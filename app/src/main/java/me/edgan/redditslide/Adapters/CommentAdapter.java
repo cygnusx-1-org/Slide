@@ -93,7 +93,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+
+// Add import
+import me.edgan.redditslide.Activities.Profile;
 
 public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -128,6 +132,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     long lastSeen = 0;
     public ArrayList<String> approved = new ArrayList<>();
     public ArrayList<String> removed = new ArrayList<>();
+    private Set<String> blockedUsers;
 
     public CommentAdapter(
             CommentPage mContext,
@@ -161,6 +166,15 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     BitmapFactory.decodeResource(mContext.getResources(), R.drawable.gold),
                     BitmapFactory.decodeResource(mContext.getResources(), R.drawable.platinum),
                 };
+
+        // Load blocked users in background
+        Profile.getBlockedUsers(new Profile.BlockedUsersCallback() {
+            @Override
+            public void onResult(Set<String> users) {
+                blockedUsers = users;
+                notifyDataSetChanged();
+            }
+        });
     }
 
     public void reset(
@@ -400,8 +414,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         comment.getDataNode().get("body_html").asText(),
                         submission.getSubredditName(),
                         holder,
-                        singleClick,
-                        onLongClickListener);
+                        comment);
             }
 
             holder.firstTextView.setOnClickListener(
@@ -949,7 +962,22 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    private void setViews(String rawHTML, String subredditName, CommentViewHolder holder) {
+    private void setViews(String rawHTML, String subredditName, CommentViewHolder holder, Comment comment) {
+        if (rawHTML.isEmpty()) {
+            return;
+        }
+
+        // Use cached blocked users list
+        if (isUserBlocked(comment.getAuthor())) {
+            Log.d(LogUtil.getTag(), "Blocking user: " + comment.getAuthor());
+            holder.firstTextView.setVisibility(View.GONE);
+            holder.commentOverflow.setVisibility(View.GONE);
+            if (!hiddenPersons.contains(comment.getFullName())) {
+                hiddenPersons.add(comment.getFullName());
+            }
+            return;
+        }
+
         setViews(rawHTML, subredditName, holder.firstTextView, holder.commentOverflow);
     }
 
@@ -1162,7 +1190,8 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 setViews(
                         n.getDataNode().get("body_html").asText(),
                         submission.getSubredditName(),
-                        holder);
+                        holder,
+                        n);
             }
             CommentAdapterHelper.hideChildrenObject(holder.childrenNumber);
             holder.commentOverflow.setVisibility(View.VISIBLE);
@@ -1961,7 +1990,8 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         setViews(
                                 comment.getDataNode().get("body_html").asText(),
                                 submission.getSubredditName(),
-                                holder);
+                                holder,
+                                comment);
                     }
 
                     CommentAdapterHelper.hideChildrenObject(holder.childrenNumber);
@@ -2658,5 +2688,10 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
         Authentication.doVerify(token, reddit, true, mContext);
         return reddit;
+    }
+
+    // Add helper method to check if user is blocked
+    private boolean isUserBlocked(String username) {
+        return blockedUsers != null && blockedUsers.contains(username.toLowerCase());
     }
 }

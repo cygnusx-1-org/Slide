@@ -82,9 +82,11 @@ import java.net.URL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /** Created by ccrama on 9/17/2015. */
 public class Profile extends BaseActivityAnim {
@@ -333,81 +335,56 @@ public class Profile extends BaseActivityAnim {
     }
 
     /**
-     * Checks if the user (with username stored in 'name') is blocked.
-     * This method calls Authentication.reddit.getUser(name) to get fresh data,
-     * converts the returned Account to JSON (assuming its toString() returns JSON)
-     * and then reads the "is_blocked" boolean.
+     * Checks if a given username is in the authenticated user's block list
+     * @param username The username to check
+     * @return true if the user is blocked, false otherwise
      */
-    private void checkBlockStatusAndToggle(final TextView blockButton) {
-        new AsyncTask<Void, Void, Boolean>() {
-            @Override
-            protected Boolean doInBackground(Void... params) {
-                try {
-                    RestResponse response = Authentication.reddit.execute(
-                        Authentication.reddit.request()
-                            .get()
-                            .path("/prefs/blocked")
-                            .build()
-                    );
-                    String rawResponse = response.getRaw();
-                    JSONObject json = new JSONObject(rawResponse);
-                    JSONObject dataObj = json.getJSONObject("data");
-                    JSONArray children = dataObj.getJSONArray("children");
-                    // Iterate over the blocked users list.
-                    for (int i = 0; i < children.length(); i++) {
-                        JSONObject userObj = children.getJSONObject(i);
-                        String blockedUser = userObj.getString("name");
-                        // If the target username is found, then the user is blocked.
-                        if (blockedUser.equalsIgnoreCase(name)) {
-                            return true;
-                        }
+    public static boolean isUserBlocked(String username) {
+        try {
+            // Run network request in background thread
+            RestResponse response = new AsyncTask<Void, Void, RestResponse>() {
+                @Override
+                protected RestResponse doInBackground(Void... voids) {
+                    try {
+                        return Authentication.reddit.execute(
+                            Authentication.reddit.request()
+                                .get()
+                                .path("/prefs/blocked")
+                                .build()
+                        );
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return null;
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
-                // Return false if not found or an error occurred.
-                return false;
-            }
+            }.execute().get();
 
-            @Override
-            protected void onPostExecute(Boolean isBlocked) {
-                // If the user is already blocked, call unblockUser, otherwise block the user.
-                if (isBlocked) {
-                    unblockUser(blockButton);
-                } else {
-                    blockUser(blockButton);
+            if (response == null) return false;
+
+            String rawResponse = response.getRaw();
+            JSONObject json = new JSONObject(rawResponse);
+            JSONObject dataObj = json.getJSONObject("data");
+            JSONArray children = dataObj.getJSONArray("children");
+            for (int i = 0; i < children.length(); i++) {
+                JSONObject userObj = children.getJSONObject(i);
+                String blockedUser = userObj.getString("name");
+                if (blockedUser.equalsIgnoreCase(username)) {
+                    return true;
                 }
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private void updateBlockButtonState(final TextView blockButton) {
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
-                try {
-                    RestResponse response = Authentication.reddit.execute(
-                        Authentication.reddit.request()
-                            .get()
-                            .path("/prefs/blocked")
-                            .build()
-                    );
-                    String rawResponse = response.getRaw();
-                    JSONObject json = new JSONObject(rawResponse);
-                    JSONObject dataObj = json.getJSONObject("data");
-                    JSONArray children = dataObj.getJSONArray("children");
-                    for (int i = 0; i < children.length(); i++) {
-                        JSONObject userObj = children.getJSONObject(i);
-                        String blockedUser = userObj.getString("name");
-                        if (blockedUser.equalsIgnoreCase(name)) {
-                            return true;
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return false;
+                return isUserBlocked(name);
             }
+
             @Override
             protected void onPostExecute(Boolean isBlocked) {
                 if (isBlocked) {
@@ -476,6 +453,24 @@ public class Profile extends BaseActivityAnim {
                 } else {
                     Toast.makeText(getBaseContext(), getString(R.string.success_unblock_user), Toast.LENGTH_LONG).show();
                     blockButton.setText(getString(R.string.profile_block_user));
+                }
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private void checkBlockStatusAndToggle(final TextView blockButton) {
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                return isUserBlocked(name);
+            }
+
+            @Override
+            protected void onPostExecute(Boolean isBlocked) {
+                if (isBlocked) {
+                    unblockUser(blockButton);
+                } else {
+                    blockUser(blockButton);
                 }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -1190,5 +1185,46 @@ public class Profile extends BaseActivityAnim {
                 return true;
         }
         return false;
+    }
+
+    public static void getBlockedUsers(final BlockedUsersCallback callback) {
+        new AsyncTask<Void, Void, Set<String>>() {
+            @Override
+            protected Set<String> doInBackground(Void... voids) {
+                Set<String> blockedUsers = new HashSet<>();
+                try {
+                    RestResponse response = Authentication.reddit.execute(
+                        Authentication.reddit.request()
+                            .get()
+                            .path("/prefs/blocked")
+                            .build()
+                    );
+                    
+                    if (response != null) {
+                        String rawResponse = response.getRaw();
+                        JSONObject json = new JSONObject(rawResponse);
+                        JSONObject dataObj = json.getJSONObject("data");
+                        JSONArray children = dataObj.getJSONArray("children");
+                        for (int i = 0; i < children.length(); i++) {
+                            JSONObject userObj = children.getJSONObject(i);
+                            String blockedUser = userObj.getString("name");
+                            blockedUsers.add(blockedUser.toLowerCase());
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return blockedUsers;
+            }
+
+            @Override
+            protected void onPostExecute(Set<String> users) {
+                callback.onResult(users);
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public interface BlockedUsersCallback {
+        void onResult(Set<String> blockedUsers);
     }
 }
