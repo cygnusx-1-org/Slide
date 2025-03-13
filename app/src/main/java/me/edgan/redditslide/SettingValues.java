@@ -149,6 +149,8 @@ public class SettingValues {
     public static final String PREF_IMAGE_SAVE_LOCATION = "PREF_IMAGE_SAVE_LOCATION";
     public static final String PREF_REDDIT_CLIENT_ID_OVERRIDE = "redditClientOverride";
 
+    public static final String PREF_COLLAPSE_BLOCKED_USERS = "collapseBlockedUsers";
+
     public static String imageSaveLocation;
     public static String redditClientIdOverride = "";
     public static CreateCardView.CardEnum defaultCardView;
@@ -296,6 +298,7 @@ public class SettingValues {
     public static boolean alwaysBlackStatusbar;
     public static boolean subredditFiltersTillRestart;
     public static boolean subredditFilterPrefixMatching;
+    public static boolean collapseBlockedUsers;
 
     public static void setAllValues(SharedPreferences settings) {
         prefs = settings;
@@ -500,6 +503,7 @@ public class SettingValues {
 
         subredditFiltersTillRestart = prefs.getBoolean(PREF_SUBREDDIT_FILTERS_TILL_RESTART, true);
         subredditFilterPrefixMatching = prefs.getBoolean(PREF_SUBREDDIT_FILTER_PREFIX_MATCHING, false);
+        collapseBlockedUsers = prefs.getBoolean(PREF_COLLAPSE_BLOCKED_USERS, false);
     }
 
     public static void setPicsEnabled(String sub, boolean checked) {

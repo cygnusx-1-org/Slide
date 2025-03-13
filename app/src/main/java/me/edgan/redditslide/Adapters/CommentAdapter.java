@@ -967,15 +967,17 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return;
         }
 
-        // Use cached blocked users list
-        if (isUserBlocked(comment.getAuthor())) {
-            Log.d(LogUtil.getTag(), "Blocking user: " + comment.getAuthor());
-            holder.firstTextView.setVisibility(View.GONE);
-            holder.commentOverflow.setVisibility(View.GONE);
-            if (!hiddenPersons.contains(comment.getFullName())) {
-                hiddenPersons.add(comment.getFullName());
+        if (SettingValues.collapseBlockedUsers) {
+            // Use cached blocked users list
+            if (isUserBlocked(comment.getAuthor())) {
+                Log.d(LogUtil.getTag(), "Blocking user: " + comment.getAuthor());
+                holder.firstTextView.setVisibility(View.GONE);
+                holder.commentOverflow.setVisibility(View.GONE);
+                if (!hiddenPersons.contains(comment.getFullName())) {
+                    hiddenPersons.add(comment.getFullName());
+                }
+                return;
             }
-            return;
         }
 
         setViews(rawHTML, subredditName, holder.firstTextView, holder.commentOverflow);
