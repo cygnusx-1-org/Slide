@@ -387,11 +387,27 @@ public class Profile extends BaseActivityAnim {
 
             @Override
             protected void onPostExecute(Boolean isBlocked) {
+                SpannableStringBuilder builder = new SpannableStringBuilder();
                 if (isBlocked) {
-                    blockButton.setText(getString(R.string.profile_unblock_user));
+                    builder.append(getString(R.string.profile_unblock_user));
+                    builder.append("\n");
+                    String description = getString(R.string.profile_unblock_user_description);
+                    builder.append(description);
+                    builder.setSpan(new RelativeSizeSpan(0.5f),
+                        getString(R.string.profile_unblock_user).length() + 1,
+                        builder.length(),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 } else {
-                    blockButton.setText(getString(R.string.profile_block_user));
+                    builder.append(getString(R.string.profile_block_user));
+                    builder.append("\n");
+                    String description = getString(R.string.profile_block_user_description);
+                    builder.append(description);
+                    builder.setSpan(new RelativeSizeSpan(0.5f),
+                        getString(R.string.profile_block_user).length() + 1,
+                        builder.length(),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
+                blockButton.setText(builder);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -420,7 +436,16 @@ public class Profile extends BaseActivityAnim {
                     Toast.makeText(getBaseContext(), getString(R.string.err_block_user), Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getBaseContext(), getString(R.string.success_block_user), Toast.LENGTH_LONG).show();
-                    blockButton.setText(getString(R.string.profile_unblock_user));
+                    SpannableStringBuilder builder = new SpannableStringBuilder();
+                    builder.append(getString(R.string.profile_unblock_user));
+                    builder.append("\n");
+                    String description = getString(R.string.profile_unblock_user_description);
+                    builder.append(description);
+                    builder.setSpan(new RelativeSizeSpan(0.5f),
+                        getString(R.string.profile_unblock_user).length() + 1,
+                        builder.length(),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    blockButton.setText(builder);
                 }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -452,7 +477,16 @@ public class Profile extends BaseActivityAnim {
                     Toast.makeText(getBaseContext(), getString(R.string.err_unblock_user), Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getBaseContext(), getString(R.string.success_unblock_user), Toast.LENGTH_LONG).show();
-                    blockButton.setText(getString(R.string.profile_block_user));
+                    SpannableStringBuilder builder = new SpannableStringBuilder();
+                    builder.append(getString(R.string.profile_block_user));
+                    builder.append("\n");
+                    String description = getString(R.string.profile_block_user_description);
+                    builder.append(description);
+                    builder.setSpan(new RelativeSizeSpan(0.5f),
+                        getString(R.string.profile_block_user).length() + 1,
+                        builder.length(),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    blockButton.setText(builder);
                 }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -951,6 +985,16 @@ public class Profile extends BaseActivityAnim {
                                         });
 
                         final TextView blockButton = (TextView) dialoglayout.findViewById(R.id.block);
+                        SpannableStringBuilder initialBuilder = new SpannableStringBuilder();
+                        initialBuilder.append(getString(R.string.profile_block_user));
+                        initialBuilder.append("\n");
+                        String description = getString(R.string.profile_block_user_description);
+                        initialBuilder.append(description);
+                        initialBuilder.setSpan(new RelativeSizeSpan(0.5f),
+                            getString(R.string.profile_block_user).length() + 1,
+                            initialBuilder.length(),
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        blockButton.setText(initialBuilder);
                         updateBlockButtonState(blockButton);
                         dialoglayout
                                 .findViewById(R.id.block_body)
@@ -1199,7 +1243,7 @@ public class Profile extends BaseActivityAnim {
                             .path("/prefs/blocked")
                             .build()
                     );
-                    
+
                     if (response != null) {
                         String rawResponse = response.getRaw();
                         JSONObject json = new JSONObject(rawResponse);

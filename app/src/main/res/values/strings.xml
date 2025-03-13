@@ -146,8 +146,11 @@
     <string name="profile_btn_tag">Set tag</string>
     <string name="profile_btn_untag">Remove tag</string>
     <string name="profile_info">Profile information</string>
-    <string name="profile_block_user">Block user\'s messages, posts, and profile</string>
-    <string name="profile_unblock_user">Unblock user\'s messages, posts, and profile</string>
+    <string name="profile_block_user">Block user</string>
+    <string name="profile_block_user_description">Blocks user\'s messages, posts, and profile</string>
+    <string name="profile_unblock_user">Unblock user</string>
+    <string name="profile_unblock_user_description">Unlocks user\'s messages, posts, and profile</string>
+
 
     <!-- Comment text options -->
     <string name="comment_gild">Award comment</string>
