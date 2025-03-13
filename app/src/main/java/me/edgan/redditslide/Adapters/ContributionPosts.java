@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import me.edgan.redditslide.Activities.Profile;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.HasSeen;
 import me.edgan.redditslide.PostMatch;
@@ -14,6 +15,7 @@ import net.dean.jraw.models.Submission;
 import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.TimePeriod;
 import net.dean.jraw.paginators.UserContributionPaginator;
+import net.dean.jraw.paginators.UserProfilePaginator;
 
 import java.util.ArrayList;
 
@@ -97,10 +99,10 @@ public class ContributionPosts extends GeneralPosts {
             try {
                 if (reset || paginator == null) {
                     paginator =
-                            new UserContributionPaginator(Authentication.reddit, where, subreddit);
+                            new UserProfilePaginator(Authentication.reddit, where, subreddit);
 
-                    paginator.setSorting(SortingUtil.getSorting(subreddit, Sorting.NEW));
-                    paginator.setTimePeriod(SortingUtil.getTime(subreddit, TimePeriod.ALL));
+                    paginator.setSorting(Profile.profSort != null ? Profile.profSort : Sorting.HOT);
+                    paginator.setTimePeriod(Profile.profTime != null ? Profile.profTime : TimePeriod.ALL);
                 }
 
                 if (!paginator.hasNext()) {

@@ -227,4 +227,33 @@ public class SortingUtil {
             return defaultSort;
         }
     }
+
+    public static String[] getProfileSortingStrings() {
+        final Context appContext = Reddit.getAppContext();
+        return new String[] {
+            appContext.getString(R.string.sorting_hot),
+            appContext.getString(R.string.sorting_new),
+            appContext.getString(R.string.sorting_top),
+            appContext.getString(R.string.sorting_controversial)
+        };
+    }
+
+    public static Spannable[] getProfileSortingSpannables(Sorting sorting) {
+        String[] sortingStrings = getProfileSortingStrings();
+        return createSortingSpannableStrings(sortingStrings, getProfileSortingId(sorting), " ");
+    }
+
+    public static Integer getProfileSortingId(Sorting sort) {
+        switch (sort) {
+            case NEW:
+                return 1;
+            case TOP:
+                return 2;
+            case CONTROVERSIAL:
+                return 3;
+            case HOT:
+            default:
+                return 0;
+        }
+    }
 }
