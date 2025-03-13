@@ -143,6 +143,7 @@ public class MultiredditOverview extends BaseActivityAnim {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (item == null) return false;
         MultiredditView currentFragment = null;
         List<Submission> posts = null;
 

@@ -23,9 +23,9 @@ app/
         Autocache/
         Flair/
         ForceTouch/
-        ForceTouch/
-        ForceTouch/
-        ForceTouch/
+        ForceTouch/callback
+        ForceTouch/builder
+        ForceTouch/util
         Fragments/
         handler/
         ImgurAlbum/
@@ -38,10 +38,10 @@ app/
         Toolbox/
         Tumblr/
         ui/
-        ui/
-        ui/
+        ui/settings
+        ui/settings/dragSort
         util/
-        util/
+        util/stubs
         Views/
         Visuals/
         Widget/
@@ -71,13 +71,16 @@ app/build.gradle
 // General code guidelines
 const generalCodeGuidelines = `
 1. Look for comments that might instruct you about what to not do, or how removing the code below it might break something.
-2. Change the minimal about of code
+2. Change the absolute minimal amount of code
 3. Try to use existing dependecies as much as possible, and avoid introducing new dependecies unless necessary.
-3. Leave comments alone unless you are changing the code assoicated with them.
-4. Do not try to introduce Glide as a library.
-5. Do not try to introduce Kotlin code.
-6. When in doubt, ask questions.
-7. Read any new API keys through "app/src/main/java/me/edgan/redditslide/SecretConstants.java".
+4. Leave comments alone unless you are changing the code assoicated with them.
+5. Do not try to introduce Glide as a library.
+6. Do not try to introduce Kotlin code.
+7. When in doubt, ask questions.
+8. Read any new API keys through "app/src/main/java/me/edgan/redditslide/SecretConstants.java".
+9. Clean up trailing whitespace for all lines
+10. Be sure to include new strings
+11. Be sure to include new imports
 `;
 
 // Performance Guidelines
