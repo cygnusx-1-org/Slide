@@ -592,7 +592,7 @@ public class PeekMediaView extends RelativeLayout {
                             }
                         });
                 try {
-                    i.setImage(ImageSource.uri(f.getAbsolutePath()));
+                    i.loader.setImage(ImageSource.uri(f.getAbsolutePath()));
                     i.setZoomEnabled(false);
                 } catch (Exception e) {
                     imageShown = false;
@@ -638,9 +638,9 @@ public class PeekMediaView extends RelativeLayout {
                                                         .getDiskCache()
                                                         .get(url);
                                         if (f != null && f.exists()) {
-                                            i.setImage(ImageSource.uri(f.getAbsolutePath()));
+                                            i.loader.setImage(ImageSource.uri(f.getAbsolutePath()));
                                         } else {
-                                            i.setImage(ImageSource.bitmap(loadedImage));
+                                            i.loader.setImage(ImageSource.bitmap(loadedImage));
                                         }
                                         (progress).setVisibility(View.GONE);
                                         handler.removeCallbacks(progressBarDelayRunner);

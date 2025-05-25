@@ -83,7 +83,7 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SpoilerRobotoTextView;
-import me.edgan.redditslide.SubmissionViews.PopulateSubmissionViewHolder;
+import me.edgan.redditslide.util.SubmissionThumbnailHelper;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Views.DoEditorActions;
@@ -1084,7 +1084,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                     }
                                     break;
                                 case REDDIT:
-                                    PopulateSubmissionViewHolder.openRedditContent(
+                                    SubmissionThumbnailHelper.openRedditContent(
                                             adapter.submission.getUrl(), getActivity());
                                     break;
                                 case LINK:
@@ -1170,13 +1170,13 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                     }
                                     break;
                                 case IMAGE:
-                                    PopulateSubmissionViewHolder.openImage(
+                                    SubmissionThumbnailHelper.openImage(
                                             type, getActivity(), adapter.submission, null, -1);
                                     break;
                                 case VREDDIT_REDIRECT:
                                 case VREDDIT_DIRECT:
                                 case GIF:
-                                    PopulateSubmissionViewHolder.openGif(
+                                    SubmissionThumbnailHelper.openGif(
                                             getActivity(), adapter.submission, -1);
                                     break;
                                 case VIDEO:

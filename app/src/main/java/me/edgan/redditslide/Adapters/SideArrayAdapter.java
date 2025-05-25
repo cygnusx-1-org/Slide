@@ -20,6 +20,7 @@ import androidx.cardview.widget.CardView;
 
 import me.edgan.redditslide.Activities.MainActivity;
 import me.edgan.redditslide.Activities.SubredditView;
+import me.edgan.redditslide.Activities.MainPagerAdapterComment;
 import me.edgan.redditslide.CaseInsensitiveArrayList;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.R;
@@ -116,7 +117,7 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
                 // to animate upon the next time
                 // the search toolbar UI is called. Set animation to 0 because the UI is already
                 // hidden.
-                ((MainActivity) getContext())
+                ((MainActivity) getContext()).toolbarSearchController
                         .exitAnimationsForToolbarSearch(
                                 0,
                                 ((CardView)
@@ -193,9 +194,7 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            boolean isSpecialOrMulti = UserSubscriptions.specialSubreddits.contains(subreddit.toLowerCase(Locale.ENGLISH))
-                                                     || subreddit.startsWith("/m/");
-
+                            boolean isSpecialOrMulti = UserSubscriptions.specialSubreddits.contains(subreddit.toLowerCase(Locale.ENGLISH)) || subreddit.startsWith("/m/");
                             if (SettingValues.hideSubredditTabs) {
                                 // WHEN TABS ARE HIDDEN:
                                 if (isSpecialOrMulti) {
@@ -204,7 +203,7 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
                                         int pos = mainActivity.usedArray.indexOf(subreddit);
                                         mainActivity.pager.setCurrentItem(pos);
                                         mainActivity.drawerLayout.closeDrawers();
-                                        if (mainActivity.drawerSearch != null) mainActivity.drawerSearch.setText("");
+                                        ((MainActivity) getContext()).drawerSearch.setText("");
                                     } else if (subreddit.equalsIgnoreCase("random")
                                                 || subreddit.equalsIgnoreCase("randnsfw")
                                                 || subreddit.equalsIgnoreCase("myrandom")) {
@@ -242,17 +241,17 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
                                     // Subscribed: Switch to the tab
                                     int pos = mainActivity.usedArray.indexOf(subreddit);
                                     if (mainActivity.commentPager
-                                            && mainActivity.adapter instanceof MainActivity.MainPagerAdapterComment) {
+                                            && mainActivity.adapter instanceof MainPagerAdapterComment) {
                                         mainActivity.openingComments = null;
                                         mainActivity.toOpenComments = -1;
-                                        ((MainActivity.MainPagerAdapterComment) mainActivity.adapter).size =
+                                        ((MainPagerAdapterComment) mainActivity.adapter).size =
                                                 (mainActivity.usedArray.size() + 1);
                                         mainActivity.adapter.notifyDataSetChanged();
                                         mainActivity.doPageSelectedComments(pos);
                                     }
                                     mainActivity.pager.setCurrentItem(pos);
                                     mainActivity.drawerLayout.closeDrawers();
-                                    if (mainActivity.drawerSearch != null) mainActivity.drawerSearch.setText("");
+                                    ((MainActivity) getContext()).getDrawerController().clearDrawerSearch();
                                 } else if (subreddit.equalsIgnoreCase("random")
                                             || subreddit.equalsIgnoreCase("randnsfw")
                                             || subreddit.equalsIgnoreCase("myrandom")) {

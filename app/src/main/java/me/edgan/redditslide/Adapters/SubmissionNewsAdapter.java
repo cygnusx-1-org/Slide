@@ -17,6 +17,7 @@ import com.google.android.material.snackbar.Snackbar;
 import me.edgan.redditslide.Activities.CommentsScreen;
 import me.edgan.redditslide.Activities.MainActivity;
 import me.edgan.redditslide.Activities.SubredditView;
+import me.edgan.redditslide.Activities.MainPagerAdapterComment;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.R;
@@ -187,7 +188,7 @@ public class SubmissionNewsAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                                             && a.commentPager
                                             && a.adapter
                                                     instanceof
-                                                    MainActivity.MainPagerAdapterComment) {
+                                                    MainPagerAdapterComment) {
 
                                         if (a.openingComments != submission) {
                                             clicked = holder2.getBindingAdapterPosition();
@@ -195,10 +196,10 @@ public class SubmissionNewsAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                                             a.toOpenComments = a.pager.getCurrentItem() + 1;
                                             a.currentComment =
                                                     holder.getBindingAdapterPosition() - 1;
-                                            ((MainActivity.MainPagerAdapterComment) (a).adapter)
+                                            ((MainPagerAdapterComment) (a).adapter)
                                                             .storedFragment =
                                                     (a).adapter.getCurrentFragment();
-                                            ((MainActivity.MainPagerAdapterComment) (a).adapter)
+                                            ((MainPagerAdapterComment) (a).adapter)
                                                             .size =
                                                     a.toOpenComments + 1;
                                             try {

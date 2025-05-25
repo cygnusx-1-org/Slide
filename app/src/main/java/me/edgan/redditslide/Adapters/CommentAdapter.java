@@ -15,7 +15,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -23,7 +22,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -40,7 +38,6 @@ import com.mikepenz.itemanimators.AlphaInAnimator;
 import com.mikepenz.itemanimators.SlideRightAlphaAnimator;
 import com.nostra13.universalimageloader.utils.DiskCacheUtils;
 
-import me.edgan.redditslide.ActionStates;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.BuildConfig;
 import me.edgan.redditslide.Constants;
@@ -51,25 +48,22 @@ import me.edgan.redditslide.ImageFlairs;
 import me.edgan.redditslide.LastComments;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
-import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.SubmissionViews.PopulateSubmissionViewHolder;
-import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Views.DoEditorActions;
 import me.edgan.redditslide.Views.PreCachingLayoutManagerComments;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
-import me.edgan.redditslide.Vote;
 import me.edgan.redditslide.util.AnimatorUtil;
-import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.DisplayUtil;
 import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.SubmissionParser;
-import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
+import me.edgan.redditslide.util.CommentStateUtil;
+import me.edgan.redditslide.util.AsyncLoadMoreTask;
 
 import net.dean.jraw.ApiException;
 import net.dean.jraw.RedditClient;
@@ -79,21 +73,13 @@ import net.dean.jraw.models.Comment;
 import net.dean.jraw.models.CommentNode;
 import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.Submission;
-import net.dean.jraw.models.VoteDirection;
 
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
 
 public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -116,14 +102,14 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public ArrayList<CommentObject> currentComments;
     public ArrayList<String> deleted = new ArrayList<>();
     RecyclerView listView;
-    CommentPage mPage;
+    public CommentPage mPage;
     int shifted;
     int toShiftTo;
     HashSet<String> hidden;
-    ArrayList<String> hiddenPersons;
-    ArrayList<String> toCollapse;
-    private String backedText = "";
-    private String currentlyEditingId = "";
+    public ArrayList<String> hiddenPersons;
+    public ArrayList<String> toCollapse;
+    public String backedText = "";
+    public String currentlyEditingId = "";
     public SubmissionViewHolder submissionViewHolder;
     long lastSeen = 0;
     public ArrayList<String> approved = new ArrayList<>();
@@ -718,13 +704,16 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 progress.setVisibility(View.VISIBLE);
                                 holder.content.setText(R.string.comment_loading_more);
                                 currentLoading =
-                                        new AsyncLoadMore(
-                                                getRealPosition(
-                                                        holder.getBindingAdapterPosition() - 2),
+                                        new AsyncLoadMoreTask(
+                                                finalNextPos,
                                                 holder.getBindingAdapterPosition(),
                                                 holder,
-                                                finalNextPos,
-                                                baseNode.comment.getComment().getFullName());
+                                                baseNode.comment.getComment().getFullName(),
+                                                mContext,
+                                                CommentAdapter.this,
+                                                listView,
+                                                currentComments,
+                                                keys);
                                 currentLoading.execute(baseNode);
                             }
                         }
@@ -749,8 +738,8 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    AsyncLoadMore currentLoading;
-    String changedProfile;
+    public AsyncLoadMoreTask currentLoading;
+    public String changedProfile;
 
     private void doReplySubmission(RecyclerView.ViewHolder submissionViewHolder) {
         final View replyArea = submissionViewHolder.itemView.findViewById(R.id.innerSend);
@@ -949,7 +938,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    private void setViews(String rawHTML, String subredditName, CommentViewHolder holder) {
+    public void setViews(String rawHTML, String subredditName, CommentViewHolder holder) {
         setViews(rawHTML, subredditName, holder.firstTextView, holder.commentOverflow);
     }
 
@@ -968,7 +957,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 longClickListener);
     }
 
-    int editingPosition;
+    public int editingPosition;
 
     private void collapseAndHide(final View v) {
         int finalHeight = v.getHeight();
@@ -1012,7 +1001,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mAnimator.start();
     }
 
-    private void doShowMenu(final View l) {
+    public void doShowMenu(final View l) {
         l.setVisibility(View.VISIBLE);
 
         final int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
@@ -1043,7 +1032,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     ValueAnimator mAnimator;
 
-    private void expand(final View l) {
+    public void expand(final View l) { // Made public (was private)
         l.setVisibility(View.VISIBLE);
 
         final int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
@@ -1064,7 +1053,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mAnimator.start();
     }
 
-    private void expandAndSetParams(final View l) {
+    public void expandAndSetParams(final View l) { // Made public (was private)
         l.setVisibility(View.VISIBLE);
 
         final int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
@@ -1138,7 +1127,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mAnimator.start();
     }
 
-    CommentNode currentBaseNode;
+    public CommentNode currentBaseNode;
 
     public void setCommentStateHighlighted(
             final CommentViewHolder holder,
@@ -1146,589 +1135,8 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             final CommentNode baseNode,
             boolean isReplying,
             boolean animate) {
-        if (currentlySelected != null && currentlySelected != holder) {
-            setCommentStateUnhighlighted(currentlySelected, currentBaseNode, true);
-        }
-
-        // If a comment is hidden and (Swap long press == true), then a single click will un-hide
-        // the comment
-        // and expand to show all children comments
-        if (SettingValues.swap
-                && holder.firstTextView.getVisibility() == View.GONE
-                && !isReplying) {
-            hiddenPersons.remove(n.getFullName());
-            unhideAll(baseNode, holder.getBindingAdapterPosition() + 1);
-            if (toCollapse.contains(n.getFullName()) && SettingValues.collapseComments) {
-                setViews(
-                        n.getDataNode().get("body_html").asText(),
-                        submission.getSubredditName(),
-                        holder);
-            }
-            CommentAdapterHelper.hideChildrenObject(holder.childrenNumber);
-            holder.commentOverflow.setVisibility(View.VISIBLE);
-            toCollapse.remove(n.getFullName());
-        } else {
-            currentlySelected = holder;
-            currentBaseNode = baseNode;
-            int color = Palette.getColor(n.getSubredditName());
-            currentSelectedItem = n.getFullName();
-            currentNode = baseNode;
-            LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
-            resetMenu(holder.menuArea, false);
-            final View baseView =
-                    inflater.inflate(
-                            SettingValues.rightHandedCommentMenu
-                                    ? R.layout.comment_menu_right_handed
-                                    : R.layout.comment_menu,
-                            holder.menuArea);
-
-            if (!isReplying) {
-                baseView.setVisibility(View.GONE);
-                if (animate) {
-                    expand(baseView);
-                } else {
-                    baseView.setVisibility(View.VISIBLE);
-                    final int widthSpec =
-                            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                    final int heightSpec =
-                            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                    baseView.measure(widthSpec, heightSpec);
-                    View l2 =
-                            baseView.findViewById(R.id.replyArea) == null
-                                    ? baseView.findViewById(R.id.innerSend)
-                                    : baseView.findViewById(R.id.replyArea);
-                    final int widthSpec2 =
-                            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                    final int heightSpec2 =
-                            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                    l2.measure(widthSpec2, heightSpec2);
-                    ViewGroup.LayoutParams layoutParams = baseView.getLayoutParams();
-                    layoutParams.height = baseView.getMeasuredHeight() - l2.getMeasuredHeight();
-                    baseView.setLayoutParams(layoutParams);
-                }
-            }
-
-            RecyclerView.LayoutParams params =
-                    (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
-            params.setMargins(0, 0, 0, 0);
-            holder.itemView.setLayoutParams(params);
-
-            View reply = baseView.findViewById(R.id.reply);
-            View send = baseView.findViewById(R.id.send);
-
-            final View menu = baseView.findViewById(R.id.menu);
-            final View replyArea = baseView.findViewById(R.id.replyArea);
-
-            final View more = baseView.findViewById(R.id.more);
-            final ImageView upvote = baseView.findViewById(R.id.upvote);
-            final ImageView downvote = baseView.findViewById(R.id.downvote);
-            View discard = baseView.findViewById(R.id.discard);
-            final EditText replyLine = baseView.findViewById(R.id.replyLine);
-            final ImageView mod = baseView.findViewById(R.id.mod);
-
-            final Comment comment = baseNode.getComment();
-            if (ActionStates.getVoteDirection(comment) == VoteDirection.UPVOTE) {
-                BlendModeUtil.tintImageViewAsModulate(upvote, holder.textColorUp);
-                upvote.setContentDescription(
-                        mContext.getResources().getString(R.string.btn_upvoted));
-            } else if (ActionStates.getVoteDirection(comment) == VoteDirection.DOWNVOTE) {
-                BlendModeUtil.tintImageViewAsModulate(downvote, holder.textColorDown);
-                downvote.setContentDescription(
-                        mContext.getResources().getString(R.string.btn_downvoted));
-            } else {
-                downvote.clearColorFilter();
-                downvote.setContentDescription(
-                        mContext.getResources().getString(R.string.btn_downvote));
-                upvote.clearColorFilter();
-                upvote.setContentDescription(
-                        mContext.getResources().getString(R.string.btn_upvote));
-            }
-
-            try {
-                if (UserSubscriptions.modOf.contains(submission.getSubredditName())) {
-                    // todo
-                    mod.setVisibility(View.GONE);
-                } else {
-                    mod.setVisibility(View.GONE);
-                }
-            } catch (Exception e) {
-                Log.d(LogUtil.getTag(), "Error loading mod " + e.toString());
-            }
-
-            if (UserSubscriptions.modOf != null
-                    && UserSubscriptions.modOf.contains(
-                            submission.getSubredditName().toLowerCase(Locale.ENGLISH))) {
-                mod.setVisibility(View.VISIBLE);
-                final Map<String, Integer> reports = comment.getUserReports();
-                final Map<String, String> reports2 = comment.getModeratorReports();
-                if (reports.size() + reports2.size() > 0) {
-                    BlendModeUtil.tintImageViewAsSrcAtop(
-                            mod, ContextCompat.getColor(mContext, R.color.md_red_300));
-                } else {
-                    BlendModeUtil.tintImageViewAsSrcAtop(mod, Color.WHITE);
-                }
-                mod.setOnClickListener(
-                        new OnSingleClickListener() {
-                            @Override
-                            public void onSingleClick(View v) {
-                                CommentAdapterHelper.showModBottomSheet(
-                                        CommentAdapter.this,
-                                        mContext,
-                                        baseNode,
-                                        comment,
-                                        holder,
-                                        reports,
-                                        reports2);
-                            }
-                        });
-            } else {
-                mod.setVisibility(View.GONE);
-            }
-
-            final ImageView edit = baseView.findViewById(R.id.edit);
-            if (Authentication.name != null
-                    && Authentication.name
-                            .toLowerCase(Locale.ENGLISH)
-                            .equals(comment.getAuthor().toLowerCase(Locale.ENGLISH))
-                    && Authentication.didOnline) {
-                edit.setOnClickListener(
-                        new OnSingleClickListener() {
-                            @Override
-                            public void onSingleClick(View v) {
-                                CommentAdapterHelper.doCommentEdit(
-                                        CommentAdapter.this,
-                                        mContext,
-                                        fm,
-                                        baseNode,
-                                        baseNode.isTopLevel()
-                                                ? submission.getSelftext()
-                                                : baseNode.getParent().getComment().getBody(),
-                                        holder);
-                            }
-                        });
-            } else {
-                edit.setVisibility(View.GONE);
-            }
-
-            final ImageView delete = baseView.findViewById(R.id.delete);
-            if (Authentication.name != null
-                    && Authentication.name
-                            .toLowerCase(Locale.ENGLISH)
-                            .equals(comment.getAuthor().toLowerCase(Locale.ENGLISH))
-                    && Authentication.didOnline) {
-                delete.setOnClickListener(
-                        new OnSingleClickListener() {
-                            @Override
-                            public void onSingleClick(View v) {
-                                CommentAdapterHelper.deleteComment(
-                                        CommentAdapter.this, mContext, baseNode, holder);
-                            }
-                        });
-            } else {
-                delete.setVisibility(View.GONE);
-            }
-
-            if (Authentication.isLoggedIn
-                    && !submission.isArchived()
-                    && !submission.isLocked()
-                    && !(comment.getDataNode().has("locked")
-                            && comment.getDataNode().get("locked").asBoolean())
-                    && !deleted.contains(n.getFullName())
-                    && !comment.getAuthor().equals("[deleted]")
-                    && Authentication.didOnline) {
-                if (isReplying) {
-                    baseView.setVisibility(View.VISIBLE);
-
-                    final int widthSpec =
-                            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                    final int heightSpec =
-                            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                    baseView.measure(widthSpec, heightSpec);
-
-                    View l2 =
-                            baseView.findViewById(R.id.replyArea) == null
-                                    ? baseView.findViewById(R.id.innerSend)
-                                    : baseView.findViewById(R.id.replyArea);
-                    final int widthSpec2 =
-                            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                    final int heightSpec2 =
-                            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                    l2.measure(widthSpec2, heightSpec2);
-                    RelativeLayout.LayoutParams params2 =
-                            (RelativeLayout.LayoutParams) baseView.getLayoutParams();
-                    params2.height = RelativeLayout.LayoutParams.WRAP_CONTENT;
-                    params2.addRule(RelativeLayout.BELOW, R.id.commentOverflow);
-                    baseView.setLayoutParams(params2);
-                    replyArea.setVisibility(View.VISIBLE);
-                    menu.setVisibility(View.GONE);
-                    currentlyEditing = replyLine;
-                    currentlyEditing.setOnFocusChangeListener(
-                            new View.OnFocusChangeListener() {
-                                @Override
-                                public void onFocusChange(View v, boolean hasFocus) {
-                                    if (hasFocus) {
-                                        mPage.fastScroll.setVisibility(View.GONE);
-                                        if (mPage.fab != null) {
-                                            mPage.fab.setVisibility(View.GONE);
-                                        }
-                                        mPage.overrideFab = true;
-                                    } else if (SettingValues.fastscroll) {
-                                        mPage.fastScroll.setVisibility(View.VISIBLE);
-                                        if (mPage.fab != null) {
-                                            mPage.fab.setVisibility(View.VISIBLE);
-                                        }
-                                        mPage.overrideFab = false;
-                                    }
-                                }
-                            });
-                    final TextView profile = baseView.findViewById(R.id.profile);
-                    changedProfile = Authentication.name;
-                    profile.setText("/u/" + changedProfile);
-                    profile.setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    final HashMap<String, String> accounts = new HashMap<>();
-
-                                    for (String s :
-                                            Authentication.authentication.getStringSet(
-                                                    "accounts", new HashSet<String>())) {
-                                        if (s.contains(":")) {
-                                            accounts.put(s.split(":")[0], s.split(":")[1]);
-                                        } else {
-                                            accounts.put(s, "");
-                                        }
-                                    }
-                                    final ArrayList<String> keys =
-                                            new ArrayList<>(accounts.keySet());
-                                    final int i = keys.indexOf(changedProfile);
-
-                                    new AlertDialog.Builder(mContext)
-                                            .setTitle(R.string.sorting_choose)
-                                            .setSingleChoiceItems(
-                                                    keys.toArray(new String[0]),
-                                                    i,
-                                                    (dialog, which) -> {
-                                                        changedProfile = keys.get(which);
-                                                        profile.setText("/u/" + changedProfile);
-                                                    })
-                                            .setNegativeButton(R.string.btn_cancel, null)
-                                            .show();
-                                }
-                            });
-                    replyLine.requestFocus();
-                    KeyboardUtil.toggleKeyboard(
-                            mContext,
-                            InputMethodManager.SHOW_FORCED,
-                            InputMethodManager.HIDE_IMPLICIT_ONLY);
-
-                    currentlyEditingId = n.getFullName();
-                    replyLine.setText(backedText);
-                    replyLine.addTextChangedListener(
-                            new SimpleTextWatcher() {
-                                @Override
-                                public void onTextChanged(
-                                        CharSequence s, int start, int before, int count) {
-                                    backedText = s.toString();
-                                }
-                            });
-                    editingPosition = holder.getBindingAdapterPosition();
-                }
-                reply.setOnClickListener(
-                        new OnSingleClickListener() {
-                            @Override
-                            public void onSingleClick(View v) {
-                                expandAndSetParams(baseView);
-
-                                // If the base theme is Light or Sepia, tint the Editor actions to
-                                // be white
-                                if (SettingValues.currentTheme == 1
-                                        || SettingValues.currentTheme == 5) {
-                                    final ImageView saveDraft =
-                                            (ImageView) replyArea.findViewById(R.id.savedraft);
-                                    final ImageView draft =
-                                            (ImageView) replyArea.findViewById(R.id.draft);
-                                    final ImageView imagerep =
-                                            (ImageView) replyArea.findViewById(R.id.imagerep);
-                                    final ImageView link =
-                                            (ImageView) replyArea.findViewById(R.id.link);
-                                    final ImageView bold =
-                                            (ImageView) replyArea.findViewById(R.id.bold);
-                                    final ImageView italics =
-                                            (ImageView) replyArea.findViewById(R.id.italics);
-                                    final ImageView bulletlist =
-                                            (ImageView) replyArea.findViewById(R.id.bulletlist);
-                                    final ImageView numlist =
-                                            (ImageView) replyArea.findViewById(R.id.numlist);
-                                    final ImageView draw =
-                                            (ImageView) replyArea.findViewById(R.id.draw);
-                                    final ImageView quote =
-                                            (ImageView) replyArea.findViewById(R.id.quote);
-                                    final ImageView size =
-                                            (ImageView) replyArea.findViewById(R.id.size);
-                                    final ImageView strike =
-                                            (ImageView) replyArea.findViewById(R.id.strike);
-                                    final ImageView author =
-                                            (ImageView) replyArea.findViewById(R.id.author);
-                                    final ImageView spoiler =
-                                            (ImageView) replyArea.findViewById(R.id.spoiler);
-                                    final List<ImageView> imageViewSet =
-                                            Arrays.asList(
-                                                    saveDraft,
-                                                    draft,
-                                                    imagerep,
-                                                    link,
-                                                    bold,
-                                                    italics,
-                                                    bulletlist,
-                                                    numlist,
-                                                    draw,
-                                                    quote,
-                                                    size,
-                                                    strike,
-                                                    author,
-                                                    spoiler);
-                                    BlendModeUtil.tintImageViewsAsSrcAtop(
-                                            imageViewSet, Color.WHITE);
-                                    BlendModeUtil.tintDrawableAsSrcIn(
-                                            replyLine.getBackground(), Color.WHITE);
-                                }
-
-                                replyArea.setVisibility(View.VISIBLE);
-                                menu.setVisibility(View.GONE);
-                                currentlyEditing = replyLine;
-                                DoEditorActions.doActions(
-                                        currentlyEditing,
-                                        replyArea,
-                                        fm,
-                                        (Activity) mContext,
-                                        comment.getBody(),
-                                        getParents(baseNode));
-                                currentlyEditing.setOnFocusChangeListener(
-                                        new View.OnFocusChangeListener() {
-                                            @Override
-                                            public void onFocusChange(View v, boolean hasFocus) {
-                                                if (hasFocus) {
-                                                    mPage.fastScroll.setVisibility(View.GONE);
-                                                    if (mPage.fab != null)
-                                                        mPage.fab.setVisibility(View.GONE);
-                                                    mPage.overrideFab = true;
-                                                } else if (SettingValues.fastscroll) {
-                                                    mPage.fastScroll.setVisibility(View.VISIBLE);
-                                                    if (mPage.fab != null)
-                                                        mPage.fab.setVisibility(View.VISIBLE);
-                                                    mPage.overrideFab = false;
-                                                }
-                                            }
-                                        });
-                                final TextView profile = baseView.findViewById(R.id.profile);
-                                changedProfile = Authentication.name;
-                                profile.setText("/u/" + changedProfile);
-                                profile.setOnClickListener(
-                                        new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                final HashMap<String, String> accounts =
-                                                        new HashMap<>();
-
-                                                for (String s :
-                                                        Authentication.authentication.getStringSet(
-                                                                "accounts",
-                                                                new HashSet<String>())) {
-                                                    if (s.contains(":")) {
-                                                        accounts.put(
-                                                                s.split(":")[0], s.split(":")[1]);
-                                                    } else {
-                                                        accounts.put(s, "");
-                                                    }
-                                                }
-                                                final ArrayList<String> keys =
-                                                        new ArrayList<>(accounts.keySet());
-                                                final int i = keys.indexOf(changedProfile);
-
-                                                new AlertDialog.Builder(mContext)
-                                                        .setTitle(R.string.sorting_choose)
-                                                        .setSingleChoiceItems(
-                                                                keys.toArray(new String[0]),
-                                                                i,
-                                                                (dialog, which) -> {
-                                                                    changedProfile =
-                                                                            keys.get(which);
-                                                                    profile.setText(
-                                                                            "/u/" + changedProfile);
-                                                                })
-                                                        .setNegativeButton(
-                                                                R.string.btn_cancel, null)
-                                                        .show();
-                                            }
-                                        });
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                                    replyLine.setOnFocusChangeListener(
-                                            (view, b) -> {
-                                                if (b) {
-                                                    view.postDelayed(
-                                                            () -> {
-                                                                if (!view.hasFocus())
-                                                                    view.requestFocus();
-                                                            },
-                                                            100);
-                                                }
-                                            });
-                                }
-                                replyLine.requestFocus(); // TODO: Not working when called a second
-                                // time
-                                KeyboardUtil.toggleKeyboard(
-                                        mContext,
-                                        InputMethodManager.SHOW_FORCED,
-                                        InputMethodManager.HIDE_IMPLICIT_ONLY);
-
-                                currentlyEditingId = n.getFullName();
-                                replyLine.addTextChangedListener(
-                                        new SimpleTextWatcher() {
-                                            @Override
-                                            public void onTextChanged(
-                                                    CharSequence s,
-                                                    int start,
-                                                    int before,
-                                                    int count) {
-                                                backedText = s.toString();
-                                            }
-                                        });
-                                editingPosition = holder.getBindingAdapterPosition();
-                            }
-                        });
-                send.setOnClickListener(
-                        new OnSingleClickListener() {
-                            @Override
-                            public void onSingleClick(View v) {
-                                currentlyEditingId = "";
-                                backedText = "";
-
-                                doShowMenu(baseView);
-                                if (SettingValues.fastscroll) {
-                                    mPage.fastScroll.setVisibility(View.VISIBLE);
-                                    if (mPage.fab != null) mPage.fab.setVisibility(View.VISIBLE);
-                                    mPage.overrideFab = false;
-                                }
-                                dataSet.refreshLayout.setRefreshing(true);
-                                if (currentlyEditing != null) {
-                                    String text = currentlyEditing.getText().toString();
-                                    new ReplyTaskComment(n, baseNode, holder, changedProfile)
-                                            .execute(text);
-                                    currentlyEditing = null;
-                                    editingPosition = -1;
-                                }
-                                // Hide soft keyboard
-                                View view =
-                                        ((Activity) mContext).findViewById(android.R.id.content);
-                                if (view != null) {
-                                    KeyboardUtil.hideKeyboard(mContext, view.getWindowToken(), 0);
-                                }
-                            }
-                        });
-                discard.setOnClickListener(
-                        new OnSingleClickListener() {
-                            @Override
-                            public void onSingleClick(View v) {
-                                currentlyEditing = null;
-                                editingPosition = -1;
-                                currentlyEditingId = "";
-                                backedText = "";
-                                mPage.overrideFab = false;
-                                View view =
-                                        ((Activity) mContext).findViewById(android.R.id.content);
-                                if (view != null) {
-                                    KeyboardUtil.hideKeyboard(mContext, view.getWindowToken(), 0);
-                                }
-                                doShowMenu(baseView);
-                            }
-                        });
-            } else {
-                if (reply.getVisibility() == View.VISIBLE) {
-                    reply.setVisibility(View.GONE);
-                }
-                if ((submission.isArchived()
-                                || deleted.contains(n.getFullName())
-                                || comment.getAuthor().equals("[deleted]"))
-                        && Authentication.isLoggedIn
-                        && Authentication.didOnline
-                        && upvote.getVisibility() == View.VISIBLE) {
-                    upvote.setVisibility(View.GONE);
-                }
-                if ((submission.isArchived()
-                                || deleted.contains(n.getFullName())
-                                || comment.getAuthor().equals("[deleted]"))
-                        && Authentication.isLoggedIn
-                        && Authentication.didOnline
-                        && downvote.getVisibility() == View.VISIBLE) {
-                    downvote.setVisibility(View.GONE);
-                }
-            }
-
-            more.setOnClickListener(
-                    new OnSingleClickListener() {
-                        @Override
-                        public void onSingleClick(View v) {
-                            CommentAdapterHelper.showOverflowBottomSheet(
-                                    CommentAdapter.this, mContext, holder, baseNode);
-                        }
-                    });
-            upvote.setOnClickListener(
-                    new OnSingleClickListener() {
-
-                        @Override
-                        public void onSingleClick(View v) {
-                            setCommentStateUnhighlighted(holder, comment, baseNode, true);
-                            if (ActionStates.getVoteDirection(comment) == VoteDirection.UPVOTE) {
-                                new Vote(v, mContext).execute(n);
-                                ActionStates.setVoteDirection(comment, VoteDirection.NO_VOTE);
-                                doScoreText(holder, n, CommentAdapter.this);
-                                upvote.clearColorFilter();
-                            } else {
-                                new Vote(true, v, mContext).execute(n);
-                                ActionStates.setVoteDirection(comment, VoteDirection.UPVOTE);
-                                downvote.clearColorFilter(); // reset colour
-                                doScoreText(holder, n, CommentAdapter.this);
-                                BlendModeUtil.tintImageViewAsModulate(upvote, holder.textColorUp);
-                            }
-                        }
-                    });
-            downvote.setOnClickListener(
-                    new OnSingleClickListener() {
-
-                        @Override
-                        public void onSingleClick(View v) {
-                            setCommentStateUnhighlighted(holder, comment, baseNode, true);
-                            if (ActionStates.getVoteDirection(comment) == VoteDirection.DOWNVOTE) {
-                                new Vote(v, mContext).execute(n);
-                                ActionStates.setVoteDirection(comment, VoteDirection.NO_VOTE);
-                                doScoreText(holder, n, CommentAdapter.this);
-                                downvote.clearColorFilter();
-
-                            } else {
-                                new Vote(false, v, mContext).execute(n);
-                                ActionStates.setVoteDirection(comment, VoteDirection.DOWNVOTE);
-                                upvote.clearColorFilter(); // reset colour
-                                doScoreText(holder, n, CommentAdapter.this);
-                                BlendModeUtil.tintImageViewAsModulate(
-                                        downvote, holder.textColorDown);
-                            }
-                        }
-                    });
-            menu.setBackgroundColor(color);
-            replyArea.setBackgroundColor(color);
-
-            if (!isReplying) {
-                menu.setVisibility(View.VISIBLE);
-                replyArea.setVisibility(View.GONE);
-            }
-
-            holder.itemView
-                    .findViewById(R.id.background)
-                    .setBackgroundColor(
-                            Color.argb(
-                                    50, Color.red(color), Color.green(color), Color.blue(color)));
-        }
+        // Call the extracted static method
+        CommentStateUtil.handleSetCommentStateHighlighted(this, holder, n, baseNode, isReplying, animate);
     }
 
     public void doHighlighted(
@@ -2234,196 +1642,6 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
         }
         return count;
-    }
-
-    public class AsyncLoadMore extends AsyncTask<MoreChildItem, Void, Integer> {
-        public MoreCommentViewHolder holder;
-        public int holderPos;
-        public int position;
-        public int dataPos;
-        public String fullname;
-
-        public AsyncLoadMore(
-                int position,
-                int holderPos,
-                MoreCommentViewHolder holder,
-                int dataPos,
-                String fullname) {
-            this.holderPos = holderPos;
-            this.holder = holder;
-            this.position = position;
-            this.dataPos = dataPos;
-            this.fullname = fullname;
-        }
-
-        @Override
-        public void onPostExecute(Integer data) {
-            currentLoading = null;
-            if (!isCancelled() && data != null) {
-                shifted += data;
-                ((Activity) mContext)
-                        .runOnUiThread(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (position >= 0 && position < currentComments.size()) {
-                                            currentComments.remove(position);
-                                            notifyItemRemoved(holderPos);
-                                        }
-                                    }
-                                });
-                int oldSize = currentComments.size();
-                currentComments.addAll(position, finalData);
-                int newSize = currentComments.size();
-
-                for (int i2 = 0; i2 < currentComments.size(); i2++) {
-                    keys.put(currentComments.get(i2).getName(), i2);
-                }
-                data = newSize - oldSize;
-                listView.setItemAnimator(new SlideRightAlphaAnimator());
-                notifyItemRangeInserted(holderPos, data);
-                currentPos = holderPos;
-                toShiftTo =
-                        ((LinearLayoutManager) listView.getLayoutManager())
-                                .findLastVisibleItemPosition();
-                shiftFrom =
-                        ((LinearLayoutManager) listView.getLayoutManager())
-                                .findFirstVisibleItemPosition();
-
-            } else if (data == null && currentComments.get(dataPos) instanceof MoreChildItem) {
-                final MoreChildItem baseNode = (MoreChildItem) currentComments.get(dataPos);
-                if (baseNode.children.getCount() > 0) {
-                    holder.content.setText(
-                            mContext.getString(
-                                    R.string.comment_load_more, baseNode.children.getCount()));
-                } else if (!baseNode.children.getChildrenIds().isEmpty()) {
-                    holder.content.setText(R.string.comment_load_more_number_unknown);
-                } else {
-                    holder.content.setText(R.string.thread_continue);
-                }
-                holder.loading.setVisibility(View.GONE);
-            }
-        }
-
-        ArrayList<CommentObject> finalData;
-
-        @Override
-        protected Integer doInBackground(MoreChildItem... params) {
-            finalData = new ArrayList<>();
-            int i = 0;
-            if (params.length > 0) {
-                try {
-                    CommentNode node = params[0].comment;
-                    node.loadMoreComments(Authentication.reddit);
-                    HashMap<Integer, MoreChildItem> waiting = new HashMap<>();
-
-                    for (CommentNode n : node.walkTree()) {
-                        if (!keys.containsKey(n.getComment().getFullName())) {
-
-                            CommentObject obj = new CommentItem(n);
-                            ArrayList<Integer> removed = new ArrayList<>();
-                            Map<Integer, MoreChildItem> map =
-                                    new TreeMap<>(Collections.reverseOrder());
-                            map.putAll(waiting);
-
-                            for (Integer i2 : map.keySet()) {
-                                if (i2 >= n.getDepth()) {
-                                    finalData.add(waiting.get(i2));
-                                    removed.add(i2);
-                                    waiting.remove(i2);
-                                    i++;
-                                }
-                            }
-
-                            finalData.add(obj);
-                            i++;
-
-                            if (n.hasMoreComments()) {
-                                waiting.put(
-                                        n.getDepth(), new MoreChildItem(n, n.getMoreChildren()));
-                            }
-                        }
-                    }
-                    if (node.hasMoreComments()) {
-                        finalData.add(new MoreChildItem(node, node.getMoreChildren()));
-                        i++;
-                    }
-                } catch (Exception e) {
-                    Log.w(LogUtil.getTag(), "Cannot load more comments " + e);
-                    Writer writer = new StringWriter();
-                    PrintWriter printWriter = new PrintWriter(writer);
-                    e.printStackTrace(printWriter);
-                    String stacktrace = writer.toString().replace(";", ",");
-                    if (stacktrace.contains("UnknownHostException")
-                            || stacktrace.contains("SocketTimeoutException")
-                            || stacktrace.contains("ConnectException")) {
-                        // is offline
-                        final Handler mHandler = new Handler(Looper.getMainLooper());
-                        mHandler.post(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            new AlertDialog.Builder(mContext)
-                                                    .setTitle(R.string.err_title)
-                                                    .setMessage(R.string.err_connection_failed_msg)
-                                                    .setNegativeButton(R.string.btn_ok, null)
-                                                    .show();
-                                        } catch (Exception ignored) {
-
-                                        }
-                                    }
-                                });
-                    } else if (stacktrace.contains("403 Forbidden")
-                            || stacktrace.contains("401 Unauthorized")) {
-                        // Un-authenticated
-                        final Handler mHandler = new Handler(Looper.getMainLooper());
-                        mHandler.post(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            new AlertDialog.Builder(mContext)
-                                                    .setTitle(R.string.err_title)
-                                                    .setMessage(R.string.err_refused_request_msg)
-                                                    .setNegativeButton(R.string.btn_no, null)
-                                                    .setPositiveButton(
-                                                            R.string.btn_yes,
-                                                            (dialog, which) ->
-                                                                    Reddit.authentication
-                                                                            .updateToken(mContext))
-                                                    .show();
-                                        } catch (Exception ignored) {
-
-                                        }
-                                    }
-                                });
-
-                    } else if (stacktrace.contains("404 Not Found")
-                            || stacktrace.contains("400 Bad Request")) {
-                        final Handler mHandler = new Handler(Looper.getMainLooper());
-                        mHandler.post(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            new AlertDialog.Builder(mContext)
-                                                    .setTitle(R.string.err_title)
-                                                    .setMessage(
-                                                            R.string.err_could_not_find_content_msg)
-                                                    .setNegativeButton(R.string.btn_close, null)
-                                                    .show();
-                                        } catch (Exception ignored) {
-
-                                        }
-                                    }
-                                });
-                    }
-                    return null;
-                }
-            }
-            return i;
-        }
     }
 
     public class AsyncForceLoadChild extends AsyncTask<String, Void, Integer> {

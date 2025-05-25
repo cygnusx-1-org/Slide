@@ -1317,6 +1317,17 @@
 
     <string name="misc_err_sync_failed">Failed to sync subreddits. No subscribed subreddits?</string>
 
+    <string name="mod_btn_distinguish">Distinguish</string>
+    <string name="mod_btn_undistinguish">Undistingiush</string>
+
+    <string name="nsfw_status_removed">NSFW status removed</string>
+    <string name="nsfw_status_set">NSFW status set</string>
+
+    <string name="spoiler_status_removed">Spoiler status removed</string>
+    <string name="spoiler_status_set">Spoiler status set</string>
+
+    <string name="submission_distinguished">Submission distinguished</string>
+    <string name="submission_distinguished_removed">Submission distinguish removed</string>
     <string name="setup_md_url">https://github.com/edgan/Slide/blob/master/docs/SETUP.md#reddit-client-id</string>
 
     <string name="settings_general_hide_subreddit_tabs">Hide subscribed subreddit tabs</string>
