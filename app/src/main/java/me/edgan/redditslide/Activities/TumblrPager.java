@@ -463,12 +463,12 @@ public class TumblrPager extends BaseSaveActivity {
                                 } else {
                                     // Optionally, show an error or fallback
                                     Log.e(TAG, "Failed to decode GIF: " + url);
-                                     if (videoView instanceof ExoVideoView) {
-                                        ((ExoVideoView) videoView).setVideoURI(Uri.parse(url), ExoVideoView.VideoType.STANDARD, null); // Fallback to ExoVideoView if Movie decoding fails
-                                        ((ExoVideoView) videoView).play();
-                                         videoView.setVisibility(View.VISIBLE);
-                                         imageView.setVisibility(View.GONE);
-                                     }
+                                    if (videoView instanceof ExoVideoView) {
+                                    ((ExoVideoView) videoView).setVideoURI(Uri.parse(url), ExoVideoView.VideoType.STANDARD, null); // Fallback to ExoVideoView if Movie decoding fails
+                                    ((ExoVideoView) videoView).play();
+                                        videoView.setVisibility(View.VISIBLE);
+                                        imageView.setVisibility(View.GONE);
+                                    }
                                 }
                             }
                         });

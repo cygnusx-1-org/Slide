@@ -552,6 +552,8 @@ public class PopulateSubmissionViewHolder {
                                 .replace("&amp;", "&"));
             } else if (t.shouldLoadPreview()
                     && submission.getDataNode().has("preview")
+                    && submission.getDataNode().get("preview").has("reddit_video_preview")
+                    && submission.getDataNode().get("preview").get("reddit_video_preview").has("fallback_url")
                     && submission
                             .getDataNode()
                             .get("preview")

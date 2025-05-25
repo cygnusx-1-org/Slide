@@ -33,6 +33,15 @@
 
         </me.edgan.redditslide.Views.ExoVideoView>
 
+        <!-- ImageView for direct GIF rendering -->
+        <ImageView
+            android:id="@+id/direct_gif_viewer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
+
         <ProgressBar
             android:id="@+id/gifprogress"
             style="?android:attr/progressBarStyleHorizontal"
