@@ -28,9 +28,9 @@ import me.edgan.redditslide.PostLoader;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
-import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.CustomViewPager;
 import me.edgan.redditslide.util.KeyboardUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 import net.dean.jraw.models.Submission;
 
@@ -207,6 +207,7 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
 
             comments = new CommentsScreenPagerAdapter(getSupportFragmentManager());
             pager.setAdapter(comments);
+
             currentPage = firstPage;
 
             if (SettingValues.oldSwipeMode) {
@@ -218,6 +219,8 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
             pager.setEntryPageIndex(firstPage);
 
             if (SettingValues.oldSwipeMode) {
+                MiscUtil.setupOldSwipeModeBackground(this, pager);
+
                 pager.addOnPageChangeListener(new CommonPageChangeListener() {
                     @Override
                     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -229,7 +232,6 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
                             if (adapter.blankPage != null) {
                                 adapter.blankPage.doOffset(positionOffset);
                             }
-                            pager.setBackgroundColor(Palette.adjustAlpha(positionOffset * 0.7f));
                         }
                     }
                 });

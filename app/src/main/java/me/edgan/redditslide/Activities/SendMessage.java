@@ -23,6 +23,7 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Views.DoEditorActions;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.MiscUtil;
 
 import net.dean.jraw.ApiException;
 import net.dean.jraw.managers.InboxManager;
@@ -60,6 +61,8 @@ public class SendMessage extends BaseActivity {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_sendmessage);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
         final Toolbar b = (Toolbar) findViewById(R.id.toolbar);
         final String name;

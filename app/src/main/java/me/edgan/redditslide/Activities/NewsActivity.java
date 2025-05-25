@@ -45,6 +45,7 @@ import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkStateReceiver;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.StringUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 import net.dean.jraw.managers.AccountManager;
 
@@ -142,6 +143,8 @@ public class NewsActivity extends BaseActivity
         applyColorTheme();
 
         setContentView(R.layout.activity_news);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());

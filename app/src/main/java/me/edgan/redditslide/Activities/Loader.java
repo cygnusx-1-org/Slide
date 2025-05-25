@@ -4,6 +4,7 @@ package me.edgan.redditslide.Activities;
 import android.os.Bundle;
 
 import me.edgan.redditslide.R;
+import me.edgan.redditslide.util.MiscUtil;
 
 /** Created by ccrama on 9/17/2015. */
 public class Loader extends BaseActivity {
@@ -14,6 +15,8 @@ public class Loader extends BaseActivity {
         super.onCreate(savedInstance);
         applyColorTheme();
         setContentView(R.layout.activity_loading);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         MainActivity.loader = this;
     }
 }

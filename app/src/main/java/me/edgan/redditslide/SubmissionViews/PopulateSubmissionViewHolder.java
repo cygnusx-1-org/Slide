@@ -79,10 +79,6 @@ public class PopulateSubmissionViewHolder {
 
     public PopulateSubmissionViewHolder() {}
 
-
-
-
-
     public <T extends Contribution> void populateSubmissionViewHolder(
             final SubmissionViewHolder holder,
             final Submission submission,

@@ -14,6 +14,7 @@ import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.util.ClipboardUtil;
 import me.edgan.redditslide.util.LinkUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 /** Created by l3d00m on 11/12/2015. */
 public class SettingsAbout extends BaseActivityAnim {
@@ -22,6 +23,9 @@ public class SettingsAbout extends BaseActivityAnim {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_about);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, R.string.settings_title_about, true, true);
 
         View privacy = findViewById(R.id.privacy);

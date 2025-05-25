@@ -10,6 +10,7 @@ import androidx.appcompat.widget.PopupMenu;
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.util.MiscUtil;
 
 /** Created by ccrama on 3/5/2015. */
 public class SettingsViewType extends BaseActivityAnim {
@@ -18,6 +19,9 @@ public class SettingsViewType extends BaseActivityAnim {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_viewtype);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, R.string.settings_view_type, true, true);
 
         // View type multi choice

@@ -148,7 +148,7 @@ public class Authentication {
                                         .edit()
                                         .putLong(
                                                 "expires",
-                                                Calendar.getInstance().getTimeInMillis() + 3000000)
+                                                Calendar.getInstance().getTimeInMillis() + Constants.EXPIRES_VALUE)
                                         .commit();
                             }
                             authentication
@@ -182,7 +182,7 @@ public class Authentication {
                                     .edit()
                                     .putLong(
                                             "expires",
-                                            Calendar.getInstance().getTimeInMillis() + 3000000)
+                                            Calendar.getInstance().getTimeInMillis() + Constants.EXPIRES_VALUE)
                                     .commit();
                             authentication
                                     .edit()
@@ -294,7 +294,7 @@ public class Authentication {
                                     .edit()
                                     .putLong(
                                             "expires",
-                                            Calendar.getInstance().getTimeInMillis() + 3000000)
+                                            Calendar.getInstance().getTimeInMillis() + Constants.EXPIRES_VALUE)
                                     .apply();
                         }
                     }
@@ -343,7 +343,7 @@ public class Authentication {
                     authData = reddit.getOAuthHelper().easyAuth(fcreds);
                     authentication
                             .edit()
-                            .putLong("expires", Calendar.getInstance().getTimeInMillis() + 3000000)
+                            .putLong("expires", Calendar.getInstance().getTimeInMillis() + Constants.EXPIRES_VALUE)
                             .apply();
                     authentication
                             .edit()

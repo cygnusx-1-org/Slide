@@ -4,23 +4,25 @@ import static org.junit.Assert.fail;
 
 import me.edgan.redditslide.SpoilerRobotoTextView;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(SpoilerRobotoTextView.class)
 public class SpoilerTextTest {
-    private final Pattern htmlSpoilerPattern =
-            Whitebox.getInternalState(SpoilerRobotoTextView.class, "htmlSpoilerPattern");
-    private final Pattern nativeSpoilerPattern =
-            Whitebox.getInternalState(SpoilerRobotoTextView.class, "nativeSpoilerPattern");
+    private Pattern htmlSpoilerPattern;
+    private Pattern nativeSpoilerPattern;
+
+    @Before
+    public void setUp() {
+        htmlSpoilerPattern = SpoilerRobotoTextView.htmlSpoilerPattern;
+        nativeSpoilerPattern = SpoilerRobotoTextView.nativeSpoilerPattern;
+    }
 
     private final List<Object[]> htmlSpoilerTests =
             new ArrayList<Object[]>() {

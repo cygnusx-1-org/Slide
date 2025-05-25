@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.R;
+import me.edgan.redditslide.util.MiscUtil;
 
 /** Created by l3d00m on 11/13/2015. */
 public class ManageOfflineContent extends BaseActivityAnim {
@@ -15,6 +16,9 @@ public class ManageOfflineContent extends BaseActivityAnim {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_manage_history);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, R.string.manage_offline_content, true, true);
 
         ((ViewGroup) findViewById(R.id.manage_history))
