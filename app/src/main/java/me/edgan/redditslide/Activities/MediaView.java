@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -64,6 +65,7 @@ import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.ShareUtil;
 import me.edgan.redditslide.util.StorageUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -466,12 +468,20 @@ public class MediaView extends BaseSaveActivity {
         }
 
         setContentView(R.layout.activity_media);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
         // Initialize the new ImageView for direct GIFs and cast it
         directGifViewer = (ImageView) findViewById(R.id.direct_gif_viewer);
 
+        // Keep the screen on
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         // Hide speed button by default
         ImageView speedBtn = (ImageView) findViewById(R.id.speed);
-        if (speedBtn != null) speedBtn.setVisibility(View.GONE);
+
+        if (speedBtn != null) {
+            speedBtn.setVisibility(View.GONE);
+        }
 
         final String firstUrl = getIntent().getExtras().getString(EXTRA_DISPLAY_URL, "");
         contentUrl = getIntent().getExtras().getString(EXTRA_URL);

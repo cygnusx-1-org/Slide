@@ -12,6 +12,7 @@ import me.edgan.redditslide.Adapters.CommentObject;
 import me.edgan.redditslide.DataShare;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Views.PreCachingLayoutManager;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
 
 import net.dean.jraw.models.CommentNode;
@@ -34,6 +35,8 @@ public class CommentSearch extends BaseActivityAnim {
         super.onCreate(savedInstance);
         applyColorTheme();
         setContentView(R.layout.activity_filtercomments);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
 
         final EditText search = (EditText) findViewById(R.id.search);
         RecyclerView rv = (RecyclerView) findViewById(R.id.vertical_content);

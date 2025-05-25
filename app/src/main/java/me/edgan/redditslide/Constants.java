@@ -32,6 +32,9 @@ public class Constants {
 
     public static final int PTR_OFFSET_BOTTOM = DisplayUtil.dpToPxVertical(18);
 
+    // 1000 * 60 * 50 = 50 minutes in milliseconds
+    public static final int EXPIRES_VALUE = 3000000;
+
     /**
      * Drawer swipe edge (navdrawer). The higher the value, the more sensitive the navdrawer swipe
      * area becomes. This is a percentage of the screen width.

@@ -15,6 +15,7 @@ import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Pair;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,6 +59,7 @@ import me.edgan.redditslide.ui.settings.SettingsBackup;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.QrCodeScannerHelper;
+import me.edgan.redditslide.util.MiscUtil;
 
 /** Created by ccrama on 3/5/2015. */
 public class Tutorial extends AppCompatActivity {
@@ -82,6 +84,8 @@ public class Tutorial extends AppCompatActivity {
 
         binding = ActivityTutorialBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
         // The pager adapter, which provides the pages to the view pager widget.
         binding.tutorialViewPager.setAdapter(new TutorialPagerAdapter(getSupportFragmentManager()));

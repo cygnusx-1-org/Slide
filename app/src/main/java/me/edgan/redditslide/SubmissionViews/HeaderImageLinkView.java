@@ -27,7 +27,6 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.ForceTouch.PeekView;
@@ -82,6 +81,9 @@ public class HeaderImageLinkView extends RelativeLayout {
     private TextView info;
     public ImageView backdrop;
     private boolean forceThumb;
+
+    private static final List<String> PLACEHOLDER_URLS =
+            Arrays.asList("self", "default", "image", "nsfw", "spoiler", "");
 
     public HeaderImageLinkView(Context context) {
         super(context);
@@ -867,44 +869,148 @@ public class HeaderImageLinkView extends RelativeLayout {
     }
 
     private void displayThumbnail(String url, boolean full) {
+        if (url == null || PLACEHOLDER_URLS.contains(url)) {
+            LogUtil.v("Displaying thumbnail - invalid or placeholder URL: " + url + ", hiding view and thumbImage2.");
+            setVisibility(View.GONE); // Hides HeaderImageLinkView
+            if (thumbImage2 != null) {
+                thumbImage2.setVisibility(View.GONE);
+            }
+            if (full && wrapArea != null) { // if full view, wrapArea might have been made visible
+                wrapArea.setVisibility(View.GONE);
+            }
+            return;
+        }
+
         if (!full) {
             thumbImage2.setVisibility(View.VISIBLE);
         } else {
             wrapArea.setVisibility(View.VISIBLE);
         }
         loadedUrl = url;
-        ((Reddit) getContext().getApplicationContext())
-                .getImageLoader()
-                .displayImage(url, thumbImage2);
-        setVisibility(View.GONE);
-    }
 
-    private void displayFullImage(String url, boolean full) {
-        loadedUrl = url;
+        ImageLoadingListener detailedListener = new ImageLoadingListener() {
+            @Override
+            public void onLoadingStarted(String imageUri, View view) {}
 
-        // Create ImageLoadingListener to handle errors
-        ImageLoadingListener errorListener = new SimpleImageLoadingListener() {
             @Override
             public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                HeaderImageLinkView.this.setVisibility(View.GONE);
+                LogUtil.e("UIL (Thumbnail): Loading FAILED for: " + imageUri + ", reason: " + failReason.getType() + ", cause: " + (failReason.getCause() != null ? failReason.getCause().getMessage() : "null"));
+                if (HeaderImageLinkView.this != null) {
+                    HeaderImageLinkView.this.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onLoadingComplete(String imageUri, View view, android.graphics.Bitmap loadedBitmap) {
+                if (loadedBitmap != null) {
+                    if (loadedBitmap.getWidth() == 0 || loadedBitmap.getHeight() == 0) {
+                        LogUtil.w("UIL (Thumbnail): Loaded bitmap has zero width or height for " + imageUri);
+                        if (HeaderImageLinkView.this != null) {
+                            HeaderImageLinkView.this.setVisibility(View.GONE); // Hide if bitmap is unusable
+                        }
+                    }
+                } else {
+                    LogUtil.w("UIL (Thumbnail): Loading COMPLETE for " + imageUri + " but bitmap is NULL.");
+                    if (HeaderImageLinkView.this != null) {
+                        HeaderImageLinkView.this.setVisibility(View.GONE); // Hide if bitmap is null
+                    }
+                }
+            }
+
+            @Override
+            public void onLoadingCancelled(String imageUri, View view) {
+                LogUtil.w("UIL (Thumbnail): Loading CANCELLED for " + imageUri);
+                if (HeaderImageLinkView.this != null) {
+                    HeaderImageLinkView.this.setVisibility(View.GONE);
+                }
             }
         };
 
+        ((Reddit) getContext().getApplicationContext())
+                .getImageLoader()
+                .displayImage(url, thumbImage2, detailedListener); // Use detailedListener
+        setVisibility(View.GONE); // This line was already here for thumbnails
+    }
+
+    private void displayFullImage(String url, boolean full) {
+        if (url == null || PLACEHOLDER_URLS.contains(url)) {
+            LogUtil.v("Displaying full image - invalid or placeholder URL for backdrop: " + url + ", hiding view.");
+            setVisibility(View.GONE);
+            if (thumbImage2 != null) {
+                thumbImage2.setVisibility(View.GONE);
+            }
+            if (wrapArea != null) {
+                wrapArea.setVisibility(View.GONE);
+            }
+            return;
+        }
+
+        loadedUrl = url;
+        ImageLoadingListener detailedListener = new ImageLoadingListener() {
+            @Override
+            public void onLoadingStarted(String imageUri, View view) {}
+
+            @Override
+            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                LogUtil.e("UIL (FullImage): Loading FAILED for: " + imageUri + ", reason: " + failReason.getType() + ", cause: " + (failReason.getCause() != null ? failReason.getCause().getMessage() : "null"));
+                if (HeaderImageLinkView.this != null) {
+                    HeaderImageLinkView.this.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onLoadingComplete(String imageUri, View view, android.graphics.Bitmap loadedBitmap) {
+                if (loadedBitmap != null) {
+                    if (loadedBitmap.getWidth() == 0 || loadedBitmap.getHeight() == 0) {
+                        LogUtil.w("UIL (FullImage): Loaded bitmap has zero width or height for " + imageUri);
+                        // Don't hide HeaderImageLinkView here by default, let adjustViewBounds try.
+                        // If it results in 0 height, it will be invisible anyway.
+                        // Only hide if explicitly desired for 0-dim images.
+                    }
+                     // Ensure backdrop is visible if we successfully loaded an image and HeaderImageLinkView is meant to be visible.
+                    if (view instanceof ImageView && HeaderImageLinkView.this.getVisibility() == View.VISIBLE) {
+                        ((ImageView) view).setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    LogUtil.w("UIL (FullImage): Loading COMPLETE for " + imageUri + " but bitmap is NULL.");
+                    if (HeaderImageLinkView.this != null) {
+                        HeaderImageLinkView.this.setVisibility(View.GONE); // Hide if bitmap is null
+                    }
+                }
+            }
+
+            @Override
+            public void onLoadingCancelled(String imageUri, View view) {
+                LogUtil.w("UIL (FullImage): Loading CANCELLED for " + imageUri);
+                if (HeaderImageLinkView.this != null) {
+                    HeaderImageLinkView.this.setVisibility(View.GONE);
+                }
+            }
+        };
+
+        // Ensure backdrop ImageView itself is visible before loading, if HeaderImageLinkView is meant to be visible.
+        // This is because UIL won't make it visible, and its default state is visible from XML,
+        // but good to be explicit if we are about to load an image into it.
+        if (backdrop != null && getVisibility() == View.VISIBLE) {
+            backdrop.setVisibility(View.VISIBLE);
+        }
+
         if (!full) {
             ((Reddit) getContext().getApplicationContext())
                     .getImageLoader()
-                    .displayImage(url, backdrop, bigOptions, errorListener);
+                    .displayImage(url, backdrop, null, detailedListener);
         } else {
             ((Reddit) getContext().getApplicationContext())
                     .getImageLoader()
-                    .displayImage(url, backdrop, bigOptions, errorListener);
+                    .displayImage(url, backdrop, bigOptions, detailedListener);
         }
 
         setVisibility(View.VISIBLE);
+
         if (!full) {
-            thumbImage2.setVisibility(View.GONE);
+            if (thumbImage2 != null) thumbImage2.setVisibility(View.GONE);
         } else {
-            wrapArea.setVisibility(View.GONE);
+            if (wrapArea != null) wrapArea.setVisibility(View.GONE);
         }
     }
 

@@ -16,6 +16,7 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.StorageUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 /** Created by ccrama on 3/5/2015. */
 public class SettingsGeneral extends BaseActivityAnim implements StorageUtil.DirectoryChooserHost {
@@ -28,6 +29,9 @@ public class SettingsGeneral extends BaseActivityAnim implements StorageUtil.Dir
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_general);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, R.string.settings_title_general, true, true);
 
         ((ViewGroup) findViewById(R.id.settings_general))

@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.R;
+import me.edgan.redditslide.util.MiscUtil;
 
 public class SettingsComments extends BaseActivityAnim {
 
@@ -14,6 +15,9 @@ public class SettingsComments extends BaseActivityAnim {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_comments);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, R.string.settings_title_comments, true, true);
 
         ((ViewGroup) findViewById(R.id.settings_comments))
