@@ -4,6 +4,14 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.3.2 / 2025-5-24
+============
+* Fixed the cascade effect while using oldSwipeMode
+* Add playback speed control to video player
+* Inconsistent tap behavior on comments with media
+* Fixed an intermittent display issue with Selftext preview images
+* Tumblr gif fixes
+
 7.3.1 / 2025-5-9
 ===========
 * Dismiss toolbar search and keyboard on suggestion selection
