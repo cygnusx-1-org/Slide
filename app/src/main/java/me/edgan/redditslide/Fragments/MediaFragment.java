@@ -51,7 +51,7 @@ import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SecretConstants;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionViews.PopulateShadowboxInfo;
-import me.edgan.redditslide.SubmissionViews.PopulateSubmissionViewHolder;
+import me.edgan.redditslide.util.SubmissionThumbnailHelper;
 import me.edgan.redditslide.Views.ExoVideoView;
 import me.edgan.redditslide.Views.ImageSource;
 import me.edgan.redditslide.Views.SubsamplingScaleImageView;
@@ -383,7 +383,7 @@ public class MediaFragment extends Fragment {
                                     }
                                     break;
                                 case REDDIT:
-                                    PopulateSubmissionViewHolder.openRedditContent(
+                                    SubmissionThumbnailHelper.openRedditContent(
                                             submission.getUrl(), contextActivity);
 
                                     break;
@@ -482,11 +482,11 @@ public class MediaFragment extends Fragment {
                                 case DEVIANTART:
                                 case XKCD:
                                 case IMAGE:
-                                    PopulateSubmissionViewHolder.openImage(
+                                    SubmissionThumbnailHelper.openImage(
                                             type, contextActivity, submission, null, -1);
                                     break;
                                 case GIF:
-                                    PopulateSubmissionViewHolder.openGif(
+                                    SubmissionThumbnailHelper.openGif(
                                             contextActivity, submission, -1);
                                     break;
                                 case VIDEO:
@@ -933,7 +933,7 @@ public class MediaFragment extends Fragment {
                 imageShown = true;
 
                 try {
-                    i.setImage(ImageSource.uri(f.getAbsolutePath()));
+                    i.loader.setImage(ImageSource.uri(f.getAbsolutePath()));
                 } catch (Exception e) {
                     // todo  i.setImage(ImageSource.bitmap(loadedImage));
                 }
@@ -1024,9 +1024,9 @@ public class MediaFragment extends Fragment {
                                                             .get(url);
                                         }
                                         if (f != null && f.exists()) {
-                                            i.setImage(ImageSource.uri(f.getAbsolutePath()));
+                                            i.loader.setImage(ImageSource.uri(f.getAbsolutePath()));
                                         } else {
-                                            i.setImage(ImageSource.bitmap(loadedImage));
+                                            i.loader.setImage(ImageSource.bitmap(loadedImage));
                                         }
                                         (rootView.findViewById(R.id.progress))
                                                 .setVisibility(View.GONE);

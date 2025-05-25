@@ -808,7 +808,7 @@ public class TumblrPager extends BaseSaveActivity {
                             public void onLoadingComplete(
                                     String imageUri, View view, Bitmap loadedImage) {
                                 size.setVisibility(View.GONE);
-                                image.setImage(ImageSource.bitmap(loadedImage));
+                                image.loader.setImage(ImageSource.bitmap(loadedImage));
                                 (rootView.findViewById(R.id.progress)).setVisibility(View.GONE);
                             }
 
