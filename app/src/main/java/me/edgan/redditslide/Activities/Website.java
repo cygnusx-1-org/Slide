@@ -35,6 +35,7 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.AdBlocker;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -167,6 +168,8 @@ public class Website extends BaseActivityAnim {
         super.onCreate(savedInstanceState);
         applyColorTheme("");
         setContentView(R.layout.activity_web);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         url = getIntent().getExtras().getString(LinkUtil.EXTRA_URL, "");
         subredditColor =
                 getIntent().getExtras().getInt(LinkUtil.EXTRA_COLOR, Palette.getDefaultColor());

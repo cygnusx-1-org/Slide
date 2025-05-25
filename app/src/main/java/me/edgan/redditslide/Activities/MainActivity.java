@@ -186,6 +186,11 @@ public class MainActivity extends BaseActivity
     SidebarController sidebarController;
     SidebarActions sidebarActions;
     SubredditSortController subredditSortController;
+
+    public DrawerController getDrawerController() {
+        return drawerController;
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == SETTINGS_RESULT) {
@@ -213,7 +218,9 @@ public class MainActivity extends BaseActivity
                     || SettingValues.subredditSearchMethod
                             == Constants.SUBREDDIT_SEARCH_METHOD_BOTH) {
                 drawerLayout.closeDrawers();
-                drawerSearch.setText("");
+                if (drawerController != null) {
+                    drawerController.clearDrawerSearch();
+                }
             }
 
             // clear the text from the toolbar search field

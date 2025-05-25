@@ -30,10 +30,10 @@ import me.edgan.redditslide.Tumblr.TumblrUtils;
 import me.edgan.redditslide.Views.PreCachingLayoutManager;
 import me.edgan.redditslide.Views.ToolbarColorizeHelper;
 import me.edgan.redditslide.Visuals.ColorPreferences;
-import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.ImageSaveUtils;
 import me.edgan.redditslide.util.LinkUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -142,6 +142,8 @@ public class Tumblr extends BaseSaveActivity {
         }
 
         if (SettingValues.oldSwipeMode) {
+            MiscUtil.setupOldSwipeModeBackground(this, pager);
+
             pager.addOnPageChangeListener(
                     new ViewPager.SimpleOnPageChangeListener() {
                         @Override
@@ -157,9 +159,6 @@ public class Tumblr extends BaseSaveActivity {
                                     ((TumblrPagerAdapter) pager.getAdapter())
                                             .blankPage.doOffset(positionOffset);
                                 }
-                                ((TumblrPagerAdapter) pager.getAdapter())
-                                        .blankPage.realBack.setBackgroundColor(
-                                                Palette.adjustAlpha(positionOffset * 0.7f));
                             }
                         }
                     });

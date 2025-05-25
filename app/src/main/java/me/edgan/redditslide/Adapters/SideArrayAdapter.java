@@ -203,7 +203,7 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
                                         int pos = mainActivity.usedArray.indexOf(subreddit);
                                         mainActivity.pager.setCurrentItem(pos);
                                         mainActivity.drawerLayout.closeDrawers();
-                                        if (mainActivity.drawerSearch != null) mainActivity.drawerSearch.setText("");
+                                        ((MainActivity) getContext()).drawerSearch.setText("");
                                     } else if (subreddit.equalsIgnoreCase("random")
                                                 || subreddit.equalsIgnoreCase("randnsfw")
                                                 || subreddit.equalsIgnoreCase("myrandom")) {
@@ -251,7 +251,7 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
                                     }
                                     mainActivity.pager.setCurrentItem(pos);
                                     mainActivity.drawerLayout.closeDrawers();
-                                    if (mainActivity.drawerSearch != null) mainActivity.drawerSearch.setText("");
+                                    ((MainActivity) getContext()).getDrawerController().clearDrawerSearch();
                                 } else if (subreddit.equalsIgnoreCase("random")
                                             || subreddit.equalsIgnoreCase("randnsfw")
                                             || subreddit.equalsIgnoreCase("myrandom")) {

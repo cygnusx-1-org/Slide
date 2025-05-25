@@ -32,8 +32,8 @@ import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SwipeLayout.Utils;
 import me.edgan.redditslide.UserSubscriptions;
-import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 import net.dean.jraw.models.Submission;
 
@@ -186,10 +186,11 @@ public class CommentsScreenSingle extends BaseActivityAnim {
         pager = (ViewPager) findViewById(R.id.content_view);
         comments = new CommentsScreenSinglePagerAdapter(getSupportFragmentManager());
         pager.setAdapter(comments);
-        pager.setBackgroundColor(Color.TRANSPARENT);
         pager.setCurrentItem(1);
 
         if (SettingValues.oldSwipeMode) {
+            MiscUtil.setupOldSwipeModeBackground(this, pager);
+
             pager.addOnPageChangeListener(new CommonPageChangeListener() {
                 @Override
                 public void onPageScrolled(
@@ -203,8 +204,6 @@ public class CommentsScreenSingle extends BaseActivityAnim {
                                 != null) {
                         ((CommentsScreenSinglePagerAdapter) pager.getAdapter())
                                 .blankPage.doOffset(positionOffset);
-                        pager.setBackgroundColor(
-                                Palette.adjustAlpha(positionOffset * 0.7f));
                     }
                 }
             });

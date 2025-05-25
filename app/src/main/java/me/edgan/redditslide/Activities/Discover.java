@@ -23,6 +23,7 @@ import me.edgan.redditslide.Fragments.SubredditListView;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.MiscUtil;
 
 /** Created by ccrama on 9/17/2015. */
 public class Discover extends BaseActivityAnim {
@@ -92,6 +93,7 @@ public class Discover extends BaseActivityAnim {
 
         applyColorTheme("");
         setContentView(R.layout.activity_multireddits);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
         ((DrawerLayout) findViewById(R.id.drawer_layout))
                 .setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);

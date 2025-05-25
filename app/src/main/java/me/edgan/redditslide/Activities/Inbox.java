@@ -33,6 +33,7 @@ import me.edgan.redditslide.ui.settings.SettingsGeneralFragment;
 import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 import net.dean.jraw.managers.InboxManager;
 
@@ -184,6 +185,7 @@ public class Inbox extends BaseActivityAnim {
         SettingValues.prefs.edit().putLong("lastInbox", System.currentTimeMillis()).apply();
         applyColorTheme("");
         setContentView(R.layout.activity_inbox);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
         setupAppBar(R.id.toolbar, R.string.title_inbox, true, true);
         mToolbar.setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
 

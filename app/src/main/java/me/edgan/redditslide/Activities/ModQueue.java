@@ -20,6 +20,7 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.MiscUtil;
 
 /** Created by ccrama on 9/17/2015. */
 public class ModQueue extends BaseActivityAnim {
@@ -34,6 +35,9 @@ public class ModQueue extends BaseActivityAnim {
 
         applyColorTheme("");
         setContentView(R.layout.activity_inbox);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, R.string.drawer_moderation, true, true);
 
         TabLayout tabs = (TabLayout) findViewById(R.id.sliding_tabs);

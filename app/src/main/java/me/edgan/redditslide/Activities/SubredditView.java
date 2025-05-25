@@ -198,6 +198,9 @@ public class SubredditView extends BaseActivity {
         }
         pager.setAdapter(adapter);
         pager.setCurrentItem(1);
+
+        MiscUtil.setupOldSwipeModeBackground(this, pager);
+
         mToolbar.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -1920,8 +1923,6 @@ public class SubredditView extends BaseActivity {
 
                                     ((SubredditPagerAdapter) pager.getAdapter())
                                             .blankPage.doOffset(positionOffset);
-                                    pager.setBackgroundColor(
-                                            Palette.adjustAlpha(positionOffset * 0.7f));
                                 }
                             }
                         });
@@ -2041,7 +2042,6 @@ public class SubredditView extends BaseActivity {
                     overridePendingTransition(0, R.anim.fade_out);
                 }
                 blankPage.doOffset(positionOffset);
-                pager.setBackgroundColor(Palette.adjustAlpha(positionOffset * 0.7f));
             } else if (positionOffset == 0) {
                 handlePositionOffset(position);
             }
@@ -2054,7 +2054,6 @@ public class SubredditView extends BaseActivity {
         }
 
         private void handlePositionOffset(int position) {
-
             if ((position == 0) || (position == 1)) {
                 doPageSelectedComments(position);
             } else {

@@ -908,7 +908,7 @@ public class DrawerController {
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                drawerSearch.setText("");
+                                clearDrawerSearch();
                             }
                         });
 
@@ -964,7 +964,7 @@ public class DrawerController {
                                     }
 
                                     mainActivity.drawerLayout.closeDrawers();
-                                    drawerSearch.setText("");
+                                    clearDrawerSearch();
                                     View view = mainActivity.getCurrentFocus();
 
                                     if (view != null) {
@@ -998,6 +998,12 @@ public class DrawerController {
                 drawerSearch.setOnClickListener(null);
                 drawerSearch.setVisibility(View.GONE);
             }
+        }
+    }
+
+    public void clearDrawerSearch() {
+        if (drawerSearch != null) {
+            drawerSearch.setText("");
         }
     }
 

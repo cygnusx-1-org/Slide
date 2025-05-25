@@ -25,6 +25,7 @@ import me.edgan.redditslide.OfflineSubreddit;
 import me.edgan.redditslide.PostLoader;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.util.MiscUtil;
 
 import net.dean.jraw.models.Submission;
 
@@ -62,6 +63,7 @@ public class Shadowbox extends FullScreenActivity implements SubmissionDisplay {
         applyDarkColorTheme(subreddit);
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_slide);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
         long offline = getIntent().getLongExtra("offline", 0L);
 

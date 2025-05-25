@@ -18,6 +18,7 @@ import me.edgan.redditslide.Views.PreCachingLayoutManager;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.handler.ToolbarScrollHideHandler;
+import me.edgan.redditslide.util.MiscUtil;
 
 public class Related extends BaseActivityAnim {
 
@@ -48,6 +49,9 @@ public class Related extends BaseActivityAnim {
 
         applyColorTheme("");
         setContentView(R.layout.activity_search);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         Intent intent = getIntent();
         if (intent.hasExtra(Intent.EXTRA_TEXT)
                 && !intent.getExtras().getString(Intent.EXTRA_TEXT, "").isEmpty()) {

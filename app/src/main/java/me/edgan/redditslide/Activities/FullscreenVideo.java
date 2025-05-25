@@ -15,6 +15,7 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 /** Created by ccrama on 3/5/2015. */
 public class FullscreenVideo extends FullScreenActivity {
@@ -34,6 +35,8 @@ public class FullscreenVideo extends FullScreenActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
         String data = getIntent().getExtras().getString(EXTRA_HTML);
         v = (WebView) findViewById(R.id.webgif);

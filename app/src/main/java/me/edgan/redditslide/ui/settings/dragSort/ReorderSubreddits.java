@@ -47,6 +47,7 @@ import me.edgan.redditslide.ui.settings.SettingsThemeFragment;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.DisplayUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 import net.dean.jraw.http.MultiRedditUpdateRequest;
 import net.dean.jraw.managers.MultiRedditManager;
@@ -223,6 +224,9 @@ public class ReorderSubreddits extends BaseActivityAnim {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_sort);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, R.string.settings_manage_subscriptions, false, true);
         mToolbar.setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

@@ -9,9 +9,11 @@ import android.text.style.ImageSpan;
 import android.text.style.RelativeSizeSpan;
 import android.widget.TextView;
 
+
 import me.edgan.redditslide.Adapters.ProfileCommentViewHolder;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.R;
+import me.edgan.redditslide.SettingValues;
 
 /**
  * Created by TacoTheDank on 03/15/2021.
@@ -122,6 +124,15 @@ public class MiscUtil {
             createAwards(mContext, fontsize, awarded, image);
             titleString.append(awarded);
             titleString.append(" ");
+        }
+    }
+
+    public static void setupOldSwipeModeBackground(Context context, android.view.View view) {
+        if (SettingValues.oldSwipeMode) {
+            // Set an opaque background for the View
+            android.util.TypedValue typedValue = new android.util.TypedValue();
+            context.getTheme().resolveAttribute(R.attr.card_background, typedValue, true);
+            view.setBackgroundColor(typedValue.data);
         }
     }
 }
