@@ -11,6 +11,7 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.FontPreferences;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
 
 import java.util.ArrayList;
@@ -33,6 +34,8 @@ public class Shortcut extends BaseActivity {
     public void doShortcut() {
 
         setContentView(R.layout.activity_setup_widget);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, R.string.shortcut_creation_title, true, true);
         header = getLayoutInflater().inflate(R.layout.shortcut_header, null);
         ListView list = (ListView) findViewById(R.id.subs);

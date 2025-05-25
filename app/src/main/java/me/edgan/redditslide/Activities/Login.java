@@ -28,6 +28,7 @@ import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Visuals.GetClosestColor;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.http.oauth.Credentials;
@@ -61,6 +62,9 @@ public class Login extends BaseActivityAnim {
             finish();
             return;
         }
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, R.string.title_login, true, true);
 
         String[] scopes = {

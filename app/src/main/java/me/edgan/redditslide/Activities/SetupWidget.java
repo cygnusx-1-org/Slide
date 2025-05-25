@@ -21,6 +21,7 @@ import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Widget.SubredditWidgetProvider;
 import me.edgan.redditslide.util.SortingUtil;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
+import me.edgan.redditslide.util.MiscUtil;
 
 import java.util.ArrayList;
 
@@ -60,6 +61,9 @@ public class SetupWidget extends BaseActivity {
     public void doShortcut() {
 
         setContentView(R.layout.activity_setup_widget);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, R.string.widget_creation_title, true, true);
         header = getLayoutInflater().inflate(R.layout.widget_header, null);
 

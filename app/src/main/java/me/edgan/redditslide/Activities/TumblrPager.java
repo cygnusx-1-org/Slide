@@ -72,6 +72,7 @@ import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.ShareUtil;
 import me.edgan.redditslide.util.SubmissionParser;
+import me.edgan.redditslide.util.MiscUtil;
 
 import java.io.File;
 import android.graphics.Movie;
@@ -217,9 +218,10 @@ public class TumblrPager extends BaseSaveActivity {
                 getSupportActionBar().setSubtitle(1 + "/" + images.size());
             }
 
-            TumblrViewPagerAdapter adapter =
-                    new TumblrViewPagerAdapter(getSupportFragmentManager());
+            TumblrViewPagerAdapter adapter = new TumblrViewPagerAdapter(getSupportFragmentManager());
             p.setAdapter(adapter);
+
+            MiscUtil.setupOldSwipeModeBackground(TumblrPager.this, p);
 
             int startPage = 0;
 
@@ -228,7 +230,6 @@ public class TumblrPager extends BaseSaveActivity {
             }
 
             p.setCurrentItem(startPage);
-
 
             p.post(
                     new Runnable() {

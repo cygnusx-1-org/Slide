@@ -21,6 +21,7 @@ import me.edgan.redditslide.Views.ToggleSwipeViewPager;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 import net.dean.jraw.managers.WikiManager;
 
@@ -54,6 +55,9 @@ public class Wiki extends BaseActivityAnim implements WikiPage.WikiPageListener 
         createCustomCss();
         createCustomJavaScript();
         setContentView(R.layout.activity_slidetabs);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupSubredditAppBar(R.id.toolbar, "/r/" + subreddit + " wiki", true, subreddit);
 
         if (getIntent().hasExtra(EXTRA_PAGE)) {

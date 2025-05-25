@@ -7,6 +7,7 @@ import com.mikepenz.aboutlibraries.ui.LibsSupportFragment;
 
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.R;
+import me.edgan.redditslide.util.MiscUtil;
 
 public class SettingsLibs extends BaseActivityAnim {
 
@@ -15,6 +16,9 @@ public class SettingsLibs extends BaseActivityAnim {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_libs);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, R.string.settings_about_libs, true, true);
 
         LibsSupportFragment fragment = new LibsBuilder().supportFragment();

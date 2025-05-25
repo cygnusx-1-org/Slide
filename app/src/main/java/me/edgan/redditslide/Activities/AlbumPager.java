@@ -69,6 +69,7 @@ import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.ShareUtil;
 import me.edgan.redditslide.util.StorageUtil;
 import me.edgan.redditslide.util.SubmissionParser;
+import me.edgan.redditslide.util.MiscUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -254,6 +255,8 @@ public class AlbumPager extends BaseSaveActivity {
 
                             if (SettingValues.oldSwipeMode) {
                                 startPage = 1;
+                                // Set an opaque background for the ViewPager
+                                MiscUtil.setupOldSwipeModeBackground(AlbumPager.this, p);
                             }
 
                             p.setCurrentItem(startPage);

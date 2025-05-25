@@ -32,12 +32,12 @@ import me.edgan.redditslide.Views.ExoVideoView;
 import me.edgan.redditslide.Views.PreCachingLayoutManager;
 import me.edgan.redditslide.Views.ToolbarColorizeHelper;
 import me.edgan.redditslide.Visuals.ColorPreferences;
-import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.GifUtils;
 import me.edgan.redditslide.util.ImageSaveUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -185,7 +185,10 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
         gallery = new RedditGalleryPagerAdapter(getSupportFragmentManager());
         pager.setAdapter(gallery);
         pager.setCurrentItem(1);
+
         if (SettingValues.oldSwipeMode) {
+            MiscUtil.setupOldSwipeModeBackground(this, pager);
+
             pager.addOnPageChangeListener(
                 new ViewPager.SimpleOnPageChangeListener() {
                     @Override
@@ -198,10 +201,6 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
                             if (((RedditGalleryPagerAdapter) pager.getAdapter()).blankPage != null) {
                                 ((RedditGalleryPagerAdapter) pager.getAdapter()).blankPage.doOffset(positionOffset);
                             }
-
-                            ((RedditGalleryPagerAdapter) pager
-                                .getAdapter()).blankPage.realBack
-                                .setBackgroundColor(Palette.adjustAlpha(positionOffset * 0.7f));
                         }
                     }
                 }

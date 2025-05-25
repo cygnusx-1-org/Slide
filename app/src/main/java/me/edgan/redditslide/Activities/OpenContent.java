@@ -11,6 +11,7 @@ import android.widget.Toast;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 import java.util.Locale;
 
@@ -23,6 +24,9 @@ public class OpenContent extends Activity {
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
         setContentView(R.layout.clear);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         Intent intent = getIntent();
         Uri data = intent.getData();
         Bundle extras = intent.getExtras();

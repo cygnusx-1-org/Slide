@@ -18,6 +18,7 @@ import me.edgan.redditslide.PostLoader;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Views.CatchStaggeredGridLayoutManager;
 import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.MiscUtil;
 
 import net.dean.jraw.models.Submission;
 
@@ -51,6 +52,9 @@ public class Gallery extends FullScreenActivity implements SubmissionDisplay {
         applyDarkColorTheme(subreddit);
         super.onCreate(savedInstance);
         setContentView(R.layout.gallery);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         getWindow()
                 .getDecorView()
                 .setSystemUiVisibility(

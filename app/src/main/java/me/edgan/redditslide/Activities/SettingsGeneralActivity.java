@@ -2,12 +2,15 @@ package me.edgan.redditslide.Activities;
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.widget.Toast;
 
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 public class SettingsGeneralActivity extends AppCompatActivity {
 
@@ -17,6 +20,7 @@ public class SettingsGeneralActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings_general);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
     }
 
     @Override
