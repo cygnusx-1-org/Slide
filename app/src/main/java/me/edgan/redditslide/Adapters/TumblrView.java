@@ -195,8 +195,13 @@ public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             user.getOriginalSize().getUrl(),
                             albumHolder.image,
                             ImageGridAdapter.options);
-            albumHolder.body.setVisibility(View.VISIBLE);
-            albumHolder.text.setVisibility(View.VISIBLE);
+
+            if (albumHolder.body != null) {
+                albumHolder.body.setVisibility(View.VISIBLE);
+            }
+            if (albumHolder.text != null) {
+                albumHolder.text.setVisibility(View.VISIBLE);
+            }
             View imageView = albumHolder.image;
 
             if (user.getOriginalSize().getWidth() > 0 && user.getOriginalSize().getHeight() > 0) {
@@ -221,7 +226,7 @@ public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                 RelativeLayout.LayoutParams.WRAP_CONTENT));
             }
 
-            {
+            if (albumHolder.body != null) {
                 int type =
                         new FontPreferences(albumHolder.body.getContext())
                                 .getFontTypeComment()
@@ -234,7 +239,7 @@ public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
                 albumHolder.body.setTypeface(typeface);
             }
-            {
+            if (albumHolder.text != null) {
                 int type =
                         new FontPreferences(albumHolder.text.getContext())
                                 .getFontTypeTitle()
@@ -251,17 +256,34 @@ public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (user.getCaption() != null) {
                 List<String> textBlocks = SubmissionParser.getBlocks(user.getCaption());
                 String captionText = textBlocks.get(0).trim();
-                LinkUtil.setTextWithLinks(captionText, albumHolder.body);
-                albumHolder.text.setVisibility(View.GONE);
+                if (albumHolder.body != null) {
+                    LinkUtil.setTextWithLinks(captionText, albumHolder.body);
+                }
+                if (albumHolder.text != null) {
+                    albumHolder.text.setVisibility(View.GONE);
+                }
 
-                if (albumHolder.body.getText().toString().isEmpty()) {
-                    albumHolder.body.setVisibility(View.GONE);
+                boolean bodyIsEmpty = true;
+                if (albumHolder.body != null && albumHolder.body.getText() != null) {
+                    bodyIsEmpty = albumHolder.body.getText().toString().isEmpty();
+                }
+
+                if (bodyIsEmpty) {
+                    if (albumHolder.body != null) {
+                        albumHolder.body.setVisibility(View.GONE);
+                    }
                 } else {
-                    albumHolder.body.setVisibility(View.VISIBLE);
+                    if (albumHolder.body != null) {
+                        albumHolder.body.setVisibility(View.VISIBLE);
+                    }
                 }
             } else {
-                albumHolder.text.setVisibility(View.GONE);
-                albumHolder.body.setVisibility(View.GONE);
+                if (albumHolder.text != null) {
+                    albumHolder.text.setVisibility(View.GONE);
+                }
+                if (albumHolder.body != null) {
+                    albumHolder.body.setVisibility(View.GONE);
+                }
             }
 
             albumHolder.itemView.setOnClickListener(new View.OnClickListener() {
