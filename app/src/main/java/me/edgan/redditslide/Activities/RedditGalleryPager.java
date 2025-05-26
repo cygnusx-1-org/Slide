@@ -320,7 +320,17 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
 
         gridview.setOnItemClickListener(
                 (parent, v, position, id) -> {
-                    p.setCurrentItem(position);
+                    int targetPosition = position;
+                    if (SettingValues.oldSwipeMode) {
+                        // When oldSwipeMode is on, ViewPager has a blank page at index 0,
+                        // so the actual content starts from index 1.
+                        // The grid items are 0-indexed based on content, so add 1.
+                        targetPosition = position + 1;
+                    } else {
+                        // Without oldSwipeMode, ViewPager items are 0-indexed directly.
+                        targetPosition = position;
+                    }
+                    p.setCurrentItem(targetPosition);
                     d.dismiss();
                 });
 
