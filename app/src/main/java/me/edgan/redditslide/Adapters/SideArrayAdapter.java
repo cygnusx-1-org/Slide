@@ -203,7 +203,9 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
                                         int pos = mainActivity.usedArray.indexOf(subreddit);
                                         mainActivity.pager.setCurrentItem(pos);
                                         mainActivity.drawerLayout.closeDrawers();
-                                        ((MainActivity) getContext()).drawerSearch.setText("");
+                                        if (((MainActivity) getContext()).drawerSearch != null) {
+                                            ((MainActivity) getContext()).drawerSearch.setText("");
+                                        }
                                     } else if (subreddit.equalsIgnoreCase("random")
                                                 || subreddit.equalsIgnoreCase("randnsfw")
                                                 || subreddit.equalsIgnoreCase("myrandom")) {
