@@ -483,6 +483,10 @@ public class MainActivity extends BaseActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (usedArray == null || usedArray.isEmpty() || Reddit.currentPosition < 0 || Reddit.currentPosition >= usedArray.size()) {
+            return super.onOptionsItemSelected(item);
+        }
+
         final String subreddit = usedArray.get(Reddit.currentPosition);
 
         // Add null checks to prevent NullPointerException
