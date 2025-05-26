@@ -98,14 +98,50 @@ public class RedditGalleryView extends RecyclerView.Adapter<RecyclerView.ViewHol
                                                                 position + 1,
                                                                 context.findViewById(R.id.toolbar).getHeight());
                                             } else if (imagesView instanceof RecyclerView) {
-                                                // Just scroll the RecyclerView
+                                                // This case is when R.id.images in the context's layout is a RecyclerView.
+                                                // For RedditGallery, R.id.images is a ViewPager, so this branch is not hit.
+                                                // Original logic for this case:
                                                 ((LinearLayoutManager)((RecyclerView) imagesView).getLayoutManager())
                                                         .scrollToPositionWithOffset(
-                                                                position + 1,
+                                                                position + 1, // Grid position is 0-indexed for images
                                                                 context.findViewById(R.id.toolbar).getHeight());
                                             } else if (imagesView instanceof ViewPager) {
-                                                // Or if it's a ViewPager
-                                                ((ViewPager) imagesView).setCurrentItem(position);
+                                                if (context instanceof RedditGallery) { // Specific fix for RedditGallery (vertical album)
+                                                    ViewPager mainViewPagerInRedditGallery = (ViewPager) imagesView;
+                                                    RedditGallery redditGalleryActivity = (RedditGallery) context;
+
+                                                    // Determine the ViewPager page index for AlbumFrag
+                                                    int albumFragPageIndexInViewPager = SettingValues.oldSwipeMode ? 1 : 0;
+
+                                                    // Ensure ViewPager is showing AlbumFrag
+                                                    if (mainViewPagerInRedditGallery.getCurrentItem() != albumFragPageIndexInViewPager) {
+                                                        mainViewPagerInRedditGallery.setCurrentItem(albumFragPageIndexInViewPager, false);
+                                                    }
+
+                                                    // Get AlbumFrag's RecyclerView and scroll it
+                                                    RedditGallery.RedditGalleryPagerAdapter pagerAdapter = (RedditGallery.RedditGalleryPagerAdapter) mainViewPagerInRedditGallery.getAdapter();
+                                                    if (pagerAdapter != null && pagerAdapter.gallery != null && pagerAdapter.gallery.recyclerView != null) {
+                                                        RedditGallery.AlbumFrag albumFrag = pagerAdapter.gallery;
+                                                        // Grid 'position' is 0-indexed for images.
+                                                        // AlbumFrag's RecyclerView has a spacer at its index 0. Image 0 is at RecyclerView index 1.
+                                                        int scrollToRecyclerPosition = position + 1;
+
+                                                        // Offset should be the height of the toolbar AlbumFrag is using.
+                                                        // AlbumFrag configures redditGalleryActivity.mToolbar as its action bar.
+                                                        int offset = 0;
+                                                        if (redditGalleryActivity.mToolbar != null) {
+                                                            offset = redditGalleryActivity.mToolbar.getHeight();
+                                                        }
+
+                                                        ((LinearLayoutManager) albumFrag.recyclerView.getLayoutManager())
+                                                            .scrollToPositionWithOffset(scrollToRecyclerPosition, offset);
+                                                    }
+                                                } else {
+                                                    // Fallback for other contexts where R.id.images is a ViewPager
+                                                    // (e.g., potentially AlbumPager, though it has its own grid handler)
+                                                    // Original behavior for generic ViewPager:
+                                                    ((ViewPager) imagesView).setCurrentItem(position);
+                                                }
                                             }
                                             d.dismiss();
                                         }
