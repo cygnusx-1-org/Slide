@@ -6,4 +6,7 @@
     <item
         android:id="@+id/show_top_right"
         android:title="@string/show_top_right" />
+    <item
+        android:id="@+id/show_bottom_right"
+        android:title="@string/show_bottom_right" />
 </menu>

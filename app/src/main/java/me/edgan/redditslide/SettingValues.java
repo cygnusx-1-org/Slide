@@ -205,7 +205,7 @@ public class SettingValues {
     public static boolean commentVolumeNav;
     public static boolean postNav;
     public static boolean cropImage;
-    public static boolean smallTag;
+    public static int smallTag;
     public static boolean typeInfoLine;
     public static boolean votesInfoLine;
     public static boolean readerMode;
@@ -427,7 +427,11 @@ public class SettingValues {
         alphabetizeOnSubscribe = prefs.getBoolean(PREF_ALPHABETIZE_SUBSCRIBE, false);
 
         commentPager = prefs.getBoolean(PREF_COMMENT_PAGER, false);
-        smallTag = prefs.getBoolean(PREF_SMALL_TAG, true);
+        // Remove the old boolean preference for smallTag to prevent ClassCastException
+        if (prefs.contains(PREF_SMALL_TAG) && (prefs.getAll().get(PREF_SMALL_TAG) instanceof Boolean)) {
+            prefs.edit().remove(PREF_SMALL_TAG).apply();
+        }
+        smallTag = prefs.getInt(PREF_SMALL_TAG, 1);
         swap = prefs.getBoolean(PREF_SWAP, false);
         hideSelftextLeadImage = prefs.getBoolean(PREF_SELFTEXT_IMAGE_COMMENT, false);
         image = prefs.getBoolean(PREF_IMAGE, true);

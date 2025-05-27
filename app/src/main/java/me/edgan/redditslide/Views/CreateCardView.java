@@ -203,10 +203,10 @@ public class CreateCardView {
         return CreateView(parent);
     }
 
-    public static View setSmallTag(boolean isChecked, ViewGroup parent) {
+    public static View setSmallTag(int value, ViewGroup parent) {
 
-        SettingValues.prefs.edit().putBoolean(SettingValues.PREF_SMALL_TAG, isChecked).apply();
-        SettingValues.smallTag = isChecked;
+        SettingValues.prefs.edit().putInt(SettingValues.PREF_SMALL_TAG, value).apply();
+        SettingValues.smallTag = value;
         return CreateView(parent);
     }
 
@@ -316,7 +316,24 @@ public class CreateCardView {
     }
 
     private static void doHideObjects(final View v) {
-        if (SettingValues.smallTag) {
+        if (SettingValues.smallTag == 1) {
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) v.findViewById(R.id.tag).getLayoutParams();
+            layoutParams.addRule(RelativeLayout.ALIGN_TOP, R.id.leadimage);
+            layoutParams.addRule(RelativeLayout.ALIGN_RIGHT, R.id.leadimage);
+            layoutParams.removeRule(RelativeLayout.ALIGN_BOTTOM);
+            layoutParams.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            v.findViewById(R.id.tag).setLayoutParams(layoutParams);
+            ((RelativeLayout.LayoutParams) v.findViewById(R.id.tag).getLayoutParams()).setMargins(DisplayUtil.dpToPxVertical(10), DisplayUtil.dpToPxVertical(10), DisplayUtil.dpToPxVertical(10), DisplayUtil.dpToPxVertical(10));
+            v.findViewById(R.id.base).setVisibility(View.GONE);
+            v.findViewById(R.id.tag).setVisibility(View.VISIBLE);
+        } else if (SettingValues.smallTag == 2) {
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) v.findViewById(R.id.tag).getLayoutParams();
+            layoutParams.addRule(RelativeLayout.ALIGN_BOTTOM, R.id.leadimage);
+            layoutParams.addRule(RelativeLayout.ALIGN_RIGHT, R.id.leadimage);
+            layoutParams.removeRule(RelativeLayout.ALIGN_TOP);
+            layoutParams.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            v.findViewById(R.id.tag).setLayoutParams(layoutParams);
+            ((RelativeLayout.LayoutParams) v.findViewById(R.id.tag).getLayoutParams()).setMargins(DisplayUtil.dpToPxVertical(10), DisplayUtil.dpToPxVertical(10), DisplayUtil.dpToPxVertical(10), DisplayUtil.dpToPxVertical(10));
             v.findViewById(R.id.base).setVisibility(View.GONE);
             v.findViewById(R.id.tag).setVisibility(View.VISIBLE);
         } else {

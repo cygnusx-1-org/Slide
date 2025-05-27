@@ -576,9 +576,11 @@ public class EditCardsLayout extends BaseActivityAnim {
         // Smaller tags//
         ((TextView) findViewById(R.id.small_tag_current))
                 .setText(
-                        SettingValues.smallTag
+                        SettingValues.smallTag == 1
                                 ? getString(R.string.show_top_right)
-                                : getString(R.string.disabled));
+                                : SettingValues.smallTag == 2
+                                        ? getString(R.string.show_bottom_right)
+                                        : getString(R.string.disabled));
 
         findViewById(R.id.small_tag_layout)
                 .setOnClickListener(
@@ -594,7 +596,7 @@ public class EditCardsLayout extends BaseActivityAnim {
                                             public boolean onMenuItemClick(MenuItem item) {
                                                 switch (item.getItemId()) {
                                                     case R.id.disabled:
-                                                        SettingValues.smallTag = false;
+                                                        SettingValues.smallTag = 0;
                                                         SettingValues.prefs
                                                                 .edit()
                                                                 .putBoolean(
@@ -605,28 +607,41 @@ public class EditCardsLayout extends BaseActivityAnim {
                                                                 .setText(R.string.small_tag_disabled);
                                                         break;
                                                     case R.id.show_top_right:
-                                                        SettingValues.smallTag = true;
+                                                        SettingValues.smallTag = 1;
                                                         SettingValues.prefs
                                                                 .edit()
-                                                                .putBoolean(
+                                                                .putInt(
                                                                         SettingValues
                                                                                 .PREF_SMALL_TAG,
-                                                                        true)
+                                                                        1)
                                                                 .apply();
                                                         layout.removeAllViews();
                                                         layout.addView(
                                                                 CreateCardView.setSmallTag(
-                                                                        true, layout));
+                                                                        1, layout));
+                                                        break;
+                                                    case R.id.show_bottom_right:
+                                                        SettingValues.smallTag = 2;
+                                                        SettingValues.prefs
+                                                                .edit()
+                                                                .putInt(
+                                                                        SettingValues
+                                                                                .PREF_SMALL_TAG,
+                                                                        2)
+                                                                .apply();
+                                                        layout.removeAllViews();
+                                                        layout.addView(
+                                                                CreateCardView.setSmallTag(
+                                                                        2, layout));
                                                         break;
                                                 }
                                                 ((TextView) findViewById(R.id.small_tag_current))
-                                                        .setText(
-                                                                SettingValues.smallTag
-                                                                        ? getString(
-                                                                                R.string
-                                                                                        .show_top_right)
-                                                                        : getString(
-                                                                                R.string.disabled));
+                                        .setText(
+                                                SettingValues.smallTag == 1
+                                                        ? getString(R.string.show_top_right)
+                                                        : SettingValues.smallTag == 2
+                                                                ? getString(R.string.show_bottom_right)
+                                                                : getString(R.string.disabled));
                                                 return true;
                                             }
                                         });
