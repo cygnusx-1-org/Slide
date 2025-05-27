@@ -427,7 +427,7 @@ public class SettingValues {
         alphabetizeOnSubscribe = prefs.getBoolean(PREF_ALPHABETIZE_SUBSCRIBE, false);
 
         commentPager = prefs.getBoolean(PREF_COMMENT_PAGER, false);
-        smallTag = prefs.getBoolean(PREF_SMALL_TAG, false);
+        smallTag = prefs.getBoolean(PREF_SMALL_TAG, true);
         swap = prefs.getBoolean(PREF_SWAP, false);
         hideSelftextLeadImage = prefs.getBoolean(PREF_SELFTEXT_IMAGE_COMMENT, false);
         image = prefs.getBoolean(PREF_IMAGE, true);

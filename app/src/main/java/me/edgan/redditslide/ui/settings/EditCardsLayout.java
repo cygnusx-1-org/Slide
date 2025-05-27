@@ -574,17 +574,66 @@ public class EditCardsLayout extends BaseActivityAnim {
                 });
 
         // Smaller tags//
-        final SwitchCompat smallTag = (SwitchCompat) findViewById(R.id.tagsetting);
+        ((TextView) findViewById(R.id.small_tag_current))
+                .setText(
+                        SettingValues.smallTag
+                                ? getString(R.string.show_top_right)
+                                : getString(R.string.disabled));
 
-        smallTag.setChecked(SettingValues.smallTag);
-        smallTag.setOnCheckedChangeListener(
-                new SwitchCompat.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        layout.removeAllViews();
-                        layout.addView(CreateCardView.setSmallTag(isChecked, layout));
-                    }
-                });
+        findViewById(R.id.small_tag_layout)
+                .setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                PopupMenu popup = new PopupMenu(EditCardsLayout.this, v);
+                                popup.getMenuInflater()
+                                        .inflate(R.menu.small_tag_mode, popup.getMenu());
+
+                                popup.setOnMenuItemClickListener(
+                                        new PopupMenu.OnMenuItemClickListener() {
+                                            public boolean onMenuItemClick(MenuItem item) {
+                                                switch (item.getItemId()) {
+                                                    case R.id.disabled:
+                                                        SettingValues.smallTag = false;
+                                                        SettingValues.prefs
+                                                                .edit()
+                                                                .putBoolean(
+                                                                        SettingValues.PREF_SMALL_TAG,
+                                                                        false)
+                                                                .apply();
+                                                        ((TextView) findViewById(R.id.small_tag_current))
+                                                                .setText(R.string.small_tag_disabled);
+                                                        break;
+                                                    case R.id.show_top_right:
+                                                        SettingValues.smallTag = true;
+                                                        SettingValues.prefs
+                                                                .edit()
+                                                                .putBoolean(
+                                                                        SettingValues
+                                                                                .PREF_SMALL_TAG,
+                                                                        true)
+                                                                .apply();
+                                                        layout.removeAllViews();
+                                                        layout.addView(
+                                                                CreateCardView.setSmallTag(
+                                                                        true, layout));
+                                                        break;
+                                                }
+                                                ((TextView) findViewById(R.id.small_tag_current))
+                                                        .setText(
+                                                                SettingValues.smallTag
+                                                                        ? getString(
+                                                                                R.string
+                                                                                        .show_top_right)
+                                                                        : getString(
+                                                                                R.string.disabled));
+                                                return true;
+                                            }
+                                        });
+
+                                popup.show();
+                            }
+                        });
 
         // Actionbar//
         // Enable, collapse//
