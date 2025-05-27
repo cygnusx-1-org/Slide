@@ -11,6 +11,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,6 +25,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -63,12 +65,18 @@ import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.FileUtil;
+import me.edgan.redditslide.util.GifDrawable;
 import me.edgan.redditslide.util.GifUtils;
 import me.edgan.redditslide.util.ImageSaveUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.ShareUtil;
 import me.edgan.redditslide.util.SubmissionParser;
+import me.edgan.redditslide.util.MiscUtil;
+
+import java.io.File;
+import android.graphics.Movie;
+import android.net.Uri;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -160,7 +168,7 @@ public class TumblrPager extends BaseSaveActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbar.setTitle(R.string.type_album);
+        mToolbar.setTitle(R.string.type_tumblr);
         ToolbarColorizeHelper.colorizeToolbar(mToolbar, Color.WHITE, this);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -210,9 +218,10 @@ public class TumblrPager extends BaseSaveActivity {
                 getSupportActionBar().setSubtitle(1 + "/" + images.size());
             }
 
-            TumblrViewPagerAdapter adapter =
-                    new TumblrViewPagerAdapter(getSupportFragmentManager());
+            TumblrViewPagerAdapter adapter = new TumblrViewPagerAdapter(getSupportFragmentManager());
             p.setAdapter(adapter);
+
+            MiscUtil.setupOldSwipeModeBackground(TumblrPager.this, p);
 
             int startPage = 0;
 
@@ -221,7 +230,6 @@ public class TumblrPager extends BaseSaveActivity {
             }
 
             p.setCurrentItem(startPage);
-
 
             p.post(
                     new Runnable() {
@@ -394,33 +402,117 @@ public class TumblrPager extends BaseSaveActivity {
         }
 
         @Override
-        public View onCreateView(
-                LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            rootView =
-                    (ViewGroup)
-                            inflater.inflate(R.layout.submission_gifcard_album, container, false);
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            Bundle bundle = this.getArguments();
+            final int i = bundle.getInt("page", 0);
+
+            rootView = (ViewGroup) inflater.inflate(R.layout.submission_gifcard_album, container, false);
             loader = rootView.findViewById(R.id.gifprogress);
+            final View videoView = rootView.findViewById(R.id.gif); // This is an ExoVideoView
 
-            gif = rootView.findViewById(R.id.gif);
+            final String url = ((TumblrPager) getActivity()).images.get(i).getOriginalSize().getUrl();
 
-            gif.setVisibility(View.VISIBLE);
-            final ExoVideoView v = (ExoVideoView) gif;
-            v.clearFocus();
+            if (url != null && url.toLowerCase().endsWith(".gif")) {
+                videoView.setVisibility(View.GONE); // Hide ExoVideoView
+                View playButton = rootView.findViewById(R.id.playbutton);
+                if (playButton != null) {
+                    playButton.setVisibility(View.GONE);
+                }
 
-            final String url =
-                    ((TumblrPager) getActivity()).images.get(i).getOriginalSize().getUrl();
+                final ImageView imageView = new ImageView(getContext());
+                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.MATCH_PARENT,
+                        RelativeLayout.LayoutParams.MATCH_PARENT);
+                layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+                imageView.setLayoutParams(layoutParams);
 
-            new GifUtils.AsyncLoadGif(
-                            getActivity(),
-                            rootView.findViewById(R.id.gif),
-                            loader,
-                            null, // placeholder
-                            false, // closeIfNull
-                            true, // autostart
-                            rootView.findViewById(R.id.size),
-                            ((TumblrPager) getActivity()).subreddit,
-                            null)
-                    .execute(url);
+                RelativeLayout imageArea = rootView.findViewById(R.id.imagearea);
+                imageArea.addView(imageView); // Add ImageView to the layout
+
+                loader.setVisibility(View.VISIBLE);
+
+                GifUtils.downloadGif(url, new GifUtils.GifDownloadCallback() {
+                    @Override
+                    public void onGifDownloaded(File gifFile) {
+                        if (getActivity() == null) return;
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                loader.setVisibility(View.GONE);
+                                Movie movie = Movie.decodeFile(gifFile.getAbsolutePath());
+                                if (movie != null) {
+                                    GifDrawable gifDrawable = new GifDrawable(movie, new Drawable.Callback() {
+                                        @Override
+                                        public void invalidateDrawable(@NonNull Drawable who) {
+                                            imageView.invalidate();
+                                        }
+
+                                        @Override
+                                        public void scheduleDrawable(@NonNull Drawable who, @NonNull Runnable what, long when) {
+                                            imageView.postDelayed(what, when - SystemClock.uptimeMillis());
+                                        }
+
+                                        @Override
+                                        public void unscheduleDrawable(@NonNull Drawable who, @NonNull Runnable what) {
+                                            imageView.removeCallbacks(what);
+                                        }
+                                    });
+                                    imageView.setImageDrawable(gifDrawable);
+                                    gifDrawable.start();
+                                } else {
+                                    // Optionally, show an error or fallback
+                                    Log.e(TAG, "Failed to decode GIF: " + url);
+                                    if (videoView instanceof ExoVideoView) {
+                                    ((ExoVideoView) videoView).setVideoURI(Uri.parse(url), ExoVideoView.VideoType.STANDARD, null); // Fallback to ExoVideoView if Movie decoding fails
+                                    ((ExoVideoView) videoView).play();
+                                        videoView.setVisibility(View.VISIBLE);
+                                        imageView.setVisibility(View.GONE);
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onGifDownloadFailed(Exception e) {
+                        if (getActivity() == null) return;
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                loader.setVisibility(View.GONE);
+                                Log.e(TAG, "Failed to download GIF: " + url, e);
+                                // Fallback to trying with ExoVideoView or show error
+                                if (videoView instanceof ExoVideoView) {
+                                   ((ExoVideoView) videoView).setVideoURI(Uri.parse(url), ExoVideoView.VideoType.STANDARD, null);
+                                   ((ExoVideoView) videoView).play();
+                                    videoView.setVisibility(View.VISIBLE);
+                                    imageView.setVisibility(View.GONE);
+                                }
+                            }
+                        });
+                    }
+                }, getContext(), null); // Pass null for submissionTitle if not available/needed here
+
+            } else { // Not a direct .gif URL, or URL is null, proceed with ExoVideoView
+                gif = rootView.findViewById(R.id.gif);
+                gif.setVisibility(View.VISIBLE);
+                final ExoVideoView v = (ExoVideoView) gif;
+                v.clearFocus();
+
+                new GifUtils.AsyncLoadGif(
+                        getActivity(),
+                        rootView.findViewById(R.id.gif), // This is the ExoVideoView
+                        loader,
+                        null, // placeholder
+                        false, // closeIfNull
+                        true, // autostart
+                        rootView.findViewById(R.id.size),
+                        ((TumblrPager) getActivity()).subreddit,
+                        null) // Pass null for submissionTitle
+                        .execute(url);
+            }
+
             rootView.findViewById(R.id.more)
                     .setOnClickListener(
                             new View.OnClickListener() {
@@ -717,7 +809,7 @@ public class TumblrPager extends BaseSaveActivity {
                             public void onLoadingComplete(
                                     String imageUri, View view, Bitmap loadedImage) {
                                 size.setVisibility(View.GONE);
-                                image.setImage(ImageSource.bitmap(loadedImage));
+                                image.loader.setImage(ImageSource.bitmap(loadedImage));
                                 (rootView.findViewById(R.id.progress)).setVisibility(View.GONE);
                             }
 

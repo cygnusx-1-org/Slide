@@ -49,6 +49,7 @@ import me.edgan.redditslide.Views.ImageInsertEditText;
 import me.edgan.redditslide.util.HttpUtil;
 import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TitleExtractor;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
@@ -109,12 +110,14 @@ public class Submit extends BaseActivity {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_submit);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = this.getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         }
+
         setupAppBar(R.id.toolbar, R.string.title_submit_post, true, true);
 
         inboxReplies = (SwitchCompat) findViewById(R.id.replies);

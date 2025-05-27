@@ -11,6 +11,7 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.Views.ExoVideoView;
 import me.edgan.redditslide.util.GifUtils;
+import me.edgan.redditslide.util.MiscUtil;
 
 /**
  * Created by ccrama on 01/29/2016.
@@ -29,6 +30,8 @@ public class ForceTouchLink extends BaseActivityAnim {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
 
         setContentView(R.layout.activity_force_touch_content);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
         findViewById(android.R.id.content)
                 .setOnTouchListener(

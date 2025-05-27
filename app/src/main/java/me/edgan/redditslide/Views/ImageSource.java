@@ -20,8 +20,8 @@ import java.net.URLDecoder;
 
 public final class ImageSource {
 
-    static final String FILE_SCHEME = "file:///";
-    static final String ASSET_SCHEME = "file:///android_asset/";
+    public static final String FILE_SCHEME = "file:///";
+    public static final String ASSET_SCHEME = "file:///android_asset/";
 
     private final Uri uri;
     private final Bitmap bitmap;
@@ -216,35 +216,35 @@ public final class ImageSource {
         }
     }
 
-    protected final Uri getUri() {
+    public final Uri getUri() {
         return uri;
     }
 
-    protected final Bitmap getBitmap() {
+    public final Bitmap getBitmap() {
         return bitmap;
     }
 
-    protected final Integer getResource() {
+    public final Integer getResource() {
         return resource;
     }
 
-    protected final boolean getTile() {
+    public final boolean getTile() {
         return tile;
     }
 
-    protected final int getSWidth() {
+    public final int getSWidth() {
         return sWidth;
     }
 
-    protected final int getSHeight() {
+    public final int getSHeight() {
         return sHeight;
     }
 
-    protected final Rect getSRegion() {
+    public final Rect getSRegion() {
         return sRegion;
     }
 
-    protected final boolean isCached() {
+    public final boolean isCached() {
         return cached;
     }
 }

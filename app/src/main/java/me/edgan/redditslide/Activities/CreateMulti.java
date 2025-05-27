@@ -44,6 +44,7 @@ import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 import net.dean.jraw.ApiException;
 import net.dean.jraw.http.MultiRedditUpdateRequest;
@@ -81,6 +82,9 @@ public class CreateMulti extends BaseActivityAnim {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_createmulti);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, "", true, true);
 
         findViewById(R.id.add)

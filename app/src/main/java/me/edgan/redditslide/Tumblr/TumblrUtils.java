@@ -152,13 +152,9 @@ public class TumblrUtils {
                                 + "&id="
                                 + id;
                 LogUtil.v(apiUrl);
-                if (tumblrRequests.contains(apiUrl)
-                        && JsonParser.parseString(tumblrRequests.getString(apiUrl, ""))
-                                .getAsJsonObject()
-                                .has("response")) {
-                    parseJson(
-                            JsonParser.parseString(tumblrRequests.getString(apiUrl, ""))
-                                    .getAsJsonObject());
+                if (tumblrRequests.contains(apiUrl) && JsonParser.parseString(tumblrRequests.getString(apiUrl, "")).getAsJsonObject().has("response")) {
+                    Log.d(TAG, "parseJson: 1" + tumblrRequests.getString(apiUrl, ""));
+                    parseJson(JsonParser.parseString(tumblrRequests.getString(apiUrl, "")).getAsJsonObject());
                 } else {
                     LogUtil.v(apiUrl);
                     final JsonObject result = HttpUtil.getJsonObject(client, gson, apiUrl);
@@ -172,6 +168,7 @@ public class TumblrUtils {
                                     .get(0)
                                     .getAsJsonObject()
                                     .has("photos")) {
+                        Log.d(TAG, "parseJson: 2" + result.toString());
                         tumblrRequests.edit().putString(apiUrl, result.toString()).apply();
                         parseJson(result);
                     } else {

@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.R;
+import me.edgan.redditslide.util.MiscUtil;
 
 public class SettingsHistory extends BaseActivityAnim {
 
@@ -15,6 +16,9 @@ public class SettingsHistory extends BaseActivityAnim {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_history);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, R.string.settings_title_history, true, true);
 
         ((ViewGroup) findViewById(R.id.settings_history))

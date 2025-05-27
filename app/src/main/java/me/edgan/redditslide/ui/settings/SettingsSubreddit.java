@@ -24,6 +24,7 @@ import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.GetClosestColor;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.MiscUtil;
 
 import net.dean.jraw.models.Subreddit;
 
@@ -59,6 +60,9 @@ public class SettingsSubreddit extends BaseActivityAnim {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_subreddit);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         SettingsThemeFragment.changed = true;
 
         setupAppBar(R.id.toolbar, R.string.title_subreddit_settings, true, true);

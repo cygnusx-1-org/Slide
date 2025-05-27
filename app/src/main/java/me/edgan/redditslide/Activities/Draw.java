@@ -28,6 +28,7 @@ import me.edgan.redditslide.Views.DoEditorActions;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.FileUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -52,6 +53,8 @@ public class Draw extends BaseActivity implements ColorChooserDialog.ColorCallba
         super.onCreate(savedInstance);
         applyColorTheme("");
         setContentView(R.layout.activity_draw);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         drawView = (CanvasView) findViewById(R.id.paintView);
         drawView.setBaseColor(Color.parseColor("#303030"));
         color = findViewById(R.id.color);

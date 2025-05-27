@@ -36,7 +36,7 @@ import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
-import me.edgan.redditslide.SubmissionViews.PopulateSubmissionViewHolder;
+import me.edgan.redditslide.util.SubmissionThumbnailHelper;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.CompatUtil;
@@ -265,7 +265,7 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                     case DEVIANTART:
                                     case XKCD:
                                     case IMAGE:
-                                        PopulateSubmissionViewHolder.openImage(
+                                        SubmissionThumbnailHelper.openImage(
                                                 type,
                                                 main,
                                                 submission,
@@ -292,7 +292,7 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                         }
                                         break;
                                     case REDDIT:
-                                        PopulateSubmissionViewHolder.openRedditContent(
+                                        SubmissionThumbnailHelper.openRedditContent(
                                                 submission.getUrl(), main);
                                         break;
                                     case LINK:
@@ -380,7 +380,7 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                         }
                                         break;
                                     case GIF:
-                                        PopulateSubmissionViewHolder.openGif(
+                                        SubmissionThumbnailHelper.openGif(
                                                 main,
                                                 submission,
                                                 holder.getBindingAdapterPosition());

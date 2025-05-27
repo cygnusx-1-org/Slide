@@ -1,111 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/sliding_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
+    android:gravity="bottom"
+    sothree:umanoOverlay="true"
+    sothree:umanoPanelHeight="48dp"
+    sothree:umanoShadowHeight="0dp">
 
-    android:orientation="vertical">
-
+    <!-- Main content -->
     <RelativeLayout
-        android:id="@+id/imagearea"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center">
+        android:orientation="vertical">
 
-        <me.edgan.redditslide.Views.ExoVideoView
-            android:id="@+id/gif"
+        <RelativeLayout
+            android:id="@+id/imagearea"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true">
-        </me.edgan.redditslide.Views.ExoVideoView>
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true">
 
-        <ProgressBar
-            android:id="@+id/gifprogress"
-            style="?android:attr/progressBarStyleHorizontal"
+            <me.edgan.redditslide.Views.ExoVideoView
+                android:id="@+id/gif"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true" />
+
+            <ProgressBar
+                android:id="@+id/gifprogress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="false"
+                android:max="100"
+                android:progress="0" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/gifheader"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:indeterminate="false"
-            android:max="100"
+            android:layout_height="56dp"
+            android:layout_alignParentBottom="true">
 
-            android:progress="0" />
-    </RelativeLayout>
+            <ImageView
+                android:id="@+id/comments"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:padding="15dp"
+                android:theme="@style/Ripple.List"
+                android:tint="@android:color/white"
+                android:layout_alignParentLeft="true"
+                app:srcCompat="@drawable/ic_forum" />
 
-    <RelativeLayout
-        android:id="@+id/gifheader"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_below="@+id/imagearea"
-        android:layout_marginTop="-52dp">
-
-        <TextView
+            <TextView
                 android:layout_width="wrap_content"
                 android:paddingLeft="16dp"
                 android:gravity="center"
                 android:id="@+id/size"
-                android:layout_marginLeft="16dp"
-                android:layout_alignParentLeft="true"
+                android:layout_toRightOf="@+id/comments"
                 android:textSize="12sp"
                 android:layout_height="match_parent" />
 
-        <ImageView
-            android:id="@+id/hq"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:theme="@style/Ripple.List"
-            android:padding="15dp"
-            android:layout_toLeftOf="@+id/mute"
-            app:srcCompat="@drawable/ic_high_quality"
-            android:tint="#e1e1e1" />
+            <ImageView
+                android:id="@+id/hq"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:theme="@style/Ripple.List"
+                android:padding="15dp"
+                android:layout_toLeftOf="@+id/mute"
+                app:srcCompat="@drawable/ic_high_quality"
+                android:tint="#e1e1e1" />
+
+            <ImageView
+                android:id="@+id/mute"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:theme="@style/Ripple.List"
+                android:padding="15dp"
+                android:layout_toLeftOf="@+id/speed"
+                app:srcCompat="@drawable/ic_volume_off"
+                android:tint="#e1e1e1" />
+
+            <ImageView
+                android:id="@+id/speed"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_toLeftOf="@id/save"
+                android:layout_marginEnd="4dp"
+                android:theme="@style/Ripple.List"
+                android:padding="15dp"
+                app:srcCompat="@drawable/ic_speed"
+                android:tint="#e1e1e1"
+                android:contentDescription="@string/video_speed_control_content_desc"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/save"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:padding="15dp"
+                android:theme="@style/Ripple.List"
+                android:tint="@android:color/white"
+                android:layout_toLeftOf="@+id/more"
+                app:srcCompat="@drawable/ic_download" />
+
+            <ImageView
+                android:id="@+id/more"
+                style="@style/Ripple.List"
+                android:layout_alignParentRight="true"
+                android:layout_width="48dp"
+                android:layout_height="56dp"
+                android:layout_gravity="right"
+                android:paddingBottom="15dp"
+                android:paddingStart="11dp"
+                android:paddingEnd="11dp"
+                android:paddingTop="15dp"
+                android:theme="@style/Ripple.List"
+                app:srcCompat="@drawable/ic_more_vert" />
+        </RelativeLayout>
 
         <ImageView
-            android:id="@+id/mute"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:theme="@style/Ripple.List"
-            android:padding="15dp"
-            android:layout_toLeftOf="@+id/save"
-            app:srcCompat="@drawable/ic_volume_off"
-            android:tint="#e1e1e1" />
-
-        <ImageView
-            android:id="@+id/save"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:padding="15dp"
-            android:theme="@style/Ripple.List"
-            android:tint="@android:color/white"
-            android:layout_toLeftOf="@+id/more"
-            app:srcCompat="@drawable/ic_download" />
-
-        <ImageView
-            android:id="@+id/more"
-            style="@style/Ripple.List"
-            android:layout_alignParentRight="true"
-            android:layout_width="48dp"
-            android:layout_height="56dp"
-            android:layout_gravity="right"
-            android:paddingBottom="15dp"
-            android:paddingStart="11dp"
-            android:paddingEnd="11dp"
-            android:paddingTop="15dp"
-            android:theme="@style/Ripple.List"
-            app:srcCompat="@drawable/ic_more_vert" />
+            android:id="@+id/playbutton"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_centerInParent="true"
+            android:alpha="0.8"
+            android:background="@drawable/circle_background"
+            android:padding="16dp"
+            android:src="@drawable/ic_play"
+            android:visibility="visible" />
     </RelativeLayout>
 
-    <!-- Replace the TextView with an ImageView for the play button -->
-    <ImageView
-        android:id="@+id/playbutton"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:layout_centerInParent="true"
-        android:alpha="0.8"
-        android:background="@drawable/circle_background"
-        android:padding="16dp"
-        android:src="@drawable/ic_play"
-        android:visibility="visible" />
-
-</RelativeLayout>
+    <!-- Sliding panel (can be empty for videos, but must exist) -->
+    <LinearLayout
+        android:id="@+id/panel"
+        android:background="#aa000000"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <!-- Empty panel for compliance with SlidingUpPanelLayout -->
+    </LinearLayout>
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

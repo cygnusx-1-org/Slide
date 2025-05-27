@@ -32,12 +32,12 @@ import me.edgan.redditslide.Views.ExoVideoView;
 import me.edgan.redditslide.Views.PreCachingLayoutManager;
 import me.edgan.redditslide.Views.ToolbarColorizeHelper;
 import me.edgan.redditslide.Visuals.ColorPreferences;
-import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.GifUtils;
 import me.edgan.redditslide.util.ImageSaveUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -185,7 +185,10 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
         gallery = new RedditGalleryPagerAdapter(getSupportFragmentManager());
         pager.setAdapter(gallery);
         pager.setCurrentItem(1);
+
         if (SettingValues.oldSwipeMode) {
+            MiscUtil.setupOldSwipeModeBackground(this, pager);
+
             pager.addOnPageChangeListener(
                 new ViewPager.SimpleOnPageChangeListener() {
                     @Override
@@ -198,10 +201,6 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
                             if (((RedditGalleryPagerAdapter) pager.getAdapter()).blankPage != null) {
                                 ((RedditGalleryPagerAdapter) pager.getAdapter()).blankPage.doOffset(positionOffset);
                             }
-
-                            ((RedditGalleryPagerAdapter) pager
-                                .getAdapter()).blankPage.realBack
-                                .setBackgroundColor(Palette.adjustAlpha(positionOffset * 0.7f));
                         }
                     }
                 }
@@ -395,6 +394,16 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
         private View gifView;
         private ProgressBar loader;
 
+        // Helper method to get adapter position from activity
+        private int getAdapterPositionFromActivity(android.app.Activity activity) {
+            if (activity instanceof RedditGallery) {
+                return ((RedditGallery) activity).adapterPosition;
+            } else if (activity instanceof RedditGalleryPager) {
+                return activity.getIntent().getIntExtra(MediaView.ADAPTER_POSITION, -1);
+            }
+            return -1;
+        }
+
         // Override this in subclasses to provide appropriate parent
         protected GalleryParent getGalleryParent() {
             return (RedditGallery) getActivity();
@@ -482,6 +491,29 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
                     }
                     rootView.findViewById(R.id.mute).setVisibility(View.GONE);
                     rootView.findViewById(R.id.hq).setVisibility(View.GONE);
+
+                    ImageView speedButton = rootView.findViewById(R.id.speed);
+                    if (speedButton != null) {
+                        if (current != null && current.isAnimated()) {
+                            speedButton.setVisibility(View.VISIBLE);
+                            exoVideoView.attachSpeedButton(speedButton, getActivity());
+                        } else {
+                            speedButton.setVisibility(View.GONE);
+                        }
+                    }
+
+                    // Add comment button logic
+                    View comments = rootView.findViewById(R.id.comments);
+                    if (comments != null) {
+                        if (getActivity().getIntent().hasExtra(MediaView.SUBMISSION_URL)) {
+                            comments.setOnClickListener(v -> {
+                                getActivity().finish();
+                                SubmissionsView.datachanged(getAdapterPositionFromActivity(getActivity()));
+                            });
+                        } else {
+                            comments.setVisibility(View.GONE);
+                        }
+                    }
                 }
             }
 

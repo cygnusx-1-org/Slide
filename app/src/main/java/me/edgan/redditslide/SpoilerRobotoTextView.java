@@ -88,9 +88,9 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
     private List<CharacterStyle> storedSpoilerSpans = new ArrayList<>();
     private List<Integer> storedSpoilerStarts = new ArrayList<>();
     private List<Integer> storedSpoilerEnds = new ArrayList<>();
-    private static final Pattern htmlSpoilerPattern =
+    public static final Pattern htmlSpoilerPattern =
             Pattern.compile("<a href=\"[#/](?:spoiler|sp|s)\">([^<]*)</a>");
-    private static final Pattern nativeSpoilerPattern =
+    public static final Pattern nativeSpoilerPattern =
             Pattern.compile("<span class=\"[^\"]*md-spoiler-text+[^\"]*\">([^<]*)</span>");
 
     private static class MatchPair {

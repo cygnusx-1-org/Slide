@@ -22,6 +22,7 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.PostMatch;
+import me.edgan.redditslide.util.MiscUtil;
 
 import java.util.HashSet;
 import java.util.Locale;
@@ -41,6 +42,9 @@ public class SettingsFilter extends BaseActivityAnim {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_filters);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, R.string.settings_title_filter, true, true);
 
         // Initialize memory filters as empty at app start

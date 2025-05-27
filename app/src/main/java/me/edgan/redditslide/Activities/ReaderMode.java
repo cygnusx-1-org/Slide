@@ -19,6 +19,7 @@ import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.LinkUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.jsoup.Connection;
@@ -37,9 +38,9 @@ public class ReaderMode extends BaseActivityAnim {
         super.onCreate(savedInstanceState);
         applyColorTheme("");
         setContentView(R.layout.activity_reader);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
-        mSubredditColor =
-                getIntent().getExtras().getInt(LinkUtil.EXTRA_COLOR, Palette.getDefaultColor());
+        mSubredditColor = getIntent().getExtras().getInt(LinkUtil.EXTRA_COLOR, Palette.getDefaultColor());
 
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         setupAppBar(R.id.toolbar, "", true, mSubredditColor, R.id.appbar);

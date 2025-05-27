@@ -47,6 +47,7 @@ import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.HttpUtil;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
 import me.edgan.redditslide.util.TwitterObject;
@@ -104,10 +105,10 @@ public class LiveThread extends BaseActivityAnim {
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         getWindow().getDecorView().setBackground(null);
         super.onCreate(savedInstanceState);
-
         applyColorTheme();
-
         setContentView(R.layout.activity_livethread);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         baseRecycler = (RecyclerView) findViewById(R.id.content_view);
         baseRecycler.setLayoutManager(new LinearLayoutManager(LiveThread.this));
         new AsyncTask<Void, Void, Void>() {

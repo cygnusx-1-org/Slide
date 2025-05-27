@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -64,6 +65,7 @@ import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.ShareUtil;
 import me.edgan.redditslide.util.StorageUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -80,6 +82,10 @@ import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+
+import android.graphics.Movie;
+import me.edgan.redditslide.util.GifDrawable;
+import androidx.annotation.NonNull;
 
 /** Created by ccrama on 3/5/2015. */
 public class MediaView extends BaseSaveActivity {
@@ -112,6 +118,10 @@ public class MediaView extends BaseSaveActivity {
     private Gson gson;
     private String imgurKey;
     private String lastContentUrl;
+
+    // Fields for direct GIF handling
+    private ImageView directGifViewer;
+    private GifDrawable activeGifDrawable; // To manage its lifecycle
 
     private static final String TAG = "MediaView";
 
@@ -373,13 +383,27 @@ public class MediaView extends BaseSaveActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        ((SubsamplingScaleImageView) findViewById(R.id.submission_image)).recycle();
-        if (gif != null) {
+        if (findViewById(R.id.submission_image) != null && ((SubsamplingScaleImageView) findViewById(R.id.submission_image)) != null) {
+            ((SubsamplingScaleImageView) findViewById(R.id.submission_image)).recycle();
+        }
+        if (gif != null) { // This is GifUtils.AsyncLoadGif for ExoVideoView
             gif.cancel();
             gif.cancel(true);
         }
 
+        // Cleanup for direct GifDrawable
+        if (activeGifDrawable != null) {
+            activeGifDrawable.setCallback(null);
+            activeGifDrawable.stop();
+            activeGifDrawable = null;
+        }
+        if (directGifViewer != null) {
+            directGifViewer.setImageDrawable(null);
+        }
+
         if (!didLoadGif && fileLoc != null && !fileLoc.isEmpty()) {
+            // This fileLoc seems related to an old way of handling gifs, review if still needed
+            // For now, keeping it as is.
             new File(fileLoc).delete();
         }
     }
@@ -445,8 +469,19 @@ public class MediaView extends BaseSaveActivity {
 
         setContentView(R.layout.activity_media);
 
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+        // Initialize the new ImageView for direct GIFs and cast it
+        directGifViewer = (ImageView) findViewById(R.id.direct_gif_viewer);
+
         // Keep the screen on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        // Hide speed button by default
+        ImageView speedBtn = (ImageView) findViewById(R.id.speed);
+
+        if (speedBtn != null) {
+            speedBtn.setVisibility(View.GONE);
+        }
 
         final String firstUrl = getIntent().getExtras().getString(EXTRA_DISPLAY_URL, "");
         contentUrl = getIntent().getExtras().getString(EXTRA_URL);
@@ -596,37 +631,124 @@ public class MediaView extends BaseSaveActivity {
 
     public void doLoadGif(final String dat) {
         isGif = true;
-        videoView = (ExoVideoView) findViewById(R.id.gif);
-        findViewById(R.id.black)
-                .setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (findViewById(R.id.gifheader).getVisibility() == View.GONE) {
-                                    AnimatorUtil.animateIn(findViewById(R.id.gifheader), 56);
-                                    AnimatorUtil.fadeOut(findViewById(R.id.black));
-                                }
-                            }
-                        });
-        videoView.clearFocus();
-        findViewById(R.id.gifarea).setVisibility(View.VISIBLE);
-        findViewById(R.id.submission_image).setVisibility(View.GONE);
         final ProgressBar loader = (ProgressBar) findViewById(R.id.gifprogress);
-        findViewById(R.id.progress).setVisibility(View.GONE);
-        gif =
-                new GifUtils.AsyncLoadGif(
-                        this,
-                        videoView,
-                        loader,
-                        findViewById(R.id.placeholder),
-                        true,
-                        true,
-                        ((TextView) findViewById(R.id.size)),
-                        subreddit,
-                        submissionTitle);
-        videoView.attachMuteButton((ImageView) findViewById(R.id.mute));
-        videoView.attachHqButton((ImageView) findViewById(R.id.hq));
-        gif.execute(dat);
+        final String gifUrl = GifUtils.AsyncLoadGif.formatUrl(dat); // Corrected static call
+
+        if (gifUrl.toLowerCase().endsWith(".gif")) {
+            // Handle direct .gif URLs with Movie/GifDrawable
+            Log.v(TAG, "Loading direct GIF: " + gifUrl); // Changed to Log.v
+            findViewById(R.id.gifarea).setVisibility(View.VISIBLE); // Ensure gifarea is visible for progress bar
+            findViewById(R.id.submission_image).setVisibility(View.GONE);
+            if (videoView != null) videoView.setVisibility(View.GONE); // Hide ExoVideoView
+            directGifViewer.setVisibility(View.VISIBLE); // Show our ImageView
+            loader.setVisibility(View.VISIBLE);
+            loader.setIndeterminate(true); // Indeterminate for download phase
+
+            // Clear any previous direct GIF
+            if (activeGifDrawable != null) {
+                activeGifDrawable.setCallback(null);
+                activeGifDrawable.stop();
+            }
+            directGifViewer.setImageDrawable(null);
+
+            GifUtils.downloadGif(gifUrl, new GifUtils.GifDownloadCallback() {
+                @Override
+                public void onGifDownloaded(File gifFile) {
+                    if (isFinishing() || isDestroyed()) return;
+                    runOnUiThread(() -> {
+                        loader.setVisibility(View.GONE);
+                        Movie movie = Movie.decodeFile(gifFile.getAbsolutePath());
+                        if (movie != null) {
+                            activeGifDrawable = new GifDrawable(movie, new Drawable.Callback() {
+                                @Override
+                                public void invalidateDrawable(@NonNull Drawable who) {
+                                    directGifViewer.invalidate();
+                                }
+
+                                @Override
+                                public void scheduleDrawable(@NonNull Drawable who, @NonNull Runnable what, long when) {
+                                    directGifViewer.postDelayed(what, when - SystemClock.uptimeMillis());
+                                }
+
+                                @Override
+                                public void unscheduleDrawable(@NonNull Drawable who, @NonNull Runnable what) {
+                                    directGifViewer.removeCallbacks(what);
+                                }
+                            });
+                            directGifViewer.setImageDrawable(activeGifDrawable);
+                            activeGifDrawable.start();
+                            didLoadGif = true; // Mark that a GIF was successfully loaded this way
+                            fileLoc = gifFile.getAbsolutePath(); // Potentially for cleanup, though this might need review
+                        } else {
+                            Log.e(TAG, "Failed to decode direct GIF: " + gifUrl);
+                            Toast.makeText(MediaView.this, "Failed to load GIF.", Toast.LENGTH_SHORT).show();
+                            // Optionally, try to open externally or show a specific error view
+                             finish(); // Or handle error more gracefully
+                        }
+                    });
+                }
+
+                @Override
+                public void onGifDownloadFailed(Exception e) {
+                    if (isFinishing() || isDestroyed()) return;
+                    runOnUiThread(() -> {
+                        loader.setVisibility(View.GONE);
+                        Log.e(TAG, "Failed to download direct GIF: " + gifUrl, e);
+                        Toast.makeText(MediaView.this, "Failed to download GIF.", Toast.LENGTH_SHORT).show();
+                        finish(); // Or handle error more gracefully
+                    });
+                }
+            }, this, submissionTitle);
+
+        } else {
+            // Existing logic for Gfycat, Streamable, v.redd.it, etc., using ExoVideoView via AsyncLoadGif
+            Log.v(TAG, "Loading GIF/video via AsyncLoadGif (ExoPlayer): " + gifUrl); // Changed to Log.v
+            if (directGifViewer != null) directGifViewer.setVisibility(View.GONE); // Hide our direct ImageViewer
+            videoView = (ExoVideoView) findViewById(R.id.gif);
+            videoView.setVisibility(View.VISIBLE); // Ensure ExoVideoView is visible
+
+            findViewById(R.id.black)
+                    .setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (findViewById(R.id.gifheader).getVisibility() == View.GONE) {
+                                        AnimatorUtil.animateIn(findViewById(R.id.gifheader), 56);
+                                        AnimatorUtil.fadeOut(findViewById(R.id.black));
+                                    }
+                                }
+                            });
+            videoView.clearFocus();
+            findViewById(R.id.gifarea).setVisibility(View.VISIBLE);
+            findViewById(R.id.submission_image).setVisibility(View.GONE);
+            loader.setVisibility(View.VISIBLE); // Progress bar for AsyncLoadGif
+            findViewById(R.id.progress).setVisibility(View.GONE); // Main progress bar for images
+
+            // Ensure this.gif (AsyncLoadGif) is not mixed up with activeGifDrawable (GifDrawable)
+            if (this.gif != null) { // Cancel previous AsyncLoadGif if any
+                this.gif.cancel(true);
+            }
+            this.gif = // Assign to the class field 'gif'
+                    new GifUtils.AsyncLoadGif(
+                            this,
+                            videoView,
+                            loader,
+                            findViewById(R.id.placeholder),
+                            true, // closeIfNull
+                            true, // autostart
+                            ((TextView) findViewById(R.id.size)),
+                            subreddit,
+                            submissionTitle);
+            // Show and attach speed button for GIFs (relevant for ExoVideoView)
+            ImageView speedBtn = (ImageView) findViewById(R.id.speed);
+            if (speedBtn != null) speedBtn.setVisibility(View.VISIBLE);
+            videoView.attachMuteButton((ImageView) findViewById(R.id.mute));
+            videoView.attachHqButton((ImageView) findViewById(R.id.hq));
+            videoView.attachSpeedButton(speedBtn, this);
+            this.gif.execute(gifUrl); // Use the formatted gifUrl
+        }
+
+        // Common setup for both paths (direct GIF or ExoVideoView GIF)
         findViewById(R.id.more)
                 .setOnClickListener(
                         new View.OnClickListener() {
@@ -940,7 +1062,7 @@ public class MediaView extends BaseSaveActivity {
                             }
                         });
                 try {
-                    i.setImage(ImageSource.uri(f.getAbsolutePath()));
+                    i.loader.setImage(ImageSource.uri(f.getAbsolutePath()));
                 } catch (Exception e) {
                     imageShown = false;
                 }
@@ -1031,7 +1153,7 @@ public class MediaView extends BaseSaveActivity {
                                     @Override
                                     public void onLoadingStarted(String imageUri, View view) {
                                         imageShown = true;
-                                        size.setVisibility(View.VISIBLE);
+                                        if (size != null) size.setVisibility(View.VISIBLE);
                                     }
 
                                     @Override
@@ -1045,7 +1167,7 @@ public class MediaView extends BaseSaveActivity {
                                     public void onLoadingComplete(
                                             String imageUri, View view, Bitmap loadedImage) {
                                         imageShown = true;
-                                        size.setVisibility(View.GONE);
+                                        if (size != null) size.setVisibility(View.GONE);
 
                                         File f =
                                                 ((Reddit) getApplicationContext())
@@ -1053,9 +1175,9 @@ public class MediaView extends BaseSaveActivity {
                                                         .getDiskCache()
                                                         .get(url);
                                         if (f != null && f.exists()) {
-                                            i.setImage(ImageSource.uri(f.getAbsolutePath()));
+                                            i.loader.setImage(ImageSource.uri(f.getAbsolutePath()));
                                         } else {
-                                            i.setImage(ImageSource.bitmap(loadedImage));
+                                            i.loader.setImage(ImageSource.bitmap(loadedImage));
                                         }
                                         (findViewById(R.id.progress)).setVisibility(View.GONE);
                                         handler.removeCallbacks(progressBarDelayRunner);
@@ -1137,10 +1259,10 @@ public class MediaView extends BaseSaveActivity {
                                     @Override
                                     public void onProgressUpdate(
                                             String imageUri, View view, int current, int total) {
-                                        size.setText(FileUtil.readableFileSize(total));
-
-                                        ((ProgressBar) findViewById(R.id.progress))
-                                                .setProgress(Math.round(100.0f * current / total));
+                                        TextView size = (TextView) findViewById(R.id.size);
+                                        if (size != null) {
+                                            size.setText(String.format("%d%%", (int) (100.0 * current / total)));
+                                        }
                                     }
                                 });
             }

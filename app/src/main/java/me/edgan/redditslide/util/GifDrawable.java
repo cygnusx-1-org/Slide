@@ -60,6 +60,16 @@ public class GifDrawable extends Drawable {
     }
 
     @Override
+    public int getIntrinsicWidth() {
+        return movie != null ? movie.width() : 0;
+    }
+
+    @Override
+    public int getIntrinsicHeight() {
+        return movie != null ? movie.height() : 0;
+    }
+
+    @Override
     public int getOpacity() {
         return PixelFormat.TRANSLUCENT;
     }

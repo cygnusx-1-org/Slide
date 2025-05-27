@@ -41,6 +41,7 @@ import androidx.media3.datasource.cache.CacheDataSource;
 import androidx.media3.common.MimeTypes;
 import androidx.media3.common.VideoSize;
 
+
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
@@ -62,10 +63,12 @@ public class ExoVideoView extends RelativeLayout {
     private PlayerControlView playerUI;
     private boolean muteAttached = false;
     private boolean hqAttached = false;
+    private boolean speedAttached = false;
+    private float[] speedOptions = {0.25f, 0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 2.0f};
+    private int currentSpeedIndex = 3; // Normal (1.0x) default
     private AudioFocusHelper audioFocusHelper;
     private Handler handler = new Handler(Looper.getMainLooper());
     private Runnable hideControlsRunnable;
-
 
     private ScaleGestureDetector scaleGestureDetector;
     private float scaleFactor = 1.0f;
@@ -607,6 +610,121 @@ public class ExoVideoView extends RelativeLayout {
                     }
                 }
             });
+        }
+    }
+
+    /**
+     * Attaches a speed control button to this view.
+     */
+    public void attachSpeedButton(final ImageView speed, final Context parentContext) {
+        Log.d(TAG, "attachSpeedButton() called");
+        if (speed != null && player != null) {
+            speed.setVisibility(VISIBLE);
+            speed.setImageResource(R.drawable.ic_speed);
+            speed.setOnClickListener(v -> {
+                // Show a BottomSheetDialog to pick speed
+                String[] speedLabels = new String[] {
+                        parentContext.getString(R.string.video_speed_0_25x),
+                        parentContext.getString(R.string.video_speed_0_5x),
+                        parentContext.getString(R.string.video_speed_0_75x),
+                        parentContext.getString(R.string.video_speed_1x),
+                        parentContext.getString(R.string.video_speed_1_25x),
+                        parentContext.getString(R.string.video_speed_1_5x),
+                        parentContext.getString(R.string.video_speed_2x)
+                };
+
+                android.widget.ListView listView = new android.widget.ListView(parentContext);
+                // Custom adapter to show speed label and icon for selected
+                android.widget.BaseAdapter adapter = new android.widget.BaseAdapter() {
+                    @Override
+                    public int getCount() { return speedLabels.length; }
+                    @Override
+                    public Object getItem(int position) { return speedLabels[position]; }
+                    @Override
+                    public long getItemId(int position) { return position; }
+                    @Override
+                    public android.view.View getView(int position, android.view.View convertView, android.view.ViewGroup parent) {
+                        android.content.Context ctx = parent.getContext();
+                        android.widget.LinearLayout layout = new android.widget.LinearLayout(ctx);
+                        layout.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+                        layout.setPadding(0, 0, 0, 0);
+                        layout.setGravity(android.view.Gravity.CENTER_VERTICAL);
+                        // Label
+                        String labelText;
+                        if (speedLabels[position].matches("[0-9.]+x")) {
+                            // If the label is like "2x", format to 2.00x
+                            try {
+                                float val = Float.parseFloat(speedLabels[position].replace("x", ""));
+                                labelText = String.format("%.2fx", val);
+                            } catch (Exception e) {
+                                labelText = speedLabels[position];
+                            }
+                        } else {
+                            labelText = speedLabels[position];
+                        }
+                        android.widget.TextView label = new android.widget.TextView(ctx);
+                        label.setText(labelText);
+                        label.setTextColor(android.graphics.Color.WHITE);
+                        // Use default text appearance for list items
+                        label.setTextAppearance(android.R.style.TextAppearance_Material_Body1);
+                        label.setPadding((int)(ctx.getResources().getDisplayMetrics().density*4), (int)(ctx.getResources().getDisplayMetrics().density*8), (int)(ctx.getResources().getDisplayMetrics().density*4), (int)(ctx.getResources().getDisplayMetrics().density*8));
+                        android.widget.LinearLayout.LayoutParams labelParams = new android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+                        label.setLayoutParams(labelParams);
+                        layout.addView(label);
+                        // Icon for selected
+                        if (position == currentSpeedIndex) {
+                            ImageView icon = new ImageView(ctx);
+                            icon.setImageResource(R.drawable.ic_speed);
+                            icon.setColorFilter(android.graphics.Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN);
+                            int iconSize = (int)(ctx.getResources().getDisplayMetrics().density*24);
+                            android.widget.LinearLayout.LayoutParams iconParams = new android.widget.LinearLayout.LayoutParams(iconSize, iconSize);
+                            iconParams.setMarginStart((int)(ctx.getResources().getDisplayMetrics().density*8));
+                            icon.setLayoutParams(iconParams);
+                            layout.addView(icon);
+                        }
+                        return layout;
+                    }
+                };
+                listView.setAdapter(adapter);
+                listView.setChoiceMode(android.widget.ListView.CHOICE_MODE_SINGLE);
+                listView.setItemChecked(currentSpeedIndex, true);
+                listView.setBackgroundColor(android.graphics.Color.BLACK);
+                listView.setDivider(null); // Remove the separator
+                listView.setDividerHeight(0); // Ensure no divider is shown
+                int horizontalPadding = (int) (parentContext.getResources().getDisplayMetrics().density * 24); // 24dp
+                int topPadding = (int) (parentContext.getResources().getDisplayMetrics().density * 12); // 12dp
+                listView.setPadding(horizontalPadding, topPadding, horizontalPadding, listView.getPaddingBottom());
+                listView.setClipToPadding(false);
+
+                com.google.android.material.bottomsheet.BottomSheetDialog bottomSheetDialog = new com.google.android.material.bottomsheet.BottomSheetDialog(parentContext);
+                bottomSheetDialog.setContentView(listView);
+                bottomSheetDialog.setTitle(parentContext.getString(R.string.video_speed));
+
+                // Set the background of the bottom sheet itself to black (no rounded corners)
+                bottomSheetDialog.setOnShowListener(dialog -> {
+                    android.view.View bottomSheet = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+                    if (bottomSheet != null) {
+                        bottomSheet.setBackgroundColor(android.graphics.Color.BLACK);
+                    }
+                });
+
+                listView.setOnItemClickListener((parent, view, position, id) -> {
+                    setPlaybackSpeed(speedOptions[position]);
+                    currentSpeedIndex = position;
+                    bottomSheetDialog.dismiss();
+                });
+
+                bottomSheetDialog.show();
+            });
+        }
+    }
+
+    /**
+     * Sets the playback speed of the player.
+     */
+    public void setPlaybackSpeed(float speed) {
+        if (player != null) {
+            player.setPlaybackParameters(new androidx.media3.common.PlaybackParameters(speed));
         }
     }
 

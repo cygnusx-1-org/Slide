@@ -33,10 +33,10 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Views.PreCachingLayoutManager;
 import me.edgan.redditslide.Views.ToolbarColorizeHelper;
 import me.edgan.redditslide.Visuals.ColorPreferences;
-import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.ImageSaveUtils;
 import me.edgan.redditslide.util.LinkUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,20 +62,22 @@ public class Album extends BaseSaveActivity {
         if (id == android.R.id.home) {
             onBackPressed();
         }
+
         if (id == R.id.slider) {
             SettingValues.albumSwipe = true;
             SettingValues.prefs.edit().putBoolean(SettingValues.PREF_ALBUM_SWIPE, true).apply();
             Intent i = new Intent(Album.this, AlbumPager.class);
             int adapterPosition = getIntent().getIntExtra(MediaView.ADAPTER_POSITION, -1);
             i.putExtra(MediaView.ADAPTER_POSITION, adapterPosition);
+
             if (getIntent().hasExtra(MediaView.SUBMISSION_URL)) {
-                i.putExtra(
-                        MediaView.SUBMISSION_URL,
-                        getIntent().getStringExtra(MediaView.SUBMISSION_URL));
+                i.putExtra(MediaView.SUBMISSION_URL, getIntent().getStringExtra(MediaView.SUBMISSION_URL));
             }
+
             if (submissionTitle != null) {
                 i.putExtra(EXTRA_SUBMISSION_TITLE, submissionTitle);
             }
+
             i.putExtra("url", url);
             startActivity(i);
             finish();
@@ -102,15 +104,7 @@ public class Album extends BaseSaveActivity {
     }
 
     public void doImageSave(boolean isGif, String contentUrl, int index) {
-        ImageSaveUtils.doImageSave(
-                this,
-                isGif,
-                contentUrl,
-                index,
-                subreddit,
-                submissionTitle,
-                this::showFirstDialog
-        );
+        ImageSaveUtils.doImageSave(this, isGif, contentUrl, index, subreddit, submissionTitle, this::showFirstDialog);
     }
 
     public String url;
@@ -122,9 +116,11 @@ public class Album extends BaseSaveActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.album_vertical, menu);
         adapterPosition = getIntent().getIntExtra(MediaView.ADAPTER_POSITION, -1);
+
         if (adapterPosition < 0) {
             menu.findItem(R.id.comments).setVisible(false);
         }
+
         return true;
     }
 
@@ -133,11 +129,7 @@ public class Album extends BaseSaveActivity {
     public void onCreate(Bundle savedInstanceState) {
         overrideSwipeFromAnywhere();
         super.onCreate(savedInstanceState);
-        getTheme()
-                .applyStyle(
-                        new ColorPreferences(this)
-                                .getDarkThemeSubreddit(ColorPreferences.FONT_STYLE),
-                        true);
+        getTheme().applyStyle(new ColorPreferences(this).getDarkThemeSubreddit(ColorPreferences.FONT_STYLE), true);
         setContentView(R.layout.album);
 
         // Keep the screen on
@@ -146,6 +138,7 @@ public class Album extends BaseSaveActivity {
         if (getIntent().hasExtra(SUBREDDIT)) {
             this.subreddit = getIntent().getExtras().getString(SUBREDDIT);
         }
+
         if (getIntent().hasExtra(EXTRA_SUBMISSION_TITLE)) {
             this.submissionTitle = getIntent().getExtras().getString(EXTRA_SUBMISSION_TITLE);
         }
@@ -154,25 +147,26 @@ public class Album extends BaseSaveActivity {
 
         album = new AlbumPagerAdapter(getSupportFragmentManager());
         pager.setAdapter(album);
+
         pager.setCurrentItem(1);
+
         if (SettingValues.oldSwipeMode) {
+            MiscUtil.setupOldSwipeModeBackground(this, pager);
+
             pager.addOnPageChangeListener(
                     new ViewPager.SimpleOnPageChangeListener() {
                         @Override
-                        public void onPageScrolled(
-                                int position, float positionOffset, int positionOffsetPixels) {
+                        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                             if (position == 0 && positionOffsetPixels == 0) {
                                 finish();
                             }
+
                             if (position == 0
                                     && ((AlbumPagerAdapter) pager.getAdapter()).blankPage != null) {
                                 if (((AlbumPagerAdapter) pager.getAdapter()).blankPage != null) {
                                     ((AlbumPagerAdapter) pager.getAdapter())
                                             .blankPage.doOffset(positionOffset);
                                 }
-                                ((AlbumPagerAdapter) pager.getAdapter())
-                                        .blankPage.realBack.setBackgroundColor(
-                                                Palette.adjustAlpha(positionOffset * 0.7f));
                             }
                         }
                     });
@@ -225,26 +219,19 @@ public class Album extends BaseSaveActivity {
                 LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             rootView = inflater.inflate(R.layout.fragment_verticalalbum, container, false);
 
-            final PreCachingLayoutManager mLayoutManager =
-                    new PreCachingLayoutManager(getActivity());
+            final PreCachingLayoutManager mLayoutManager = new PreCachingLayoutManager(getActivity());
             recyclerView = rootView.findViewById(R.id.images);
             recyclerView.setLayoutManager(mLayoutManager);
-            ((Album) getActivity()).url =
-                    getActivity().getIntent().getExtras().getString(EXTRA_URL, "");
+            ((Album) getActivity()).url = getActivity().getIntent().getExtras().getString(EXTRA_URL, "");
 
-            new LoadIntoRecycler(((Album) getActivity()).url, getActivity())
-                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            new LoadIntoRecycler(((Album) getActivity()).url, getActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             ((Album) getActivity()).mToolbar = rootView.findViewById(R.id.toolbar);
             ((Album) getActivity()).mToolbar.setTitle(R.string.type_album);
-            ToolbarColorizeHelper.colorizeToolbar(
-                    ((Album) getActivity()).mToolbar, Color.WHITE, (getActivity()));
+            ToolbarColorizeHelper.colorizeToolbar(((Album) getActivity()).mToolbar, Color.WHITE, (getActivity()));
             ((Album) getActivity()).setSupportActionBar(((Album) getActivity()).mToolbar);
             ((Album) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-            ((Album) getActivity())
-                    .mToolbar.setPopupTheme(
-                            new ColorPreferences(getActivity())
-                                    .getDarkThemeSubreddit(ColorPreferences.FONT_STYLE));
+            ((Album) getActivity()).mToolbar.setPopupTheme(new ColorPreferences(getActivity()).getDarkThemeSubreddit(ColorPreferences.FONT_STYLE));
             return rootView;
         }
 
@@ -260,40 +247,29 @@ public class Album extends BaseSaveActivity {
             @Override
             public void onError() {
                 if (getActivity() != null) {
-                    getActivity()
-                            .runOnUiThread(
-                                    new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            try {
-                                                new AlertDialog.Builder(getActivity())
-                                                        .setTitle(R.string.error_album_not_found)
-                                                        .setMessage(
-                                                                R.string.error_album_not_found_text)
-                                                        .setNegativeButton(
-                                                                R.string.btn_no,
-                                                                (dialog, which) ->
-                                                                        getActivity().finish())
-                                                        .setCancelable(false)
-                                                        .setPositiveButton(
-                                                                R.string.btn_yes,
-                                                                (dialog, which) -> {
-                                                                    Intent i =
-                                                                            new Intent(
-                                                                                    getActivity(),
-                                                                                    Website.class);
-                                                                    i.putExtra(
-                                                                            LinkUtil.EXTRA_URL,
-                                                                            url);
-                                                                    startActivity(i);
-                                                                    getActivity().finish();
-                                                                })
-                                                        .show();
-                                            } catch (Exception e) {
-
-                                            }
-                                        }
-                                    });
+                    getActivity().runOnUiThread(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    new AlertDialog.Builder(getActivity())
+                                        .setTitle(R.string.error_album_not_found)
+                                        .setMessage(R.string.error_album_not_found_text)
+                                        .setNegativeButton(R.string.btn_no, (dialog, which) -> getActivity().finish())
+                                        .setCancelable(false)
+                                        .setPositiveButton(
+                                            R.string.btn_yes,
+                                            (dialog, which) -> {
+                                                Intent i = new Intent(getActivity(), Website.class);
+                                                i.putExtra(LinkUtil.EXTRA_URL, url);
+                                                startActivity(i);
+                                                getActivity().finish();
+                                            })
+                                        .show();
+                                } catch (Exception e) {}
+                            }
+                        }
+                    );
                 }
             }
 
@@ -304,13 +280,13 @@ public class Album extends BaseSaveActivity {
                     getActivity().findViewById(R.id.progress).setVisibility(View.GONE);
                     Album albumActivity = (Album) getActivity();
                     albumActivity.images = new ArrayList<>(jsonElements);
-                    AlbumView adapter =
-                            new AlbumView(
-                                    baseActivity,
-                                    albumActivity.images,
-                                    getActivity().findViewById(R.id.toolbar).getHeight(),
-                                    albumActivity.subreddit,
-                                    albumActivity.submissionTitle);
+                    AlbumView adapter = new AlbumView(
+                        baseActivity,
+                        albumActivity.images,
+                        getActivity().findViewById(R.id.toolbar).getHeight(),
+                        albumActivity.subreddit,
+                        albumActivity.submissionTitle
+                    );
                     recyclerView.setAdapter(adapter);
                 }
             }

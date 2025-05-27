@@ -17,6 +17,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import me.edgan.redditslide.Fragments.SubredditListView;
 import me.edgan.redditslide.R;
+import me.edgan.redditslide.util.MiscUtil;
 
 /** Created by ccrama on 9/17/2015. */
 public class SubredditSearch extends BaseActivityAnim {
@@ -85,6 +86,8 @@ public class SubredditSearch extends BaseActivityAnim {
         term = getIntent().getExtras().getString("term");
         applyColorTheme("");
         setContentView(R.layout.activity_fragmentinner);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, term, true, true);
 
         Fragment f = new SubredditListView();

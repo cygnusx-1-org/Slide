@@ -43,6 +43,7 @@ import me.edgan.redditslide.util.ImageSaveUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.ShareUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -196,6 +197,8 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
         GalleryViewPagerAdapter adapter = new GalleryViewPagerAdapter(getSupportFragmentManager());
         p.setAdapter(adapter);
 
+        MiscUtil.setupOldSwipeModeBackground(this, p);
+
         p.post(
                 new Runnable() {
                     @Override
@@ -317,7 +320,17 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
 
         gridview.setOnItemClickListener(
                 (parent, v, position, id) -> {
-                    p.setCurrentItem(position);
+                    int targetPosition = position;
+                    if (SettingValues.oldSwipeMode) {
+                        // When oldSwipeMode is on, ViewPager has a blank page at index 0,
+                        // so the actual content starts from index 1.
+                        // The grid items are 0-indexed based on content, so add 1.
+                        targetPosition = position + 1;
+                    } else {
+                        // Without oldSwipeMode, ViewPager items are 0-indexed directly.
+                        targetPosition = position;
+                    }
+                    p.setCurrentItem(targetPosition);
                     d.dismiss();
                 });
 
@@ -468,44 +481,62 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
                         ((RedditGalleryPager) getActivity()).images.size() == 1);
             }
 
-            rootView.findViewById(R.id.more)
-                    .setOnClickListener(
+            View more = rootView.findViewById(R.id.more);
+            if (more != null) {
+                more.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                ((RedditGalleryPager) getActivity())
+                                        .showBottomSheetImage(url, false, i);
+                            }
+                        });
+            }
+            View save = rootView.findViewById(R.id.save);
+            if (save != null) {
+                save.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v2) {
+                                ((RedditGalleryPager) getActivity()).doImageSave(false, url, i);
+                            }
+                        });
+                if (!SettingValues.imageDownloadButton) {
+                    save.setVisibility(View.INVISIBLE);
+                }
+            }
+            View panel = rootView.findViewById(R.id.panel);
+            if (panel != null) {
+                panel.setVisibility(View.GONE);
+            }
+            View margin = rootView.findViewById(R.id.margin);
+            if (margin != null) {
+                margin.setPadding(0, 0, 0, 0);
+            }
+            View hq = rootView.findViewById(R.id.hq);
+            if (hq != null) {
+                hq.setVisibility(View.GONE);
+            }
+            View mute = rootView.findViewById(R.id.mute);
+            if (mute != null) {
+                mute.setVisibility(View.GONE);
+            }
+            View comments = rootView.findViewById(R.id.comments);
+            if (getActivity().getIntent().hasExtra(MediaView.SUBMISSION_URL)) {
+                if (comments != null) {
+                    comments.setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    ((RedditGalleryPager) getActivity())
-                                            .showBottomSheetImage(url, false, i);
+                                    getActivity().finish();
+                                    SubmissionsView.datachanged(adapterPosition);
                                 }
                             });
-            rootView.findViewById(R.id.save)
-                    .setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v2) {
-                                    ((RedditGalleryPager) getActivity()).doImageSave(false, url, i);
-                                }
-                            });
-            if (!SettingValues.imageDownloadButton) {
-                rootView.findViewById(R.id.save).setVisibility(View.INVISIBLE);
-            }
-
-            rootView.findViewById(R.id.panel).setVisibility(View.GONE);
-            (rootView.findViewById(R.id.margin)).setPadding(0, 0, 0, 0);
-
-            rootView.findViewById(R.id.hq).setVisibility(View.GONE);
-
-            if (getActivity().getIntent().hasExtra(MediaView.SUBMISSION_URL)) {
-                rootView.findViewById(R.id.comments)
-                        .setOnClickListener(
-                                new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        getActivity().finish();
-                                        SubmissionsView.datachanged(adapterPosition);
-                                    }
-                                });
+                }
             } else {
-                rootView.findViewById(R.id.comments).setVisibility(View.GONE);
+                if (comments != null) {
+                    comments.setVisibility(View.GONE);
+                }
             }
             return rootView;
         }

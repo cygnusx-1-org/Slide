@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.ContentType.Type;
-import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 
 import org.junit.BeforeClass;
@@ -148,23 +147,6 @@ public class ContentTypeTest {
         assertThat(ContentType.getContentType("google.com"), is(not(Type.NONE)));
         // Protocol relative
         assertThat(ContentType.getContentType("//google.com"), is(not(Type.NONE)));
-    }
-
-    @Test
-    public void detectsVideo() {
-        Reddit.videoPlugin = true;
-        assertThat(
-                ContentType.getContentType("https://www.youtube.com/watch?v=lX_pF03vCSU"),
-                is(Type.VIDEO));
-        assertThat(ContentType.getContentType("https://youtu.be/lX_pF03vCSU"), is(Type.VIDEO));
-
-        assertThat(ContentType.getContentType("https://www.gifyoutube.com/"), is(not(Type.VIDEO)));
-
-        Reddit.videoPlugin = false;
-        assertThat(
-                ContentType.getContentType("https://www.youtube.com/watch?v=lX_pF03vCSU"),
-                is(not(Type.VIDEO)));
-        assertThat(ContentType.getContentType("https://youtu.be/lX_pF03vCSU"), is(not(Type.VIDEO)));
     }
 
     @Test

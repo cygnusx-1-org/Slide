@@ -30,6 +30,7 @@ import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.SortingUtil;
 import me.edgan.redditslide.util.TimeUtils;
+import me.edgan.redditslide.util.MiscUtil;
 
 import net.dean.jraw.paginators.SubmissionSearchPaginator;
 import net.dean.jraw.paginators.TimePeriod;
@@ -242,6 +243,9 @@ public class Search extends BaseActivityAnim {
 
         applyColorTheme("");
         setContentView(R.layout.activity_search);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         where = getIntent().getExtras().getString(EXTRA_TERM, "");
 
         time = TimePeriod.ALL;

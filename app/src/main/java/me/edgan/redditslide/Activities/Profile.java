@@ -58,6 +58,7 @@ import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.SortingUtil;
 import me.edgan.redditslide.util.TimeUtils;
+import me.edgan.redditslide.util.MiscUtil;
 
 import net.dean.jraw.fluent.FluentRedditClient;
 import net.dean.jraw.http.RestResponse;
@@ -118,6 +119,8 @@ public class Profile extends BaseActivityAnim {
 
         applyColorTheme();
         setContentView(R.layout.activity_profile);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupUserAppBar(R.id.toolbar, name, true, name);
         mToolbar.setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
 

@@ -167,16 +167,39 @@ public class GifUtils {
                     throw new Exception("Failed to download GIF: " + response);
                 }
 
-                // Create unique filename based on URL
-                String fileName;
-                Log.d("GifUtils", "DownloadGifTask - submissionTitle: " + (submissionTitle != null ? "'" + submissionTitle + "'" : "null"));
-                if (submissionTitle != null && !submissionTitle.trim().isEmpty()) {
-                    fileName = FileUtil.getValidFileName(submissionTitle, "", ".gif");
-                } else {
-                    // If no title available, use a timestamp
-                    fileName = System.currentTimeMillis() + ".gif";
+                // Create unique filename
+                String uniquePartFromUrl;
+                try {
+                    Uri parsedUri = Uri.parse(url);
+                    String lastSegment = parsedUri.getLastPathSegment();
+                    if (lastSegment != null && lastSegment.length() > 3 && lastSegment.contains(".")) { // Basic check for a file-like segment
+                        uniquePartFromUrl = lastSegment;
+                    } else {
+                        // Fallback to hash of URL if no good segment found
+                        uniquePartFromUrl = String.valueOf(url.hashCode());
+                    }
+                } catch (Exception e) {
+                    // Fallback to hash of URL on any parsing error
+                    uniquePartFromUrl = String.valueOf(url.hashCode());
                 }
-                File gifFile = new File(context.getCacheDir(), fileName);
+
+                String fileNamePrefix;
+                if (submissionTitle != null && !submissionTitle.trim().isEmpty()) {
+                    // Use submission title as part of the prefix, sanitized
+                    fileNamePrefix = FileUtil.getValidFileName(submissionTitle, "", "") + "_";
+                } else {
+                    // If no title, use a timestamp for the prefix
+                    fileNamePrefix = System.currentTimeMillis() + "_";
+                }
+
+                // Combine prefix, unique part from URL, and ensure .gif extension
+                String finalFileName = FileUtil.getValidFileName(fileNamePrefix + uniquePartFromUrl, "", ".gif");
+                if (!finalFileName.toLowerCase().endsWith(".gif")) { // Ensure .gif extension if getValidFileName strips it
+                    finalFileName += ".gif";
+                }
+
+                File gifFile = new File(context.getCacheDir(), finalFileName);
+                Log.d(TAG, "Downloading GIF " + url + " to cache file: " + gifFile.getAbsolutePath());
 
                 InputStream inputStream = response.body().byteStream();
                 OutputStream outputStream = new FileOutputStream(gifFile);
@@ -580,6 +603,7 @@ public class GifUtils {
         public enum VideoType {
             IMGUR,
             STREAMABLE,
+            TUMBLR,
             GFYCAT,
             DIRECT,
             OTHER,
@@ -661,6 +685,8 @@ public class GifUtils {
             if (realURL.contains("imgur.com")) return VideoType.IMGUR;
 
             if (realURL.contains("streamable.com")) return VideoType.STREAMABLE;
+
+            if (realURL.contains("tumblr.com")) return VideoType.TUMBLR;
 
             return VideoType.OTHER;
         }
@@ -924,6 +950,8 @@ public class GifUtils {
                 case REDDIT_GALLERY:
                     return Uri.parse(url);
                 case DIRECT:
+                case TUMBLR:
+                    return Uri.parse(url);
                 case IMGUR:
                     try {
                         return Uri.parse(url);

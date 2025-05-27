@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.util.MiscUtil;
 
 /** Created by l3d00m on 11/13/2015. */
 public class SettingsHandling extends BaseActivityAnim {
@@ -17,6 +18,9 @@ public class SettingsHandling extends BaseActivityAnim {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_handling);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, R.string.settings_link_handling, true, true);
 
         ((ViewGroup) findViewById(R.id.settings_handling))

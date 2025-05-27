@@ -16,6 +16,7 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Synccit.MySynccitReadTask;
 import me.edgan.redditslide.Synccit.MySynccitUpdateTask;
 import me.edgan.redditslide.Synccit.SynccitRead;
+import me.edgan.redditslide.util.MiscUtil;
 
 import java.util.Collections;
 
@@ -29,6 +30,9 @@ public class SettingsSynccit extends BaseActivityAnim {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_synccit);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, R.string.settings_synccit, true, true);
 
         name = (EditText) findViewById(R.id.name);

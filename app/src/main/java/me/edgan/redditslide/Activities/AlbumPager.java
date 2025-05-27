@@ -14,7 +14,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -70,6 +69,7 @@ import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.ShareUtil;
 import me.edgan.redditslide.util.StorageUtil;
 import me.edgan.redditslide.util.SubmissionParser;
+import me.edgan.redditslide.util.MiscUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -255,30 +255,14 @@ public class AlbumPager extends BaseSaveActivity {
 
                             if (SettingValues.oldSwipeMode) {
                                 startPage = 1;
+                                // Set an opaque background for the ViewPager
+                                MiscUtil.setupOldSwipeModeBackground(AlbumPager.this, p);
                             }
 
                             p.setCurrentItem(startPage);
 
                             // Reset the currently playing position
                             Gif.currentlyPlayingPosition = -1;
-
-                            // Initialize the correct position after a delay
-                            new Handler().postDelayed(() -> {
-                                if (!isFinishing()) {
-                                    int position = p.getCurrentItem();
-                                    int adjustedPosition = position;
-                                    if (SettingValues.oldSwipeMode && position > 0) {
-                                        adjustedPosition = position - 1;
-                                    }
-
-                                    if (images != null && !images.isEmpty() && adjustedPosition >= 0 && adjustedPosition < images.size()) {
-                                        if (images.get(adjustedPosition).isAnimated()) {
-                                            LogUtil.v("Setting initial playing position to " + adjustedPosition);
-                                            Gif.currentlyPlayingPosition = adjustedPosition;
-                                        }
-                                    }
-                                }
-                            }, 100);
 
                             findViewById(R.id.grid)
                                     .setOnClickListener(
@@ -349,16 +333,18 @@ public class AlbumPager extends BaseSaveActivity {
 
                                         @Override
                                         public void onPageSelected(int position) {
-                                            // When a page is selected, explicitly tell all Gif fragments to check their visibility
                                             if (adapter != null && adapter.getCount() > 0) {
                                                 int adjustedPosition = position;
                                                 if (SettingValues.oldSwipeMode && position > 0) {
                                                     adjustedPosition = position - 1;
                                                 }
-
-                                                // Update the currently playing position in the Gif class
-                                                if (images.get(adjustedPosition).isAnimated()) {
-                                                    Gif.currentlyPlayingPosition = adjustedPosition;
+                                                FragmentManager fm = getSupportFragmentManager();
+                                                for (int i = 0; i < adapter.getCount(); i++) {
+                                                    String tag = "android:switcher:" + R.id.images_horizontal + ":" + i;
+                                                    Fragment frag = fm.findFragmentByTag(tag);
+                                                    if (frag instanceof Gif) {
+                                                        ((Gif)frag).setPlaybackActive(i == adjustedPosition);
+                                                    }
                                                 }
                                             }
                                         }
@@ -393,24 +379,18 @@ public class AlbumPager extends BaseSaveActivity {
                 if (i == 0) {
                     return new BlankFragment();
                 }
-
                 i--;
             }
-
             Image current = images.get(i);
-
             Fragment f;
-
             if (current.isAnimated()) {
                 f = new Gif();
             } else {
                 f = new ImageFullNoSubmission();
             }
-
             Bundle args = new Bundle();
             args.putInt("page", i);
             f.setArguments(args);
-
             return f;
         }
 
@@ -434,32 +414,41 @@ public class AlbumPager extends BaseSaveActivity {
         ProgressBar loader;
 
         // Static tracking of which fragment is currently playing
-        private static int currentlyPlayingPosition = -1;
+        // Use package-private for access from AlbumPager
+        static int currentlyPlayingPosition = -1;
+
+        public void setPlaybackActive(boolean active) {
+            if (gif != null && gif instanceof ExoVideoView) {
+                if (active) {
+                    ((ExoVideoView) gif).play();
+                    gif.setVisibility(View.VISIBLE);
+                } else {
+                    ((ExoVideoView) gif).stop(); // Stop and release resources
+                    gif.setVisibility(View.GONE);
+                }
+            }
+        }
 
         @Override
         public void setUserVisibleHint(boolean isVisibleToUser) {
             super.setUserVisibleHint(isVisibleToUser);
+            // No-op: playback is now controlled by onPageSelected
+        }
 
-            // If fragment is becoming visible
-            if (isVisibleToUser) {
-                // Record this position as the currently playing fragment
-                currentlyPlayingPosition = i;
-                LogUtil.v("Gif fragment " + i + " becoming visible, setting as current");
-
-                // Only start playback if view is created
-                if (gif != null && gif instanceof ExoVideoView) {
-                    LogUtil.v("Playing gif at position " + i);
-                    ((ExoVideoView) gif).play();
-                    gif.setVisibility(View.VISIBLE);
-                }
-            } else {
-                // If this fragment is becoming invisible and it's the one that was playing
-                if (currentlyPlayingPosition == i && gif != null && gif instanceof ExoVideoView) {
-                    LogUtil.v("Pausing gif at position " + i);
-                    ((ExoVideoView) gif).pause();
-                    gif.setVisibility(View.GONE);
+        private int getCurrentPagerPosition() {
+            Activity activity = getActivity();
+            if (activity instanceof AlbumPager) {
+                ViewPager pager = activity.findViewById(R.id.images_horizontal);
+                if (pager != null) {
+                    int pos = pager.getCurrentItem();
+                    if (SettingValues.oldSwipeMode && pos > 0) {
+                        return pos - 1;
+                    } else {
+                        return pos;
+                    }
                 }
             }
+            return -1;
         }
 
         @Override
@@ -498,6 +487,16 @@ public class AlbumPager extends BaseSaveActivity {
                 v.attachHqButton(hqButton);
             }
 
+            ImageView speedButton = rootView.findViewById(R.id.speed);
+            if (speedButton != null) {
+                if (((AlbumPager) getActivity()).images.get(i).isAnimated()) {
+                    speedButton.setVisibility(View.VISIBLE);
+                    v.attachSpeedButton(speedButton, getActivity());
+                } else {
+                    speedButton.setVisibility(View.GONE);
+                }
+            }
+
             final String url = ((AlbumPager) getActivity()).images.get(i).getImageUrl();
 
             // Important: Always start with autostart=false
@@ -513,41 +512,6 @@ public class AlbumPager extends BaseSaveActivity {
                             ((AlbumPager) getActivity()).subreddit,
                             getActivity().getIntent().getStringExtra(EXTRA_SUBMISSION_TITLE))
                     .execute(url);
-
-            // Add a delayed check to control playback once the UI is fully set up
-            // This helps overcome timing issues with fragment visibility
-            new Handler().postDelayed(() -> {
-                if (getActivity() != null && !getActivity().isFinishing() && gif != null) {
-                    // Initialize the current playing position if it's not set yet
-                    if (currentlyPlayingPosition == -1 && getActivity() instanceof AlbumPager) {
-                        ViewPager pager = getActivity().findViewById(R.id.images_horizontal);
-                        if (pager != null) {
-                            int currentItem = pager.getCurrentItem();
-                            int adjustedPosition = currentItem;
-                            if (SettingValues.oldSwipeMode && currentItem > 0) {
-                                adjustedPosition = currentItem - 1;
-                            }
-
-                            // This is needed to handle the initial case
-                            if (i == adjustedPosition) {
-                                LogUtil.v("Initial load: setting position " + i + " as current");
-                                currentlyPlayingPosition = i;
-                            }
-                        }
-                    }
-
-                    // Check if this is the current playing position
-                    if (getUserVisibleHint() && (currentlyPlayingPosition == i || currentlyPlayingPosition == -1)) {
-                        LogUtil.v("Playing gif at position " + i + " after delay");
-                        ((ExoVideoView) gif).play();
-                        // Ensure we update the playing position
-                        currentlyPlayingPosition = i;
-                    } else {
-                        LogUtil.v("Not playing gif at position " + i + " after delay");
-                        ((ExoVideoView) gif).pause();
-                    }
-                }
-            }, 500);  // Increased delay to give more time for ViewPager to settle
 
             rootView.findViewById(R.id.more)
                     .setOnClickListener(
@@ -574,6 +538,23 @@ public class AlbumPager extends BaseSaveActivity {
             if (!SettingValues.imageDownloadButton) {
                 rootView.findViewById(R.id.save).setVisibility(View.INVISIBLE);
             }
+
+            // Add comment button logic
+            View comments = rootView.findViewById(R.id.comments);
+            if (comments != null) {
+                if (getActivity().getIntent().hasExtra(MediaView.SUBMISSION_URL)) {
+                    comments.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            getActivity().finish();
+                            SubmissionsView.datachanged(adapterPosition);
+                        }
+                    });
+                } else {
+                    comments.setVisibility(View.GONE);
+                }
+            }
+
             return rootView;
         }
 
@@ -587,8 +568,8 @@ public class AlbumPager extends BaseSaveActivity {
         @Override
         public void onResume() {
             super.onResume();
-            // When fragment resumes, check if it should be playing
-            if (getUserVisibleHint() && currentlyPlayingPosition == i &&
+            // Only play if this fragment is visible and is the current playing position
+            if (getUserVisibleHint() && getCurrentPagerPosition() == i &&
                 gif != null && gif instanceof ExoVideoView) {
                 ((ExoVideoView) gif).play();
             }
@@ -597,7 +578,6 @@ public class AlbumPager extends BaseSaveActivity {
         @Override
         public void onPause() {
             super.onPause();
-            // Always pause when the fragment is paused
             if (gif != null && gif instanceof ExoVideoView) {
                 ((ExoVideoView) gif).pause();
             }
@@ -606,7 +586,6 @@ public class AlbumPager extends BaseSaveActivity {
         @Override
         public void onDestroyView() {
             super.onDestroyView();
-            // Clean up
             if (gif != null && gif instanceof ExoVideoView) {
                 ((ExoVideoView) gif).pause();
             }
@@ -749,30 +728,58 @@ public class AlbumPager extends BaseSaveActivity {
                     loadImage(rootView, this, url, ((AlbumPager) getActivity()).images.size() == 1);
                 }
 
-                {
-                    rootView.findViewById(R.id.more)
-                            .setOnClickListener(
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            ((AlbumPager) getActivity())
-                                                    .showBottomSheetImage(url, false, i);
-                                        }
-                                    });
-                    {
-                        rootView.findViewById(R.id.save)
-                                .setOnClickListener(
-                                        new View.OnClickListener() {
-
-                                            @Override
-                                            public void onClick(View v2) {
-                                                ((AlbumPager) getActivity())
-                                                        .doImageSave(false, url, i);
-                                            }
-                                        });
-                        if (!SettingValues.imageDownloadButton) {
-                            rootView.findViewById(R.id.save).setVisibility(View.INVISIBLE);
-                        }
+                View more = rootView.findViewById(R.id.more);
+                if (more != null) {
+                    more.setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    ((AlbumPager) getActivity())
+                                            .showBottomSheetImage(url, false, i);
+                                }
+                            });
+                }
+                View save = rootView.findViewById(R.id.save);
+                if (save != null) {
+                    save.setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v2) {
+                                    ((AlbumPager) getActivity())
+                                            .doImageSave(false, url, i);
+                                }
+                            });
+                    if (!SettingValues.imageDownloadButton) {
+                        save.setVisibility(View.INVISIBLE);
+                    }
+                }
+                View panel = rootView.findViewById(R.id.panel);
+                if (panel != null) {
+                    panel.setVisibility(View.GONE);
+                }
+                View margin = rootView.findViewById(R.id.margin);
+                if (margin != null) {
+                    margin.setPadding(0, 0, 0, 0);
+                }
+                View hq = rootView.findViewById(R.id.hq);
+                if (hq != null) {
+                    hq.setVisibility(View.GONE);
+                }
+                View comments = rootView.findViewById(R.id.comments);
+                if (getActivity().getIntent().hasExtra(MediaView.SUBMISSION_URL)) {
+                    if (comments != null) {
+                        comments.setOnClickListener(
+                                new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        getActivity().finish();
+                                        SubmissionsView.datachanged(adapterPosition);
+                                    }
+                                });
+                    }
+                } else {
+                    if (comments != null) {
+                        comments.setVisibility(View.GONE);
                     }
                 }
                 {
@@ -842,6 +849,10 @@ public class AlbumPager extends BaseSaveActivity {
                                         }
                                     });
                 }
+                View mute = rootView.findViewById(R.id.mute);
+                if (mute != null) {
+                    mute.setVisibility(View.GONE);
+                }
                 if (lq) {
                     rootView.findViewById(R.id.hq)
                             .setOnClickListener(
@@ -859,20 +870,6 @@ public class AlbumPager extends BaseSaveActivity {
                                     });
                 } else {
                     rootView.findViewById(R.id.hq).setVisibility(View.GONE);
-                }
-
-                if (getActivity().getIntent().hasExtra(MediaView.SUBMISSION_URL)) {
-                    rootView.findViewById(R.id.comments)
-                            .setOnClickListener(
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            getActivity().finish();
-                                            SubmissionsView.datachanged(adapterPosition);
-                                        }
-                                    });
-                } else {
-                    rootView.findViewById(R.id.comments).setVisibility(View.GONE);
                 }
             }
             return rootView;
@@ -918,7 +915,7 @@ public class AlbumPager extends BaseSaveActivity {
                         }
 
                         size.setVisibility(View.GONE);
-                        image.setImage(ImageSource.bitmap(loadedImage));
+                        image.loader.setImage(ImageSource.bitmap(loadedImage));
                         rootView.findViewById(R.id.progress).setVisibility(View.GONE);
                     }
                 });

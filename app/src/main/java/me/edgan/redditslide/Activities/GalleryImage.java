@@ -19,6 +19,14 @@ public class GalleryImage implements Serializable {
     public MediaMetadata metadata;
 
     public GalleryImage(JsonNode data) {
+        // Add metadata population
+        this.metadata = new MediaMetadata();
+
+        if (data == null || data.isNull()) {
+            Log.e(TAG, "GalleryImage constructor called with null or JsonNull data. Initializing as empty.");
+            return;
+        }
+
         Log.d(TAG, "GalleryImage constructor called with data: " + data.toString());
         if (data.has("media_id")) {
             mediaId = data.get("media_id").asText();
@@ -42,8 +50,7 @@ public class GalleryImage implements Serializable {
             height = sNode.get("y").asInt();
         }
 
-        // Add metadata population
-        metadata = new MediaMetadata();
+
         if (data.has("e")) {
             metadata.e = data.get("e").asText();
         }

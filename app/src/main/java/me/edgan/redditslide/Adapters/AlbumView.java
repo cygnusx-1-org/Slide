@@ -242,6 +242,10 @@ public class AlbumView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             holder.saveButton.setVisibility(View.GONE);
             holder.moreButton.setVisibility(View.GONE);
+            View commentsButton = holder.rootView.findViewById(R.id.comments);
+            if (commentsButton != null) {
+                commentsButton.setVisibility(View.GONE);
+            }
             holder.muteButton.setVisibility(View.GONE);
             holder.hqButton.setVisibility(View.GONE);
 
