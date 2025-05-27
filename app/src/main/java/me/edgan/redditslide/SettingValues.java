@@ -431,7 +431,7 @@ public class SettingValues {
         if (prefs.contains(PREF_SMALL_TAG) && (prefs.getAll().get(PREF_SMALL_TAG) instanceof Boolean)) {
             prefs.edit().remove(PREF_SMALL_TAG).apply();
         }
-        smallTag = prefs.getInt(PREF_SMALL_TAG, 1);
+        smallTag = prefs.getInt(PREF_SMALL_TAG, 0);
         swap = prefs.getBoolean(PREF_SWAP, false);
         hideSelftextLeadImage = prefs.getBoolean(PREF_SELFTEXT_IMAGE_COMMENT, false);
         image = prefs.getBoolean(PREF_IMAGE, true);
