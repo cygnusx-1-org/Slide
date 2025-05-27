@@ -599,9 +599,9 @@ public class EditCardsLayout extends BaseActivityAnim {
                                                         SettingValues.smallTag = 0;
                                                         SettingValues.prefs
                                                                 .edit()
-                                                                .putBoolean(
+                                                                .putInt(
                                                                         SettingValues.PREF_SMALL_TAG,
-                                                                        false)
+                                                                        0)
                                                                 .apply();
                                                         ((TextView) findViewById(R.id.small_tag_current))
                                                                 .setText(R.string.small_tag_disabled);
