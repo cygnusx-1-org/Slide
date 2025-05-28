@@ -88,7 +88,7 @@ import me.edgan.redditslide.util.GifDrawable;
 import androidx.annotation.NonNull;
 
 /** Created by ccrama on 3/5/2015. */
-public class MediaView extends BaseSaveActivity {
+public class MediaView extends BaseSaveActivity implements ExoVideoView.OnSingleTapListener {
     public static final String EXTRA_URL = "url";
     public static final String SUBREDDIT = "sub";
     public static final String ADAPTER_POSITION = "adapter_position";
@@ -437,21 +437,7 @@ public class MediaView extends BaseSaveActivity {
                                 }
                             }
                         });
-        findViewById(R.id.submission_image)
-                .setOnClickListener(
-                        new View.OnClickListener() {
-
-                            @Override
-                            public void onClick(View v2) {
-                                if (findViewById(R.id.gifheader).getVisibility() == View.GONE) {
-                                    AnimatorUtil.animateIn(findViewById(R.id.gifheader), 56);
-                                    AnimatorUtil.fadeOut(findViewById(R.id.black));
-                                    getWindow().getDecorView().setSystemUiVisibility(0);
-                                } else {
-                                    finish();
-                                }
-                            }
-                        });
+        // Removed findViewById(R.id.submission_image).setOnClickListener(...) as ExoVideoView's OnSingleTapListener will handle it
     }
 
     @Override
@@ -706,18 +692,8 @@ public class MediaView extends BaseSaveActivity {
             if (directGifViewer != null) directGifViewer.setVisibility(View.GONE); // Hide our direct ImageViewer
             videoView = (ExoVideoView) findViewById(R.id.gif);
             videoView.setVisibility(View.VISIBLE); // Ensure ExoVideoView is visible
+            videoView.setOnSingleTapListener(this); // Set the single tap listener
 
-            findViewById(R.id.black)
-                    .setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    if (findViewById(R.id.gifheader).getVisibility() == View.GONE) {
-                                        AnimatorUtil.animateIn(findViewById(R.id.gifheader), 56);
-                                        AnimatorUtil.fadeOut(findViewById(R.id.black));
-                                    }
-                                }
-                            });
             videoView.clearFocus();
             findViewById(R.id.gifarea).setVisibility(View.VISIBLE);
             findViewById(R.id.submission_image).setVisibility(View.GONE);
@@ -748,46 +724,6 @@ public class MediaView extends BaseSaveActivity {
             this.gif.execute(gifUrl); // Use the formatted gifUrl
         }
 
-        // Common setup for both paths (direct GIF or ExoVideoView GIF)
-        videoView = (ExoVideoView) findViewById(R.id.gif);
-        findViewById(R.id.black)
-                .setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (findViewById(R.id.gifheader).getVisibility() == View.GONE) {
-                                    AnimatorUtil.animateIn(findViewById(R.id.gifheader), 56);
-                                    AnimatorUtil.fadeOut(findViewById(R.id.black));
-                                }
-                            }
-                        });
-        videoView.clearFocus();
-        findViewById(R.id.gifarea).setVisibility(View.VISIBLE);
-        findViewById(R.id.submission_image).setVisibility(View.GONE);
-        final ProgressBar loader = (ProgressBar) findViewById(R.id.gifprogress);
-        findViewById(R.id.progress).setVisibility(View.GONE);
-        gif =
-                new GifUtils.AsyncLoadGif(
-                        this,
-                        videoView,
-                        loader,
-                        findViewById(R.id.placeholder),
-                        true,
-                        true,
-                        ((TextView) findViewById(R.id.size)),
-                        subreddit,
-                        submissionTitle);
-        videoView.attachMuteButton((ImageView) findViewById(R.id.mute));
-        videoView.attachHqButton((ImageView) findViewById(R.id.hq));
-        gif.execute(dat);
-        findViewById(R.id.more)
-                .setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                showBottomSheetImage();
-                            }
-                        });
     }
 
     public void doLoadImgur(String url) {
@@ -1306,6 +1242,25 @@ public class MediaView extends BaseSaveActivity {
 
     private void showErrorDialog() {
         runOnUiThread(() -> DialogUtil.showErrorDialog(MediaView.this));
+    }
+
+    @Override
+    public void onSingleTap() {
+        // This is the logic to toggle gifheader visibility
+        View gifHeader = findViewById(R.id.gifheader);
+        View blackOverlay = findViewById(R.id.black);
+
+        if (gifHeader != null && blackOverlay != null) {
+            if (gifHeader.getVisibility() == View.GONE) {
+                AnimatorUtil.animateIn(gifHeader, 56);
+                AnimatorUtil.fadeOut(blackOverlay);
+                getWindow().getDecorView().setSystemUiVisibility(0);
+            } else {
+                AnimatorUtil.animateOut(gifHeader);
+                AnimatorUtil.fadeIn(blackOverlay);
+                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+            }
+        }
     }
 
     @Override
