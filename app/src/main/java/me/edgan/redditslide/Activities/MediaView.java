@@ -749,6 +749,38 @@ public class MediaView extends BaseSaveActivity {
         }
 
         // Common setup for both paths (direct GIF or ExoVideoView GIF)
+        videoView = (ExoVideoView) findViewById(R.id.gif);
+        findViewById(R.id.black)
+                .setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (findViewById(R.id.gifheader).getVisibility() == View.GONE) {
+                                    AnimatorUtil.animateIn(findViewById(R.id.gifheader), 56);
+                                    View blackOverlay = findViewById(R.id.black);
+                                    AnimatorUtil.fadeOut(blackOverlay, () -> blackOverlay.setVisibility(View.GONE));
+                                }
+                            }
+                        });
+        videoView.clearFocus();
+        findViewById(R.id.gifarea).setVisibility(View.VISIBLE);
+        findViewById(R.id.submission_image).setVisibility(View.GONE);
+        final ProgressBar loader = (ProgressBar) findViewById(R.id.gifprogress);
+        findViewById(R.id.progress).setVisibility(View.GONE);
+        gif =
+                new GifUtils.AsyncLoadGif(
+                        this,
+                        videoView,
+                        loader,
+                        findViewById(R.id.placeholder),
+                        true,
+                        true,
+                        ((TextView) findViewById(R.id.size)),
+                        subreddit,
+                        submissionTitle);
+        videoView.attachMuteButton((ImageView) findViewById(R.id.mute));
+        videoView.attachHqButton((ImageView) findViewById(R.id.hq));
+        gif.execute(dat);
         findViewById(R.id.more)
                 .setOnClickListener(
                         new View.OnClickListener() {
