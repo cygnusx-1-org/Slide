@@ -757,8 +757,7 @@ public class MediaView extends BaseSaveActivity {
                             public void onClick(View v) {
                                 if (findViewById(R.id.gifheader).getVisibility() == View.GONE) {
                                     AnimatorUtil.animateIn(findViewById(R.id.gifheader), 56);
-                                    View blackOverlay = findViewById(R.id.black);
-                                    AnimatorUtil.fadeOut(blackOverlay, () -> blackOverlay.setVisibility(View.GONE));
+                                    AnimatorUtil.fadeOut(findViewById(R.id.black));
                                 }
                             }
                         });

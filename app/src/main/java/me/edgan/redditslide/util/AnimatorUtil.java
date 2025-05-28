@@ -71,24 +71,11 @@ public class AnimatorUtil {
     }
 
     public static void fadeOut(final View view) {
-        fadeOut(view, () -> view.setVisibility(View.GONE));
-    }
-
-    public static void fadeOut(final View view, final Runnable onEndAction) {
-        final ValueAnimator mAnimator = fadeAnimator(1, 0f, view); // Fade to fully transparent
-        mAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                if (onEndAction != null) {
-                    onEndAction.run();
-                }
-            }
-        });
+        final ValueAnimator mAnimator = fadeAnimator(1, .66f, view);
         mAnimator.start();
     }
 
     public static ValueAnimator fadeAnimator(final float start, final float end, final View view) {
-        view.setVisibility(View.VISIBLE); // Ensure view is visible before fading
         final ValueAnimator animator = ValueAnimator.ofFloat(start, end);
         animator.setInterpolator(new FastOutSlowInInterpolator());
         // Update height

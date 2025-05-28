@@ -334,29 +334,26 @@ public class ExoVideoView extends RelativeLayout {
             }
         };
 
-        if (videoFrame != null) {
-            videoFrame.setClickable(true);
-            videoFrame.setOnClickListener((v) -> {
-                // Ensure playerUI, player, and handler are not null
-                if (playerUI == null || player == null || handler == null) return;
+        setOnClickListener((v) -> {
+            // Ensure playerUI, player, and handler are not null
+            if (playerUI == null || player == null || handler == null) return;
 
-                // Always remove pending runnable when screen is tapped
-                handler.removeCallbacks(hideControlsRunnable);
+            // Always remove pending runnable when screen is tapped
+            handler.removeCallbacks(hideControlsRunnable);
 
-                if (playerUI.isVisible()) {
-                    // If visible, just hide.
-                    playerUI.hide();
-                } else {
-                    // If hidden, show and decide whether to schedule auto-hide.
-                    playerUI.show();
-                    boolean isPlaying = player.getPlayWhenReady();
-                    if (isPlaying) {
-                        // If playing, schedule the hide runnable.
-                        handler.postDelayed(hideControlsRunnable, 2000);
-                    }
+            if (playerUI.isVisible()) {
+                // If visible, just hide.
+                playerUI.hide();
+            } else {
+                // If hidden, show and decide whether to schedule auto-hide.
+                playerUI.show();
+                boolean isPlaying = player.getPlayWhenReady();
+                if (isPlaying) {
+                    // If playing, schedule the hide runnable.
+                    handler.postDelayed(hideControlsRunnable, 2000);
                 }
-            });
-        }
+            }
+        });
     }
 
     /**
