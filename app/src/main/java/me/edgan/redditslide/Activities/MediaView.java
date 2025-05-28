@@ -1247,7 +1247,7 @@ public class MediaView extends BaseSaveActivity implements ExoVideoView.OnSingle
     }
 
     @Override
-    public void onSingleTap(MotionEvent event) {
+    public boolean onSingleTap(MotionEvent event) {
         // Get screen height and the Y-coordinate of the tap
         int screenHeight = getResources().getDisplayMetrics().heightPixels;
         float tapY = event.getRawY(); // Use getRawY for screen coordinates
@@ -1284,8 +1284,10 @@ public class MediaView extends BaseSaveActivity implements ExoVideoView.OnSingle
                     AnimatorUtil.fadeIn(blackOverlay);
                     getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
                 }
+                return true; // Indicate that the event was handled
             }
         }
+        return false; // Indicate that the event was not handled
     }
 
     @Override
