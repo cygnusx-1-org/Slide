@@ -205,7 +205,7 @@ public class CreateCardView {
 
     public static View setSmallTag(int value, ViewGroup parent) {
 
-        SettingValues.prefs.edit().putInt(SettingValues.PREF_SMALL_TAG, value).apply();
+        SettingValues.prefs.edit().putInt(SettingValues.PREF_SMALL_TAG_DROPDOWN, value).apply();
         SettingValues.smallTag = value;
         return CreateView(parent);
     }

@@ -45,7 +45,7 @@ public class SettingValues {
     public static final String PREF_EXPANDED_TOOLBAR = "expandedToolbar";
     public static final String PREF_SWAP = "Swap";
     public static final String PREF_ACTIONBAR_VISIBLE = "actionbarVisible";
-    public static final String PREF_SMALL_TAG = "smallTag";
+    public static final String PREF_SMALL_TAG_DROPDOWN = "smallTagDropdown";
     public static final String PREF_ACTIONBAR_TAP = "actionbarTap";
     public static final String PREF_STORE_HISTORY = "storehistory";
     public static final String PREF_STORE_NSFW_HISTORY = "storensfw";
@@ -428,10 +428,11 @@ public class SettingValues {
 
         commentPager = prefs.getBoolean(PREF_COMMENT_PAGER, false);
         // Remove the old boolean preference for smallTag to prevent ClassCastException
-        if (prefs.contains(PREF_SMALL_TAG) && (prefs.getAll().get(PREF_SMALL_TAG) instanceof Boolean)) {
-            prefs.edit().remove(PREF_SMALL_TAG).apply();
+        // Remove the old boolean preference for smallTag to prevent ClassCastException
+        if (prefs.contains("smallTag") && (prefs.getAll().get("smallTag") instanceof Boolean)) {
+            prefs.edit().remove("smallTag").apply();
         }
-        smallTag = prefs.getInt(PREF_SMALL_TAG, 0);
+        smallTag = prefs.getInt(PREF_SMALL_TAG_DROPDOWN, 0);
         swap = prefs.getBoolean(PREF_SWAP, false);
         hideSelftextLeadImage = prefs.getBoolean(PREF_SELFTEXT_IMAGE_COMMENT, false);
         image = prefs.getBoolean(PREF_IMAGE, true);

@@ -600,7 +600,7 @@ public class EditCardsLayout extends BaseActivityAnim {
                                                         SettingValues.prefs
                                                                 .edit()
                                                                 .putInt(
-                                                                        SettingValues.PREF_SMALL_TAG,
+                                                                        SettingValues.PREF_SMALL_TAG_DROPDOWN,
                                                                         0)
                                                                 .apply();
                                                         ((TextView) findViewById(R.id.small_tag_current))
@@ -616,7 +616,7 @@ public class EditCardsLayout extends BaseActivityAnim {
                                                                 .edit()
                                                                 .putInt(
                                                                         SettingValues
-                                                                                .PREF_SMALL_TAG,
+                                                                                .PREF_SMALL_TAG_DROPDOWN,
                                                                         1)
                                                                 .apply();
                                                         layout.removeAllViews();
@@ -630,7 +630,7 @@ public class EditCardsLayout extends BaseActivityAnim {
                                                                 .edit()
                                                                 .putInt(
                                                                         SettingValues
-                                                                                .PREF_SMALL_TAG,
+                                                                                .PREF_SMALL_TAG_DROPDOWN,
                                                                         2)
                                                                 .apply();
                                                         layout.removeAllViews();
