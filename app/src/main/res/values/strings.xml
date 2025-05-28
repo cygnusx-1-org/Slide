@@ -1087,6 +1087,9 @@
     <string name="mode_cropped">Cropped big picture</string>
     <string name="mode_bigpic">Big picture</string>
     <string name="press_actionbar">Press arrow to show actionbar</string>
+    <string name="show_top_right">Show top right</string>
+    <string name="show_bottom_right">Show bottom right</string>
+    <string name="small_tag_disabled">Disabled</string>
     <string name="tap_actionbar">Long press for actionbar</string>
     <string name="always_actionbar">Always show actionbar</string>
     <string name="sub_content_filter">Subreddit content filter</string>

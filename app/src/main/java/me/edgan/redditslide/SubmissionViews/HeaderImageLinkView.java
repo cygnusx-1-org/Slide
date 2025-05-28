@@ -231,7 +231,7 @@ public class HeaderImageLinkView extends RelativeLayout {
 
             setupTitleAndBottomSheet(submission, full, forceThumb, type);
 
-            if (SettingValues.smallTag && !full && !news) {
+            if (SettingValues.smallTag != 0 && !full && !news) {
                 title = findViewById(R.id.tag);
                 findViewById(R.id.tag).setVisibility(View.VISIBLE);
                 info = null;
@@ -241,7 +241,7 @@ public class HeaderImageLinkView extends RelativeLayout {
                 info.setVisibility(View.VISIBLE);
             }
 
-            if (SettingValues.smallTag && !full && !news) {
+            if (SettingValues.smallTag != 0 && !full && !news) {
                 ((TransparentTagTextView) title).init(getContext());
             }
 

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/disabled"
+        android:title="@string/disabled" />
+    <item
+        android:id="@+id/show_top_right"
+        android:title="@string/show_top_right" />
+    <item
+        android:id="@+id/show_bottom_right"
+        android:title="@string/show_bottom_right" />
+</menu>
