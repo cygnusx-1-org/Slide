@@ -108,12 +108,12 @@ public class PopulateSubmissionViewHolder {
             } else {
                 final int getTintColor =
                         holder.itemView.getTag(holder.itemView.getId()) != null
-                                                && holder.itemView
-                                                        .getTag(holder.itemView.getId())
-                                                        .equals("none")
-                                        || full
-                                ? Palette.getCurrentTintColor(mContext)
-                                : Palette.getWhiteTintColor();
+                                        && holder.itemView
+                                                .getTag(holder.itemView.getId())
+                                                .equals("none")
+                                || full
+                        ? Palette.getCurrentTintColor(mContext)
+                        : Palette.getWhiteTintColor();
                 BlendModeUtil.tintImageViewAsSrcAtop((ImageView) holder.mod, getTintColor);
             }
             holder.mod.setOnClickListener(
@@ -450,7 +450,8 @@ public class PopulateSubmissionViewHolder {
                             .toString()
                             .replace("<sup>", "<sup><small>")
                             .replace("</sup>", "</small></sup>"),
-                    "none ");
+                    "none ",
+                    submission);
             holder.body.setOnClickListener(
                     new View.OnClickListener() {
                         @Override
@@ -486,7 +487,8 @@ public class PopulateSubmissionViewHolder {
                         submission.getSubredditName() == null
                                 ? "all"
                                 : submission.getSubredditName(),
-                        holder);
+                        holder,
+                        submission);
                 holder.itemView.findViewById(R.id.body_area).setVisibility(View.VISIBLE);
             } else {
                 holder.itemView.findViewById(R.id.body_area).setVisibility(View.GONE);
@@ -1412,7 +1414,7 @@ public class PopulateSubmissionViewHolder {
         }
     }
 
-    private void setViews(String rawHTML, String subredditName, SubmissionViewHolder holder) {
+    private void setViews(String rawHTML, String subredditName, SubmissionViewHolder holder, Submission submission) {
         if (rawHTML.isEmpty()) {
             return;
         }
@@ -1421,7 +1423,7 @@ public class PopulateSubmissionViewHolder {
 
         int startIndex = 0;
         if (!blocks.get(0).startsWith("<table>") && !blocks.get(0).startsWith("<pre>")) {
-            holder.firstTextView.setTextHtml(blocks.get(0), subredditName);
+            holder.firstTextView.setTextHtml(blocks.get(0), subredditName, submission);
             startIndex = 1;
         }
 
