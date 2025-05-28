@@ -439,7 +439,6 @@ public class MediaView extends BaseSaveActivity implements ExoVideoView.OnSingle
                                 }
                             }
                         });
-        // Removed findViewById(R.id.submission_image).setOnClickListener(...) as ExoVideoView's OnSingleTapListener will handle it
     }
 
     @Override
@@ -1248,30 +1247,21 @@ public class MediaView extends BaseSaveActivity implements ExoVideoView.OnSingle
 
     @Override
     public boolean onSingleTap(MotionEvent event) {
-        // Get screen height and the Y-coordinate of the tap
         int screenHeight = getResources().getDisplayMetrics().heightPixels;
-        float tapY = event.getRawY(); // Use getRawY for screen coordinates
+        float tapY = event.getRawY();
 
-        // Get the bottom controls (gifheader) view
         View gifHeader = findViewById(R.id.gifheader);
 
-        // Determine the threshold for the bottom portion.
-        // A reasonable threshold could be the top of the gifheader, or a fixed percentage of the screen height.
-        // Let's try using the top of the gifheader if it's visible, otherwise a fixed percentage (e.g., bottom 25%).
         int thresholdY;
         if (gifHeader != null && gifHeader.getVisibility() == View.VISIBLE) {
-            // If controls are visible, use their top as the threshold
             int[] location = new int[2];
             gifHeader.getLocationOnScreen(location);
-            thresholdY = location[1]; // Y-coordinate of the top of gifHeader
+            thresholdY = location[1];
         } else {
-            // If controls are hidden, use a fixed percentage from the bottom
-            thresholdY = (int) (screenHeight * 0.75); // Example: bottom 25% of the screen
+            thresholdY = (int) (screenHeight * 0.75);
         }
 
-        // Only toggle if the tap occurred in the bottom region
         if (tapY >= thresholdY) {
-            // Existing toggle logic
             View blackOverlay = findViewById(R.id.black);
 
             if (gifHeader != null && blackOverlay != null) {
@@ -1284,10 +1274,10 @@ public class MediaView extends BaseSaveActivity implements ExoVideoView.OnSingle
                     AnimatorUtil.fadeIn(blackOverlay);
                     getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
                 }
-                return true; // Indicate that the event was handled
+                return true;
             }
         }
-        return false; // Indicate that the event was not handled
+        return false;
     }
 
     @Override

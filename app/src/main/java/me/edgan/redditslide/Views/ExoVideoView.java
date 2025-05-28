@@ -878,12 +878,11 @@ public class ExoVideoView extends RelativeLayout {
             }
         } // end if (scaleFactor > 1.0f && !scalingInProgress)
 
-        // Detect single tap and notify listener
         if (action == MotionEvent.ACTION_UP && !wasScaling && !wasDragging && !scalingInProgress) {
             if (singleTapListener != null) {
                 boolean handled = singleTapListener.onSingleTap(event);
                 if (handled) {
-                    return true; // Consume the event if it was handled
+                    return true;
                 }
             }
         }
