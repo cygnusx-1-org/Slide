@@ -26,6 +26,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.view.MotionEvent;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
@@ -1245,20 +1247,43 @@ public class MediaView extends BaseSaveActivity implements ExoVideoView.OnSingle
     }
 
     @Override
-    public void onSingleTap() {
-        // This is the logic to toggle gifheader visibility
-        View gifHeader = findViewById(R.id.gifheader);
-        View blackOverlay = findViewById(R.id.black);
+    public void onSingleTap(MotionEvent event) {
+        // Get screen height and the Y-coordinate of the tap
+        int screenHeight = getResources().getDisplayMetrics().heightPixels;
+        float tapY = event.getRawY(); // Use getRawY for screen coordinates
 
-        if (gifHeader != null && blackOverlay != null) {
-            if (gifHeader.getVisibility() == View.GONE) {
-                AnimatorUtil.animateIn(gifHeader, 56);
-                AnimatorUtil.fadeOut(blackOverlay);
-                getWindow().getDecorView().setSystemUiVisibility(0);
-            } else {
-                AnimatorUtil.animateOut(gifHeader);
-                AnimatorUtil.fadeIn(blackOverlay);
-                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+        // Get the bottom controls (gifheader) view
+        View gifHeader = findViewById(R.id.gifheader);
+
+        // Determine the threshold for the bottom portion.
+        // A reasonable threshold could be the top of the gifheader, or a fixed percentage of the screen height.
+        // Let's try using the top of the gifheader if it's visible, otherwise a fixed percentage (e.g., bottom 25%).
+        int thresholdY;
+        if (gifHeader != null && gifHeader.getVisibility() == View.VISIBLE) {
+            // If controls are visible, use their top as the threshold
+            int[] location = new int[2];
+            gifHeader.getLocationOnScreen(location);
+            thresholdY = location[1]; // Y-coordinate of the top of gifHeader
+        } else {
+            // If controls are hidden, use a fixed percentage from the bottom
+            thresholdY = (int) (screenHeight * 0.75); // Example: bottom 25% of the screen
+        }
+
+        // Only toggle if the tap occurred in the bottom region
+        if (tapY >= thresholdY) {
+            // Existing toggle logic
+            View blackOverlay = findViewById(R.id.black);
+
+            if (gifHeader != null && blackOverlay != null) {
+                if (gifHeader.getVisibility() == View.GONE) {
+                    AnimatorUtil.animateIn(gifHeader, 56);
+                    AnimatorUtil.fadeOut(blackOverlay);
+                    getWindow().getDecorView().setSystemUiVisibility(0);
+                } else {
+                    AnimatorUtil.animateOut(gifHeader);
+                    AnimatorUtil.fadeIn(blackOverlay);
+                    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+                }
             }
         }
     }

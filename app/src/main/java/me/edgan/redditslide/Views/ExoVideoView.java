@@ -58,7 +58,7 @@ public class ExoVideoView extends RelativeLayout {
     private static final String TAG = "ExoVideoView";
 
     public interface OnSingleTapListener {
-        void onSingleTap();
+        void onSingleTap(MotionEvent event);
     }
     private OnSingleTapListener singleTapListener;
 
@@ -881,7 +881,7 @@ public class ExoVideoView extends RelativeLayout {
         // Detect single tap and notify listener
         if (action == MotionEvent.ACTION_UP && !wasScaling && !wasDragging && !scalingInProgress) {
             if (singleTapListener != null) {
-                singleTapListener.onSingleTap();
+                singleTapListener.onSingleTap(event);
             }
         }
 
