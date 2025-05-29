@@ -1,5 +1,6 @@
 app:
   name: Slide
   description: Slide is an open-source, ad-free Reddit browser for Android. It is based around the Java Reddit API Wrapper.
+  icon: https://raw.githubusercontent.com/cygnusx-1-org/Slide/refs/heads/master/app/src/main/ic_launcher-web.png
   releases:
     url: https://github.com/cygnusx-1-org/Slide/releases
