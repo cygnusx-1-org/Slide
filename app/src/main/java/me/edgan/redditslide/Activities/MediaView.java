@@ -685,6 +685,28 @@ public class MediaView extends BaseSaveActivity implements ExoVideoView.OnSingle
                             activeGifDrawable.start();
                             didLoadGif = true; // Mark that a GIF was successfully loaded this way
                             fileLoc = gifFile.getAbsolutePath(); // Potentially for cleanup, though this might need review
+
+                            // Add OnClickListener for directGifViewer (direct GIFs)
+                            directGifViewer.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    // Simulate a tap in the bottom quarter of the screen to ensure it passes the thresholdY check
+                                    int screenHeight = getResources().getDisplayMetrics().heightPixels;
+                                    float simulatedTapY = screenHeight * 0.8f; // 80% down the screen
+
+                                    MotionEvent motionEvent = MotionEvent.obtain(
+                                            SystemClock.uptimeMillis(),
+                                            SystemClock.uptimeMillis() + 100,
+                                            MotionEvent.ACTION_UP,
+                                            0,
+                                            simulatedTapY,
+                                            0
+                                    );
+                                    onSingleTap(motionEvent);
+                                    motionEvent.recycle();
+                                }
+                            });
+
                         } else {
                             Log.e(TAG, "Failed to decode direct GIF: " + gifUrl);
                             Toast.makeText(MediaView.this, "Failed to load GIF.", Toast.LENGTH_SHORT).show();
