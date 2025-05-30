@@ -686,13 +686,11 @@ public class MediaView extends BaseSaveActivity implements ExoVideoView.OnSingle
                             didLoadGif = true; // Mark that a GIF was successfully loaded this way
                             fileLoc = gifFile.getAbsolutePath(); // Potentially for cleanup, though this might need review
 
-                            // Add OnClickListener for directGifViewer (direct GIFs)
                             directGifViewer.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    // Simulate a tap in the bottom quarter of the screen to ensure it passes the thresholdY check
                                     int screenHeight = getResources().getDisplayMetrics().heightPixels;
-                                    float simulatedTapY = screenHeight * 0.8f; // 80% down the screen
+                                    float simulatedTapY = screenHeight * 0.8f;
 
                                     MotionEvent motionEvent = MotionEvent.obtain(
                                             SystemClock.uptimeMillis(),
