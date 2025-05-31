@@ -193,7 +193,7 @@ public class MediaView extends BaseSaveActivity implements ExoVideoView.OnSingle
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
-            b.sheet(6, file, getString(R.string.mediaview_save, type));
+
         }
         if (contentUrl.contains("v.redd.it")) {
             b.sheet(15, thread, "View video thread");
