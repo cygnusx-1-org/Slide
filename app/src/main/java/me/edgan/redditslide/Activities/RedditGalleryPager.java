@@ -371,7 +371,7 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
         if (!isGif) {
             bottomSheetBuilder.sheet(3, image, getString(R.string.share_image));
         }
-        bottomSheetBuilder.sheet(4, save, getString(R.string.submission_save_image));
+        bottomSheetBuilder.sheet(4, save, getString(isGif ? R.string.submission_save_mp4 : R.string.submission_save_image));
 
         bottomSheetBuilder.listener(
                 (dialog, which) -> {
