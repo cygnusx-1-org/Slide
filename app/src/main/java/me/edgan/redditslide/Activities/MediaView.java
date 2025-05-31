@@ -176,7 +176,7 @@ public class MediaView extends BaseSaveActivity implements ExoVideoView.OnSingle
         b.sheet(5, share, getString(R.string.submission_link_share));
 
         if (!isGif) b.sheet(3, image, getString(R.string.share_image));
-        b.sheet(4, save, "Save " + (isGif ? "MP4" : "image"));
+        b.sheet(4, save, getString(isGif ? R.string.submission_save_mp4 : R.string.submission_save_image));
         Drawable folder = getResources().getDrawable(R.drawable.ic_folder);
         if (isGif
                 && !contentUrl.contains(".mp4")
