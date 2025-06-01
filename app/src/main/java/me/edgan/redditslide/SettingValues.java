@@ -667,6 +667,10 @@ public class SettingValues {
         return prefs.contains("defaultSort" + subreddit.toLowerCase(Locale.ENGLISH));
     }
 
+    public static boolean hasCommentSort(String subreddit) {
+        return prefs.contains("defaultComment" + subreddit.toLowerCase(Locale.ENGLISH));
+    }
+
     public enum RemovalReasonType {
         SLIDE,
         TOOLBOX,

@@ -2004,12 +2004,16 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
             Submission s = ((CommentsScreen) getActivity()).currentPosts.get(page);
             if (s != null
                     && s.getDataNode().has("suggested_sort")
-                    && !s.getDataNode().get("suggested_sort").asText().equalsIgnoreCase("null")) {
+                    && !s.getDataNode().get("suggested_sort").asText().equalsIgnoreCase("null")
+                    && !SettingValues.hasCommentSort(s.getSubredditName())) {
+                // Only use suggested sort if user hasn't set a custom preference
                 String sorting = s.getDataNode().get("suggested_sort").asText().toUpperCase();
                 sorting = sorting.replace("İ", "I");
                 commentSorting = CommentSort.valueOf(sorting);
+                Log.d("CommentPage", "Using suggested sort: " + commentSorting.name() + " because no custom preference exists");
             } else if (s != null) {
                 commentSorting = SettingValues.getCommentSorting(s.getSubredditName());
+                Log.d("CommentPage", "Using saved comment sort preference: " + commentSorting.name());
             }
             if (load) comments.setSorting(commentSorting);
             if (adapter == null) {
@@ -2025,12 +2029,16 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                         && !s.getDataNode()
                                 .get("suggested_sort")
                                 .asText()
-                                .equalsIgnoreCase("null")) {
+                                .equalsIgnoreCase("null")
+                        && !SettingValues.hasCommentSort(s.getSubredditName())) {
+                    // Only use suggested sort if user hasn't set a custom preference
                     String sorting = s.getDataNode().get("suggested_sort").asText().toUpperCase();
                     sorting = sorting.replace("İ", "I");
                     commentSorting = CommentSort.valueOf(sorting);
+                    Log.d("CommentPage", "Using suggested sort: " + commentSorting.name() + " because no custom preference exists");
                 } else if (s != null) {
                     commentSorting = SettingValues.getCommentSorting(s.getSubredditName());
+                    Log.d("CommentPage", "Using saved comment sort preference: " + commentSorting.name());
                 }
                 if (load) comments.setSorting(commentSorting);
                 if (adapter == null) {
