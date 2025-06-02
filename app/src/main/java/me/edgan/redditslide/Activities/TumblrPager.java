@@ -536,6 +536,14 @@ public class TumblrPager extends BaseSaveActivity {
                                     }
                                 }
                             });
+            View mute = rootView.findViewById(R.id.mute);
+            if (mute != null) {
+                mute.setVisibility(View.GONE);
+            }
+            View hq = rootView.findViewById(R.id.hq);
+            if (hq != null) {
+                hq.setVisibility(View.GONE);
+            }
             return rootView;
         }
 
@@ -760,6 +768,14 @@ public class TumblrPager extends BaseSaveActivity {
                                 });
             } else {
                 rootView.findViewById(R.id.comments).setVisibility(View.GONE);
+            }
+            View mute = rootView.findViewById(R.id.mute);
+            if (mute != null) {
+                mute.setVisibility(View.GONE);
+            }
+            View hq = rootView.findViewById(R.id.hq);
+            if (hq != null) {
+                hq.setVisibility(View.GONE);
             }
             return rootView;
         }
