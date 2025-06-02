@@ -45,7 +45,7 @@ public class SettingValues {
     public static final String PREF_EXPANDED_TOOLBAR = "expandedToolbar";
     public static final String PREF_SWAP = "Swap";
     public static final String PREF_ACTIONBAR_VISIBLE = "actionbarVisible";
-    public static final String PREF_SMALL_TAG = "smallTag";
+    public static final String PREF_SMALL_TAG_DROPDOWN = "smallTagDropdown";
     public static final String PREF_ACTIONBAR_TAP = "actionbarTap";
     public static final String PREF_STORE_HISTORY = "storehistory";
     public static final String PREF_STORE_NSFW_HISTORY = "storensfw";
@@ -205,7 +205,7 @@ public class SettingValues {
     public static boolean commentVolumeNav;
     public static boolean postNav;
     public static boolean cropImage;
-    public static boolean smallTag;
+    public static int smallTag;
     public static boolean typeInfoLine;
     public static boolean votesInfoLine;
     public static boolean readerMode;
@@ -427,7 +427,12 @@ public class SettingValues {
         alphabetizeOnSubscribe = prefs.getBoolean(PREF_ALPHABETIZE_SUBSCRIBE, false);
 
         commentPager = prefs.getBoolean(PREF_COMMENT_PAGER, false);
-        smallTag = prefs.getBoolean(PREF_SMALL_TAG, false);
+        // Remove the old boolean preference for smallTag to prevent ClassCastException
+        // Remove the old boolean preference for smallTag to prevent ClassCastException
+        if (prefs.contains("smallTag") && (prefs.getAll().get("smallTag") instanceof Boolean)) {
+            prefs.edit().remove("smallTag").apply();
+        }
+        smallTag = prefs.getInt(PREF_SMALL_TAG_DROPDOWN, 0);
         swap = prefs.getBoolean(PREF_SWAP, false);
         hideSelftextLeadImage = prefs.getBoolean(PREF_SELFTEXT_IMAGE_COMMENT, false);
         image = prefs.getBoolean(PREF_IMAGE, true);

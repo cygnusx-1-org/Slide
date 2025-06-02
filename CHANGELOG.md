@@ -4,6 +4,13 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.3.3 / 2025-5-30
+============
+* Fixed reddit.com/comments links
+* Added ability to put the small content tag in the top right corner
+* Fixed off-by-one bugs in Reddit Gallery in horizontal and verticals modes
+* Fixed various crashes
+
 7.3.2 / 2025-5-24
 ============
 * Fixed the cascade effect while using oldSwipeMode

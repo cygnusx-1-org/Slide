@@ -120,7 +120,7 @@ public class PostMatch {
             if (SettingValues.subredditFilterPrefixMatching && subreddit.length() >= 6) {
                 String lowerSubreddit = subreddit.toLowerCase();
                 if (SettingValues.subredditFilters.stream()
-                        .anyMatch(filter -> filter.contains(lowerSubreddit))) {
+                        .anyMatch(filter -> lowerSubreddit.startsWith(filter))) {
                     return true;
                 }
             } else {

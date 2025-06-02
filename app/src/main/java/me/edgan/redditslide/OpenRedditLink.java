@@ -450,14 +450,6 @@ public class OpenRedditLink {
             return RedditLinkType.SHORTENED;
         }
 
-        // Handle cases like reddit.com/comments/xxxx as shortened links
-        if (host.equals("reddit.com") && path.matches("(?i)/comments/[^/]+/?")) {
-            boolean isSubmissionOrComment = path.matches("(?i)/(?:r|u(?:ser)?)/[^/]+/comments/.*");
-            if (!isSubmissionOrComment) {
-                return RedditLinkType.SHORTENED;
-            }
-        }
-
         if (path.matches("(?i)/live/[^/]*")) {
             return RedditLinkType.LIVE;
         } else if (path.matches("(?i)/message/compose.*")) {
