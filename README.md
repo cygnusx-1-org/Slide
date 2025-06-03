@@ -25,7 +25,8 @@ Android. It is based around the
 [Java Reddit API Wrapper](https://github.com/mattbdean/JRAW).
 
 Slide is available here on [GitHub](https://github.com/) in
-[releases](https://github.com/edgan/Slide/releases), and [Google Play Store](https://play.google.com/store/apps/details?id=me.edgan.redditslide&hl=en_US).
+[releases](https://github.com/edgan/Slide/releases), and
+[Google Play Store](https://play.google.com/store/apps/details?id=me.edgan.redditslide&hl=en_US).
 
 <hr style="display: inline-block; width: 100%; border: 1px dotted #ff00cc;">
 
@@ -39,10 +40,10 @@ See [SETUP.md](/docs/SETUP.md)
 See [DEBUGGING.md](/docs/DEBUGGING.md)
 
 # Updates
-The easiest way, for now, to get updates is
-[Obtainium](https://github.com/ImranR98/Obtainium).
-[Obtainium](https://github.com/ImranR98/Obtainium) can also be found on
-[F-Droid](https://f-droid.org/).
+The easiest way to get updates, outside the
+[Google Play Store](https://play.google.com/store/apps/details?id=me.edgan.redditslide&hl=en_US),
+is [Discoverium](https://github.com/cygnusx-1-org/Discoverium/). It has a search
+function, and lets you add apps to the list for keeping the apps updated.
 
 # Issues
 In any project it's likely that a few bugs will slip through the cracks, so it
