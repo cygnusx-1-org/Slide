@@ -1,7 +1,6 @@
 package me.edgan.redditslide.util;
 
 import android.content.res.Resources;
-import android.util.DisplayMetrics;
 
 /** Created by TacoTheDank on 03/15/2021. */
 public class DisplayUtil {
