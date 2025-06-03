@@ -62,13 +62,6 @@ public class AnimatorUtil {
     public static void animateIn(final View view, final int dp) {
         view.setVisibility(View.VISIBLE);
         final ValueAnimator mAnimator = slideAnimator(0, DisplayUtil.dpToPxVertical(dp), view);
-        mAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                view.requestLayout();
-                view.invalidate();
-            }
-        });
         mAnimator.start();
     }
 
