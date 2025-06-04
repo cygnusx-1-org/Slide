@@ -57,6 +57,15 @@ import me.edgan.redditslide.util.NetworkUtil;
 public class ExoVideoView extends RelativeLayout {
     private static final String TAG = "ExoVideoView";
 
+    public interface OnSingleTapListener {
+        boolean onSingleTap(MotionEvent event);
+    }
+    private OnSingleTapListener singleTapListener;
+
+    public void setOnSingleTapListener(OnSingleTapListener listener) {
+        this.singleTapListener = listener;
+    }
+
     private Context context;
     private SimpleExoPlayer player;
     private DefaultTrackSelector trackSelector;
@@ -869,6 +878,14 @@ public class ExoVideoView extends RelativeLayout {
             }
         } // end if (scaleFactor > 1.0f && !scalingInProgress)
 
+        if (action == MotionEvent.ACTION_UP && !wasScaling && !wasDragging && !scalingInProgress) {
+            if (singleTapListener != null) {
+                boolean handled = singleTapListener.onSingleTap(event);
+                if (handled) {
+                    return true;
+                }
+            }
+        }
 
         // Determine if the event should be consumed (preventing click)
         // Consume if:
