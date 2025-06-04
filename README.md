@@ -37,17 +37,18 @@ is [Discoverium](https://github.com/cygnusx-1-org/Discoverium/). It has a search
 function, and lets you add apps to the list for keeping the apps updated.
 <p align="left">
     <a href="https://play.google.com/store/apps/details?id=me.edgan.redditslide">
-        <img alt="Get it on Google Play"
-            height="80"
-            src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" />
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="assets/badges/googleplaystore.png" height="68">
+        <img alt="Get it on the Google Play Store" src="assets/badges/googleplaystore.png" height="68">
+      </picture>
     </a>
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="assets/badges/discoverium.png" height="60">
-      <img alt="Get it on Discoverium" src="assets/badges/discoverium.png" height="60">
-    </picture>
-  </a>
-  </a>&nbsp;&nbsp;&nbsp;
-  <a href="https://github.com/cygnusx-1-org/continuum/releases/latest">
+    <a href="https://github.com/cygnusx-1-org/Discoverium/releases/latest">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="assets/badges/discoverium.png" height="60">
+        <img alt="Get it on Discoverium" src="assets/badges/discoverium.png" height="60">
+      </picture>
+    </a>
+  <a href="https://github.com/cygnusx-1-org/Slide/releases/latest">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="assets/badges/github.png" height="60">
       <img alt="Get it on Github" src="assets/badges/github.png" height="60">
