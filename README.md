@@ -30,20 +30,36 @@ Slide is available here on [GitHub](https://github.com/) in
 
 <hr style="display: inline-block; width: 100%; border: 1px dotted #ff00cc;">
 
-# Current project status
-This project is back with this fork, and is being **maintained**.
+# Installation
+The easiest way to install Slide or get updates for Slide, outside the
+[Google Play Store](https://play.google.com/store/apps/details?id=me.edgan.redditslide&hl=en_US),
+is [Discoverium](https://github.com/cygnusx-1-org/Discoverium/). It has a search
+function, and lets you add apps to the list for keeping the apps updated.
+<p align="left">
+    <a href="https://play.google.com/store/apps/details?id=me.edgan.redditslide">
+        <img alt="Get it on Google Play"
+            height="80"
+            src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" />
+    </a>
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="assets/badges/discoverium.png" height="60">
+      <img alt="Get it on Discoverium" src="assets/badges/discoverium.png" height="60">
+    </picture>
+  </a>
+  </a>&nbsp;&nbsp;&nbsp;
+  <a href="https://github.com/cygnusx-1-org/continuum/releases/latest">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="assets/badges/github.png" height="60">
+      <img alt="Get it on Github" src="assets/badges/github.png" height="60">
+    </picture>
+  </a>
+</p>
 
 # Setup
 See [SETUP.md](/docs/SETUP.md)
 
 # Android device debugging via USB
 See [DEBUGGING.md](/docs/DEBUGGING.md)
-
-# Updates
-The easiest way to get updates, outside the
-[Google Play Store](https://play.google.com/store/apps/details?id=me.edgan.redditslide&hl=en_US),
-is [Discoverium](https://github.com/cygnusx-1-org/Discoverium/). It has a search
-function, and lets you add apps to the list for keeping the apps updated.
 
 # Issues
 In any project it's likely that a few bugs will slip through the cracks, so it
