@@ -24,10 +24,6 @@ Slide is an open-source, ad-free [Reddit](https://www.reddit.com) browser for
 Android. It is based around the
 [Java Reddit API Wrapper](https://github.com/mattbdean/JRAW).
 
-Slide is available here on [GitHub](https://github.com/) in
-[releases](https://github.com/edgan/Slide/releases), and
-[Google Play Store](https://play.google.com/store/apps/details?id=me.edgan.redditslide&hl=en_US).
-
 <hr style="display: inline-block; width: 100%; border: 1px dotted #ff00cc;">
 
 # Installation
