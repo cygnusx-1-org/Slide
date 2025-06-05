@@ -36,7 +36,7 @@ public class SelftextFull extends Fragment {
 
         if (!s.getSelftext().isEmpty()) {
 
-            setViews(s.getDataNode().get("selftext_html").asText(), s.getSubredditName(), rootView);
+            setViews(s.getDataNode().get("selftext_html").asText(), s.getSubredditName(), rootView, s);
         }
         rootView.findViewById(R.id.desc)
                 .setOnClickListener(
@@ -70,7 +70,7 @@ public class SelftextFull extends Fragment {
         }
     }
 
-    private void setViews(String rawHTML, String subredditName, View base) {
+    private void setViews(String rawHTML, String subredditName, View base, Submission submission) {
         if (rawHTML.isEmpty()) {
             return;
         }
@@ -80,7 +80,7 @@ public class SelftextFull extends Fragment {
         int startIndex = 0;
         if (!blocks.get(0).startsWith("<table>") && !blocks.get(0).startsWith("<pre>")) {
             ((SpoilerRobotoTextView) base.findViewById(R.id.firstTextView))
-                    .setTextHtml(blocks.get(0), subredditName);
+                    .setTextHtml(blocks.get(0), subredditName, submission);
             startIndex = 1;
         }
 
