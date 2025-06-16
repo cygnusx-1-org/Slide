@@ -280,11 +280,10 @@ public class CreateCardView {
     public static void toggleActionbar(View v) {
         if (!SettingValues.actionbarVisible) {
 
-            ValueAnimator a =
-                    AnimatorUtil.flipAnimatorIfNonNull(
-                            v.findViewById(R.id.upvote).getVisibility() == View.VISIBLE,
-                            v.findViewById(R.id.secondMenu));
+            ValueAnimator a = AnimatorUtil.flipAnimatorIfNonNull(v.findViewById(R.id.upvote).getVisibility() == View.VISIBLE, v.findViewById(R.id.secondMenu));
+
             if (a != null) a.start();
+
             for (View v2 : getViewsByTag((ViewGroup) v, "tintactionbar")) {
                 if (v2.getId() != R.id.mod && v2.getId() != R.id.edit) {
                     if (v2.getId() == R.id.save) {

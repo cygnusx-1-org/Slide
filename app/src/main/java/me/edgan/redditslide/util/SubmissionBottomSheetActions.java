@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -540,7 +541,7 @@ public class SubmissionBottomSheetActions {
                 Snackbar s;
                 try {
                     if (ActionStates.isSaved(submission)) {
-                        BlendModeUtil.tintImageViewAsSrcAtop((ImageView) holder.save, Palette.getCurrentTintColor(mContext));
+                        BlendModeUtil.tintImageViewAsSrcAtop((ImageView) holder.save, ContextCompat.getColor(mContext, R.color.md_amber_500));
                         holder.save.setContentDescription(mContext.getString(R.string.btn_unsave));
                         s = Snackbar.make(holder.itemView, R.string.submission_info_saved, Snackbar.LENGTH_LONG);
                         if (Authentication.me.hasGold()) {
@@ -554,7 +555,7 @@ public class SubmissionBottomSheetActions {
                                     });
                         }
 
-                        AnimatorUtil.setFlashAnimation(holder.itemView, holder.save, Palette.getCurrentTintColor(mContext));
+                        AnimatorUtil.setFlashAnimation(holder.itemView, holder.save, ContextCompat.getColor(mContext, R.color.md_amber_500));
                     } else {
                         s = Snackbar.make(holder.itemView, R.string.submission_info_unsaved, Snackbar.LENGTH_SHORT);
                         final int getTintColor =

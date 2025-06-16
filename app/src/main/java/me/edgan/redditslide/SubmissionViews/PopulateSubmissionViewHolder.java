@@ -284,6 +284,7 @@ public class PopulateSubmissionViewHolder {
         final int SUBMISSION_SCORE = submissionScore;
 
         final ImageView hideButton = (ImageView) holder.hide;
+
         if (hideButton != null) {
             if (SettingValues.hideButton && Authentication.isLoggedIn) {
                 hideButton.setOnClickListener(
@@ -297,11 +298,10 @@ public class PopulateSubmissionViewHolder {
                 hideButton.setVisibility(View.GONE);
             }
         }
+
         if (Authentication.isLoggedIn && Authentication.didOnline) {
             if (ActionStates.isSaved(submission)) {
-                BlendModeUtil.tintImageViewAsSrcAtop(
-                        (ImageView) holder.save,
-                        ContextCompat.getColor(mContext, R.color.md_amber_500));
+                BlendModeUtil.tintImageViewAsSrcAtop((ImageView) holder.save, ContextCompat.getColor(mContext, R.color.md_amber_500));
                 holder.save.setContentDescription(mContext.getString(R.string.btn_unsave));
             } else {
                 final int getTintColor =
@@ -324,9 +324,7 @@ public class PopulateSubmissionViewHolder {
                     });
         }
 
-        if (!SettingValues.saveButton && !full
-                || !Authentication.isLoggedIn
-                || !Authentication.didOnline) {
+        if (!SettingValues.saveButton && !full || !Authentication.isLoggedIn || !Authentication.didOnline) {
             holder.save.setVisibility(View.GONE);
         }
 
