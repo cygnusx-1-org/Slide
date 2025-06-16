@@ -23,8 +23,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
     private final MoreCommentViewHolder holder;
@@ -72,34 +75,53 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
                             new Runnable() {
                                 @Override
                                 public void run() {
-                                    // Ensure dataPos is still valid before removing
-                                    // Also check that the item is indeed a MoreChildItem, as the list might have changed
-                                    if (dataPos < currentComments.size() && currentComments.get(dataPos) instanceof MoreChildItem) {
+                                    // Find the MoreChildItem by fullname instead of relying on dataPos
+                                    // to avoid race conditions when the list is modified during async operation
+                                    int currentDataPos = -1;
+                                    int currentHolderPos = -1;
+
+                                    for (int i = 0; i < currentComments.size(); i++) {
+                                        CommentObject obj = currentComments.get(i);
+                                        if (obj instanceof MoreChildItem) {
+                                            MoreChildItem moreItem = (MoreChildItem) obj;
+                                            if (moreItem.comment.getComment().getFullName().equals(fullname)) {
+                                                currentDataPos = i;
+                                                // Calculate holder position (account for header and spacer)
+                                                currentHolderPos = i + 2;
+                                                // Adjust for hidden items
+                                                for (int j = 0; j < i; j++) {
+                                                    if (adapter.hidden.contains(currentComments.get(j).getName())) {
+                                                        currentHolderPos--;
+                                                    }
+                                                }
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    if (currentDataPos != -1) {
                                         // Remove the "Load More" item
-                                        currentComments.remove(dataPos);
-                                        adapter.notifyItemRemoved(holderPos); // Use adapter instance
+                                        currentComments.remove(currentDataPos);
+                                        adapter.notifyItemRemoved(currentHolderPos);
 
                                         // Add new items at the same position
-                                        currentComments.addAll(dataPos, finalData);
+                                        currentComments.addAll(currentDataPos, finalData);
 
                                         // Update keys for newly added items
                                         for (int i = 0; i < finalData.size(); i++) {
-                                            keys.put(finalData.get(i).getName(), dataPos + i);
+                                            keys.put(finalData.get(i).getName(), currentDataPos + i);
                                         }
 
                                         // Update keys for items that came after the insertion point
-                                        for (int i = dataPos + finalData.size(); i < currentComments.size(); i++) {
+                                        for (int i = currentDataPos + finalData.size(); i < currentComments.size(); i++) {
                                             keys.put(currentComments.get(i).getName(), i);
                                         }
 
-
                                         listView.setItemAnimator(new SlideRightAlphaAnimator());
-                                        adapter.notifyItemRangeInserted(holderPos, itemsToAdd);
+                                        adapter.notifyItemRangeInserted(currentHolderPos, itemsToAdd);
 
                                     } else {
-                                        Log.e(LogUtil.getTag(), "Error: dataPos "
-                                            + dataPos + " out of bounds or item not MoreChildItem during load more completion. Size="
-                                            + currentComments.size());
+                                        Log.w(LogUtil.getTag(), "Could not find MoreChildItem with fullname: " + fullname + " during load more completion. Item may have been removed.");
                                         resetLoadingIndicator();
                                     }
                                 }
@@ -115,10 +137,19 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
          // Ensure holder and its views are not null, and context is valid
         if (holder != null && holder.loading != null && holder.content != null && mContext != null) {
             ((Activity) mContext).runOnUiThread(() -> {
-                 // Check if the item at dataPos still exists and is a MoreChildItem before resetting text
-                 // It's possible the item was removed or changed by another operation
-                if (dataPos < currentComments.size() && currentComments.get(dataPos) instanceof MoreChildItem) {
-                    final MoreChildItem baseNode = (MoreChildItem) currentComments.get(dataPos);
+                // Find the MoreChildItem by fullname instead of using potentially stale dataPos
+                MoreChildItem baseNode = null;
+                for (CommentObject obj : currentComments) {
+                    if (obj instanceof MoreChildItem) {
+                        MoreChildItem moreItem = (MoreChildItem) obj;
+                        if (moreItem.comment.getComment().getFullName().equals(fullname)) {
+                            baseNode = moreItem;
+                            break;
+                        }
+                    }
+                }
+
+                if (baseNode != null) {
                     try {
                          // Use getLocalizedCount for display
                         String countString = baseNode.children.getLocalizedCount();
@@ -136,9 +167,8 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
                         holder.content.setText(R.string.comment_load_more_number_unknown);
                     }
                 } else {
-                    // Item might have been removed or changed, just hide loading indicator
-                    // Avoid setting text if the original item context is lost
-                    Log.w(LogUtil.getTag(), "Item at dataPos " + dataPos + " no longer MoreChildItem when resetting indicator.");
+                    // Item was removed or changed, just hide loading indicator
+                    Log.w(LogUtil.getTag(), "Could not find MoreChildItem with fullname: " + fullname + " when resetting indicator. Item may have been removed.");
                 }
                 holder.loading.setVisibility(View.GONE);
             });
@@ -167,20 +197,54 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
                 List<CommentNode> newNodesListing = parentNode.loadMoreComments(Authentication.reddit);
 
                 if (newNodesListing != null) {
+                    // Use the same pattern as SubmissionComments to properly handle nested comments
+                    Map<Integer, MoreChildItem> waiting = new HashMap<>();
+
                     for (CommentNode newNode : newNodesListing) {
                         // Check if the key already exists - prevents adding duplicates
                         if (!keys.containsKey(newNode.getComment().getFullName())) {
-                            finalData.add(new CommentItem(newNode));
-                            itemsAddedCount++;
+                            // Use walkTree to traverse the entire tree structure of each loaded comment
+                            for (CommentNode n : newNode.walkTree()) {
+                                // Skip if this comment is already loaded
+                                if (!keys.containsKey(n.getComment().getFullName())) {
+                                    // Process any waiting MoreChildItems before adding this comment
+                                    List<Integer> removed = new ArrayList<>();
+                                    Map<Integer, MoreChildItem> map = new TreeMap<>(Collections.reverseOrder());
+                                    map.putAll(waiting);
 
-                            // If this newly added node itself has more comments, add a MoreChildItem marker for it
-                            if (newNode.hasMoreComments()) {
-                                finalData.add(new MoreChildItem(newNode, newNode.getMoreChildren()));
-                                itemsAddedCount++;
+                                    for (Integer i : map.keySet()) {
+                                        if (i >= n.getDepth()) {
+                                            finalData.add(waiting.get(i));
+                                            itemsAddedCount++;
+                                            removed.add(i);
+                                            waiting.remove(i);
+                                        }
+                                    }
+
+                                    // Add the comment itself
+                                    finalData.add(new CommentItem(n));
+                                    itemsAddedCount++;
+
+                                    // If this node has more comments, add a MoreChildItem marker for it
+                                    if (n.hasMoreComments()) {
+                                        waiting.put(n.getDepth(), new MoreChildItem(n, n.getMoreChildren()));
+                                    }
+                                } else {
+                                    Log.w(LogUtil.getTag(), "Skipping already existing comment key in walkTree: " + n.getComment().getFullName());
+                                }
                             }
                         } else {
                             Log.w(LogUtil.getTag(), "Skipping already existing comment key: " + newNode.getComment().getFullName());
                         }
+                    }
+
+                    // Add any remaining waiting MoreChildItems
+                    Map<Integer, MoreChildItem> map = new TreeMap<>(Collections.reverseOrder());
+                    map.putAll(waiting);
+                    for (Integer i : map.keySet()) {
+                        finalData.add(waiting.get(i));
+                        itemsAddedCount++;
+                        waiting.remove(i);
                     }
                 } else {
                     Log.w(LogUtil.getTag(), "loadMoreComments returned null listing for node: " + parentNode.getComment().getId());

@@ -105,7 +105,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public CommentPage mPage;
     int shifted;
     int toShiftTo;
-    HashSet<String> hidden;
+    public HashSet<String> hidden;
     public ArrayList<String> hiddenPersons;
     public ArrayList<String> toCollapse;
     public String backedText = "";
@@ -664,10 +664,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             final MoreChildItem baseNode = (MoreChildItem) currentComments.get(nextPos);
             if (baseNode.children.getCount() > 0) {
                 try {
-                    holder.content.setText(
-                            mContext.getString(
-                                    R.string.comment_load_more_string_new,
-                                    baseNode.children.getLocalizedCount()));
+                    holder.content.setText(mContext.getString(R.string.comment_load_more_string_new, baseNode.children.getLocalizedCount()));
                 } catch (Exception e) {
                     holder.content.setText(R.string.comment_load_more_number_unknown);
                 }
@@ -677,11 +674,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 holder.content.setText(R.string.thread_continue);
             }
 
-            int dwidth =
-                    (int)
-                            ((SettingValues.largeDepth ? 5 : 3)
-                                    * Resources.getSystem().getDisplayMetrics().density);
+            int dwidth = (int) ((SettingValues.largeDepth ? 5 : 3) * Resources.getSystem().getDisplayMetrics().density);
             int width = 0;
+
             for (int i = 1; i < baseNode.comment.getDepth(); i++) {
                 width += dwidth;
             }
