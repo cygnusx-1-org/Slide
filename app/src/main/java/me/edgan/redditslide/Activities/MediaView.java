@@ -108,6 +108,7 @@ public class MediaView extends BaseSaveActivity {
     public boolean imageShown;
     public String actuallyLoaded;
     public boolean isGif;
+    private int currentRotation = 0; // Track current rotation in degrees
 
     private NotificationManager mNotifyManager;
     private NotificationCompat.Builder mBuilder;
@@ -596,6 +597,32 @@ public class MediaView extends BaseSaveActivity {
             findViewById(R.id.save).setVisibility(View.INVISIBLE);
         }
 
+        findViewById(R.id.rotate)
+                .setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (videoView != null && videoView.getVisibility() == View.VISIBLE) {
+                                    videoView.rotateRight();
+                                } else {
+                                    rotateImage();
+                                }
+                            }
+                        });
+
+        findViewById(R.id.rotate_left)
+                .setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (videoView != null && videoView.getVisibility() == View.VISIBLE) {
+                                    videoView.rotateLeft();
+                                } else {
+                                    rotateImageLeft();
+                                }
+                            }
+                        });
+
         hideOnLongClick();
     }
 
@@ -631,11 +658,18 @@ public class MediaView extends BaseSaveActivity {
 
     public void doLoadGif(final String dat) {
         isGif = true;
+        // Show rotate buttons for videos/GIFs
+        findViewById(R.id.rotate).setVisibility(View.VISIBLE);
+        findViewById(R.id.rotate_left).setVisibility(View.VISIBLE);
         final ProgressBar loader = (ProgressBar) findViewById(R.id.gifprogress);
         final String gifUrl = GifUtils.AsyncLoadGif.formatUrl(dat); // Corrected static call
 
         if (gifUrl.toLowerCase().endsWith(".gif")) {
             // Handle direct .gif URLs with Movie/GifDrawable
+            // Hide rotate buttons for direct GIFs since we can't rotate GifDrawable
+            findViewById(R.id.rotate).setVisibility(View.GONE);
+            findViewById(R.id.rotate_left).setVisibility(View.GONE);
+
             Log.v(TAG, "Loading direct GIF: " + gifUrl); // Changed to Log.v
             findViewById(R.id.gifarea).setVisibility(View.VISIBLE); // Ensure gifarea is visible for progress bar
             findViewById(R.id.submission_image).setVisibility(View.GONE);
@@ -706,6 +740,9 @@ public class MediaView extends BaseSaveActivity {
             if (directGifViewer != null) directGifViewer.setVisibility(View.GONE); // Hide our direct ImageViewer
             videoView = (ExoVideoView) findViewById(R.id.gif);
             videoView.setVisibility(View.VISIBLE); // Ensure ExoVideoView is visible
+
+            // Position rotate buttons to work with video controls
+            updateRotateButtonPositions(true);
 
             findViewById(R.id.black)
                     .setOnClickListener(
@@ -949,7 +986,12 @@ public class MediaView extends BaseSaveActivity {
         if (contentUrl != null && ContentType.isImgurLink(contentUrl)) {
             contentUrl = contentUrl + ".png";
         }
-        findViewById(R.id.gifprogress).setVisibility(View.GONE);
+                findViewById(R.id.gifprogress).setVisibility(View.GONE);
+
+        // Show rotate buttons for images and position them correctly
+        findViewById(R.id.rotate).setVisibility(View.VISIBLE);
+        findViewById(R.id.rotate_left).setVisibility(View.VISIBLE);
+        updateRotateButtonPositions(false);
 
         if (contentUrl != null && contentUrl.contains("m.imgur.com")) {
             contentUrl = contentUrl.replace("m.imgur.com", "i.imgur.com");
@@ -1026,6 +1068,8 @@ public class MediaView extends BaseSaveActivity {
         final String url = StringEscapeUtils.unescapeHtml4(urlB);
 
         if (!imageShown) {
+            // Reset rotation when loading a new image
+            currentRotation = 0;
             actuallyLoaded = url;
             final SubsamplingScaleImageView i =
                     (SubsamplingScaleImageView) findViewById(R.id.submission_image);
@@ -1275,6 +1319,63 @@ public class MediaView extends BaseSaveActivity {
 
     private void showErrorDialog() {
         runOnUiThread(() -> DialogUtil.showErrorDialog(MediaView.this));
+    }
+
+        /**
+     * Updates the positioning of rotate buttons to avoid overlapping with video controls
+     * @param hasVideoControls true if video controls (speed, mute, hq) are visible
+     */
+    private void updateRotateButtonPositions(boolean hasVideoControls) {
+        // The layout is now fixed in XML with proper positioning:
+        // From right to left: more -> save -> speed -> rotate -> rotate_left -> mute -> hq
+        // Rotate buttons are already positioned correctly in the layout
+        // We just need to control their visibility, not their positioning
+
+        // This method is kept for potential future positioning adjustments
+        // but the main layout positioning is now handled in the XML
+    }
+
+    private void rotateImage() {
+        SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) findViewById(R.id.submission_image);
+        if (imageView != null) {
+            currentRotation = (currentRotation + 90) % 360;
+            refreshImageWithRotation(imageView, currentRotation);
+        }
+    }
+
+    private void rotateImageLeft() {
+        SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) findViewById(R.id.submission_image);
+        if (imageView != null) {
+            currentRotation = (currentRotation - 90 + 360) % 360;
+            refreshImageWithRotation(imageView, currentRotation);
+        }
+    }
+
+        private void refreshImageWithRotation(SubsamplingScaleImageView imageView, int rotation) {
+        // Store the current source
+        if (imageView.loader != null && imageView.loader.savedImageSource != null) {
+            ImageSource currentSource = imageView.loader.savedImageSource;
+
+            // Set a proper black background to avoid ghosting
+            imageView.setBackgroundColor(Color.BLACK);
+
+            // Force a complete refresh by resetting and reloading with new orientation
+            imageView.recycle();
+            imageView.setOrientation(rotation);
+
+            // Delay the image reload slightly to ensure the view is properly cleared
+            imageView.post(new Runnable() {
+                @Override
+                public void run() {
+                    imageView.loader.setImage(currentSource);
+                }
+            });
+        } else {
+            // Fallback to direct orientation setting if no saved source
+            imageView.setBackgroundColor(Color.BLACK);
+            imageView.setOrientation(rotation);
+            imageView.invalidate();
+        }
     }
 
     @Override

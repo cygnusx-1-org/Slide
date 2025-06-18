@@ -448,6 +448,7 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
     public static class ImageFullNoSubmission extends Fragment {
 
         private int i = 0;
+        private int currentRotation = 0; // Track current rotation in degrees
 
         public ImageFullNoSubmission() {}
 
@@ -521,6 +522,28 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
             if (mute != null) {
                 mute.setVisibility(View.GONE);
             }
+
+            // Set up rotation buttons
+            View rotateLeft = rootView.findViewById(R.id.rotate_left);
+            if (rotateLeft != null) {
+                rotateLeft.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        rotateImageLeft(rootView);
+                    }
+                });
+            }
+
+            View rotateRight = rootView.findViewById(R.id.rotate_right);
+            if (rotateRight != null) {
+                rotateRight.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        rotateImageRight(rootView);
+                    }
+                });
+            }
+
             View comments = rootView.findViewById(R.id.comments);
             if (getActivity().getIntent().hasExtra(MediaView.SUBMISSION_URL)) {
                 if (comments != null) {
@@ -546,6 +569,51 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
             super.onCreate(savedInstanceState);
             Bundle bundle = this.getArguments();
             i = bundle.getInt("page", 0);
+        }
+
+        private void rotateImageRight(View rootView) {
+            me.edgan.redditslide.Views.SubsamplingScaleImageView imageView =
+                    rootView.findViewById(R.id.image);
+            if (imageView != null) {
+                currentRotation = (currentRotation + 90) % 360;
+                refreshImageWithRotation(imageView, currentRotation);
+            }
+        }
+
+        private void rotateImageLeft(View rootView) {
+            me.edgan.redditslide.Views.SubsamplingScaleImageView imageView =
+                    rootView.findViewById(R.id.image);
+            if (imageView != null) {
+                currentRotation = (currentRotation - 90 + 360) % 360;
+                refreshImageWithRotation(imageView, currentRotation);
+            }
+        }
+
+        private void refreshImageWithRotation(me.edgan.redditslide.Views.SubsamplingScaleImageView imageView, int rotation) {
+            // Store the current source
+            if (imageView.loader != null && imageView.loader.savedImageSource != null) {
+                me.edgan.redditslide.Views.ImageSource currentSource = imageView.loader.savedImageSource;
+
+                // Set a proper black background to avoid ghosting
+                imageView.setBackgroundColor(android.graphics.Color.BLACK);
+
+                // Force a complete refresh by resetting and reloading with new orientation
+                imageView.recycle();
+                imageView.setOrientation(rotation);
+
+                // Delay the image reload slightly to ensure the view is properly cleared
+                imageView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        imageView.loader.setImage(currentSource);
+                    }
+                });
+            } else {
+                // Fallback to direct orientation setting if no saved source
+                imageView.setBackgroundColor(android.graphics.Color.BLACK);
+                imageView.setOrientation(rotation);
+                imageView.invalidate();
+            }
         }
     }
 

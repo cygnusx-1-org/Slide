@@ -111,10 +111,34 @@
             android:tint="#e1e1e1"
             android:contentDescription="@string/video_speed_control_content_desc" />
         <ImageView
-            android:id="@+id/mute"
+            android:id="@+id/rotate"
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:layout_toLeftOf="@id/speed"
+            android:layout_marginEnd="4dp"
+            android:theme="@style/Ripple.List"
+            android:padding="15dp"
+            app:srcCompat="@drawable/ic_rotate_right"
+            android:tint="#e1e1e1"
+            android:visibility="gone"
+            android:contentDescription="@string/image_rotate_content_desc" />
+        <ImageView
+            android:id="@+id/rotate_left"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_toLeftOf="@id/rotate"
+            android:layout_marginEnd="4dp"
+            android:theme="@style/Ripple.List"
+            android:padding="15dp"
+            app:srcCompat="@drawable/ic_rotate_left"
+            android:tint="#e1e1e1"
+            android:visibility="gone"
+            android:contentDescription="@string/image_rotate_left_content_desc" />
+        <ImageView
+            android:id="@+id/mute"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_toLeftOf="@id/rotate_left"
             android:layout_marginEnd="4dp"
             android:theme="@style/Ripple.List"
             android:padding="15dp"

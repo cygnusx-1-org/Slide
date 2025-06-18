@@ -1346,4 +1346,6 @@
     <string name="video_speed_1_5x">1.5x</string>
     <string name="video_speed_2x">2x</string>
     <string name="video_speed_control_content_desc">Playback speed control</string>
+    <string name="image_rotate_content_desc">Rotate image 90 degrees clockwise</string>
+    <string name="image_rotate_left_content_desc">Rotate image 90 degrees counter-clockwise</string>
 </resources>

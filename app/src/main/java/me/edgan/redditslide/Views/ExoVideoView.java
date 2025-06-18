@@ -83,6 +83,9 @@ public class ExoVideoView extends RelativeLayout {
     private boolean wasScaling = false; // Flag to track if scaling happened in the gesture
     private boolean wasDragging = false; // Flag to track if dragging happened in the gesture
 
+    // Variables for rotation
+    private int currentRotation = 0; // Track current rotation in degrees
+
     // Static variable to hold the saved SurfaceTexture.
     private static SurfaceTexture sSavedSurfaceTexture;
     // The TextureView used for video playback.
@@ -361,6 +364,10 @@ public class ExoVideoView extends RelativeLayout {
      */
     public void setVideoURI(Uri uri, VideoType type, Player.Listener listener) {
         Log.d(TAG, "setVideoURI() called with uri: " + (uri != null ? uri.toString() : "null"));
+        // Reset rotation when loading new video
+        currentRotation = 0;
+        applyRotation();
+
         // Ensure player and uri are not null before proceeding
         if (player != null && uri != null) {
             DataSource.Factory downloader =
@@ -961,6 +968,46 @@ public class ExoVideoView extends RelativeLayout {
             videoFrame.setTranslationX(0f);
             videoFrame.setTranslationY(0f);
         }
+    }
+
+    /**
+     * Rotates the video 90 degrees clockwise
+     */
+    public void rotateRight() {
+        currentRotation = (currentRotation + 90) % 360;
+        applyRotation();
+    }
+
+    /**
+     * Rotates the video 90 degrees counter-clockwise
+     */
+    public void rotateLeft() {
+        currentRotation = (currentRotation - 90 + 360) % 360;
+        applyRotation();
+    }
+
+    /**
+     * Resets video rotation to 0 degrees
+     */
+    public void resetRotation() {
+        currentRotation = 0;
+        applyRotation();
+    }
+
+    /**
+     * Applies the current rotation to the video frame
+     */
+    private void applyRotation() {
+        if (videoFrame != null) {
+            videoFrame.setRotation(currentRotation);
+        }
+    }
+
+    /**
+     * Gets the current rotation in degrees
+     */
+    public int getCurrentRotation() {
+        return currentRotation;
     }
 
     private boolean isVerticalMode() {

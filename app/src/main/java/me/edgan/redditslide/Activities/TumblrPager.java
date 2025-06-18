@@ -626,6 +626,7 @@ public class TumblrPager extends BaseSaveActivity {
     public static class ImageFullNoSubmission extends Fragment {
 
         private int i = 0;
+        private int currentRotation = 0; // Track current rotation in degrees (0, 90, 180, 270)
 
         public ImageFullNoSubmission() {}
 
@@ -734,6 +735,29 @@ public class TumblrPager extends BaseSaveActivity {
                                     }
                                 });
             }
+
+            // Set up rotation buttons
+            View rotateLeft = rootView.findViewById(R.id.rotate_left);
+            View rotateRight = rootView.findViewById(R.id.rotate_right);
+
+            if (rotateLeft != null) {
+                rotateLeft.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        rotateImageLeft(rootView);
+                    }
+                });
+            }
+
+            if (rotateRight != null) {
+                rotateRight.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        rotateImageRight(rootView);
+                    }
+                });
+            }
+
             if (lq) {
                 rootView.findViewById(R.id.hq)
                         .setOnClickListener(
@@ -769,6 +793,52 @@ public class TumblrPager extends BaseSaveActivity {
             super.onCreate(savedInstanceState);
             Bundle bundle = this.getArguments();
             i = bundle.getInt("page", 0);
+        }
+
+        private void rotateImageLeft(View rootView) {
+            currentRotation = (currentRotation - 90 + 360) % 360;
+            refreshImageWithRotation(rootView);
+        }
+
+        private void rotateImageRight(View rootView) {
+            currentRotation = (currentRotation + 90) % 360;
+            refreshImageWithRotation(rootView);
+        }
+
+        private void refreshImageWithRotation(View rootView) {
+            final SubsamplingScaleImageView imageView = rootView.findViewById(R.id.image);
+            if (imageView != null) {
+                // Set background to black to prevent ghosting
+                imageView.setBackgroundColor(android.graphics.Color.BLACK);
+
+                // Recycle the current image to clear any cached state
+                imageView.recycle();
+
+                // Apply the rotation and reload the image
+                imageView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        imageView.setOrientation(currentRotation);
+
+                        // Reload the image
+                        final Photo current = ((TumblrPager) getActivity()).images.get(i);
+                        final String url = current.getOriginalSize().getUrl();
+
+                        boolean lq = false;
+                        if (SettingValues.loadImageLq
+                                && (SettingValues.lowResAlways
+                                        || (!NetworkUtil.isConnectedWifi(getActivity())
+                                                && SettingValues.lowResMobile))
+                                && current.getAltSizes() != null
+                                && !current.getAltSizes().isEmpty()) {
+                            String lqurl = current.getAltSizes().get(current.getAltSizes().size() / 2).getUrl();
+                            loadImage(rootView, ImageFullNoSubmission.this, lqurl);
+                        } else {
+                            loadImage(rootView, ImageFullNoSubmission.this, url);
+                        }
+                    }
+                });
+            }
         }
     }
 
