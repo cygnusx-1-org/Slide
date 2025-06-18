@@ -109,6 +109,7 @@ public class MediaView extends BaseSaveActivity {
     public String actuallyLoaded;
     public boolean isGif;
     private int currentRotation = 0; // Track current rotation in degrees
+    private int currentGifRotation = 0; // Track current rotation for direct GIFs
 
     private NotificationManager mNotifyManager;
     private NotificationCompat.Builder mBuilder;
@@ -604,6 +605,8 @@ public class MediaView extends BaseSaveActivity {
                             public void onClick(View v) {
                                 if (videoView != null && videoView.getVisibility() == View.VISIBLE) {
                                     videoView.rotateRight();
+                                } else if (directGifViewer != null && directGifViewer.getVisibility() == View.VISIBLE) {
+                                    rotateDirectGifRight();
                                 } else {
                                     rotateImage();
                                 }
@@ -617,6 +620,8 @@ public class MediaView extends BaseSaveActivity {
                             public void onClick(View v) {
                                 if (videoView != null && videoView.getVisibility() == View.VISIBLE) {
                                     videoView.rotateLeft();
+                                } else if (directGifViewer != null && directGifViewer.getVisibility() == View.VISIBLE) {
+                                    rotateDirectGifLeft();
                                 } else {
                                     rotateImageLeft();
                                 }
@@ -664,12 +669,8 @@ public class MediaView extends BaseSaveActivity {
         final ProgressBar loader = (ProgressBar) findViewById(R.id.gifprogress);
         final String gifUrl = GifUtils.AsyncLoadGif.formatUrl(dat); // Corrected static call
 
-        if (gifUrl.toLowerCase().endsWith(".gif")) {
+                if (gifUrl.toLowerCase().endsWith(".gif")) {
             // Handle direct .gif URLs with Movie/GifDrawable
-            // Hide rotate buttons for direct GIFs since we can't rotate GifDrawable
-            findViewById(R.id.rotate).setVisibility(View.GONE);
-            findViewById(R.id.rotate_left).setVisibility(View.GONE);
-
             Log.v(TAG, "Loading direct GIF: " + gifUrl); // Changed to Log.v
             findViewById(R.id.gifarea).setVisibility(View.VISIBLE); // Ensure gifarea is visible for progress bar
             findViewById(R.id.submission_image).setVisibility(View.GONE);
@@ -684,6 +685,10 @@ public class MediaView extends BaseSaveActivity {
                 activeGifDrawable.stop();
             }
             directGifViewer.setImageDrawable(null);
+
+            // Reset rotation for new GIF
+            currentGifRotation = 0;
+            directGifViewer.setRotation(0f);
 
             GifUtils.downloadGif(gifUrl, new GifUtils.GifDownloadCallback() {
                 @Override
@@ -1375,6 +1380,33 @@ public class MediaView extends BaseSaveActivity {
             imageView.setBackgroundColor(Color.BLACK);
             imageView.setOrientation(rotation);
             imageView.invalidate();
+        }
+    }
+
+    private void rotateDirectGifRight() {
+        if (directGifViewer != null) {
+            currentGifRotation = (currentGifRotation + 90) % 360;
+            refreshDirectGifWithRotation();
+        }
+    }
+
+    private void rotateDirectGifLeft() {
+        if (directGifViewer != null) {
+            currentGifRotation = (currentGifRotation - 90 + 360) % 360;
+            refreshDirectGifWithRotation();
+        }
+    }
+
+    private void refreshDirectGifWithRotation() {
+        if (directGifViewer != null) {
+            // Set background to black to prevent ghosting, similar to image rotation
+            directGifViewer.setBackgroundColor(Color.BLACK);
+
+            // Apply rotation using ImageView's built-in rotation
+            directGifViewer.setRotation(currentGifRotation);
+
+            // Invalidate to ensure the view redraws
+            directGifViewer.invalidate();
         }
     }
 
