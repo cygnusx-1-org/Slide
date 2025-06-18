@@ -1,5 +1,6 @@
 package me.edgan.redditslide.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -7,6 +8,8 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
 import android.text.style.RelativeSizeSpan;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 
@@ -133,6 +136,49 @@ public class MiscUtil {
             android.util.TypedValue typedValue = new android.util.TypedValue();
             context.getTheme().resolveAttribute(R.attr.card_background, typedValue, true);
             view.setBackgroundColor(typedValue.data);
+        }
+    }
+
+    /**
+     * Adjusts button sizes for small screens (360dp or less)
+     * @param rootView The root view containing the buttons (null for activity-level)
+     * @param activity The activity context
+     */
+    public static void adjustButtonSizesForSmallScreens(View rootView, Activity activity) {
+        if (activity == null) return;
+
+        // Get the smallest screen width in dp (respects Developer Options setting)
+        int smallestWidthDp = activity.getResources().getConfiguration().smallestScreenWidthDp;
+
+        if (smallestWidthDp <= 360) {
+            // Convert 48dp to pixels
+            float density = activity.getResources().getDisplayMetrics().density;
+            int buttonSizePx = (int) (48 * density);
+
+            // List of button IDs to resize
+            int[] buttonIds = {
+                R.id.comments, R.id.more, R.id.save, R.id.speed,
+                R.id.rotate, R.id.rotate_left, R.id.mute, R.id.hq
+            };
+
+            // Resize each button
+            for (int buttonId : buttonIds) {
+                View button;
+                if (rootView != null) {
+                    button = rootView.findViewById(buttonId);
+                } else {
+                    button = activity.findViewById(buttonId);
+                }
+
+                if (button != null) {
+                    ViewGroup.LayoutParams params = button.getLayoutParams();
+                    if (params != null) {
+                        params.width = buttonSizePx;
+                        params.height = buttonSizePx;
+                        button.setLayoutParams(params);
+                    }
+                }
+            }
         }
     }
 }

@@ -629,6 +629,9 @@ public class MediaView extends BaseSaveActivity {
                         });
 
         hideOnLongClick();
+
+        // Adjust button sizes for small screens
+        MiscUtil.adjustButtonSizesForSmallScreens(null, this);
     }
 
     public void doLoad(final String contentUrl) {
@@ -1409,6 +1412,8 @@ public class MediaView extends BaseSaveActivity {
             directGifViewer.invalidate();
         }
     }
+
+
 
     @Override
     protected void onStoragePermissionGranted() {

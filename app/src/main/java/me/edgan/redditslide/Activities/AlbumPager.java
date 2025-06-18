@@ -583,6 +583,9 @@ public class AlbumPager extends BaseSaveActivity {
                 }
             }
 
+            // Adjust button sizes for small screens
+            MiscUtil.adjustButtonSizesForSmallScreens(rootView, getActivity());
+
             return rootView;
         }
 
@@ -924,6 +927,10 @@ public class AlbumPager extends BaseSaveActivity {
                     rootView.findViewById(R.id.hq).setVisibility(View.GONE);
                 }
             }
+
+            // Adjust button sizes for small screens
+            MiscUtil.adjustButtonSizesForSmallScreens(rootView, getActivity());
+
             return rootView;
         }
 

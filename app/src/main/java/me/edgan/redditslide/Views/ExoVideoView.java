@@ -85,6 +85,8 @@ public class ExoVideoView extends RelativeLayout {
 
     // Variables for rotation
     private int currentRotation = 0; // Track current rotation in degrees
+    private int originalVideoWidth = 0; // Store the original video width
+    private int originalVideoHeight = 0; // Store the original video height
 
     // Static variable to hold the saved SurfaceTexture.
     private static SurfaceTexture sSavedSurfaceTexture;
@@ -188,23 +190,33 @@ public class ExoVideoView extends RelativeLayout {
         // Add a Player.Listener for aspect ratio changes, logging, etc.
         player.addListener(
             new Player.Listener() {
-                // Make the video use the correct aspect ratio
+                                // Make the video use the correct aspect ratio
                 @Override
                 public void onVideoSizeChanged(@NonNull VideoSize videoSize) {
                     Log.d(TAG, "onVideoSizeChanged: width=" + videoSize.width + ", height=" + videoSize.height + ", unappliedRotationDegrees=" + videoSize.unappliedRotationDegrees);
                     if (videoSize.width > 0 && videoSize.height > 0) {
+                        // Store the original video dimensions (accounting for embedded rotation)
+                        originalVideoWidth = videoSize.width;
+                        originalVideoHeight = videoSize.height;
+
                         // Calculate the correct aspect ratio
                         float aspectRatio = (float) videoSize.width / videoSize.height;
 
-                        // Apply any needed rotation
+                        // Apply any needed rotation from video metadata
                         if (videoSize.unappliedRotationDegrees == 90 ||
                             videoSize.unappliedRotationDegrees == 270) {
                             aspectRatio = 1.0f / aspectRatio;
+                            // Also swap the stored dimensions for embedded rotation
+                            originalVideoWidth = videoSize.height;
+                            originalVideoHeight = videoSize.width;
                         }
 
-                        // Set the aspect ratio
+                        // Set the aspect ratio ONCE and never change it for user rotations
                         Log.d(TAG, "Setting aspect ratio to: " + aspectRatio);
                         frame.setAspectRatio(aspectRatio);
+
+                        // Apply current rotation with proper scaling
+                        applyRotation();
                     }
                 }
 
@@ -364,9 +376,10 @@ public class ExoVideoView extends RelativeLayout {
      */
     public void setVideoURI(Uri uri, VideoType type, Player.Listener listener) {
         Log.d(TAG, "setVideoURI() called with uri: " + (uri != null ? uri.toString() : "null"));
-        // Reset rotation when loading new video
+        // Reset rotation and video dimensions when loading new video
         currentRotation = 0;
-        applyRotation();
+        originalVideoWidth = 0;
+        originalVideoHeight = 0;
 
         // Ensure player and uri are not null before proceeding
         if (player != null && uri != null) {
@@ -929,14 +942,15 @@ public class ExoVideoView extends RelativeLayout {
         public void onScaleEnd(ScaleGestureDetector detector) {
             // Ensure detector is not null
             if (detector != null) {
-                // If scale is back to normal (or very close), reset to FIT mode and reset position
+                // If scale is back to normal (or very close), reset position and proper resize mode
                 if (scaleFactor <= 1.05f) {
                     scaleFactor = 1.0f;
                     resetPosition(); // resetPosition handles internal null check
                     if (videoFrame != null) {
                         videoFrame.setScaleX(1.0f);
                         videoFrame.setScaleY(1.0f);
-                        videoFrame.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+                        // Apply rotation to set the correct resize mode based on current rotation
+                        applyRotation();
                     }
                 }
             }
@@ -953,7 +967,8 @@ public class ExoVideoView extends RelativeLayout {
         if (videoFrame != null) {
             videoFrame.setScaleX(1.0f);
             videoFrame.setScaleY(1.0f);
-            videoFrame.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+            // Don't reset resize mode here - let applyRotation() handle it based on current rotation
+            applyRotation();
         }
     }
 
@@ -994,12 +1009,43 @@ public class ExoVideoView extends RelativeLayout {
         applyRotation();
     }
 
-    /**
+            /**
      * Applies the current rotation to the video frame
      */
     private void applyRotation() {
-        if (videoFrame != null) {
+        if (videoFrame != null && originalVideoWidth > 0 && originalVideoHeight > 0) {
             videoFrame.setRotation(currentRotation);
+
+            // Always use FIT mode to show the full content
+            videoFrame.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+
+            // Calculate scale factor to make rotated content fit
+            float scaleX = 1.0f;
+            float scaleY = 1.0f;
+
+            if (currentRotation == 90 || currentRotation == 270) {
+                // When rotated 90/270, the video's height becomes its visual width
+                // and its width becomes its visual height. We need to scale down
+                // so the rotated content fits in the original container bounds.
+
+                // The container aspect ratio is originalVideoWidth / originalVideoHeight
+                // After rotation, the content aspect ratio becomes originalVideoHeight / originalVideoWidth
+
+                // Scale factor = min(containerWidth/rotatedContentWidth, containerHeight/rotatedContentHeight)
+                float scaleForWidth = (float) originalVideoWidth / originalVideoHeight;
+                float scaleForHeight = (float) originalVideoHeight / originalVideoWidth;
+
+                // Use the minimum scale to ensure both dimensions fit
+                float scale = Math.min(scaleForWidth, scaleForHeight);
+                scaleX = scaleY = scale;
+
+                Log.d(TAG, "Applied rotation: " + currentRotation + "° with scale: " + scale);
+            } else {
+                Log.d(TAG, "Applied rotation: " + currentRotation + "° (no scaling needed)");
+            }
+
+            videoFrame.setScaleX(scaleX);
+            videoFrame.setScaleY(scaleY);
         }
     }
 
