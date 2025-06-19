@@ -1128,60 +1128,19 @@ public class MediaView extends BaseSaveActivity {
                             @Override
                             public void run() {
                                 i.setOnStateChangedListener(
-                                        new SubsamplingScaleImageView
-                                                .DefaultOnStateChangedListener() {
-                                            @Override
-                                            public void onScaleChanged(float newScale, int origin) {
-                                                if (newScale > previous
-                                                        && !hidden
-                                                        && newScale > base) {
-                                                    hidden = true;
-                                                    final View base = findViewById(R.id.gifheader);
-
-                                                    ValueAnimator va =
-                                                            ValueAnimator.ofFloat(1.0f, 0.2f);
-                                                    int mDuration = 250; // in millis
-                                                    va.setDuration(mDuration);
-                                                    va.addUpdateListener(
-                                                            new ValueAnimator
-                                                                    .AnimatorUpdateListener() {
-                                                                public void onAnimationUpdate(
-                                                                        ValueAnimator animation) {
-                                                                    Float value =
-                                                                            (Float)
-                                                                                    animation
-                                                                                            .getAnimatedValue();
-                                                                    base.setAlpha(value);
-                                                                }
-                                                            });
-                                                    va.start();
-                                                    // hide
-                                                } else if (newScale <= previous && hidden) {
-                                                    hidden = false;
-                                                    final View base = findViewById(R.id.gifheader);
-
-                                                    ValueAnimator va =
-                                                            ValueAnimator.ofFloat(0.2f, 1.0f);
-                                                    int mDuration = 250; // in millis
-                                                    va.setDuration(mDuration);
-                                                    va.addUpdateListener(
-                                                            new ValueAnimator
-                                                                    .AnimatorUpdateListener() {
-                                                                public void onAnimationUpdate(
-                                                                        ValueAnimator animation) {
-                                                                    Float value =
-                                                                            (Float)
-                                                                                    animation
-                                                                                            .getAnimatedValue();
-                                                                    base.setAlpha(value);
-                                                                }
-                                                            });
-                                                    va.start();
-                                                    // unhide
-                                                }
-                                                previous = newScale;
+                                    new SubsamplingScaleImageView.DefaultOnStateChangedListener() {
+                                        @Override
+                                        public void onScaleChanged(float newScale, int origin) {
+                                            if (newScale > previous && !hidden && newScale > base) {
+                                                hidden = true;
+                                                animateGifHeaderAlpha(false);
+                                            } else if (newScale <= previous && hidden) {
+                                                hidden = false;
+                                                animateGifHeaderAlpha(true);
                                             }
-                                        });
+                                            previous = newScale;
+                                        }
+                                    });
                             }
                         },
                         2000);
@@ -1246,56 +1205,10 @@ public class MediaView extends BaseSaveActivity {
                                                                 && !hidden
                                                                 && newScale > base) {
                                                             hidden = true;
-                                                            final View base =
-                                                                    findViewById(R.id.gifheader);
-
-                                                            ValueAnimator va =
-                                                                    ValueAnimator.ofFloat(
-                                                                            1.0f, 0.2f);
-                                                            int mDuration = 250; // in millis
-                                                            va.setDuration(mDuration);
-                                                            va.addUpdateListener(
-                                                                    new ValueAnimator
-                                                                            .AnimatorUpdateListener() {
-                                                                        public void
-                                                                                onAnimationUpdate(
-                                                                                        ValueAnimator
-                                                                                                animation) {
-                                                                            Float value =
-                                                                                    (Float)
-                                                                                            animation
-                                                                                                    .getAnimatedValue();
-                                                                            base.setAlpha(value);
-                                                                        }
-                                                                    });
-                                                            va.start();
-                                                            // hide
+                                                            animateGifHeaderAlpha(false);
                                                         } else if (newScale <= previous && hidden) {
                                                             hidden = false;
-                                                            final View base =
-                                                                    findViewById(R.id.gifheader);
-
-                                                            ValueAnimator va =
-                                                                    ValueAnimator.ofFloat(
-                                                                            0.2f, 1.0f);
-                                                            int mDuration = 250; // in millis
-                                                            va.setDuration(mDuration);
-                                                            va.addUpdateListener(
-                                                                    new ValueAnimator
-                                                                            .AnimatorUpdateListener() {
-                                                                        public void
-                                                                                onAnimationUpdate(
-                                                                                        ValueAnimator
-                                                                                                animation) {
-                                                                            Float value =
-                                                                                    (Float)
-                                                                                            animation
-                                                                                                    .getAnimatedValue();
-                                                                            base.setAlpha(value);
-                                                                        }
-                                                                    });
-                                                            va.start();
-                                                            // unhide
+                                                            animateGifHeaderAlpha(true);
                                                         }
                                                         previous = newScale;
                                                     }
@@ -1359,7 +1272,7 @@ public class MediaView extends BaseSaveActivity {
         }
     }
 
-        private void refreshImageWithRotation(SubsamplingScaleImageView imageView, int rotation) {
+    private void refreshImageWithRotation(SubsamplingScaleImageView imageView, int rotation) {
         // Store the current source
         if (imageView.loader != null && imageView.loader.savedImageSource != null) {
             ImageSource currentSource = imageView.loader.savedImageSource;
@@ -1413,7 +1326,25 @@ public class MediaView extends BaseSaveActivity {
         }
     }
 
+    /**
+     * Animates the alpha of the gifheader view
+     * @param show true to show (animate alpha to 1.0f), false to hide (animate alpha to 0.2f)
+     */
+    private void animateGifHeaderAlpha(boolean show) {
+        final View headerView = findViewById(R.id.gifheader);
+        if (headerView == null) return;
 
+        ValueAnimator va = ValueAnimator.ofFloat(show ? 0.2f : 1.0f, show ? 1.0f : 0.2f);
+        int mDuration = 250; // in millis
+        va.setDuration(mDuration);
+        va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            public void onAnimationUpdate(ValueAnimator animation) {
+                Float value = (Float) animation.getAnimatedValue();
+                headerView.setAlpha(value);
+            }
+        });
+        va.start();
+    }
 
     @Override
     protected void onStoragePermissionGranted() {
