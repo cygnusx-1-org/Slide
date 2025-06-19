@@ -1016,16 +1016,23 @@ public class ExoVideoView extends RelativeLayout {
             // Always use FIT mode to show the full content
             videoFrame.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
 
+            boolean isVerticalVideo = originalVideoHeight > originalVideoWidth;
+
             if (currentRotation == 90 || currentRotation == 270) {
-                // For 90/270 degree rotations, zoom in to fit the width of the screen
-                // Simple approach: zoom by the video's aspect ratio
-                float videoAspect = (float) originalVideoWidth / originalVideoHeight;
-
-                // When rotated 90/270°, we want to zoom in by the aspect ratio
-                // so the shorter dimension (which becomes width after rotation) fills the width
-                rotationScaleFactor = videoAspect;
-
-                Log.d(TAG, "Applied rotation: " + currentRotation + "° with zoom scale: " + rotationScaleFactor);
+                if (isVerticalVideo) {
+                    // For vertical videos, we need to zoom out so the video's original top/bottom
+                    // edges fit the screen's width.
+                    // The scale factor is the ratio of the screen's width to its height.
+                    float screenWidth = getResources().getDisplayMetrics().widthPixels;
+                    float screenHeight = getResources().getDisplayMetrics().heightPixels;
+                    rotationScaleFactor = screenWidth / screenHeight;
+                    Log.d(TAG, "Applied rotation for vertical video: " + currentRotation + "° with zoom scale: " + rotationScaleFactor);
+                } else {
+                    // For horizontal videos, zoom in to fit the width of the screen
+                    float videoAspect = (float) originalVideoWidth / originalVideoHeight;
+                    rotationScaleFactor = videoAspect;
+                    Log.d(TAG, "Applied rotation for horizontal video: " + currentRotation + "° with zoom scale: " + rotationScaleFactor);
+                }
             } else {
                 // For 0/180 degree rotations, reset to normal view
                 rotationScaleFactor = 1.0f;
@@ -1035,7 +1042,7 @@ public class ExoVideoView extends RelativeLayout {
             }
 
             // Set initial scale factor to include rotation zoom when first applying rotation
-            if (scaleFactor == 1.0f && rotationScaleFactor > 1.0f) {
+            if (scaleFactor == 1.0f) { // Only apply if user hasn't zoomed
                 scaleFactor = rotationScaleFactor;
             }
 
