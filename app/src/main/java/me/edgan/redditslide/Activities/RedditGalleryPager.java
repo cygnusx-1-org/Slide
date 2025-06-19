@@ -561,6 +561,8 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
                     comments.setVisibility(View.GONE);
                 }
             }
+            // Adjust button sizes for small screens
+            MiscUtil.adjustButtonSizesForSmallScreens(rootView, getActivity());
             return rootView;
         }
 
@@ -643,6 +645,15 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
         @Override
         protected GalleryParent getGalleryParent() {
             return (RedditGalleryPager) getActivity();
+        }
+
+        // Override onCreateView to adjust button sizes for small screens
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View rootView = super.onCreateView(inflater, container, savedInstanceState);
+            // Apply small-screen button resizing
+            MiscUtil.adjustButtonSizesForSmallScreens(rootView, getActivity());
+            return rootView;
         }
     }
 

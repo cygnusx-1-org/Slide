@@ -158,7 +158,7 @@ public class MiscUtil {
             // List of button IDs to resize
             int[] buttonIds = {
                 R.id.comments, R.id.more, R.id.save, R.id.speed,
-                R.id.rotate, R.id.rotate_left, R.id.mute, R.id.hq
+                R.id.rotate, R.id.rotate_left, R.id.rotate_right, R.id.mute, R.id.hq
             };
 
             // Resize each button
