@@ -87,6 +87,7 @@ public class ExoVideoView extends RelativeLayout {
     private int currentRotation = 0; // Track current rotation in degrees
     private int originalVideoWidth = 0; // Store the original video width
     private int originalVideoHeight = 0; // Store the original video height
+    private float rotationScaleFactor = 1.0f; // Scale factor applied for rotation auto-zoom
 
     // Static variable to hold the saved SurfaceTexture.
     private static SurfaceTexture sSavedSurfaceTexture;
@@ -380,6 +381,8 @@ public class ExoVideoView extends RelativeLayout {
         currentRotation = 0;
         originalVideoWidth = 0;
         originalVideoHeight = 0;
+        rotationScaleFactor = 1.0f;
+        scaleFactor = 1.0f;
 
         // Ensure player and uri are not null before proceeding
         if (player != null && uri != null) {
@@ -926,7 +929,7 @@ public class ExoVideoView extends RelativeLayout {
                 scaleFactor *= detector.getScaleFactor();
 
                 // Limit the scale factor to reasonable bounds
-                scaleFactor = Math.max(1.0f, Math.min(scaleFactor, 3.0f));
+                scaleFactor = Math.max(0.5f, Math.min(scaleFactor, 3.0f));
 
                 // Apply the scale to the video frame if it exists
                 if (videoFrame != null) {
@@ -942,16 +945,9 @@ public class ExoVideoView extends RelativeLayout {
         public void onScaleEnd(ScaleGestureDetector detector) {
             // Ensure detector is not null
             if (detector != null) {
-                // If scale is back to normal (or very close), reset position and proper resize mode
-                if (scaleFactor <= 1.05f) {
-                    scaleFactor = 1.0f;
+                // Reset position if zoomed out significantly
+                if (scaleFactor <= 0.6f) {
                     resetPosition(); // resetPosition handles internal null check
-                    if (videoFrame != null) {
-                        videoFrame.setScaleX(1.0f);
-                        videoFrame.setScaleY(1.0f);
-                        // Apply rotation to set the correct resize mode based on current rotation
-                        applyRotation();
-                    }
                 }
             }
         }
@@ -961,14 +957,12 @@ public class ExoVideoView extends RelativeLayout {
      * Resets any applied zoom to default scale and position
      */
     public void resetZoom() {
-        scaleFactor = 1.0f;
+        scaleFactor = rotationScaleFactor;
         resetPosition(); // resetPosition already has a null check for videoFrame
         // Ensure videoFrame exists before resetting scale/mode
         if (videoFrame != null) {
-            videoFrame.setScaleX(1.0f);
-            videoFrame.setScaleY(1.0f);
-            // Don't reset resize mode here - let applyRotation() handle it based on current rotation
-            applyRotation();
+            videoFrame.setScaleX(rotationScaleFactor);
+            videoFrame.setScaleY(rotationScaleFactor);
         }
     }
 
@@ -990,6 +984,7 @@ public class ExoVideoView extends RelativeLayout {
      */
     public void rotateRight() {
         currentRotation = (currentRotation + 90) % 360;
+        resetPosition(); // Reset panning when rotating
         applyRotation();
     }
 
@@ -998,6 +993,7 @@ public class ExoVideoView extends RelativeLayout {
      */
     public void rotateLeft() {
         currentRotation = (currentRotation - 90 + 360) % 360;
+        resetPosition(); // Reset panning when rotating
         applyRotation();
     }
 
@@ -1006,10 +1002,11 @@ public class ExoVideoView extends RelativeLayout {
      */
     public void resetRotation() {
         currentRotation = 0;
+        resetPosition(); // Reset panning when resetting rotation
         applyRotation();
     }
 
-            /**
+    /**
      * Applies the current rotation to the video frame
      */
     private void applyRotation() {
@@ -1019,33 +1016,31 @@ public class ExoVideoView extends RelativeLayout {
             // Always use FIT mode to show the full content
             videoFrame.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
 
-            // Calculate scale factor to make rotated content fit
-            float scaleX = 1.0f;
-            float scaleY = 1.0f;
-
             if (currentRotation == 90 || currentRotation == 270) {
-                // When rotated 90/270, the video's height becomes its visual width
-                // and its width becomes its visual height. We need to scale down
-                // so the rotated content fits in the original container bounds.
+                // For 90/270 degree rotations, zoom in to fit the width of the screen
+                // Simple approach: zoom by the video's aspect ratio
+                float videoAspect = (float) originalVideoWidth / originalVideoHeight;
 
-                // The container aspect ratio is originalVideoWidth / originalVideoHeight
-                // After rotation, the content aspect ratio becomes originalVideoHeight / originalVideoWidth
+                // When rotated 90/270°, we want to zoom in by the aspect ratio
+                // so the shorter dimension (which becomes width after rotation) fills the width
+                rotationScaleFactor = videoAspect;
 
-                // Scale factor = min(containerWidth/rotatedContentWidth, containerHeight/rotatedContentHeight)
-                float scaleForWidth = (float) originalVideoWidth / originalVideoHeight;
-                float scaleForHeight = (float) originalVideoHeight / originalVideoWidth;
-
-                // Use the minimum scale to ensure both dimensions fit
-                float scale = Math.min(scaleForWidth, scaleForHeight);
-                scaleX = scaleY = scale;
-
-                Log.d(TAG, "Applied rotation: " + currentRotation + "° with scale: " + scale);
+                Log.d(TAG, "Applied rotation: " + currentRotation + "° with zoom scale: " + rotationScaleFactor);
             } else {
-                Log.d(TAG, "Applied rotation: " + currentRotation + "° (no scaling needed)");
+                // For 0/180 degree rotations, reset to normal view
+                rotationScaleFactor = 1.0f;
+                scaleFactor = 1.0f; // Reset scale to normal for 0/180 degrees
+                resetPosition(); // Reset position when going to normal rotation
+                Log.d(TAG, "Applied rotation: " + currentRotation + "° (normal view)");
             }
 
-            videoFrame.setScaleX(scaleX);
-            videoFrame.setScaleY(scaleY);
+            // Set initial scale factor to include rotation zoom when first applying rotation
+            if (scaleFactor == 1.0f && rotationScaleFactor > 1.0f) {
+                scaleFactor = rotationScaleFactor;
+            }
+
+            videoFrame.setScaleX(scaleFactor);
+            videoFrame.setScaleY(scaleFactor);
         }
     }
 
