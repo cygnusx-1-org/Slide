@@ -1,0 +1,7 @@
+---
+description: Leave the beginning of C style comment blocks alone 
+globs: *
+alwaysApply: true
+---
+
+Leave the beginning of C style comment blocks alone, and don't change their indentation. An example is "/**".
