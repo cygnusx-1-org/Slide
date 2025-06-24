@@ -4,6 +4,14 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.3.4 / 2025-6-24
+============
+* Fixed External video playback pauses on videos that don't have audio #263
+* Fixed "Method of sending removal reasons" setting resets on app restart #262
+* Fixed Subreddit theme dialog crashing when accessed via sidebar #261
+* Fixed Saving a post doesn't always highlight the star icon #257
+* Fixed Sorting problem. #254
+
 7.3.3 / 2025-5-30
 ============
 * Fixed reddit.com/comments links
