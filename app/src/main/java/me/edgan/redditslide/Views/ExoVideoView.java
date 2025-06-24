@@ -69,6 +69,7 @@ public class ExoVideoView extends RelativeLayout {
     private AudioFocusHelper audioFocusHelper;
     private Handler handler = new Handler(Looper.getMainLooper());
     private Runnable hideControlsRunnable;
+    private boolean hasAudio = false; // Track whether current video has audio
 
     private ScaleGestureDetector scaleGestureDetector;
     private float scaleFactor = 1.0f;
@@ -252,6 +253,28 @@ public class ExoVideoView extends RelativeLayout {
                     }
                 }
             }
+
+            @Override
+            public void onTracksChanged(@NonNull Tracks tracks) {
+                // Check if the video has audio tracks
+                boolean foundAudio = false;
+                for (Tracks.Group group : tracks.getGroups()) {
+                    for (int trackIndex = 0; trackIndex < group.getMediaTrackGroup().length; trackIndex++) {
+                        if (group.isTrackSelected(trackIndex)) {
+                            Format format = group.getTrackFormat(trackIndex);
+                            if (format != null && MimeTypes.isAudio(format.sampleMimeType)) {
+                                foundAudio = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (foundAudio) {
+                        break;
+                    }
+                }
+                hasAudio = foundAudio;
+                Log.d(TAG, "Audio tracks detected: " + hasAudio);
+            }
         });
 
         // --- Use a TextureView with a cached SurfaceTexture ---
@@ -402,8 +425,8 @@ public class ExoVideoView extends RelativeLayout {
         // Ensure player is not null
         if (player != null) {
             player.play();
-            // Gain audio focus if helper is available
-            if (audioFocusHelper != null) {
+            // Gain audio focus only if helper is available and video has audio
+            if (audioFocusHelper != null && hasAudio) {
                 audioFocusHelper.gainFocus();
             }
             if (playbackStateChangedListener != null) {
@@ -417,8 +440,8 @@ public class ExoVideoView extends RelativeLayout {
         // Ensure player is not null
         if (player != null) {
             player.pause();
-            // Lose audio focus if helper is available
-            if (audioFocusHelper != null) {
+            // Lose audio focus only if helper is available and video has audio
+            if (audioFocusHelper != null && hasAudio) {
                 audioFocusHelper.loseFocus();
             }
             if (playbackStateChangedListener != null) {
@@ -435,10 +458,12 @@ public class ExoVideoView extends RelativeLayout {
             player.release();
             player = null;
         }
-        // Ensure audioFocusHelper is not null before losing focus
-        if (audioFocusHelper != null) {
+        // Ensure audioFocusHelper is not null before losing focus and only if video had audio
+        if (audioFocusHelper != null && hasAudio) {
             audioFocusHelper.loseFocus();
         }
+        // Reset audio state when stopping
+        hasAudio = false;
         // Cancel pending hide runnable when explicitly stopping
         if (handler != null && hideControlsRunnable != null) {
             handler.removeCallbacks(hideControlsRunnable);
@@ -510,17 +535,17 @@ public class ExoVideoView extends RelativeLayout {
                                 player.setVolume(1f);
                                 mute.setImageResource(R.drawable.ic_volume_on);
                                 BlendModeUtil.tintImageViewAsSrcAtop(mute, Color.WHITE);
-                                // Gain focus only if helper exists
-                                if (audioFocusHelper != null) {
+                                // Gain focus only if helper exists and video has audio
+                                if (audioFocusHelper != null && hasAudio) {
                                     audioFocusHelper.gainFocus();
                                 }
                             } else {
                                 player.setVolume(0f);
                                 mute.setImageResource(R.drawable.ic_volume_off);
                                 BlendModeUtil.tintImageViewAsSrcAtop(mute, getResources().getColor(R.color.md_red_500));
-                                // Lose focus only if helper exists
-                                if (audioFocusHelper != null) {
-                                     audioFocusHelper.loseFocus(); // Already checked, but good practice
+                                // Lose focus only if helper exists and video has audio
+                                if (audioFocusHelper != null && hasAudio) {
+                                     audioFocusHelper.loseFocus();
                                 }
                             }
                         }
@@ -534,8 +559,8 @@ public class ExoVideoView extends RelativeLayout {
                                     SettingValues.prefs.edit().putBoolean(SettingValues.PREF_MUTE, false).apply();
                                     mute.setImageResource(R.drawable.ic_volume_on);
                                     BlendModeUtil.tintImageViewAsSrcAtop(mute, Color.WHITE);
-                                    // Gain focus only if helper exists
-                                    if (audioFocusHelper != null) {
+                                    // Gain focus only if helper exists and video has audio
+                                    if (audioFocusHelper != null && hasAudio) {
                                         audioFocusHelper.gainFocus();
                                     }
                                 } else {
@@ -545,8 +570,8 @@ public class ExoVideoView extends RelativeLayout {
                                     SettingValues.prefs.edit().putBoolean(SettingValues.PREF_MUTE, true).apply();
                                     mute.setImageResource(R.drawable.ic_volume_off);
                                     BlendModeUtil.tintImageViewAsSrcAtop(mute, getResources().getColor(R.color.md_red_500));
-                                    // Lose focus only if helper exists
-                                    if (audioFocusHelper != null) {
+                                    // Lose focus only if helper exists and video has audio
+                                    if (audioFocusHelper != null && hasAudio) {
                                         audioFocusHelper.loseFocus();
                                     }
                                 }
