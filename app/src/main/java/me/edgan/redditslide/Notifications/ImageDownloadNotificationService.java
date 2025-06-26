@@ -48,6 +48,7 @@ public class ImageDownloadNotificationService extends Service {
     private void handleIntent(Intent intent) {
         String actuallyLoaded = intent.getStringExtra("actuallyLoaded");
         String downloadUriString = intent.getStringExtra("downloadUri");
+        boolean forceOriginal = intent.getBooleanExtra("forceOriginal", false);
 
         if (actuallyLoaded == null || downloadUriString == null) {
             stopSelf();
@@ -55,7 +56,7 @@ public class ImageDownloadNotificationService extends Service {
         }
 
         if (actuallyLoaded.contains("imgur.com")
-                && (!actuallyLoaded.contains(".png") && !actuallyLoaded.contains(".jpg"))) {
+                && (!actuallyLoaded.contains(".png") && !actuallyLoaded.contains(".jpg") && !actuallyLoaded.contains(".gif"))) {
             actuallyLoaded = actuallyLoaded + ".png";
         }
 
@@ -69,7 +70,8 @@ public class ImageDownloadNotificationService extends Service {
                         Uri.parse(downloadUriString),
                         intent.getIntExtra("index", -1),
                         subreddit,
-                        intent.getStringExtra(EXTRA_SUBMISSION_TITLE))
+                        intent.getStringExtra(EXTRA_SUBMISSION_TITLE),
+                        forceOriginal)
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -81,6 +83,7 @@ public class ImageDownloadNotificationService extends Service {
         private final int index;
         private final String subreddit;
         private final String submissionTitle;
+        private final boolean forceOriginal;
         private int id;
         private int percentDone, latestPercentDone;
 
@@ -89,12 +92,14 @@ public class ImageDownloadNotificationService extends Service {
                 Uri baseUri,
                 int index,
                 String subreddit,
-                String submissionTitle) {
+                String submissionTitle,
+                boolean forceOriginal) {
             this.actuallyLoaded = actuallyLoaded;
             this.baseUri = baseUri;
             this.index = index;
             this.subreddit = subreddit;
             this.submissionTitle = submissionTitle;
+            this.forceOriginal = forceOriginal;
         }
 
         private void startNotification() {
@@ -129,16 +134,20 @@ public class ImageDownloadNotificationService extends Service {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                ((Reddit) getApplication())
-                        .getImageLoader()
-                        .loadImage(
-                                actuallyLoaded,
-                                null,
-                                new DisplayImageOptions.Builder()
-                                        .imageScaleType(ImageScaleType.NONE)
-                                        .cacheInMemory(false)
-                                        .cacheOnDisk(true)
-                                        .build(),
+                if (forceOriginal) {
+                    // For original GIF files, download directly without using image loader cache
+                    downloadDirectly();
+                } else {
+                    ((Reddit) getApplication())
+                            .getImageLoader()
+                            .loadImage(
+                                    actuallyLoaded,
+                                    null,
+                                    new DisplayImageOptions.Builder()
+                                            .imageScaleType(ImageScaleType.NONE)
+                                            .cacheInMemory(false)
+                                            .cacheOnDisk(true)
+                                            .build(),
                                 new SimpleImageLoadingListener() {
                                     @Override
                                     public void onLoadingComplete(String imageUri, android.view.View view, final Bitmap loadedImage) {
@@ -224,10 +233,88 @@ public class ImageDownloadNotificationService extends Service {
                                         }
                                     }
                                 });
+                }
             } catch (Exception e) {
                 onError(e);
             }
             return null;
+        }
+
+                private void downloadDirectly() {
+            try {
+                android.util.Log.d("ImageDownloadService", "downloadDirectly - URL: " + actuallyLoaded);
+                Context activity = ImageDownloadNotificationService.this;
+                DocumentFile parentDir = DocumentFile.fromTreeUri(activity, baseUri);
+
+                if (parentDir == null || !parentDir.canWrite()) {
+                    onError(new IOException("Invalid directory URI or no write permission."));
+                    return;
+                }
+
+                // Create subreddit subfolder if needed
+                if (SettingValues.imageSubfolders && !subreddit.isEmpty()) {
+                    String cleanSubredditName = subreddit.replaceAll("[^a-zA-Z0-9.-]", "_");
+                    // Synchronize folder lookup/creation to avoid race conditions
+                    synchronized (DIRECTORY_LOCK) {
+                        DocumentFile subFolder = parentDir.findFile(cleanSubredditName);
+                        if (subFolder == null) {
+                            subFolder = parentDir.createDirectory(cleanSubredditName);
+                        }
+                        if (subFolder == null) {
+                            onError(new IOException("Failed to create subfolder."));
+                            return;
+                        }
+                        parentDir = subFolder;
+                    }
+                }
+
+                String fileName = getFileName(actuallyLoaded);
+                String mimeType = getMimeType(fileName);
+                DocumentFile outDocFile = parentDir.createFile(mimeType, fileName);
+
+                if (outDocFile != null) {
+                    OutputStream out = getContentResolver().openOutputStream(outDocFile.getUri());
+                    if (out != null) {
+                        // Download directly from URL with proper headers
+                        java.net.URL url = new java.net.URL(actuallyLoaded);
+                        java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
+                        connection.setConnectTimeout(10000);
+                        connection.setReadTimeout(30000);
+                        connection.setRequestMethod("GET");
+                        connection.setRequestProperty("User-Agent", "Slide for Reddit");
+                        connection.setInstanceFollowRedirects(true);
+
+                        int responseCode = connection.getResponseCode();
+                        if (responseCode != java.net.HttpURLConnection.HTTP_OK) {
+                            onError(new IOException("HTTP error code: " + responseCode + " for URL: " + actuallyLoaded));
+                            return;
+                        }
+
+                        java.io.InputStream in = connection.getInputStream();
+                        byte[] buffer = new byte[8192];
+                        int bytesRead;
+                        long totalBytes = 0;
+
+                        while ((bytesRead = in.read(buffer)) != -1) {
+                            out.write(buffer, 0, bytesRead);
+                            totalBytes += bytesRead;
+                        }
+
+                        in.close();
+                        out.close();
+
+                        if (totalBytes == 0) {
+                            onError(new IOException("Downloaded file is empty for URL: " + actuallyLoaded));
+                            return;
+                        }
+
+                        // Show success notification
+                        showSuccessNotification(outDocFile.getUri(), null);
+                    }
+                }
+            } catch (Exception e) {
+                onError(e);
+            }
         }
 
         private Uri createDocument(Uri baseUri, String fileName) {
@@ -267,11 +354,14 @@ public class ImageDownloadNotificationService extends Service {
             }
         }
 
+
         private String getMimeType(String fileName) {
             String mimeType = "image/png";
 
             if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
                 mimeType = "image/jpeg";
+            } else if (fileName.endsWith(".gif")) {
+                mimeType = "image/gif";
             }
 
             return mimeType;
@@ -283,7 +373,11 @@ public class ImageDownloadNotificationService extends Service {
             try {
                 URL parsedUrl = new URL(url);
                 String path = parsedUrl.getPath();
-                if (path.endsWith(".png") || path.endsWith(".jpg") || path.endsWith(".jpeg")) {
+                // Clean path to remove query parameters
+                if (path.contains("?")) {
+                    path = path.substring(0, path.indexOf("?"));
+                }
+                if (path.endsWith(".png") || path.endsWith(".jpg") || path.endsWith(".jpeg") || path.endsWith(".gif")) {
                     extension = path.substring(path.lastIndexOf("."));
                 } else {
                     throw new MalformedURLException();

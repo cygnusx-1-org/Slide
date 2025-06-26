@@ -28,6 +28,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NotificationCompat;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import androidx.core.content.ContextCompat;
 
 import com.cocosw.bottomsheet.BottomSheet;
@@ -41,6 +43,7 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 
 import me.edgan.redditslide.ContentType;
+import me.edgan.redditslide.DataShare;
 import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.Notifications.ImageDownloadNotificationService;
 import me.edgan.redditslide.R;
@@ -181,8 +184,14 @@ public class MediaView extends BaseSaveActivity {
                 && !contentUrl.contains("streamable.com")
                 && !contentUrl.contains("gfycat.com")
                 && !contentUrl.contains("redgifs.com")
-                && !contentUrl.contains("v.redd.it")) {
-            String type = contentUrl.substring(contentUrl.lastIndexOf(".") + 1).toUpperCase();
+                && !contentUrl.contains("v.redd.it")
+                && !contentUrl.toLowerCase().endsWith(".gifv")) {
+            // Clean URL to remove query parameters before extracting extension
+            String cleanUrl = contentUrl;
+            if (cleanUrl.contains("?")) {
+                cleanUrl = cleanUrl.substring(0, cleanUrl.indexOf("?"));
+            }
+            String type = cleanUrl.substring(cleanUrl.lastIndexOf(".") + 1).toUpperCase();
             try {
                 if (type.equals("GIFV") && new URL(contentUrl).getHost().equals("i.imgur.com")) {
                     type = "GIF";
@@ -221,7 +230,23 @@ public class MediaView extends BaseSaveActivity {
                                 }
                             case (6):
                                 {
-                                    saveFile(contentUrl);
+                                    // For GIF files, use the original URL without format conversion
+                                    String originalUrl = getIntent().getExtras().getString(EXTRA_URL);
+
+                                    // Convert preview.redd.it URLs back to i.redd.it for original file
+                                    if (originalUrl != null && originalUrl.contains("preview.redd.it")) {
+                                        originalUrl = originalUrl.replace("preview.redd.it", "i.redd.it");
+
+                                        // Remove any query parameters that might convert format
+                                        if (originalUrl.contains("?")) {
+                                            originalUrl = originalUrl.substring(0, originalUrl.indexOf("?"));
+                                        }
+                                    } else if (originalUrl != null && originalUrl.contains("?format=mp4")) {
+                                        // Remove MP4 format parameter to get original GIF
+                                        originalUrl = originalUrl.replaceAll("\\?format=mp4.*", "");
+                                    }
+
+                                    saveFile(originalUrl != null ? originalUrl : contentUrl, true);
                                 }
                                 break;
                             case (15):
@@ -240,6 +265,15 @@ public class MediaView extends BaseSaveActivity {
                                 {
                                     String urlToSave =
                                             actuallyLoaded != null ? actuallyLoaded : contentUrl;
+
+                                    // For MP4 saving, try to get the MP4 URL from preview data
+                                    if (isGif && DataShare.sharedSubmission != null) {
+                                        String mp4Url = extractMp4UrlFromPreview(DataShare.sharedSubmission, urlToSave);
+                                        if (mp4Url != null) {
+                                            urlToSave = mp4Url;
+                                        }
+                                    }
+
                                     doImageSave(isGif, urlToSave, index);
                                     break;
                                 }
@@ -267,6 +301,10 @@ public class MediaView extends BaseSaveActivity {
         );
     }
     public void saveFile(final String baseUrl) {
+        saveFile(baseUrl, false);
+    }
+
+    public void saveFile(final String baseUrl, boolean forceOriginal) {
         Uri storageUri = StorageUtil.getStorageUri(this);
 
         if (storageUri == null || !StorageUtil.hasStorageAccess(this)) {
@@ -278,8 +316,9 @@ public class MediaView extends BaseSaveActivity {
         Intent i = new Intent(this, ImageDownloadNotificationService.class);
         // always download the original file, or use the cached original if that is currently
         // displayed
-        i.putExtra("actuallyLoaded", contentUrl);
+        i.putExtra("actuallyLoaded", baseUrl);
         i.putExtra("downloadUri", storageUri.toString());
+        i.putExtra("forceOriginal", forceOriginal);
         if (subreddit != null && !subreddit.isEmpty()) i.putExtra("subreddit", subreddit);
         if (submissionTitle != null) i.putExtra(EXTRA_SUBMISSION_TITLE, submissionTitle);
         i.putExtra("index", index);
@@ -1302,5 +1341,40 @@ public class MediaView extends BaseSaveActivity {
             }
             lastContentUrl = null;
         }
+    }
+
+    /**
+     * Extracts MP4 URL from Reddit preview data if available
+     * @param submission The submission containing preview data
+     * @param fallbackUrl The fallback URL to use if no MP4 found
+     * @return MP4 URL if found, null otherwise
+     */
+    private String extractMp4UrlFromPreview(net.dean.jraw.models.Submission submission, String fallbackUrl) {
+        try {
+            JsonNode dataNode = submission.getDataNode();
+            if (dataNode.has("preview")
+                    && dataNode.get("preview").has("images")
+                    && dataNode.get("preview").get("images").size() > 0
+                    && dataNode.get("preview").get("images").get(0).has("variants")
+                    && dataNode.get("preview").get("images").get(0).get("variants").has("mp4")) {
+
+                String mp4Url = org.apache.commons.lang3.StringEscapeUtils.unescapeJson(
+                        dataNode.get("preview")
+                                .get("images")
+                                .get(0)
+                                .get("variants")
+                                .get("mp4")
+                                .get("source")
+                                .get("url")
+                                .asText()).replace("&amp;", "&");
+
+                return mp4Url;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error extracting MP4 URL from preview data", e);
+        }
+
+        Log.d(TAG, "No MP4 URL found in preview data, using fallback: " + fallbackUrl);
+        return null;
     }
 }

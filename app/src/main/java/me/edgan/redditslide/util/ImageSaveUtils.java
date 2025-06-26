@@ -42,8 +42,10 @@ public class ImageSaveUtils {
             Runnable showFirstDialogCallback) {
 
         Uri storageUri = StorageUtil.getStorageUri(activity);
-        if (storageUri == null || !StorageUtil.hasStorageAccess(activity)) {
-            Log.e(TAG, "No valid storage URI found.");
+        boolean hasAccess = StorageUtil.hasStorageAccess(activity);
+
+        if (storageUri == null || !hasAccess) {
+            Log.e(TAG, "No valid storage URI found or no access. URI=" + storageUri + ", hasAccess=" + hasAccess);
             if (showFirstDialogCallback != null) {
                 showFirstDialogCallback.run();
             }
@@ -108,7 +110,6 @@ public class ImageSaveUtils {
             // Logic adapted from GifUtils.AsyncLoadGif.doInBackground
             final String url = GifUtils.AsyncLoadGif.formatUrl(initialUrl);
             GifUtils.AsyncLoadGif.VideoType videoType = GifUtils.AsyncLoadGif.getVideoType(url);
-            LogUtil.v("ResolveAndSaveGifTask: " + url + ", VideoType: " + videoType);
 
             try {
                 switch (videoType) {
@@ -152,6 +153,9 @@ public class ImageSaveUtils {
                             }
                             return Uri.parse(obj);
                         }
+                    case TUMBLR:
+                        // For Tumblr URLs, treat as direct download
+                        return Uri.parse(url);
                     case OTHER:
                         error = new IllegalArgumentException("Cannot resolve video URL for type OTHER: " + url);
                         return null; // Cannot resolve
@@ -168,6 +172,7 @@ public class ImageSaveUtils {
         @Override
         protected void onPostExecute(Uri resolvedUri) {
             if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
+                Log.d(TAG, "Activity is null, finishing, or destroyed - aborting save");
                 return; // Activity gone
             }
 
@@ -184,6 +189,7 @@ public class ImageSaveUtils {
                 Log.e(TAG, "Failed to resolve URI for " + initialUrl + (error != null ? ": " + error.getMessage() : ""));
                 // Show error dialog or toast
                 if (activity instanceof androidx.appcompat.app.AppCompatActivity) {
+                    Log.d(TAG, "Showing error dialog for failed URI resolution");
                     DialogUtil.showErrorDialog((androidx.appcompat.app.AppCompatActivity) activity);
                 } else {
                      // Fallback or log error if casting is not possible (shouldn't happen in practice)
