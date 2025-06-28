@@ -29,6 +29,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.cocosw.bottomsheet.BottomSheet;
 
 import me.edgan.redditslide.Adapters.ImageGridAdapter;
+import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.Fragments.BlankFragment;
 import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.R;
@@ -351,6 +352,9 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
     public void showBottomSheetImage(final String contentUrl, final boolean isGif, final int index) {
         lastContentUrl = contentUrl; // Store for potential retry after permission grant
 
+        boolean isImage = false;
+        String saveImageString = getString(R.string.submission_save_image);
+
         int[] attrs = new int[] {R.attr.tintColor};
         TypedArray ta = obtainStyledAttributes(attrs);
 
@@ -368,11 +372,20 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
 
         bottomSheetBuilder.sheet(2, external, getString(R.string.open_externally));
         bottomSheetBuilder.sheet(5, share, getString(R.string.submission_link_share));
-        if (!isGif) {
+
+        if (!isGif || ContentType.isActualGifFile(contentUrl)) {
+            isImage = true;
+        }
+
+        if (ContentType.isActualGifFile(contentUrl)) {
+            saveImageString = getString(R.string.mediaview_save, "GIF");
+        }
+
+        if (isImage) {
             bottomSheetBuilder.sheet(3, image, getString(R.string.share_image));
         }
-        bottomSheetBuilder.sheet(4, save, getString(R.string.submission_save_image));
 
+        bottomSheetBuilder.sheet(4, save, isImage ? saveImageString : getString(R.string.mediaview_save, "MP4"));
         bottomSheetBuilder.listener(
                 (dialog, which) -> {
                     switch (which) {

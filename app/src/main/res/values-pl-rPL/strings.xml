@@ -195,9 +195,6 @@
     <string name="editor_size">Duża czcionka</string>
     <string name="editor_strike">Przekreślenie</string>
     <string name="editor_spoiler">Spojler</string>
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Zdjęcie zapisane</string>
-    <string name="gif_saved">GIF zapisany</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">O nie, coś poszło nie tak!</string>
     <string name="err_invalid_url">Nieprawidłowy link</string>
@@ -852,8 +849,6 @@
     <string name="livethread_not_found">Nie znaleziono wątku na żywo</string>
     <string name="livethread_recents_title">Wątek na żywo: %1$s</string>
     <!-- Used when viewing media -->
-    <string name="mediaview_notif_title">Pobieranie obrazu&#8230;</string>
-    <string name="mediaview_notif_text">Pobieranie w toku</string>
     <string name="mediaview_save">Zapisz %1$s</string>
     <string name="mediaview_saving">Zapisywanie %1$s</string>
     <!-- Drafts -->

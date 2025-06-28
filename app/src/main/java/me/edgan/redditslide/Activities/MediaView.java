@@ -343,23 +343,12 @@ public class MediaView extends BaseSaveActivity {
                 } else if (!new File(Reddit.appRestart.getString("imagelocation", "")).exists()) {
                     showErrorDialog();
                 } else {
-                    final File f =
-                            new File(
-                                    Reddit.appRestart.getString("imagelocation", "")
-                                            + File.separator
-                                            + UUID.randomUUID().toString()
-                                            + baseUrl.substring(baseUrl.lastIndexOf(".")));
-                    mNotifyManager =
-                            ContextCompat.getSystemService(
-                                    MediaView.this, NotificationManager.class);
+                    final File f = new File(Reddit.appRestart.getString("imagelocation", "") + File.separator + UUID.randomUUID().toString() + baseUrl.substring(baseUrl.lastIndexOf(".")));
+                    mNotifyManager = ContextCompat.getSystemService(MediaView.this, NotificationManager.class);
                     mBuilder = new NotificationCompat.Builder(MediaView.this, Reddit.CHANNEL_IMG);
-                    mBuilder.setContentTitle(getString(R.string.mediaview_saving, baseUrl))
-                            .setSmallIcon(R.drawable.ic_download);
+                    mBuilder.setContentTitle(getString(R.string.mediaview_saving, baseUrl)).setSmallIcon(R.drawable.ic_download);
                     try {
-
-                        final URL url =
-                                new URL(baseUrl); // wont exist on server yet, just load the full
-                        // version
+                        final URL url = new URL(baseUrl); // wont exist on server yet, just load the full version
                         URLConnection ucon = url.openConnection();
                         ucon.setReadTimeout(5000);
                         ucon.setConnectTimeout(10000);
@@ -390,21 +379,13 @@ public class MediaView extends BaseSaveActivity {
                                 null,
                                 new MediaScannerConnection.OnScanCompletedListener() {
                                     public void onScanCompleted(String path, Uri uri) {
-                                        Intent mediaScanIntent =
-                                                FileUtil.getFileIntent(
-                                                        f,
-                                                        new Intent(
-                                                                Intent
-                                                                        .ACTION_MEDIA_SCANNER_SCAN_FILE),
-                                                        MediaView.this);
+                                        Intent mediaScanIntent = FileUtil.getFileIntent(f,new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE), MediaView.this);
                                         MediaView.this.sendBroadcast(mediaScanIntent);
 
                                         final Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                                        startActivity(
-                                                Intent.createChooser(shareIntent, "Share GIF"));
-                                        NotificationManager mNotificationManager =
-                                                ContextCompat.getSystemService(
-                                                        MediaView.this, NotificationManager.class);
+                                        startActivity(Intent.createChooser(shareIntent, "Share GIF"));
+                                        NotificationManager mNotificationManager = ContextCompat.getSystemService(MediaView.this, NotificationManager.class);
+
                                         if (mNotificationManager != null) {
                                             mNotificationManager.cancel(1);
                                         }

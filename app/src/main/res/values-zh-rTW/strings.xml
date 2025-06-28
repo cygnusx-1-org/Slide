@@ -197,9 +197,6 @@
     <string name="editor_size">大字型</string>
     <string name="editor_strike">刪除線</string>
     <string name="editor_spoiler">劇透</string>
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">圖片已儲存</string>
-    <string name="gif_saved">已儲存 GIF</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">哎呀，出錯了</string>
     <string name="err_invalid_url">網址不正確</string>
@@ -734,8 +731,6 @@
     <!-- Internal browser -->
     <!-- Live thread -->
     <!-- Used when viewing media -->
-    <string name="mediaview_notif_title">正在下載圖片</string>
-    <string name="mediaview_notif_text">正在下載中</string>
     <string name="mediaview_save">儲存 %1$s</string>
     <string name="mediaview_saving">正在儲存 %1$s</string>
     <!-- Drafts -->

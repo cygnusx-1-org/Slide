@@ -211,9 +211,6 @@ Möchten Sie Slide for Reddit unterstützen?</string>
     <string name="editor_size">Große Schrift</string>
     <string name="editor_strike">Durchgestrichen</string>
     <string name="editor_spoiler">Spoiler</string>
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Foto gespeichert</string>
-    <string name="gif_saved">GIF wurde gespeichert</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">Oh nein, irgendwas ist schief gelaufen!</string>
     <string name="err_invalid_url">Ungültiger Link</string>
@@ -844,8 +841,6 @@ Möchten Sie Slide for Reddit unterstützen?</string>
     <string name="livethread_not_found">Live-Thread nicht gefunden</string>
     <string name="livethread_recents_title">Live-Thread: %1$s</string>
     <!-- Used when viewing media -->
-    <string name="mediaview_notif_title">Lade Bild&#8230;</string>
-    <string name="mediaview_notif_text">Download wird ausgeführt</string>
     <string name="mediaview_save">%1$s speichern</string>
     <string name="mediaview_saving">%1$s speichern</string>
     <!-- Drafts -->

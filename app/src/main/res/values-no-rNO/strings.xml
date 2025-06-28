@@ -143,8 +143,6 @@
     <string name="editor_submit">Send inn en post</string>
     <string name="editor_hint_subreddit">Subreddit</string>
     <!-- Editor buttons -->
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Bilde lagret</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">Uff da, noe gikk galt.</string>
     <string name="err_invalid_url">Ugyldig nettadresse</string>

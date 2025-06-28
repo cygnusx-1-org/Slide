@@ -550,6 +550,9 @@ public class TumblrPager extends BaseSaveActivity {
     public void showBottomSheetImage(
             final String contentUrl, final boolean isGif, final int index) {
 
+        boolean isImage = false;
+        String saveImageString = getString(R.string.submission_save_image);
+
         int[] attrs = new int[] {R.attr.tintColor};
         TypedArray ta = obtainStyledAttributes(attrs);
 
@@ -567,8 +570,20 @@ public class TumblrPager extends BaseSaveActivity {
 
         b.sheet(2, external, getString(R.string.open_externally));
         b.sheet(5, share, getString(R.string.submission_link_share));
-        if (!isGif) b.sheet(3, image, getString(R.string.share_image));
-        b.sheet(4, save, getString(R.string.submission_save_image));
+
+        if (!isGif || ContentType.isActualGifFile(contentUrl)) {
+            isImage = true;
+        }
+
+        if (ContentType.isActualGifFile(contentUrl)) {
+            saveImageString = getString(R.string.mediaview_save, "GIF");
+        }
+
+        if (isImage) {
+            b.sheet(3, image, getString(R.string.share_image));
+        }
+
+        b.sheet(4, save, isImage ? saveImageString : getString(R.string.mediaview_save, "MP4"));
         b.listener(
                 new DialogInterface.OnClickListener() {
                     @Override

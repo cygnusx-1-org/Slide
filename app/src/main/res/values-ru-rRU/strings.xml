@@ -209,9 +209,6 @@
     <string name="editor_size">Крупный шрифт</string>
     <string name="editor_strike">Зачеркнутый</string>
     <string name="editor_spoiler">Спойлер</string>
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Фото сохранено</string>
-    <string name="gif_saved">GIF сохранен</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">Ох, что-то пошло не так!</string>
     <string name="err_invalid_url">Неверный URL-адрес</string>
@@ -881,8 +878,6 @@
     <string name="livethread_not_found">Прямой эфир не найден</string>
     <string name="livethread_recents_title">Прямой эфир: %1$s</string>
     <!-- Used when viewing media -->
-    <string name="mediaview_notif_title">Загрузка изображения&#8230;</string>
-    <string name="mediaview_notif_text">Идет загрузка</string>
     <string name="mediaview_save">Сохранить %1$s</string>
     <string name="mediaview_saving">Сохраняем %1$s</string>
     <!-- Drafts -->

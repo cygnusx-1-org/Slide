@@ -206,9 +206,6 @@
     <string name="editor_size">Velké písmo</string>
     <string name="editor_strike">Proškrtnuté</string>
     <string name="editor_spoiler">Spoiler</string>
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Fotografie uložena</string>
-    <string name="gif_saved">GIF uložen</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">Ale ne, něco se pokazilo!</string>
     <string name="err_invalid_url">Neplatná URL</string>
@@ -861,8 +858,6 @@
     <string name="livethread_not_found">Živé vlákno nebylo nalezeno</string>
     <string name="livethread_recents_title">Živé vlákno: %1$s</string>
     <!-- Used when viewing media -->
-    <string name="mediaview_notif_title">Stahuji obrázek&#8230;</string>
-    <string name="mediaview_notif_text">Probíhá stahování</string>
     <string name="mediaview_save">Uložit %1$s</string>
     <string name="mediaview_saving">Ukládám %1$s</string>
     <!-- Drafts -->

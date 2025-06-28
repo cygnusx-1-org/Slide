@@ -200,9 +200,6 @@
     <string name="editor_size">Letra grande</string>
     <string name="editor_strike">Rasurado</string>
     <string name="editor_spoiler">Spoiler</string>
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Foto gravada</string>
-    <string name="gif_saved">GIF guardado</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">Uh oh, algo deu errado!</string>
     <string name="err_invalid_url">URL inválida</string>
@@ -792,8 +789,6 @@
     <string name="livethread_not_found">Discussão em direto não encontrada</string>
     <string name="livethread_recents_title">Discussão em direto: %1$s</string>
     <!-- Used when viewing media -->
-    <string name="mediaview_notif_title">A transferir imagem&#8230;</string>
-    <string name="mediaview_notif_text">Transferência em curso</string>
     <string name="mediaview_save">Gravar %1$s</string>
     <string name="mediaview_saving">A gravar %1$s</string>
     <!-- Drafts -->

@@ -479,6 +479,16 @@ public class ContentType {
         }
     }
 
+    /**
+     * Checks if content is actually a GIF file (not video)
+     *
+     * @param contentUrl The URL of the content
+     * @return true if it's a .gif file, false otherwise
+     */
+    public static boolean isActualGifFile(String contentUrl) {
+        return contentUrl != null && contentUrl.toLowerCase().endsWith(".gif");
+    }
+
     public enum Type {
         ALBUM,
         REDDIT_GALLERY,

@@ -200,9 +200,6 @@
     <string name="editor_size">Büyük yazı tipi</string>
     <string name="editor_strike">Üstü çizgili</string>
     <string name="editor_spoiler">Spoiler (İpucu)</string>
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Fotoğraf Kaydedildi</string>
-    <string name="gif_saved">GIF kaydedildi</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">Hay aksi, bir şeyler ters gitti!</string>
     <string name="err_invalid_url">Geçersiz adres</string>
@@ -833,8 +830,6 @@
     <string name="livethread_not_found">Canlı konu bulunamadı</string>
     <string name="livethread_recents_title">Canlı Konu: %1$s</string>
     <!-- Used when viewing media -->
-    <string name="mediaview_notif_title">Resim indiriliyor&#8230;</string>
-    <string name="mediaview_notif_text">İndirme devam ediyor</string>
     <string name="mediaview_save">%1$s\'ı kaydet</string>
     <string name="mediaview_saving">%1$s kaydediliyor</string>
     <!-- Drafts -->

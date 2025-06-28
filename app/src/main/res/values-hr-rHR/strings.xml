@@ -182,9 +182,6 @@
     <string name="edit_selftext">Uredi selftext</string>
     <string name="delete_submission">Obriši objavu</string>
     <!-- Editor buttons -->
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Fotografija spremljena</string>
-    <string name="gif_saved">GIF spremljen</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">Uh, nešto je pošlo po zlu!</string>
     <string name="err_invalid_url">Neispravan URL</string>
@@ -654,8 +651,6 @@
     <!-- Live thread -->
     <string name="livethread_recents_title">Live tema: %1$s</string>
     <!-- Used when viewing media -->
-    <string name="mediaview_notif_title">Preuzimanje slike&#8230;</string>
-    <string name="mediaview_notif_text">Preuzimanje u tijeku</string>
     <string name="mediaview_save">Spremi %1$s</string>
     <string name="mediaview_saving">Spremanje %1$s</string>
     <!-- Drafts -->

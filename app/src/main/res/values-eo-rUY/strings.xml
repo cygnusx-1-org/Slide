@@ -124,9 +124,6 @@
     <string name="editor_insert_image">Enmeti bildon</string>
     <string name="editor_quote">Citaĵo</string>
     <string name="editor_spoiler">Malkaŝaĵo</string>
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Foto konservita</string>
-    <string name="gif_saved">Movbildo konservita</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">Ho ve, io misokazis!</string>
     <string name="err_invalid_url">Malvalida ligilo</string>
@@ -314,7 +311,6 @@
     <!-- Internal browser -->
     <!-- Live thread -->
     <!-- Used when viewing media -->
-    <string name="mediaview_notif_title">Elŝutas bildon...</string>
     <string name="mediaview_save">Konservi %1$s</string>
     <string name="mediaview_saving">Konservas %1$s</string>
     <!-- Drafts -->

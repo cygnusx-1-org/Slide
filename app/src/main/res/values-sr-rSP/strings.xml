@@ -203,9 +203,6 @@
     <string name="editor_size">Велики фонт</string>
     <string name="editor_strike">Прецртано</string>
     <string name="editor_spoiler">Спојлер</string>
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Слика сачувана</string>
-    <string name="gif_saved">GIF сачуван</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">Ух, нешто је пошло наопако!</string>
     <string name="err_invalid_url">Погрешна адреса</string>
@@ -730,8 +727,6 @@
     <string name="livethread_not_found">Тема уживо није нађена</string>
     <string name="livethread_recents_title">Тема уживо: %1$s</string>
     <!-- Used when viewing media -->
-    <string name="mediaview_notif_title">Преузимам слику&#8230;</string>
-    <string name="mediaview_notif_text">Преузимање у току</string>
     <string name="mediaview_save">Сачувај %1$s</string>
     <string name="mediaview_saving">Чувам %1$s</string>
     <!-- Drafts -->

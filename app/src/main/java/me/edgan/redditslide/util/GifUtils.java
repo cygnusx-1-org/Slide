@@ -1,9 +1,7 @@
 package me.edgan.redditslide.util;
 
 import android.app.Activity;
-import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -19,7 +17,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
 
@@ -84,36 +81,6 @@ public class GifUtils {
      * @param c
      */
     private static final Object DIRECTORY_LOCK = new Object();
-
-    public static void doNotifGif(DocumentFile docFile, Activity c) {
-        try {
-            final Intent shareIntent = new Intent(Intent.ACTION_VIEW);
-            shareIntent.setDataAndType(docFile.getUri(), "video/mp4");
-            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-            PendingIntent contentIntent =
-                    PendingIntent.getActivity(
-                            c,
-                            0,
-                            shareIntent,
-                            PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
-
-            Notification notif =
-                    new NotificationCompat.Builder(c, Reddit.CHANNEL_IMG)
-                            .setContentTitle(c.getString(R.string.gif_saved))
-                            .setSmallIcon(R.drawable.ic_save)
-                            .setContentIntent(contentIntent)
-                            .build();
-
-            NotificationManager mNotificationManager =
-                    ContextCompat.getSystemService(c, NotificationManager.class);
-            if (mNotificationManager != null) {
-                mNotificationManager.notify((int) System.currentTimeMillis(), notif);
-            }
-        } catch (Exception e) {
-            Log.e("GifUtils", "Error showing notification", e);
-        }
-    }
 
     private static void showErrorDialog(final Activity a) {
         DialogUtil.showErrorDialog((MediaView) a);
@@ -511,9 +478,7 @@ public class GifUtils {
                 protected void onPostExecute(DocumentFile result) {
                     if (save) {
                         notifMgr.cancel(1);
-                        if (result != null) {
-                            doNotifGif(result, activity);
-                        } else {
+                        if (result == null) {
                             Log.e(
                                     "GifUtils",
                                     "Save failed: "

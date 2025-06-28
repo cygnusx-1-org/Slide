@@ -229,10 +229,6 @@
     <string name="editor_strike">Strikethrough</string>
     <string name="editor_spoiler">Spoiler</string>
 
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Photo saved</string>
-    <string name="gif_saved">GIF saved</string>
-
     <!-- General errors / errors without a category -->
     <string name="err_title">Uh oh, something went wrong!</string>
     <string name="err_invalid_url">Invalid URL</string>
@@ -973,9 +969,7 @@
     <string name="livethread_recents_title">Live thread: %1$s</string>
 
     <!-- Used when viewing media -->
-    <string name="mediaview_notif_title">Downloading image…</string>
     <string name="mediaview_notif_video">Downloading video…</string>
-    <string name="mediaview_notif_text">Download in progress</string>
     <string name="mediaview_save">Save %1$s</string>
     <string name="mediaview_saving">Saving %1$s</string>
 

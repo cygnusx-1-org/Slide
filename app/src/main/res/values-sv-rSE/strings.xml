@@ -161,9 +161,6 @@
     <string name="editor_quote">Citat</string>
     <string name="editor_num_list">Numrerad lista</string>
     <string name="editor_size">Stort typsnitt</string>
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Fotot sparat</string>
-    <string name="gif_saved">GIF sparad</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">Hoppsan, något gick fel!</string>
     <string name="err_invalid_url">Ogiltig webbadress</string>

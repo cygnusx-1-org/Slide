@@ -168,9 +168,6 @@
     <string name="editor_hint_subreddit">Subreddit</string>
     <string name="edit_selftext">Wijzig zelftekst</string>
     <!-- Editor buttons -->
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Afbeelding opgeslagen</string>
-    <string name="gif_saved">GIF opgeslagen</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">Oh oh, er is iets misgegaan!</string>
     <string name="err_invalid_url">Ongeldige URL</string>

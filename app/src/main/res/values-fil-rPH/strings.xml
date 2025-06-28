@@ -177,9 +177,6 @@
     <string name="delete_submission">I-delete ang pagsusumite</string>
     <string name="set_submission_flair">I-set ang flair ng pagsusumite</string>
     <!-- Editor buttons -->
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Nai-save ang Larawan</string>
-    <string name="gif_saved">Nai-save ang GIF</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">Uh oh, may nangyaring mali!</string>
     <string name="err_invalid_url">Ang URL ay Imbalido</string>

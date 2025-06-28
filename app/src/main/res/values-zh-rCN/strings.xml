@@ -200,9 +200,6 @@
     <string name="editor_size">大字体</string>
     <string name="editor_strike">删除线</string>
     <string name="editor_spoiler">剧透</string>
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">图片已保存</string>
-    <string name="gif_saved">动图已保存</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">不好，出问题了！</string>
     <string name="err_invalid_url">无效网址</string>
@@ -839,8 +836,6 @@
     <string name="livethread_not_found">未找到实时主题帖</string>
     <string name="livethread_recents_title">实时主题帖：%1$s</string>
     <!-- Used when viewing media -->
-    <string name="mediaview_notif_title">正在下载图片&#8230;</string>
-    <string name="mediaview_notif_text">正在下载</string>
     <string name="mediaview_save">保存 %1$s</string>
     <string name="mediaview_saving">保存中 %1$s</string>
     <!-- Drafts -->

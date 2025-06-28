@@ -198,9 +198,6 @@
     <string name="editor_size">Fon besar</string>
     <string name="editor_strike">Coret</string>
     <string name="editor_spoiler">Spoiler</string>
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Foto disimpan</string>
-    <string name="gif_saved">GIF disimpan</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">Uh oh, ada sesuatu yang tidak beres!</string>
     <string name="err_invalid_url">URL tidak valid</string>
@@ -819,8 +816,6 @@
     <string name="livethread_not_found">Urutan langsung tidak ditemukan</string>
     <string name="livethread_recents_title">Urutan langsung: %1$s</string>
     <!-- Used when viewing media -->
-    <string name="mediaview_notif_title">Mengunduh gambar&#8230;</string>
-    <string name="mediaview_notif_text">Sedang mengunduh</string>
     <string name="mediaview_save">Simpan %1$s</string>
     <string name="mediaview_saving">Menyimpan %1$s</string>
     <!-- Drafts -->

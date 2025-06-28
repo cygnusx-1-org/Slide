@@ -200,9 +200,6 @@
     <string name="editor_size">Tipus de lletra gran</string>
     <string name="editor_strike">Rallat</string>
     <string name="editor_spoiler">Filtració</string>
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Imatge desada</string>
-    <string name="gif_saved">GIF desat</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">Caram, quelcom ha fallat!</string>
     <string name="err_invalid_url">Enllaç invàlid</string>
@@ -833,8 +830,6 @@
     <string name="livethread_not_found">Fil en viu no trobat</string>
     <string name="livethread_recents_title">Fil en viu: %1$s</string>
     <!-- Used when viewing media -->
-    <string name="mediaview_notif_title">S\'està baixant la imatge&#8230;</string>
-    <string name="mediaview_notif_text">Descàrrega en curs</string>
     <string name="mediaview_save">Desa %1$s</string>
     <string name="mediaview_saving">Desant %1$s</string>
     <!-- Drafts -->

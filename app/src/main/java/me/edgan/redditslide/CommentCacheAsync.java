@@ -126,22 +126,17 @@ public class CommentCacheAsync extends AsyncTask<Void, Void, Void> {
 
             if (!sub.isEmpty()) {
                 if (!sub.equals(SAVED_SUBMISSIONS)) {
-                    mNotifyManager =
-                            ContextCompat.getSystemService(context, NotificationManager.class);
-                    mBuilder =
-                            new NotificationCompat.Builder(context, Reddit.CHANNEL_COMMENT_CACHE);
+                    mNotifyManager = ContextCompat.getSystemService(context, NotificationManager.class);
+                    mBuilder =new NotificationCompat.Builder(context, Reddit.CHANNEL_COMMENT_CACHE);
                     mBuilder.setOngoing(true);
-                    mBuilder.setContentTitle(
-                                    context.getString(
-                                            R.string.offline_caching_title,
-                                            sub.equalsIgnoreCase("frontpage")
-                                                    ? fSub
-                                                    : (fSub.contains("/m/") ? fSub : "/r/" + fSub)))
+                    mBuilder.setContentTitle(context.getString(R.string.offline_caching_title, sub.equalsIgnoreCase("frontpage") ? fSub : (fSub.contains("/m/") ? fSub : "/r/" + fSub)))
                             .setSmallIcon(R.drawable.ic_save);
                 }
+
                 List<Submission> submissions = new ArrayList<>();
                 ArrayList<String> newFullnames = new ArrayList<>();
                 int count = 0;
+
                 if (alreadyReceived != null) {
                     submissions.addAll(alreadyReceived);
                 } else {

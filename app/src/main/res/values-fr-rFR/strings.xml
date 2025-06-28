@@ -201,9 +201,6 @@
     <string name="editor_size">Grande police</string>
     <string name="editor_strike">Barré</string>
     <string name="editor_spoiler">Spoiler</string>
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Photo Enregistrée</string>
-    <string name="gif_saved">GIF enregistré</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">Oups, il y a un problème !</string>
     <string name="err_invalid_url">URL non valide</string>
@@ -844,8 +841,6 @@
     <string name="livethread_not_found">Fil en direct introuvable</string>
     <string name="livethread_recents_title">Fil en direct: %1$s</string>
     <!-- Used when viewing media -->
-    <string name="mediaview_notif_title">Téléchargement de l\'image&#8230;</string>
-    <string name="mediaview_notif_text">Téléchargement en cours</string>
     <string name="mediaview_save">Enregistrer%1$s</string>
     <string name="mediaview_saving">Sauvegarde de %1$s</string>
     <!-- Drafts -->

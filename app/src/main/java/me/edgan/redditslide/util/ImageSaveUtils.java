@@ -10,6 +10,7 @@ import android.widget.Toast; // Added
 // Added
 import com.google.gson.JsonObject; // Added
 
+import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.Notifications.ImageDownloadNotificationService;
 import me.edgan.redditslide.R; // Added
 // Added
@@ -51,8 +52,11 @@ public class ImageSaveUtils {
             }
             return;
         } else {
-            if (isGif) {
-                // Handle video/gif save asynchronously
+            // Check if it's an actual .gif file - these should be handled as images, not videos
+            boolean isActualGifFile = ContentType.isActualGifFile(contentUrl);
+
+            if (isGif && !isActualGifFile) {
+                // Handle video/gif save asynchronously (mp4, webm, etc.)
                 new ResolveAndSaveGifTask(
                         activity,
                         contentUrl,
@@ -62,7 +66,7 @@ public class ImageSaveUtils {
                         index
                 ).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
-                // Handle image save (remains synchronous start of service)
+                // Handle image save (including actual .gif files) - remains synchronous start of service
                 Intent i = new Intent(activity, ImageDownloadNotificationService.class);
                 i.putExtra("actuallyLoaded", contentUrl);
                 i.putExtra("downloadUri", storageUri.toString());

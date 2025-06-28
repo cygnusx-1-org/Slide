@@ -201,9 +201,6 @@
     <string name="editor_size">Caratteri grandi</string>
     <string name="editor_strike">Barrato</string>
     <string name="editor_spoiler">Spoiler</string>
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Foto salvata</string>
-    <string name="gif_saved">GIF salvata</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">Oh–oh, qualcosa è andato storto!</string>
     <string name="err_invalid_url">URL invalido</string>
@@ -851,8 +848,6 @@
     <string name="livethread_not_found">Live thread non trovato</string>
     <string name="livethread_recents_title">Live thread: %1$s</string>
     <!-- Used when viewing media -->
-    <string name="mediaview_notif_title">Scaricando l\'immagine&#8230;</string>
-    <string name="mediaview_notif_text">Download in corso</string>
     <string name="mediaview_save">Salva %1$s</string>
     <string name="mediaview_saving">Salvando %1$s</string>
     <!-- Drafts -->

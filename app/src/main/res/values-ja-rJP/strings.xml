@@ -198,9 +198,6 @@
     <string name="editor_size">大きなフォント</string>
     <string name="editor_strike">取り消し線</string>
     <string name="editor_spoiler">ネタバレ</string>
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">保存した写真</string>
-    <string name="gif_saved">GIF を保存しました</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">何か問題が発生しました!</string>
     <string name="err_invalid_url">URL が正しくありません</string>
@@ -837,8 +834,6 @@
     <string name="livethread_not_found">ライブスレッドが見つかりません</string>
     <string name="livethread_recents_title">ライブスレッド: %1$s</string>
     <!-- Used when viewing media -->
-    <string name="mediaview_notif_title">画像をダウンロード中&#8230;</string>
-    <string name="mediaview_notif_text">ダウンロードが進行中</string>
     <string name="mediaview_save">%1$s を保存</string>
     <string name="mediaview_saving">%1$s を保存中</string>
     <!-- Drafts -->

@@ -203,9 +203,6 @@
     <string name="editor_size">Fonte grande</string>
     <string name="editor_strike">Riscado</string>
     <string name="editor_spoiler">Spoiler</string>
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Imagem Salva</string>
-    <string name="gif_saved">GIF salva</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">Uh oh, algo deu errado!</string>
     <string name="err_invalid_url">URL inválida</string>
@@ -853,8 +850,6 @@
     <string name="livethread_not_found">Tópico ao vivo não encontrado</string>
     <string name="livethread_recents_title">Tópico ao vivo: %1$s</string>
     <!-- Used when viewing media -->
-    <string name="mediaview_notif_title">Baixando imagem&#8230;</string>
-    <string name="mediaview_notif_text">Download em andamento</string>
     <string name="mediaview_save">Salvar %1$s</string>
     <string name="mediaview_saving">Salvando %1$s</string>
     <!-- Drafts -->

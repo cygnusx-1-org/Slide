@@ -197,9 +197,6 @@
     <string name="editor_size">Nagy betűméret</string>
     <string name="editor_strike">Áthúzott</string>
     <string name="editor_spoiler">spoiler-figyelmeztetés</string>
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Kép elmentve</string>
-    <string name="gif_saved">GIF elmentve</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">Ajjaj, valami hiba történt!</string>
     <string name="err_invalid_url">Érvénytelen webcím</string>

@@ -158,9 +158,6 @@
     <string name="editor_hint_subreddit">Subreddit</string>
     <string name="delete_submission">Slet indlæg</string>
     <!-- Editor buttons -->
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Billede gemt</string>
-    <string name="gif_saved">GIF gemt</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">Ups! Noget gik galt</string>
     <string name="err_invalid_url">Ugyldig URL</string>

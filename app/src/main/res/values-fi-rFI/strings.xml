@@ -196,9 +196,6 @@
     <string name="editor_size">Suuri fontti</string>
     <string name="editor_strike">Yliviivaus</string>
     <string name="editor_spoiler">Spoileri</string>
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Kuva tallennettu</string>
-    <string name="gif_saved">GIF:i tallennettu</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">Hups, jotain meni pieleen!</string>
     <string name="err_invalid_url">Virheellinen URL</string>

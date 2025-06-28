@@ -165,9 +165,6 @@
     <string name="edit_selftext">Editare selftext</string>
     <string name="delete_submission">Șterge postare</string>
     <!-- Editor buttons -->
-    <!-- General information / information without a category -->
-    <string name="info_photo_saved">Fotografie salvată</string>
-    <string name="gif_saved">GIF salvat</string>
     <!-- General errors / errors without a category -->
     <string name="err_title">O! Ceva nu merge cum trebuie!</string>
     <string name="err_invalid_url">Link invalid</string>
@@ -583,8 +580,6 @@
     <string name="livethread_not_found">Subiectul live nu a fost găsit</string>
     <string name="livethread_recents_title">Subiect live: %1$s</string>
     <!-- Used when viewing media -->
-    <string name="mediaview_notif_title">Se descarcă imaginea&#8230;</string>
-    <string name="mediaview_notif_text">Descărcare în curs</string>
     <string name="mediaview_save">Salvează %1$s</string>
     <string name="mediaview_saving">Se salvează %1$s</string>
     <!-- Drafts -->
