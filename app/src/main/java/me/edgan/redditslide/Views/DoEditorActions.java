@@ -480,6 +480,8 @@ public class DoEditorActions {
                                         HtmlRenderer.builder().extensions(extensions).build();
                                 Node document = parser.parse(editText.getText().toString());
                                 String html = renderer.render(document);
+                                // Process Reddit-style superscript (^text)
+                                html = processSuperscript(html);
                                 LayoutInflater inflater = a.getLayoutInflater();
                                 final View dialoglayout =
                                         inflater.inflate(R.layout.parent_comment_dialog, null);
@@ -967,5 +969,15 @@ public class DoEditorActions {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * Processes Reddit-style superscript formatting (^text) and converts it to HTML.
+     * Matches text that starts with ^ and continues until whitespace or end of line.
+     */
+    private static String processSuperscript(String html) {
+        // Pattern to match ^text (caret followed by text until whitespace or end)
+        // This matches Reddit's superscript behavior
+        return html.replaceAll("\\^([^\\s]+)", "<sup><small>$1</small></sup>");
     }
 }
