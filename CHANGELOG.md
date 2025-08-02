@@ -4,6 +4,10 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.3.6 / 2025-8-1
+===========
+* Fixed Settings display by further opting out of edge-to-edge
+
 7.3.5 / 2025-8-1
 ===========
 * Updated to targetSdk 35
