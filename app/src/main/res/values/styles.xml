@@ -187,6 +187,7 @@
         <item name="android:alertDialogStyle">@style/AlertDialog.AppCompat</item>
         <item name="android:colorBackground">@android:color/black</item>
         <item name="android:windowBackground">@null</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
         <item name="bs_bottomSheetStyle">@style/BottomSheet.StyleDialog.AMOLED</item>
         <item name="card_background">@android:color/black</item>
         <item name="fontColor">#DEFFFFFF</item> <!-- 87% white -->
@@ -203,6 +204,7 @@
         <item name="android:alertDialogStyle">@style/AlertDialog.AppCompat</item>
         <item name="android:colorBackground">#121212</item>
         <item name="android:windowBackground">@null</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
         <item name="bs_bottomSheetStyle">@style/BottomSheet.StyleDialog.AMOLED</item>
         <item name="card_background">@android:color/black</item>
         <item name="fontColor">#deffffff</item> <!-- 87% white -->
@@ -219,6 +221,7 @@
         <item name="android:alertDialogStyle">@style/AlertDialog.AppCompat</item>
         <item name="android:colorBackground">#303030</item>
         <item name="android:windowBackground">@null</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
         <item name="bs_bottomSheetStyle">@style/BottomSheet.StyleDialog.Dark</item>
         <item name="card_background">#303030</item>
         <item name="fontColor">#deffffff</item> <!-- 87% white -->
@@ -235,6 +238,7 @@
         <item name="android:alertDialogStyle">@style/AlertDialog.AppCompat</item>
         <item name="android:colorBackground">#37474f</item>
         <item name="android:windowBackground">@null</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
         <item name="bs_bottomSheetStyle">@style/BottomSheet.StyleDialog.Dark_Blue</item>
         <item name="card_background">#37474f</item>
         <item name="fontColor">#deffffff</item> <!-- 87% white -->
@@ -251,6 +255,7 @@
         <item name="android:alertDialogStyle">@style/AlertDialog.AppCompat</item>
         <item name="android:colorBackground">#1f1e26</item>
         <item name="android:windowBackground">@null</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
         <item name="bs_bottomSheetStyle">@style/BottomSheet.StyleDialog.Deep</item>
         <item name="card_background">#1f1e26</item>
         <item name="fontColor">#deffffff</item> <!-- 87% white -->
@@ -267,6 +272,7 @@
         <item name="android:alertDialogStyle">@style/AlertDialog.AppCompat</item>
         <item name="android:colorBackground">#2d2d2d</item>
         <item name="android:windowBackground">@null</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
         <item name="bs_bottomSheetStyle">@style/BottomSheet.StyleDialog.PIXEL</item>
         <item name="card_background">#2d2d2d</item>
         <item name="fontColor">#deffffff</item> <!-- 87% white -->
@@ -283,6 +289,7 @@
         <item name="android:alertDialogStyle">@style/AlertDialog.AppCompat</item>
         <item name="android:colorBackground">#402c2c</item>
         <item name="android:windowBackground">@null</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
         <item name="bs_bottomSheetStyle">@style/BottomSheet.StyleDialog.Night_Red</item>
         <item name="card_background">#402c2c</item>
         <item name="fontColor">#defff7ed</item> <!-- 87% white -->
@@ -304,6 +311,7 @@
         <item name="android:textColorPrimary">#de3e3d36</item> <!-- 87% black -->
         <item name="android:textColorSecondary">#8a3e3d36</item> <!-- 54% black -->
         <item name="android:windowBackground">@null</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
         <item name="bs_bottomSheetStyle">@style/BottomSheet.StyleDialog.Sepia</item>
         <item name="card_background">#e2dfd7</item>
         <item name="fontColor">#de3e3d36</item> <!-- 87% black -->
@@ -325,6 +333,7 @@
         <item name="android:textColorPrimary">#de000000</item> <!-- 87% black -->
         <item name="android:textColorSecondary">#8a000000</item> <!-- 54% black -->
         <item name="android:windowBackground">@null</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
         <item name="bs_bottomSheetStyle">@style/BottomSheet.StyleDialog.Light</item>
         <item name="card_background">@android:color/white</item>
         <item name="fontColor">#de000000</item> <!-- 87% black -->
