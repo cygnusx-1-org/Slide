@@ -507,11 +507,13 @@
     <style parent="Theme.AppCompat.NoActionBar" name="swipeable">
         <item name="android:windowBackground">@null</item>
         <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
     </style>
 
     <style parent="Theme.AppCompat.NoActionBar" name="swipeableweb">
         <item name="android:windowBackground">@null</item>
         <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
         <item name="actionMenuTextColor">#DE000000</item>
         <item name="android:actionMenuTextColor">#DE000000</item>
         <item name="android:colorBackground">#dedede</item>
@@ -1051,6 +1053,7 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsFloating">true</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
