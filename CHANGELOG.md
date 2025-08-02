@@ -4,6 +4,13 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.3.6 / 2025-8-1
+===========
+* Updated to targetSdk 35
+* Opted out of edge-to-edge in the themes
+* Fixed Superscript ^ doesn't format in previews #266
+* Fixed crash in SubmissionsView.java
+
 7.3.4 / 2025-6-24
 ============
 * Fixed External video playback pauses on videos that don't have audio #263
