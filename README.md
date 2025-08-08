@@ -81,5 +81,8 @@ The file [CHANGELOG.md](CHANGELOG.md) provides an overview of the changes for a
 release; for a more detailed look at changes to the app,
 [view individual commits](https://github.com/edgan/Slide/commits/master).
 
+# Related project
+Another [Reddit](https://www.reddit.com/) Android client app is [Continuum](https://github.com/cygnusx-1-org/continuum/). It is a fork of [Infinity for Reddit](https://github.com/Docile-Alligator/Infinity-For-Reddit/), but allows you to enter your own `Client ID` like `Slide`. It is open source, ad-free and completely free.
+
 ## Licensing
 Slide is licensed under the [GNU v3 Public License](LICENSE.txt).
