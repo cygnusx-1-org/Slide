@@ -73,6 +73,7 @@ public class Authentication {
         } else {
             isLoggedIn = Reddit.appRestart.getBoolean("loggedin", false);
             name = Reddit.appRestart.getString("name", "");
+            refresh = authentication.getString("lasttoken", "");
             if ((name.isEmpty() || !isLoggedIn)
                     && !authentication.getString("lasttoken", "").isEmpty()) {
                 for (String s :
@@ -131,6 +132,17 @@ public class Authentication {
                             Log.v(LogUtil.getTag(), "REAUTH LOGGED IN");
 
                             OAuthHelper oAuthHelper = reddit.getOAuthHelper();
+
+                            // Ensure refresh token is available from SharedPreferences if null
+                            if (refresh == null || refresh.isEmpty()) {
+                                refresh = authentication.getString("lasttoken", "");
+                            }
+
+                            if (refresh == null || refresh.isEmpty()) {
+                                Log.e(LogUtil.getTag(), "No refresh token available, forcing re-authentication");
+                                Authentication.isLoggedIn = false;
+                                return null;
+                            }
 
                             oAuthHelper.setRefreshToken(refresh);
                             OAuthData finalData;
