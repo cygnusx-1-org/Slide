@@ -162,8 +162,27 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
      * @param subreddit the subreddit to theme
      */
     public void setTextHtml(CharSequence baseText, String subreddit) {
+        setTextHtml(baseText, subreddit, null);
+    }
+
+    /**
+     * Set the text from html. Handles formatting spoilers, links etc.
+     *
+     * <p>The text must be valid html.
+     *
+     * @param baseText html text
+     * @param subreddit the subreddit to theme
+     * @param submission the submission object for accessing media metadata
+     */
+    public void setTextHtml(CharSequence baseText, String subreddit, net.dean.jraw.models.Submission submission) {
         String text = wrapAlternateSpoilers(saveEmotesFromDestruction(baseText.toString().trim()));
         text = replaceCodeBlocks(text);
+
+        // Process Reddit video player URLs before HTML parsing if submission is provided
+        if (submission != null && text.contains("reddit.com/link/") && text.contains("/video/")) {
+            text = preprocessRedditVideoPlayerUrls(text, submission, subreddit);
+        }
+
         SpannableStringBuilder builder = (SpannableStringBuilder) CompatUtil.fromHtml(text);
 
         // replace the <blockquote> blue line with something more colorful
@@ -188,13 +207,39 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
 
         processRedditPreviewImages(builder);
 
+        // Process video thumbnail placeholders if submission is provided
+        if (submission != null && builder.toString().contains("VIDEO_THUMBNAIL_")) {
+            processVideoThumbnailPlaceholders(builder, submission, subreddit);
+        }
+
         if (subreddit != null && !subreddit.isEmpty()) {
+            // Check if we have video thumbnails
+            boolean hasVideoThumbnails = submission != null && builder.toString().contains("\uFFFC");
+
+            if (hasVideoThumbnails) {
+                // Use standard LinkMovementMethod for video thumbnails to ensure ClickableSpans work
+                setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
+                android.util.Log.d("SpoilerRobotoTextView", "Using LinkMovementMethod for video thumbnails");
+            } else {
+                // Use custom TextViewLinkHandler for regular content
             setMovementMethod(new TextViewLinkHandler(this, subreddit, builder));
+            }
+
             setFocusable(false);
+            // Don't set clickable to false if we have video thumbnails
+            if (!hasVideoThumbnails) {
             setClickable(false);
+            }
             if (subreddit.equals("FORCE_LINK_CLICK")) {
                 setLongClickable(false);
             }
+        }
+
+        // If we have video thumbnails, make sure the TextView can handle clicks
+        if (submission != null && builder.toString().contains("\uFFFC")) {
+            setClickable(true);
+            setFocusable(true);
+            android.util.Log.d("SpoilerRobotoTextView", "TextView set to clickable for video thumbnails");
         }
 
         builder = removeNewlines(builder);
@@ -1341,7 +1386,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
 
                                 float widthScale = (float) maxWidth / bitmap.getWidth();
                                 float heightScale = (float) maxHeight / bitmap.getHeight();
-                                float scale = Math.min(widthScale, heightScale);  // Use the smaller scale
+                                float scale = Math.min(widthScale, heightScale);
 
                                 int scaledWidth = (int) (bitmap.getWidth() * scale);
                                 int scaledHeight = (int) (bitmap.getHeight() * scale);
@@ -1381,24 +1426,292 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
         }
     }
 
+    private String preprocessRedditVideoPlayerUrls(String html, net.dean.jraw.models.Submission submission, String subreddit) {
+        android.util.Log.d("SpoilerRobotoTextView", "preprocessRedditVideoPlayerUrls called with HTML: " + html);
+
+        // Pattern to match Reddit video player URLs in HTML links
+        Pattern videoLinkPattern = Pattern.compile("<a href=\"(https://reddit\\.com/link/[^/]+/video/([^/]+)/player)\"[^>]*>([^<]*)</a>");
+        Matcher matcher = videoLinkPattern.matcher(html);
+
+        // Get media metadata from submission
+        com.fasterxml.jackson.databind.JsonNode mediaMetadata = null;
+        if (submission.getDataNode().has("media_metadata")) {
+            mediaMetadata = submission.getDataNode().get("media_metadata");
+            android.util.Log.d("SpoilerRobotoTextView", "Found media_metadata with keys: " + mediaMetadata.fieldNames());
+        }
+
+        if (mediaMetadata == null) {
+            android.util.Log.d("SpoilerRobotoTextView", "No media_metadata found");
+            return html; // No media metadata available
+        }
+
+        StringBuffer result = new StringBuffer();
+        int matchCount = 0;
+
+        while (matcher.find()) {
+            matchCount++;
+            String fullUrl = matcher.group(1);
+            String videoId = matcher.group(2);
+            String linkText = matcher.group(3);
+
+            android.util.Log.d("SpoilerRobotoTextView", "Found video link " + matchCount + ": URL=" + fullUrl + ", videoId=" + videoId);
+
+            if (mediaMetadata.has(videoId)) {
+                com.fasterxml.jackson.databind.JsonNode videoData = mediaMetadata.get(videoId);
+
+                // Check if this is a valid Reddit video
+                if (videoData.has("e") && "RedditVideo".equals(videoData.get("e").asText())) {
+                    // Replace the link with a special placeholder that includes video metadata
+                    String replacement = String.format(
+                        "<span class=\"reddit-video\" data-video-id=\"%s\" data-url=\"%s\">VIDEO_THUMBNAIL_%s</span>",
+                        videoId, fullUrl, videoId
+                    );
+                    android.util.Log.d("SpoilerRobotoTextView", "Replacing with: " + replacement);
+                    matcher.appendReplacement(result, replacement);
+                } else {
+                    android.util.Log.d("SpoilerRobotoTextView", "Not a valid Reddit video, keeping original link");
+                    // Keep the original link if it's not a valid Reddit video
+                    matcher.appendReplacement(result, matcher.group(0));
+                }
+            } else {
+                android.util.Log.d("SpoilerRobotoTextView", "No metadata found for videoId: " + videoId);
+                // Keep the original link if no metadata found
+                matcher.appendReplacement(result, matcher.group(0));
+            }
+        }
+        matcher.appendTail(result);
+
+        String finalResult = result.toString();
+        android.util.Log.d("SpoilerRobotoTextView", "Final preprocessed HTML: " + finalResult);
+        return finalResult;
+    }
+
+    private void processVideoThumbnailPlaceholders(SpannableStringBuilder builder, net.dean.jraw.models.Submission submission, String subreddit) {
+        android.util.Log.d("SpoilerRobotoTextView", "processVideoThumbnailPlaceholders called with text: " + builder.toString());
+
+        // Get media metadata from submission
+        com.fasterxml.jackson.databind.JsonNode mediaMetadata = null;
+        if (submission.getDataNode().has("media_metadata")) {
+            mediaMetadata = submission.getDataNode().get("media_metadata");
+        }
+
+        if (mediaMetadata == null) {
+            android.util.Log.d("SpoilerRobotoTextView", "No media_metadata found in processVideoThumbnailPlaceholders");
+            return; // No media metadata available
+        }
+
+        // Process placeholders one by one, recalculating positions each time
+        Pattern placeholderPattern = Pattern.compile("VIDEO_THUMBNAIL_([^\\s]+)");
+
+        while (true) {
+            Matcher matcher = placeholderPattern.matcher(builder);
+            if (!matcher.find()) {
+                break; // No more placeholders found
+            }
+
+            int start = matcher.start();
+            int end = matcher.end();
+            String placeholderText = matcher.group(0);
+            String videoId = matcher.group(1);
+
+            android.util.Log.d("SpoilerRobotoTextView", "Processing placeholder: " + placeholderText + " at position " + start + "-" + end);
+            android.util.Log.d("SpoilerRobotoTextView", "Extracted videoId: " + videoId);
+
+            if (mediaMetadata.has(videoId)) {
+                com.fasterxml.jackson.databind.JsonNode videoData = mediaMetadata.get(videoId);
+
+                // Check if this is a valid Reddit video
+                if (videoData.has("e") && "RedditVideo".equals(videoData.get("e").asText())) {
+                    android.util.Log.d("SpoilerRobotoTextView", "Creating video thumbnail for: " + videoId);
+
+                    // Get video dimensions
+                    int videoWidth = videoData.has("x") ? videoData.get("x").asInt() : 300;
+                    int videoHeight = videoData.has("y") ? videoData.get("y").asInt() : 300;
+
+                    // Calculate thumbnail dimensions maintaining aspect ratio
+                    // Use a default max width if view width is not available yet
+                    int viewWidth = getWidth();
+                    int maxWidth = viewWidth > 0 ?
+                        Math.min(viewWidth - getPaddingLeft() - getPaddingRight(), 500) : 400;
+                    int maxHeight = 300;
+
+                    float widthScale = (float) maxWidth / videoWidth;
+                    float heightScale = (float) maxHeight / videoHeight;
+                    float scale = Math.min(widthScale, heightScale);
+
+                    int thumbnailWidth = Math.max((int) (videoWidth * scale), 100); // Minimum 100px width
+                    int thumbnailHeight = Math.max((int) (videoHeight * scale), 100); // Minimum 100px height
+
+                    android.util.Log.d("SpoilerRobotoTextView", "Thumbnail dimensions: " + thumbnailWidth + "x" + thumbnailHeight);
+
+                    // Replace the placeholder text with a single character
+                    builder.replace(start, end, "\uFFFC"); // Object replacement character
+
+                    // The position is now start (where we just inserted the replacement character)
+                    int finalPosition = start;
+
+                    // Create initial placeholder while loading actual thumbnail
+                    android.graphics.drawable.ColorDrawable initialPlaceholder = new android.graphics.drawable.ColorDrawable(android.graphics.Color.LTGRAY);
+                    initialPlaceholder.setBounds(0, 0, thumbnailWidth, thumbnailHeight);
+
+                    // Create an ImageSpan with initial placeholder
+                    android.text.style.ImageSpan imageSpan = new android.text.style.ImageSpan(initialPlaceholder, android.text.style.DynamicDrawableSpan.ALIGN_BOTTOM);
+
+                    // Create a ClickableSpan for handling clicks
+                    VideoPlayerClickSpan clickSpan = new VideoPlayerClickSpan(videoData, subreddit, submission);
+
+                    // Apply both spans to the placeholder character
+                    builder.setSpan(
+                        imageSpan,
+                        finalPosition,
+                        finalPosition + 1, // Only span the single replacement character
+                        android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    );
+
+                    builder.setSpan(
+                        clickSpan,
+                        finalPosition,
+                        finalPosition + 1, // Only span the single replacement character
+                        android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    );
+
+                    // Load actual video thumbnail asynchronously
+                    loadVideoThumbnail(videoData, finalPosition, thumbnailWidth, thumbnailHeight);
+                } else {
+                    android.util.Log.d("SpoilerRobotoTextView", "Not a valid Reddit video");
+                    break; // Skip this placeholder and continue
+                }
+            } else {
+                android.util.Log.d("SpoilerRobotoTextView", "No metadata found for videoId: " + videoId);
+                break; // Skip this placeholder and continue
+            }
+        }
+    }
+
+    private android.graphics.drawable.LayerDrawable createVideoThumbnailPlaceholder(int width, int height) {
+        // Create a gray background
+        android.graphics.drawable.ColorDrawable background = new android.graphics.drawable.ColorDrawable(android.graphics.Color.LTGRAY);
+        background.setBounds(0, 0, width, height);
+
+        // Create a play button overlay
+        android.graphics.drawable.Drawable playIcon = androidx.core.content.ContextCompat.getDrawable(getContext(), R.drawable.ic_play_arrow);
+        if (playIcon != null) {
+            // Center the play button
+            int iconSize = Math.min(width, height) / 4;
+            int iconLeft = (width - iconSize) / 2;
+            int iconTop = (height - iconSize) / 2;
+            playIcon.setBounds(iconLeft, iconTop, iconLeft + iconSize, iconTop + iconSize);
+            playIcon.setTint(android.graphics.Color.WHITE);
+        }
+
+        android.graphics.drawable.Drawable[] layers = playIcon != null ?
+            new android.graphics.drawable.Drawable[]{background, playIcon} :
+            new android.graphics.drawable.Drawable[]{background};
+
+        android.graphics.drawable.LayerDrawable layerDrawable = new android.graphics.drawable.LayerDrawable(layers);
+        layerDrawable.setBounds(0, 0, width, height);
+
+        return layerDrawable;
+    }
+
+    // Custom span class for video thumbnails that handles click functionality
+    private class VideoPlayerClickSpan extends android.text.style.ClickableSpan {
+        private final com.fasterxml.jackson.databind.JsonNode videoData;
+        private final String subreddit;
+        private final net.dean.jraw.models.Submission submission;
+
+        public VideoPlayerClickSpan(com.fasterxml.jackson.databind.JsonNode videoData, String subreddit, net.dean.jraw.models.Submission submission) {
+            this.videoData = videoData;
+            this.subreddit = subreddit;
+            this.submission = submission;
+        }
+
+        @Override
+        public void onClick(View widget) {
+            android.util.Log.d("SpoilerRobotoTextView", "VideoPlayerClickSpan onClick called!");
+
+            // Extract video URLs from the metadata
+            String dashUrl = null;
+            String hlsUrl = null;
+
+            if (videoData.has("dashUrl")) {
+                dashUrl = videoData.get("dashUrl").asText();
+            }
+            if (videoData.has("hlsUrl")) {
+                hlsUrl = videoData.get("hlsUrl").asText();
+            }
+
+            // Use DASH URL if available, otherwise HLS
+            String videoUrl = dashUrl != null ? dashUrl : hlsUrl;
+
+            android.util.Log.d("SpoilerRobotoTextView", "Video URL: " + videoUrl);
+
+            if (videoUrl != null) {
+                // Open the video in MediaView
+                android.content.Context context = getContext();
+                android.app.Activity activity = null;
+
+                if (context instanceof android.app.Activity) {
+                    activity = (android.app.Activity) context;
+                } else if (context instanceof androidx.appcompat.view.ContextThemeWrapper) {
+                    activity = (android.app.Activity) ((androidx.appcompat.view.ContextThemeWrapper) context).getBaseContext();
+                } else if (context instanceof android.content.ContextWrapper) {
+                    android.content.Context context1 = ((android.content.ContextWrapper) context).getBaseContext();
+                    if (context1 instanceof android.app.Activity) {
+                        activity = (android.app.Activity) context1;
+                    }
+                }
+
+                if (activity != null && me.edgan.redditslide.SettingValues.video) {
+                    android.util.Log.d("SpoilerRobotoTextView", "Opening video in MediaView");
+                    android.content.Intent intent = new android.content.Intent(activity, me.edgan.redditslide.Activities.MediaView.class);
+                    intent.putExtra(me.edgan.redditslide.Activities.MediaView.EXTRA_URL, videoUrl);
+                    intent.putExtra(me.edgan.redditslide.Activities.MediaView.SUBREDDIT, subreddit);
+                    if (submission != null) {
+                        intent.putExtra("EXTRA_SUBMISSION_TITLE", submission.getTitle());
+                    }
+                    activity.startActivity(intent);
+                } else if (activity != null) {
+                    android.util.Log.d("SpoilerRobotoTextView", "Opening video externally");
+                    me.edgan.redditslide.util.LinkUtil.openExternally(videoUrl);
+                }
+            } else {
+                android.util.Log.e("SpoilerRobotoTextView", "No video URL found");
+            }
+        }
+
+        @Override
+        public void updateDrawState(android.text.TextPaint ds) {
+            // Don't underline the video thumbnail
+        }
+    }
+
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
-    // Define a cache for thumbnails.
-    private LruCache<String, Bitmap> thumbnailCache = new LruCache<>(calculateCacheSize());
+    private static final ExecutorService THUMBNAIL_LOAD_EXECUTOR =
+            Executors.newFixedThreadPool(Math.max(2, Math.min(Runtime.getRuntime().availableProcessors() * 2, 8)));
 
-    private int calculateCacheSize() {
-        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        return maxMemory / 8; // Use 1/8th of available memory for caching.
+    private static final LruCache<String, Bitmap> THUMBNAIL_CACHE;
+
+    static {
+        THUMBNAIL_CACHE = new LruCache<>(calculateThumbnailCacheMemSize());
+    }
+
+    private static int calculateThumbnailCacheMemSize() {
+        // Using a fixed proportion of max memory for the cache.
+        // Consider making this configurable or more dynamic if needed.
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024); // Get memory in KB
+        return maxMemory / 8; // Use 1/8th of available memory for the cache
     }
 
     private void loadThumbnailFromUrl(final String url, final ImageCallback callback) {
-        Bitmap cachedThumbnail = thumbnailCache.get(url);
+        Bitmap cachedThumbnail = THUMBNAIL_CACHE.get(url);
         if (cachedThumbnail != null) {
             callback.onImageLoaded(cachedThumbnail);
             return;
         }
-        executor.execute(() -> {
+        THUMBNAIL_LOAD_EXECUTOR.execute(() -> {
             HttpURLConnection connection = null;
             InputStream input = null;
             try {
@@ -1427,21 +1740,23 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                 input.close();
 
                 if (thumbnail != null) {
-                    thumbnailCache.put(url, thumbnail);
+                    THUMBNAIL_CACHE.put(url, thumbnail);
                     Log.d("SpoilerRobotoTextView", "Thumbnail loaded successfully, size: "
                             + thumbnail.getWidth() + "x" + thumbnail.getHeight());
                     callback.onImageLoaded(thumbnail);
                 } else {
                     Log.e("SpoilerRobotoTextView", "Failed to decode thumbnail from: " + url);
+                    callback.onImageLoaded(null);
                 }
             } catch (Exception e) {
                 Log.e("SpoilerRobotoTextView", "Error loading thumbnail: " + url, e);
+                callback.onImageLoaded(null);
             } finally {
                 if (input != null) {
                     try {
                         input.close();
                     } catch (Exception e) {
-                        Log.e("SpoilerRobotoTextView", "Error loading image: " + url, e);
+                        Log.e("SpoilerRobotoTextView", "Error closing input stream: " + url, e);
                     }
                 }
                 if (connection != null) {
@@ -1507,7 +1822,380 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
         String result = sb.toString();
         Log.d("SpoilerRobotoTextView", "Final HTML after code block replacement: " + result);
 
-        return result;
+        return result.toString();
+    }
+
+    private void loadVideoThumbnail(com.fasterxml.jackson.databind.JsonNode videoData, int position, int targetWidth, int targetHeight) {
+        android.util.Log.d("SpoilerRobotoTextView", "loadVideoThumbnail called for position " + position + " with dimensions " + targetWidth + "x" + targetHeight);
+        android.util.Log.d("SpoilerRobotoTextView", "Video data: " + videoData.toString());
+
+        // Extract video URLs from the metadata
+        String dashUrl = null;
+        String hlsUrl = null;
+        String fallbackUrl = null;
+
+        if (videoData.has("dashUrl")) {
+            dashUrl = videoData.get("dashUrl").asText();
+        }
+        if (videoData.has("hlsUrl")) {
+            hlsUrl = videoData.get("hlsUrl").asText();
+        }
+        if (videoData.has("fallbackUrl")) {
+            fallbackUrl = videoData.get("fallbackUrl").asText();
+        }
+
+        android.util.Log.d("SpoilerRobotoTextView", "Extracted URLs - dashUrl: " + dashUrl + ", hlsUrl: " + hlsUrl + ", fallbackUrl: " + fallbackUrl);
+
+        // Try to extract thumbnail from video file
+        // First try fallback URL if available, then construct direct URLs
+        java.util.List<String> videoUrls = new java.util.ArrayList<>();
+
+        // Add fallback URL first if available
+        if (fallbackUrl != null && !fallbackUrl.isEmpty()) {
+            videoUrls.add(fallbackUrl);
+            android.util.Log.d("SpoilerRobotoTextView", "Added fallback URL: " + fallbackUrl);
+        }
+
+        // Try to construct direct video URLs from DASH URL
+        if (dashUrl != null && dashUrl.contains("v.redd.it")) {
+            String baseUrl = dashUrl;
+            if (baseUrl.contains("?")) {
+                baseUrl = baseUrl.substring(0, baseUrl.indexOf("?"));
+            }
+
+            // Extract video ID from the DASH URL
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("v\\.redd\\.it/(?:link/[^/]+/asset/)?([^/]+)");
+            java.util.regex.Matcher matcher = pattern.matcher(baseUrl);
+            if (matcher.find()) {
+                String videoId = matcher.group(1);
+                // Try multiple video quality options
+                videoUrls.add("https://v.redd.it/" + videoId + "/DASH_480.mp4");
+                videoUrls.add("https://v.redd.it/" + videoId + "/DASH_360.mp4");
+                videoUrls.add("https://v.redd.it/" + videoId + "/DASH_720.mp4");
+                videoUrls.add("https://v.redd.it/" + videoId + "/DASH_240.mp4");
+                android.util.Log.d("SpoilerRobotoTextView", "Added constructed video URLs for ID: " + videoId);
+            }
+        }
+
+        if (!videoUrls.isEmpty()) {
+            tryVideoFrameExtraction(videoUrls, 0, position, targetWidth, targetHeight);
+        } else {
+            android.util.Log.d("SpoilerRobotoTextView", "No video URLs available, using fallback thumbnail");
+            createFallbackVideoThumbnail(position, targetWidth, targetHeight);
+        }
+    }
+
+    private void extractVideoFrame(String videoUrl, int position, int targetWidth, int targetHeight) {
+        android.util.Log.d("SpoilerRobotoTextView", "Extracting video frame from: " + videoUrl);
+
+        executor.execute(() -> {
+            android.media.MediaMetadataRetriever retriever = null;
+            try {
+                retriever = new android.media.MediaMetadataRetriever();
+
+                // Set headers for Reddit video requests
+                java.util.Map<String, String> headers = new java.util.HashMap<>();
+                headers.put("User-Agent", "android:me.edgan.redditslide:v6.0.0 (by /u/edgan)");
+
+                // Set connection timeout
+                retriever.setDataSource(videoUrl, headers);
+
+                // Get frame at 1 second (1,000,000 microseconds) or beginning if video is shorter
+                android.graphics.Bitmap frame = retriever.getFrameAtTime(1000000, android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+
+                if (frame != null) {
+                    android.util.Log.d("SpoilerRobotoTextView", "Successfully extracted video frame: " + frame.getWidth() + "x" + frame.getHeight());
+
+                    post(() -> {
+                        createVideoThumbnailWithImage(frame, position, targetWidth, targetHeight);
+                    });
+                } else {
+                    android.util.Log.e("SpoilerRobotoTextView", "Failed to extract frame from video");
+                    post(() -> {
+                        createFallbackVideoThumbnail(position, targetWidth, targetHeight);
+                    });
+                }
+
+            } catch (Exception e) {
+                android.util.Log.e("SpoilerRobotoTextView", "Error extracting video frame from: " + videoUrl, e);
+                post(() -> {
+                    createFallbackVideoThumbnail(position, targetWidth, targetHeight);
+                });
+            } finally {
+                if (retriever != null) {
+                    try {
+                        retriever.release();
+                    } catch (Exception e) {
+                        android.util.Log.e("SpoilerRobotoTextView", "Error releasing MediaMetadataRetriever", e);
+                    }
+                }
+            }
+        });
+    }
+
+    private void tryAlternativeVideoUrls(String originalUrl, int position, int targetWidth, int targetHeight) {
+        android.util.Log.d("SpoilerRobotoTextView", "Trying alternative video URLs for frame extraction");
+
+        // Extract video ID from original URL
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("v\\.redd\\.it/([^/]+)");
+        java.util.regex.Matcher matcher = pattern.matcher(originalUrl);
+
+        if (matcher.find()) {
+            String videoId = matcher.group(1);
+
+            // Try different video quality/format URLs
+            java.util.List<String> alternativeUrls = new java.util.ArrayList<>();
+            alternativeUrls.add("https://v.redd.it/" + videoId + "/DASH_480.mp4");
+            alternativeUrls.add("https://v.redd.it/" + videoId + "/DASH_360.mp4");
+            alternativeUrls.add("https://v.redd.it/" + videoId + "/DASH_240.mp4");
+            alternativeUrls.add("https://v.redd.it/" + videoId + "/DASH_1080.mp4");
+            alternativeUrls.add("https://v.redd.it/" + videoId + "/DASH_96.mp4");
+
+            tryVideoFrameExtraction(alternativeUrls, 0, position, targetWidth, targetHeight);
+        } else {
+            android.util.Log.d("SpoilerRobotoTextView", "Could not extract video ID, using fallback thumbnail");
+            createFallbackVideoThumbnail(position, targetWidth, targetHeight);
+        }
+    }
+
+    private void tryVideoFrameExtraction(java.util.List<String> urls, int index, int position, int targetWidth, int targetHeight) {
+        if (index >= urls.size()) {
+            android.util.Log.d("SpoilerRobotoTextView", "All video URLs failed, using fallback thumbnail");
+            createFallbackVideoThumbnail(position, targetWidth, targetHeight);
+            return;
+        }
+
+        String currentUrl = urls.get(index);
+        android.util.Log.d("SpoilerRobotoTextView", "Trying video URL " + (index + 1) + "/" + urls.size() + ": " + currentUrl);
+
+        // Use a separate executor with timeout for video frame extraction
+        // java.util.concurrent.ExecutorService timeoutExecutor = java.util.concurrent.Executors.newSingleThreadExecutor();
+        java.util.concurrent.Future<android.graphics.Bitmap> future = THUMBNAIL_LOAD_EXECUTOR.submit(() -> {
+            android.media.MediaMetadataRetriever retriever = null;
+            try {
+                retriever = new android.media.MediaMetadataRetriever();
+
+                java.util.Map<String, String> headers = new java.util.HashMap<>();
+                headers.put("User-Agent", "android:me.edgan.redditslide:v6.0.0 (by /u/edgan)");
+
+                android.util.Log.d("SpoilerRobotoTextView", "Setting data source for: " + currentUrl);
+                retriever.setDataSource(currentUrl, headers);
+
+                android.util.Log.d("SpoilerRobotoTextView", "Extracting frame at 0.5 seconds");
+                android.graphics.Bitmap frame = retriever.getFrameAtTime(500000, android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+
+                if (frame != null) {
+                    android.util.Log.d("SpoilerRobotoTextView", "Successfully extracted frame: " + frame.getWidth() + "x" + frame.getHeight());
+                } else {
+                    android.util.Log.e("SpoilerRobotoTextView", "Frame extraction returned null");
+                }
+
+                return frame;
+
+            } catch (Exception e) {
+                if (e instanceof RuntimeException && e.getMessage() != null && e.getMessage().startsWith("setDataSource failed: status = 0x80000000")) {
+                    Log.w("SpoilerRobotoTextView", "Known MediaMetadataRetriever failure (likely from a timed-out and cancelled attempt) for " + currentUrl + ": " + e.toString());
+                } else if (Thread.currentThread().isInterrupted()) {
+                    Log.w("SpoilerRobotoTextView", "Interrupted task for frame extraction from " + currentUrl + " ended with exception: " + e.toString());
+                } else {
+                    Log.e("SpoilerRobotoTextView", "Exception during frame extraction from: " + currentUrl, e);
+                }
+                return null;
+            } finally {
+                if (retriever != null) {
+                    try {
+                        retriever.release();
+                    } catch (Exception e) {
+                        android.util.Log.e("SpoilerRobotoTextView", "Error releasing MediaMetadataRetriever", e);
+                    }
+                }
+            }
+        });
+
+        // Handle the result with timeout
+        THUMBNAIL_LOAD_EXECUTOR.execute(() -> {
+            try {
+                // Wait for result with 8 second timeout
+                android.graphics.Bitmap frame = future.get(3, java.util.concurrent.TimeUnit.SECONDS);
+
+                if (frame != null) {
+                    android.util.Log.d("SpoilerRobotoTextView", "Successfully extracted frame from URL: " + currentUrl);
+                    post(() -> {
+                        createVideoThumbnailWithImage(frame, position, targetWidth, targetHeight);
+                    });
+                } else {
+                    android.util.Log.e("SpoilerRobotoTextView", "Frame extraction failed for: " + currentUrl);
+                    // Try next URL
+                    // post(() -> {
+                    //    tryVideoFrameExtraction(urls, index + 1, position, targetWidth, targetHeight);
+                    // });
+                    THUMBNAIL_LOAD_EXECUTOR.execute(() -> tryVideoFrameExtraction(urls, index + 1, position, targetWidth, targetHeight));
+                }
+
+            } catch (java.util.concurrent.TimeoutException e) {
+                android.util.Log.e("SpoilerRobotoTextView", "Timeout extracting frame from: " + currentUrl);
+                future.cancel(true);
+                // Try next URL
+                // post(() -> {
+                //    tryVideoFrameExtraction(urls, index + 1, position, targetWidth, targetHeight);
+                // });
+                THUMBNAIL_LOAD_EXECUTOR.execute(() -> tryVideoFrameExtraction(urls, index + 1, position, targetWidth, targetHeight));
+            } catch (Exception e) {
+                android.util.Log.e("SpoilerRobotoTextView", "Error waiting for frame extraction: " + currentUrl, e);
+                // Try next URL
+                // post(() -> {
+                //    tryVideoFrameExtraction(urls, index + 1, position, targetWidth, targetHeight);
+                // });
+                THUMBNAIL_LOAD_EXECUTOR.execute(() -> tryVideoFrameExtraction(urls, index + 1, position, targetWidth, targetHeight));
+            } finally {
+                // timeoutExecutor.shutdown();
+            }
+        });
+    }
+
+    private void createVideoThumbnailWithImage(android.graphics.Bitmap originalBitmap, int position, int targetWidth, int targetHeight) {
+        try {
+            // Scale the bitmap to target dimensions while maintaining aspect ratio
+            float bitmapAspect = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
+            float targetAspect = (float) targetWidth / targetHeight;
+
+            int scaledWidth, scaledHeight;
+            if (bitmapAspect > targetAspect) {
+                // Bitmap is wider than target, fit to width
+                scaledWidth = targetWidth;
+                scaledHeight = (int) (targetWidth / bitmapAspect);
+            } else {
+                // Bitmap is taller than target, fit to height
+                scaledHeight = targetHeight;
+                scaledWidth = (int) (targetHeight * bitmapAspect);
+            }
+
+            // Create scaled bitmap
+            android.graphics.Bitmap scaledBitmap = android.graphics.Bitmap.createScaledBitmap(
+                originalBitmap, scaledWidth, scaledHeight, true);
+
+            // Create final bitmap with target dimensions (may have letterboxing)
+            android.graphics.Bitmap finalBitmap = android.graphics.Bitmap.createBitmap(
+                targetWidth, targetHeight, android.graphics.Bitmap.Config.ARGB_8888);
+            android.graphics.Canvas canvas = new android.graphics.Canvas(finalBitmap);
+
+            // Fill with black background
+            canvas.drawColor(android.graphics.Color.BLACK);
+
+            // Center the scaled image
+            int offsetX = (targetWidth - scaledWidth) / 2;
+            int offsetY = (targetHeight - scaledHeight) / 2;
+            canvas.drawBitmap(scaledBitmap, offsetX, offsetY, null);
+
+            // Add play button overlay
+            addPlayButtonOverlay(canvas, targetWidth, targetHeight);
+
+            // Replace the ImageSpan
+            replaceImageSpan(finalBitmap, position, targetWidth, targetHeight);
+
+        } catch (Exception e) {
+            android.util.Log.e("SpoilerRobotoTextView", "Error creating video thumbnail with image", e);
+            createFallbackVideoThumbnail(position, targetWidth, targetHeight);
+        }
+    }
+
+    private void createFallbackVideoThumbnail(int position, int targetWidth, int targetHeight) {
+        post(() -> {
+            android.util.Log.d("SpoilerRobotoTextView", "Creating fallback video thumbnail for position " + position);
+            try {
+                // Create a dark background
+                android.graphics.Bitmap bitmap = android.graphics.Bitmap.createBitmap(targetWidth, targetHeight, android.graphics.Bitmap.Config.ARGB_8888);
+                android.graphics.Canvas canvas = new android.graphics.Canvas(bitmap);
+
+                // Fill with dark background
+                android.graphics.Paint backgroundPaint = new android.graphics.Paint();
+                backgroundPaint.setColor(android.graphics.Color.parseColor("#2C2C2C")); // Dark gray
+                canvas.drawRect(0, 0, targetWidth, targetHeight, backgroundPaint);
+
+                // Add play button overlay
+                addPlayButtonOverlay(canvas, targetWidth, targetHeight);
+
+                // Add "VIDEO" text at the bottom
+                android.graphics.Paint textPaint = new android.graphics.Paint();
+                textPaint.setColor(android.graphics.Color.WHITE);
+                textPaint.setTextSize(targetHeight * 0.08f); // 8% of height
+                textPaint.setAntiAlias(true);
+                textPaint.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+
+                String videoText = "REDDIT VIDEO";
+                float textWidth = textPaint.measureText(videoText);
+                float textX = (targetWidth - textWidth) / 2;
+                float textY = targetHeight - (targetHeight * 0.1f); // 10% from bottom
+
+                // Draw text background
+                android.graphics.Paint textBgPaint = new android.graphics.Paint();
+                textBgPaint.setColor(android.graphics.Color.BLACK);
+                textBgPaint.setAlpha(150);
+                canvas.drawRect(textX - 10, textY - textPaint.getTextSize(), textX + textWidth + 10, textY + 5, textBgPaint);
+
+                canvas.drawText(videoText, textX, textY, textPaint);
+
+                // Replace the ImageSpan
+                replaceImageSpan(bitmap, position, targetWidth, targetHeight);
+
+            } catch (Exception e) {
+                android.util.Log.e("SpoilerRobotoTextView", "Error creating fallback video thumbnail", e);
+            }
+        });
+    }
+
+    private void addPlayButtonOverlay(android.graphics.Canvas canvas, int width, int height) {
+        // Draw play button
+        android.graphics.drawable.Drawable playIcon = androidx.core.content.ContextCompat.getDrawable(getContext(), R.drawable.ic_play_arrow);
+        if (playIcon != null) {
+            int iconSize = Math.min(width, height) / 3;
+            int iconLeft = (width - iconSize) / 2;
+            int iconTop = (height - iconSize) / 2;
+
+            // Add semi-transparent circle background for play button
+            android.graphics.Paint circlePaint = new android.graphics.Paint();
+            circlePaint.setColor(android.graphics.Color.BLACK);
+            circlePaint.setAlpha(180); // More opaque
+            circlePaint.setAntiAlias(true);
+            canvas.drawCircle(iconLeft + iconSize/2, iconTop + iconSize/2, iconSize/2 + 15, circlePaint);
+
+            playIcon.setBounds(iconLeft, iconTop, iconLeft + iconSize, iconTop + iconSize);
+            playIcon.setTint(android.graphics.Color.WHITE);
+            playIcon.draw(canvas);
+        }
+    }
+
+    private void replaceImageSpan(android.graphics.Bitmap bitmap, int position, int targetWidth, int targetHeight) {
+        // Create drawable with the video thumbnail
+        android.graphics.drawable.BitmapDrawable drawable = new android.graphics.drawable.BitmapDrawable(getResources(), bitmap);
+        drawable.setBounds(0, 0, targetWidth, targetHeight);
+
+        android.util.Log.d("SpoilerRobotoTextView", "Looking for ImageSpan at position " + position);
+
+        // Find and replace the placeholder ImageSpan
+        android.text.Spannable spannable = (android.text.Spannable) getText();
+        if (spannable != null && position < spannable.length()) {
+            android.text.style.ImageSpan[] imageSpans = spannable.getSpans(position, position + 1, android.text.style.ImageSpan.class);
+            android.util.Log.d("SpoilerRobotoTextView", "Found " + imageSpans.length + " ImageSpans at position " + position);
+
+            if (imageSpans.length > 0) {
+                // Remove old span
+                spannable.removeSpan(imageSpans[0]);
+
+                // Add new span with video thumbnail
+                android.text.style.ImageSpan newSpan = new android.text.style.ImageSpan(drawable, android.text.style.DynamicDrawableSpan.ALIGN_BOTTOM);
+                spannable.setSpan(newSpan, position, position + 1, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                android.util.Log.d("SpoilerRobotoTextView", "Successfully replaced ImageSpan at position " + position);
+
+                invalidate();
+                requestLayout();
+            } else {
+                android.util.Log.e("SpoilerRobotoTextView", "No ImageSpan found at position " + position);
+            }
+        } else {
+            android.util.Log.e("SpoilerRobotoTextView", "Invalid spannable or position: spannable=" + (spannable != null) + ", position=" + position + ", length=" + (spannable != null ? spannable.length() : "null"));
+        }
     }
 }
 
