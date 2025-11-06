@@ -1,6 +1,7 @@
 package me.edgan.redditslide.Activities;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -70,8 +71,10 @@ public class Shadowbox extends FullScreenActivity implements SubmissionDisplay {
         OfflineSubreddit submissions =
                 OfflineSubreddit.getSubreddit(subreddit, offline, !Authentication.didOnline, this);
 
+        // Always pre-populate from offline cache, just like Gallery mode
         subredditPosts.getPosts().addAll(submissions.submissions);
         count = subredditPosts.getPosts().size();
+        Log.d("Shadowbox", "Loaded " + count + " posts from cache, didOnline=" + Authentication.didOnline);
 
         pager = (ViewPager) findViewById(R.id.content_view);
         submissionsPager = new ShadowboxPagerAdapter(getSupportFragmentManager());
@@ -81,6 +84,30 @@ public class Shadowbox extends FullScreenActivity implements SubmissionDisplay {
                 new ViewPager.SimpleOnPageChangeListener() {
                     @Override
                     public void onPageSelected(int position) {
+                        // Load more posts when approaching the end (do this first, before any early returns)
+                        if (count - 5 <= position && subredditPosts.hasMore()) {
+                            Log.d("Shadowbox", "Triggering loadMore: position=" + position + ", count=" + count + ", hasMore=" + subredditPosts.hasMore());
+                            if (subredditPosts instanceof SubredditPosts) {
+                                if (!((SubredditPosts) subredditPosts).loading) {
+                                    ((SubredditPosts) subredditPosts).loading = true;
+                                    ((SubredditPosts) subredditPosts)
+                                            .loadMore(
+                                                    Shadowbox.this,
+                                                    Shadowbox.this,
+                                                    false,
+                                                    subreddit);
+                                }
+                            } else if (subredditPosts instanceof MultiredditPosts) {
+                                if (!((MultiredditPosts) subredditPosts).loading) {
+                                    ((MultiredditPosts) subredditPosts).loading = true;
+                                    subredditPosts.loadMore(Shadowbox.this, Shadowbox.this, false);
+                                }
+                            }
+                        } else if (count - 5 <= position) {
+                            Log.d("Shadowbox", "NOT loading more: position=" + position + ", count=" + count + ", hasMore=" + subredditPosts.hasMore() + ", nomore=" + (subredditPosts instanceof SubredditPosts ? ((SubredditPosts)subredditPosts).nomore : "N/A"));
+                        }
+
+                        // Track history (do this after loading logic to avoid early returns)
                         if (SettingValues.storeHistory) {
                             if (subredditPosts.getPosts().get(position).isNsfw()
                                     && !SettingValues.storeNSFWHistory) {
@@ -101,7 +128,9 @@ public class Shadowbox extends FullScreenActivity implements SubmissionDisplay {
                 new Runnable() {
                     @Override
                     public void run() {
+                        int oldCount = count;
                         count = subredditPosts.getPosts().size();
+                        Log.d("Shadowbox", "updateSuccess: oldCount=" + oldCount + ", newCount=" + count + ", submissions=" + submissions.size() + ", startIndex=" + startIndex);
                         if (startIndex != -1) {
                             // TODO determine correct behaviour
                             // comments.notifyItemRangeInserted(startIndex, posts.posts.size());
