@@ -177,7 +177,7 @@ public class SubredditWidgetProvider extends AppWidgetProvider {
         //
         final Intent activityIntent = new Intent(context, OpenContent.class);
         final PendingIntent pendingIntent =
-                PendingIntent.getActivity(context, 0, activityIntent, PendingIntent.FLAG_IMMUTABLE);
+                PendingIntent.getActivity(context, 0, activityIntent, PendingIntent.FLAG_MUTABLE);
         rv.setPendingIntentTemplate(R.id.list_view, pendingIntent);
 
         appWidgetManager.updateAppWidget(appWidgetId, rv);
@@ -261,7 +261,7 @@ public class SubredditWidgetProvider extends AppWidgetProvider {
                         context,
                         0,
                         activityIntent,
-                        PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_IMMUTABLE);
+                        PendingIntent.FLAG_MUTABLE);
         rv.setPendingIntentTemplate(R.id.list_view, pendingIntent);
 
         appWidgetManager.updateAppWidget(appWidgetId, rv);
