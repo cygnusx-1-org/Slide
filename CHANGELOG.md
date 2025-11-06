@@ -4,6 +4,14 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.3.7 / 2025-11-6
+============
+* Fixed Slideshow #271
+* Fixed Clicking on post on widget doesn't open properly? #273
+* Fixed The Score threshold dialog that is part of subreddit notification setup is inescapable #275
+* Fixed Crash when marking inbox message as unread #276
+* Fixed refreshing the authentication token
+
 7.3.6 / 2025-8-1
 ===========
 * Fixed Settings display by further opting out of edge-to-edge
