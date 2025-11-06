@@ -781,7 +781,8 @@ public class SidebarController {
                                         .setMessage(R.string.sub_post_notifs_msg)
                                         .setPositiveButton(
                                             R.string.btn_ok,
-                                            (dialog, which) ->
+                                            (dialog, which) -> {
+                                                final int[] selectedThreshold = {0}; // Default to index 0 ("1")
                                                 new MaterialDialog.Builder(mainActivity)
                                                     .title(R.string.sub_post_notifs_threshold)
                                                     .items(
@@ -797,21 +798,33 @@ public class SidebarController {
                                                                 .ListCallbackSingleChoice() {
                                                             @Override
                                                             public boolean onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
-                                                                ArrayList<String> subs = StringUtil.stringToArray(
-                                                                    Reddit.appRestart.getString(CheckForMail.SUBS_TO_GET, "")
-                                                                );
-                                                                subs.add(sub + ":" + text);
-                                                                Reddit.appRestart.edit().putString(
-                                                                    CheckForMail.SUBS_TO_GET,
-                                                                    StringUtil.arrayToString(subs)
-                                                                ).commit();
-
+                                                                selectedThreshold[0] = which;
                                                                 return true;
                                                             }
                                                         }
                                                     )
-                                                    .cancelable(false)
-                                                    .show())
+                                                    .positiveText(R.string.btn_ok)
+                                                    .negativeText(R.string.btn_cancel)
+                                                    .onPositive((dialog1, which1) -> {
+                                                        String[] thresholds = new String[] {
+                                                            "1", "5", "10",
+                                                            "20", "40", "50"
+                                                        };
+                                                        ArrayList<String> subs = StringUtil.stringToArray(
+                                                            Reddit.appRestart.getString(CheckForMail.SUBS_TO_GET, "")
+                                                        );
+                                                        subs.add(sub + ":" + thresholds[selectedThreshold[0]]);
+                                                        Reddit.appRestart.edit().putString(
+                                                            CheckForMail.SUBS_TO_GET,
+                                                            StringUtil.arrayToString(subs)
+                                                        ).commit();
+                                                    })
+                                                    .onNegative((dialog1, which1) -> {
+                                                        notifyStateCheckBox.setChecked(false);
+                                                    })
+                                                    .cancelable(true)
+                                                    .show();
+                                            })
                                         .setNegativeButton(R.string.btn_cancel, null)
                                         .setNegativeButton(
                                             R.string.btn_cancel,

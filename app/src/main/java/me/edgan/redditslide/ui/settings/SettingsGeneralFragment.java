@@ -1606,9 +1606,11 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
             }
         }
         if (!toAdd.isEmpty()) {
+            final int[] selectedThreshold = {0}; // Default to index 0 ("1")
+            final String[] thresholds = new String[] {"1", "5", "10", "20", "40", "50"};
             new MaterialDialog.Builder(SettingsGeneralFragment.this.context)
                     .title(R.string.sub_post_notifs_threshold)
-                    .items(new String[] {"1", "5", "10", "20", "40", "50"})
+                    .items(thresholds)
                     .alwaysCallSingleChoiceCallback()
                     .itemsCallbackSingleChoice(
                             0,
@@ -1619,14 +1621,19 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                                         View itemView,
                                         int which,
                                         CharSequence text) {
-                                    for (String s : toAdd) {
-                                        subsRaw.add(s + ":" + text);
-                                    }
-                                    saveAndUpdateSubs(subsRaw);
+                                    selectedThreshold[0] = which;
                                     return true;
                                 }
                             })
-                    .cancelable(false)
+                    .positiveText(R.string.btn_ok)
+                    .negativeText(R.string.btn_cancel)
+                    .onPositive((dialog, which) -> {
+                        for (String s : toAdd) {
+                            subsRaw.add(s + ":" + thresholds[selectedThreshold[0]]);
+                        }
+                        saveAndUpdateSubs(subsRaw);
+                    })
+                    .cancelable(true)
                     .show();
         } else {
             saveAndUpdateSubs(subsRaw);
