@@ -223,9 +223,13 @@ public class ContentType {
             if (e.getMessage() != null
                     && (e.getMessage().contains("Illegal character in fragment")
                             || e.getMessage().contains("Illegal character in query")
+                            || e.getMessage().contains("Illegal character in path")
+                            || e.getMessage().contains("Malformed escape pair")
                             || e.getMessage()
-                                    .contains("Illegal character in path"))) // a valid link but
+                                    .toLowerCase(Locale.ENGLISH)
+                                    .contains("malformed"))) // a valid link but
             // something un-encoded
+            // or malformed
             // in the URL
             {
                 return Type.LINK;
