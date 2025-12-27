@@ -1298,6 +1298,8 @@
     <string name="settings_subreddit_filter_prefix_matching">Enable subreddit filter prefix matching</string>
     <string name="settings_subreddit_filter_prefix_matching_description">The prefix is the whole subreddit name, and a minimum of six characters. Examples: The subreddit social will allow block socialanxiety. The subreddit pokemongo will block pokemongoraids.</string>
 
+    <string name="settings_filter_old_posts">Filter posts older than 30 days (not when viewing an individual subreddit)</string>
+
     <!-- Pause on audio focus ducking setting -->
     <string name="settings_pause_on_duck_title">Pause video instead of ducking</string>
     <string name="settings_pause_on_duck_desc">Pause videos when other apps play audio. Ducking is when the the audio volume is lowered instead of the video being paused.</string>

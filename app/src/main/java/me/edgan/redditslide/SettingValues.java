@@ -126,6 +126,7 @@ public class SettingValues {
     public static final String COMMENT_DEPTH = "commentDepth";
     public static final String COMMENT_COUNT = "commentcount";
     public static final String PREF_USER_FILTERS = "userFilters";
+    public static final String PREF_FILTER_OLD_POSTS = "filterOldPosts";
     public static final String PREF_COLOR_ICON = "colorIcon";
     public static final String PREF_PEEK = "peek";
     public static final String PREF_NO_PREVIEW_IMAGE_LONGCLICK = "noPreviewImageLongClick";
@@ -300,6 +301,7 @@ public class SettingValues {
     public static boolean alwaysBlackStatusbar;
     public static boolean subredditFiltersTillRestart;
     public static boolean subredditFilterPrefixMatching;
+    public static boolean filterOldPosts;
     public static boolean dialogColoredBorder;
     public static boolean hideSubredditTabs;
 
@@ -512,6 +514,7 @@ public class SettingValues {
 
         subredditFiltersTillRestart = prefs.getBoolean(PREF_SUBREDDIT_FILTERS_TILL_RESTART, true);
         subredditFilterPrefixMatching = prefs.getBoolean(PREF_SUBREDDIT_FILTER_PREFIX_MATCHING, false);
+        filterOldPosts = prefs.getBoolean(PREF_FILTER_OLD_POSTS, false);
         dialogColoredBorder = prefs.getBoolean(PREF_DIALOG_COLORED_BORDER, false);
         hideSubredditTabs = prefs.getBoolean(PREF_HIDE_SUBREDDIT_TABS, false);
     }

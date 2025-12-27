@@ -3,6 +3,7 @@ package me.edgan.redditslide;
 import android.content.SharedPreferences;
 
 import net.dean.jraw.models.Submission;
+import net.dean.jraw.paginators.Sorting;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -96,6 +97,43 @@ public class PostMatch {
     public static boolean doesMatch(Submission s, String baseSubreddit, boolean ignore18) {
         if (Hidden.id.contains(s.getFullName()))
             return true; // if it's hidden we're not going to show it regardless
+
+        // Filter posts older than 30 days (except for Top and Controversial sorts)
+        // Only apply to frontpage/all/multi-reddits, not individual subreddits
+        if (SettingValues.filterOldPosts) {
+            // Handle null or empty subreddit (treat as frontpage)
+            String subredditForSort = baseSubreddit;
+            if (subredditForSort == null || subredditForSort.isEmpty()) {
+                subredditForSort = "frontpage";
+            }
+
+            // Only apply filter to frontpage, all, and multi-reddits (not individual subreddits)
+            boolean isFrontpageOrAll = subredditForSort.equalsIgnoreCase("frontpage")
+                    || subredditForSort.equalsIgnoreCase("all")
+                    || subredditForSort.contains("+") // Combined subreddits like "programming+coding"
+                    || subredditForSort.contains("/m/") // Multireddits like "/m/tech"
+                    || subredditForSort.startsWith("multi"); // Multireddits in overview like "multitech"
+
+            if (isFrontpageOrAll) {
+                // Get current sort type for this subreddit
+                Sorting currentSort = SettingValues.getSubmissionSort(subredditForSort);
+
+                // Only apply filter if NOT Top or Controversial
+                if (currentSort != Sorting.TOP && currentSort != Sorting.CONTROVERSIAL) {
+                    // Get post creation time (in milliseconds)
+                    long postTime = s.getCreated().getTime();
+                    long currentTime = System.currentTimeMillis();
+
+                    // Calculate age in days
+                    long ageInDays = (currentTime - postTime) / (1000L * 60 * 60 * 24);
+
+                    // Filter if older than 30 days
+                    if (ageInDays > 30) {
+                        return true;  // Filter out this post
+                    }
+                }
+            }
+        }
 
         String title = s.getTitle();
         String body = s.getSelftext();

@@ -237,8 +237,9 @@ public class MultiredditPosts implements PostLoader {
             }
 
             List<Submission> filteredSubmissions = new ArrayList<>();
+            String multiName = "multi" + paginator.getMultiReddit().getDisplayName().toLowerCase(Locale.ENGLISH);
             for (Submission s : things) {
-                if (!PostMatch.doesMatch(s, paginator.getMultiReddit().getDisplayName(), false)) {
+                if (!PostMatch.doesMatch(s, multiName, false)) {
                     filteredSubmissions.add(s);
                 }
             }
