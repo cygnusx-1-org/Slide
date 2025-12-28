@@ -8,6 +8,9 @@ import me.edgan.redditslide.Activities.Profile;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.HasSeen;
 import me.edgan.redditslide.PostMatch;
+import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.util.NetworkUtil;
+import me.edgan.redditslide.util.PhotoLoader;
 
 import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.Submission;
@@ -120,6 +123,20 @@ public class ContributionPosts extends GeneralPosts {
                 }
 
                 HasSeen.setHasSeenContrib(newData);
+
+                // Preload thumbnails for submissions (not comments)
+                ArrayList<Submission> submissions = new ArrayList<>();
+                for (Contribution c : newData) {
+                    if (c instanceof Submission) {
+                        submissions.add((Submission) c);
+                    }
+                }
+                if (!(SettingValues.noImages
+                        && ((!NetworkUtil.isConnectedWifi(adapter.mContext)
+                                        && SettingValues.lowResMobile)
+                                || SettingValues.lowResAlways))) {
+                    PhotoLoader.loadPhotos(adapter.mContext, submissions);
+                }
 
                 return newData;
             } catch (Exception e) {
