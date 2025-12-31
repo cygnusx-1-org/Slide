@@ -193,8 +193,7 @@ public class Profile extends BaseActivityAnim {
                             categoryItem.setVisible(position == 6);
                         }
                         if (searchItem != null) {
-                            // Hide search on History tab (tab 8)
-                            searchItem.setVisible(position != 8);
+                            searchItem.setVisible(true);
                         }
 
                         // Clear search when switching tabs
@@ -1299,23 +1298,25 @@ public class Profile extends BaseActivityAnim {
         // Get the current fragment from the adapter
         Fragment fragment = pagerAdapter.getRegisteredFragment(currentTab);
 
+        RecyclerView recyclerView = null;
         if (fragment instanceof ContributionsView) {
-            ContributionsView contributionsView = (ContributionsView) fragment;
-            RecyclerView recyclerView = contributionsView.getRecyclerView();
+            recyclerView = ((ContributionsView) fragment).getRecyclerView();
+        } else if (fragment instanceof HistoryView) {
+            recyclerView = ((HistoryView) fragment).getRecyclerView();
+        }
 
-            if (recyclerView != null && recyclerView.getAdapter() instanceof ContributionAdapter) {
-                ContributionAdapter adapter = (ContributionAdapter) recyclerView.getAdapter();
+        if (recyclerView != null && recyclerView.getAdapter() instanceof ContributionAdapter) {
+            ContributionAdapter adapter = (ContributionAdapter) recyclerView.getAdapter();
 
-                // Apply the filter
-                adapter.applyFilter(query, where);
+            // Apply the filter
+            adapter.applyFilter(query, where);
 
-                // Update state
-                currentSearchQuery = query;
-                isSearchActive = true;
+            // Update state
+            currentSearchQuery = query;
+            isSearchActive = true;
 
-                // Note: Not showing result count since more results may load dynamically
-                // The user can see the filtered results on screen
-            }
+            // Note: Not showing result count since more results may load dynamically
+            // The user can see the filtered results on screen
         }
     }
 
@@ -1336,14 +1337,16 @@ public class Profile extends BaseActivityAnim {
         // Get the current fragment from the adapter
         Fragment fragment = pagerAdapter.getRegisteredFragment(currentTab);
 
+        RecyclerView recyclerView = null;
         if (fragment instanceof ContributionsView) {
-            ContributionsView contributionsView = (ContributionsView) fragment;
-            RecyclerView recyclerView = contributionsView.getRecyclerView();
+            recyclerView = ((ContributionsView) fragment).getRecyclerView();
+        } else if (fragment instanceof HistoryView) {
+            recyclerView = ((HistoryView) fragment).getRecyclerView();
+        }
 
-            if (recyclerView != null && recyclerView.getAdapter() instanceof ContributionAdapter) {
-                ContributionAdapter adapter = (ContributionAdapter) recyclerView.getAdapter();
-                adapter.clearFilter();
-            }
+        if (recyclerView != null && recyclerView.getAdapter() instanceof ContributionAdapter) {
+            ContributionAdapter adapter = (ContributionAdapter) recyclerView.getAdapter();
+            adapter.clearFilter();
         }
 
         // Update state

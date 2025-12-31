@@ -26,6 +26,7 @@ public class HistoryView extends Fragment {
     private int pastVisiblesItems;
     private ContributionAdapter adapter;
     private HistoryPosts posts;
+    private RecyclerView rv;
 
     @Override
     public View onCreateView(
@@ -33,7 +34,7 @@ public class HistoryView extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_verticalcontent, container, false);
 
-        final RecyclerView rv = v.findViewById(R.id.vertical_content);
+        rv = v.findViewById(R.id.vertical_content);
 
         final PreCachingLayoutManager mLayoutManager = new PreCachingLayoutManager(getContext());
 
@@ -109,5 +110,9 @@ public class HistoryView extends Fragment {
                     }
                 });
         return v;
+    }
+
+    public RecyclerView getRecyclerView() {
+        return rv;
     }
 }
