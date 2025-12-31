@@ -10,6 +10,12 @@
         app:showAsAction="always"/>
 
     <item
+        android:id="@+id/search"
+        android:icon="@drawable/ic_search"
+        android:title="@string/profile_search"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@+id/sort"
         android:icon="@drawable/ic_sort"
         android:title="@string/sorting_change_sorting"

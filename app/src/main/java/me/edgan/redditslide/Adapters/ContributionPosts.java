@@ -77,15 +77,24 @@ public class ContributionPosts extends GeneralPosts {
                     refreshLayout.setRefreshing(false);
                 }
 
-                if (finalStart != -1) {
-                    adapter.notifyItemRangeInserted(finalStart + 1, posts.size());
-                } else {
-                    adapter.notifyDataSetChanged();
+                // Re-apply filter if active (for ContributionAdapter)
+                if (adapter instanceof ContributionAdapter) {
+                    ((ContributionAdapter) adapter).onDataUpdated();
                 }
+
+                // Always use notifyDataSetChanged() to ensure correct rendering
+                // This handles both filtered and unfiltered data correctly
+                adapter.notifyDataSetChanged();
 
             } else if (submissions != null) {
                 // end of submissions
                 nomore = true;
+
+                // Re-apply filter if active (for ContributionAdapter)
+                if (adapter instanceof ContributionAdapter) {
+                    ((ContributionAdapter) adapter).onDataUpdated();
+                }
+
                 adapter.notifyDataSetChanged();
 
             } else if (!nomore) {

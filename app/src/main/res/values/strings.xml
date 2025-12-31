@@ -148,6 +148,13 @@
     <string name="profile_info">Profile information</string>
     <string name="profile_block_user">Block user\'s messages, posts, and profile</string>
     <string name="profile_unblock_user">Unblock user\'s messages, posts, and profile</string>
+    <string name="profile_search">Search</string>
+    <string name="profile_search_title">Search in %1$s</string>
+    <string name="profile_search_hint">Search titles and text…</string>
+    <string name="profile_search_no_results">No results found</string>
+    <string name="profile_search_results">%1$d results for \'%2$s\'</string>
+    <string name="profile_search_clear">Clear search</string>
+    <string name="profile_search_cleared">Search cleared</string>
 
     <!-- Comment text options -->
     <string name="comment_gild">Award comment</string>

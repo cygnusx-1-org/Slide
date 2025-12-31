@@ -53,8 +53,11 @@ import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.VoteDirection;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements BaseAdapter {
@@ -65,6 +68,12 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private final RecyclerView listView;
     private final Boolean isHiddenPost;
     public GeneralPosts dataSet;
+
+    // Search/filter state
+    private ArrayList<Contribution> originalData = null;
+    private ArrayList<Contribution> filteredData = null;
+    private String currentQuery = null;
+    private String currentWhere = null;
 
     public ContributionAdapter(Activity mContext, GeneralPosts dataSet, RecyclerView listView) {
         this.mContext = mContext;
@@ -93,6 +102,8 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         } else if (!dataSet.posts.isEmpty()) {
             position -= 1;
         }
+        // When filter is active, footer is not shown (handled in getItemCount)
+        // Otherwise show loading spinner or no more message
         if (position == dataSet.posts.size() && !dataSet.posts.isEmpty() && !dataSet.nomore) {
             return LOADING_SPINNER;
         } else if (position == dataSet.posts.size() && dataSet.nomore) {
@@ -160,7 +171,11 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             LayoutInflater inflater = mContext.getLayoutInflater();
                             final View dialoglayout = inflater.inflate(R.layout.postmenu, null);
                             final TextView title = dialoglayout.findViewById(R.id.title);
-                            title.setText(CompatUtil.fromHtml(submission.getTitle()));
+                            CharSequence titleText = CompatUtil.fromHtml(submission.getTitle());
+                            if (hasActiveFilter() && currentQuery != null) {
+                                titleText = highlightSearchTerms(titleText, currentQuery);
+                            }
+                            title.setText(titleText);
 
                             ((TextView) dialoglayout.findViewById(R.id.userpopup))
                                     .setText("/u/" + submission.getAuthor());
@@ -385,6 +400,15 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             null,
                             null);
 
+            // Apply search highlighting to submission title if filter is active
+            if (hasActiveFilter() && currentQuery != null && holder.title != null) {
+                CharSequence titleText = holder.title.getText();
+                if (titleText != null && titleText.length() > 0) {
+                    CharSequence highlightedTitle = highlightSearchTerms(titleText, currentQuery);
+                    holder.title.setText(highlightedTitle);
+                }
+            }
+
             final ImageView hideButton = holder.itemView.findViewById(R.id.hide);
             if (hideButton != null && isHiddenPost) {
                 hideButton.setOnClickListener(
@@ -492,14 +516,34 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
 
+                // Highlight search terms in subreddit name
+                if (hasActiveFilter() && currentQuery != null) {
+                    String[] searchTerms = currentQuery.trim().toLowerCase(Locale.getDefault()).split("\\s+");
+                    for (String term : searchTerms) {
+                        if (term.isEmpty()) continue;
+                        Pattern pattern = Pattern.compile(Pattern.quote(term), Pattern.CASE_INSENSITIVE);
+                        Matcher matcher = pattern.matcher(subreddit.toString());
+                        while (matcher.find()) {
+                            subreddit.setSpan(
+                                new android.text.style.BackgroundColorSpan(0x80FFFF00),
+                                matcher.start(),
+                                matcher.end(),
+                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                            );
+                        }
+                    }
+                }
+
                 titleString.append(subreddit);
             }
 
             holder.time.setText(titleString);
+            // Pass search query for highlighting comment body
             setViews(
                     comment.getDataNode().get("body_html").asText(),
                     comment.getSubredditName(),
-                    holder);
+                    holder,
+                    hasActiveFilter() ? currentQuery : null);
 
             int type = new FontPreferences(mContext).getFontTypeComment().getTypeface();
             Typeface typeface;
@@ -539,9 +583,15 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             } else if (holder.gild.getVisibility() == View.VISIBLE)
                 holder.gild.setVisibility(View.GONE);
 
-            if (comment.getSubmissionTitle() != null)
-                holder.title.setText(CompatUtil.fromHtml(comment.getSubmissionTitle()));
-            else holder.title.setText(CompatUtil.fromHtml(comment.getAuthor()));
+            if (comment.getSubmissionTitle() != null) {
+                CharSequence titleText = CompatUtil.fromHtml(comment.getSubmissionTitle());
+                if (hasActiveFilter() && currentQuery != null) {
+                    titleText = highlightSearchTerms(titleText, currentQuery);
+                }
+                holder.title.setText(titleText);
+            } else {
+                holder.title.setText(CompatUtil.fromHtml(comment.getAuthor()));
+            }
 
             holder.itemView.setOnClickListener(
                     new View.OnClickListener() {
@@ -588,7 +638,7 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 
-    private void setViews(String rawHTML, String subredditName, ProfileCommentViewHolder holder) {
+    private void setViews(String rawHTML, String subredditName, ProfileCommentViewHolder holder, String searchQuery) {
         if (rawHTML.isEmpty()) {
             return;
         }
@@ -600,6 +650,14 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if (!blocks.get(0).equals("<div class=\"md\">")) {
             holder.content.setVisibility(View.VISIBLE);
             holder.content.setTextHtml(blocks.get(0), subredditName);
+
+            // Apply search highlighting to comment body after HTML is processed
+            if (searchQuery != null && holder.content.getText() != null) {
+                CharSequence currentText = holder.content.getText();
+                CharSequence highlightedText = highlightSearchTerms(currentText, searchQuery);
+                holder.content.setText(highlightedText);
+            }
+
             startIndex = 1;
         } else {
             holder.content.setText("");
@@ -622,7 +680,12 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if (dataSet.posts == null || dataSet.posts.isEmpty()) {
             return 0;
         } else {
-            return dataSet.posts.size() + 2;
+            // When filter is active, don't show the loading/no more footer
+            if (hasActiveFilter()) {
+                return dataSet.posts.size() + 1; // Only include spacer, no footer
+            } else {
+                return dataSet.posts.size() + 2; // Include spacer and footer
+            }
         }
     }
 
@@ -634,6 +697,148 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public void undoSetError() {
         listView.setAdapter(this);
+    }
+
+    /**
+     * Called by GeneralPosts after data has been updated.
+     * Re-applies filter if one is active.
+     */
+    public void onDataUpdated() {
+        if (hasActiveFilter() && currentQuery != null && currentWhere != null) {
+            // Update original data to include newly loaded items
+            if (dataSet.posts != null && !dataSet.posts.isEmpty()) {
+                // Always update originalData with the new unfiltered data
+                originalData = new ArrayList<>(dataSet.posts);
+                // Re-apply filter to the new data
+                filteredData = ContributionFilter.filterContributions(originalData, currentQuery, currentWhere);
+                dataSet.posts = filteredData;
+            }
+        }
+    }
+
+    /**
+     * Applies a search filter to the contributions list.
+     *
+     * @param query The search query string
+     * @param where The tab/section name (e.g., "Overview", "Comments", etc.)
+     */
+    public void applyFilter(String query, String where) {
+        if (query == null || query.trim().isEmpty()) {
+            clearFilter();
+            return;
+        }
+
+        // Always store the search query and location, even if no data yet
+        currentQuery = query;
+        currentWhere = where;
+
+        // Store original data if this is the first filter
+        if (originalData == null && dataSet.posts != null && !dataSet.posts.isEmpty()) {
+            originalData = new ArrayList<>(dataSet.posts);
+        }
+
+        // Apply filter if we have data to filter
+        if (originalData != null && !originalData.isEmpty()) {
+            filteredData = ContributionFilter.filterContributions(originalData, query, where);
+            dataSet.posts = filteredData;
+            notifyDataSetChanged();
+        }
+        // If no data yet, the filter will be applied when data loads via onDataUpdated()
+    }
+
+    /**
+     * Clears the active search filter and restores original data.
+     */
+    public void clearFilter() {
+        if (originalData != null) {
+            dataSet.posts = originalData;
+            originalData = null;
+            filteredData = null;
+            currentQuery = null;
+            currentWhere = null;
+            notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * Checks if a search filter is currently active.
+     *
+     * @return true if filter is active, false otherwise
+     */
+    public boolean hasActiveFilter() {
+        return currentQuery != null && !currentQuery.trim().isEmpty();
+    }
+
+    /**
+     * Gets the number of results after filtering.
+     *
+     * @return Number of filtered results, or -1 if no filter is active
+     */
+    public int getResultCount() {
+        if (filteredData != null) {
+            return filteredData.size();
+        }
+        return -1;
+    }
+
+    /**
+     * Gets the current search query.
+     *
+     * @return The current query string, or null if no filter is active
+     */
+    public String getCurrentQuery() {
+        return currentQuery;
+    }
+
+    /**
+     * Highlights search terms in the given text.
+     *
+     * @param text The original text (can be String or CharSequence with existing spans)
+     * @param query The search query with terms to highlight
+     * @return SpannableStringBuilder with highlighted terms and preserved original spans
+     */
+    private CharSequence highlightSearchTerms(CharSequence text, String query) {
+        if (query == null || query.trim().isEmpty() || text == null || text.length() == 0) {
+            return text;
+        }
+
+        // Create a SpannableStringBuilder preserving existing spans
+        SpannableStringBuilder spannable;
+        if (text instanceof SpannableStringBuilder) {
+            spannable = (SpannableStringBuilder) text;
+        } else {
+            spannable = new SpannableStringBuilder(text);
+        }
+
+        String textString = text.toString();
+
+        // Split query into individual terms
+        String[] searchTerms = query.trim().toLowerCase(Locale.getDefault()).split("\\s+");
+
+        // Highlight each term
+        for (String term : searchTerms) {
+            if (term.isEmpty()) continue;
+
+            // Create case-insensitive pattern
+            Pattern pattern = Pattern.compile(Pattern.quote(term), Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(textString);
+
+            // Find and highlight all occurrences
+            while (matcher.find()) {
+                int start = matcher.start();
+                int end = matcher.end();
+
+                // Apply yellow background highlight
+                spannable.setSpan(
+                    new android.text.style.BackgroundColorSpan(0x80FFFF00), // Semi-transparent yellow
+                    start,
+                    end,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                );
+            }
+        }
+
+        return spannable;
     }
 
     public static class EmptyViewHolder extends RecyclerView.ViewHolder {

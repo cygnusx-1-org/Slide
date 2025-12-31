@@ -21,6 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
@@ -36,6 +37,7 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -44,6 +46,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import me.edgan.redditslide.Adapters.ContributionAdapter;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Fragments.ContributionsView;
 import me.edgan.redditslide.Fragments.HistoryView;
@@ -106,8 +109,14 @@ public class Profile extends BaseActivityAnim {
     private boolean friend;
     private MenuItem sortItem;
     private MenuItem categoryItem;
+    private MenuItem searchItem;
+    private ProfilePagerAdapter pagerAdapter;
     public static Sorting profSort;
     public static TimePeriod profTime;
+
+    // Search state
+    private String currentSearchQuery = null;
+    private boolean isSearchActive = false;
 
     @Override
     public void onCreate(Bundle savedInstance) {
@@ -126,6 +135,12 @@ public class Profile extends BaseActivityAnim {
 
         profSort = Sorting.NEW;
         profTime = TimePeriod.ALL;
+
+        // Restore search state if available
+        if (savedInstance != null) {
+            currentSearchQuery = savedInstance.getString("searchQuery");
+            isSearchActive = savedInstance.getBoolean("searchActive", false);
+        }
 
         findViewById(R.id.header).setBackgroundColor(Palette.getColorUser(name));
 
@@ -176,6 +191,15 @@ public class Profile extends BaseActivityAnim {
                                 && Authentication.me.hasGold() != null
                                 && Authentication.me.hasGold()) {
                             categoryItem.setVisible(position == 6);
+                        }
+                        if (searchItem != null) {
+                            // Hide search on History tab (tab 8)
+                            searchItem.setVisible(position != 8);
+                        }
+
+                        // Clear search when switching tabs
+                        if (isSearchActive) {
+                            clearSearch();
                         }
                     }
                 });
@@ -234,9 +258,9 @@ public class Profile extends BaseActivityAnim {
 
     private void setDataSet(String[] data) {
         usedArray = data;
-        ProfilePagerAdapter adapter = new ProfilePagerAdapter(getSupportFragmentManager());
+        pagerAdapter = new ProfilePagerAdapter(getSupportFragmentManager());
 
-        pager.setAdapter(adapter);
+        pager.setAdapter(pagerAdapter);
         pager.setOffscreenPageLimit(1);
         tabs.setupWithViewPager(pager);
     }
@@ -266,9 +290,28 @@ public class Profile extends BaseActivityAnim {
     }
 
     private class ProfilePagerAdapter extends FragmentStatePagerAdapter {
+        private android.util.SparseArray<Fragment> registeredFragments = new android.util.SparseArray<>();
 
         ProfilePagerAdapter(FragmentManager fm) {
             super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        }
+
+        @NonNull
+        @Override
+        public Object instantiateItem(@NonNull ViewGroup container, int position) {
+            Fragment fragment = (Fragment) super.instantiateItem(container, position);
+            registeredFragments.put(position, fragment);
+            return fragment;
+        }
+
+        @Override
+        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+            registeredFragments.remove(position);
+            super.destroyItem(container, position, object);
+        }
+
+        public Fragment getRegisteredFragment(int position) {
+            return registeredFragments.get(position);
         }
 
         @NonNull
@@ -516,9 +559,8 @@ public class Profile extends BaseActivityAnim {
                         SortingUtil.sorting.put(name.toLowerCase(Locale.ENGLISH), profSort);
 
                         int current = pager.getCurrentItem();
-                        ProfilePagerAdapter adapter =
-                                new ProfilePagerAdapter(getSupportFragmentManager());
-                        pager.setAdapter(adapter);
+                        pagerAdapter = new ProfilePagerAdapter(getSupportFragmentManager());
+                        pager.setAdapter(pagerAdapter);
                         pager.setOffscreenPageLimit(1);
 
                         tabs.setupWithViewPager(pager);
@@ -571,9 +613,8 @@ public class Profile extends BaseActivityAnim {
                         SortingUtil.times.put(name.toLowerCase(Locale.ENGLISH), profTime);
 
                         int current = pager.getCurrentItem();
-                        ProfilePagerAdapter adapter =
-                                new ProfilePagerAdapter(getSupportFragmentManager());
-                        pager.setAdapter(adapter);
+                        pagerAdapter = new ProfilePagerAdapter(getSupportFragmentManager());
+                        pager.setAdapter(pagerAdapter);
                         pager.setOffscreenPageLimit(1);
 
                         tabs.setupWithViewPager(pager);
@@ -594,6 +635,7 @@ public class Profile extends BaseActivityAnim {
         // used to hide the sort item on certain Profile tabs
         sortItem = menu.findItem(R.id.sort);
         categoryItem = menu.findItem(R.id.category);
+        searchItem = menu.findItem(R.id.search);
         categoryItem.setVisible(false);
         sortItem.setVisible(false);
 
@@ -604,6 +646,12 @@ public class Profile extends BaseActivityAnim {
         if (categoryItem != null && Authentication.me != null) {
             Boolean hasGold = Authentication.me.hasGold();
             categoryItem.setVisible(position == 6 && hasGold != null && hasGold);
+        }
+        if (searchItem != null) {
+            // Always show search icon (magnifying glass)
+            searchItem.setIcon(R.drawable.ic_search);
+            // Hide search on History tab (tab 8) which uses different data structure
+            searchItem.setVisible(position != 8);
         }
         return true;
     }
@@ -1180,10 +1228,140 @@ public class Profile extends BaseActivityAnim {
                 }
                 return true;
 
+            case (R.id.search):
+                openSearchDialog();
+                return true;
+
             case (R.id.sort):
                 openPopup();
                 return true;
         }
         return false;
+    }
+
+    /**
+     * Opens a dialog to enter search query.
+     */
+    private void openSearchDialog() {
+        int currentTab = pager.getCurrentItem();
+        String tabName = usedArray[currentTab];
+
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(this)
+                .title(String.format(getString(R.string.profile_search_title), tabName))
+                .input(getString(R.string.profile_search_hint), currentSearchQuery, false,
+                        new MaterialDialog.InputCallback() {
+                            @Override
+                            public void onInput(MaterialDialog dialog, CharSequence input) {
+                                // Input will be handled by positive button
+                            }
+                        })
+                .positiveText(R.string.profile_search)
+                .negativeText(android.R.string.cancel)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        CharSequence input = dialog.getInputEditText().getText();
+                        if (input != null && input.toString().trim().length() > 0) {
+                            executeSearch(input.toString().trim());
+                        }
+                    }
+                });
+
+        // Only show clear button if search is already active
+        if (isSearchActive) {
+            builder.neutralText(R.string.profile_search_clear)
+                    .onNeutral(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            clearSearch();
+                        }
+                    });
+        }
+
+        builder.show();
+    }
+
+    /**
+     * Executes search with the given query on the current tab.
+     */
+    private void executeSearch(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return;
+        }
+
+        if (pagerAdapter == null) {
+            return;
+        }
+
+        int currentTab = pager.getCurrentItem();
+        String where = usedArray[currentTab];
+
+        // Get the current fragment from the adapter
+        Fragment fragment = pagerAdapter.getRegisteredFragment(currentTab);
+
+        if (fragment instanceof ContributionsView) {
+            ContributionsView contributionsView = (ContributionsView) fragment;
+            RecyclerView recyclerView = contributionsView.getRecyclerView();
+
+            if (recyclerView != null && recyclerView.getAdapter() instanceof ContributionAdapter) {
+                ContributionAdapter adapter = (ContributionAdapter) recyclerView.getAdapter();
+
+                // Apply the filter
+                adapter.applyFilter(query, where);
+
+                // Update state
+                currentSearchQuery = query;
+                isSearchActive = true;
+
+                // Note: Not showing result count since more results may load dynamically
+                // The user can see the filtered results on screen
+            }
+        }
+    }
+
+    /**
+     * Clears the active search filter.
+     */
+    private void clearSearch() {
+        if (!isSearchActive) {
+            return;
+        }
+
+        if (pagerAdapter == null) {
+            return;
+        }
+
+        int currentTab = pager.getCurrentItem();
+
+        // Get the current fragment from the adapter
+        Fragment fragment = pagerAdapter.getRegisteredFragment(currentTab);
+
+        if (fragment instanceof ContributionsView) {
+            ContributionsView contributionsView = (ContributionsView) fragment;
+            RecyclerView recyclerView = contributionsView.getRecyclerView();
+
+            if (recyclerView != null && recyclerView.getAdapter() instanceof ContributionAdapter) {
+                ContributionAdapter adapter = (ContributionAdapter) recyclerView.getAdapter();
+                adapter.clearFilter();
+            }
+        }
+
+        // Update state
+        currentSearchQuery = null;
+        isSearchActive = false;
+
+        // Show feedback
+        Snackbar.make(findViewById(R.id.header), R.string.profile_search_cleared,
+                Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Save search state
+        if (currentSearchQuery != null) {
+            outState.putString("searchQuery", currentSearchQuery);
+        }
+        outState.putBoolean("searchActive", isSearchActive);
     }
 }

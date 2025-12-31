@@ -30,6 +30,7 @@ public class ContributionsView extends Fragment {
     private ContributionPosts posts;
     private String id;
     private String where;
+    private RecyclerView recyclerView;
 
     @Override
     public View onCreateView(
@@ -37,7 +38,8 @@ public class ContributionsView extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_verticalcontent, container, false);
 
-        final RecyclerView rv = v.findViewById(R.id.vertical_content);
+        recyclerView = v.findViewById(R.id.vertical_content);
+        final RecyclerView rv = recyclerView;
 
         final PreCachingLayoutManager mLayoutManager = new PreCachingLayoutManager(getContext());
 
@@ -124,5 +126,15 @@ public class ContributionsView extends Fragment {
         Bundle bundle = this.getArguments();
         id = bundle.getString("id", "");
         where = bundle.getString("where", "");
+    }
+
+    /**
+     * Gets the RecyclerView instance for this fragment.
+     * Used by Profile activity to access the adapter for search functionality.
+     *
+     * @return The RecyclerView instance, or null if not yet created
+     */
+    public RecyclerView getRecyclerView() {
+        return recyclerView;
     }
 }
