@@ -117,6 +117,7 @@ public class Profile extends BaseActivityAnim {
     // Search state
     private String currentSearchQuery = null;
     private boolean isSearchActive = false;
+    private int searchActiveTab = -1; // Track which tab has active search
 
     @Override
     public void onCreate(Bundle savedInstance) {
@@ -140,6 +141,7 @@ public class Profile extends BaseActivityAnim {
         if (savedInstance != null) {
             currentSearchQuery = savedInstance.getString("searchQuery");
             isSearchActive = savedInstance.getBoolean("searchActive", false);
+            searchActiveTab = savedInstance.getInt("searchActiveTab", -1);
         }
 
         findViewById(R.id.header).setBackgroundColor(Palette.getColorUser(name));
@@ -1313,6 +1315,7 @@ public class Profile extends BaseActivityAnim {
             // Update state
             currentSearchQuery = query;
             isSearchActive = true;
+            searchActiveTab = currentTab; // Track which tab has the search
 
             // Update search icon to pencil/edit icon
             if (searchItem != null) {
@@ -1336,10 +1339,11 @@ public class Profile extends BaseActivityAnim {
             return;
         }
 
-        int currentTab = pager.getCurrentItem();
+        // Use the tab where search was applied, not the current tab
+        int tabToClear = searchActiveTab >= 0 ? searchActiveTab : pager.getCurrentItem();
 
-        // Get the current fragment from the adapter
-        Fragment fragment = pagerAdapter.getRegisteredFragment(currentTab);
+        // Get the fragment from the adapter where search was applied
+        Fragment fragment = pagerAdapter.getRegisteredFragment(tabToClear);
 
         RecyclerView recyclerView = null;
         if (fragment instanceof ContributionsView) {
@@ -1356,6 +1360,7 @@ public class Profile extends BaseActivityAnim {
         // Update state
         currentSearchQuery = null;
         isSearchActive = false;
+        searchActiveTab = -1; // Reset the tracked tab
 
         // Update search icon back to magnifying glass
         if (searchItem != null) {
@@ -1375,5 +1380,6 @@ public class Profile extends BaseActivityAnim {
             outState.putString("searchQuery", currentSearchQuery);
         }
         outState.putBoolean("searchActive", isSearchActive);
+        outState.putInt("searchActiveTab", searchActiveTab);
     }
 }
