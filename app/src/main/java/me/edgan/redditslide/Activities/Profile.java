@@ -647,10 +647,9 @@ public class Profile extends BaseActivityAnim {
             categoryItem.setVisible(position == 6 && hasGold != null && hasGold);
         }
         if (searchItem != null) {
-            // Always show search icon (magnifying glass)
-            searchItem.setIcon(R.drawable.ic_search);
-            // Hide search on History tab (tab 8) which uses different data structure
-            searchItem.setVisible(position != 8);
+            // Show ic_edit when search is active, ic_search when not active
+            searchItem.setIcon(isSearchActive ? R.drawable.ic_edit : R.drawable.ic_search);
+            searchItem.setVisible(true);
         }
         return true;
     }
@@ -1315,6 +1314,11 @@ public class Profile extends BaseActivityAnim {
             currentSearchQuery = query;
             isSearchActive = true;
 
+            // Update search icon to pencil/edit icon
+            if (searchItem != null) {
+                searchItem.setIcon(R.drawable.ic_edit);
+            }
+
             // Note: Not showing result count since more results may load dynamically
             // The user can see the filtered results on screen
         }
@@ -1352,6 +1356,11 @@ public class Profile extends BaseActivityAnim {
         // Update state
         currentSearchQuery = null;
         isSearchActive = false;
+
+        // Update search icon back to magnifying glass
+        if (searchItem != null) {
+            searchItem.setIcon(R.drawable.ic_search);
+        }
 
         // Show feedback
         Snackbar.make(findViewById(R.id.header), R.string.profile_search_cleared,
