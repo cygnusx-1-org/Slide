@@ -750,12 +750,15 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
      * Clears the active search filter and restores original data.
      */
     public void clearFilter() {
+        // Always clear the query state, even if originalData is null
+        // This prevents the filter from being re-applied when new data loads
+        currentQuery = null;
+        currentWhere = null;
+
         if (originalData != null) {
             dataSet.posts = originalData;
             originalData = null;
             filteredData = null;
-            currentQuery = null;
-            currentWhere = null;
             notifyDataSetChanged();
         }
     }

@@ -1345,16 +1345,13 @@ public class Profile extends BaseActivityAnim {
         // Get the fragment from the adapter where search was applied
         Fragment fragment = pagerAdapter.getRegisteredFragment(tabToClear);
 
-        RecyclerView recyclerView = null;
-        if (fragment instanceof ContributionsView) {
-            recyclerView = ((ContributionsView) fragment).getRecyclerView();
-        } else if (fragment instanceof HistoryView) {
-            recyclerView = ((HistoryView) fragment).getRecyclerView();
-        }
-
-        if (recyclerView != null && recyclerView.getAdapter() instanceof ContributionAdapter) {
-            ContributionAdapter adapter = (ContributionAdapter) recyclerView.getAdapter();
-            adapter.clearFilter();
+        if (fragment != null) {
+            // Call the fragment's method to clear search and reload data
+            if (fragment instanceof ContributionsView) {
+                ((ContributionsView) fragment).clearSearchAndReload();
+            } else if (fragment instanceof HistoryView) {
+                ((HistoryView) fragment).clearSearchAndReload();
+            }
         }
 
         // Update state

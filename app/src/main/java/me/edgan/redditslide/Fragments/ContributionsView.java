@@ -31,6 +31,7 @@ public class ContributionsView extends Fragment {
     private String id;
     private String where;
     private RecyclerView recyclerView;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public View onCreateView(
@@ -46,8 +47,8 @@ public class ContributionsView extends Fragment {
         rv.setLayoutManager(mLayoutManager);
         rv.setItemViewCacheSize(2);
         v.findViewById(R.id.post_floating_action_button).setVisibility(View.GONE);
-        final SwipeRefreshLayout mSwipeRefreshLayout =
-                v.findViewById(R.id.activity_main_swipe_refresh_layout);
+        swipeRefreshLayout = v.findViewById(R.id.activity_main_swipe_refresh_layout);
+        final SwipeRefreshLayout mSwipeRefreshLayout = swipeRefreshLayout;
 
         mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors(id, getActivity()));
 
@@ -136,5 +137,17 @@ public class ContributionsView extends Fragment {
      */
     public RecyclerView getRecyclerView() {
         return recyclerView;
+    }
+
+    /**
+     * Clears the active search filter and reloads data.
+     */
+    public void clearSearchAndReload() {
+        if (adapter != null) {
+            adapter.clearFilter();
+        }
+        if (posts != null && swipeRefreshLayout != null) {
+            posts.loadMore(adapter, id, true);
+        }
     }
 }
