@@ -4,6 +4,13 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.3.8 / 2025-12-31
+=============
+* Added a search button to You/Profile tabs
+* Improved caching for "Go to profile" tabs and in Saved posts
+* Added "Filter posts older than 30 days" setting in Filters
+* Fixed issue with some post's URLs causing them to be marked as Title/None instead of Link
+
 7.3.7 / 2025-11-6
 ============
 * Fixed Slideshow #271
