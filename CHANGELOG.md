@@ -4,6 +4,10 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.3.9 / 2026-2-12
+============
+* Fixed giphy gifs marked invalid by Reddit when they are valid 
+
 7.3.8 / 2025-12-31
 =============
 * Added a search button to You/Profile tabs
