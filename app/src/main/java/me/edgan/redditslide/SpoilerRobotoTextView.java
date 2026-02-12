@@ -164,6 +164,9 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
     public void setTextHtml(CharSequence baseText, String subreddit) {
         String text = wrapAlternateSpoilers(saveEmotesFromDestruction(baseText.toString().trim()));
         text = replaceCodeBlocks(text);
+        if (text.contains("giphy.com/gifs/")) {
+            text = convertGiphyLinksToImages(text);
+        }
         SpannableStringBuilder builder = (SpannableStringBuilder) CompatUtil.fromHtml(text);
 
         // replace the <blockquote> blue line with something more colorful
@@ -470,6 +473,9 @@ public void setEmoteText(String text, TextView textView) {
         Pattern giphyPattern =
                 Pattern.compile(
                     "<img\\s+src=\\\"(https://external-preview\\.redd\\.it/([^?]+)\\?width=([0-9]+)&height=([0-9]+)&s=([^\\\"]+))\\\"[^>]*>");
+        Pattern giphyDirectPattern =
+                Pattern.compile(
+                    "<img\\s+src=\\\"(https://i\\.giphy\\.com/media/([^/\\\"]+)/[^\\\"]+)\\\"[^>]*>");
 
         List<EmoteSpanRequest> spanRequests = new ArrayList<>();
         StringBuilder processedText = new StringBuilder();
@@ -477,9 +483,10 @@ public void setEmoteText(String text, TextView textView) {
         // Strip unwanted divs first
         text = text.replaceAll("<div class=\\\"md\\\"><div>", "").replaceAll("</div>", "");
 
-        // Process the text for both patterns (note: free_emote_pack is handled by redditPattern)
+        // Process the text for all patterns
         processPattern(text, redditPattern, processedText, spanRequests);
         processPattern(text, giphyPattern, processedText, spanRequests);
+        processPattern(text, giphyDirectPattern, processedText, spanRequests);
 
         // Create builder and ensure it's a SpannableStringBuilder
         SpannableStringBuilder builder = new SpannableStringBuilder(processedText);
@@ -489,8 +496,9 @@ public void setEmoteText(String text, TextView textView) {
 
         // For each emote request, decide how to load it
         for (EmoteSpanRequest request : spanRequests) {
-            // If this URL comes from external-preview (i.e. giphy emote), use the new inline image loader…
-            if (request.gifUrl.contains("external-preview.redd.it")) {
+            // If this URL comes from external-preview or i.giphy.com, use the inline image loader
+            if (request.gifUrl.contains("external-preview.redd.it")
+                    || request.gifUrl.contains("i.giphy.com")) {
                 loadGiphyEmote(request, textView, request.start);
             } else {
                 // …otherwise (e.g. free_emote_pack/snoomoji) leave it as before.
@@ -1469,6 +1477,30 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
     // Simple callback interface
     private interface ImageCallback {
         void onImageLoaded(Bitmap bitmap);
+    }
+
+    /**
+     * Converts giphy links that lack an embedded &lt;img&gt; tag into img tags.
+     * Reddit marks some giphy GIFs as "invalid" in media_metadata, which causes
+     * body_html to contain a plain text link instead of an img tag. This method
+     * detects those plain links and rewrites them so the image loader can handle them.
+     *
+     * @param html The input HTML string.
+     * @return The HTML string with giphy plain links converted to img tags.
+     */
+    private String convertGiphyLinksToImages(String html) {
+        Pattern giphyLinkPattern = Pattern.compile(
+                "<a\\s+href=\"(https://giphy\\.com/gifs/([^\"]+))\"[^>]*>[^<]*</a>");
+        Matcher matcher = giphyLinkPattern.matcher(html);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String giphyId = matcher.group(2);
+            String imgTag = "<img src=\"https://i.giphy.com/media/"
+                    + giphyId + "/giphy.gif\">";
+            matcher.appendReplacement(sb, Matcher.quoteReplacement(imgTag));
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 
     /**
