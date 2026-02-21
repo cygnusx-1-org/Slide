@@ -193,7 +193,7 @@ dependencies {
     // Draggable sliding up panel
     implementation 'com.github.edgan:AndroidSlidingUpPanel:8413b22a2a'
     implementation 'com.github.edgan:JRAW:bacd6f5764'
-    implementation 'io.github.ParkSangGwon:tedimagepicker:1.6.1'
+    implementation 'io.github.parksanggwon:tedimagepicker:1.7.2'
     def commonmarkVersion = '0ebc0749c7'
     implementation "com.github.Haptic-Apps.commonmark-java:commonmark:$commonmarkVersion"
     implementation "com.github.Haptic-Apps.commonmark-java:commonmark-ext-gfm-strikethrough:$commonmarkVersion"
@@ -202,6 +202,7 @@ dependencies {
     implementation 'com.github.Haptic-Apps.Android-RobotoTextView:robototextview:f6d0eb5ac7'
 
 /** AndroidX **/
+    implementation 'androidx.activity:activity:1.9.3'
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'androidx.browser:browser:1.3.0'
     implementation 'androidx.cardview:cardview:1.0.0'
@@ -253,7 +254,7 @@ dependencies {
     implementation 'com.github.davemorrissey:subsampling-scale-image-view:173e421fdb'
 
     // Image cropping
-    implementation 'com.github.CanHub:Android-Image-Cropper:3.2.2'
+    implementation 'com.vanniktech:android-image-cropper:4.7.0'
 
     // Bottom sheet implementation
     //  NOTE: Deprecated in favor of official Google bottom sheets

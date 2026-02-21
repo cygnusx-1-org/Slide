@@ -124,7 +124,7 @@ public class SubredditNames {
                                 new SubredditStream(Authentication.reddit, subredditPaginators[0]);
                         paginator.setSorting(SettingValues.getSubmissionSort(where));
                         paginator.setTimePeriod(SettingValues.getSubmissionTimePeriod(where));
-                        paginator.setLimit(Constants.PAGINATOR_POST_LIMIT);
+                        paginator.setLimit(Constants.DEFAULT_PAGINATOR_LIMIT);
                     }
 
                     try {
@@ -148,7 +148,7 @@ public class SubredditNames {
                                         Authentication.reddit, subredditPaginators[0]);
                         paginator.setSorting(SettingValues.getSubmissionSort(where));
                         paginator.setTimePeriod(SettingValues.getSubmissionTimePeriod(where));
-                        paginator.setLimit(Constants.PAGINATOR_POST_LIMIT);
+                        paginator.setLimit(Constants.DEFAULT_PAGINATOR_LIMIT);
                     }
 
                     try {

@@ -18,6 +18,9 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SwitchCompat;
 
@@ -89,6 +92,8 @@ public class Submit extends BaseActivity {
     AsyncTask<Void, Void, Subreddit> tchange;
     private OkHttpClient client;
     private Gson gson;
+    private ActivityResultLauncher<PickVisualMediaRequest> submitImageLauncher;
+    private ActivityResultLauncher<PickVisualMediaRequest> editorImageLauncher;
 
     @Override
     public void onDestroy() {
@@ -108,6 +113,41 @@ public class Submit extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         disableSwipeBackLayout();
         super.onCreate(savedInstanceState);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            submitImageLauncher =
+                    registerForActivityResult(
+                            new ActivityResultContracts.PickVisualMedia(),
+                            uri -> {
+                                if (uri != null) {
+                                    handleImageIntent(Collections.singletonList(uri));
+                                    KeyboardUtil.hideKeyboard(
+                                            Submit.this,
+                                            findViewById(R.id.bodytext).getWindowToken(),
+                                            0);
+                                }
+                            });
+            editorImageLauncher =
+                    registerForActivityResult(
+                            new ActivityResultContracts.PickVisualMedia(),
+                            uri -> {
+                                if (uri != null
+                                        && DoEditorActions.currentImageTarget != null) {
+                                    ArrayList<Uri> uriList = new ArrayList<>();
+                                    uriList.add(uri);
+                                    DoEditorActions.handleImageIntent(
+                                            uriList,
+                                            DoEditorActions.currentImageTarget,
+                                            Submit.this);
+                                    KeyboardUtil.hideKeyboard(
+                                            Submit.this,
+                                            DoEditorActions.currentImageTarget.getWindowToken(),
+                                            0);
+                                    DoEditorActions.currentImageTarget = null;
+                                }
+                            });
+        }
+
         applyColorTheme();
         setContentView(R.layout.activity_submit);
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
@@ -321,18 +361,28 @@ public class Submit extends BaseActivity {
         findViewById(R.id.selImage)
                 .setOnClickListener(
                         v -> {
-                            TedImagePicker.with(Submit.this)
-                                    .title("Choose a photo")
-                                    .start(
-                                            uri -> {
-                                                List<Uri> uris = Collections.singletonList(uri);
-                                                handleImageIntent(uris);
-                                                KeyboardUtil.hideKeyboard(
-                                                        Submit.this,
-                                                        findViewById(R.id.bodytext)
-                                                                .getWindowToken(),
-                                                        0);
-                                            });
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                submitImageLauncher.launch(
+                                        new PickVisualMediaRequest.Builder()
+                                                .setMediaType(
+                                                        ActivityResultContracts.PickVisualMedia
+                                                                .ImageOnly.INSTANCE)
+                                                .build());
+                            } else {
+                                TedImagePicker.with(Submit.this)
+                                        .title("Choose a photo")
+                                        .start(
+                                                uri -> {
+                                                    List<Uri> uris =
+                                                            Collections.singletonList(uri);
+                                                    handleImageIntent(uris);
+                                                    KeyboardUtil.hideKeyboard(
+                                                            Submit.this,
+                                                            findViewById(R.id.bodytext)
+                                                                    .getWindowToken(),
+                                                            0);
+                                                });
+                            }
                         });
         DoEditorActions.doActions(
                 ((EditText) findViewById(R.id.bodytext)),
@@ -340,7 +390,8 @@ public class Submit extends BaseActivity {
                 getSupportFragmentManager(),
                 Submit.this,
                 null,
-                null);
+                null,
+                editorImageLauncher);
         if (intent.hasExtra(Intent.EXTRA_TEXT)
                 && !intent.getExtras().getString(Intent.EXTRA_TEXT, "").isEmpty()
                 && !intent.getBooleanExtra(EXTRA_IS_SELF, false)) {

@@ -1,5 +1,6 @@
 package me.edgan.redditslide.Activities;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,6 +12,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 
@@ -23,6 +27,7 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Views.DoEditorActions;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.MiscUtil;
 
 import net.dean.jraw.ApiException;
@@ -55,10 +60,34 @@ public class SendMessage extends BaseActivity {
     private boolean messageSent = true; // whether or not the message was sent successfully
 
     String author;
+    private ActivityResultLauncher<PickVisualMediaRequest> editorImageLauncher;
 
     public void onCreate(Bundle savedInstanceState) {
         disableSwipeBackLayout();
         super.onCreate(savedInstanceState);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            editorImageLauncher =
+                    registerForActivityResult(
+                            new ActivityResultContracts.PickVisualMedia(),
+                            uri -> {
+                                if (uri != null
+                                        && DoEditorActions.currentImageTarget != null) {
+                                    ArrayList<Uri> uriList = new ArrayList<>();
+                                    uriList.add(uri);
+                                    DoEditorActions.handleImageIntent(
+                                            uriList,
+                                            DoEditorActions.currentImageTarget,
+                                            SendMessage.this);
+                                    KeyboardUtil.hideKeyboard(
+                                            SendMessage.this,
+                                            DoEditorActions.currentImageTarget.getWindowToken(),
+                                            0);
+                                    DoEditorActions.currentImageTarget = null;
+                                }
+                            });
+        }
+
         applyColorTheme();
         setContentView(R.layout.activity_sendmessage);
 
@@ -184,7 +213,8 @@ public class SendMessage extends BaseActivity {
                 getSupportFragmentManager(),
                 SendMessage.this,
                 previousMessage == null ? null : previousMessage.getBody(),
-                null);
+                null,
+                editorImageLauncher);
     }
 
     private class AsyncDo extends AsyncTask<Void, Void, Void> {

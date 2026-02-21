@@ -7,6 +7,7 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.text.Editable;
 import android.util.Base64;
 import android.view.LayoutInflater;
@@ -16,6 +17,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -66,6 +70,17 @@ public class DoEditorActions {
             final Activity a,
             final String oldComment,
             @Nullable final String[] authors) {
+        doActions(editText, baseView, fm, a, oldComment, authors, null);
+    }
+
+    public static void doActions(
+            final EditText editText,
+            final View baseView,
+            final FragmentManager fm,
+            final Activity a,
+            final String oldComment,
+            @Nullable final String[] authors,
+            @Nullable final ActivityResultLauncher<PickVisualMediaRequest> imageLauncher) {
         baseView.findViewById(R.id.bold)
                 .setOnClickListener(
                         new View.OnClickListener() {
@@ -315,21 +330,32 @@ public class DoEditorActions {
                             sStart = editText.getSelectionStart();
                             sEnd = editText.getSelectionEnd();
 
-                            TedImagePicker.with(editText.getContext())
-                                    .title("Choose a photo")
-                                    .start(
-                                            uri -> {
-                                                ArrayList<Uri> uriList = new ArrayList<>();
-                                                uriList.add(uri);
-                                                handleImageIntent(
-                                                        uriList,
-                                                        editText,
-                                                        editText.getContext());
-                                                KeyboardUtil.hideKeyboard(
-                                                        editText.getContext(),
-                                                        editText.getWindowToken(),
-                                                        0);
-                                            });
+                            if (imageLauncher != null
+                                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                currentImageTarget = editText;
+                                imageLauncher.launch(
+                                        new PickVisualMediaRequest.Builder()
+                                                .setMediaType(
+                                                        ActivityResultContracts.PickVisualMedia
+                                                                .ImageOnly.INSTANCE)
+                                                .build());
+                            } else {
+                                TedImagePicker.with(editText.getContext())
+                                        .title("Choose a photo")
+                                        .start(
+                                                uri -> {
+                                                    ArrayList<Uri> uriList = new ArrayList<>();
+                                                    uriList.add(uri);
+                                                    handleImageIntent(
+                                                            uriList,
+                                                            editText,
+                                                            editText.getContext());
+                                                    KeyboardUtil.hideKeyboard(
+                                                            editText.getContext(),
+                                                            editText.getWindowToken(),
+                                                            0);
+                                                });
+                            }
                         });
         baseView.findViewById(R.id.draw)
                 .setOnClickListener(
@@ -642,6 +668,7 @@ public class DoEditorActions {
 
     public static Editable e;
     public static int sStart, sEnd;
+    public static EditText currentImageTarget;
 
     public static void doDraw(final Activity a, final EditText editText, final FragmentManager fm) {
         final Intent intent = new Intent(a, Draw.class);

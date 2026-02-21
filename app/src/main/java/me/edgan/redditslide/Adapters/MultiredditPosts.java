@@ -217,7 +217,7 @@ public class MultiredditPosts implements PostLoader {
                                         + subredditPaginators[0]
                                                 .getDisplayName()
                                                 .toLowerCase(Locale.ENGLISH)));
-                paginator.setLimit(Constants.PAGINATOR_POST_LIMIT);
+                paginator.setLimit(Constants.DEFAULT_PAGINATOR_LIMIT);
             }
 
             List<Submission> things = new ArrayList<>();
