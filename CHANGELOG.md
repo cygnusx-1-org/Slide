@@ -4,6 +4,10 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.4.2 / 2026-2-25
+============
+* Removed READ_EXTERNAL_STORAGE, READ_MEDIA_IMAGES, and READ_MEDIA_VIDEO permissions
+
 7.4.1 / 2026-2-25
 ============
 * Completely removed TedImagePicker for the stock image picker
