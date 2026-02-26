@@ -4,6 +4,11 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.4.1 / 2026-2-25
+============
+* Switched to the stock image picker on Android 11+
+* Added two retries on 500 errors while trying to load posts from a subreddit
+
 7.4.0 / 2026-2-21
 ============
 * Switched to the stock image picker on Android 11+
