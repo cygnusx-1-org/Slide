@@ -66,27 +66,25 @@ public class SendMessage extends BaseActivity {
         disableSwipeBackLayout();
         super.onCreate(savedInstanceState);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            editorImageLauncher =
-                    registerForActivityResult(
-                            new ActivityResultContracts.PickVisualMedia(),
-                            uri -> {
-                                if (uri != null
-                                        && DoEditorActions.currentImageTarget != null) {
-                                    ArrayList<Uri> uriList = new ArrayList<>();
-                                    uriList.add(uri);
-                                    DoEditorActions.handleImageIntent(
-                                            uriList,
-                                            DoEditorActions.currentImageTarget,
-                                            SendMessage.this);
-                                    KeyboardUtil.hideKeyboard(
-                                            SendMessage.this,
-                                            DoEditorActions.currentImageTarget.getWindowToken(),
-                                            0);
-                                    DoEditorActions.currentImageTarget = null;
-                                }
-                            });
-        }
+        editorImageLauncher =
+                registerForActivityResult(
+                        new ActivityResultContracts.PickVisualMedia(),
+                        uri -> {
+                            if (uri != null
+                                    && DoEditorActions.currentImageTarget != null) {
+                                ArrayList<Uri> uriList = new ArrayList<>();
+                                uriList.add(uri);
+                                DoEditorActions.handleImageIntent(
+                                        uriList,
+                                        DoEditorActions.currentImageTarget,
+                                        SendMessage.this);
+                                KeyboardUtil.hideKeyboard(
+                                        SendMessage.this,
+                                        DoEditorActions.currentImageTarget.getWindowToken(),
+                                        0);
+                                DoEditorActions.currentImageTarget = null;
+                            }
+                        });
 
         applyColorTheme();
         setContentView(R.layout.activity_sendmessage);

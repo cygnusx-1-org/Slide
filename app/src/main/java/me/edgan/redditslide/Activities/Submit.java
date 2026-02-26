@@ -34,7 +34,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import gun0912.tedimagepicker.builder.TedImagePicker;
 
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Drafts;
@@ -114,39 +113,37 @@ public class Submit extends BaseActivity {
         disableSwipeBackLayout();
         super.onCreate(savedInstanceState);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            submitImageLauncher =
-                    registerForActivityResult(
-                            new ActivityResultContracts.PickVisualMedia(),
-                            uri -> {
-                                if (uri != null) {
-                                    handleImageIntent(Collections.singletonList(uri));
-                                    KeyboardUtil.hideKeyboard(
-                                            Submit.this,
-                                            findViewById(R.id.bodytext).getWindowToken(),
-                                            0);
-                                }
-                            });
-            editorImageLauncher =
-                    registerForActivityResult(
-                            new ActivityResultContracts.PickVisualMedia(),
-                            uri -> {
-                                if (uri != null
-                                        && DoEditorActions.currentImageTarget != null) {
-                                    ArrayList<Uri> uriList = new ArrayList<>();
-                                    uriList.add(uri);
-                                    DoEditorActions.handleImageIntent(
-                                            uriList,
-                                            DoEditorActions.currentImageTarget,
-                                            Submit.this);
-                                    KeyboardUtil.hideKeyboard(
-                                            Submit.this,
-                                            DoEditorActions.currentImageTarget.getWindowToken(),
-                                            0);
-                                    DoEditorActions.currentImageTarget = null;
-                                }
-                            });
-        }
+        submitImageLauncher =
+                registerForActivityResult(
+                        new ActivityResultContracts.PickVisualMedia(),
+                        uri -> {
+                            if (uri != null) {
+                                handleImageIntent(Collections.singletonList(uri));
+                                KeyboardUtil.hideKeyboard(
+                                        Submit.this,
+                                        findViewById(R.id.bodytext).getWindowToken(),
+                                        0);
+                            }
+                        });
+        editorImageLauncher =
+                registerForActivityResult(
+                        new ActivityResultContracts.PickVisualMedia(),
+                        uri -> {
+                            if (uri != null
+                                    && DoEditorActions.currentImageTarget != null) {
+                                ArrayList<Uri> uriList = new ArrayList<>();
+                                uriList.add(uri);
+                                DoEditorActions.handleImageIntent(
+                                        uriList,
+                                        DoEditorActions.currentImageTarget,
+                                        Submit.this);
+                                KeyboardUtil.hideKeyboard(
+                                        Submit.this,
+                                        DoEditorActions.currentImageTarget.getWindowToken(),
+                                        0);
+                                DoEditorActions.currentImageTarget = null;
+                            }
+                        });
 
         applyColorTheme();
         setContentView(R.layout.activity_submit);
@@ -361,28 +358,12 @@ public class Submit extends BaseActivity {
         findViewById(R.id.selImage)
                 .setOnClickListener(
                         v -> {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                                submitImageLauncher.launch(
-                                        new PickVisualMediaRequest.Builder()
-                                                .setMediaType(
-                                                        ActivityResultContracts.PickVisualMedia
-                                                                .ImageOnly.INSTANCE)
-                                                .build());
-                            } else {
-                                TedImagePicker.with(Submit.this)
-                                        .title("Choose a photo")
-                                        .start(
-                                                uri -> {
-                                                    List<Uri> uris =
-                                                            Collections.singletonList(uri);
-                                                    handleImageIntent(uris);
-                                                    KeyboardUtil.hideKeyboard(
-                                                            Submit.this,
-                                                            findViewById(R.id.bodytext)
-                                                                    .getWindowToken(),
-                                                            0);
-                                                });
-                            }
+                            submitImageLauncher.launch(
+                                    new PickVisualMediaRequest.Builder()
+                                            .setMediaType(
+                                                    ActivityResultContracts.PickVisualMedia
+                                                            .ImageOnly.INSTANCE)
+                                            .build());
                         });
         DoEditorActions.doActions(
                 ((EditText) findViewById(R.id.bodytext)),

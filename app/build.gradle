@@ -193,7 +193,7 @@ dependencies {
     // Draggable sliding up panel
     implementation 'com.github.edgan:AndroidSlidingUpPanel:8413b22a2a'
     implementation 'com.github.edgan:JRAW:bacd6f5764'
-    implementation 'io.github.parksanggwon:tedimagepicker:1.7.2'
+
     def commonmarkVersion = '0ebc0749c7'
     implementation "com.github.Haptic-Apps.commonmark-java:commonmark:$commonmarkVersion"
     implementation "com.github.Haptic-Apps.commonmark-java:commonmark-ext-gfm-strikethrough:$commonmarkVersion"

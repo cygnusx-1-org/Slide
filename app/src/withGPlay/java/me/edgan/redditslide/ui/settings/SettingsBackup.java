@@ -10,8 +10,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.documentfile.provider.DocumentFile;
-
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -65,6 +63,7 @@ public class SettingsBackup extends BaseActivityAnim {
     private static final int RC_SIGN_IN = 100;
     private static final int RC_AUTHORIZATION = 101;
     private static final int RC_OPEN_DOCUMENT = 102; // used for local restore via SAF
+    private static final int RC_CREATE_DOCUMENT = 103; // used for local backup via SAF
 
     // Google sign-in client
     private GoogleSignInClient mGoogleSignInClient;
@@ -229,10 +228,29 @@ public class SettingsBackup extends BaseActivityAnim {
         Log.d(TAG, "showBackupToDirDialog() called.");
         new AlertDialog.Builder(this)
                 .setTitle(R.string.backup_question)
-                .setPositiveButton(R.string.btn_ok, (dialog, which) -> backupToDir())
+                .setPositiveButton(R.string.btn_ok, (dialog, which) -> launchCreateBackupFile())
                 .setNeutralButton(R.string.btn_cancel, null)
                 .setCancelable(false)
                 .show();
+    }
+
+    /** Launch SAF ACTION_CREATE_DOCUMENT to let the user choose where to save the backup. */
+    private void launchCreateBackupFile() {
+        String timeStamp = new SimpleDateFormat("-yyyy-MM-dd-HH-mm-ss").format(new Date());
+        String fileName = "Slide" + timeStamp + ".txt";
+
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TITLE, fileName);
+
+        // If a storage location is configured, use it as the initial directory
+        Uri treeUri = StorageUtil.getStorageUri(this);
+        if (treeUri != null) {
+            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, treeUri);
+        }
+
+        startActivityForResult(intent, RC_CREATE_DOCUMENT);
     }
 
     /**
@@ -288,6 +306,10 @@ public class SettingsBackup extends BaseActivityAnim {
                 // SAF file picker result for local restore
                 handleFilePickerResult(resultCode, data);
                 break;
+            case RC_CREATE_DOCUMENT:
+                // SAF create document result for local backup
+                handleCreateDocumentResult(resultCode, data);
+                break;
             default:
                 // ...
                 break;
@@ -327,6 +349,17 @@ public class SettingsBackup extends BaseActivityAnim {
                 });
     }
 
+    /** SAF create document result for local backup. */
+    private void handleCreateDocumentResult(int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
+            Uri fileUri = data.getData();
+            Log.d(TAG, "Created backup file URI: " + fileUri);
+            backupToFile(fileUri);
+        } else {
+            Log.w(TAG, "Backup file creation canceled or failed.");
+        }
+    }
+
     /** Handle the result from the local SAF file picker for restore. */
     private void handleFilePickerResult(int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK && data != null) {
@@ -350,20 +383,8 @@ public class SettingsBackup extends BaseActivityAnim {
         }
     }
 
-    /** SAF-based local backup to the user-chosen directory. */
-    private void backupToDir() {
-        Uri treeUri = StorageUtil.getStorageUri(this);
-
-        if (treeUri == null) {
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.err_general)
-                    .setMessage(R.string.set_storage_location)
-                    .setPositiveButton(R.string.btn_ok, (dialog, which) -> {})
-                    .setCancelable(false)
-                    .show();
-            return;
-        }
-
+    /** Performs the actual local backup writing to the user-chosen file URI. */
+    private void backupToFile(Uri fileUri) {
         progress =
                 new MaterialDialog.Builder(SettingsBackup.this)
                         .title(R.string.backup_backing_up)
@@ -373,36 +394,17 @@ public class SettingsBackup extends BaseActivityAnim {
                         .build();
         progress.show();
 
+        localBackupFileUri = fileUri;
+
         new AsyncTask<Void, Void, Boolean>() {
             private String errorMessage = null;
 
             @Override
             protected Boolean doInBackground(Void... params) {
                 try {
-                    DocumentFile parentDir = DocumentFile.fromTreeUri(SettingsBackup.this, treeUri);
-                    if (parentDir == null || !parentDir.exists() || !parentDir.isDirectory()) {
-                        errorMessage = "Invalid backup directory.";
-                        return false;
-                    }
-
-                    // Generate a backup filename
-                    String timeStamp =
-                            new SimpleDateFormat("-yyyy-MM-dd-HH-mm-ss").format(new Date());
-                    String fileName = "Slide" + timeStamp + ".txt";
-
-                    // Create the backup file in the chosen directory
-                    DocumentFile backupFile = parentDir.createFile("text/plain", fileName);
-                    if (backupFile == null) {
-                        errorMessage = "Failed to create backup file via SAF.";
-                        return false;
-                    }
-
-                    localBackupFileUri = backupFile.getUri();
-
-                    // Start writing
-                    OutputStream out = getContentResolver().openOutputStream(localBackupFileUri);
+                    OutputStream out = getContentResolver().openOutputStream(fileUri);
                     if (out == null) {
-                        errorMessage = "OutputStream was null for: " + localBackupFileUri;
+                        errorMessage = "OutputStream was null for: " + fileUri;
                         return false;
                     }
 
@@ -467,13 +469,13 @@ public class SettingsBackup extends BaseActivityAnim {
                 }
                 if (!success) {
                     Log.w(TAG, "Local backup failed: " + errorMessage);
-                    showErrorDialog(R.string.err_general, R.string.set_storage_location);
+                    showErrorDialog(R.string.err_general, R.string.err_general);
                     return;
                 }
-                // Show success dialog with a "View" button (like base version)
+                // Show success dialog with a "View" button
                 new AlertDialog.Builder(SettingsBackup.this)
                         .setTitle(R.string.backup_complete)
-                        .setMessage(R.string.backup_saved_downloads) // or a generic success message
+                        .setMessage(R.string.backup_saved_downloads)
                         .setPositiveButton(
                                 R.string.btn_view,
                                 (dialog, which) -> {
