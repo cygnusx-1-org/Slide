@@ -499,7 +499,9 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             messageViewHolder.content.setTypeface(typeface);
 
             setViews(
-                    comment.getDataNode().get("body_html").asText(),
+                    SubmissionParser.replaceProcessingImgPlaceholders(
+                            comment.getDataNode().get("body_html").asText(),
+                            comment.getDataNode()),
                     "FORCE_LINK_CLICK",
                     messageViewHolder);
         }

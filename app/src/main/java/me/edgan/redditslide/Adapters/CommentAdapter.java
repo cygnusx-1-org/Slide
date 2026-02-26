@@ -383,7 +383,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             holder.commentOverflow.setOnClickListener(singleClick);
             if (!toCollapse.contains(comment.getFullName()) || !SettingValues.collapseComments) {
                 setViews(
-                        comment.getDataNode().get("body_html").asText(),
+                        SubmissionParser.replaceProcessingImgPlaceholders(
+                                comment.getDataNode().get("body_html").asText(),
+                                comment.getDataNode()),
                         submission.getSubredditName(),
                         holder,
                         singleClick,
@@ -1367,7 +1369,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     if (toCollapse.contains(comment.getFullName())
                             && SettingValues.collapseComments) {
                         setViews(
-                                comment.getDataNode().get("body_html").asText(),
+                                SubmissionParser.replaceProcessingImgPlaceholders(
+                                        comment.getDataNode().get("body_html").asText(),
+                                        comment.getDataNode()),
                                 submission.getSubredditName(),
                                 holder);
                     }

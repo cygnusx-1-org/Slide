@@ -540,7 +540,9 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             holder.time.setText(titleString);
             // Pass search query for highlighting comment body
             setViews(
-                    comment.getDataNode().get("body_html").asText(),
+                    SubmissionParser.replaceProcessingImgPlaceholders(
+                            comment.getDataNode().get("body_html").asText(),
+                            comment.getDataNode()),
                     comment.getSubredditName(),
                     holder,
                     hasActiveFilter() ? currentQuery : null);
