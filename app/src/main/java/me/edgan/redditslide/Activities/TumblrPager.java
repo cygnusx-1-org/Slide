@@ -536,6 +536,14 @@ public class TumblrPager extends BaseSaveActivity {
                                     }
                                 }
                             });
+            View mute = rootView.findViewById(R.id.mute);
+            if (mute != null) {
+                mute.setVisibility(View.GONE);
+            }
+            View hq = rootView.findViewById(R.id.hq);
+            if (hq != null) {
+                hq.setVisibility(View.GONE);
+            }
             return rootView;
         }
 
@@ -568,7 +576,7 @@ public class TumblrPager extends BaseSaveActivity {
         b.sheet(2, external, getString(R.string.open_externally));
         b.sheet(5, share, getString(R.string.submission_link_share));
         if (!isGif) b.sheet(3, image, getString(R.string.share_image));
-        b.sheet(4, save, getString(R.string.submission_save_image));
+        b.sheet(4, save, getString(isGif ? R.string.submission_save_mp4 : R.string.submission_save_image));
         b.listener(
                 new DialogInterface.OnClickListener() {
                     @Override
@@ -760,6 +768,14 @@ public class TumblrPager extends BaseSaveActivity {
                                 });
             } else {
                 rootView.findViewById(R.id.comments).setVisibility(View.GONE);
+            }
+            View mute = rootView.findViewById(R.id.mute);
+            if (mute != null) {
+                mute.setVisibility(View.GONE);
+            }
+            View hq = rootView.findViewById(R.id.hq);
+            if (hq != null) {
+                hq.setVisibility(View.GONE);
             }
             return rootView;
         }
