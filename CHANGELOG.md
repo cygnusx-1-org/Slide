@@ -4,6 +4,11 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.4.3 / 2026-2-28
+============
+* Added button to the Login screen to open a Chrome custom tab via the default browser as a login alternative
+* Fixed Some gifs in comments fail to embed
+
 7.4.2 / 2026-2-25
 ============
 * Removed READ_EXTERNAL_STORAGE, READ_MEDIA_IMAGES, and READ_MEDIA_VIDEO permissions
