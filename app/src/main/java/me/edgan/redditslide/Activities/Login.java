@@ -2,20 +2,32 @@ package me.edgan.redditslide.Activities;
 
 import android.annotation.TargetApi;
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.browser.customtabs.CustomTabColorSchemeParams;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsService;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -40,6 +52,7 @@ import net.dean.jraw.models.Subreddit;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -50,6 +63,8 @@ public class Login extends BaseActivityAnim {
 
     Dialog d;
     CaseInsensitiveArrayList subNames;
+    String authorizationUrl;
+    OAuthHelper oAuthHelper;
 
     @Override
     public void onCreate(Bundle savedInstance) {
@@ -97,11 +112,8 @@ public class Login extends BaseActivityAnim {
         if (Authentication.reddit == null) {
             new Authentication(getApplicationContext());
         }
-        final OAuthHelper oAuthHelper = Authentication.reddit.getOAuthHelper();
-
-        final Credentials credentials =
-                Credentials.installedApp(Constants.getClientId(), Constants.REDDIT_REDIRECT_URL);
-        String authorizationUrl =
+        oAuthHelper = Authentication.reddit.getOAuthHelper();
+        authorizationUrl =
                 oAuthHelper.getAuthorizationUrl(credentials, true, scopes).toExternalForm();
         authorizationUrl = authorizationUrl.replace("www.", "i.");
         authorizationUrl = authorizationUrl.replace("%3A%2F%2Fi", "://www");
@@ -145,6 +157,80 @@ public class Login extends BaseActivityAnim {
                 });
 
         webView.loadUrl(authorizationUrl);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_login, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.open_in_browser) {
+            if (authorizationUrl != null) {
+                openLoginInCustomTab();
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        Uri uri = intent.getData();
+        if (uri != null && uri.toString().contains("code=")) {
+            String url = uri.toString();
+            Log.v(LogUtil.getTag(), "Custom Tab redirect URL: " + url);
+            new UserChallengeTask(oAuthHelper, credentials).execute(url);
+        }
+    }
+
+    private void openLoginInCustomTab() {
+        List<ResolveInfo> resolveInfos = getCustomTabsPackages(getPackageManager());
+
+        if (!resolveInfos.isEmpty()) {
+            CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+            builder.setShareState(CustomTabsIntent.SHARE_STATE_ON);
+            builder.setDefaultColorSchemeParams(
+                    new CustomTabColorSchemeParams.Builder()
+                            .setToolbarColor(getResources().getColor(R.color.md_blue_500))
+                            .build());
+            CustomTabsIntent customTabsIntent = builder.build();
+            customTabsIntent.intent.setPackage(
+                    resolveInfos.get(0).activityInfo.packageName);
+
+            try {
+                customTabsIntent.launchUrl(this, Uri.parse(authorizationUrl));
+            } catch (ActivityNotFoundException e) {
+                Toast.makeText(this, R.string.website_external, Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, R.string.website_external, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private List<ResolveInfo> getCustomTabsPackages(PackageManager pm) {
+        Intent activityIntent = new Intent()
+                .setAction(Intent.ACTION_VIEW)
+                .addCategory(Intent.CATEGORY_BROWSABLE)
+                .setData(Uri.fromParts("http", "", null));
+
+        List<ResolveInfo> resolvedActivityList = pm.queryIntentActivities(activityIntent, 0);
+        List<ResolveInfo> packagesSupportingCustomTabs = new ArrayList<>();
+        for (ResolveInfo info : resolvedActivityList) {
+            Intent serviceIntent = new Intent();
+            serviceIntent.setAction(CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION);
+            serviceIntent.setPackage(info.activityInfo.packageName);
+            if (pm.resolveService(serviceIntent, 0) != null) {
+                packagesSupportingCustomTabs.add(info);
+            }
+        }
+
+        return packagesSupportingCustomTabs;
     }
 
     @Override
