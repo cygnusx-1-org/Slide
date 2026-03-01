@@ -29,6 +29,17 @@ See [CLIENT_ID_QR_CODE.md](/docs/CLIENT_ID_QR_CODE.md)
 The most likely cause for this is the `redirect uri` is set incorrectly. The
 big tell is if you can view Reddit in guest mode, aka without logging in.
 
+## Keyboard won't come up for input fields on login screen
+A new button has been added, in `7.4.3` to the top right of the Login screen. It uses your default
+browser to open a custom `Chrome` tab. Note this requires your default browser to be a `Chrome`
+based browser. `Firefox` has been tested, and does not work.
+
+Also before trying to login with the new button you need to go to
+`Settings | Apps | Slide | Open by Default` and add `www.ccrama.me`. This is for historical
+reasons, and with the recent changes made to client IDs by `Reddit`, it can't be changed.
+
+See [Issue 280](https://github.com/cygnusx-1-org/Slide/issues/280) for more details.
+
 ## Correct username and password does not work
 Slide depends on
 [Android System Webview](https://play.google.com/store/apps/details?id=com.google.android.webview)
