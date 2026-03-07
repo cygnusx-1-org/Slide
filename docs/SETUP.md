@@ -1,4 +1,5 @@
 # Setup
+
 ## Backup / Restore
 You want to backup your settings before uninstalling other versions of Slide.
 This will help save filters, accounts, etc. It is also a good idea in general.
@@ -15,6 +16,12 @@ This will help save filters, accounts, etc. It is also a good idea in general.
 
 ## Reddit Client ID
 A Reddit Client ID is needed to access Reddit from 3rd party clients.
+
+> [!IMPORTANT]
+>
+> Reddit has recently changed the guidelines to create api key
+> [see here](https://www.reddit.com/r/redditdev/comments/1oug31u/introducing_the_responsible_builder_policy_new/)
+> we are not sure how it wll affect the app in the future but currently it seems most users are unable to create new api keys
 
 ### Normal way
 See [CLIENT_ID_NORMAL.md](/docs/CLIENT_ID_NORMAL.md)
