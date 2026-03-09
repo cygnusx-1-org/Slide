@@ -432,7 +432,8 @@ public class MainActivity extends BaseActivity
          * domain, the frontpage, or /r/all. If the subreddit has a "." in it, we know it's a domain
          * because subreddits aren't allowed to have hard-stops in the name.
          */
-        if (Authentication.didOnline && usedArray != null) {
+        if (Authentication.didOnline && usedArray != null && pager != null
+                && pager.getCurrentItem() < usedArray.size()) {
             final String subreddit = usedArray.get(pager.getCurrentItem());
 
             if (subreddit.contains("/m/")
