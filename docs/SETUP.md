@@ -30,6 +30,12 @@ See [CLIENT_ID_NORMAL.md](/docs/CLIENT_ID_NORMAL.md)
 See [CLIENT_ID_QR_CODE.md](/docs/CLIENT_ID_QR_CODE.md)
 
 # Common errors
+## External browser login not working
+It requires adding `www.ccrama.me` to `Open by default` in the device's `Settings | Apps | Slide`. This is enable the
+`redirect uri` to work.
+
+It is recommended to use `Brave`, and `Firefox is known not to work.
+
 ## Error: Invalid request to Oauth API
 ![Oauth error](/screenshots/oauth_error.png)
 
