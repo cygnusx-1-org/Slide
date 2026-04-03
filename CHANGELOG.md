@@ -4,6 +4,10 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.4.5 / 2026-4-2
+===========
+* Fixed /r/all not loading by fixing it in JRAW and updating it
+
 7.4.4 / 2026-3-31
 ============
 * Fixed WebView login
