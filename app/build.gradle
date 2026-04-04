@@ -199,7 +199,7 @@ dependencies {
     implementation "com.github.Haptic-Apps.commonmark-java:commonmark-ext-gfm-strikethrough:$commonmarkVersion"
     implementation "com.github.Haptic-Apps.commonmark-java:commonmark-ext-gfm-tables:$commonmarkVersion"
     implementation 'com.github.Haptic-Apps:JReadability:bb291880a5'
-    implementation 'com.github.Haptic-Apps.Android-RobotoTextView:robototextview:f6d0eb5ac7'
+    implementation 'com.github.edgan:Android-RobotoTextView:d368c94b3c'
 
 /** AndroidX **/
     implementation 'androidx.activity:activity:1.9.3'
