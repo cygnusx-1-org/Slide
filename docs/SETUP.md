@@ -14,6 +14,27 @@ This will help save filters, accounts, etc. It is also a good idea in general.
 6. Close Slide
 7. Open Slide
 
+## Reddit account language
+
+You need to set the language of your Reddit account to `English`.
+
+1. Go to https://old.reddit.com/prefs/
+2. Change the `interface language`
+
+<p align="center">
+  <picture>
+    <source
+      width="1053x"
+      media="(prefers-color-scheme: dark)"
+      srcset="screenshots/reddit_account_language.png"
+    >
+    <img
+      width="1053px"
+      src="screenshots/reddit_account_language.png"
+    >
+  </picture>
+</p>
+
 ## Reddit Client ID
 A Reddit Client ID is needed to access Reddit from 3rd party clients.
 
