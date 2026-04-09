@@ -14,9 +14,15 @@ This will help save filters, accounts, etc. It is also a good idea in general.
 6. Close Slide
 7. Open Slide
 
-## Reddit account language
-There is a known issue with the `Reddit` API that prevents logging in when the language if the language is anything other than `English`. So you need to set the language of your Reddit account to `English`.
+## Reddit account interface language
+There is a known issue with the `Reddit` login JavaScript. It was discovered by wchill. It prevents logging in when the language if the language is anything other than `English`. So you need to set the language of your `Reddit` account to `English`.
 
+I have implemented a hack to workaround the issue in `7.4.6`, but it has a few issues.
+
+1. It could break at anytime if `Reddit` rewrites their JavaScript.
+2. The hack only works in the WebView not Chrome, Brave or Firefox.
+
+### How to change the Reddit account interface language
 1. Go to https://old.reddit.com/prefs/
 2. Change the `interface language`
 
