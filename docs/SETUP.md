@@ -16,7 +16,7 @@ This will help save filters, accounts, etc. It is also a good idea in general.
 
 ## Reddit account language
 
-You need to set the language of your Reddit account to `English`.
+There is a known issue with the `Reddit` API that prevents logging in when the language if the language is anything other than `English`. So you need to set the language of your Reddit account to `English`.
 
 1. Go to https://old.reddit.com/prefs/
 2. Change the `interface language`
