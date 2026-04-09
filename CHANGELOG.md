@@ -4,6 +4,10 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.4.6 / 2026-4-9
+===========
+* Fixed the Reddit account's interface language being anything but English at login issue in the WebView case
+
 7.4.5 / 2026-4-2
 ===========
 * Fixed /r/all not loading by fixing it in JRAW and updating it
