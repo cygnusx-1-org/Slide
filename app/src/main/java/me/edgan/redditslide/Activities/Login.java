@@ -277,6 +277,31 @@ public class Login extends BaseActivityAnim {
                                         Log.v(
                                                 LOGIN_TAG,
                                                 "JS inject result: " + value));
+
+                        // Rewrite the authorize button value to 'Allow' (English) before
+                        // form submission. Reddit's localized OAuth consent page submits
+                        // a native form POST to /svc/shreddit/oauth-grant with the button's
+                        // localized value (e.g. '허용' in Korean). Non-English values cause
+                        // access_denied on Reddit's backend. We intercept in capture phase
+                        // so the rewrite happens before FormData is read.
+                        view.evaluateJavascript(
+                                "(function() {"
+                                        + "  if (window._authorizeRewriteInstalled) return;"
+                                        + "  window._authorizeRewriteInstalled = true;"
+                                        + "  document.addEventListener('submit', function(e) {"
+                                        + "    var s = e.submitter;"
+                                        + "    if (s && s.name === 'authorize'"
+                                        + "        && s.value !== 'Allow') {"
+                                        + "      LoginDebug.logFetch("
+                                        + "        'authorize rewrite: '"
+                                        + "        + s.value + ' -> Allow');"
+                                        + "      s.value = 'Allow';"
+                                        + "    }"
+                                        + "  }, true);"
+                                        + "  LoginDebug.logFetch("
+                                        + "    'authorize rewrite listener installed');"
+                                        + "})()",
+                                value -> Log.v(LOGIN_TAG, "authorize rewrite inject: " + value));
                     }
 
                     @Override
