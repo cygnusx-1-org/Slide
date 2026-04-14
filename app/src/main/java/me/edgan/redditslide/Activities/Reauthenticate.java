@@ -73,7 +73,7 @@ public class Reauthenticate extends BaseActivityAnim {
         };
         final OAuthHelper oAuthHelper = Authentication.reddit.getOAuthHelper();
         final Credentials credentials =
-                Credentials.installedApp(Constants.getClientId(), Constants.REDDIT_REDIRECT_URL);
+                Credentials.installedApp(Constants.getClientId(), Constants.getRedirectUrl());
         String authorizationUrl =
                 oAuthHelper.getAuthorizationUrl(credentials, true, scopes).toExternalForm();
         authorizationUrl = authorizationUrl.replace("www.", "i.");

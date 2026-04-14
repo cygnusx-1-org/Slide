@@ -77,6 +77,38 @@ public class Constants {
 
     public static final String REDDIT_REDIRECT_URL = "http://www.ccrama.me";
 
+    /**
+     * Gets the Reddit redirect URL to use for authentication. Returns the user-specified override
+     * if set, otherwise returns the default.
+     */
+    public static String getRedirectUrl() {
+        if (SettingValues.prefs == null) {
+            return REDDIT_REDIRECT_URL;
+        }
+
+        String override =
+                SettingValues.prefs.getString(
+                        SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE, "");
+        return !override.isEmpty() ? override : REDDIT_REDIRECT_URL;
+    }
+
+    /**
+     * Gets the Reddit user agent string to use for API requests. Returns the user-specified
+     * override if set, otherwise returns the default.
+     */
+    public static String getUserAgent() {
+        if (SettingValues.prefs != null) {
+            String override =
+                    SettingValues.prefs.getString(
+                            SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE, "");
+            if (!override.isEmpty()) {
+                return override;
+            }
+        }
+
+        return "android:me.edgan.RedditSlide:v" + BuildConfig.VERSION_NAME;
+    }
+
     public enum BackButtonBehaviorOptions {
         Default(0),
         ConfirmExit(1),

@@ -1302,6 +1302,32 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                     showClientIDDialog();
                 });
 
+        // * Redirect URI override
+        RelativeLayout redirectUri = context.findViewById(R.id.settings_general_redirect_uri);
+        final TextView currentRedirectUri =
+                context.findViewById(R.id.settings_general_redirect_uri_current);
+
+        String savedRedirectUri =
+                SettingValues.prefs.getString(SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE, "");
+        if (!savedRedirectUri.isEmpty()) {
+            currentRedirectUri.setText(savedRedirectUri);
+        }
+
+        redirectUri.setOnClickListener(v -> showRedirectUriDialog());
+
+        // * User agent override
+        RelativeLayout userAgentLayout = context.findViewById(R.id.settings_general_user_agent);
+        final TextView currentUserAgent =
+                context.findViewById(R.id.settings_general_user_agent_current);
+
+        String savedUserAgent =
+                SettingValues.prefs.getString(SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE, "");
+        if (!savedUserAgent.isEmpty()) {
+            currentUserAgent.setText(savedUserAgent);
+        }
+
+        userAgentLayout.setOnClickListener(v -> showUserAgentDialog());
+
         // Add notification permission request button for Android 13+
         RelativeLayout notifPermLayout = context.findViewById(R.id.settings_general_notification_permission);
         if (notifPermLayout != null) {
@@ -1793,6 +1819,92 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                                 context.getString(R.string.click_custom_client_id) : newClientId);
 
                         // Restart the app immediately
+                        ((Reddit) context.getApplicationContext()).forceRestart(context, false);
+                    }
+                })
+                .setNegativeButton(R.string.btn_cancel, null)
+                .show();
+    }
+
+    private void showRedirectUriDialog() {
+        final Context contextThemeWrapper = new ContextThemeWrapper(context,
+                new ColorPreferences(context).getFontStyle().getBaseId());
+
+        final EditText input = new EditText(contextThemeWrapper);
+        String saved = SettingValues.prefs.getString(SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE, "");
+        input.setText(saved);
+
+        int paddingPx = (int)(16 * context.getResources().getDisplayMetrics().density);
+        input.setPadding(paddingPx, input.getPaddingTop(), paddingPx, input.getPaddingBottom());
+
+        final TextView currentView = context.findViewById(R.id.settings_general_redirect_uri_current);
+
+        new MaterialAlertDialogBuilder(contextThemeWrapper)
+                .setTitle(R.string.reddit_redirect_uri_override)
+                .setView(input)
+                .setPositiveButton(R.string.btn_ok, (dialog, which) -> {
+                    String newValue = input.getText().toString().trim();
+                    String oldValue = SettingValues.prefs.getString(SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE, "");
+
+                    if (!newValue.equals(oldValue)) {
+                        SettingValues.redditRedirectUriOverride = newValue;
+
+                        if (newValue.isEmpty()) {
+                            SettingValues.prefs.edit()
+                                    .remove(SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE)
+                                    .commit();
+                        } else {
+                            SettingValues.prefs.edit()
+                                    .putString(SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE, newValue)
+                                    .commit();
+                        }
+
+                        currentView.setText(newValue.isEmpty() ?
+                                context.getString(R.string.click_custom_redirect_uri) : newValue);
+
+                        ((Reddit) context.getApplicationContext()).forceRestart(context, false);
+                    }
+                })
+                .setNegativeButton(R.string.btn_cancel, null)
+                .show();
+    }
+
+    private void showUserAgentDialog() {
+        final Context contextThemeWrapper = new ContextThemeWrapper(context,
+                new ColorPreferences(context).getFontStyle().getBaseId());
+
+        final EditText input = new EditText(contextThemeWrapper);
+        String saved = SettingValues.prefs.getString(SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE, "");
+        input.setText(saved);
+
+        int paddingPx = (int)(16 * context.getResources().getDisplayMetrics().density);
+        input.setPadding(paddingPx, input.getPaddingTop(), paddingPx, input.getPaddingBottom());
+
+        final TextView currentView = context.findViewById(R.id.settings_general_user_agent_current);
+
+        new MaterialAlertDialogBuilder(contextThemeWrapper)
+                .setTitle(R.string.reddit_user_agent_override)
+                .setView(input)
+                .setPositiveButton(R.string.btn_ok, (dialog, which) -> {
+                    String newValue = input.getText().toString().trim();
+                    String oldValue = SettingValues.prefs.getString(SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE, "");
+
+                    if (!newValue.equals(oldValue)) {
+                        SettingValues.redditUserAgentOverride = newValue;
+
+                        if (newValue.isEmpty()) {
+                            SettingValues.prefs.edit()
+                                    .remove(SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE)
+                                    .commit();
+                        } else {
+                            SettingValues.prefs.edit()
+                                    .putString(SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE, newValue)
+                                    .commit();
+                        }
+
+                        currentView.setText(newValue.isEmpty() ?
+                                context.getString(R.string.click_custom_user_agent) : newValue);
+
                         ((Reddit) context.getApplicationContext()).forceRestart(context, false);
                     }
                 })

@@ -13,7 +13,7 @@
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
         android:paddingTop="16dp"
-        android:text="Reddit Client ID"
+        android:text="Overrides"
         android:tag="label"
         android:textColor="?attr/colorAccent"
         android:paddingBottom="8dp" />
@@ -47,6 +47,77 @@
                 android:layout_height="wrap_content"
                 android:alpha=".86"
                 android:text="Click to set custom client ID"
+                android:textColor="?attr/fontColor"
+                android:textSize="13sp"
+                android:fontFamily="@font/roboto_mono_medium"
+                android:paddingBottom="8dp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/settings_general_redirect_uri"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:selectableItemBackground"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Redirect URI override"
+                android:textColor="?attr/fontColor"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/settings_general_redirect_uri_current"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha=".86"
+                android:text="Click to set custom redirect URI"
+                android:textColor="?attr/fontColor"
+                android:textSize="13sp"
+                android:paddingBottom="8dp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/settings_general_user_agent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:selectableItemBackground"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="User agent override"
+                android:textColor="?attr/fontColor"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/settings_general_user_agent_current"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha=".86"
+                android:text="Click to set custom user agent"
                 android:textColor="?attr/fontColor"
                 android:textSize="13sp"
                 android:paddingBottom="8dp" />

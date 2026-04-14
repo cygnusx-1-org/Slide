@@ -39,7 +39,6 @@ import com.mikepenz.itemanimators.SlideRightAlphaAnimator;
 import com.nostra13.universalimageloader.utils.DiskCacheUtils;
 
 import me.edgan.redditslide.Authentication;
-import me.edgan.redditslide.BuildConfig;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.Drafts;
 import me.edgan.redditslide.Fragments.CommentPage;
@@ -1855,7 +1854,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         String token;
         RedditClient reddit =
                 new RedditClient(
-                        UserAgent.of("android:me.edgan.RedditSlide:v" + BuildConfig.VERSION_NAME));
+                        UserAgent.of(Constants.getUserAgent()));
         final HashMap<String, String> accounts = new HashMap<>();
 
         for (String s :

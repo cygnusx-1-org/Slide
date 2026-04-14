@@ -71,7 +71,7 @@ import java.util.Set;
 /** Created by ccrama on 5/27/2015. */
 public class Login extends BaseActivityAnim {
     final Credentials credentials =
-            Credentials.installedApp(Constants.getClientId(), Constants.REDDIT_REDIRECT_URL);
+            Credentials.installedApp(Constants.getClientId(), Constants.getRedirectUrl());
 
     Dialog d;
     CaseInsensitiveArrayList subNames;

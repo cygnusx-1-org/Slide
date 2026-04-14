@@ -1299,6 +1299,11 @@
 
     <string name="enter_client_id">Enter Client ID</string>
 
+    <string name="reddit_redirect_uri_override">Reddit Redirect URI Override</string>
+    <string name="click_custom_redirect_uri">Click to set custom redirect URI</string>
+    <string name="reddit_user_agent_override">Reddit User Agent Override</string>
+    <string name="click_custom_user_agent">Click to set custom user agent</string>
+
     <string name="settings_section_sound">Sound</string>
     <string name="settings_unmute_default">Unmute videos by default</string>
 

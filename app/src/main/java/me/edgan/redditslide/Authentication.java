@@ -63,8 +63,7 @@ public class Authentication {
             isLoggedIn = false;
             reddit =
                     new RedditClient(
-                            UserAgent.of(
-                                    "android:me.edgan.RedditSlide:v" + BuildConfig.VERSION_NAME),
+                            UserAgent.of(Constants.getUserAgent()),
                             httpAdapter);
             reddit.setRetryLimit(2);
             if (BuildConfig.DEBUG) reddit.setLoggingMode(LoggingMode.ALWAYS);
@@ -96,8 +95,7 @@ public class Authentication {
             isLoggedIn = false;
             reddit =
                     new RedditClient(
-                            UserAgent.of(
-                                    "android:me.edgan.RedditSlide:v" + BuildConfig.VERSION_NAME));
+                            UserAgent.of(Constants.getUserAgent()));
             reddit.setLoggingMode(LoggingMode.ALWAYS);
             didOnline = true;
 
@@ -128,7 +126,7 @@ public class Authentication {
 
                             final Credentials credentials =
                                     Credentials.installedApp(
-                                            Constants.getClientId(), Constants.REDDIT_REDIRECT_URL);
+                                            Constants.getClientId(), Constants.getRedirectUrl());
                             Log.v(LogUtil.getTag(), "REAUTH LOGGED IN");
 
                             OAuthHelper oAuthHelper = reddit.getOAuthHelper();
@@ -285,7 +283,7 @@ public class Authentication {
 
                 final Credentials credentials =
                         Credentials.installedApp(
-                                Constants.getClientId(), Constants.REDDIT_REDIRECT_URL);
+                                Constants.getClientId(), Constants.getRedirectUrl());
 
                 OAuthHelper oAuthHelper = baseReddit.getOAuthHelper();
                 oAuthHelper.setRefreshToken(lastToken);
