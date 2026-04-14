@@ -5,7 +5,6 @@ import static me.edgan.redditslide.Notifications.ImageDownloadNotificationServic
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 
 
 import me.edgan.redditslide.Activities.MediaView;
@@ -14,7 +13,6 @@ import me.edgan.redditslide.DataShare;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionViews.HeaderImageLinkView;
-import me.edgan.redditslide.SubmissionViews.OpenVRedditTask;
 import me.edgan.redditslide.SubmissionViews.PopulateBase;
 import me.edgan.redditslide.Visuals.Palette;
 
@@ -76,35 +74,12 @@ public class SubmissionThumbnailHelper {
             myIntent.putExtra(MediaView.SUBREDDIT, submission.getSubredditName());
             myIntent.putExtra(EXTRA_SUBMISSION_TITLE, submission.getTitle());
 
+            String videoUrl = GifUtils.AsyncLoadGif.getVideoUrlFromSubmission(submission);
             GifUtils.AsyncLoadGif.VideoType t =
-                    GifUtils.AsyncLoadGif.getVideoType(submission.getUrl());
+                    GifUtils.AsyncLoadGif.getVideoType(videoUrl);
 
             if (t == GifUtils.AsyncLoadGif.VideoType.VREDDIT) {
-                if (submission.getDataNode().has("media")
-                        && submission.getDataNode().get("media").has("reddit_video") && submission.getDataNode().get("media").get("reddit_video").has("hls_url")) {
-                    myIntent.putExtra(
-                        MediaView.EXTRA_URL,
-                        StringEscapeUtils.unescapeJson(
-                            submission
-                                .getDataNode()
-                                .get("media")
-                                .get("reddit_video")
-                                .get("dash_url") // In the future, we could load the HLS url as well
-                                .asText()).replace("&amp;", "&"));
-                } else if (submission.getDataNode().has("media") && submission.getDataNode().get("media").has("reddit_video")) {
-                    myIntent.putExtra(
-                        MediaView.EXTRA_URL,
-                        StringEscapeUtils.unescapeJson(submission.getDataNode().get("media").get("reddit_video").get("fallback_url").asText()).replace("&amp;", "&"));
-                } else if (submission.getDataNode().has("crosspost_parent_list")) {
-                    myIntent.putExtra(
-                        MediaView.EXTRA_URL,
-                        StringEscapeUtils.unescapeJson(
-                            submission.getDataNode().get("crosspost_parent_list").get(0).get("media").get("reddit_video").get("dash_url").asText()).replace("&amp;", "&"));
-                } else {
-                    new OpenVRedditTask(contextActivity, submission.getSubredditName())
-                            .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, submission.getUrl());
-                    return;
-                }
+                myIntent.putExtra(MediaView.EXTRA_URL, videoUrl);
 
             } else if (t.shouldLoadPreview()
                     && submission.getDataNode().has("preview")

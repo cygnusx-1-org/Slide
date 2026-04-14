@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import net.dean.jraw.models.Submission;
 
 import java.net.URI;
@@ -166,7 +168,8 @@ public class ContentType {
             final String scheme = uri.getScheme().toLowerCase(Locale.ENGLISH);
 
             if (hostContains(host, "v.redd.it")
-                    || (host.equals("reddit.com") && url.contains("reddit.com/video/"))) {
+                    || (host.equals("reddit.com") && url.contains("reddit.com/video/"))
+                    || (host.equals("reddit.com") && url.contains("/link/") && url.contains("/video/"))) {
                 if (url.contains("DASH_")) {
                     return Type.VREDDIT_DIRECT;
                 } else {
@@ -256,6 +259,11 @@ public class ContentType {
         }
 
         if (submission.isSelfPost()) {
+            for (JsonNode entry : submission.getDataNode().path("media_metadata")) {
+                if ("RedditVideo".equals(entry.path("e").asText())) {
+                    return Type.VREDDIT_REDIRECT;
+                }
+            }
             return Type.SELF;
         }
 

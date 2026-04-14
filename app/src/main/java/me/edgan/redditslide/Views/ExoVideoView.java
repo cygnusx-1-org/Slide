@@ -33,6 +33,7 @@ import androidx.media3.datasource.okhttp.OkHttpDataSource;
 import androidx.media3.exoplayer.source.MediaSource;
 import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 import androidx.media3.exoplayer.dash.DashMediaSource;
+import androidx.media3.exoplayer.hls.HlsMediaSource;
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector;
 import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.media3.ui.PlayerControlView;
@@ -402,6 +403,12 @@ public class ExoVideoView extends RelativeLayout {
                             new DashMediaSource.Factory(cacheDataSourceFactory)
                                     .createMediaSource(MediaItem.fromUri(uri));
                     break;
+                case HLS:
+                    Log.d(TAG, "Creating HLS media source");
+                    videoSource =
+                            new HlsMediaSource.Factory(cacheDataSourceFactory)
+                                    .createMediaSource(MediaItem.fromUri(uri));
+                    break;
                 case STANDARD:
                 default:
                     Log.d(TAG, "Creating standard media source");
@@ -756,7 +763,8 @@ public class ExoVideoView extends RelativeLayout {
     /** Enum for video types. */
     public enum VideoType {
         STANDARD,
-        DASH
+        DASH,
+        HLS
     }
 
     /** Helper class to manage audio focus. */

@@ -988,7 +988,11 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                     openImage(url, subreddit);
                     break;
                 case VREDDIT_REDIRECT:
-                    openVReddit(url, subreddit, activity);
+                    if (url.contains("reddit.com/link/") && url.contains("/video/")) {
+                        openGif(url, subreddit, activity);
+                    } else {
+                        openVReddit(url, subreddit, activity);
+                    }
                     break;
                 case GIF:
                 case VREDDIT_DIRECT:
