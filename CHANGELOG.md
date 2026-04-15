@@ -4,6 +4,12 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.4.7 / 2026-4-15
+============
+* Added support for overriding the redirect URI and user agent
+* Changed the font used to display the the client ID to avoid typoes
+* Added HLS video support, including in self posts
+
 7.4.6 / 2026-4-9
 ===========
 * Fixed the Reddit account's interface language being anything but English at login issue in the WebView case
