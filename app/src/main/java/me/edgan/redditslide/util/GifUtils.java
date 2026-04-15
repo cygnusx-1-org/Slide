@@ -648,10 +648,10 @@ public class GifUtils {
             if (s.contains("reddit.com/link/") && s.contains("/video/")) {
                 s = s.replace("reddit.com/link/", "v.redd.it/link/")
                      .replace("/video/", "/asset/")
-                     .replace("/player", "/HLSPlaylist.m3u8");
+                     .replace("/player", "/DASHPlaylist.mpd");
             }
 
-            if (s.contains("v.redd.it") && !s.contains("DASHPlaylist") && !s.contains("HLSPlaylist")) {
+            if (s.contains("v.redd.it") && !s.contains("DASHPlaylist")) {
                 if (s.contains("DASH")) {
                     s = s.substring(0, s.indexOf("DASH"));
                 }
@@ -712,7 +712,7 @@ public class GifUtils {
             // New format: self posts with video in media_metadata
             for (JsonNode entry : data.path("media_metadata")) {
                 if ("RedditVideo".equals(entry.path("e").asText())) {
-                    String url = StringEscapeUtils.unescapeJson(entry.path("hlsUrl").asText("")).replace("&amp;", "&");
+                    String url = StringEscapeUtils.unescapeJson(entry.path("dashUrl").asText("")).replace("&amp;", "&");
                     if (!url.isEmpty()) return url;
                 }
             }
@@ -720,7 +720,7 @@ public class GifUtils {
             // Standard reddit video
             JsonNode rv = data.path("media").path("reddit_video");
             if (!rv.isMissingNode() && !rv.isNull()) {
-                for (String field : new String[]{"hls_url", "dash_url", "fallback_url"}) {
+                for (String field : new String[]{"dash_url", "fallback_url"}) {
                     String url = rv.path(field).asText("");
                     if (!url.isEmpty())
                         return StringEscapeUtils.unescapeJson(url).replace("&amp;", "&");
@@ -731,7 +731,7 @@ public class GifUtils {
             JsonNode cpl = data.path("crosspost_parent_list");
             if (cpl.isArray() && cpl.size() > 0) {
                 JsonNode crv = cpl.get(0).path("media").path("reddit_video");
-                for (String field : new String[]{"hls_url", "dash_url"}) {
+                for (String field : new String[]{"dash_url"}) {
                     String url = crv.path(field).asText("");
                     if (!url.isEmpty())
                         return StringEscapeUtils.unescapeJson(url).replace("&amp;", "&");
@@ -1112,10 +1112,8 @@ public class GifUtils {
             }
 
             try {
-                String uriStr = uri.toString();
                 ExoVideoView.VideoType type =
-                    uriStr.contains("HLSPlaylist") ? ExoVideoView.VideoType.HLS
-                    : uriStr.contains("DASHPlaylist") ? ExoVideoView.VideoType.DASH
+                    uri.toString().contains("DASHPlaylist") ? ExoVideoView.VideoType.DASH
                     : ExoVideoView.VideoType.STANDARD;
 
                 video.setVideoURI(uri, type, new Player.Listener() {

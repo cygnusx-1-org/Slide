@@ -550,10 +550,13 @@ public class MediaFragment extends Fragment {
         } else if ((t.shouldLoadPreview()
                 && s.getDataNode().has("preview")
                 && s.getDataNode().get("preview").has("reddit_video_preview"))) {
-            JsonNode rvp = s.getDataNode().get("preview").get("reddit_video_preview");
-            String urlField = rvp.has("hls_url") ? "hls_url" : "dash_url";
             toLoadURL =
-                    StringEscapeUtils.unescapeJson(rvp.path(urlField).asText(""));
+                    StringEscapeUtils.unescapeJson(
+                            s.getDataNode()
+                                    .get("preview")
+                                    .get("reddit_video_preview")
+                                    .get("dash_url")
+                                    .asText());
         } else if (t == GifUtils.AsyncLoadGif.VideoType.DIRECT
                 && s.getDataNode().has("media")
                 && s.getDataNode().get("media").has("reddit_video")
