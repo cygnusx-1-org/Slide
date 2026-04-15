@@ -70,8 +70,7 @@ import java.util.Set;
 
 /** Created by ccrama on 5/27/2015. */
 public class Login extends BaseActivityAnim {
-    final Credentials credentials =
-            Credentials.installedApp(Constants.getClientId(), Constants.getRedirectUrl());
+    Credentials credentials;
 
     Dialog d;
     CaseInsensitiveArrayList subNames;
@@ -123,6 +122,13 @@ public class Login extends BaseActivityAnim {
         };
         if (Authentication.reddit == null) {
             new Authentication(getApplicationContext());
+        }
+        try {
+            credentials = Credentials.installedApp(Constants.getClientId(), Constants.getRedirectUrl());
+        } catch (IllegalArgumentException e) {
+            Toast.makeText(this, R.string.settings_reddit_redirect_uri_invalid, Toast.LENGTH_LONG).show();
+            finish();
+            return;
         }
         oAuthHelper = Authentication.reddit.getOAuthHelper();
         authorizationUrl =

@@ -1846,6 +1846,11 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                     String newValue = input.getText().toString().trim();
                     String oldValue = SettingValues.prefs.getString(SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE, "");
 
+                    if (!newValue.isEmpty() && !newValue.matches(".+://.+")) {
+                        Toast.makeText(context, R.string.settings_reddit_redirect_uri_invalid, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
                     if (!newValue.equals(oldValue)) {
                         SettingValues.redditRedirectUriOverride = newValue;
 
