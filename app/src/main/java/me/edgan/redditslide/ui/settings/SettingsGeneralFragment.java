@@ -16,11 +16,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Paint;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.Settings;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -1737,18 +1738,6 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 LinearLayout.LayoutParams.MATCH_PARENT, paddingPx));
         dialogContainer.addView(paddingView);
 
-        // Add instructions link
-        TextView linkText = new TextView(contextThemeWrapper);
-        linkText.setText(R.string.client_id_instructions);
-        linkText.setTextColor(new ColorPreferences(contextThemeWrapper).getColor(""));
-        linkText.setPaintFlags(linkText.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        linkText.setPadding(paddingPx, 0, 0, paddingPx);
-        linkText.setOnClickListener(v -> {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(context.getString(R.string.setup_md_url)));
-            context.startActivity(browserIntent);
-        });
-        dialogContainer.addView(linkText);
-
         // Create horizontal layout for input field and camera button
         LinearLayout inputLayout = new LinearLayout(contextThemeWrapper);
         inputLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -1791,11 +1780,11 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
 
         final TextView currentClientIdView = context.findViewById(R.id.settings_general_client_id_current);
 
-        new MaterialAlertDialogBuilder(contextThemeWrapper)
-                .setTitle(R.string.reddit_client_id_override)
+        final AlertDialog clientIdDialog = new MaterialAlertDialogBuilder(contextThemeWrapper)
+                .setTitle(R.string.reddit_client_id)
                 .setView(dialogContainer)
                 .setPositiveButton(R.string.btn_ok, (dialog, which) -> {
-                    String newClientId = input.getText().toString().trim();
+                    String newClientId = StringUtil.stripAllWhitespace(input.getText().toString());
                     String oldClientId = SettingValues.prefs.getString(SettingValues.PREF_REDDIT_CLIENT_ID_OVERRIDE, "");
 
                     // Only proceed if the client ID has changed
@@ -1824,6 +1813,26 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 })
                 .setNegativeButton(R.string.btn_cancel, null)
                 .show();
+
+        final android.widget.Button okButton =
+                clientIdDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        Runnable updateOkState = () -> {
+            String stripped = StringUtil.stripAllWhitespace(input.getText().toString());
+            okButton.setEnabled(stripped.length() >= 22);
+        };
+        updateOkState.run();
+        input.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                updateOkState.run();
+            }
+        });
     }
 
     private void showRedirectUriDialog() {
@@ -1843,7 +1852,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 .setTitle(R.string.reddit_redirect_uri_override)
                 .setView(input)
                 .setPositiveButton(R.string.btn_ok, (dialog, which) -> {
-                    String newValue = input.getText().toString().trim();
+                    String newValue = StringUtil.stripAllWhitespace(input.getText().toString());
                     String oldValue = SettingValues.prefs.getString(SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE, "");
 
                     if (!newValue.isEmpty() && !newValue.matches(".+://.+")) {
@@ -1891,7 +1900,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 .setTitle(R.string.reddit_user_agent_override)
                 .setView(input)
                 .setPositiveButton(R.string.btn_ok, (dialog, which) -> {
-                    String newValue = input.getText().toString().trim();
+                    String newValue = StringUtil.stripLeadingTrailingWhitespace(input.getText().toString());
                     String oldValue = SettingValues.prefs.getString(SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE, "");
 
                     if (!newValue.equals(oldValue)) {

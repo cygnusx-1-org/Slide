@@ -13,7 +13,7 @@
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
         android:paddingTop="16dp"
-        android:text="Overrides"
+        android:text="App details"
         android:tag="label"
         android:textColor="?attr/colorAccent"
         android:paddingBottom="8dp" />
@@ -37,7 +37,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Reddit Client ID override"
+                android:text="Reddit Client ID"
                 android:textColor="?attr/fontColor"
                 android:textSize="14sp" />
 

@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,7 +23,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
@@ -380,18 +377,6 @@ public class Tutorial extends AppCompatActivity {
                 dialogContainer.setOrientation(LinearLayout.VERTICAL);
                 dialogContainer.setPadding(paddingDp, paddingDp, paddingDp, 0);
 
-                // Add the link TextView
-                TextView linkText = new TextView(contextThemeWrapper);
-                linkText.setText(R.string.client_id_instructions);
-                linkText.setTextColor(new ColorPreferences(getContext()).getColor(""));
-                linkText.setPadding(0, 0, 0, paddingDp);
-                linkText.setPaintFlags(linkText.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-                linkText.setOnClickListener(v -> {
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(this.getString(R.string.setup_md_url)));
-                    startActivity(browserIntent);
-                });
-                dialogContainer.addView(linkText);
-
                 // Declare EditText here and make it final
                 final EditText input = new EditText(contextThemeWrapper);
                 String savedClientId = SettingValues.prefs.getString(SettingValues.PREF_REDDIT_CLIENT_ID_OVERRIDE, "");
@@ -440,7 +425,7 @@ public class Tutorial extends AppCompatActivity {
                 dialogContainer.addView(paddingViewBottom);
 
                 MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(contextThemeWrapper)
-                        .setTitle(R.string.reddit_client_id_override)
+                        .setTitle(R.string.reddit_client_id)
                         .setView(dialogContainer)
                         .setPositiveButton(R.string.btn_ok, null)
                         .setCancelable(false);  // This prevents dismissing when clicking outside
