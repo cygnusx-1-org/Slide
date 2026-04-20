@@ -4,6 +4,15 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.4.8 / 2026-4-20
+============
+* Fixed issues with missing/phathom "Load X more" comments
+* Changed "Load X more" to "Load more comments"
+* Added whitespace trimming for the client ID and redirect URI
+* Added leading and trailing only whitespace trimming to the user agent
+* Retitled "Settings | General | Overrides" to "Settings | General | App details"
+* Removed HLS suppport for better DASH support for the edge case of a user posting videos in self posts
+
 7.4.7 / 2026-4-15
 ============
 * Added support for overriding the redirect URI and user agent
