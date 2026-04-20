@@ -663,16 +663,8 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             nextPos = getRealPosition(nextPos);
 
             final MoreChildItem baseNode = (MoreChildItem) currentComments.get(nextPos);
-            if (baseNode.children.getCount() > 0) {
-                try {
-                    holder.content.setText(
-                            mContext.getString(
-                                    R.string.comment_load_more_string_new,
-                                    baseNode.children.getLocalizedCount()));
-                } catch (Exception e) {
-                    holder.content.setText(R.string.comment_load_more_number_unknown);
-                }
-            } else if (!baseNode.children.getChildrenIds().isEmpty()) {
+            if (!baseNode.children.getChildrenIds().isEmpty()
+                    || baseNode.children.getCount() > 0) {
                 holder.content.setText(R.string.comment_load_more_number_unknown);
             } else {
                 holder.content.setText(R.string.thread_continue);
