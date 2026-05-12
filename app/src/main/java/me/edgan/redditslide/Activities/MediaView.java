@@ -421,24 +421,9 @@ public class MediaView extends BaseSaveActivity {
     }
 
     public void hideOnLongClick() {
-        (findViewById(R.id.gifheader))
-                .setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (findViewById(R.id.gifheader).getVisibility() == View.GONE) {
-                                    AnimatorUtil.animateIn(findViewById(R.id.gifheader), 56);
-                                    AnimatorUtil.fadeOut(findViewById(R.id.black));
-                                    getWindow().getDecorView().setSystemUiVisibility(0);
-                                } else {
-                                    AnimatorUtil.animateOut(findViewById(R.id.gifheader));
-                                    AnimatorUtil.fadeIn(findViewById(R.id.black));
-                                    getWindow()
-                                            .getDecorView()
-                                            .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
-                                }
-                            }
-                        });
+        // Keep the bottom button row static — consume clicks in gaps between buttons
+        // so they don't fall through to submission_image (which would close the activity).
+        findViewById(R.id.gifheader).setClickable(true);
         findViewById(R.id.submission_image)
                 .setOnClickListener(
                         new View.OnClickListener() {
