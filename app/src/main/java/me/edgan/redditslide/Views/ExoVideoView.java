@@ -192,7 +192,7 @@ public class ExoVideoView extends RelativeLayout {
         // Add a Player.Listener for aspect ratio changes, logging, etc.
         player.addListener(
             new Player.Listener() {
-                                // Make the video use the correct aspect ratio
+                // Make the video use the correct aspect ratio
                 @Override
                 public void onVideoSizeChanged(@NonNull VideoSize videoSize) {
                     Log.d(TAG, "onVideoSizeChanged: width=" + videoSize.width + ", height=" + videoSize.height + ", unappliedRotationDegrees=" + videoSize.unappliedRotationDegrees);
