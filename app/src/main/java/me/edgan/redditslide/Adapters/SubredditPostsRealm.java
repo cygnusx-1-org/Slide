@@ -11,7 +11,6 @@ import me.edgan.redditslide.Activities.NewsActivity;
 import me.edgan.redditslide.Activities.SubredditView;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.BuildConfig;
-import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.HasSeen;
 import me.edgan.redditslide.LastComments;
@@ -236,7 +235,7 @@ public class SubredditPostsRealm implements PostLoader {
                 }
                 paginator.setSorting(SettingValues.getSubmissionSort(subreddit));
                 paginator.setTimePeriod(SettingValues.getSubmissionTimePeriod(subreddit));
-                paginator.setLimit(Constants.PAGINATOR_POST_LIMIT);
+                paginator.setLimit(Paginator.RECOMMENDED_MAX_LIMIT);
             }
 
             List<Submission> filteredSubmissions = getNextFiltered();
@@ -302,6 +301,30 @@ public class SubredditPostsRealm implements PostLoader {
                     filteredSubmissions.addAll(getNextFiltered());
                 }
             } catch (Exception e) {
+                if (e instanceof NetworkException
+                        && ((NetworkException) e).getResponse().getStatusCode() == 500
+                        && retryCount < 2) {
+                    retryCount++;
+                    int newLimit = Paginator.RECOMMENDED_MAX_LIMIT;
+                    for (int r = 0; r < retryCount; r++) {
+                        newLimit /= 2;
+                    }
+                    String sub = subreddit.toLowerCase(Locale.ENGLISH);
+                    if (sub.equals("frontpage")) {
+                        paginator = new SubredditPaginator(Authentication.reddit);
+                    } else if (!sub.contains(".")) {
+                        paginator = new SubredditPaginator(Authentication.reddit, sub);
+                    } else {
+                        paginator = new DomainPaginator(Authentication.reddit, sub);
+                    }
+                    paginator.setSorting(SettingValues.getSubmissionSort(subreddit));
+                    paginator.setTimePeriod(SettingValues.getSubmissionTimePeriod(subreddit));
+                    paginator.setLimit(newLimit);
+                    if (force18 && paginator instanceof SubredditPaginator) {
+                        ((SubredditPaginator) paginator).setObeyOver18(false);
+                    }
+                    return getNextFiltered();
+                }
                 e.printStackTrace();
                 error = e;
                 if (e.getMessage() != null && e.getMessage().contains("Forbidden")) {
@@ -311,6 +334,7 @@ public class SubredditPostsRealm implements PostLoader {
             return filteredSubmissions;
         }
 
+        int retryCount = 0;
         Exception error;
     }
 

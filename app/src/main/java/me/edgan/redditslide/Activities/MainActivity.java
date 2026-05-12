@@ -432,7 +432,8 @@ public class MainActivity extends BaseActivity
          * domain, the frontpage, or /r/all. If the subreddit has a "." in it, we know it's a domain
          * because subreddits aren't allowed to have hard-stops in the name.
          */
-        if (Authentication.didOnline && usedArray != null) {
+        if (Authentication.didOnline && usedArray != null && pager != null
+                && pager.getCurrentItem() < usedArray.size()) {
             final String subreddit = usedArray.get(pager.getCurrentItem());
 
             if (subreddit.contains("/m/")
@@ -1692,8 +1693,12 @@ public class MainActivity extends BaseActivity
     }
 
     public void updateColor(int color, String subreddit) {
-        hea.setBackgroundColor(color);
-        header.setBackgroundColor(color);
+        if (hea != null) {
+            hea.setBackgroundColor(color);
+        }
+        if (header != null) {
+            header.setBackgroundColor(color);
+        }
         if (accountsArea != null) {
             accountsArea.setBackgroundColor(Palette.getDarkerColor(color));
         }
@@ -1708,7 +1713,10 @@ public class MainActivity extends BaseActivity
             window.setStatusBarColor(finalColor);
         }
         setRecentBar(subreddit, color);
-        findViewById(R.id.header_sub).setBackgroundColor(color);
+        View headerSubView = findViewById(R.id.header_sub);
+        if (headerSubView != null) {
+            headerSubView.setBackgroundColor(color);
+        }
     }
 
     public void updateMultiNameToSubs(Map<String, String> subs) {

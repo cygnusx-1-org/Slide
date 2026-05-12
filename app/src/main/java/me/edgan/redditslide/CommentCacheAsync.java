@@ -151,7 +151,7 @@ public class CommentCacheAsync extends AsyncTask<Void, Void, Void> {
                     } else {
                         p = new SubredditPaginator(Authentication.reddit, sub);
                     }
-                    p.setLimit(Constants.PAGINATOR_POST_LIMIT);
+                    p.setLimit(Constants.DEFAULT_PAGINATOR_LIMIT);
                     try {
                         submissions.addAll(p.next());
                     } catch (Exception e) {

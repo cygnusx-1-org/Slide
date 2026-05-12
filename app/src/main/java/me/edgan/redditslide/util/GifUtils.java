@@ -71,7 +71,12 @@ import android.media.MediaFormat;
 import android.media.MediaMuxer;
 import android.media.MediaCodec;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
+import net.dean.jraw.models.Submission;
+
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 /** GIF handling utilities */
 public class GifUtils {
@@ -640,6 +645,12 @@ public class GifUtils {
             if (s.endsWith("/")) s = s.substring(0, s.length() - 1);
             if (s.endsWith("?r")) s = s.substring(0, s.length() - 2);
 
+            if (s.contains("reddit.com/link/") && s.contains("/video/")) {
+                s = s.replace("reddit.com/link/", "v.redd.it/link/")
+                     .replace("/video/", "/asset/")
+                     .replace("/player", "/DASHPlaylist.mpd");
+            }
+
             if (s.contains("v.redd.it") && !s.contains("DASHPlaylist")) {
                 if (s.contains("DASH")) {
                     s = s.substring(0, s.indexOf("DASH"));
@@ -689,6 +700,45 @@ public class GifUtils {
             if (realURL.contains("tumblr.com")) return VideoType.TUMBLR;
 
             return VideoType.OTHER;
+        }
+
+        /**
+         * Returns the best playable video URL from a submission, checking media_metadata,
+         * media.reddit_video, and crossposts before falling back to the submission URL.
+         */
+        public static String getVideoUrlFromSubmission(Submission s) {
+            JsonNode data = s.getDataNode();
+
+            // New format: self posts with video in media_metadata
+            for (JsonNode entry : data.path("media_metadata")) {
+                if ("RedditVideo".equals(entry.path("e").asText())) {
+                    String url = StringEscapeUtils.unescapeJson(entry.path("dashUrl").asText("")).replace("&amp;", "&");
+                    if (!url.isEmpty()) return url;
+                }
+            }
+
+            // Standard reddit video
+            JsonNode rv = data.path("media").path("reddit_video");
+            if (!rv.isMissingNode() && !rv.isNull()) {
+                for (String field : new String[]{"dash_url", "fallback_url"}) {
+                    String url = rv.path(field).asText("");
+                    if (!url.isEmpty())
+                        return StringEscapeUtils.unescapeJson(url).replace("&amp;", "&");
+                }
+            }
+
+            // Crosspost
+            JsonNode cpl = data.path("crosspost_parent_list");
+            if (cpl.isArray() && cpl.size() > 0) {
+                JsonNode crv = cpl.get(0).path("media").path("reddit_video");
+                for (String field : new String[]{"dash_url"}) {
+                    String url = crv.path(field).asText("");
+                    if (!url.isEmpty())
+                        return StringEscapeUtils.unescapeJson(url).replace("&amp;", "&");
+                }
+            }
+
+            return s.getUrl();
         }
 
         public static Map<String, String> makeHeaderMap(String domain) {
@@ -1063,9 +1113,8 @@ public class GifUtils {
 
             try {
                 ExoVideoView.VideoType type =
-                    uri.getHost().equals("v.redd.it")
-                        ? ExoVideoView.VideoType.DASH
-                        : ExoVideoView.VideoType.STANDARD;
+                    uri.toString().contains("DASHPlaylist") ? ExoVideoView.VideoType.DASH
+                    : ExoVideoView.VideoType.STANDARD;
 
                 video.setVideoURI(uri, type, new Player.Listener() {
                     @Override

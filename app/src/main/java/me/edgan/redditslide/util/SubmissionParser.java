@@ -1,5 +1,7 @@
 package me.edgan.redditslide.util;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.util.ArrayList;
@@ -295,5 +297,55 @@ public class SubmissionParser {
         }
 
         return newBlocks;
+    }
+
+    private static final Pattern PROCESSING_IMG_PATTERN =
+            Pattern.compile("\\*?Processing img (\\w+)\\.{3}\\*?");
+
+    /**
+     * Replaces "Processing img &lt;id&gt;..." placeholders in comment HTML with actual image URLs
+     * from the comment's media_metadata. Reddit uses these placeholders for inline images (e.g.
+     * giphy GIFs) that haven't been fully processed server-side.
+     *
+     * @param bodyHtml the raw body_html from the comment
+     * @param dataNode the comment's raw JSON data node (from getDataNode())
+     * @return the body HTML with placeholders replaced by image URLs, or the original if no
+     *     media_metadata is available
+     */
+    public static String replaceProcessingImgPlaceholders(String bodyHtml, JsonNode dataNode) {
+        if (dataNode == null || !dataNode.has("media_metadata")) {
+            return bodyHtml;
+        }
+
+        JsonNode mediaMetadata = dataNode.get("media_metadata");
+        if (mediaMetadata == null || mediaMetadata.isNull()) {
+            return bodyHtml;
+        }
+
+        Matcher matcher = PROCESSING_IMG_PATTERN.matcher(bodyHtml);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String imgId = matcher.group(1);
+            if (mediaMetadata.has(imgId)) {
+                JsonNode mediaNode = mediaMetadata.get(imgId);
+                if (mediaNode != null && mediaNode.has("s")) {
+                    JsonNode s = mediaNode.get("s");
+                    String url = null;
+                    if (s.has("gif")) {
+                        url = s.get("gif").asText();
+                    } else if (s.has("mp4")) {
+                        url = s.get("mp4").asText();
+                    } else if (s.has("u")) {
+                        url = s.get("u").asText();
+                    }
+                    if (url != null) {
+                        url = StringEscapeUtils.unescapeHtml4(url);
+                        matcher.appendReplacement(sb, Matcher.quoteReplacement(url));
+                    }
+                }
+            }
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 }

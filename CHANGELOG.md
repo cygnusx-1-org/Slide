@@ -4,6 +4,90 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.4.8 / 2026-4-20
+============
+* Fixed issues with missing/phathom "Load X more" comments
+* Changed "Load X more" to "Load more comments"
+* Added whitespace trimming for the client ID and redirect URI
+* Added leading and trailing only whitespace trimming to the user agent
+* Retitled "Settings | General | Overrides" to "Settings | General | App details"
+* Removed HLS suppport for better DASH support for the edge case of a user posting videos in self posts
+
+7.4.7 / 2026-4-15
+============
+* Added support for overriding the redirect URI and user agent
+* Changed the font used to display the the client ID to avoid typoes
+* Added HLS video support, including in self posts
+
+7.4.6 / 2026-4-9
+===========
+* Fixed the Reddit account's interface language being anything but English at login issue in the WebView case
+
+7.4.5 / 2026-4-2
+===========
+* Fixed /r/all not loading by fixing it in JRAW and updating it
+
+7.4.4 / 2026-3-31
+============
+* Fixed WebView login
+* Fixed App crashes when opening a thread in the last subreddit in the sub list #281
+
+7.4.3 / 2026-2-28
+============
+* Added button to the Login screen to open a Chrome custom tab via the default browser as a login alternative
+* Fixed Some gifs in comments fail to embed
+
+7.4.2 / 2026-2-25
+============
+* Removed READ_EXTERNAL_STORAGE, READ_MEDIA_IMAGES, and READ_MEDIA_VIDEO permissions
+
+7.4.1 / 2026-2-25
+============
+* Completely removed TedImagePicker for the stock image picker
+
+7.4.0 / 2026-2-21
+============
+* Switched to the stock image picker on Android 11+
+* Added two retries on 500 errors while trying to load posts from a subreddit
+
+7.3.9 / 2026-2-12
+============
+* Fixed giphy gifs marked invalid by Reddit when they are valid 
+
+7.3.8 / 2025-12-31
+=============
+* Added a search button to You/Profile tabs
+* Improved caching for "Go to profile" tabs and in Saved posts
+* Added "Filter posts older than 30 days" setting in Filters
+* Fixed issue with some post's URLs causing them to be marked as Title/None instead of Link
+
+7.3.7 / 2025-11-6
+============
+* Fixed Slideshow #271
+* Fixed Clicking on post on widget doesn't open properly? #273
+* Fixed The Score threshold dialog that is part of subreddit notification setup is inescapable #275
+* Fixed Crash when marking inbox message as unread #276
+* Fixed refreshing the authentication token
+
+7.3.6 / 2025-8-1
+===========
+* Fixed Settings display by further opting out of edge-to-edge
+
+7.3.5 / 2025-8-1
+===========
+* Updated to targetSdk 35
+* Opted out of edge-to-edge in the themes
+* Fixed Superscript ^ doesn't format in previews #266
+* Fixed crash in SubmissionsView.java
+
+7.3.4 / 2025-6-24
+============
+* Fixed External video playback pauses on videos that don't have audio #263
+* Fixed "Method of sending removal reasons" setting resets on app restart #262
+* Fixed Subreddit theme dialog crashing when accessed via sidebar #261
+* Fixed Saving a post doesn't always highlight the star icon #257
+* Fixed Sorting problem. #254
+
 7.3.3 / 2025-5-30
 ============
 * Fixed reddit.com/comments links

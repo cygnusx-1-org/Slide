@@ -148,6 +148,13 @@
     <string name="profile_info">Profile information</string>
     <string name="profile_block_user">Block user\'s messages, posts, and profile</string>
     <string name="profile_unblock_user">Unblock user\'s messages, posts, and profile</string>
+    <string name="profile_search">Search</string>
+    <string name="profile_search_title">Search in %1$s</string>
+    <string name="profile_search_hint">Search titles and text…</string>
+    <string name="profile_search_no_results">No results found</string>
+    <string name="profile_search_results">%1$d results for \'%2$s\'</string>
+    <string name="profile_search_clear">Clear search</string>
+    <string name="profile_search_cleared">Search cleared</string>
 
     <!-- Comment text options -->
     <string name="comment_gild">Award comment</string>
@@ -1275,10 +1282,9 @@
     <string name="read_later_location_title">Save Location Required</string>
     <string name="read_later_location_msg">To use Read Later, you need to set a storage location in General settings first.</string>
 
-    <string name="reddit_client_id_override">Reddit Client ID Override</string>
+    <string name="reddit_client_id">Reddit Client ID</string>
     <string name="click_custom_client_id">Click to set custom client ID</string>
     <string name="client_id_saved">Client ID saved: </string>
-    <string name="client_id_instructions">Client ID creation instructions</string>
     <string name="client_id_scan_qr">Scan QR Code</string>
     <string name="client_id_scan_prompt">Scan a QR code containing your Reddit Client ID</string>
     <string name="camera_permission_denied">Camera permission is required to scan QR codes</string>
@@ -1292,11 +1298,20 @@
 
     <string name="enter_client_id">Enter Client ID</string>
 
+    <string name="reddit_redirect_uri_override">Reddit Redirect URI Override</string>
+    <string name="click_custom_redirect_uri">Click to set custom redirect URI</string>
+    <string name="settings_reddit_redirect_uri_invalid">Invalid redirect URI: must be in the form scheme://hostname</string>
+    <string name="reddit_user_agent_override">Reddit User Agent Override</string>
+    <string name="click_custom_user_agent">Click to set custom user agent</string>
+
     <string name="settings_section_sound">Sound</string>
     <string name="settings_unmute_default">Unmute videos by default</string>
 
     <string name="settings_subreddit_filter_prefix_matching">Enable subreddit filter prefix matching</string>
     <string name="settings_subreddit_filter_prefix_matching_description">The prefix is the whole subreddit name, and a minimum of six characters. Examples: The subreddit social will allow block socialanxiety. The subreddit pokemongo will block pokemongoraids.</string>
+
+    <string name="settings_filter_old_posts">Filter posts older than 30 days</string>
+    <string name="settings_filter_old_posts_description">Not applied when viewing an individual subreddit</string>
 
     <!-- Pause on audio focus ducking setting -->
     <string name="settings_pause_on_duck_title">Pause video instead of ducking</string>

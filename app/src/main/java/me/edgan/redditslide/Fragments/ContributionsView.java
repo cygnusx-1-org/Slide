@@ -30,6 +30,8 @@ public class ContributionsView extends Fragment {
     private ContributionPosts posts;
     private String id;
     private String where;
+    private RecyclerView recyclerView;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public View onCreateView(
@@ -37,15 +39,16 @@ public class ContributionsView extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_verticalcontent, container, false);
 
-        final RecyclerView rv = v.findViewById(R.id.vertical_content);
+        recyclerView = v.findViewById(R.id.vertical_content);
+        final RecyclerView rv = recyclerView;
 
         final PreCachingLayoutManager mLayoutManager = new PreCachingLayoutManager(getContext());
 
         rv.setLayoutManager(mLayoutManager);
         rv.setItemViewCacheSize(2);
         v.findViewById(R.id.post_floating_action_button).setVisibility(View.GONE);
-        final SwipeRefreshLayout mSwipeRefreshLayout =
-                v.findViewById(R.id.activity_main_swipe_refresh_layout);
+        swipeRefreshLayout = v.findViewById(R.id.activity_main_swipe_refresh_layout);
+        final SwipeRefreshLayout mSwipeRefreshLayout = swipeRefreshLayout;
 
         mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors(id, getActivity()));
 
@@ -124,5 +127,27 @@ public class ContributionsView extends Fragment {
         Bundle bundle = this.getArguments();
         id = bundle.getString("id", "");
         where = bundle.getString("where", "");
+    }
+
+    /**
+     * Gets the RecyclerView instance for this fragment.
+     * Used by Profile activity to access the adapter for search functionality.
+     *
+     * @return The RecyclerView instance, or null if not yet created
+     */
+    public RecyclerView getRecyclerView() {
+        return recyclerView;
+    }
+
+    /**
+     * Clears the active search filter and reloads data.
+     */
+    public void clearSearchAndReload() {
+        if (adapter != null) {
+            adapter.clearFilter();
+        }
+        if (posts != null && swipeRefreshLayout != null) {
+            posts.loadMore(adapter, id, true);
+        }
     }
 }

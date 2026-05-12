@@ -231,18 +231,14 @@ public class SettingsModerationFragment {
     private void setToolboxRemovalMessageType(
             final TextView textView, final int enumOrdinal, final int string) {
         SettingValues.toolboxMessageType = enumOrdinal;
-        setBaseModerationType(textView, SettingValues.toolboxMessageType, string);
+        editSharedIntPreference(SettingValues.PREF_MOD_TOOLBOX_MESSAGE, enumOrdinal);
+        textView.setText(context.getString(string));
     }
 
     private void setModRemovalReasonType(
             final TextView textView, final int enumOrdinal, final int string) {
         SettingValues.removalReasonType = enumOrdinal;
-        setBaseModerationType(textView, SettingValues.removalReasonType, string);
-    }
-
-    private void setBaseModerationType(
-            final TextView textView, final int moderationType, final int string) {
-        editSharedIntPreference(SettingValues.PREF_MOD_REMOVAL_TYPE, moderationType);
+        editSharedIntPreference(SettingValues.PREF_MOD_REMOVAL_TYPE, enumOrdinal);
         textView.setText(context.getString(string));
     }
 

@@ -588,8 +588,12 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
             List<Submission> postsList = adapter.dataSet.getPosts();
             if (postsList != null && !postsList.isEmpty() && (adapterPosition - 1) >= 0 && (adapterPosition - 1) < postsList.size()) {
                 if (postsList.get(adapterPosition - 1) == currentSubmission) {
-                    adapter.performClick(adapterPosition);
-                    adapterPosition = -1;
+                    // Defer the click until after the resume process is complete to avoid
+                    // FragmentManager transaction conflicts
+                    new Handler().post(() -> {
+                        adapter.performClick(adapterPosition);
+                        adapterPosition = -1;
+                    });
                 }
             }
         }

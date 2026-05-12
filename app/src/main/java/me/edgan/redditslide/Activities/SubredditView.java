@@ -1750,34 +1750,39 @@ public class SubredditView extends BaseActivity {
                                                         .setMessage(R.string.sub_post_notifs_msg)
                                                         .setPositiveButton(
                                                                 R.string.btn_ok,
-                                                                (dialog, which) ->
-                                                                        new MaterialAlertDialogBuilder(contextThemeWrapper)
-                                                                                .setTitle(R.string.sub_post_notifs_threshold)
-                                                                                .setSingleChoiceItems(
-                                                                                        new String[] {
-                                                                                                "1", "5", "10",
-                                                                                                "20", "40", "50"
-                                                                                        },
-                                                                                        0,
-                                                                                        (dialog12, which12) -> {
-                                                                                            ArrayList<String> subs =
-                                                                                                    StringUtil.stringToArray(
-                                                                                                            Reddit.appRestart.getString(
-                                                                                                                    CheckForMail.SUBS_TO_GET,
-                                                                                                                    ""));
-                                                                                            subs.add(sub + ":" + (
-                                                                                                    new String[] {
-                                                                                                            "1", "5", "10",
-                                                                                                            "20", "40", "50"
-                                                                                                    })[which12]);
-                                                                                            Reddit.appRestart.edit()
-                                                                                                    .putString(
-                                                                                                            CheckForMail.SUBS_TO_GET,
-                                                                                                            StringUtil.arrayToString(subs))
-                                                                                                    .commit();
-                                                                                        })
-                                                                                .setCancelable(false)
-                                                                                .show())
+                                                                (dialog, which) -> {
+                                                                    final int[] selectedThreshold = {0}; // Default to index 0 ("1")
+                                                                    final String[] thresholds = new String[] {
+                                                                            "1", "5", "10",
+                                                                            "20", "40", "50"
+                                                                    };
+                                                                    new MaterialAlertDialogBuilder(contextThemeWrapper)
+                                                                            .setTitle(R.string.sub_post_notifs_threshold)
+                                                                            .setSingleChoiceItems(
+                                                                                    thresholds,
+                                                                                    0,
+                                                                                    (dialog12, which12) -> {
+                                                                                        selectedThreshold[0] = which12;
+                                                                                    })
+                                                                            .setPositiveButton(R.string.btn_ok, (dialog2, which2) -> {
+                                                                                ArrayList<String> subs =
+                                                                                        StringUtil.stringToArray(
+                                                                                                Reddit.appRestart.getString(
+                                                                                                        CheckForMail.SUBS_TO_GET,
+                                                                                                        ""));
+                                                                                subs.add(sub + ":" + thresholds[selectedThreshold[0]]);
+                                                                                Reddit.appRestart.edit()
+                                                                                        .putString(
+                                                                                                CheckForMail.SUBS_TO_GET,
+                                                                                                StringUtil.arrayToString(subs))
+                                                                                        .commit();
+                                                                            })
+                                                                            .setNegativeButton(R.string.btn_cancel, (dialog2, which2) -> {
+                                                                                notifyStateCheckBox.setChecked(false);
+                                                                            })
+                                                                            .setCancelable(true)
+                                                                            .show();
+                                                                })
                                                 .setNegativeButton(R.string.btn_cancel, null)
                                                 .setNegativeButton(
                                                         R.string.btn_cancel,

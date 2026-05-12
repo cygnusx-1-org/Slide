@@ -103,6 +103,16 @@ public class SettingsFilter extends BaseActivityAnim {
                 .apply();
         });
 
+        // Add switch for filtering old posts
+        Switch filterOldPosts = (Switch) findViewById(R.id.filter_old_posts);
+        filterOldPosts.setChecked(SettingValues.filterOldPosts);
+        filterOldPosts.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            SettingValues.filterOldPosts = isChecked;
+            SettingValues.prefs.edit()
+                .putBoolean(SettingValues.PREF_FILTER_OLD_POSTS, isChecked)
+                .apply();
+        });
+
         updateFilters();
     }
 

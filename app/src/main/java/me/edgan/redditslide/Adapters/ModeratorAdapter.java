@@ -563,7 +563,9 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
             holder.time.setText(titleString);
             setViews(
-                    comment.getDataNode().get("body_html").asText(),
+                    SubmissionParser.replaceProcessingImgPlaceholders(
+                            comment.getDataNode().get("body_html").asText(),
+                            comment.getDataNode()),
                     comment.getSubredditName(),
                     holder);
 

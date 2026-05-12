@@ -450,7 +450,9 @@ public class RedditItemView extends RelativeLayout {
 
         holder.time.setText(titleString);
         setViews(
-                comment.getDataNode().get("body_html").asText(),
+                SubmissionParser.replaceProcessingImgPlaceholders(
+                        comment.getDataNode().get("body_html").asText(),
+                        comment.getDataNode()),
                 comment.getSubredditName(),
                 holder);
 

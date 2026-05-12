@@ -385,7 +385,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                         .multiReddit
                         .getDisplayName()
                         .toLowerCase(Locale.ENGLISH);
-        final Spannable[] base = SortingUtil.getSortingSpannables("multi" + id);
+        final Spannable[] base = SortingUtil.getSortingSpannables("multi_" + id);
         for (Spannable s : base) {
             // Do not add option for "Best" in any subreddit except for the frontpage.
             if (s.toString().equals(getString(R.string.sorting_best))) {
@@ -408,7 +408,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                             switch (i) {
                                 case 0:
                                     SortingUtil.setSorting(
-                                            "multi"
+                                            "multi_"
                                                     + ((MultiredditView)
                                                                     (((MultiredditOverviewPagerAdapter)
                                                                                     pager
@@ -423,7 +423,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                                     break;
                                 case 1:
                                     SortingUtil.setSorting(
-                                            "multi"
+                                            "multi_"
                                                     + ((MultiredditView)
                                                                     (((MultiredditOverviewPagerAdapter)
                                                                                     pager
@@ -438,7 +438,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                                     break;
                                 case 2:
                                     SortingUtil.setSorting(
-                                            "multi"
+                                            "multi_"
                                                     + ((MultiredditView)
                                                                     (((MultiredditOverviewPagerAdapter)
                                                                                     pager
@@ -453,7 +453,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                                     break;
                                 case 3:
                                     SortingUtil.setSorting(
-                                            "multi"
+                                            "multi_"
                                                     + ((MultiredditView)
                                                                     (((MultiredditOverviewPagerAdapter)
                                                                                     pager
@@ -468,7 +468,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                                     break;
                                 case 4:
                                     SortingUtil.setSorting(
-                                            "multi"
+                                            "multi_"
                                                     + ((MultiredditView)
                                                                     (((MultiredditOverviewPagerAdapter)
                                                                                     pager
@@ -500,7 +500,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                         .multiReddit
                         .getDisplayName()
                         .toLowerCase(Locale.ENGLISH);
-        final Spannable[] base = SortingUtil.getSortingTimesSpannables("multi" + id);
+        final Spannable[] base = SortingUtil.getSortingTimesSpannables("multi_" + id);
         for (Spannable s : base) {
             MenuItem m = popup.getMenu().add(s);
         }
@@ -519,7 +519,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                             switch (i) {
                                 case 0:
                                     SortingUtil.setTime(
-                                            "multi"
+                                            "multi_"
                                                     + ((MultiredditView)
                                                                     (((MultiredditOverviewPagerAdapter)
                                                                                     pager
@@ -534,7 +534,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                                     break;
                                 case 1:
                                     SortingUtil.setTime(
-                                            "multi"
+                                            "multi_"
                                                     + ((MultiredditView)
                                                                     (((MultiredditOverviewPagerAdapter)
                                                                                     pager
@@ -549,7 +549,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                                     break;
                                 case 2:
                                     SortingUtil.setTime(
-                                            "multi"
+                                            "multi_"
                                                     + ((MultiredditView)
                                                                     (((MultiredditOverviewPagerAdapter)
                                                                                     pager
@@ -564,7 +564,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                                     break;
                                 case 3:
                                     SortingUtil.setTime(
-                                            "multi"
+                                            "multi_"
                                                     + ((MultiredditView)
                                                                     (((MultiredditOverviewPagerAdapter)
                                                                                     pager
@@ -579,7 +579,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                                     break;
                                 case 4:
                                     SortingUtil.setTime(
-                                            "multi"
+                                            "multi_"
                                                     + ((MultiredditView)
                                                                     (((MultiredditOverviewPagerAdapter)
                                                                                     pager
@@ -594,7 +594,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                                     break;
                                 case 5:
                                     SortingUtil.setTime(
-                                            "multi"
+                                            "multi_"
                                                     + ((MultiredditView)
                                                                     (((MultiredditOverviewPagerAdapter)
                                                                                     pager

@@ -63,8 +63,7 @@ public class Authentication {
             isLoggedIn = false;
             reddit =
                     new RedditClient(
-                            UserAgent.of(
-                                    "android:me.edgan.RedditSlide:v" + BuildConfig.VERSION_NAME),
+                            UserAgent.of(Constants.getUserAgent()),
                             httpAdapter);
             reddit.setRetryLimit(2);
             if (BuildConfig.DEBUG) reddit.setLoggingMode(LoggingMode.ALWAYS);
@@ -73,6 +72,7 @@ public class Authentication {
         } else {
             isLoggedIn = Reddit.appRestart.getBoolean("loggedin", false);
             name = Reddit.appRestart.getString("name", "");
+            refresh = authentication.getString("lasttoken", "");
             if ((name.isEmpty() || !isLoggedIn)
                     && !authentication.getString("lasttoken", "").isEmpty()) {
                 for (String s :
@@ -95,8 +95,7 @@ public class Authentication {
             isLoggedIn = false;
             reddit =
                     new RedditClient(
-                            UserAgent.of(
-                                    "android:me.edgan.RedditSlide:v" + BuildConfig.VERSION_NAME));
+                            UserAgent.of(Constants.getUserAgent()));
             reddit.setLoggingMode(LoggingMode.ALWAYS);
             didOnline = true;
 
@@ -127,10 +126,21 @@ public class Authentication {
 
                             final Credentials credentials =
                                     Credentials.installedApp(
-                                            Constants.getClientId(), Constants.REDDIT_REDIRECT_URL);
+                                            Constants.getClientId(), Constants.getRedirectUrl());
                             Log.v(LogUtil.getTag(), "REAUTH LOGGED IN");
 
                             OAuthHelper oAuthHelper = reddit.getOAuthHelper();
+
+                            // Ensure refresh token is available from SharedPreferences if null
+                            if (refresh == null || refresh.isEmpty()) {
+                                refresh = authentication.getString("lasttoken", "");
+                            }
+
+                            if (refresh == null || refresh.isEmpty()) {
+                                Log.e(LogUtil.getTag(), "No refresh token available, forcing re-authentication");
+                                Authentication.isLoggedIn = false;
+                                return null;
+                            }
 
                             oAuthHelper.setRefreshToken(refresh);
                             OAuthData finalData;
@@ -273,7 +283,7 @@ public class Authentication {
 
                 final Credentials credentials =
                         Credentials.installedApp(
-                                Constants.getClientId(), Constants.REDDIT_REDIRECT_URL);
+                                Constants.getClientId(), Constants.getRedirectUrl());
 
                 OAuthHelper oAuthHelper = baseReddit.getOAuthHelper();
                 oAuthHelper.setRefreshToken(lastToken);

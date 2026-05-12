@@ -58,9 +58,10 @@ public class Draw extends BaseActivity implements ColorChooserDialog.ColorCallba
         drawView = (CanvasView) findViewById(R.id.paintView);
         drawView.setBaseColor(Color.parseColor("#303030"));
         color = findViewById(R.id.color);
+        CropImageOptions cropImageOptions = new CropImageOptions();
+        cropImageOptions.guidelines = CropImageView.Guidelines.ON;
         final CropImageContractOptions options =
-                new CropImageContractOptions(uri, new CropImageOptions())
-                        .setGuidelines(CropImageView.Guidelines.ON);
+                new CropImageContractOptions(uri, cropImageOptions);
         cropImageLauncher.launch(options);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         setupAppBar(R.id.toolbar, "", true, Color.parseColor("#212121"), R.id.toolbar);

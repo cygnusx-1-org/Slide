@@ -24,7 +24,7 @@ CHANGELOG_OVERRIDE_FILENAME="changelog_override.txt"
 if [ ! -f ${CHANGELOG_OVERRIDE_FILENAME} ]; then
   # Grab commit messages since that tag, matching specific format
   RELEVANT_COMMIT_MESSAGES=`git log $(git describe --tags --abbrev=0)..HEAD | grep "^${COMMIT_MESSAGE_PREFIX}${COMMIT_MESSAGE_SPECIAL_PREFIX}" | sed "s/^${COMMIT_MESSAGE_PREFIX}//g"`
-  if [ -z "$RELEVANT_COMMIT_MESSAGES" ]; then
+  if [ -z "${RELEVANT_COMMIT_MESSAGES}" ]; then
     echo "Warning: No relevant commit messages found after latest tag"
   fi
 else
@@ -81,3 +81,5 @@ fi
 
 # Creating .apk in app/build/outputs/apk/withGPlay, and uploading it to git repository in GitHub as a new release.
 scripts/release-github.sh "${RELEVANT_COMMIT_MESSAGES}"
+
+git push

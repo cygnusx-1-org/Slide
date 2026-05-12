@@ -16,11 +16,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Paint;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.Settings;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -1302,6 +1303,32 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                     showClientIDDialog();
                 });
 
+        // * Redirect URI override
+        RelativeLayout redirectUri = context.findViewById(R.id.settings_general_redirect_uri);
+        final TextView currentRedirectUri =
+                context.findViewById(R.id.settings_general_redirect_uri_current);
+
+        String savedRedirectUri =
+                SettingValues.prefs.getString(SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE, "");
+        if (!savedRedirectUri.isEmpty()) {
+            currentRedirectUri.setText(savedRedirectUri);
+        }
+
+        redirectUri.setOnClickListener(v -> showRedirectUriDialog());
+
+        // * User agent override
+        RelativeLayout userAgentLayout = context.findViewById(R.id.settings_general_user_agent);
+        final TextView currentUserAgent =
+                context.findViewById(R.id.settings_general_user_agent_current);
+
+        String savedUserAgent =
+                SettingValues.prefs.getString(SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE, "");
+        if (!savedUserAgent.isEmpty()) {
+            currentUserAgent.setText(savedUserAgent);
+        }
+
+        userAgentLayout.setOnClickListener(v -> showUserAgentDialog());
+
         // Add notification permission request button for Android 13+
         RelativeLayout notifPermLayout = context.findViewById(R.id.settings_general_notification_permission);
         if (notifPermLayout != null) {
@@ -1606,9 +1633,11 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
             }
         }
         if (!toAdd.isEmpty()) {
+            final int[] selectedThreshold = {0}; // Default to index 0 ("1")
+            final String[] thresholds = new String[] {"1", "5", "10", "20", "40", "50"};
             new MaterialDialog.Builder(SettingsGeneralFragment.this.context)
                     .title(R.string.sub_post_notifs_threshold)
-                    .items(new String[] {"1", "5", "10", "20", "40", "50"})
+                    .items(thresholds)
                     .alwaysCallSingleChoiceCallback()
                     .itemsCallbackSingleChoice(
                             0,
@@ -1619,14 +1648,19 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                                         View itemView,
                                         int which,
                                         CharSequence text) {
-                                    for (String s : toAdd) {
-                                        subsRaw.add(s + ":" + text);
-                                    }
-                                    saveAndUpdateSubs(subsRaw);
+                                    selectedThreshold[0] = which;
                                     return true;
                                 }
                             })
-                    .cancelable(false)
+                    .positiveText(R.string.btn_ok)
+                    .negativeText(R.string.btn_cancel)
+                    .onPositive((dialog, which) -> {
+                        for (String s : toAdd) {
+                            subsRaw.add(s + ":" + thresholds[selectedThreshold[0]]);
+                        }
+                        saveAndUpdateSubs(subsRaw);
+                    })
+                    .cancelable(true)
                     .show();
         } else {
             saveAndUpdateSubs(subsRaw);
@@ -1704,18 +1738,6 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 LinearLayout.LayoutParams.MATCH_PARENT, paddingPx));
         dialogContainer.addView(paddingView);
 
-        // Add instructions link
-        TextView linkText = new TextView(contextThemeWrapper);
-        linkText.setText(R.string.client_id_instructions);
-        linkText.setTextColor(new ColorPreferences(contextThemeWrapper).getColor(""));
-        linkText.setPaintFlags(linkText.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        linkText.setPadding(paddingPx, 0, 0, paddingPx);
-        linkText.setOnClickListener(v -> {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(context.getString(R.string.setup_md_url)));
-            context.startActivity(browserIntent);
-        });
-        dialogContainer.addView(linkText);
-
         // Create horizontal layout for input field and camera button
         LinearLayout inputLayout = new LinearLayout(contextThemeWrapper);
         inputLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -1758,11 +1780,11 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
 
         final TextView currentClientIdView = context.findViewById(R.id.settings_general_client_id_current);
 
-        new MaterialAlertDialogBuilder(contextThemeWrapper)
-                .setTitle(R.string.reddit_client_id_override)
+        final AlertDialog clientIdDialog = new MaterialAlertDialogBuilder(contextThemeWrapper)
+                .setTitle(R.string.reddit_client_id)
                 .setView(dialogContainer)
                 .setPositiveButton(R.string.btn_ok, (dialog, which) -> {
-                    String newClientId = input.getText().toString().trim();
+                    String newClientId = StringUtil.stripAllWhitespace(input.getText().toString());
                     String oldClientId = SettingValues.prefs.getString(SettingValues.PREF_REDDIT_CLIENT_ID_OVERRIDE, "");
 
                     // Only proceed if the client ID has changed
@@ -1786,6 +1808,117 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                                 context.getString(R.string.click_custom_client_id) : newClientId);
 
                         // Restart the app immediately
+                        ((Reddit) context.getApplicationContext()).forceRestart(context, false);
+                    }
+                })
+                .setNegativeButton(R.string.btn_cancel, null)
+                .show();
+
+        final android.widget.Button okButton =
+                clientIdDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        Runnable updateOkState = () -> {
+            String stripped = StringUtil.stripAllWhitespace(input.getText().toString());
+            okButton.setEnabled(stripped.length() >= 22);
+        };
+        updateOkState.run();
+        input.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                updateOkState.run();
+            }
+        });
+    }
+
+    private void showRedirectUriDialog() {
+        final Context contextThemeWrapper = new ContextThemeWrapper(context,
+                new ColorPreferences(context).getFontStyle().getBaseId());
+
+        final EditText input = new EditText(contextThemeWrapper);
+        String saved = SettingValues.prefs.getString(SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE, "");
+        input.setText(saved);
+
+        int paddingPx = (int)(16 * context.getResources().getDisplayMetrics().density);
+        input.setPadding(paddingPx, input.getPaddingTop(), paddingPx, input.getPaddingBottom());
+
+        final TextView currentView = context.findViewById(R.id.settings_general_redirect_uri_current);
+
+        new MaterialAlertDialogBuilder(contextThemeWrapper)
+                .setTitle(R.string.reddit_redirect_uri_override)
+                .setView(input)
+                .setPositiveButton(R.string.btn_ok, (dialog, which) -> {
+                    String newValue = StringUtil.stripAllWhitespace(input.getText().toString());
+                    String oldValue = SettingValues.prefs.getString(SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE, "");
+
+                    if (!newValue.isEmpty() && !newValue.matches(".+://.+")) {
+                        Toast.makeText(context, R.string.settings_reddit_redirect_uri_invalid, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
+                    if (!newValue.equals(oldValue)) {
+                        SettingValues.redditRedirectUriOverride = newValue;
+
+                        if (newValue.isEmpty()) {
+                            SettingValues.prefs.edit()
+                                    .remove(SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE)
+                                    .commit();
+                        } else {
+                            SettingValues.prefs.edit()
+                                    .putString(SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE, newValue)
+                                    .commit();
+                        }
+
+                        currentView.setText(newValue.isEmpty() ?
+                                context.getString(R.string.click_custom_redirect_uri) : newValue);
+
+                        ((Reddit) context.getApplicationContext()).forceRestart(context, false);
+                    }
+                })
+                .setNegativeButton(R.string.btn_cancel, null)
+                .show();
+    }
+
+    private void showUserAgentDialog() {
+        final Context contextThemeWrapper = new ContextThemeWrapper(context,
+                new ColorPreferences(context).getFontStyle().getBaseId());
+
+        final EditText input = new EditText(contextThemeWrapper);
+        String saved = SettingValues.prefs.getString(SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE, "");
+        input.setText(saved);
+
+        int paddingPx = (int)(16 * context.getResources().getDisplayMetrics().density);
+        input.setPadding(paddingPx, input.getPaddingTop(), paddingPx, input.getPaddingBottom());
+
+        final TextView currentView = context.findViewById(R.id.settings_general_user_agent_current);
+
+        new MaterialAlertDialogBuilder(contextThemeWrapper)
+                .setTitle(R.string.reddit_user_agent_override)
+                .setView(input)
+                .setPositiveButton(R.string.btn_ok, (dialog, which) -> {
+                    String newValue = StringUtil.stripLeadingTrailingWhitespace(input.getText().toString());
+                    String oldValue = SettingValues.prefs.getString(SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE, "");
+
+                    if (!newValue.equals(oldValue)) {
+                        SettingValues.redditUserAgentOverride = newValue;
+
+                        if (newValue.isEmpty()) {
+                            SettingValues.prefs.edit()
+                                    .remove(SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE)
+                                    .commit();
+                        } else {
+                            SettingValues.prefs.edit()
+                                    .putString(SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE, newValue)
+                                    .commit();
+                        }
+
+                        currentView.setText(newValue.isEmpty() ?
+                                context.getString(R.string.click_custom_user_agent) : newValue);
+
                         ((Reddit) context.getApplicationContext()).forceRestart(context, false);
                     }
                 })

@@ -1,7 +1,7 @@
 # Android device debugging via USB
 
 ## What
-You can get crash logs from your `Android` device with `USB debugging` and `adb.
+You can get crash logs from your `Android` device with `USB debugging` and `adb`.
 
 ## Why
 Crash logs, aka backtraces, make it sigificantly easier to fix the bug that caused the crash.

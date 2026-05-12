@@ -6,6 +6,7 @@ import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -27,6 +28,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.ForceTouch.PeekView;
@@ -85,6 +87,55 @@ public class HeaderImageLinkView extends RelativeLayout {
     private static final List<String> PLACEHOLDER_URLS =
             Arrays.asList("self", "default", "image", "nsfw", "spoiler", "");
 
+    // Reused across all loads — instance-free so it's safe as a singleton.
+    private static final ImageLoadingListener TRANSPARENCY_LISTENER =
+            new SimpleImageLoadingListener() {
+                @Override
+                public void onLoadingComplete(String imageUri, View view, Bitmap loadedBitmap) {
+                    applyTransparencyBackground(view, loadedBitmap);
+                }
+
+                @Override
+                public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                    if (view != null) view.setBackground(null);
+                }
+
+                @Override
+                public void onLoadingCancelled(String imageUri, View view) {
+                    if (view != null) view.setBackground(null);
+                }
+            };
+
+    private static void applyTransparencyBackground(View view, Bitmap bitmap) {
+        if (view == null) return;
+        if (hasMeaningfulTransparency(bitmap)) {
+            view.setBackgroundColor(Color.WHITE);
+        } else {
+            view.setBackground(null);
+        }
+    }
+
+    // Sample an 8x8 grid; transparent PNGs (logos, icons) trip this, photos don't.
+    private static boolean hasMeaningfulTransparency(Bitmap bitmap) {
+        if (bitmap == null || !bitmap.hasAlpha()) return false;
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        if (width == 0 || height == 0) return false;
+        final int samples = 8;
+        int transparent = 0;
+        int total = 0;
+        for (int sy = 0; sy < samples; sy++) {
+            for (int sx = 0; sx < samples; sx++) {
+                int x = Math.min(width - 1, (int) ((sx + 0.5f) * width / samples));
+                int y = Math.min(height - 1, (int) ((sy + 0.5f) * height / samples));
+                int alpha = (bitmap.getPixel(x, y) >>> 24) & 0xff;
+                if (alpha < 250) transparent++;
+                total++;
+            }
+        }
+        return transparent * 20 > total;
+    }
+
     public HeaderImageLinkView(Context context) {
         super(context);
         init();
@@ -112,6 +163,9 @@ public class HeaderImageLinkView extends RelativeLayout {
         String url = "";
         boolean forceThumb = false;
         thumbImage2.setImageResource(android.R.color.transparent);
+        // View recycling: clear any transparency background from the previous bind.
+        backdrop.setBackground(null);
+        thumbImage2.setBackground(null);
 
         boolean loadLq =
                 (((!NetworkUtil.isConnectedWifi(getContext()) && SettingValues.lowResMobile)
@@ -566,15 +620,11 @@ public class HeaderImageLinkView extends RelativeLayout {
         if (hasValidPreview) {
             if (!full && !SettingValues.isPicsEnabled(baseSub)) {
                 thumbImage2.setVisibility(View.VISIBLE);
-                ((Reddit) getContext().getApplicationContext())
-                        .getImageLoader()
-                        .displayImage(url, thumbImage2);
+                displayImage(url, thumbImage2, full);
                 setVisibility(View.GONE);
             } else {
                 backdrop.setVisibility(View.VISIBLE);
-                ((Reddit) getContext().getApplicationContext())
-                        .getImageLoader()
-                        .displayImage(url, backdrop);
+                displayImage(url, backdrop, full);
                 setVisibility(View.VISIBLE);
             }
             if (wrapArea != null) wrapArea.setVisibility(View.GONE);
@@ -690,11 +740,11 @@ public class HeaderImageLinkView extends RelativeLayout {
         if (!full) {
             ((Reddit) getContext().getApplicationContext())
                     .getImageLoader()
-                    .displayImage(url, target);
+                    .displayImage(url, target, null, TRANSPARENCY_LISTENER);
         } else {
             ((Reddit) getContext().getApplicationContext())
                     .getImageLoader()
-                    .displayImage(url, target, bigOptions);
+                    .displayImage(url, target, bigOptions, TRANSPARENCY_LISTENER);
         }
     }
 
@@ -895,6 +945,7 @@ public class HeaderImageLinkView extends RelativeLayout {
             @Override
             public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
                 LogUtil.e("UIL (Thumbnail): Loading FAILED for: " + imageUri + ", reason: " + failReason.getType() + ", cause: " + (failReason.getCause() != null ? failReason.getCause().getMessage() : "null"));
+                if (view != null) view.setBackground(null);
                 if (HeaderImageLinkView.this != null) {
                     HeaderImageLinkView.this.setVisibility(View.GONE);
                 }
@@ -908,6 +959,8 @@ public class HeaderImageLinkView extends RelativeLayout {
                         if (HeaderImageLinkView.this != null) {
                             HeaderImageLinkView.this.setVisibility(View.GONE); // Hide if bitmap is unusable
                         }
+                    } else {
+                        applyTransparencyBackground(view, loadedBitmap);
                     }
                 } else {
                     LogUtil.w("UIL (Thumbnail): Loading COMPLETE for " + imageUri + " but bitmap is NULL.");
@@ -920,6 +973,7 @@ public class HeaderImageLinkView extends RelativeLayout {
             @Override
             public void onLoadingCancelled(String imageUri, View view) {
                 LogUtil.w("UIL (Thumbnail): Loading CANCELLED for " + imageUri);
+                if (view != null) view.setBackground(null);
                 if (HeaderImageLinkView.this != null) {
                     HeaderImageLinkView.this.setVisibility(View.GONE);
                 }
@@ -953,6 +1007,7 @@ public class HeaderImageLinkView extends RelativeLayout {
             @Override
             public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
                 LogUtil.e("UIL (FullImage): Loading FAILED for: " + imageUri + ", reason: " + failReason.getType() + ", cause: " + (failReason.getCause() != null ? failReason.getCause().getMessage() : "null"));
+                if (view != null) view.setBackground(null);
                 if (HeaderImageLinkView.this != null) {
                     HeaderImageLinkView.this.setVisibility(View.GONE);
                 }
@@ -966,6 +1021,8 @@ public class HeaderImageLinkView extends RelativeLayout {
                         // Don't hide HeaderImageLinkView here by default, let adjustViewBounds try.
                         // If it results in 0 height, it will be invisible anyway.
                         // Only hide if explicitly desired for 0-dim images.
+                    } else {
+                        applyTransparencyBackground(view, loadedBitmap);
                     }
                      // Ensure backdrop is visible if we successfully loaded an image and HeaderImageLinkView is meant to be visible.
                     if (view instanceof ImageView && HeaderImageLinkView.this.getVisibility() == View.VISIBLE) {
@@ -982,6 +1039,7 @@ public class HeaderImageLinkView extends RelativeLayout {
             @Override
             public void onLoadingCancelled(String imageUri, View view) {
                 LogUtil.w("UIL (FullImage): Loading CANCELLED for " + imageUri);
+                if (view != null) view.setBackground(null);
                 if (HeaderImageLinkView.this != null) {
                     HeaderImageLinkView.this.setVisibility(View.GONE);
                 }

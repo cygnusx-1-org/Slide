@@ -291,7 +291,8 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
             holder.itemView.findViewById(R.id.next).setVisibility(View.GONE);
         }
 
-        String body = comment.getDataNode().get("body_html").asText();
+        String body = SubmissionParser.replaceProcessingImgPlaceholders(
+                comment.getDataNode().get("body_html").asText(), comment.getDataNode());
         if (!search.isEmpty() && StringUtils.isAlphanumericSpace(search)) {
             body = body.replaceAll(search, "[[h[" + search + "]h]]");
         }

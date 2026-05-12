@@ -1,4 +1,5 @@
 # Setup
+
 ## Backup / Restore
 You want to backup your settings before uninstalling other versions of Slide.
 This will help save filters, accounts, etc. It is also a good idea in general.
@@ -13,8 +14,40 @@ This will help save filters, accounts, etc. It is also a good idea in general.
 6. Close Slide
 7. Open Slide
 
+## Reddit account interface language
+There is a known issue with the `Reddit` login JavaScript. It was discovered by wchill. It prevents logging in when the language if the language is anything other than `English`. So you need to set the language of your `Reddit` account to `English`.
+
+I have implemented a hack to workaround the issue in `7.4.6`, but it has a few issues.
+
+1. It could break at anytime if `Reddit` rewrites their JavaScript.
+2. The hack only works in the WebView not Chrome, Brave or Firefox.
+
+### How to change the Reddit account interface language
+1. Go to https://old.reddit.com/prefs/
+2. Change the `interface language`
+
+<p align="center">
+  <picture>
+    <source
+      width="1053x"
+      media="(prefers-color-scheme: dark)"
+      srcset="/screenshots/reddit_account_language.png"
+    >
+    <img
+      width="1053px"
+      src="/screenshots/reddit_account_language.png"
+    >
+  </picture>
+</p>
+
 ## Reddit Client ID
 A Reddit Client ID is needed to access Reddit from 3rd party clients.
+
+> [!IMPORTANT]
+>
+> Reddit has recently changed the guidelines to create api key
+> [see here](https://www.reddit.com/r/redditdev/comments/1oug31u/introducing_the_responsible_builder_policy_new/)
+> we are not sure how it wll affect the app in the future but currently it seems most users are unable to create new api keys
 
 ### Normal way
 See [CLIENT_ID_NORMAL.md](/docs/CLIENT_ID_NORMAL.md)
@@ -23,11 +56,28 @@ See [CLIENT_ID_NORMAL.md](/docs/CLIENT_ID_NORMAL.md)
 See [CLIENT_ID_QR_CODE.md](/docs/CLIENT_ID_QR_CODE.md)
 
 # Common errors
+## External browser login not working
+It requires adding `www.ccrama.me` to `Open by default` in the device's `Settings | Apps | Slide`. This is enable the
+`redirect uri` to work.
+
+It is recommended to use `Brave`, and `Firefox is known not to work.
+
 ## Error: Invalid request to Oauth API
 ![Oauth error](/screenshots/oauth_error.png)
 
 The most likely cause for this is the `redirect uri` is set incorrectly. The
 big tell is if you can view Reddit in guest mode, aka without logging in.
+
+## Keyboard won't come up for input fields on login screen
+A new button has been added, in `7.4.3` to the top right of the Login screen. It uses your default
+browser to open a custom `Chrome` tab. Note this requires your default browser to be a `Chrome`
+based browser. `Firefox` has been tested, and does not work.
+
+Also before trying to login with the new button you need to go to
+`Settings | Apps | Slide | Open by Default` and add `www.ccrama.me`. This is for historical
+reasons, and with the recent changes made to client IDs by `Reddit`, it can't be changed.
+
+See [Issue 280](https://github.com/cygnusx-1-org/Slide/issues/280) for more details.
 
 ## Correct username and password does not work
 Slide depends on

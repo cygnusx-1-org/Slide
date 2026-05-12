@@ -44,6 +44,20 @@ public class StringUtil {
         return str.substring(0, maxWidth - 3) + abrevMarker;
     }
 
+    public static String stripAllWhitespace(final String input) {
+        if (input == null) {
+            return "";
+        }
+        return input.replaceAll("\\s", "");
+    }
+
+    public static String stripLeadingTrailingWhitespace(final String input) {
+        if (input == null) {
+            return "";
+        }
+        return input.trim();
+    }
+
     public static String sanitizeString(final String input) {
         final char[] allowed =
                 "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_".toCharArray();

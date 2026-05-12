@@ -360,7 +360,7 @@ public class OfflineSubreddit {
     public static ArrayList<String> getAll() {
         ArrayList<String> keys = new ArrayList<>();
         for (String s : Reddit.cachedData.getAll().keySet()) {
-            if (s.contains(",") && !s.startsWith("multi")) {
+            if (s.contains(",") && !s.startsWith("multi_")) {
                 keys.add(s);
             }
         }
@@ -372,7 +372,7 @@ public class OfflineSubreddit {
         for (String s : Reddit.cachedData.getAll().keySet()) {
             if (s.contains(",")
                     && !keys.contains(s.substring(0, s.indexOf(",")))
-                    && !s.startsWith("multi")) {
+                    && !s.startsWith("multi_")) {
                 keys.add(s.substring(0, s.indexOf(",")));
             }
         }

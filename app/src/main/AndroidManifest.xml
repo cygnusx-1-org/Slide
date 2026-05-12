@@ -609,8 +609,17 @@
                 <activity
                         android:name=".Activities.Login"
                         android:alwaysRetainTaskState="true"
+                        android:launchMode="singleTask"
+                        android:exported="true"
                         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                        android:theme="@style/swipeable"/>
+                        android:theme="@style/swipeable">
+                        <intent-filter>
+                                <action android:name="android.intent.action.VIEW"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.BROWSABLE"/>
+                                <data android:scheme="http" android:host="www.ccrama.me"/>
+                        </intent-filter>
+                </activity>
                 <activity
                         android:name=".Activities.Reauthenticate"
                         android:alwaysRetainTaskState="true"

@@ -64,7 +64,7 @@ public class CommentStateUtil {
             adapter.hiddenPersons.remove(n.getFullName());
             adapter.unhideAll(baseNode, holder.getBindingAdapterPosition() + 1);
             if (adapter.toCollapse.contains(n.getFullName()) && SettingValues.collapseComments) {
-                adapter.setViews(n.getDataNode().get("body_html").asText(), adapter.submission.getSubredditName(), holder);
+                adapter.setViews(SubmissionParser.replaceProcessingImgPlaceholders(n.getDataNode().get("body_html").asText(), n.getDataNode()), adapter.submission.getSubredditName(), holder);
             }
             CommentAdapterHelper.hideChildrenObject(holder.childrenNumber);
             holder.commentOverflow.setVisibility(View.VISIBLE);

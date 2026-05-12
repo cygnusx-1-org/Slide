@@ -39,7 +39,6 @@ import com.mikepenz.itemanimators.SlideRightAlphaAnimator;
 import com.nostra13.universalimageloader.utils.DiskCacheUtils;
 
 import me.edgan.redditslide.Authentication;
-import me.edgan.redditslide.BuildConfig;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.Drafts;
 import me.edgan.redditslide.Fragments.CommentPage;
@@ -383,7 +382,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             holder.commentOverflow.setOnClickListener(singleClick);
             if (!toCollapse.contains(comment.getFullName()) || !SettingValues.collapseComments) {
                 setViews(
-                        comment.getDataNode().get("body_html").asText(),
+                        SubmissionParser.replaceProcessingImgPlaceholders(
+                                comment.getDataNode().get("body_html").asText(),
+                                comment.getDataNode()),
                         submission.getSubredditName(),
                         holder,
                         singleClick,
@@ -662,13 +663,8 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             nextPos = getRealPosition(nextPos);
 
             final MoreChildItem baseNode = (MoreChildItem) currentComments.get(nextPos);
-            if (baseNode.children.getCount() > 0) {
-                try {
-                    holder.content.setText(mContext.getString(R.string.comment_load_more_string_new, baseNode.children.getLocalizedCount()));
-                } catch (Exception e) {
-                    holder.content.setText(R.string.comment_load_more_number_unknown);
-                }
-            } else if (!baseNode.children.getChildrenIds().isEmpty()) {
+            if (!baseNode.children.getChildrenIds().isEmpty()
+                    || baseNode.children.getCount() > 0) {
                 holder.content.setText(R.string.comment_load_more_number_unknown);
             } else {
                 holder.content.setText(R.string.thread_continue);
@@ -1362,7 +1358,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     if (toCollapse.contains(comment.getFullName())
                             && SettingValues.collapseComments) {
                         setViews(
-                                comment.getDataNode().get("body_html").asText(),
+                                SubmissionParser.replaceProcessingImgPlaceholders(
+                                        comment.getDataNode().get("body_html").asText(),
+                                        comment.getDataNode()),
                                 submission.getSubredditName(),
                                 holder);
                     }
@@ -1846,7 +1844,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         String token;
         RedditClient reddit =
                 new RedditClient(
-                        UserAgent.of("android:me.edgan.RedditSlide:v" + BuildConfig.VERSION_NAME));
+                        UserAgent.of(Constants.getUserAgent()));
         final HashMap<String, String> accounts = new HashMap<>();
 
         for (String s :

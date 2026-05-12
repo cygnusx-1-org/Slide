@@ -65,6 +65,7 @@ import me.edgan.redditslide.util.DisplayUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.MiscUtil;
+import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
 
 import net.dean.jraw.ApiException;
@@ -460,7 +461,9 @@ public class CommentAdapterHelper {
                 final View dialoglayout = inflater.inflate(R.layout.parent_comment_dialog, null);
                 Comment parent = o.comment.getComment();
                 adapter.setViews(
-                        parent.getDataNode().get("body_html").asText(),
+                        SubmissionParser.replaceProcessingImgPlaceholders(
+                                parent.getDataNode().get("body_html").asText(),
+                                parent.getDataNode()),
                         adapter.submission.getSubredditName(),
                         dialoglayout.findViewById(R.id.firstTextView),
                         dialoglayout.findViewById(R.id.commentOverflow));

@@ -62,30 +62,44 @@ public class SubmissionCache {
     }
 
     public static void updateInfoSpannable(Submission changed, Context mContext, String baseSub) {
+        if (info == null) info = new WeakHashMap<>();
         info.put(changed.getFullName(), getInfoSpannable(changed, mContext, baseSub));
     }
 
     public static void updateTitleFlair(Submission s, String flair, Context c) {
+        if (titles == null) titles = new WeakHashMap<>();
         titles.put(s.getFullName(), getTitleSpannable(s, flair, c));
     }
 
     public static SpannableStringBuilder getTitleLine(Submission s, Context mContext) {
         if (titles == null) titles = new WeakHashMap<>();
         if (titles.containsKey(s.getFullName())) {
-            return titles.get(s.getFullName());
+            SpannableStringBuilder title = titles.get(s.getFullName());
+            if (title != null) {
+                return title;
+            }
         } else {
             return getTitleSpannable(s, mContext);
         }
+        SpannableStringBuilder title = getTitleSpannable(s, mContext);
+        titles.put(s.getFullName(), title);
+        return title;
     }
 
     public static SpannableStringBuilder getInfoLine(
             Submission s, Context mContext, String baseSub) {
         if (info == null) info = new WeakHashMap<>();
         if (info.containsKey(s.getFullName())) {
-            return info.get(s.getFullName());
+            SpannableStringBuilder infoLine = info.get(s.getFullName());
+            if (infoLine != null) {
+                return infoLine;
+            }
         } else {
             return getInfoSpannable(s, mContext, baseSub);
         }
+        SpannableStringBuilder infoLine = getInfoSpannable(s, mContext, baseSub);
+        info.put(s.getFullName(), infoLine);
+        return infoLine;
     }
 
     private static SpannableStringBuilder getCrosspostSpannable(Submission s, Context mContext) {

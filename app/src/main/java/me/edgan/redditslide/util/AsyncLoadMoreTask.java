@@ -23,8 +23,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
     private final MoreCommentViewHolder holder;
@@ -39,6 +42,7 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
     private final HashMap<String, Integer> keys;
 
     private ArrayList<CommentObject> finalData;
+    private MoreChildItem targetItem;
 
     public AsyncLoadMoreTask(
             int dataPos,
@@ -64,87 +68,120 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
     @Override
     public void onPostExecute(Integer data) {
         adapter.currentLoading = null;
-        if (!isCancelled() && data != null && data > 0) {
-            final int itemsToAdd = data;
-
-            ((Activity) mContext)
-                    .runOnUiThread(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    // Ensure dataPos is still valid before removing
-                                    // Also check that the item is indeed a MoreChildItem, as the list might have changed
-                                    if (dataPos < currentComments.size() && currentComments.get(dataPos) instanceof MoreChildItem) {
-                                        // Remove the "Load More" item
-                                        currentComments.remove(dataPos);
-                                        adapter.notifyItemRemoved(holderPos); // Use adapter instance
-
-                                        // Add new items at the same position
-                                        currentComments.addAll(dataPos, finalData);
-
-                                        // Update keys for newly added items
-                                        for (int i = 0; i < finalData.size(); i++) {
-                                            keys.put(finalData.get(i).getName(), dataPos + i);
-                                        }
-
-                                        // Update keys for items that came after the insertion point
-                                        for (int i = dataPos + finalData.size(); i < currentComments.size(); i++) {
-                                            keys.put(currentComments.get(i).getName(), i);
-                                        }
-
-
-                                        listView.setItemAnimator(new SlideRightAlphaAnimator());
-                                        adapter.notifyItemRangeInserted(holderPos, itemsToAdd);
-
-                                    } else {
-                                        Log.e(LogUtil.getTag(), "Error: dataPos "
-                                            + dataPos + " out of bounds or item not MoreChildItem during load more completion. Size="
-                                            + currentComments.size());
-                                        resetLoadingIndicator();
-                                    }
-                                }
-                            });
-
-        } else if (data == null || data == 0) { // Handle null or zero case (error or no new comments)
-            Log.w(LogUtil.getTag(), "AsyncLoadMoreTask finished with null or zero data. Error occurred or no more comments.");
-            resetLoadingIndicator();
+        if (isCancelled()) {
+            return;
         }
+        if (data == null) {
+            // Exception path; error dialog already shown from doInBackground. Keep the
+            // placeholder so the user can retry.
+            resetLoadingIndicator();
+            return;
+        }
+        if (data <= 0) {
+            Log.w(LogUtil.getTag(), "AsyncLoadMoreTask produced no visible rows for " + fullname);
+            resetLoadingIndicator();
+            return;
+        }
+
+        final int itemsToAdd = data;
+        ((Activity) mContext)
+                .runOnUiThread(
+                        () -> {
+                            // Re-resolve the placeholder using its stable key. The original
+                            // captured index is only a hint because collapsed/hidden rows can
+                            // leave us one slot off by the time this callback runs.
+                            int currentDataPos = findPlaceholderPosition();
+                            if (currentDataPos < 0) {
+                                Log.w(LogUtil.getTag(), "Target MoreChildItem no longer in list; nothing to apply.");
+                                resetLoadingIndicator();
+                                return;
+                            }
+
+                            String placeholderKey = targetItem.getName();
+                            currentComments.remove(currentDataPos);
+                            keys.remove(placeholderKey);
+
+                            if (itemsToAdd > 0) {
+                                currentComments.addAll(currentDataPos, finalData);
+                                for (int i = 0; i < finalData.size(); i++) {
+                                    keys.put(finalData.get(i).getName(), currentDataPos + i);
+                                }
+                            }
+                            for (int i = currentDataPos + (itemsToAdd > 0 ? finalData.size() : 0);
+                                 i < currentComments.size();
+                                 i++) {
+                                keys.put(currentComments.get(i).getName(), i);
+                            }
+
+                            if (itemsToAdd > 0) {
+                                listView.setItemAnimator(new SlideRightAlphaAnimator());
+                            }
+                            adapter.notifyDataSetChanged();
+                        });
     }
 
     private void resetLoadingIndicator() {
-         // Ensure holder and its views are not null, and context is valid
-        if (holder != null && holder.loading != null && holder.content != null && mContext != null) {
-            ((Activity) mContext).runOnUiThread(() -> {
-                 // Check if the item at dataPos still exists and is a MoreChildItem before resetting text
-                 // It's possible the item was removed or changed by another operation
-                if (dataPos < currentComments.size() && currentComments.get(dataPos) instanceof MoreChildItem) {
-                    final MoreChildItem baseNode = (MoreChildItem) currentComments.get(dataPos);
-                    try {
-                         // Use getLocalizedCount for display
-                        String countString = baseNode.children.getLocalizedCount();
-                        if (baseNode.children.getCount() > 0) {
-                            holder.content.setText(mContext.getString(R.string.comment_load_more_string_new, countString));
-                        } else if (!baseNode.children.getChildrenIds().isEmpty()) {
-                            // Even if count is 0, if IDs exist, show unknown
-                            holder.content.setText(R.string.comment_load_more_number_unknown);
-                        } else {
-                             // No count and no IDs means it's likely a "continue thread" link
-                            holder.content.setText(R.string.thread_continue);
-                        }
-                    } catch (Exception e) {
-                        Log.e(LogUtil.getTag(), "Error resetting loading indicator text", e);
-                        holder.content.setText(R.string.comment_load_more_number_unknown);
-                    }
-                } else {
-                    // Item might have been removed or changed, just hide loading indicator
-                    // Avoid setting text if the original item context is lost
-                    Log.w(LogUtil.getTag(), "Item at dataPos " + dataPos + " no longer MoreChildItem when resetting indicator.");
-                }
-                holder.loading.setVisibility(View.GONE);
-            });
-        } else {
+        if (holder == null || holder.loading == null || holder.content == null || mContext == null) {
             Log.w(LogUtil.getTag(), "Could not reset loading indicator: holder or context was null.");
+            return;
         }
+        ((Activity) mContext).runOnUiThread(() -> {
+            // Prefer the adapter's re-bind path; it correctly reproduces the placeholder text
+            // regardless of how the list has shifted. Only fall back to direct holder mutation
+            // when we can't find the item anymore.
+            int currentDataPos = findPlaceholderPosition();
+            if (currentDataPos >= 0) {
+                adapter.notifyDataSetChanged();
+                return;
+            }
+
+            // The item is gone. Make sure the captured holder at least isn't stuck on
+            // "Loading more…" — clear its spinner. Text will be reset when/if it rebinds.
+            holder.loading.setVisibility(View.GONE);
+        });
+    }
+
+    private int findPlaceholderPosition() {
+        if (targetItem == null) {
+            return -1;
+        }
+
+        String placeholderKey = targetItem.getName();
+        if (placeholderKey == null || placeholderKey.isEmpty()) {
+            return -1;
+        }
+
+        Integer keyedPosition = keys.get(placeholderKey);
+        if (isMatchingPlaceholderPosition(keyedPosition, placeholderKey)) {
+            return keyedPosition;
+        }
+
+        if (isMatchingPlaceholderPosition(dataPos, placeholderKey)) {
+            return dataPos;
+        }
+
+        if (isMatchingPlaceholderPosition(dataPos - 1, placeholderKey)) {
+            return dataPos - 1;
+        }
+
+        if (isMatchingPlaceholderPosition(dataPos + 1, placeholderKey)) {
+            return dataPos + 1;
+        }
+
+        for (int i = 0; i < currentComments.size(); i++) {
+            if (placeholderKey.equals(currentComments.get(i).getName())) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private boolean isMatchingPlaceholderPosition(Integer position, String placeholderKey) {
+        return position != null
+                && position >= 0
+                && position < currentComments.size()
+                && placeholderKey.equals(currentComments.get(position).getName());
     }
 
 
@@ -154,6 +191,7 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
         int itemsAddedCount = 0;
         if (params.length > 0) {
             MoreChildItem moreChildItem = params[0];
+            targetItem = moreChildItem;
             CommentNode parentNode = moreChildItem.comment;
             MoreChildren moreChildren = moreChildItem.children;
 
@@ -163,27 +201,28 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
                     return null;
                 }
 
-                // Fetch the next batch of comments
                 List<CommentNode> newNodesListing = parentNode.loadMoreComments(Authentication.reddit);
 
-                if (newNodesListing != null) {
-                    for (CommentNode newNode : newNodesListing) {
-                        // Check if the key already exists - prevents adding duplicates
-                        if (!keys.containsKey(newNode.getComment().getFullName())) {
-                            finalData.add(new CommentItem(newNode));
-                            itemsAddedCount++;
-
-                            // If this newly added node itself has more comments, add a MoreChildItem marker for it
-                            if (newNode.hasMoreComments()) {
-                                finalData.add(new MoreChildItem(newNode, newNode.getMoreChildren()));
-                                itemsAddedCount++;
-                            }
-                        } else {
-                            Log.w(LogUtil.getTag(), "Skipping already existing comment key: " + newNode.getComment().getFullName());
-                        }
-                    }
-                } else {
+                if (newNodesListing == null) {
                     Log.w(LogUtil.getTag(), "loadMoreComments returned null listing for node: " + parentNode.getComment().getId());
+                    return 0;
+                }
+
+                itemsAddedCount += appendExpandedNodes(parentNode, newNodesListing);
+
+                // JRAW occasionally resolves the request but returns no depth+1 nodes for a
+                // single-child placeholder. In that case, fetch that one child directly.
+                if (itemsAddedCount == 0
+                        && moreChildren != null
+                        && moreChildren.getChildrenIds() != null
+                        && moreChildren.getChildrenIds().size() == 1) {
+                    String childId = moreChildren.getChildrenIds().get(0);
+                    Log.d(LogUtil.getTag(), "AsyncLoadMoreTask: falling back to insertComment for single child "
+                            + childId + " under " + parentNode.getComment().getId());
+                    List<CommentNode> insertedNodes = parentNode.insertComment(
+                            Authentication.reddit,
+                            "t1_" + childId);
+                    itemsAddedCount += appendExpandedNodes(parentNode, insertedNodes);
                 }
 
             } catch (Exception e) {
@@ -233,6 +272,72 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
                 return null;
             }
         }
+        return itemsAddedCount;
+    }
+
+    private int appendExpandedNodes(CommentNode parentNode, List<CommentNode> newNodesListing) {
+        int itemsAddedCount = 0;
+
+        // JRAW's loadMoreComments returns only nodes at depth == parent.depth + 1, but the
+        // network call attaches their descendants (and any nested MoreChildren) into the
+        // returned nodes' subtrees. Walk each subtree so descendants reach the UI too.
+        List<CommentNode> walked = new ArrayList<>();
+        boolean dedupe;
+        if (newNodesListing != null && !newNodesListing.isEmpty()) {
+            // Normal path: these nodes are all freshly constructed by JRAW, so no dedupe.
+            for (CommentNode top : newNodesListing) {
+                for (CommentNode n : top.walkTree()) {
+                    walked.add(n);
+                }
+            }
+            dedupe = false;
+        } else {
+            // Fallback: the depth+1 filter matched nothing but the parent tree may still
+            // have been mutated. Walk it and dedupe against what's already visible.
+            for (CommentNode n : parentNode.walkTree()) {
+                if (n == parentNode) continue;
+                walked.add(n);
+            }
+            dedupe = true;
+        }
+
+        Log.d(LogUtil.getTag(), "AsyncLoadMoreTask: parent=" + parentNode.getComment().getId()
+                + " newRootNodes=" + (newNodesListing == null ? -1 : newNodesListing.size())
+                + " walked=" + walked.size() + " dedupe=" + dedupe);
+
+        // Mirror SubmissionComments.LoadData.doInBackground: emit nodes in preorder and
+        // place MoreChildItem placeholders at the correct depth via a reverse-order flush.
+        Map<Integer, MoreChildItem> waiting = new HashMap<>();
+        for (CommentNode n : walked) {
+            Map<Integer, MoreChildItem> flush = new TreeMap<>(Collections.reverseOrder());
+            flush.putAll(waiting);
+            for (Integer i : flush.keySet()) {
+                if (i >= n.getDepth()) {
+                    finalData.add(waiting.get(i));
+                    itemsAddedCount++;
+                    waiting.remove(i);
+                }
+            }
+
+            if (dedupe && keys.containsKey(n.getComment().getFullName())) {
+                continue;
+            }
+
+            finalData.add(new CommentItem(n));
+            itemsAddedCount++;
+
+            if (n.hasMoreComments()) {
+                waiting.put(n.getDepth(), new MoreChildItem(n, n.getMoreChildren()));
+            }
+        }
+
+        Map<Integer, MoreChildItem> flush = new TreeMap<>(Collections.reverseOrder());
+        flush.putAll(waiting);
+        for (Integer i : flush.keySet()) {
+            finalData.add(waiting.get(i));
+            itemsAddedCount++;
+        }
+
         return itemsAddedCount;
     }
 }

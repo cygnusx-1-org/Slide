@@ -7,6 +7,7 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+
 import android.text.Editable;
 import android.util.Base64;
 import android.view.LayoutInflater;
@@ -16,6 +17,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -27,7 +31,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.snackbar.Snackbar;
 
-import gun0912.tedimagepicker.builder.TedImagePicker;
+import androidx.activity.ComponentActivity;
 
 import me.edgan.redditslide.Activities.Draw;
 import me.edgan.redditslide.Drafts;
@@ -55,9 +59,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Created by carlo_000 on 10/18/2015. */
 public class DoEditorActions {
+
+    private static final AtomicInteger registryCounter = new AtomicInteger(0);
 
     public static void doActions(
             final EditText editText,
@@ -66,6 +73,17 @@ public class DoEditorActions {
             final Activity a,
             final String oldComment,
             @Nullable final String[] authors) {
+        doActions(editText, baseView, fm, a, oldComment, authors, null);
+    }
+
+    public static void doActions(
+            final EditText editText,
+            final View baseView,
+            final FragmentManager fm,
+            final Activity a,
+            final String oldComment,
+            @Nullable final String[] authors,
+            @Nullable final ActivityResultLauncher<PickVisualMediaRequest> imageLauncher) {
         baseView.findViewById(R.id.bold)
                 .setOnClickListener(
                         new View.OnClickListener() {
@@ -315,21 +333,49 @@ public class DoEditorActions {
                             sStart = editText.getSelectionStart();
                             sEnd = editText.getSelectionEnd();
 
-                            TedImagePicker.with(editText.getContext())
-                                    .title("Choose a photo")
-                                    .start(
-                                            uri -> {
-                                                ArrayList<Uri> uriList = new ArrayList<>();
-                                                uriList.add(uri);
-                                                handleImageIntent(
-                                                        uriList,
-                                                        editText,
-                                                        editText.getContext());
-                                                KeyboardUtil.hideKeyboard(
-                                                        editText.getContext(),
-                                                        editText.getWindowToken(),
-                                                        0);
-                                            });
+                            if (imageLauncher != null) {
+                                currentImageTarget = editText;
+                                imageLauncher.launch(
+                                        new PickVisualMediaRequest.Builder()
+                                                .setMediaType(
+                                                        ActivityResultContracts.PickVisualMedia
+                                                                .ImageOnly.INSTANCE)
+                                                .build());
+                            } else if (a instanceof ComponentActivity) {
+                                currentImageTarget = editText;
+                                ComponentActivity componentActivity = (ComponentActivity) a;
+                                String key =
+                                        "doEditorImage_"
+                                                + registryCounter.getAndIncrement();
+                                ActivityResultLauncher<PickVisualMediaRequest> launcher =
+                                        componentActivity
+                                                .getActivityResultRegistry()
+                                                .register(
+                                                        key,
+                                                        new ActivityResultContracts
+                                                                .PickVisualMedia(),
+                                                        uri -> {
+                                                            if (uri != null) {
+                                                                ArrayList<Uri> uriList =
+                                                                        new ArrayList<>();
+                                                                uriList.add(uri);
+                                                                handleImageIntent(
+                                                                        uriList,
+                                                                        editText,
+                                                                        editText.getContext());
+                                                                KeyboardUtil.hideKeyboard(
+                                                                        editText.getContext(),
+                                                                        editText.getWindowToken(),
+                                                                        0);
+                                                            }
+                                                        });
+                                launcher.launch(
+                                        new PickVisualMediaRequest.Builder()
+                                                .setMediaType(
+                                                        ActivityResultContracts.PickVisualMedia
+                                                                .ImageOnly.INSTANCE)
+                                                .build());
+                            }
                         });
         baseView.findViewById(R.id.draw)
                 .setOnClickListener(
@@ -480,6 +526,8 @@ public class DoEditorActions {
                                         HtmlRenderer.builder().extensions(extensions).build();
                                 Node document = parser.parse(editText.getText().toString());
                                 String html = renderer.render(document);
+                                // Process Reddit-style superscript (^text)
+                                html = processSuperscript(html);
                                 LayoutInflater inflater = a.getLayoutInflater();
                                 final View dialoglayout =
                                         inflater.inflate(R.layout.parent_comment_dialog, null);
@@ -640,28 +688,44 @@ public class DoEditorActions {
 
     public static Editable e;
     public static int sStart, sEnd;
+    public static EditText currentImageTarget;
 
     public static void doDraw(final Activity a, final EditText editText, final FragmentManager fm) {
         final Intent intent = new Intent(a, Draw.class);
         KeyboardUtil.hideKeyboard(editText.getContext(), editText.getWindowToken(), 0);
         e = editText.getText();
 
-        TedImagePicker.with(editText.getContext())
-                .title("Choose a photo")
-                .start(
-                        uri -> {
-                            List<Uri> uris = Collections.singletonList(uri);
-                            Draw.uri = uris.get(0);
-                            Fragment auxiliary = new AuxiliaryFragment();
+        if (a instanceof ComponentActivity) {
+            ComponentActivity componentActivity = (ComponentActivity) a;
+            String key = "doEditorDraw_" + registryCounter.getAndIncrement();
+            ActivityResultLauncher<PickVisualMediaRequest> drawLauncher =
+                    componentActivity
+                            .getActivityResultRegistry()
+                            .register(
+                                    key,
+                                    new ActivityResultContracts.PickVisualMedia(),
+                                    uri -> {
+                                        if (uri != null) {
+                                            Draw.uri = uri;
+                                            Fragment auxiliary = new AuxiliaryFragment();
 
-                            sStart = editText.getSelectionStart();
-                            sEnd = editText.getSelectionEnd();
+                                            sStart = editText.getSelectionStart();
+                                            sEnd = editText.getSelectionEnd();
 
-                            fm.beginTransaction().add(auxiliary, "IMAGE_UPLOAD").commit();
-                            fm.executePendingTransactions();
+                                            fm.beginTransaction()
+                                                    .add(auxiliary, "IMAGE_UPLOAD")
+                                                    .commit();
+                                            fm.executePendingTransactions();
 
-                            auxiliary.startActivityForResult(intent, 3333);
-                        });
+                                            auxiliary.startActivityForResult(intent, 3333);
+                                        }
+                                    });
+            drawLauncher.launch(
+                    new PickVisualMediaRequest.Builder()
+                            .setMediaType(
+                                    ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                            .build());
+        }
     }
 
     public static class AuxiliaryFragment extends Fragment {
@@ -967,5 +1031,15 @@ public class DoEditorActions {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * Processes Reddit-style superscript formatting (^text) and converts it to HTML.
+     * Matches text that starts with ^ and continues until whitespace or end of line.
+     */
+    private static String processSuperscript(String html) {
+        // Pattern to match ^text (caret followed by text until whitespace or end)
+        // This matches Reddit's superscript behavior
+        return html.replaceAll("\\^([^\\s]+)", "<sup><small>$1</small></sup>");
     }
 }

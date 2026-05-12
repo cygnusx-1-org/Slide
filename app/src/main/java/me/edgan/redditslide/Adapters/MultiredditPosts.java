@@ -121,7 +121,7 @@ public class MultiredditPosts implements PostLoader {
                 }
                 if (!usedOffline)
                     OfflineSubreddit.getSubreddit(
-                                    "multi"
+                                    "multi_"
                                             + multiReddit
                                                     .getDisplayName()
                                                     .toLowerCase(Locale.ENGLISH),
@@ -148,7 +148,7 @@ public class MultiredditPosts implements PostLoader {
                 // end of submissions
                 nomore = true;
             } else if (!OfflineSubreddit.getSubreddit(
-                                    "multi"
+                                    "multi_"
                                             + multiReddit
                                                     .getDisplayName()
                                                     .toLowerCase(Locale.ENGLISH),
@@ -161,7 +161,7 @@ public class MultiredditPosts implements PostLoader {
                 offline = true;
                 final OfflineSubreddit cached =
                         OfflineSubreddit.getSubreddit(
-                                "multi" + multiReddit.getDisplayName().toLowerCase(Locale.ENGLISH),
+                                "multi_" + multiReddit.getDisplayName().toLowerCase(Locale.ENGLISH),
                                 true,
                                 context);
 
@@ -169,7 +169,7 @@ public class MultiredditPosts implements PostLoader {
                 for (Submission s : cached.submissions) {
                     if (!PostMatch.doesMatch(
                             s,
-                            "multi" + multiReddit.getDisplayName().toLowerCase(Locale.ENGLISH),
+                            "multi_" + multiReddit.getDisplayName().toLowerCase(Locale.ENGLISH),
                             false)) {
                         finalSubs.add(s);
                     }
@@ -207,17 +207,17 @@ public class MultiredditPosts implements PostLoader {
                 paginator = new MultiRedditPaginator(Authentication.reddit, subredditPaginators[0]);
                 paginator.setSorting(
                         SettingValues.getSubmissionSort(
-                                "multi"
+                                "multi_"
                                         + subredditPaginators[0]
                                                 .getDisplayName()
                                                 .toLowerCase(Locale.ENGLISH)));
                 paginator.setTimePeriod(
                         SettingValues.getSubmissionTimePeriod(
-                                "multi"
+                                "multi_"
                                         + subredditPaginators[0]
                                                 .getDisplayName()
                                                 .toLowerCase(Locale.ENGLISH)));
-                paginator.setLimit(Constants.PAGINATOR_POST_LIMIT);
+                paginator.setLimit(Constants.DEFAULT_PAGINATOR_LIMIT);
             }
 
             List<Submission> things = new ArrayList<>();
@@ -237,8 +237,9 @@ public class MultiredditPosts implements PostLoader {
             }
 
             List<Submission> filteredSubmissions = new ArrayList<>();
+            String multiName = "multi_" + paginator.getMultiReddit().getDisplayName().toLowerCase(Locale.ENGLISH);
             for (Submission s : things) {
-                if (!PostMatch.doesMatch(s, paginator.getMultiReddit().getDisplayName(), false)) {
+                if (!PostMatch.doesMatch(s, multiName, false)) {
                     filteredSubmissions.add(s);
                 }
             }
