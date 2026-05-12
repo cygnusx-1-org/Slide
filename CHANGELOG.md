@@ -4,6 +4,14 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.4.9 / 2026-5-12
+============
+* Added image and video rotate support
+* Made bottom buttons static in media views
+* Fixed issue with the 30 day filter and subreddits that start with multi
+* Fixed crash
+* Fixed issue with transparent pngs as preview or thumbnails
+
 7.4.8 / 2026-4-20
 ============
 * Fixed issues with missing/phathom "Load X more" comments
