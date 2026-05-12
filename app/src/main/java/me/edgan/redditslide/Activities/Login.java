@@ -40,6 +40,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsService;
+import androidx.webkit.WebViewCompat;
+import androidx.webkit.WebViewFeature;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -63,6 +65,7 @@ import net.dean.jraw.models.LoggedInAccount;
 import net.dean.jraw.models.Subreddit;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -433,6 +436,34 @@ public class Login extends BaseActivityAnim {
                         }
                     }
                 });
+
+        // Hide Reddit's cookie consent wrapper before any page script runs. It can appear
+        // behind the login form and steal focus from inputs. Inject at document-start so the
+        // CSS rule + MutationObserver land before Reddit's own scripts mount the element.
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) {
+            WebViewCompat.addDocumentStartJavaScript(
+                    webView,
+                    "(function(){"
+                            + "var ID='data-protection-consent-wrapper';"
+                            + "var addStyle=function(){"
+                            + "if(document.getElementById('_dpcStyle'))return;"
+                            + "var s=document.createElement('style');"
+                            + "s.id='_dpcStyle';"
+                            + "s.textContent='#'+ID+'{display:none!important}';"
+                            + "(document.head||document.documentElement||document)"
+                            + ".appendChild(s);"
+                            + "};"
+                            + "var kill=function(){"
+                            + "var el=document.getElementById(ID);"
+                            + "if(el)el.remove();"
+                            + "};"
+                            + "addStyle();kill();"
+                            + "new MutationObserver(function(){addStyle();kill();})"
+                            + ".observe(document.documentElement||document,"
+                            + "{childList:true,subtree:true});"
+                            + "})()",
+                    Collections.singleton("https://*.reddit.com"));
+        }
 
         webView.loadUrl(authorizationUrl);
     }
