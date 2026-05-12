@@ -494,6 +494,21 @@ public class TumblrPager extends BaseSaveActivity {
                     }
                 }, getContext(), null); // Pass null for submissionTitle if not available/needed here
 
+                ImageView rotateRight = rootView.findViewById(R.id.rotate_right);
+                ImageView rotateLeft = rootView.findViewById(R.id.rotate_left);
+                if (rotateRight != null && rotateLeft != null) {
+                    rotateRight.setVisibility(View.VISIBLE);
+                    rotateLeft.setVisibility(View.VISIBLE);
+                    rotateRight.setOnClickListener(view -> {
+                        float next = (imageView.getRotation() + 90f) % 360f;
+                        imageView.setRotation(next);
+                    });
+                    rotateLeft.setOnClickListener(view -> {
+                        float next = (imageView.getRotation() - 90f + 360f) % 360f;
+                        imageView.setRotation(next);
+                    });
+                }
+
             } else { // Not a direct .gif URL, or URL is null, proceed with ExoVideoView
                 gif = rootView.findViewById(R.id.gif);
                 gif.setVisibility(View.VISIBLE);
@@ -511,6 +526,15 @@ public class TumblrPager extends BaseSaveActivity {
                         ((TumblrPager) getActivity()).subreddit,
                         null) // Pass null for submissionTitle
                         .execute(url);
+
+                ImageView rotateRight = rootView.findViewById(R.id.rotate_right);
+                ImageView rotateLeft = rootView.findViewById(R.id.rotate_left);
+                if (rotateRight != null && rotateLeft != null) {
+                    rotateRight.setVisibility(View.VISIBLE);
+                    rotateLeft.setVisibility(View.VISIBLE);
+                    rotateRight.setOnClickListener(view -> v.rotateRight());
+                    rotateLeft.setOnClickListener(view -> v.rotateLeft());
+                }
             }
 
             rootView.findViewById(R.id.more)

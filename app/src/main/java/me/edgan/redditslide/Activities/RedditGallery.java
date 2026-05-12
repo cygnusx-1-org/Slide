@@ -502,6 +502,16 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
                         }
                     }
 
+                    ImageView rotateButton = rootView.findViewById(R.id.rotate_right);
+                    ImageView rotateLeftButton = rootView.findViewById(R.id.rotate_left);
+                    if (rotateButton != null && rotateLeftButton != null) {
+                        rotateButton.setVisibility(View.VISIBLE);
+                        rotateLeftButton.setVisibility(View.VISIBLE);
+
+                        rotateButton.setOnClickListener(view -> exoVideoView.rotateRight());
+                        rotateLeftButton.setOnClickListener(view -> exoVideoView.rotateLeft());
+                    }
+
                     // Add comment button logic
                     View comments = rootView.findViewById(R.id.comments);
                     if (comments != null) {
