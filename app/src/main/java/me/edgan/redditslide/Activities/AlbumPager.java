@@ -498,7 +498,7 @@ public class AlbumPager extends BaseSaveActivity {
             }
 
             // Set up rotation buttons for videos
-            ImageView rotateButton = rootView.findViewById(R.id.rotate);
+            ImageView rotateButton = rootView.findViewById(R.id.rotate_right);
             ImageView rotateLeftButton = rootView.findViewById(R.id.rotate_left);
 
             if (rotateButton != null && rotateLeftButton != null) {

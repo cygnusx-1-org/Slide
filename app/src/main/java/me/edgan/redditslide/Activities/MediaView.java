@@ -598,7 +598,7 @@ public class MediaView extends BaseSaveActivity {
             findViewById(R.id.save).setVisibility(View.INVISIBLE);
         }
 
-        findViewById(R.id.rotate)
+        findViewById(R.id.rotate_right)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -667,7 +667,7 @@ public class MediaView extends BaseSaveActivity {
     public void doLoadGif(final String dat) {
         isGif = true;
         // Show rotate buttons for videos/GIFs
-        findViewById(R.id.rotate).setVisibility(View.VISIBLE);
+        findViewById(R.id.rotate_right).setVisibility(View.VISIBLE);
         findViewById(R.id.rotate_left).setVisibility(View.VISIBLE);
         final ProgressBar loader = (ProgressBar) findViewById(R.id.gifprogress);
         final String gifUrl = GifUtils.AsyncLoadGif.formatUrl(dat); // Corrected static call
@@ -994,7 +994,7 @@ public class MediaView extends BaseSaveActivity {
         findViewById(R.id.gifprogress).setVisibility(View.GONE);
 
         // Show rotate buttons for images
-        findViewById(R.id.rotate).setVisibility(View.VISIBLE);
+        findViewById(R.id.rotate_right).setVisibility(View.VISIBLE);
         findViewById(R.id.rotate_left).setVisibility(View.VISIBLE);
 
         if (contentUrl != null && contentUrl.contains("m.imgur.com")) {
