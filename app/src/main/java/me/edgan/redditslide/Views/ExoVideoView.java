@@ -973,9 +973,19 @@ public class ExoVideoView extends RelativeLayout {
         public void onScaleEnd(ScaleGestureDetector detector) {
             // Ensure detector is not null
             if (detector != null) {
-                // Reset position if zoomed out significantly
-                if (scaleFactor <= 0.6f) {
+                // Snap back to the rotation-aware default scale when the user releases
+                // within a small tolerance of it. For unrotated videos rotationScaleFactor
+                // is 1.0f, matching the original snap-to-fit behavior.
+                if (Math.abs(scaleFactor - rotationScaleFactor) <= 0.05f) {
+                    scaleFactor = rotationScaleFactor;
+                    userZoomed = false;
+                    if (videoFrame != null) {
+                        videoFrame.setScaleX(scaleFactor);
+                        videoFrame.setScaleY(scaleFactor);
+                    }
                     resetPosition(); // resetPosition handles internal null check
+                } else if (scaleFactor <= 0.6f) {
+                    resetPosition();
                 }
             }
         }
