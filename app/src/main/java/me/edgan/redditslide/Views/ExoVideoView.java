@@ -89,6 +89,7 @@ public class ExoVideoView extends RelativeLayout {
     private int originalVideoWidth = 0; // Store the original video width
     private int originalVideoHeight = 0; // Store the original video height
     private float rotationScaleFactor = 1.0f; // Scale factor applied for rotation auto-zoom
+    private boolean userZoomed = false; // True once the user has pinch-zoomed
 
     // Static variable to hold the saved SurfaceTexture.
     private static SurfaceTexture sSavedSurfaceTexture;
@@ -406,6 +407,7 @@ public class ExoVideoView extends RelativeLayout {
         originalVideoHeight = 0;
         rotationScaleFactor = 1.0f;
         scaleFactor = 1.0f;
+        userZoomed = false;
 
         // Ensure player and uri are not null before proceeding
         if (player != null && uri != null) {
@@ -950,6 +952,7 @@ public class ExoVideoView extends RelativeLayout {
             // Ensure detector is not null
             if (detector != null) {
                 wasScaling = true; // Mark that scaling has occurred in this gesture sequence
+                userZoomed = true;
 
                 scaleFactor *= detector.getScaleFactor();
 
@@ -983,6 +986,7 @@ public class ExoVideoView extends RelativeLayout {
      */
     public void resetZoom() {
         scaleFactor = rotationScaleFactor;
+        userZoomed = false;
         resetPosition(); // resetPosition already has a null check for videoFrame
         // Ensure videoFrame exists before resetting scale/mode
         if (videoFrame != null) {
@@ -1062,12 +1066,13 @@ public class ExoVideoView extends RelativeLayout {
                 // For 0/180 degree rotations, reset to normal view
                 rotationScaleFactor = 1.0f;
                 scaleFactor = 1.0f; // Reset scale to normal for 0/180 degrees
+                userZoomed = false;
                 resetPosition(); // Reset position when going to normal rotation
                 Log.d(TAG, "Applied rotation: " + currentRotation + "° (normal view)");
             }
 
-            // Set initial scale factor to include rotation zoom when first applying rotation
-            if (scaleFactor == 1.0f) { // Only apply if user hasn't zoomed
+            // Apply the rotation auto-zoom unless the user has manually pinch-zoomed
+            if (!userZoomed) {
                 scaleFactor = rotationScaleFactor;
             }
 
