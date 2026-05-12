@@ -672,7 +672,7 @@ public class MediaView extends BaseSaveActivity {
         final ProgressBar loader = (ProgressBar) findViewById(R.id.gifprogress);
         final String gifUrl = GifUtils.AsyncLoadGif.formatUrl(dat); // Corrected static call
 
-                if (gifUrl.toLowerCase().endsWith(".gif")) {
+        if (gifUrl.toLowerCase().endsWith(".gif")) {
             // Handle direct .gif URLs with Movie/GifDrawable
             Log.v(TAG, "Loading direct GIF: " + gifUrl); // Changed to Log.v
             findViewById(R.id.gifarea).setVisibility(View.VISIBLE); // Ensure gifarea is visible for progress bar
@@ -748,9 +748,6 @@ public class MediaView extends BaseSaveActivity {
             if (directGifViewer != null) directGifViewer.setVisibility(View.GONE); // Hide our direct ImageViewer
             videoView = (ExoVideoView) findViewById(R.id.gif);
             videoView.setVisibility(View.VISIBLE); // Ensure ExoVideoView is visible
-
-            // Position rotate buttons to work with video controls
-            updateRotateButtonPositions(true);
 
             findViewById(R.id.black)
                     .setOnClickListener(
@@ -994,12 +991,11 @@ public class MediaView extends BaseSaveActivity {
         if (contentUrl != null && ContentType.isImgurLink(contentUrl)) {
             contentUrl = contentUrl + ".png";
         }
-                findViewById(R.id.gifprogress).setVisibility(View.GONE);
+        findViewById(R.id.gifprogress).setVisibility(View.GONE);
 
-        // Show rotate buttons for images and position them correctly
+        // Show rotate buttons for images
         findViewById(R.id.rotate).setVisibility(View.VISIBLE);
         findViewById(R.id.rotate_left).setVisibility(View.VISIBLE);
-        updateRotateButtonPositions(false);
 
         if (contentUrl != null && contentUrl.contains("m.imgur.com")) {
             contentUrl = contentUrl.replace("m.imgur.com", "i.imgur.com");
@@ -1240,20 +1236,6 @@ public class MediaView extends BaseSaveActivity {
 
     private void showErrorDialog() {
         runOnUiThread(() -> DialogUtil.showErrorDialog(MediaView.this));
-    }
-
-        /**
-     * Updates the positioning of rotate buttons to avoid overlapping with video controls
-     * @param hasVideoControls true if video controls (speed, mute, hq) are visible
-     */
-    private void updateRotateButtonPositions(boolean hasVideoControls) {
-        // The layout is now fixed in XML with proper positioning:
-        // From right to left: more -> save -> speed -> rotate -> rotate_left -> mute -> hq
-        // Rotate buttons are already positioned correctly in the layout
-        // We just need to control their visibility, not their positioning
-
-        // This method is kept for potential future positioning adjustments
-        // but the main layout positioning is now handled in the XML
     }
 
     private void rotateImage() {
