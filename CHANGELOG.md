@@ -4,6 +4,10 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.5.0 / 2026-5-12
+============
+* Fixed issue with cookie dialog on the login page when using WebView 
+
 7.4.9 / 2026-5-12
 ============
 * Added image and video rotate support
