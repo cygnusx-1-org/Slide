@@ -176,7 +176,7 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
         } else {
             OfflineSubreddit o =
                     OfflineSubreddit.getSubreddit(
-                            multireddit == null ? baseSubreddit : "multi" + multireddit,
+                            multireddit == null ? baseSubreddit : "multi_" + multireddit,
                             OfflineSubreddit.currentid,
                             !Authentication.didOnline,
                             CommentsScreen.this);
@@ -327,7 +327,7 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
             args.putString("subreddit", currentPosts.get(i).getSubredditName());
             args.putString(
                     "baseSubreddit",
-                    multireddit == null ? baseSubreddit : "multi" + multireddit);
+                    multireddit == null ? baseSubreddit : "multi_" + multireddit);
             f.setArguments(args);
             return f;
         }

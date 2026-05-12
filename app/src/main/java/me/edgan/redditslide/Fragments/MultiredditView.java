@@ -380,7 +380,7 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
 
             OfflineSubreddit o =
                     OfflineSubreddit.getSubreddit(
-                            "multi"
+                            "multi_"
                                     + posts.multiReddit
                                             .getDisplayName()
                                             .toLowerCase(Locale.ENGLISH),

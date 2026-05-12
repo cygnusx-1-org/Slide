@@ -112,7 +112,7 @@ public class PostMatch {
                     || subredditForSort.equalsIgnoreCase("all")
                     || subredditForSort.contains("+") // Combined subreddits like "programming+coding"
                     || subredditForSort.contains("/m/") // Multireddits like "/m/tech"
-                    || subredditForSort.startsWith("multi"); // Multireddits in overview like "multitech"
+                    || subredditForSort.startsWith("multi_"); // Multireddits in overview like "multi_tech"
 
             if (isFrontpageOrAll) {
                 // Get current sort type for this subreddit

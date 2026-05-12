@@ -153,7 +153,7 @@ public class MultiredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             CreateCardView.colorCard(
                     submission.getSubredditName().toLowerCase(Locale.ENGLISH),
                     holder.itemView,
-                    "multi" + dataSet.multiReddit.getDisplayName(),
+                    "multi_" + dataSet.multiReddit.getDisplayName(),
                     true);
             holder.itemView.setOnClickListener(
                     new View.OnClickListener() {
@@ -198,7 +198,7 @@ public class MultiredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                             listView,
                             true,
                             false,
-                            "multi"
+                            "multi_"
                                     + dataSet.multiReddit
                                             .getDisplayName()
                                             .toLowerCase(Locale.ENGLISH),

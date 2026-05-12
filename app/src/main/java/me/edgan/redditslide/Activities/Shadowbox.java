@@ -59,7 +59,7 @@ public class Shadowbox extends FullScreenActivity implements SubmissionDisplay {
         } else {
             subredditPosts = new SubredditPosts(subreddit, Shadowbox.this);
         }
-        subreddit = multireddit == null ? subreddit : ("multi" + multireddit);
+        subreddit = multireddit == null ? subreddit : ("multi_" + multireddit);
 
         applyDarkColorTheme(subreddit);
         super.onCreate(savedInstance);
