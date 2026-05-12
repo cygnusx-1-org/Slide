@@ -561,6 +561,14 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
                     comments.setVisibility(View.GONE);
                 }
             }
+            if (currentRotation != 0) {
+                me.edgan.redditslide.Views.SubsamplingScaleImageView imageView =
+                        rootView.findViewById(R.id.image);
+                if (imageView != null) {
+                    imageView.setOrientation(currentRotation);
+                }
+            }
+
             // Adjust button sizes for small screens
             MiscUtil.adjustButtonSizesForSmallScreens(rootView, getActivity());
             return rootView;
@@ -571,6 +579,15 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
             super.onCreate(savedInstanceState);
             Bundle bundle = this.getArguments();
             i = bundle.getInt("page", 0);
+            if (savedInstanceState != null) {
+                currentRotation = savedInstanceState.getInt("currentRotation", 0);
+            }
+        }
+
+        @Override
+        public void onSaveInstanceState(@NonNull Bundle outState) {
+            super.onSaveInstanceState(outState);
+            outState.putInt("currentRotation", currentRotation);
         }
 
         private void rotateImageRight(View rootView) {

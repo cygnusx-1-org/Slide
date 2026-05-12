@@ -928,6 +928,13 @@ public class AlbumPager extends BaseSaveActivity {
                 }
             }
 
+            if (currentRotation != 0) {
+                SubsamplingScaleImageView imageView = rootView.findViewById(R.id.image);
+                if (imageView != null) {
+                    imageView.setOrientation(currentRotation);
+                }
+            }
+
             // Adjust button sizes for small screens
             MiscUtil.adjustButtonSizesForSmallScreens(rootView, getActivity());
 
@@ -939,6 +946,15 @@ public class AlbumPager extends BaseSaveActivity {
             super.onCreate(savedInstanceState);
             Bundle bundle = this.getArguments();
             i = bundle.getInt("page", 0);
+            if (savedInstanceState != null) {
+                currentRotation = savedInstanceState.getInt("currentRotation", 0);
+            }
+        }
+
+        @Override
+        public void onSaveInstanceState(@NonNull Bundle outState) {
+            super.onSaveInstanceState(outState);
+            outState.putInt("currentRotation", currentRotation);
         }
 
         private void rotateImageLeft(View rootView) {
@@ -964,16 +980,19 @@ public class AlbumPager extends BaseSaveActivity {
                 imageView.post(new Runnable() {
                     @Override
                     public void run() {
+                        if (!isAdded()) return;
+                        AlbumPager activity = (AlbumPager) getActivity();
+                        if (activity == null || activity.images == null) return;
+
                         imageView.setOrientation(currentRotation);
 
                         // Reload the image
-                        final Image current = ((AlbumPager) getActivity()).images.get(i);
+                        final Image current = activity.images.get(i);
                         final String url = current.getImageUrl();
 
-                        boolean lq = false;
                         if (SettingValues.loadImageLq
                                 && (SettingValues.lowResAlways
-                                        || (!NetworkUtil.isConnectedWifi(getActivity())
+                                        || (!NetworkUtil.isConnectedWifi(activity)
                                                 && SettingValues.lowResMobile))) {
                             String lqurl =
                                     url.substring(0, url.lastIndexOf("."))
@@ -981,9 +1000,9 @@ public class AlbumPager extends BaseSaveActivity {
                                                     ? "m"
                                                     : (SettingValues.lqMid ? "l" : "h"))
                                             + url.substring(url.lastIndexOf("."));
-                            loadImage(rootView, ImageFullNoSubmission.this, lqurl, ((AlbumPager) getActivity()).images.size() == 1);
+                            loadImage(rootView, ImageFullNoSubmission.this, lqurl, activity.images.size() == 1);
                         } else {
-                            loadImage(rootView, ImageFullNoSubmission.this, url, ((AlbumPager) getActivity()).images.size() == 1);
+                            loadImage(rootView, ImageFullNoSubmission.this, url, activity.images.size() == 1);
                         }
                     }
                 });

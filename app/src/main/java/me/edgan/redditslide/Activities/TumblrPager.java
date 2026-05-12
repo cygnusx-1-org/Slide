@@ -785,6 +785,14 @@ public class TumblrPager extends BaseSaveActivity {
             } else {
                 rootView.findViewById(R.id.comments).setVisibility(View.GONE);
             }
+
+            if (currentRotation != 0) {
+                SubsamplingScaleImageView imageView = rootView.findViewById(R.id.image);
+                if (imageView != null) {
+                    imageView.setOrientation(currentRotation);
+                }
+            }
+
             return rootView;
         }
 
@@ -793,6 +801,15 @@ public class TumblrPager extends BaseSaveActivity {
             super.onCreate(savedInstanceState);
             Bundle bundle = this.getArguments();
             i = bundle.getInt("page", 0);
+            if (savedInstanceState != null) {
+                currentRotation = savedInstanceState.getInt("currentRotation", 0);
+            }
+        }
+
+        @Override
+        public void onSaveInstanceState(@NonNull Bundle outState) {
+            super.onSaveInstanceState(outState);
+            outState.putInt("currentRotation", currentRotation);
         }
 
         private void rotateImageLeft(View rootView) {
@@ -818,16 +835,19 @@ public class TumblrPager extends BaseSaveActivity {
                 imageView.post(new Runnable() {
                     @Override
                     public void run() {
+                        if (!isAdded()) return;
+                        TumblrPager activity = (TumblrPager) getActivity();
+                        if (activity == null || activity.images == null) return;
+
                         imageView.setOrientation(currentRotation);
 
                         // Reload the image
-                        final Photo current = ((TumblrPager) getActivity()).images.get(i);
+                        final Photo current = activity.images.get(i);
                         final String url = current.getOriginalSize().getUrl();
 
-                        boolean lq = false;
                         if (SettingValues.loadImageLq
                                 && (SettingValues.lowResAlways
-                                        || (!NetworkUtil.isConnectedWifi(getActivity())
+                                        || (!NetworkUtil.isConnectedWifi(activity)
                                                 && SettingValues.lowResMobile))
                                 && current.getAltSizes() != null
                                 && !current.getAltSizes().isEmpty()) {
