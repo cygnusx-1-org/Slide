@@ -25,6 +25,7 @@
     <string name="submission_gild">Open in browser</string>
     <string name="submission_save">Save post</string>
     <string name="submission_save_image">Save image</string>
+    <string name="submission_save_mp4">Save MP4</string>
     <string name="submission_load_full">Load full thread</string>
     <string name="submission_np_link">This is a no participation link. Please don\'t vote or comment.</string>
     <string name="submission_tap_gif">Tap to load GIF</string>
