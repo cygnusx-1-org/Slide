@@ -33,6 +33,7 @@ cd
 captures
 
 *.bak
+*.swp
 
 crowdin.properties
 app/noGPlay/
