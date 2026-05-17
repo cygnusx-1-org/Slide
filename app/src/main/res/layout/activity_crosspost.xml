@@ -66,6 +66,30 @@
                     android:maxLength="300" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <TextView
+                android:id="@+id/flair"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:background="?android:selectableItemBackground"
+                android:padding="6dp"
+                android:text="@string/editor_btn_select_flair"
+                android:textAllCaps="true"
+                android:textColor="?attr/fontColor"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/crosspost_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:padding="6dp"
+                android:textColor="?attr/fontColor"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
             <LinearLayout
                 android:id="@+id/selftext"
                 android:layout_width="match_parent"

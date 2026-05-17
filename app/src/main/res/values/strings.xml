@@ -252,6 +252,12 @@
     <string name="err_authentication">Authentication failed</string>
     <string name="err_submit_restricted">This subreddit is restricted</string>
     <string name="err_submit_restricted_text">You are not allowed to post here. Please choose another subreddit</string>
+    <string name="err_crosspost_disallowed">This subreddit does not allow crossposts</string>
+    <string name="err_crosspost_disallowed_text">/r/%s does not allow crossposts. Please choose another subreddit.</string>
+    <string name="err_crosspost_not_subscribed">You must subscribe to /r/%s before crossposting.</string>
+    <string name="err_crosspost_sub_not_found">/r/%s does not exist.</string>
+    <string name="crosspost_flair_required">Flair is required to post in /r/%s. Please select a flair.</string>
+    <string name="crosspost_flair_required_short">Flair is required — please select a flair before posting.</string>
     <string name="error_video_not_found">Video not found</string>
     <string name="error_video_message">An error occurred while loading this video</string>
     <string name="error_album_not_found">Album not found</string>
