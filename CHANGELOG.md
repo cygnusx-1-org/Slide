@@ -4,6 +4,13 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.5.1 / 2026-5-17
+============
+* Fixed Crosspost function doesn't show the destination sub's flair (which is required in some subs) #283
+* Apply vote colors to comments in the search results
+* Comment search now searches usernames in addition to comment text
+* Added support for rotation of gifs in Reddit Galleries and Tumblr albums
+
 7.5.0 / 2026-5-12
 ============
 * Fixed issue with cookie dialog on the login page when using WebView 
