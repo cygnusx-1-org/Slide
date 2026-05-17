@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.devspark.robototextview.RobotoTypefaces;
 
+import me.edgan.redditslide.ActionStates;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
@@ -156,6 +157,19 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
 
         titleString.append(spacer);
 
+        int scoreColor;
+        switch (ActionStates.getVoteDirection(comment)) {
+            case UPVOTE:
+                scoreColor = holder.textColorUp;
+                break;
+            case DOWNVOTE:
+                scoreColor = holder.textColorDown;
+                break;
+            default:
+                scoreColor = holder.textColorRegular;
+                break;
+        }
+
         String scoreText;
         if (comment.isScoreHidden()) {
             scoreText = "[" + mContext.getString(R.string.misc_score_hidden).toUpperCase() + "]";
@@ -164,12 +178,18 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
         }
         SpannableStringBuilder score = new SpannableStringBuilder(scoreText);
 
-        titleString.append(score);
         if (!scoreText.contains("[")) {
-            titleString.append(
+            score.append(
                     mContext.getResources()
                             .getQuantityString(R.plurals.points, comment.getScore()));
         }
+        score.setSpan(
+                new ForegroundColorSpan(scoreColor),
+                0,
+                score.length(),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        titleString.append(score);
         titleString.append((comment.isControversial() ? " †" : ""));
 
         titleString.append(spacer);
