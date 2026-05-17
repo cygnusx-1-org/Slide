@@ -435,9 +435,15 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
                         constraint.toString().toLowerCase(Locale.ENGLISH).trim();
 
                 for (final CommentNode user : originalList) {
-                    if (StringEscapeUtils.unescapeHtml4(
-                                    user.getComment().getBody().toLowerCase(Locale.ENGLISH))
-                            .contains(filterPattern)) {
+                    final Comment comment = user.getComment();
+                    final String body =
+                            StringEscapeUtils.unescapeHtml4(
+                                    comment.getBody().toLowerCase(Locale.ENGLISH));
+                    final String author =
+                            comment.getAuthor() == null
+                                    ? ""
+                                    : comment.getAuthor().toLowerCase(Locale.ENGLISH);
+                    if (body.contains(filterPattern) || author.contains(filterPattern)) {
                         filteredList.add(user);
                     }
                 }
