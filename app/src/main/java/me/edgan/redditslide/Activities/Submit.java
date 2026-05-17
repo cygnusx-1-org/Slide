@@ -3,10 +3,16 @@ package me.edgan.redditslide.Activities;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -27,6 +33,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
@@ -58,6 +65,7 @@ import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
 
 import net.dean.jraw.ApiException;
 import net.dean.jraw.http.HttpRequest;
+import net.dean.jraw.http.RestResponse;
 import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Subreddit;
@@ -80,6 +88,8 @@ public class Submit extends BaseActivity {
     private String trying;
     private String URL;
     private String selectedFlairID;
+    private String selectedFlairText;
+    private boolean isFlairRequired = false;
     private SwitchCompat inboxReplies;
     private View image;
     private View link;
@@ -88,7 +98,13 @@ public class Submit extends BaseActivity {
     public static final String EXTRA_BODY = "body";
     public static final String EXTRA_IS_SELF = "is_self";
 
+    private static final int FLAIR_REQUIRED_COLOR = Color.parseColor("#FF9800");
+
     AsyncTask<Void, Void, Subreddit> tchange;
+    AsyncTask<Void, Void, Boolean> tFlairRequired;
+    private final Handler subredditDebounce = new Handler(Looper.getMainLooper());
+    private Runnable subredditDebounceRunnable;
+    private String lastCheckedSubreddit = "";
     private OkHttpClient client;
     private Gson gson;
     private ActivityResultLauncher<PickVisualMediaRequest> submitImageLauncher;
@@ -200,7 +216,16 @@ public class Submit extends BaseActivity {
                         if (tchange != null) {
                             tchange.cancel(true);
                         }
+                        if (tFlairRequired != null) {
+                            tFlairRequired.cancel(true);
+                        }
                         findViewById(R.id.submittext).setVisibility(View.GONE);
+                        isFlairRequired = false;
+                        selectedFlairID = null;
+                        selectedFlairText = null;
+                        lastCheckedSubreddit = "";
+                        refreshFlairState();
+                        scheduleSubredditCheck(s.toString());
                     }
                 });
 
@@ -210,63 +235,21 @@ public class Submit extends BaseActivity {
                     public void onFocusChange(View v, boolean hasFocus) {
                         findViewById(R.id.submittext).setVisibility(View.GONE);
                         if (!hasFocus) {
-                            tchange =
-                                    new AsyncTask<Void, Void, Subreddit>() {
-                                        @Override
-                                        protected Subreddit doInBackground(Void... params) {
-                                            try {
-                                                return Authentication.reddit.getSubreddit(
-                                                        subredditText.getText().toString());
-                                            } catch (Exception ignored) {
-
-                                            }
-                                            return null;
-                                        }
-
-                                        @Override
-                                        protected void onPostExecute(Subreddit s) {
-
-                                            if (s != null) {
-                                                String text =
-                                                        s.getDataNode()
-                                                                .get("submit_text_html")
-                                                                .asText();
-                                                if (text != null
-                                                        && !text.isEmpty()
-                                                        && !text.equals("null")) {
-                                                    findViewById(R.id.submittext)
-                                                            .setVisibility(View.VISIBLE);
-                                                    setViews(
-                                                            text,
-                                                            subredditText.getText().toString(),
-                                                            (SpoilerRobotoTextView)
-                                                                    findViewById(R.id.submittext),
-                                                            (CommentOverflow)
-                                                                    findViewById(
-                                                                            R.id.commentOverflow));
-                                                }
-                                                if (s.getSubredditType().equals("RESTRICTED")) {
-                                                    subredditText.setText("");
-                                                    new AlertDialog.Builder(Submit.this)
-                                                            .setTitle(
-                                                                    R.string.err_submit_restricted)
-                                                            .setMessage(
-                                                                    R.string
-                                                                            .err_submit_restricted_text)
-                                                            .setPositiveButton(
-                                                                    R.string.btn_ok, null)
-                                                            .show();
-                                                }
-                                            } else {
-                                                findViewById(R.id.submittext)
-                                                        .setVisibility(View.GONE);
-                                            }
-                                        }
-                                    };
-                            tchange.execute();
+                            runSubredditCheck(subredditText.getText().toString());
                         }
                     }
                 });
+
+        subredditText.setOnItemClickListener(
+                (parent, view, position, id) ->
+                        runSubredditCheck(subredditText.getText().toString()));
+
+        // Pre-filled subreddit (e.g. launched from a sub view) — setText() fires before the
+        // watcher is attached, so trigger the check explicitly so flair requirement loads.
+        String initialSub = subredditText.getText().toString();
+        if (!initialSub.isEmpty()) {
+            runSubredditCheck(initialSub);
+        }
 
         findViewById(R.id.selftextradio)
                 .setOnClickListener(
@@ -414,6 +397,14 @@ public class Submit extends BaseActivity {
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                if (isFlairRequired && selectedFlairID == null) {
+                                    Toast.makeText(
+                                                    Submit.this,
+                                                    R.string.crosspost_flair_required_short,
+                                                    Toast.LENGTH_LONG)
+                                            .show();
+                                    return;
+                                }
                                 ((FloatingActionButton) findViewById(R.id.send)).hide();
                                 new AsyncDo().execute();
                             }
@@ -509,12 +500,8 @@ public class Submit extends BaseActivity {
                                                     CharSequence text) {
                                                 RichFlair selected = flairs.get(allKeys.get(which));
                                                 selectedFlairID = selected.getId();
-                                                ((TextView) findViewById(R.id.flair))
-                                                        .setText(
-                                                                getString(
-                                                                        R.string
-                                                                                .submit_selected_flair,
-                                                                        selected.getText()));
+                                                selectedFlairText = selected.getText();
+                                                refreshFlairState();
                                             }
                                         })
                                 .show();
@@ -526,6 +513,151 @@ public class Submit extends BaseActivity {
                 }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private void scheduleSubredditCheck(final String subreddit) {
+        if (subredditDebounceRunnable != null) {
+            subredditDebounce.removeCallbacks(subredditDebounceRunnable);
+        }
+        if (subreddit == null || subreddit.trim().length() < 2) {
+            return;
+        }
+        subredditDebounceRunnable = () -> runSubredditCheck(subreddit);
+        subredditDebounce.postDelayed(subredditDebounceRunnable, 700);
+    }
+
+    private void runSubredditCheck(final String subredditRaw) {
+        final String subreddit = subredditRaw == null ? "" : subredditRaw.trim();
+        if (subreddit.isEmpty() || subreddit.equals(lastCheckedSubreddit)) {
+            return;
+        }
+        lastCheckedSubreddit = subreddit;
+        if (subredditDebounceRunnable != null) {
+            subredditDebounce.removeCallbacks(subredditDebounceRunnable);
+            subredditDebounceRunnable = null;
+        }
+        if (tchange != null) {
+            tchange.cancel(true);
+        }
+        final AutoCompleteTextView subredditText =
+                (AutoCompleteTextView) findViewById(R.id.subreddittext);
+        tchange =
+                new AsyncTask<Void, Void, Subreddit>() {
+                    @Override
+                    protected Subreddit doInBackground(Void... params) {
+                        try {
+                            return Authentication.reddit.getSubreddit(subreddit);
+                        } catch (Exception ignored) {
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Subreddit s) {
+                        if (s != null) {
+                            String text = s.getDataNode().get("submit_text_html").asText();
+                            if (text != null && !text.isEmpty() && !text.equals("null")) {
+                                findViewById(R.id.submittext).setVisibility(View.VISIBLE);
+                                setViews(
+                                        text,
+                                        subreddit,
+                                        (SpoilerRobotoTextView)
+                                                findViewById(R.id.submittext),
+                                        (CommentOverflow) findViewById(R.id.commentOverflow));
+                            }
+                            if (s.getSubredditType().equals("RESTRICTED")) {
+                                subredditText.setText("");
+                                lastCheckedSubreddit = "";
+                                new AlertDialog.Builder(Submit.this)
+                                        .setTitle(R.string.err_submit_restricted)
+                                        .setMessage(R.string.err_submit_restricted_text)
+                                        .setPositiveButton(R.string.btn_ok, null)
+                                        .show();
+                                return;
+                            }
+                            fetchFlairRequirement(subreddit);
+                        } else {
+                            findViewById(R.id.submittext).setVisibility(View.GONE);
+                        }
+                    }
+                };
+        tchange.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private void fetchFlairRequirement(final String subreddit) {
+        if (tFlairRequired != null) {
+            tFlairRequired.cancel(true);
+        }
+        tFlairRequired =
+                new AsyncTask<Void, Void, Boolean>() {
+                    @Override
+                    protected Boolean doInBackground(Void... voids) {
+                        try {
+                            HttpRequest r =
+                                    Authentication.reddit
+                                            .request()
+                                            .path(
+                                                    "/api/v1/"
+                                                            + subreddit
+                                                            + "/post_requirements")
+                                            .get()
+                                            .build();
+                            RestResponse response = Authentication.reddit.execute(r);
+                            JsonNode root = response.getJson();
+                            LogUtil.v(
+                                    "Submit: post_requirements /r/"
+                                            + subreddit
+                                            + " response: "
+                                            + (root == null ? "null" : root.toString()));
+                            if (root != null && root.has("is_flair_required")) {
+                                return root.get("is_flair_required").asBoolean(false);
+                            }
+                        } catch (Exception e) {
+                            LogUtil.v(
+                                    "Submit: post_requirements lookup failed: "
+                                            + e.getClass().getSimpleName()
+                                            + ": "
+                                            + e.getMessage());
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Boolean required) {
+                        isFlairRequired = required != null && required;
+                        refreshFlairState();
+                    }
+                };
+        tFlairRequired.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private void refreshFlairState() {
+        TextView flair = (TextView) findViewById(R.id.flair);
+        if (flair == null) {
+            return;
+        }
+        String base =
+                selectedFlairID != null
+                        ? getString(R.string.submit_selected_flair, selectedFlairText)
+                        : getString(R.string.editor_btn_select_flair);
+        if (isFlairRequired && selectedFlairID == null) {
+            SpannableString span = new SpannableString(base + " *");
+            span.setSpan(
+                    new ForegroundColorSpan(FLAIR_REQUIRED_COLOR),
+                    span.length() - 1,
+                    span.length(),
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            flair.setText(span);
+        } else {
+            flair.setText(base);
+        }
+
+        boolean canSend = !(isFlairRequired && selectedFlairID == null);
+        FloatingActionButton send = (FloatingActionButton) findViewById(R.id.send);
+        if (send != null) {
+            send.setEnabled(canSend);
+            send.setAlpha(canSend ? 1f : 0.4f);
+        }
     }
 
     public void setViews(
