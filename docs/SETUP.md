@@ -45,9 +45,16 @@ A Reddit Client ID is needed to access Reddit from 3rd party clients.
 
 > [!IMPORTANT]
 >
-> Reddit has recently changed the guidelines to create api key
-> [see here](https://www.reddit.com/r/redditdev/comments/1oug31u/introducing_the_responsible_builder_policy_new/)
-> we are not sure how it wll affect the app in the future but currently it seems most users are unable to create new api keys
+> Reddit has changed the guidelines to create client ID/API key. It means you effectively can no longer create new client IDs/API keys.
+> See [here](https://www.reddit.com/r/redditdev/comments/1oug31u/introducing_the_responsible_builder_policy_new/) for details.
+>
+> It is recommended not to delete any existing client IDs. You can swap an existing client IDs from one application to another by changing
+> the redirect URI, and using the update button.
+>
+> Continuum now allows you to enter any client ID, redirect URI, and user agent. When using a client ID need to using the matching
+> redirect URI. It is also wise to use the matching user agent.
+>
+> If you have no client ID, look [here](https://old.reddit.com/r/continuumreddit/comments/1scwgcx/custom_api_workaround/).
 
 ### Normal way
 See [CLIENT_ID_NORMAL.md](/docs/CLIENT_ID_NORMAL.md)
