@@ -1,6 +1,8 @@
 package me.edgan.redditslide.Activities;
 
+import android.content.res.ColorStateList;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,6 +31,8 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.UserSubscriptions;
+import com.google.android.material.shape.MaterialShapeDrawable;
+
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.LogUtil;
@@ -39,6 +43,17 @@ import java.util.Locale;
 public class MainPagerAdapter extends FragmentStatePagerAdapter {
     protected SubmissionsView mCurrentFragment;
     private MainActivity mainActivity;
+
+    static int resolveHeaderColor(Drawable bg, String fallbackSub) {
+        if (bg instanceof ColorDrawable) {
+            return ((ColorDrawable) bg).getColor();
+        }
+        if (bg instanceof MaterialShapeDrawable) {
+            ColorStateList tint = ((MaterialShapeDrawable) bg).getFillColor();
+            if (tint != null) return tint.getDefaultColor();
+        }
+        return Palette.getColor(fallbackSub);
+    }
 
     // Helper method to check if a subreddit is special (frontpage, all) or a multi-reddit
     protected boolean isSpecialOrMulti(String subreddit) {
@@ -84,7 +99,8 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
                             }
                         }
 
-                        int colorFrom = ((ColorDrawable) mainActivity.header.getBackground()).getColor();
+                        int colorFrom = resolveHeaderColor(
+                                mainActivity.header.getBackground(), mainActivity.selectedSub);
                         int colorTo = Palette.getColor(mainActivity.selectedSub);
 
                         ValueAnimator colorAnimation =

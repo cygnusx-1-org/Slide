@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -364,7 +363,8 @@ public class NewsActivity extends BaseActivity
                             selectedSub = usedArray.get(position);
                             NewsView page = (NewsView) adapter.getCurrentFragment();
 
-                            int colorFrom = ((ColorDrawable) header.getBackground()).getColor();
+                            int colorFrom = MainPagerAdapter.resolveHeaderColor(
+                                    header.getBackground(), selectedSub);
                             int colorTo = Palette.getColor(selectedSub);
 
                             ValueAnimator colorAnimation =
