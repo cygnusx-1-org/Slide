@@ -617,7 +617,7 @@ public class GifUtils {
             REDDIT_GALLERY;
 
             public boolean shouldLoadPreview() {
-                return this == OTHER;
+                return this == OTHER || this == REDGIFS;
             }
         }
 
@@ -652,11 +652,15 @@ public class GifUtils {
             }
 
             if (s.contains("v.redd.it") && !s.contains("DASHPlaylist")) {
-                if (s.contains("DASH")) {
-                    s = s.substring(0, s.indexOf("DASH"));
+                // Strip any segment/playlist file (DASH_*.mp4, CMAF_*.mp4,
+                // HLSPlaylist.m3u8, etc.) back to https://v.redd.it/<id>
+                int idStart = s.indexOf("v.redd.it/") + "v.redd.it/".length();
+                int idEnd = s.indexOf('/', idStart);
+                if (idEnd == -1) {
+                    idEnd = s.indexOf('?', idStart);
                 }
-                if (s.endsWith("/")) {
-                    s = s.substring(0, s.length() - 1);
+                if (idEnd != -1) {
+                    s = s.substring(0, idEnd);
                 }
 
                 s += "/DASHPlaylist.mpd";
