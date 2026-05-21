@@ -97,7 +97,7 @@ public class OpenRedditLinkTest {
 
     @Test
     public void detectsShortened() {
-        assertThat(getType("https://reddit.com/comments/eorhm/"), is(RedditLinkType.SHORTENED));
+        assertThat(getType("https://redd.it/eorhm/"), is(RedditLinkType.SHORTENED));
     }
 
     @Test
