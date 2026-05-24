@@ -4,6 +4,12 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.5.2 / 2026-5-24
+============
+* Fixed to use Reddit cache of Redgifs GIFs/videos when available
+* Massive update of libraries
+* Added detection and display of subreddit flair requirements for submitting a post
+
 7.5.1 / 2026-5-17
 ============
 * Fixed Crosspost function doesn't show the destination sub's flair (which is required in some subs) #283
