@@ -101,7 +101,10 @@ public class SubmissionThumbnailHelper {
             } else if (t.shouldLoadPreview()
                     && submission.getDataNode().has("preview")
                     && submission.getDataNode().get("preview").has("reddit_video_preview") // Check if reddit_video_preview exists
-                    && submission.getDataNode().get("preview").get("reddit_video_preview").has("fallback_url")) {
+                    && submission.getDataNode().get("preview").get("reddit_video_preview").has("fallback_url")
+                    && (t != GifUtils.AsyncLoadGif.VideoType.REDGIFS
+                            || (submission.getDataNode().get("preview").get("reddit_video_preview").has("has_audio")
+                                    && submission.getDataNode().get("preview").get("reddit_video_preview").get("has_audio").asBoolean()))) {
                 myIntent.putExtra(
                         MediaView.EXTRA_URL,
                         StringEscapeUtils.unescapeJson(

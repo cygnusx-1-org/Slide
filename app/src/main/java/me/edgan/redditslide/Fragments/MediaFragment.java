@@ -547,9 +547,19 @@ public class MediaFragment extends Fragment {
                                             .get("url")
                                             .asText())
                             .replace("&amp;", "&");
-        } else if ((t.shouldLoadPreview()
+        } else if (t.shouldLoadPreview()
                 && s.getDataNode().has("preview")
-                && s.getDataNode().get("preview").has("reddit_video_preview"))) {
+                && s.getDataNode().get("preview").has("reddit_video_preview")
+                && (t != GifUtils.AsyncLoadGif.VideoType.REDGIFS
+                        || (s.getDataNode()
+                                        .get("preview")
+                                        .get("reddit_video_preview")
+                                        .has("has_audio")
+                                && s.getDataNode()
+                                        .get("preview")
+                                        .get("reddit_video_preview")
+                                        .get("has_audio")
+                                        .asBoolean()))) {
             toLoadURL =
                     StringEscapeUtils.unescapeJson(
                             s.getDataNode()
