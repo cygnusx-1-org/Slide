@@ -151,7 +151,8 @@ public class LinkUtil {
             @Nullable Submission submission) {
         intent.putExtra(EXTRA_URL, url);
         if (adapterPosition != null && submission != null) {
-            PopulateBase.addAdaptorPosition(intent, submission, adapterPosition);
+            PopulateBase.addAdaptorPosition(
+                    intent, submission, adapterPosition, contextActivity);
         }
         intent.putExtra(EXTRA_COLOR, color);
         contextActivity.startActivity(intent);

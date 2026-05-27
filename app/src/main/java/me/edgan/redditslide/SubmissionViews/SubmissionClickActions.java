@@ -89,7 +89,7 @@ public class SubmissionClickActions {
                                                 myIntent.putExtra(MediaView.SUBREDDIT, submission.getSubredditName());
                                                 myIntent.putExtra(MediaView.EXTRA_URL, submission.getUrl());
                                                 myIntent.putExtra(EXTRA_SUBMISSION_TITLE, submission.getTitle());
-                                                PopulateBase.addAdaptorPosition(myIntent, submission, holder.getBindingAdapterPosition());
+                                                PopulateBase.addAdaptorPosition(myIntent, submission, holder.getBindingAdapterPosition(), contextActivity);
                                                 contextActivity.startActivity(myIntent);
                                             } else {
                                                 LinkUtil.openExternally(submission.getUrl());
@@ -148,7 +148,7 @@ public class SubmissionClickActions {
                                                 urlsBundle.putSerializable(RedditGallery.GALLERY_URLS, urls);
                                                 i.putExtras(urlsBundle);
 
-                                                PopulateBase.addAdaptorPosition(i, submission, holder.getBindingAdapterPosition());
+                                                PopulateBase.addAdaptorPosition(i, submission, holder.getBindingAdapterPosition(), contextActivity);
                                                 contextActivity.startActivity(i);
                                                 contextActivity.overridePendingTransition(R.anim.slideright, R.anim.fade_out);
                                             } else {
@@ -183,7 +183,7 @@ public class SubmissionClickActions {
                                                 i.putExtra(EXTRA_SUBMISSION_TITLE, submission.getTitle());
                                                 i.putExtra(Album.EXTRA_URL, submission.getUrl());
 
-                                                PopulateBase.addAdaptorPosition(i, submission, holder.getBindingAdapterPosition());
+                                                PopulateBase.addAdaptorPosition(i, submission, holder.getBindingAdapterPosition(), contextActivity);
                                                 contextActivity.startActivity(i);
                                                 contextActivity.overridePendingTransition(R.anim.slideright, R.anim.fade_out);
                                             } else {
@@ -202,7 +202,7 @@ public class SubmissionClickActions {
                                                 }
                                                 i.putExtra(Album.EXTRA_URL, submission.getUrl());
 
-                                                PopulateBase.addAdaptorPosition(i, submission, holder.getBindingAdapterPosition());
+                                                PopulateBase.addAdaptorPosition(i, submission, holder.getBindingAdapterPosition(), contextActivity);
                                                 contextActivity.startActivity(i);
                                                 contextActivity.overridePendingTransition(R.anim.slideright, R.anim.fade_out);
                                             } else {

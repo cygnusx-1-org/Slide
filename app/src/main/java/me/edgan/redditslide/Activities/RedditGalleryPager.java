@@ -31,6 +31,7 @@ import com.cocosw.bottomsheet.BottomSheet;
 import me.edgan.redditslide.Adapters.ImageGridAdapter;
 import me.edgan.redditslide.Fragments.BlankFragment;
 import me.edgan.redditslide.Fragments.SubmissionsView;
+import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
@@ -115,11 +116,23 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
                 }
                 return true;
 
-            case R.id.comments:
+            case R.id.comments: {
                 int adapterPosition = getIntent().getIntExtra(MediaView.ADAPTER_POSITION, -1);
-                finish();
-                SubmissionsView.datachanged(adapterPosition);
+                String submissionPermalink =
+                        getIntent().getStringExtra(MediaView.SUBMISSION_URL);
+                boolean openCommentsDirect =
+                        getIntent()
+                                .getBooleanExtra(MediaView.EXTRA_OPEN_COMMENTS_DIRECT, false);
+                if (openCommentsDirect && submissionPermalink != null) {
+                    OpenRedditLink.openUrl(
+                            this, "https://reddit.com" + submissionPermalink, false);
+                    finish();
+                } else {
+                    finish();
+                    SubmissionsView.datachanged(adapterPosition);
+                }
                 return true;
+            }
 
             case R.id.download:
                 if (images != null) {
@@ -551,12 +564,29 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
             View comments = rootView.findViewById(R.id.comments);
             if (getActivity().getIntent().hasExtra(MediaView.SUBMISSION_URL)) {
                 if (comments != null) {
+                    final String submissionPermalink =
+                            getActivity()
+                                    .getIntent()
+                                    .getStringExtra(MediaView.SUBMISSION_URL);
+                    final boolean openCommentsDirect =
+                            getActivity()
+                                    .getIntent()
+                                    .getBooleanExtra(
+                                            MediaView.EXTRA_OPEN_COMMENTS_DIRECT, false);
                     comments.setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    getActivity().finish();
-                                    SubmissionsView.datachanged(adapterPosition);
+                                    if (openCommentsDirect && submissionPermalink != null) {
+                                        OpenRedditLink.openUrl(
+                                                getActivity(),
+                                                "https://reddit.com" + submissionPermalink,
+                                                false);
+                                        getActivity().finish();
+                                    } else {
+                                        getActivity().finish();
+                                        SubmissionsView.datachanged(adapterPosition);
+                                    }
                                 }
                             });
                 }

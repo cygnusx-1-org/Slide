@@ -219,7 +219,8 @@ public class PopulateNewsViewHolder {
                                                 PopulateBase.addAdaptorPosition(
                                                         i,
                                                         submission,
-                                                        holder.getBindingAdapterPosition());
+                                                        holder.getBindingAdapterPosition(),
+                                                        contextActivity);
                                                 contextActivity.startActivity(i);
                                                 contextActivity.overridePendingTransition(
                                                         R.anim.slideright, R.anim.fade_out);
@@ -249,7 +250,8 @@ public class PopulateNewsViewHolder {
                                                 PopulateBase.addAdaptorPosition(
                                                         i,
                                                         submission,
-                                                        holder.getBindingAdapterPosition());
+                                                        holder.getBindingAdapterPosition(),
+                                                        contextActivity);
                                                 contextActivity.startActivity(i);
                                                 contextActivity.overridePendingTransition(
                                                         R.anim.slideright, R.anim.fade_out);
@@ -350,7 +352,7 @@ public class PopulateNewsViewHolder {
                 }
             }
             myIntent.putExtra(MediaView.EXTRA_URL, url);
-            PopulateBase.addAdaptorPosition(myIntent, submission, adapterPosition);
+            PopulateBase.addAdaptorPosition(myIntent, submission, adapterPosition, contextActivity);
             myIntent.putExtra(MediaView.EXTRA_SHARE_URL, submission.getUrl());
 
             contextActivity.startActivity(myIntent);
@@ -440,7 +442,7 @@ public class PopulateNewsViewHolder {
                                         .asText());
                 myIntent.putExtra(MediaView.EXTRA_DISPLAY_URL, previewUrl);
             }
-            PopulateBase.addAdaptorPosition(myIntent, submission, adapterPosition);
+            PopulateBase.addAdaptorPosition(myIntent, submission, adapterPosition, contextActivity);
             contextActivity.startActivity(myIntent);
         } else {
             LinkUtil.openExternally(submission.getUrl());

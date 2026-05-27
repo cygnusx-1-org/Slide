@@ -49,6 +49,7 @@ import me.edgan.redditslide.Fragments.BlankFragment;
 import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.ImgurAlbum.AlbumUtils;
 import me.edgan.redditslide.ImgurAlbum.Image;
+import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
@@ -132,8 +133,16 @@ public class AlbumPager extends BaseSaveActivity {
 
         if (id == R.id.comments) {
             int adapterPosition = getIntent().getIntExtra(MediaView.ADAPTER_POSITION, -1);
-            finish();
-            SubmissionsView.datachanged(adapterPosition);
+            String submissionPermalink = getIntent().getStringExtra(MediaView.SUBMISSION_URL);
+            boolean openCommentsDirect =
+                    getIntent().getBooleanExtra(MediaView.EXTRA_OPEN_COMMENTS_DIRECT, false);
+            if (openCommentsDirect && submissionPermalink != null) {
+                OpenRedditLink.openUrl(this, "https://reddit.com" + submissionPermalink, false);
+                finish();
+            } else {
+                finish();
+                SubmissionsView.datachanged(adapterPosition);
+            }
         }
 
         if (id == R.id.download && images != null) {
@@ -571,11 +580,28 @@ public class AlbumPager extends BaseSaveActivity {
             View comments = rootView.findViewById(R.id.comments);
             if (comments != null) {
                 if (getActivity().getIntent().hasExtra(MediaView.SUBMISSION_URL)) {
+                    final String submissionPermalink =
+                            getActivity()
+                                    .getIntent()
+                                    .getStringExtra(MediaView.SUBMISSION_URL);
+                    final boolean openCommentsDirect =
+                            getActivity()
+                                    .getIntent()
+                                    .getBooleanExtra(
+                                            MediaView.EXTRA_OPEN_COMMENTS_DIRECT, false);
                     comments.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            getActivity().finish();
-                            SubmissionsView.datachanged(adapterPosition);
+                            if (openCommentsDirect && submissionPermalink != null) {
+                                OpenRedditLink.openUrl(
+                                        getActivity(),
+                                        "https://reddit.com" + submissionPermalink,
+                                        false);
+                                getActivity().finish();
+                            } else {
+                                getActivity().finish();
+                                SubmissionsView.datachanged(adapterPosition);
+                            }
                         }
                     });
                 } else {
@@ -804,12 +830,29 @@ public class AlbumPager extends BaseSaveActivity {
                 View comments = rootView.findViewById(R.id.comments);
                 if (getActivity().getIntent().hasExtra(MediaView.SUBMISSION_URL)) {
                     if (comments != null) {
+                        final String submissionPermalink =
+                                getActivity()
+                                        .getIntent()
+                                        .getStringExtra(MediaView.SUBMISSION_URL);
+                        final boolean openCommentsDirect =
+                                getActivity()
+                                        .getIntent()
+                                        .getBooleanExtra(
+                                                MediaView.EXTRA_OPEN_COMMENTS_DIRECT, false);
                         comments.setOnClickListener(
                                 new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        getActivity().finish();
-                                        SubmissionsView.datachanged(adapterPosition);
+                                        if (openCommentsDirect && submissionPermalink != null) {
+                                            OpenRedditLink.openUrl(
+                                                    getActivity(),
+                                                    "https://reddit.com" + submissionPermalink,
+                                                    false);
+                                            getActivity().finish();
+                                        } else {
+                                            getActivity().finish();
+                                            SubmissionsView.datachanged(adapterPosition);
+                                        }
                                     }
                                 });
                     }

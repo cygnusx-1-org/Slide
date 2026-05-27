@@ -55,7 +55,7 @@ public class SubmissionThumbnailHelper {
                 }
             }
             myIntent.putExtra(MediaView.EXTRA_URL, url);
-            PopulateBase.addAdaptorPosition(myIntent, submission, adapterPosition);
+            PopulateBase.addAdaptorPosition(myIntent, submission, adapterPosition, contextActivity);
             myIntent.putExtra(MediaView.EXTRA_SHARE_URL, submission.getUrl());
 
             contextActivity.startActivity(myIntent);
@@ -134,7 +134,7 @@ public class SubmissionThumbnailHelper {
                 String previewUrl = submission.getDataNode().get("preview").get("images").get(0).get("source").get("url").asText();
                 myIntent.putExtra(MediaView.EXTRA_DISPLAY_URL, previewUrl);
             }
-            PopulateBase.addAdaptorPosition(myIntent, submission, adapterPosition);
+            PopulateBase.addAdaptorPosition(myIntent, submission, adapterPosition, contextActivity);
             contextActivity.startActivity(myIntent);
         } else {
             LinkUtil.openExternally(submission.getUrl());

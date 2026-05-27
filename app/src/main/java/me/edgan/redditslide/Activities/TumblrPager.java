@@ -50,6 +50,7 @@ import me.edgan.redditslide.Adapters.ImageGridAdapterTumblr;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.Fragments.BlankFragment;
 import me.edgan.redditslide.Fragments.SubmissionsView;
+import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
@@ -139,8 +140,16 @@ public class TumblrPager extends BaseSaveActivity {
 
         if (id == R.id.comments) {
             int adapterPosition = getIntent().getIntExtra(MediaView.ADAPTER_POSITION, -1);
-            finish();
-            SubmissionsView.datachanged(adapterPosition);
+            String submissionPermalink = getIntent().getStringExtra(MediaView.SUBMISSION_URL);
+            boolean openCommentsDirect =
+                    getIntent().getBooleanExtra(MediaView.EXTRA_OPEN_COMMENTS_DIRECT, false);
+            if (openCommentsDirect && submissionPermalink != null) {
+                OpenRedditLink.openUrl(this, "https://reddit.com" + submissionPermalink, false);
+                finish();
+            } else {
+                finish();
+                SubmissionsView.datachanged(adapterPosition);
+            }
         }
 
         if (id == R.id.download) {
@@ -575,6 +584,40 @@ public class TumblrPager extends BaseSaveActivity {
                                     }
                                 }
                             });
+
+            View comments = rootView.findViewById(R.id.comments);
+            if (comments != null) {
+                if (getActivity().getIntent().hasExtra(MediaView.SUBMISSION_URL)) {
+                    final int adapterPosition =
+                            getActivity()
+                                    .getIntent()
+                                    .getIntExtra(MediaView.ADAPTER_POSITION, -1);
+                    final String submissionPermalink =
+                            getActivity()
+                                    .getIntent()
+                                    .getStringExtra(MediaView.SUBMISSION_URL);
+                    final boolean openCommentsDirect =
+                            getActivity()
+                                    .getIntent()
+                                    .getBooleanExtra(
+                                            MediaView.EXTRA_OPEN_COMMENTS_DIRECT, false);
+                    comments.setOnClickListener(v -> {
+                        if (openCommentsDirect && submissionPermalink != null) {
+                            OpenRedditLink.openUrl(
+                                    getActivity(),
+                                    "https://reddit.com" + submissionPermalink,
+                                    false);
+                            getActivity().finish();
+                        } else {
+                            getActivity().finish();
+                            SubmissionsView.datachanged(adapterPosition);
+                        }
+                    });
+                } else {
+                    comments.setVisibility(View.GONE);
+                }
+            }
+
             return rootView;
         }
 
@@ -816,13 +859,27 @@ public class TumblrPager extends BaseSaveActivity {
             }
 
             if (getActivity().getIntent().hasExtra(MediaView.SUBMISSION_URL)) {
+                final String submissionPermalink =
+                        getActivity().getIntent().getStringExtra(MediaView.SUBMISSION_URL);
+                final boolean openCommentsDirect =
+                        getActivity()
+                                .getIntent()
+                                .getBooleanExtra(MediaView.EXTRA_OPEN_COMMENTS_DIRECT, false);
                 rootView.findViewById(R.id.comments)
                         .setOnClickListener(
                                 new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        getActivity().finish();
-                                        SubmissionsView.datachanged(adapterPosition);
+                                        if (openCommentsDirect && submissionPermalink != null) {
+                                            OpenRedditLink.openUrl(
+                                                    getActivity(),
+                                                    "https://reddit.com" + submissionPermalink,
+                                                    false);
+                                            getActivity().finish();
+                                        } else {
+                                            getActivity().finish();
+                                            SubmissionsView.datachanged(adapterPosition);
+                                        }
                                     }
                                 });
             } else {

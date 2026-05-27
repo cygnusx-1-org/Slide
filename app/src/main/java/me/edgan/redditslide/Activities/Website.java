@@ -105,8 +105,19 @@ public class Website extends BaseActivityAnim {
                 return true;
             case R.id.comments:
                 final int commentUrl = getIntent().getExtras().getInt(LinkUtil.ADAPTER_POSITION);
-                finish();
-                SubmissionsView.datachanged(commentUrl);
+                String submissionPermalink =
+                        getIntent().getStringExtra(MediaView.SUBMISSION_URL);
+                boolean openCommentsDirect =
+                        getIntent()
+                                .getBooleanExtra(MediaView.EXTRA_OPEN_COMMENTS_DIRECT, false);
+                if (openCommentsDirect && submissionPermalink != null) {
+                    OpenRedditLink.openUrl(
+                            this, "https://reddit.com" + submissionPermalink, false);
+                    finish();
+                } else {
+                    finish();
+                    SubmissionsView.datachanged(commentUrl);
+                }
                 break;
             case R.id.external:
                 Intent inte = new Intent(this, MakeExternal.class);

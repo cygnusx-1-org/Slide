@@ -41,6 +41,7 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 
 import me.edgan.redditslide.ContentType;
+import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.Notifications.ImageDownloadNotificationService;
 import me.edgan.redditslide.R;
@@ -96,6 +97,7 @@ public class MediaView extends BaseSaveActivity {
     public static final String EXTRA_DISPLAY_URL = "displayUrl";
     public static final String EXTRA_LQ = "lq";
     public static final String EXTRA_SHARE_URL = "urlShare";
+    public static final String EXTRA_OPEN_COMMENTS_DIRECT = "open_comments_direct";
 
     public static String fileLoc;
     public String subreddit;
@@ -488,13 +490,24 @@ public class MediaView extends BaseSaveActivity {
         actuallyLoaded = contentUrl;
         if (getIntent().hasExtra(SUBMISSION_URL)) {
             final int commentUrl = getIntent().getExtras().getInt(ADAPTER_POSITION);
+            final String submissionPermalink = getIntent().getStringExtra(SUBMISSION_URL);
+            final boolean openCommentsDirect =
+                    getIntent().getBooleanExtra(EXTRA_OPEN_COMMENTS_DIRECT, false);
             findViewById(R.id.comments)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    finish();
-                                    SubmissionsView.datachanged(commentUrl);
+                                    if (openCommentsDirect && submissionPermalink != null) {
+                                        OpenRedditLink.openUrl(
+                                                MediaView.this,
+                                                "https://reddit.com" + submissionPermalink,
+                                                false);
+                                        finish();
+                                    } else {
+                                        finish();
+                                        SubmissionsView.datachanged(commentUrl);
+                                    }
                                 }
                             });
         } else {

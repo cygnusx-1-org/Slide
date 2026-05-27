@@ -23,6 +23,7 @@ import androidx.viewpager.widget.ViewPager;
 import me.edgan.redditslide.Adapters.TumblrView;
 import me.edgan.redditslide.Fragments.BlankFragment;
 import me.edgan.redditslide.Fragments.SubmissionsView;
+import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Tumblr.Photo;
@@ -83,7 +84,14 @@ public class Tumblr extends BaseSaveActivity {
             mToolbar.findViewById(R.id.grid).callOnClick();
         }
         if (id == R.id.comments) {
-            SubmissionsView.datachanged(adapterPosition);
+            String submissionPermalink = getIntent().getStringExtra(MediaView.SUBMISSION_URL);
+            boolean openCommentsDirect =
+                    getIntent().getBooleanExtra(MediaView.EXTRA_OPEN_COMMENTS_DIRECT, false);
+            if (openCommentsDirect && submissionPermalink != null) {
+                OpenRedditLink.openUrl(this, "https://reddit.com" + submissionPermalink, false);
+            } else {
+                SubmissionsView.datachanged(adapterPosition);
+            }
             finish();
         }
         if (id == R.id.external) {
