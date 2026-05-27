@@ -607,7 +607,11 @@ public class TumblrPager extends BaseSaveActivity {
         b.sheet(2, external, getString(R.string.open_externally));
         b.sheet(5, share, getString(R.string.submission_link_share));
         if (!isGif) b.sheet(3, image, getString(R.string.share_image));
-        b.sheet(4, save, getString(R.string.submission_save_image));
+        String lcUrl = contentUrl == null ? "" : contentUrl.toLowerCase();
+        int q = lcUrl.indexOf('?');
+        String path = q < 0 ? lcUrl : lcUrl.substring(0, q);
+        boolean isVideo = path.endsWith(".mp4") || lcUrl.contains("format=mp4");
+        b.sheet(4, save, getString(isVideo ? R.string.submission_save_video : R.string.submission_save_image));
         b.listener(
                 new DialogInterface.OnClickListener() {
                     @Override

@@ -131,6 +131,7 @@ public class ImageSaveUtils {
                         return null;
                     case DIRECT:
                     case IMGUR:
+                    case TUMBLR:
                         return Uri.parse(url);
                     case STREAMABLE:
                         String hash = url.substring(url.lastIndexOf("/") + 1);
@@ -174,7 +175,10 @@ public class ImageSaveUtils {
             if (resolvedUri != null) {
                 // Show toast before starting the potentially long save operation
                 try {
-                    Toast.makeText(activity, activity.getString(R.string.mediaview_notif_video), Toast.LENGTH_SHORT).show();
+                    int toastMsg = GifUtils.willSaveAsMp4(resolvedUri)
+                            ? R.string.mediaview_notif_video
+                            : R.string.mediaview_notif_title;
+                    Toast.makeText(activity, activity.getString(toastMsg), Toast.LENGTH_SHORT).show();
                 } catch (Exception ignored) {} // Ignore if toast fails
 
                 // Proceed with saving using the resolved URI

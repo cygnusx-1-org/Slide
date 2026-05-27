@@ -247,6 +247,20 @@ public class GifUtils {
         void onGifDownloadFailed(Exception e);
     }
 
+    /**
+     * Returns true if the given URL will be saved as an mp4 (the GIF/video save path's default).
+     * Returns false only when the URL points to a real .gif file we'll save with a .gif extension.
+     */
+    public static boolean willSaveAsMp4(Uri uri) {
+        if (uri == null) return true;
+        String lc = uri.toString().toLowerCase(Locale.ENGLISH);
+        int q = lc.indexOf('?');
+        String path = q < 0 ? lc : lc.substring(0, q);
+        boolean isDash = lc.contains("v.redd.it") && lc.contains("dashplaylist.mpd");
+        if (isDash || path.endsWith(".mp4") || lc.contains("format=mp4")) return true;
+        return !path.endsWith(".gif");
+    }
+
     public static void cacheSaveGif(
             Uri uri, Activity activity, String subreddit, String submissionTitle, boolean save, int index) {
         // Add debug logging
@@ -265,11 +279,10 @@ public class GifUtils {
 
         if (save) {
             try {
-                Toast.makeText(
-                                activity,
-                                activity.getString(R.string.mediaview_notif_video),
-                                Toast.LENGTH_SHORT)
-                        .show();
+                int toastMsg = willSaveAsMp4(uri)
+                        ? R.string.mediaview_notif_video
+                        : R.string.mediaview_notif_title;
+                Toast.makeText(activity, activity.getString(toastMsg), Toast.LENGTH_SHORT).show();
             } catch (Exception ignored) {
             }
         }
@@ -342,19 +355,24 @@ public class GifUtils {
                                 parentDir = subFolder;
                             }
 
-                            // Create output file with .mp4 extension
+                            // Pick extension/mime from the source URL. DASH and reddit
+                            // preview URLs always yield mp4; tumblr .gif URLs yield gif bytes.
+                            boolean savesAsMp4 = willSaveAsMp4(uri);
+                            String outExt = savesAsMp4 ? ".mp4" : ".gif";
+                            String outMime = savesAsMp4 ? "video/mp4" : "image/gif";
+
                             String fileName;
                             Log.d("GifUtils", "Creating file with submissionTitle: " + (finalSubmissionTitle != null ? "'" + finalSubmissionTitle + "'" : "null"));
                             if (finalSubmissionTitle != null && !finalSubmissionTitle.trim().isEmpty()) {
                                 String fileIndex = finalIndex > -1 ? String.format(Locale.ENGLISH, "_%03d", finalIndex) : "";
-                                fileName = FileUtil.getValidFileName(finalSubmissionTitle + fileIndex, "", ".mp4");
+                                fileName = FileUtil.getValidFileName(finalSubmissionTitle + fileIndex, "", outExt);
                             } else {
                                 // If no title available, use a timestamp
                                 String fileIndex = finalIndex > -1 ? String.format(Locale.ENGLISH, "_%03d", finalIndex) : "";
-                                fileName = System.currentTimeMillis() + fileIndex + ".mp4";
+                                fileName = System.currentTimeMillis() + fileIndex + outExt;
                             }
                             Log.d("GifUtils", "Creating output file: " + fileName);
-                            DocumentFile outDocFile = parentDir.createFile("video/mp4", fileName);
+                            DocumentFile outDocFile = parentDir.createFile(outMime, fileName);
                             if (outDocFile == null) {
                                 saveError = new Exception("Could not create output file");
                                 return null;
