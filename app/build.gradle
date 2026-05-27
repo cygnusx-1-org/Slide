@@ -203,20 +203,20 @@ dependencies {
     implementation 'com.github.edgan:Android-RobotoTextView:d368c94b3c'
 
 /** AndroidX **/
-    implementation 'androidx.activity:activity:1.9.3'
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'androidx.browser:browser:1.3.0'
+    implementation 'androidx.activity:activity:1.13.0'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.browser:browser:1.10.0'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.core:core:1.6.0'
-    implementation 'androidx.fragment:fragment:1.3.6'
-    implementation 'androidx.media:media:1.7.1'
+    implementation 'androidx.core:core:1.18.0'
+    implementation 'androidx.fragment:fragment:1.8.9'
+    implementation 'androidx.media:media:1.8.0'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
     implementation 'androidx.webkit:webkit:1.16.0'
-    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'com.google.android.material:material:1.13.0'
     implementation "androidx.concurrent:concurrent-futures:1.3.0"
-    implementation "androidx.lifecycle:lifecycle-runtime:2.5.1"
-    implementation "androidx.databinding:databinding-runtime:8.7.3"
+    implementation "androidx.lifecycle:lifecycle-runtime:2.10.0"
+    implementation "androidx.databinding:databinding-runtime:8.13.2"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0"
 /** ExoPlayer **/
     // Application level media player
@@ -283,7 +283,7 @@ dependencies {
     implementation 'io.github.everythingme:overscroll-decor-android:1.1.1'
 
     // Library information
-    implementation 'com.mikepenz:aboutlibraries:14.2.0'
+    implementation 'com.mikepenz:aboutlibraries:14.2.1'
 
 /**** Backend logic ****/
 
