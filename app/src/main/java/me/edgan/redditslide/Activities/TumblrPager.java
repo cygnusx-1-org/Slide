@@ -509,11 +509,26 @@ public class TumblrPager extends BaseSaveActivity {
                     });
                 }
 
+                // Direct .gif has no audio track and no quality toggle.
+                View muteButton = rootView.findViewById(R.id.mute);
+                if (muteButton != null) muteButton.setVisibility(View.GONE);
+                View hqButton = rootView.findViewById(R.id.hq);
+                if (hqButton != null) hqButton.setVisibility(View.GONE);
+
             } else { // Not a direct .gif URL, or URL is null, proceed with ExoVideoView
                 gif = rootView.findViewById(R.id.gif);
                 gif.setVisibility(View.VISIBLE);
                 final ExoVideoView v = (ExoVideoView) gif;
                 v.clearFocus();
+
+                ImageView muteButton = rootView.findViewById(R.id.mute);
+                if (muteButton != null) {
+                    v.attachMuteButton(muteButton);
+                }
+                ImageView hqButton = rootView.findViewById(R.id.hq);
+                if (hqButton != null) {
+                    v.attachHqButton(hqButton);
+                }
 
                 new GifUtils.AsyncLoadGif(
                         getActivity(),
