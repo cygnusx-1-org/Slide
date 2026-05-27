@@ -4,6 +4,14 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.5.3 / 2026-5-27
+============
+* Fixed Bug: Comment icon in MediaView broken universally #218
+* Fixed Bug: Incorrect "Save Image" Label for Videos/GIFs in Pager #253
+* Fixed Bug: Non-functional mute and HQ icons in TumblrPager bottom controls #256
+* Upgraded many libraries
+* Fixed audio via fallback to RedGifs for Reddit cached RedGifs videos that don't have audio
+
 7.5.2 / 2026-5-24
 ============
 * Fixed to use Reddit cache of Redgifs GIFs/videos when available
