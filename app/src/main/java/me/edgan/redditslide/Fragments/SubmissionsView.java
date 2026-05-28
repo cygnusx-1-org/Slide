@@ -88,6 +88,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
     private int totalItemCount;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private static Submission currentSubmission;
+    private int lastRotationAnchor = RecyclerView.NO_POSITION;
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -98,7 +99,64 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
         final CatchStaggeredGridLayoutManager mLayoutManager =
                 (CatchStaggeredGridLayoutManager) rv.getLayoutManager();
 
-        mLayoutManager.setSpanCount(LayoutUtils.getNumColumns(currentOrientation, getActivity()));
+        final int newSpan = LayoutUtils.getNumColumns(currentOrientation, getActivity());
+
+        // Pick the anchor: smallest adapter position among children whose top is at or below
+        // the viewport top. Excludes items above the viewport AND items that grew into the
+        // viewport from above (e.g., images loading mid-rotation).
+        int computedAnchor = RecyclerView.NO_POSITION;
+        boolean lastAnchorStillVisible = false;
+        for (int i = 0; i < mLayoutManager.getChildCount(); i++) {
+            View child = mLayoutManager.getChildAt(i);
+            if (child == null) continue;
+            int pos = mLayoutManager.getPosition(child);
+            if (child.getTop() >= rv.getPaddingTop()) {
+                if (computedAnchor == RecyclerView.NO_POSITION || pos < computedAnchor) {
+                    computedAnchor = pos;
+                }
+                if (pos == lastRotationAnchor) {
+                    lastAnchorStillVisible = true;
+                }
+            }
+        }
+
+        // If the previous rotation set an anchor and it's still in the visible top row,
+        // prefer it. In multi-col layouts a row contains multiple adapter positions and
+        // picking the smallest would shift the user back by spanCount-1 each round trip.
+        final int anchorPos =
+                (lastAnchorStillVisible && lastRotationAnchor != RecyclerView.NO_POSITION)
+                        ? lastRotationAnchor
+                        : computedAnchor;
+        lastRotationAnchor = anchorPos;
+
+        if (anchorPos != RecyclerView.NO_POSITION) {
+            // setSpanCount queues its own layout pass that anchors to the smallest adapter
+            // position currently rendered (typically a recycle-cache item). Defer our scroll
+            // until after that layout, then post one more tick so requestLayout() reliably
+            // queues a fresh pass.
+            rv.addOnLayoutChangeListener(
+                    new View.OnLayoutChangeListener() {
+                        @Override
+                        public void onLayoutChange(
+                                View v,
+                                int left,
+                                int top,
+                                int right,
+                                int bottom,
+                                int oldLeft,
+                                int oldTop,
+                                int oldRight,
+                                int oldBottom) {
+                            rv.removeOnLayoutChangeListener(this);
+                            rv.post(
+                                    () ->
+                                            mLayoutManager.scrollToPositionWithOffset(
+                                                    anchorPos, 0));
+                        }
+                    });
+        }
+
+        mLayoutManager.setSpanCount(newSpan);
     }
 
     Runnable mLongPressRunnable;
