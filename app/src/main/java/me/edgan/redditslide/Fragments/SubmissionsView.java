@@ -100,36 +100,52 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                 (CatchStaggeredGridLayoutManager) rv.getLayoutManager();
 
         final int newSpan = LayoutUtils.getNumColumns(currentOrientation, getActivity());
+        final int paddingTop = rv.getPaddingTop();
 
-        // Pick the anchor: smallest adapter position among children whose top is at or below
-        // the viewport top. Excludes items above the viewport AND items that grew into the
-        // viewport from above (e.g., images loading mid-rotation).
+        // Pick the anchor: the topmost partially-visible child (smallest top among children
+        // whose bottom is below the viewport's top edge). Capture its exact pixel offset so
+        // we can restore the user's exact scroll position, not just snap the anchor to top.
         int computedAnchor = RecyclerView.NO_POSITION;
+        int computedTop = 0;
         boolean lastAnchorStillVisible = false;
+        int lastAnchorTop = 0;
         for (int i = 0; i < mLayoutManager.getChildCount(); i++) {
             View child = mLayoutManager.getChildAt(i);
             if (child == null) continue;
+            int childTop = child.getTop();
+            int childBottom = child.getBottom();
+            if (childBottom <= paddingTop) continue;
             int pos = mLayoutManager.getPosition(child);
-            if (child.getTop() >= rv.getPaddingTop()) {
-                if (computedAnchor == RecyclerView.NO_POSITION || pos < computedAnchor) {
-                    computedAnchor = pos;
-                }
-                if (pos == lastRotationAnchor) {
-                    lastAnchorStillVisible = true;
-                }
+            if (computedAnchor == RecyclerView.NO_POSITION || childTop < computedTop) {
+                computedAnchor = pos;
+                computedTop = childTop;
+            }
+            if (pos == lastRotationAnchor) {
+                lastAnchorStillVisible = true;
+                lastAnchorTop = childTop;
             }
         }
 
-        // If the previous rotation set an anchor and it's still in the visible top row,
-        // prefer it. In multi-col layouts a row contains multiple adapter positions and
-        // picking the smallest would shift the user back by spanCount-1 each round trip.
-        final int anchorPos =
-                (lastAnchorStillVisible && lastRotationAnchor != RecyclerView.NO_POSITION)
-                        ? lastRotationAnchor
-                        : computedAnchor;
+        // Prefer the previous rotation's anchor if it's still visible. In multi-col layouts
+        // a top row contains multiple adapter positions; without this, each round trip would
+        // shift the user back by spanCount-1. Also handles items that grow into the viewport
+        // mid-rotation (e.g., images loading) — the prior anchor stays correct.
+        final int anchorPos;
+        final int anchorTop;
+        if (lastAnchorStillVisible && lastRotationAnchor != RecyclerView.NO_POSITION) {
+            anchorPos = lastRotationAnchor;
+            anchorTop = lastAnchorTop;
+        } else {
+            anchorPos = computedAnchor;
+            anchorTop = computedTop;
+        }
         lastRotationAnchor = anchorPos;
 
         if (anchorPos != RecyclerView.NO_POSITION) {
+            // scrollToPositionWithOffset's offset is measured from paddingTop (offset=0
+            // lands the item at top=paddingTop), so subtract paddingTop from the captured
+            // raw child.getTop() to get the same y-coordinate after re-layout.
+            final int anchorOffset = anchorTop - paddingTop;
             // setSpanCount queues its own layout pass that anchors to the smallest adapter
             // position currently rendered (typically a recycle-cache item). Defer our scroll
             // until after that layout, then post one more tick so requestLayout() reliably
@@ -149,9 +165,19 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                                 int oldBottom) {
                             rv.removeOnLayoutChangeListener(this);
                             rv.post(
-                                    () ->
-                                            mLayoutManager.scrollToPositionWithOffset(
-                                                    anchorPos, 0));
+                                    () -> {
+                                        mLayoutManager.scrollToPositionWithOffset(
+                                                anchorPos, anchorOffset);
+                                        // The programmatic scroll-jump pushes a large dy
+                                        // through ToolbarScrollHideHandler and corrupts its
+                                        // verticalOffset tracking. Reset that on next idle so
+                                        // future user scrolls behave correctly. Do NOT force
+                                        // the toolbar visible here — that would push the post
+                                        // title behind it when the user was scrolled past.
+                                        if (toolbarScroll != null) {
+                                            toolbarScroll.reset = true;
+                                        }
+                                    });
                         }
                     });
         }
