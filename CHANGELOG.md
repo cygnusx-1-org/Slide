@@ -4,6 +4,10 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.5.4 / 2026-5-29
+============
+* Fixed feed position when switching to landscape mode with more than one column and back to portrait
+
 7.5.3 / 2026-5-27
 ============
 * Fixed Bug: Comment icon in MediaView broken universally #218
