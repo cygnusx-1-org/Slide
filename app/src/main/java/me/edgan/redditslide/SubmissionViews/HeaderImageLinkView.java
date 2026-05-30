@@ -586,55 +586,67 @@ public class HeaderImageLinkView extends RelativeLayout {
 
     private void handleTypes(Submission submission, String baseSub, boolean full) {
         JsonNode dataNode = submission.getDataNode();
-        String url = submission.getUrl();
-        String redditPreviewUrl = null;
 
-        // Check for preview data
-        if (dataNode.has("preview") && !dataNode.get("preview").isNull()) {
-            JsonNode previewNode = dataNode.get("preview").get("images");
-            if (previewNode != null && previewNode.size() > 0) {
-                JsonNode sourceNode = previewNode.get(0).get("source");
-                if (sourceNode != null && sourceNode.has("url")) {
-                    redditPreviewUrl = sourceNode.get("url").asText();
-                }
-            }
-        }
+        // Prefer a genuine preview image. For crossposts the preview lives on the
+        // parent submission, so getPreviewUrl() checks the crosspost parent first.
+        String redditPreviewUrl = getPreviewUrl(dataNode);
 
-        // Validate and use Reddit preview URL if available
-        boolean hasValidPreview = false;
         if (redditPreviewUrl != null && !redditPreviewUrl.isEmpty()) {
-            url = redditPreviewUrl;
-            hasValidPreview = true;
-        } else if (dataNode.has("thumbnail") && !dataNode.get("thumbnail").isNull()) {
-            String thumbnail = dataNode.get("thumbnail").asText();
-            // Check if thumbnail is a valid URL and not a placeholder
-            if (!thumbnail.equals("self") && !thumbnail.equals("default") &&
-                !thumbnail.equals("nsfw") &&
-                !thumbnail.isEmpty()) {
-                url = thumbnail;
-                hasValidPreview = true;
-            }
-        }
-
-        // Only show preview if we have a valid image URL
-        if (hasValidPreview) {
+            // A real, full-resolution preview is available; show it as a lead image.
             if (!full && !SettingValues.isPicsEnabled(baseSub)) {
                 thumbImage2.setVisibility(View.VISIBLE);
-                displayImage(url, thumbImage2, full);
+                displayImage(redditPreviewUrl, thumbImage2, full);
                 setVisibility(View.GONE);
             } else {
                 backdrop.setVisibility(View.VISIBLE);
-                displayImage(url, backdrop, full);
+                displayImage(redditPreviewUrl, backdrop, full);
                 setVisibility(View.VISIBLE);
             }
             if (wrapArea != null) wrapArea.setVisibility(View.GONE);
+            return;
+        }
+
+        // No real preview available. Fall back to the (small) thumbnail, but show it
+        // as a thumbnail rather than stretching it into the big lead image. This
+        // matches how the parent post is displayed when it has no preview image.
+        String thumbnailUrl = getValidThumbnailUrl(dataNode);
+        if (thumbnailUrl == null
+                && dataNode.has("crosspost_parent_list")
+                && dataNode.get("crosspost_parent_list").size() > 0) {
+            thumbnailUrl = getValidThumbnailUrl(dataNode.get("crosspost_parent_list").get(0));
+        }
+
+        if (thumbnailUrl != null) {
+            loadedUrl = thumbnailUrl;
+            setThumbAndWrapVisibility(full, true);
+            ((Reddit) getContext().getApplicationContext())
+                    .getImageLoader()
+                    .displayImage(thumbnailUrl, thumbImage2);
+            setVisibility(View.GONE);
         } else {
-            // No valid preview available
+            // No image at all.
             setVisibility(View.GONE);
             if (thumbImage2 != null) thumbImage2.setVisibility(View.GONE);
             if (backdrop != null) backdrop.setVisibility(View.GONE);
             if (wrapArea != null) wrapArea.setVisibility(View.VISIBLE);
         }
+    }
+
+    /**
+     * Returns the thumbnail URL from the given node if it is a usable image URL, or null if it is
+     * missing or one of Reddit's placeholder values ("self", "default", "nsfw").
+     */
+    private String getValidThumbnailUrl(JsonNode node) {
+        if (node != null && node.has("thumbnail") && !node.get("thumbnail").isNull()) {
+            String thumbnail = node.get("thumbnail").asText();
+            if (!thumbnail.equals("self")
+                    && !thumbnail.equals("default")
+                    && !thumbnail.equals("nsfw")
+                    && !thumbnail.isEmpty()) {
+                return thumbnail;
+            }
+        }
+        return null;
     }
 
     private void handleRedditGalleryType(Submission submission, String baseSub, boolean full, boolean forceThumb) {
@@ -695,12 +707,10 @@ public class HeaderImageLinkView extends RelativeLayout {
             node.get("preview").has("images") &&
             node.get("preview").get("images").size() > 0) {
 
-            return node.get("preview")
-                    .get("images")
-                    .get(0)
-                    .get("source")
-                    .get("url")
-                    .asText();
+            JsonNode sourceNode = node.get("preview").get("images").get(0).get("source");
+            if (sourceNode != null && sourceNode.has("url")) {
+                return sourceNode.get("url").asText();
+            }
         }
         return null;
     }
