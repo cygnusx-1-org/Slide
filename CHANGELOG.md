@@ -4,6 +4,10 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.5.5 / 2026-5-30
+============
+* Fixed cross-posts to show thumbnails as thumbnails when there is no preview image
+
 7.5.4 / 2026-5-29
 ============
 * Fixed feed position when switching to landscape mode with more than one column and back to portrait
