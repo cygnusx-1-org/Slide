@@ -27,6 +27,7 @@ import androidx.media.AudioManagerCompat;
 import androidx.media3.common.Format;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
+import androidx.media3.exoplayer.SeekParameters;
 import androidx.media3.exoplayer.SimpleExoPlayer;
 import androidx.media3.common.Tracks;
 import androidx.media3.datasource.okhttp.OkHttpDataSource;
@@ -83,6 +84,15 @@ public class ExoVideoView extends RelativeLayout {
     private boolean isDragging = false;
     private boolean wasScaling = false; // Flag to track if scaling happened in the gesture
     private boolean wasDragging = false; // Flag to track if dragging happened in the gesture
+
+    // Variables for horizontal scrub-to-seek gesture
+    private boolean isScrubbing = false; // Currently scrubbing in this gesture
+    private boolean wasScrubbing = false; // Flag to track if scrubbing happened in the gesture
+    private float scrubStartX; // Touch X when the current gesture started
+    private float scrubStartY; // Touch Y when the current gesture started
+    private long scrubStartPosition = 0; // Playback position when scrubbing started
+    private long scrubTargetPosition = 0; // Position the user is currently seeking to
+    private android.widget.TextView scrubOverlay; // On-screen time indicator while scrubbing
 
     // Variables for rotation
     private int currentRotation = 0; // Track current rotation in degrees
@@ -850,6 +860,139 @@ public class ExoVideoView extends RelativeLayout {
         }
     }
 
+    /**
+     * Handles the horizontal swipe-to-seek (scrub) gesture. Dragging left/right moves the
+     * playback position back/forward, mapping a full-width drag to the full video duration.
+     *
+     * <p>Only active in the full-screen viewer (when {@code playerUI} exists), when the video is
+     * not pinch-zoomed, and when the horizontal movement clearly dominates the vertical movement
+     * (so vertical swipe-to-dismiss is preserved).
+     *
+     * @return true if this event was consumed by the scrub gesture (so it should not be treated as
+     *     a tap).
+     */
+    private boolean handleScrub(MotionEvent event, int action, boolean scalingInProgress) {
+        // Only scrub in the full-screen viewer, when not zoomed and not pinching.
+        if (playerUI == null || scaleFactor > 1.0f || scalingInProgress || player == null) {
+            return false;
+        }
+
+        boolean scrubHandled = false;
+        switch (action) {
+            case MotionEvent.ACTION_MOVE: {
+                if (event.getPointerCount() != 1) break;
+
+                final long duration = player.getDuration();
+                if (duration <= 0) break; // Unknown/zero duration (e.g. live) — nothing to scrub.
+
+                final float dx = event.getX() - scrubStartX;
+                final float dy = event.getY() - scrubStartY;
+                final float touchSlop =
+                        android.view.ViewConfiguration.get(context).getScaledTouchSlop();
+
+                // Begin scrubbing once horizontal movement passes the slop and dominates vertical.
+                if (!isScrubbing
+                        && Math.abs(dx) > touchSlop
+                        && Math.abs(dx) > Math.abs(dy) * 1.5f) {
+                    isScrubbing = true;
+                    wasScrubbing = true;
+                    scrubStartPosition = player.getCurrentPosition();
+                    // Snap to keyframes while dragging so live preview stays responsive.
+                    player.setSeekParameters(SeekParameters.CLOSEST_SYNC);
+                    if (getParent() != null) {
+                        getParent().requestDisallowInterceptTouchEvent(true);
+                    }
+                }
+
+                if (isScrubbing) {
+                    int width = getWidth() > 0
+                            ? getWidth()
+                            : getResources().getDisplayMetrics().widthPixels;
+                    long delta = (long) ((dx / width) * duration);
+                    scrubTargetPosition =
+                            Math.max(0, Math.min(duration, scrubStartPosition + delta));
+                    player.seekTo(scrubTargetPosition);
+                    updateScrubOverlay(
+                            scrubTargetPosition, duration, scrubTargetPosition - scrubStartPosition);
+                    scrubHandled = true;
+                }
+                break;
+            }
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL: {
+                if (isScrubbing) {
+                    // Restore exact seeking and land precisely on the chosen position.
+                    player.setSeekParameters(SeekParameters.DEFAULT);
+                    player.seekTo(scrubTargetPosition);
+                    hideScrubOverlay();
+                    if (getParent() != null) {
+                        getParent().requestDisallowInterceptTouchEvent(false);
+                    }
+                    isScrubbing = false;
+                }
+                break;
+            }
+        }
+        return scrubHandled;
+    }
+
+    /** Lazily creates the centered text overlay used to show the scrub target time. */
+    private void ensureScrubOverlay() {
+        if (scrubOverlay == null) {
+            float density = context.getResources().getDisplayMetrics().density;
+            scrubOverlay = new android.widget.TextView(context);
+            scrubOverlay.setTextColor(Color.WHITE);
+            scrubOverlay.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 18);
+            scrubOverlay.setBackgroundColor(0x99000000);
+            scrubOverlay.setGravity(android.view.Gravity.CENTER);
+            int padH = (int) (16 * density);
+            int padV = (int) (8 * density);
+            scrubOverlay.setPadding(padH, padV, padH, padV);
+            RelativeLayout.LayoutParams lp =
+                    new RelativeLayout.LayoutParams(
+                            LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            lp.addRule(CENTER_IN_PARENT, TRUE);
+            scrubOverlay.setLayoutParams(lp);
+            scrubOverlay.setVisibility(GONE);
+            addView(scrubOverlay);
+        }
+    }
+
+    /** Updates the scrub overlay to show "current / total" and the signed delta. */
+    private void updateScrubOverlay(long position, long duration, long delta) {
+        ensureScrubOverlay();
+        String sign = delta >= 0 ? "+" : "-";
+        scrubOverlay.setText(
+                formatTime(position)
+                        + " / "
+                        + formatTime(duration)
+                        + "\n"
+                        + sign
+                        + formatTime(Math.abs(delta)));
+        scrubOverlay.setVisibility(VISIBLE);
+    }
+
+    /** Hides the scrub overlay if it is showing. */
+    private void hideScrubOverlay() {
+        if (scrubOverlay != null) {
+            scrubOverlay.setVisibility(GONE);
+        }
+    }
+
+    /** Formats a duration in milliseconds as H:MM:SS or M:SS. */
+    private static String formatTime(long ms) {
+        if (ms < 0) ms = 0;
+        long totalSeconds = ms / 1000;
+        long seconds = totalSeconds % 60;
+        long minutes = (totalSeconds / 60) % 60;
+        long hours = totalSeconds / 3600;
+        if (hours > 0) {
+            return String.format(
+                    java.util.Locale.getDefault(), "%d:%02d:%02d", hours, minutes, seconds);
+        }
+        return String.format(java.util.Locale.getDefault(), "%d:%02d", minutes, seconds);
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event == null) return super.onTouchEvent(null);
@@ -868,9 +1011,15 @@ public class ExoVideoView extends RelativeLayout {
             isDragging = false;
             wasScaling = false; // Reset scaling history flag for the new gesture
             wasDragging = false; // Reset dragging history flag for the new gesture
+            // Reset scrub state and record the gesture's starting point
+            scrubStartX = event.getX();
+            scrubStartY = event.getY();
+            isScrubbing = false;
+            wasScrubbing = false; // Reset scrubbing history flag for the new gesture
         }
 
         boolean dragHandled = false;
+        boolean scrubHandled = handleScrub(event, action, scalingInProgress);
         // Panning logic (only when zoomed and not currently scaling)
         if (scaleFactor > 1.0f && !scalingInProgress) {
             switch (action) {
@@ -925,8 +1074,8 @@ public class ExoVideoView extends RelativeLayout {
         // 1. Scaling is currently in progress (mid-gesture)
         // 2. Dragging occurred during this MOVE event
         // 3. The action is UP or CANCEL *and* scaling or dragging happened at any point during this gesture sequence
-        boolean consumeEvent = scalingInProgress || dragHandled ||
-                ((action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) && (wasScaling || wasDragging));
+        boolean consumeEvent = scalingInProgress || dragHandled || scrubHandled ||
+                ((action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) && (wasScaling || wasDragging || wasScrubbing));
 
         // Reset dragging state on UP or CANCEL, regardless of consumption, ready for next gesture
         if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
