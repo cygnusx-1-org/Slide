@@ -871,8 +871,13 @@ public class ExoVideoView extends RelativeLayout {
      *     a tap).
      */
     private boolean handleScrub(MotionEvent event, int action, boolean scalingInProgress) {
-        // Only scrub in the full-screen viewer, when not zoomed and not pinching.
-        if (playerUI == null || scaleFactor > 1.0f || scalingInProgress || player == null) {
+        // Only scrub in the full-screen viewer, never in any gallery (where horizontal swipes
+        // page between items), and only when not zoomed and not pinching.
+        if (isGalleryContext()
+                || playerUI == null
+                || scaleFactor > 1.0f
+                || scalingInProgress
+                || player == null) {
             return false;
         }
 
@@ -1220,6 +1225,29 @@ public class ExoVideoView extends RelativeLayout {
             if (context instanceof Activity) {
                 String activityName = context.getClass().getSimpleName();
                 return activityName.equals("Album") || activityName.equals("RedditGallery");
+            }
+            context = ((ContextWrapper) context).getBaseContext();
+        }
+        return false;
+    }
+
+    /**
+     * Returns true when this view lives inside any gallery host activity. Galleries use horizontal
+     * swipes to page between items, so the horizontal scrub gesture must be disabled there. This
+     * covers both the vertical-list galleries (Album, RedditGallery) and the horizontal-swipe pager
+     * galleries (AlbumPager, RedditGalleryPager, Gallery), which would otherwise have a player UI
+     * and incorrectly enable scrubbing.
+     */
+    private boolean isGalleryContext() {
+        Context context = getContext();
+        while (context instanceof ContextWrapper) {
+            if (context instanceof Activity) {
+                String activityName = context.getClass().getSimpleName();
+                return activityName.equals("Album")
+                        || activityName.equals("AlbumPager")
+                        || activityName.equals("RedditGallery")
+                        || activityName.equals("RedditGalleryPager")
+                        || activityName.equals("Gallery");
             }
             context = ((ContextWrapper) context).getBaseContext();
         }
