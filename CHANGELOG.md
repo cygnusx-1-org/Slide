@@ -4,6 +4,11 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.5.6 / 2026-6-2
+===========
+* Added a video scrub feature by horizontally swiping back and forth(Disabled
+in Albums and Galleries
+
 7.5.5 / 2026-5-30
 ============
 * Fixed cross-posts to show thumbnails as thumbnails when there is no preview image
