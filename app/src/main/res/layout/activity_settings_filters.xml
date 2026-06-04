@@ -141,314 +141,257 @@
                     android:textSize="14sp" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingBottom="8dp"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="?android:selectableItemBackground"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="56dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="16dp"
-                        android:padding="16dp"
-                        app:srcCompat="@drawable/ic_link"
-                        android:tint="?attr/tintColor" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:text="@string/settings_filter_domain"
-                        android:textColor="?attr/fontColor"
-                        android:textSize="16sp" />
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:id="@+id/domainlist"
-                    android:orientation="vertical"
-                    android:layout_height="wrap_content"/>
-                <EditText
-                    android:id="@+id/domain"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:singleLine="true"
-                    android:imeOptions="actionDone"
-                    android:hint="@string/enter_text_to_filter_click_enter_to_add"
-                    android:inputType="textUri"
-                    android:textSize="14sp" />
-
-
-            </LinearLayout>
             <View
                 android:layout_width="match_parent"
                 android:background="?attr/tintColor"
                 android:alpha=".25"
                 android:layout_height="0.25dp"/>
+
             <LinearLayout
+                android:id="@+id/domain_row"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingBottom="8dp"
-                android:orientation="vertical">
+                android:layout_height="56dp"
+                android:background="?android:selectableItemBackground"
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="?android:selectableItemBackground"
-                    android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="16dp"
+                    android:padding="16dp"
+                    app:srcCompat="@drawable/ic_link"
+                    android:tint="?attr/tintColor" />
 
-                    <ImageView
-                        android:layout_width="56dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="16dp"
-                        android:padding="16dp"
-                        app:srcCompat="@drawable/ic_text_fields"
-                        android:tint="?attr/tintColor" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/settings_filter_domain"
+                    android:textColor="?attr/fontColor"
+                    android:textSize="16sp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:text="@string/settings_filter_selfttext"
-                        android:textColor="?attr/fontColor"
-                        android:textSize="16sp" />
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:id="@+id/selftextlist"
-                    android:orientation="vertical"
-                    android:layout_height="wrap_content"/>
-                <EditText
-                    android:id="@+id/text"
-                    android:layout_width="match_parent"
-                    android:singleLine="true"
-                    android:imeOptions="actionDone"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:hint="@string/enter_text_to_filter_click_enter_to_add"
+                <TextView
+                    android:id="@+id/domain_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="16dp"
+                    android:gravity="center_vertical"
+                    android:textColor="?attr/fontColor"
+                    android:alpha="0.8"
                     android:textSize="14sp" />
-
-
             </LinearLayout>
+
             <View
                 android:layout_width="match_parent"
                 android:background="?attr/tintColor"
                 android:alpha=".25"
                 android:layout_height="0.25dp"/>
+
             <LinearLayout
+                android:id="@+id/selftext_row"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingBottom="8dp"
-                android:orientation="vertical">
+                android:layout_height="56dp"
+                android:background="?android:selectableItemBackground"
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="?android:selectableItemBackground"
-                    android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="16dp"
+                    android:padding="16dp"
+                    app:srcCompat="@drawable/ic_text_fields"
+                    android:tint="?attr/tintColor" />
 
-                    <ImageView
-                        android:layout_width="56dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="16dp"
-                        android:padding="16dp"
-                        app:srcCompat="@drawable/ic_info"
-                        android:tint="?attr/tintColor" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/settings_filter_selfttext"
+                    android:textColor="?attr/fontColor"
+                    android:textSize="16sp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:text="@string/settings_filter_title"
-                        android:textColor="?attr/fontColor"
-                        android:textSize="16sp" />
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:id="@+id/titlelist"
-                    android:orientation="vertical"
-                    android:layout_height="wrap_content"/>
-                <EditText
-                    android:id="@+id/title"
-                    android:layout_width="match_parent"
-                    android:singleLine="true"
-                    android:imeOptions="actionDone"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:hint="@string/enter_text_to_filter_click_enter_to_add"
+                <TextView
+                    android:id="@+id/selftext_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="16dp"
+                    android:gravity="center_vertical"
+                    android:textColor="?attr/fontColor"
+                    android:alpha="0.8"
                     android:textSize="14sp" />
-
-
             </LinearLayout>
+
             <View
                 android:layout_width="match_parent"
                 android:background="?attr/tintColor"
                 android:alpha=".25"
                 android:layout_height="0.25dp"/>
+
             <LinearLayout
+                android:id="@+id/title_row"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingBottom="8dp"
-                android:orientation="vertical">
+                android:layout_height="56dp"
+                android:background="?android:selectableItemBackground"
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="?android:selectableItemBackground"
-                    android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="16dp"
+                    android:padding="16dp"
+                    app:srcCompat="@drawable/ic_info"
+                    android:tint="?attr/tintColor" />
 
-                    <ImageView
-                        android:layout_width="56dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="16dp"
-                        android:padding="16dp"
-                        app:srcCompat="@drawable/ic_account_circle"
-                        android:tint="?attr/tintColor" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/settings_filter_title"
+                    android:textColor="?attr/fontColor"
+                    android:textSize="16sp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:text="@string/settings_filter_profile"
-                        android:textColor="?attr/fontColor"
-                        android:textSize="16sp" />
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:id="@+id/userlist"
-                    android:orientation="vertical"
-                    android:layout_height="wrap_content"/>
-                <EditText
-                    android:id="@+id/user"
-                    android:layout_width="match_parent"
-                    android:singleLine="true"
-                    android:imeOptions="actionDone"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:hint="@string/enter_text_to_filter_click_enter_to_add"
+                <TextView
+                    android:id="@+id/title_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="16dp"
+                    android:gravity="center_vertical"
+                    android:textColor="?attr/fontColor"
+                    android:alpha="0.8"
                     android:textSize="14sp" />
-
-
             </LinearLayout>
+
             <View
                 android:layout_width="match_parent"
                 android:background="?attr/tintColor"
                 android:alpha=".25"
                 android:layout_height="0.25dp"/>
+
             <LinearLayout
+                android:id="@+id/profile_row"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingBottom="8dp"
-                android:orientation="vertical">
+                android:layout_height="56dp"
+                android:background="?android:selectableItemBackground"
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="?android:selectableItemBackground"
-                    android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="16dp"
+                    android:padding="16dp"
+                    app:srcCompat="@drawable/ic_account_circle"
+                    android:tint="?attr/tintColor" />
 
-                    <ImageView
-                        android:layout_width="56dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="16dp"
-                        android:padding="16dp"
-                        app:srcCompat="@drawable/ic_bookmark_border"
-                        android:tint="?attr/tintColor" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/settings_filter_profile"
+                    android:textColor="?attr/fontColor"
+                    android:textSize="16sp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:text="@string/setting_filter_subreddits"
-                        android:textColor="?attr/fontColor"
-                        android:textSize="16sp" />
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:id="@+id/subredditlist"
-                    android:orientation="vertical"
-                    android:layout_height="wrap_content">
-
-                    </LinearLayout>
-                <EditText
-                    android:id="@+id/subreddit"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:singleLine="true"
-                    android:imeOptions="actionDone"
-                    android:hint="@string/enter_text_to_filter_click_enter_to_add"
+                <TextView
+                    android:id="@+id/profile_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="16dp"
+                    android:gravity="center_vertical"
+                    android:textColor="?attr/fontColor"
+                    android:alpha="0.8"
                     android:textSize="14sp" />
-
-
             </LinearLayout>
+
             <View
                 android:layout_width="match_parent"
                 android:background="?attr/tintColor"
                 android:alpha=".25"
                 android:layout_height="0.25dp"/>
+
             <LinearLayout
+                android:id="@+id/subreddit_row"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingBottom="8dp"
-                android:orientation="vertical">
+                android:layout_height="56dp"
+                android:background="?android:selectableItemBackground"
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="?android:selectableItemBackground"
-                    android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="16dp"
+                    android:padding="16dp"
+                    app:srcCompat="@drawable/ic_bookmark_border"
+                    android:tint="?attr/tintColor" />
 
-                    <ImageView
-                        android:layout_width="56dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="16dp"
-                        android:padding="16dp"
-                        app:srcCompat="@drawable/ic_local_offer"
-                        android:tint="?attr/tintColor" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/setting_filter_subreddits"
+                    android:textColor="?attr/fontColor"
+                    android:textSize="16sp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:text="@string/settings_filter_flair"
-                        android:textColor="?attr/fontColor"
-                        android:textSize="16sp" />
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:id="@+id/flairlist"
-                    android:orientation="vertical"
-                    android:layout_height="wrap_content">
-
-                </LinearLayout>
-                <EditText
-                    android:id="@+id/flair"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:singleLine="true"
-                    android:imeOptions="actionDone"
-                    android:hint="@string/enter_text_to_filter_click_enter_to_add_flair"
+                <TextView
+                    android:id="@+id/subreddit_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="16dp"
+                    android:gravity="center_vertical"
+                    android:textColor="?attr/fontColor"
+                    android:alpha="0.8"
                     android:textSize="14sp" />
-
-
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:background="?attr/tintColor"
+                android:alpha=".25"
+                android:layout_height="0.25dp"/>
+
+            <LinearLayout
+                android:id="@+id/flair_row"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="?android:selectableItemBackground"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="16dp"
+                    android:padding="16dp"
+                    app:srcCompat="@drawable/ic_local_offer"
+                    android:tint="?attr/tintColor" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/settings_filter_flair"
+                    android:textColor="?attr/fontColor"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/flair_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="16dp"
+                    android:gravity="center_vertical"
+                    android:textColor="?attr/fontColor"
+                    android:alpha="0.8"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:background="?attr/tintColor"
+                android:alpha=".25"
+                android:layout_height="0.25dp"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

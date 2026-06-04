@@ -358,6 +358,10 @@
                         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
                         android:theme="@style/swipeable"/>
                 <activity
+                        android:name=".ui.settings.SettingsFilterList"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
                         android:name="com.canhub.cropper.CropImageActivity"
                         android:theme="@style/Theme.AppCompat"/>
                 <activity
