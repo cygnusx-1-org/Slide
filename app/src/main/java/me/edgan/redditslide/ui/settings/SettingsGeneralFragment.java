@@ -1076,12 +1076,12 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                                                         break;
                                                     case 3:
                                                         SortingUtil.defaultSorting = Sorting.TOP;
-                                                        askTimePeriod();
+                                                        askTimePeriod(false);
                                                         return;
                                                     case 4:
                                                         SortingUtil.defaultSorting =
                                                                 Sorting.CONTROVERSIAL;
-                                                        askTimePeriod();
+                                                        askTimePeriod(false);
                                                         return;
                                                 }
                                                 SettingValues.prefs
@@ -1154,12 +1154,12 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                                                         break;
                                                     case 3:
                                                         SortingUtil.frontpageSorting = Sorting.TOP;
-                                                        askTimePeriod();
+                                                        askTimePeriod(true);
                                                         return;
                                                     case 4:
                                                         SortingUtil.frontpageSorting =
                                                                 Sorting.CONTROVERSIAL;
-                                                        askTimePeriod();
+                                                        askTimePeriod(true);
                                                         return;
                                                     case 5:
                                                         SortingUtil.frontpageSorting = Sorting.BEST;
@@ -1411,56 +1411,87 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
         }
     }
 
-    private void askTimePeriod() {
-        final TextView defaultSortingCurrentView =
-                context.findViewById(R.id.settings_general_sorting_current);
+    private void askTimePeriod(final boolean frontpage) {
+        final TextView currentView =
+                frontpage
+                        ? context.findViewById(
+                                R.id.settings_general_sorting_current_frontpage)
+                        : context.findViewById(R.id.settings_general_sorting_current);
+        final String sub = frontpage ? "frontpage" : "";
         final DialogInterface.OnClickListener l2 =
                 new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        final TimePeriod time;
                         switch (i) {
-                            case 0:
-                                SortingUtil.timePeriod = TimePeriod.HOUR;
-                                break;
                             case 1:
-                                SortingUtil.timePeriod = TimePeriod.DAY;
+                                time = TimePeriod.DAY;
                                 break;
                             case 2:
-                                SortingUtil.timePeriod = TimePeriod.WEEK;
+                                time = TimePeriod.WEEK;
                                 break;
                             case 3:
-                                SortingUtil.timePeriod = TimePeriod.MONTH;
+                                time = TimePeriod.MONTH;
                                 break;
                             case 4:
-                                SortingUtil.timePeriod = TimePeriod.YEAR;
+                                time = TimePeriod.YEAR;
                                 break;
                             case 5:
-                                SortingUtil.timePeriod = TimePeriod.ALL;
+                                time = TimePeriod.ALL;
+                                break;
+                            case 0:
+                            default:
+                                time = TimePeriod.HOUR;
                                 break;
                         }
-                        SettingValues.prefs
-                                .edit()
-                                .putString("defaultSorting", SortingUtil.defaultSorting.name())
-                                .apply();
-                        SettingValues.prefs
-                                .edit()
-                                .putString("timePeriod", SortingUtil.timePeriod.name())
-                                .apply();
-                        SettingValues.defaultSorting = SortingUtil.defaultSorting;
-                        SettingValues.timePeriod = SortingUtil.timePeriod;
-                        defaultSortingCurrentView.setText(
-                                SortingUtil.getSortingStrings()[SortingUtil.getSortingId("")]
-                                        + " > "
-                                        + SortingUtil.getSortingTimesStrings()[
-                                                SortingUtil.getSortingTimeId("")]);
+
+                        if (frontpage) {
+                            // Persist the frontpage sort and its own time period without
+                            // clobbering the default sort/time. The frontpage reads its
+                            // time from "defaultTimefrontpage" via
+                            // SettingValues.getSubmissionTimePeriod("frontpage").
+                            SettingValues.prefs
+                                    .edit()
+                                    .putString(
+                                            "frontpageSorting",
+                                            SortingUtil.frontpageSorting.name())
+                                    .putString("defaultTimefrontpage", time.name())
+                                    .apply();
+                            SettingValues.frontpageSorting = SortingUtil.frontpageSorting;
+                            SortingUtil.setTime("frontpage", time);
+                            currentView.setText(
+                                    SortingUtil.getSortingStrings()[
+                                                    SortingUtil.getSortingIdFrontpage()]
+                                            + " > "
+                                            + SortingUtil.getSortingTimesStrings()[
+                                                    SortingUtil.getSortingTimeId("frontpage")]);
+                        } else {
+                            SortingUtil.timePeriod = time;
+                            SettingValues.prefs
+                                    .edit()
+                                    .putString(
+                                            "defaultSorting",
+                                            SortingUtil.defaultSorting.name())
+                                    .putString("timePeriod", SortingUtil.timePeriod.name())
+                                    .apply();
+                            SettingValues.defaultSorting = SortingUtil.defaultSorting;
+                            SettingValues.timePeriod = SortingUtil.timePeriod;
+                            currentView.setText(
+                                    SortingUtil.getSortingStrings()[SortingUtil.getSortingId("")]
+                                            + " > "
+                                            + SortingUtil.getSortingTimesStrings()[
+                                                    SortingUtil.getSortingTimeId("")]);
+                        }
                     }
                 };
 
         new AlertDialog.Builder(SettingsGeneralFragment.this.context)
                 .setTitle(R.string.sorting_choose)
                 .setSingleChoiceItems(
-                        SortingUtil.getSortingTimesStrings(), SortingUtil.getSortingTimeId(""), l2)
+                        SortingUtil.getSortingTimesStrings(),
+                        SortingUtil.getSortingTimeId(sub),
+                        l2)
                 .show();
     }
 

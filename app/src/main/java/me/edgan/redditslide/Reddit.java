@@ -477,6 +477,9 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
         SortingUtil.defaultSorting = SettingValues.defaultSorting;
         SortingUtil.frontpageSorting = SettingValues.frontpageSorting;
         SortingUtil.timePeriod = SettingValues.timePeriod;
+        // Restore the persisted frontpage time period so it survives across sessions and
+        // is reflected in the settings sort dialog and the frontpage sort header.
+        SortingUtil.setTime("frontpage", SettingValues.getSubmissionTimePeriod("frontpage"));
         colors = getSharedPreferences("COLOR", 0);
         tags = getSharedPreferences("TAGS", 0);
         KVStore.init(this, "SEEN");
