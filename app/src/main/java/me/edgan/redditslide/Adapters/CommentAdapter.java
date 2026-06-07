@@ -57,6 +57,7 @@ import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.AnimatorUtil;
 import me.edgan.redditslide.util.DisplayUtil;
+import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
@@ -389,6 +390,12 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         holder,
                         singleClick,
                         onLongClickListener);
+
+                // Name media saved from links in this comment after its source:
+                // title_postId_commentId.
+                String downloadName = FileUtil.buildDownloadName(comment);
+                holder.firstTextView.setDownloadName(downloadName);
+                holder.commentOverflow.setDownloadName(downloadName);
             }
 
             holder.firstTextView.setOnClickListener(

@@ -36,7 +36,9 @@ public class SubmissionThumbnailHelper {
         if (SettingValues.image) {
             Intent myIntent = new Intent(contextActivity, MediaView.class);
             myIntent.putExtra(MediaView.SUBREDDIT, submission.getSubredditName());
-            myIntent.putExtra(EXTRA_SUBMISSION_TITLE, submission.getTitle());
+            myIntent.putExtra(
+                    EXTRA_SUBMISSION_TITLE,
+                    FileUtil.buildDownloadName(submission));
             String previewUrl;
             String url = submission.getUrl();
 
@@ -72,7 +74,9 @@ public class SubmissionThumbnailHelper {
 
             Intent myIntent = new Intent(contextActivity, MediaView.class);
             myIntent.putExtra(MediaView.SUBREDDIT, submission.getSubredditName());
-            myIntent.putExtra(EXTRA_SUBMISSION_TITLE, submission.getTitle());
+            myIntent.putExtra(
+                    EXTRA_SUBMISSION_TITLE,
+                    FileUtil.buildDownloadName(submission));
 
             String videoUrl = GifUtils.AsyncLoadGif.getVideoUrlFromSubmission(submission);
             GifUtils.AsyncLoadGif.VideoType t =

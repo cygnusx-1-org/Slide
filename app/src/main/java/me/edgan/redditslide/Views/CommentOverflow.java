@@ -81,6 +81,26 @@ public class CommentOverflow extends LinearLayout {
     }
 
     /**
+     * Propagates the download base name (title_postId_commentId) to every text block so media
+     * links inside comment overflow blocks save with the same name as the rest of the comment.
+     * Call after {@link #setViews} has populated the children.
+     */
+    public void setDownloadName(String downloadName) {
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (child instanceof SpoilerRobotoTextView) {
+                ((SpoilerRobotoTextView) child).setDownloadName(downloadName);
+            } else if (child instanceof HorizontalScrollView
+                    && ((HorizontalScrollView) child).getChildCount() > 0) {
+                View inner = ((HorizontalScrollView) child).getChildAt(0);
+                if (inner instanceof SpoilerRobotoTextView) {
+                    ((SpoilerRobotoTextView) inner).setDownloadName(downloadName);
+                }
+            }
+        }
+    }
+
+    /**
      * Set the text for the corresponding views.
      *
      * @param blocks list of all blocks to be set

@@ -24,6 +24,7 @@ import me.edgan.redditslide.ImgurAlbum.Image;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SubmissionViews.PopulateShadowboxInfo;
+import me.edgan.redditslide.util.FileUtil;
 
 import net.dean.jraw.models.Comment;
 
@@ -199,7 +200,7 @@ public class AlbumFullComments extends Fragment {
                             jsonElements,
                             0,
                             s.getSubredditName(),
-                            s.comment.getComment().getSubmissionTitle());
+                            FileUtil.buildDownloadName(s.comment.getComment()));
             ((RecyclerView) list).setAdapter(adapter);
         }
     }

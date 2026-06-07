@@ -654,6 +654,28 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
             }
         }
 
+        {
+            SwitchCompat typeSubfolderSwitch =
+                    context.findViewById(R.id.settings_general_type_subfolder);
+
+            if (typeSubfolderSwitch != null) {
+                typeSubfolderSwitch.setChecked(SettingValues.imageTypeSubfolders);
+                typeSubfolderSwitch.setOnCheckedChangeListener(
+                        new CompoundButton.OnCheckedChangeListener() {
+                            @Override
+                            public void onCheckedChanged(
+                                    CompoundButton buttonView, boolean isChecked) {
+                                SettingValues.imageTypeSubfolders = isChecked;
+                                SettingValues.prefs
+                                        .edit()
+                                        .putBoolean(
+                                                SettingValues.PREF_IMAGE_TYPE_SUBFOLDERS, isChecked)
+                                        .apply();
+                            }
+                        });
+            }
+        }
+
         final RelativeLayout setSaveLocationLayout =
                 context.findViewById(R.id.settings_general_set_save_location);
         if (setSaveLocationLayout != null) {

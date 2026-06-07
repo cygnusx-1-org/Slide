@@ -45,6 +45,7 @@ import me.edgan.redditslide.SubmissionViews.PopulateShadowboxInfo;
 import me.edgan.redditslide.Views.ExoVideoView;
 import me.edgan.redditslide.Views.ImageSource;
 import me.edgan.redditslide.Views.SubsamplingScaleImageView;
+import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.GifUtils;
 import me.edgan.redditslide.util.HttpUtil;
 import me.edgan.redditslide.util.LinkUtil;
@@ -324,7 +325,8 @@ public class MediaFragmentComment extends Fragment {
                                     // same submission
                                     myIntent.putExtra(
                                             EXTRA_SUBMISSION_TITLE,
-                                            submission.comment.getComment().getSubmissionTitle());
+                                            FileUtil.buildDownloadName(
+                                                    submission.comment.getComment()));
                                     myIntent.putExtra(
                                             MediaView.EXTRA_SHARE_URL, submission.getUrl());
 
@@ -355,6 +357,8 @@ public class MediaFragmentComment extends Fragment {
                         false,
                         true,
                         sub);
+        gif.submissionTitle =
+                FileUtil.buildDownloadName(s.comment.getComment());
         gif.execute(dat);
     }
 

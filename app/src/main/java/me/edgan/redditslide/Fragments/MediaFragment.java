@@ -56,6 +56,7 @@ import me.edgan.redditslide.Views.ExoVideoView;
 import me.edgan.redditslide.Views.ImageSource;
 import me.edgan.redditslide.Views.SubsamplingScaleImageView;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.GifUtils;
 import me.edgan.redditslide.util.HttpUtil;
 import me.edgan.redditslide.util.JsonUtil;
@@ -412,7 +413,9 @@ public class MediaFragment extends Fragment {
                                             i.putExtra(
                                                     Album.SUBREDDIT, submission.getSubredditName());
                                         }
-                                        i.putExtra(EXTRA_SUBMISSION_TITLE, submission.getTitle());
+                                        i.putExtra(
+                                                EXTRA_SUBMISSION_TITLE,
+                                                FileUtil.buildDownloadName(submission));
                                         contextActivity.startActivity(i);
                                     } else {
                                         LinkUtil.openExternally(submission.getUrl());
@@ -434,7 +437,9 @@ public class MediaFragment extends Fragment {
                                             i.putExtra(
                                                     Album.SUBREDDIT, submission.getSubredditName());
                                         }
-                                        i.putExtra(EXTRA_SUBMISSION_TITLE, submission.getTitle());
+                                        i.putExtra(
+                                                EXTRA_SUBMISSION_TITLE,
+                                                FileUtil.buildDownloadName(submission));
 
                                         i.putExtra(
                                                 RedditGallery.SUBREDDIT,

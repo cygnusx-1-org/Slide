@@ -37,6 +37,7 @@ public class SettingValues {
     public static final String PREF_ALPHABETIZE_SUBSCRIBE = "alphabetizeSubscribe";
     public static final String PREF_COLOR_BACK = "colorBack";
     public static final String PREF_IMAGE_SUBFOLDERS = "imageSubfolders";
+    public static final String PREF_IMAGE_TYPE_SUBFOLDERS = "imageTypeSubfolders";
     public static final String PREF_IMAGE_DOWNLOAD_BUTTON = "imageDownloadButton";
     public static final String PREF_COLOR_NAV_BAR = "colorNavBar";
     public static final String PREF_READER_MODE = "readerDefault";
@@ -259,6 +260,7 @@ public class SettingValues {
     public static boolean singleColumnMultiWindow;
     public static int nightModeState;
     public static boolean imageSubfolders;
+    public static boolean imageTypeSubfolders;
     public static boolean imageDownloadButton;
     public static boolean autoTime;
     public static boolean albumSwipe;
@@ -351,6 +353,7 @@ public class SettingValues {
         largeDepth = prefs.getBoolean(PREF_LARGE_DEPTH, false);
         readerMode = prefs.getBoolean(PREF_READER_MODE, false);
         imageSubfolders = prefs.getBoolean(PREF_IMAGE_SUBFOLDERS, false);
+        imageTypeSubfolders = prefs.getBoolean(PREF_IMAGE_TYPE_SUBFOLDERS, false);
         imageDownloadButton = prefs.getBoolean(PREF_IMAGE_DOWNLOAD_BUTTON, true);
         isMuted = prefs.getBoolean(PREF_MUTE, false);
         unmuteDefault = prefs.getBoolean(PREF_UNMUTE_DEFAULT, false);

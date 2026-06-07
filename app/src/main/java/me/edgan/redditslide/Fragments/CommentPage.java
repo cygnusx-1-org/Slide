@@ -93,6 +93,7 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.handler.ToolbarScrollHideHandler;
 import me.edgan.redditslide.ui.settings.SettingsSubAdapter;
 import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.MiscUtil;
@@ -965,7 +966,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                 MediaView.EXTRA_URL, adapter.submission.getUrl());
                                         myIntent.putExtra(
                                                 EXTRA_SUBMISSION_TITLE,
-                                                adapter.submission.getTitle());
+                                                FileUtil.buildDownloadName(adapter.submission));
                                         getActivity().startActivity(myIntent);
 
                                     } else {
@@ -977,7 +978,8 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                     Intent i2 = new Intent(getActivity(), MediaView.class);
                                     i2.putExtra(MediaView.SUBREDDIT, subreddit);
                                     i2.putExtra(
-                                            EXTRA_SUBMISSION_TITLE, adapter.submission.getTitle());
+                                            EXTRA_SUBMISSION_TITLE,
+                                            FileUtil.buildDownloadName(adapter.submission));
                                     if (adapter.submission.getDataNode().has("preview")
                                             && adapter.submission
                                                     .getDataNode()
@@ -1061,7 +1063,9 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                             Intent i = new Intent(getActivity(), RedditGalleryPager.class);
                                             i.putExtra(RedditGalleryPager.SUBREDDIT, subreddit);
                                             i.putExtra(MediaView.SUBMISSION_URL, adapter.submission.getUrl());
-                                            i.putExtra(EXTRA_SUBMISSION_TITLE, adapter.submission.getTitle());
+                                            i.putExtra(
+                                                    EXTRA_SUBMISSION_TITLE,
+                                                    FileUtil.buildDownloadName(adapter.submission));
                                             // Pass the list of GalleryImage via a Serializable extra
                                             i.putExtra(RedditGallery.GALLERY_URLS, images);
                                             startActivity(i);
@@ -1071,7 +1075,9 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                             Intent i = new Intent(getActivity(), RedditGallery.class);
                                             i.putExtra(RedditGallery.SUBREDDIT, subreddit);
                                             i.putExtra(MediaView.SUBMISSION_URL, adapter.submission.getUrl());
-                                            i.putExtra(EXTRA_SUBMISSION_TITLE, adapter.submission.getTitle());
+                                            i.putExtra(
+                                                    EXTRA_SUBMISSION_TITLE,
+                                                    FileUtil.buildDownloadName(adapter.submission));
                                             // Pass the list of GalleryImage via a Serializable extra
                                             i.putExtra(RedditGallery.GALLERY_URLS, images);
                                             startActivity(i);
@@ -1138,7 +1144,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                         }
                                         i.putExtra(
                                                 EXTRA_SUBMISSION_TITLE,
-                                                adapter.submission.getTitle());
+                                                FileUtil.buildDownloadName(adapter.submission));
                                         getActivity().startActivity(i);
                                         getActivity()
                                                 .overridePendingTransition(

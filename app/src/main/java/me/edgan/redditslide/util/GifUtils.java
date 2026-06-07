@@ -355,6 +355,18 @@ public class GifUtils {
                                 parentDir = subFolder;
                             }
 
+                            // Create media-type subfolder if needed. Videos and GIFs share the
+                            // "videos" folder.
+                            if (SettingValues.imageTypeSubfolders) {
+                                DocumentFile typeFolder =
+                                        FileUtil.getOrCreateDirectory(parentDir, "videos");
+                                if (typeFolder == null) {
+                                    saveError = new Exception("Could not create type folder");
+                                    return null;
+                                }
+                                parentDir = typeFolder;
+                            }
+
                             // Pick extension/mime from the source URL. DASH and reddit
                             // preview URLs always yield mp4; tumblr .gif URLs yield gif bytes.
                             boolean savesAsMp4 = willSaveAsMp4(uri);

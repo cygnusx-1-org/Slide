@@ -1230,6 +1230,8 @@
     <string name="theme_pixel">Pixel</string>
     <string name="save_images_to_subreddit_specific_subfolders">Save images to subreddit-specific subfolders</string>
     <string name="description_save_subfolders">Works in submission and comment views</string>
+    <string name="save_media_to_type_specific_subfolders">Save media to type-specific subfolders</string>
+    <string name="description_save_type_subfolders">Images go to \"images\", videos and GIFs to \"videos\"</string>
     <string name="show_image_download_button">Download Shortcut</string>
     <string name="description_image_download_button">Show download button in the image viewer</string>
     <string name="content_settings">Content settings</string>

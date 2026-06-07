@@ -6,6 +6,10 @@ import android.net.Uri;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
+import androidx.documentfile.provider.DocumentFile;
+
+import net.dean.jraw.models.Comment;
+import net.dean.jraw.models.Submission;
 
 import java.io.File;
 import java.io.IOException;
@@ -224,5 +228,76 @@ public class FileUtil {
 
     public static String getValidFileName(String title) {
         return getValidFileName(title, "", "");
+    }
+
+    /**
+     * Builds the base name used for a downloaded file by joining the post title with the Reddit
+     * post id and (for media saved from a comment) the comment id, separated by underscores.
+     *
+     * <p>Post content yields {@code title_postId}; comment content yields {@code
+     * title_postId_commentId}. Empty/null parts are skipped, so when nothing is available the
+     * result is an empty string and callers fall back to a timestamp, matching the previous
+     * behavior. A file index and extension are appended later by the save code.
+     *
+     * @param title Post title (may be null/empty)
+     * @param postId Reddit post (submission) id, such as "1abc2de" (may be null/empty)
+     * @param commentId Reddit comment id when saving comment media, otherwise null/empty
+     * @return Underscore-joined base name without extension
+     */
+    public static String buildDownloadName(String title, String postId, String commentId) {
+        StringBuilder sb = new StringBuilder();
+
+        if (title != null && !title.trim().isEmpty()) {
+            sb.append(title);
+        }
+        if (postId != null && !postId.isEmpty()) {
+            if (sb.length() > 0) sb.append("_");
+            sb.append(postId);
+        }
+        if (commentId != null && !commentId.isEmpty()) {
+            if (sb.length() > 0) sb.append("_");
+            sb.append(commentId);
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Builds the download base name for media that belongs to a post, yielding {@code
+     * title_postId}.
+     *
+     * @param submission The post the media belongs to
+     * @return Underscore-joined base name without extension
+     */
+    public static String buildDownloadName(Submission submission) {
+        return buildDownloadName(submission.getTitle(), submission.getId(), null);
+    }
+
+    /**
+     * Builds the download base name for media saved from a comment, yielding {@code
+     * title_postId_commentId}.
+     *
+     * @param comment The comment the media was saved from
+     * @return Underscore-joined base name without extension
+     */
+    public static String buildDownloadName(Comment comment) {
+        return buildDownloadName(
+                comment.getSubmissionTitle(), comment.getSubmissionId(), comment.getId());
+    }
+
+    /**
+     * Looks up a child directory by name and creates it if it does not exist.
+     *
+     * @param parent Directory to look in / create within
+     * @param name Name of the child directory
+     * @return The existing or newly created directory, or null if creation failed
+     */
+    @Nullable
+    public static DocumentFile getOrCreateDirectory(DocumentFile parent, String name) {
+        DocumentFile existing = parent.findFile(name);
+        if (existing != null && existing.isDirectory()) {
+            return existing;
+        }
+        return parent.createDirectory(name);
     }
 }

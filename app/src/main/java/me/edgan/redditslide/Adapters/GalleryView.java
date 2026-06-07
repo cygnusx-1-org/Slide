@@ -40,6 +40,7 @@ import me.edgan.redditslide.util.SubmissionThumbnailHelper;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.CompatUtil;
+import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.JsonUtil;
 import me.edgan.redditslide.util.LinkUtil;
 
@@ -255,7 +256,8 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                             myIntent.putExtra(
                                                     MediaView.EXTRA_URL, submission.getUrl());
                                             myIntent.putExtra(
-                                                    EXTRA_SUBMISSION_TITLE, submission.getTitle());
+                                                    EXTRA_SUBMISSION_TITLE,
+                                                    FileUtil.buildDownloadName(submission));
                                             main.startActivity(myIntent);
                                         } else {
                                             LinkUtil.openExternally(submission.getUrl());
@@ -309,7 +311,7 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                                 i.putExtra(AlbumPager.SUBREDDIT, subreddit);
                                                 i.putExtra(
                                                         EXTRA_SUBMISSION_TITLE,
-                                                        submission.getTitle());
+                                                        FileUtil.buildDownloadName(submission));
                                                 i.putExtra(Album.EXTRA_URL, submission.getUrl());
                                             } else {
                                                 i = new Intent(main, Album.class);
@@ -317,7 +319,7 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                                 i.putExtra(Album.EXTRA_URL, submission.getUrl());
                                                 i.putExtra(
                                                         EXTRA_SUBMISSION_TITLE,
-                                                        submission.getTitle());
+                                                        FileUtil.buildDownloadName(submission));
                                             }
                                             main.startActivity(i);
                                         } else {
@@ -339,7 +341,8 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                                         submission.getSubredditName());
                                             }
                                             i.putExtra(
-                                                    EXTRA_SUBMISSION_TITLE, submission.getTitle());
+                                                    EXTRA_SUBMISSION_TITLE,
+                                                    FileUtil.buildDownloadName(submission));
 
                                             i.putExtra(
                                                     RedditGallery.SUBREDDIT,

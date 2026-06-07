@@ -69,6 +69,7 @@ import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.ClipboardUtil;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.DisplayUtil;
+import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.GifUtils;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LinkUtil;
@@ -138,7 +139,7 @@ public class PopulateNewsViewHolder {
                                                         MediaView.EXTRA_URL, submission.getUrl());
                                                 myIntent.putExtra(
                                                         EXTRA_SUBMISSION_TITLE,
-                                                        submission.getTitle());
+                                                        FileUtil.buildDownloadName(submission));
                                                 contextActivity.startActivity(myIntent);
                                             } else {
                                                 LinkUtil.openExternally(submission.getUrl());
@@ -213,7 +214,7 @@ public class PopulateNewsViewHolder {
                                                 }
                                                 i.putExtra(
                                                         EXTRA_SUBMISSION_TITLE,
-                                                        submission.getTitle());
+                                                        FileUtil.buildDownloadName(submission));
                                                 i.putExtra(Album.EXTRA_URL, submission.getUrl());
 
                                                 PopulateBase.addAdaptorPosition(
@@ -313,7 +314,9 @@ public class PopulateNewsViewHolder {
         if (SettingValues.image) {
             Intent myIntent = new Intent(contextActivity, MediaView.class);
             myIntent.putExtra(MediaView.SUBREDDIT, submission.getSubredditName());
-            myIntent.putExtra(EXTRA_SUBMISSION_TITLE, submission.getTitle());
+            myIntent.putExtra(
+                    EXTRA_SUBMISSION_TITLE,
+                    FileUtil.buildDownloadName(submission));
             String previewUrl;
             String url = submission.getUrl();
 
@@ -369,7 +372,9 @@ public class PopulateNewsViewHolder {
 
             Intent myIntent = new Intent(contextActivity, MediaView.class);
             myIntent.putExtra(MediaView.SUBREDDIT, submission.getSubredditName());
-            myIntent.putExtra(EXTRA_SUBMISSION_TITLE, submission.getTitle());
+            myIntent.putExtra(
+                    EXTRA_SUBMISSION_TITLE,
+                    FileUtil.buildDownloadName(submission));
 
             GifUtils.AsyncLoadGif.VideoType t =
                     GifUtils.AsyncLoadGif.getVideoType(submission.getUrl());
