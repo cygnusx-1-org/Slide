@@ -6,9 +6,9 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 7.5.8 / 2026-6-10
 ============
-* Implemented Have separate folders for image/video downloads #268
-* Fixed Frontpage sort->time would save as default sort->time #278
-* Rewrite the filters in Settings | Filters into individual searchable views
+* The new default is the RedReader client ID. 
+* New Enable Overrides toggle, off by default, to still allow overriding the client ID, user agent, and redirect URI 
+* Tons of enhanced exception handling
 
 7.5.7 / 2026-6-7
 ===========
