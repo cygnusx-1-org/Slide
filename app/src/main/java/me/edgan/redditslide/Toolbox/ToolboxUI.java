@@ -708,7 +708,7 @@ public class ToolboxUI {
                                     flair[0],
                                     flair[1]);
                 }
-            } catch (ApiException | NetworkException e) {
+            } catch (ApiException | RuntimeException e) {
                 success = false;
             }
 
@@ -739,7 +739,7 @@ public class ToolboxUI {
             try {
                 new InboxManager(Authentication.reddit).compose(from, to, subject, body);
                 return true;
-            } catch (ApiException | NetworkException e) {
+            } catch (ApiException | RuntimeException e) {
                 return false;
             }
         }
@@ -770,7 +770,7 @@ public class ToolboxUI {
                                     DistinguishedStatus.MODERATOR);
                 }
                 return true;
-            } catch (ApiException | NetworkException e) {
+            } catch (ApiException | RuntimeException e) {
                 return false;
             }
         }
@@ -847,7 +847,8 @@ public class ToolboxUI {
 
             try {
                 Toolbox.downloadUsernotes(strings[0]);
-            } catch (NetworkException e) {
+            } catch (RuntimeException e) {
+                // Connection failures surface as a bare RuntimeException (not NetworkException)
                 return false;
             }
             if (Toolbox.getUsernotes(strings[0]) == null) {
@@ -910,7 +911,8 @@ public class ToolboxUI {
         protected Boolean doInBackground(String... strings) {
             try {
                 Toolbox.downloadUsernotes(strings[0]);
-            } catch (NetworkException e) {
+            } catch (RuntimeException e) {
+                // Connection failures surface as a bare RuntimeException (not NetworkException)
                 return false;
             }
             Toolbox.getUsernotes(strings[0]).removeNote(strings[1], note);

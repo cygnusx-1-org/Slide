@@ -315,7 +315,10 @@ public class Toolbox {
         protected Void doInBackground(String... subreddit) {
             try {
                 downloadUsernotes(subreddit[0]);
-            } catch (NetworkException ignored) {
+            } catch (RuntimeException ignored) {
+                // RestClient wraps connection failures (e.g. SocketTimeoutException) in a plain
+                // RuntimeException, and NetworkException is itself unchecked, so catch
+                // RuntimeException to avoid crashing the app on network blips.
             }
             return null;
         }
@@ -326,7 +329,10 @@ public class Toolbox {
         protected Void doInBackground(String... subreddit) {
             try {
                 downloadToolboxConfig(subreddit[0]);
-            } catch (NetworkException ignored) {
+            } catch (RuntimeException ignored) {
+                // RestClient wraps connection failures (e.g. SocketTimeoutException) in a plain
+                // RuntimeException, and NetworkException is itself unchecked, so catch
+                // RuntimeException to avoid crashing the app on network blips.
             }
             return null;
         }

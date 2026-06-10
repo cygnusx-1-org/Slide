@@ -54,7 +54,7 @@ public class PopulateBase {
         protected Void doInBackground(String... reason) {
             try {
                 new AccountManager(Authentication.reddit).report(submission, reason[0]);
-            } catch (ApiException e) {
+            } catch (ApiException | RuntimeException e) {
                 e.printStackTrace();
             }
             return null;

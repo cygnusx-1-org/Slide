@@ -1015,8 +1015,13 @@ public class PopulateNewsViewHolder {
                                 new AsyncTask<Void, Void, Ruleset>() {
                                     @Override
                                     protected Ruleset doInBackground(Void... voids) {
-                                        return Authentication.reddit.getRules(
-                                                submission.getSubredditName());
+                                        try {
+                                            return Authentication.reddit.getRules(
+                                                    submission.getSubredditName());
+                                        } catch (RuntimeException e) {
+                                            // Connection failures surface as a bare RuntimeException
+                                            return null;
+                                        }
                                     }
 
                                     @Override
@@ -1025,6 +1030,10 @@ public class PopulateNewsViewHolder {
                                                 .getCustomView()
                                                 .findViewById(R.id.report_loading)
                                                 .setVisibility(View.GONE);
+                                        if (rules == null) {
+                                            // Could not load rules (offline); leave the dialog as-is
+                                            return;
+                                        }
                                         if (rules.getSubredditRules().size() > 0) {
                                             TextView subHeader = new TextView(mContext);
                                             subHeader.setText(

@@ -217,7 +217,7 @@ public class PopulateShadowboxInfo {
                                                             .save(s);
                                                     ActionStates.setSaved(s, true);
                                                 }
-                                            } catch (ApiException e) {
+                                            } catch (ApiException | RuntimeException e) {
                                                 e.printStackTrace();
                                             }
 
@@ -595,7 +595,7 @@ public class PopulateShadowboxInfo {
                                                             .save(s);
                                                     ActionStates.setSaved(s, true);
                                                 }
-                                            } catch (ApiException e) {
+                                            } catch (ApiException | RuntimeException e) {
                                                 e.printStackTrace();
                                             }
 
@@ -925,8 +925,13 @@ public class PopulateShadowboxInfo {
                                         new AsyncTask<Void, Void, Ruleset>() {
                                             @Override
                                             protected Ruleset doInBackground(Void... voids) {
-                                                return Authentication.reddit.getRules(
-                                                        submission.getSubredditName());
+                                                try {
+                                                    return Authentication.reddit.getRules(
+                                                            submission.getSubredditName());
+                                                } catch (RuntimeException e) {
+                                                    // Connection failures surface as a bare RuntimeException
+                                                    return null;
+                                                }
                                             }
 
                                             @Override
@@ -935,6 +940,10 @@ public class PopulateShadowboxInfo {
                                                         .getCustomView()
                                                         .findViewById(R.id.report_loading)
                                                         .setVisibility(View.GONE);
+                                                if (rules == null) {
+                                                    // Could not load rules (offline); leave the dialog as-is
+                                                    return;
+                                                }
                                                 if (rules.getSubredditRules().size() > 0) {
                                                     TextView subHeader = new TextView(mContext);
                                                     subHeader.setText(

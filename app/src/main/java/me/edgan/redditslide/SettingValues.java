@@ -154,12 +154,14 @@ public class SettingValues {
     public static final String PREF_REDDIT_CLIENT_ID_OVERRIDE = "redditClientOverride";
     public static final String PREF_REDDIT_REDIRECT_URI_OVERRIDE = "redditRedirectUriOverride";
     public static final String PREF_REDDIT_USER_AGENT_OVERRIDE = "redditUserAgentOverride";
+    public static final String PREF_REDDIT_ENABLE_OVERRIDES = "redditEnableOverrides";
     public static final String PREF_DIALOG_COLORED_BORDER = "dialogColoredBorder";
 
     public static String imageSaveLocation;
     public static String redditClientIdOverride = "";
     public static String redditRedirectUriOverride = "";
     public static String redditUserAgentOverride = "";
+    public static boolean redditEnableOverrides = false;
     public static CreateCardView.CardEnum defaultCardView;
     public static Sorting defaultSorting;
     public static Sorting frontpageSorting;
@@ -318,6 +320,7 @@ public class SettingValues {
         redditClientIdOverride = settings.getString(PREF_REDDIT_CLIENT_ID_OVERRIDE, "");
         redditRedirectUriOverride = settings.getString(PREF_REDDIT_REDIRECT_URI_OVERRIDE, "");
         redditUserAgentOverride = settings.getString(PREF_REDDIT_USER_AGENT_OVERRIDE, "");
+        redditEnableOverrides = settings.getBoolean(PREF_REDDIT_ENABLE_OVERRIDES, false);
         defaultCardView =
                 CreateCardView.CardEnum.valueOf(
                         settings.getString("defaultCardViewNew", "LARGE").toUpperCase());

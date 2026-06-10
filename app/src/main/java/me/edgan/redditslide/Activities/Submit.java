@@ -750,6 +750,8 @@ public class Submit extends BaseActivity {
                                 true);
                         Submit.this.finish();
                     } catch (final ApiException e) {
+                        // Network failures (bare RuntimeException) propagate to the outer
+                        // catch (Exception); this branch only handles Reddit API errors.
                         Drafts.addDraft(text);
                         e.printStackTrace();
 
@@ -801,6 +803,8 @@ public class Submit extends BaseActivity {
 
                         Submit.this.finish();
                     } catch (final ApiException e) {
+                        // Network failures (bare RuntimeException) propagate to the outer
+                        // catch (Exception); this branch only handles Reddit API errors.
                         e.printStackTrace();
 
                         runOnUiThread(

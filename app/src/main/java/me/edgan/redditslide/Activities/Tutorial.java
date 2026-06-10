@@ -1,7 +1,6 @@
 package me.edgan.redditslide.Activities;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -10,39 +9,24 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Pair;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.textfield.TextInputLayout;
-
 import me.edgan.redditslide.Constants;
-import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
-import me.edgan.redditslide.SecretConstants;
-import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
@@ -350,7 +334,7 @@ public class Tutorial extends AppCompatActivity {
                     });
 
             personalizeBinding.done.setOnClickListener(v1 -> {
-                // Add a black overlay view
+                // Add a black overlay view for a clean transition into the restart
                 View overlayView = new View(getActivity());
                 overlayView.setBackgroundColor(Color.BLACK);
                 overlayView.setAlpha(1.0f); // Fully opaque black
@@ -361,141 +345,11 @@ public class Tutorial extends AppCompatActivity {
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT));
 
-                // Show client ID dialog first
-                final Context contextThemeWrapper = new ContextThemeWrapper(getContext(),
-                        new ColorPreferences(getContext()).getFontStyle().getBaseId());
-
-                // Calculate padding in dp
-                int paddingDp = (int) TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    16,
-                    getResources().getDisplayMetrics()
-                );
-
-                // Create a vertical LinearLayout to hold the dialog contents
-                LinearLayout dialogContainer = new LinearLayout(contextThemeWrapper);
-                dialogContainer.setOrientation(LinearLayout.VERTICAL);
-                dialogContainer.setPadding(paddingDp, paddingDp, paddingDp, 0);
-
-                // Declare EditText here and make it final
-                final EditText input = new EditText(contextThemeWrapper);
-                String savedClientId = SettingValues.prefs.getString(SettingValues.PREF_REDDIT_CLIENT_ID_OVERRIDE, "");
-                input.setText(savedClientId);
-                input.setHint(R.string.enter_client_id);
-                input.setSingleLine(true);  // Make input single line
-
-                // Create horizontal layout for input field and camera button
-                LinearLayout inputRowLayout = new LinearLayout(contextThemeWrapper);
-                inputRowLayout.setOrientation(LinearLayout.HORIZONTAL);
-                inputRowLayout.setLayoutParams(new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-
-                // Create TextInputLayout for proper error handling
-                final TextInputLayout inputLayout = new TextInputLayout(contextThemeWrapper); // Make final
-                LinearLayout.LayoutParams inputLayoutParams = new LinearLayout.LayoutParams(
-                        0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
-                inputLayout.setLayoutParams(inputLayoutParams);
-                inputLayout.setErrorIconDrawable(null); // Remove error icon
-                inputLayout.setErrorEnabled(true);
-
-                inputLayout.addView(input); // Add input to its layout first
-
-                // Add themed QR code scan button (camera icon)
-                ImageButton scanQrButton = new ImageButton(contextThemeWrapper);
-                scanQrButton.setImageResource(R.drawable.ic_camera);
-                // scanQrButton.setBackground(null); // REMOVED: Potential cause of visibility issue
-                scanQrButton.setPadding(0,0,0,0); // Remove padding
-
-                LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                buttonParams.setMargins(paddingDp, 0, paddingDp, 0);
-                scanQrButton.setLayoutParams(buttonParams);
-
-                // Add views to horizontal layout
-                inputRowLayout.addView(inputLayout);
-                inputRowLayout.addView(scanQrButton);
-
-                // Add horizontal layout to main container
-                dialogContainer.addView(inputRowLayout);
-
-                // Add bottom padding view
-                View paddingViewBottom = new View(contextThemeWrapper);
-                paddingViewBottom.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, paddingDp));
-                dialogContainer.addView(paddingViewBottom);
-
-                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(contextThemeWrapper)
-                        .setTitle(R.string.reddit_client_id)
-                        .setView(dialogContainer)
-                        .setPositiveButton(R.string.btn_ok, null)
-                        .setCancelable(false);  // This prevents dismissing when clicking outside
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
-
-                // Get the positive button and initially disable it
-                Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                positiveButton.setEnabled(false);
-
-                // Set click listener for Scan button
-                scanQrButton.setOnClickListener(vScan -> {
-                    QrCodeScannerHelper.startScan(getActivity(),
-                            new QrCodeScannerHelper.EditTextUpdateCallback(input, getContext()));
-                });
-
-                // Set click listener for positive button
-                positiveButton.setOnClickListener(v -> {
-                    String clientId = input.getText().toString().trim();
-                    String shortClientId = SecretConstants.getGoogleShortClientID(getContext());
-
-                    // If input is 8 chars, validate against shortClientId
-                    if (clientId.length() == 8 && !clientId.equals(shortClientId)) {
-                        inputLayout.setError("Invalid Client ID");
-                        return;  // Don't proceed
-                    }
-
-                    // If we get here, either the input is 22 chars or it matches shortClientId
-                    if (clientId.equals(shortClientId)) {
-                        clientId = SecretConstants.getGoogleLongClientID(getContext());
-                    }
-
-                    // Set the value in memory
-                    SettingValues.redditClientIdOverride = clientId;
-
-                    // Save to preferences
-                    if (clientId.isEmpty()) {
-                        SettingValues.prefs.edit()
-                                .remove(SettingValues.PREF_REDDIT_CLIENT_ID_OVERRIDE)
-                                .commit();
-                    } else {
-                        SettingValues.prefs.edit()
-                                .putString(SettingValues.PREF_REDDIT_CLIENT_ID_OVERRIDE, clientId)
-                                .commit();
-                    }
-
-                    // Complete tutorial and restart app
-                    Reddit.colors.edit().putString("Tutorial", "S").commit();
-                    Reddit.appRestart.edit().apply();
-                    Reddit.forceRestart(getActivity(), false);
-                    dialog.dismiss();
-                });
-
-                // Add text change listener to enable/disable OK button based on input length
-                input.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        inputLayout.setError(null);
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        int length = s.toString().trim().length();
-                        positiveButton.setEnabled(length == 8 || length == 22);
-                    }
-                });
+                // Complete tutorial and restart app. The app ships with a default Reddit client ID,
+                // so there is no need to prompt for one here.
+                Reddit.colors.edit().putString("Tutorial", "S").commit();
+                Reddit.appRestart.edit().apply();
+                Reddit.forceRestart(getActivity(), false);
             });
 
             return personalizeBinding.getRoot();

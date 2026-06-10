@@ -58,7 +58,7 @@ public class Constants {
     public static final int FAB_SEARCH = 3;
 
     /** Reddit OAuth credentials */
-    private static final String REDDIT_CLIENT_ID_DEFAULT = "KI2Nl9A_ouG9Qw";
+    private static final String REDDIT_CLIENT_ID_DEFAULT = "yH0aTnJEt6qUgGn835B4vg";
 
     /**
      * Gets the Reddit client ID to use for authentication. Returns the user-specified override if
@@ -66,7 +66,7 @@ public class Constants {
      */
     public static String getClientId() {
         // Make sure settings are loaded
-        if (SettingValues.prefs == null) {
+        if (SettingValues.prefs == null || !overridesEnabled()) {
             return REDDIT_CLIENT_ID_DEFAULT;
         }
 
@@ -75,14 +75,14 @@ public class Constants {
         return !override.isEmpty() ? override : REDDIT_CLIENT_ID_DEFAULT;
     }
 
-    public static final String REDDIT_REDIRECT_URL = "http://www.ccrama.me";
+    public static final String REDDIT_REDIRECT_URL = "redreader://rr_oauth_redir";
 
     /**
      * Gets the Reddit redirect URL to use for authentication. Returns the user-specified override
      * if set, otherwise returns the default.
      */
     public static String getRedirectUrl() {
-        if (SettingValues.prefs == null) {
+        if (SettingValues.prefs == null || !overridesEnabled()) {
             return REDDIT_REDIRECT_URL;
         }
 
@@ -97,7 +97,7 @@ public class Constants {
      * override if set, otherwise returns the default.
      */
     public static String getUserAgent() {
-        if (SettingValues.prefs != null) {
+        if (SettingValues.prefs != null && overridesEnabled()) {
             String override =
                     SettingValues.prefs.getString(
                             SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE, "");
@@ -106,7 +106,19 @@ public class Constants {
             }
         }
 
-        return "android:me.edgan.RedditSlide:v" + BuildConfig.VERSION_NAME;
+        return "org.quantumbadger.redreader/1.25.2";
+    }
+
+    /**
+     * Whether the user has opted in to using their own Reddit client ID, redirect URI, and user
+     * agent overrides. Defaults to false so the app uses its built-in defaults unless the user
+     * explicitly enables overrides.
+     */
+    public static boolean overridesEnabled() {
+        if (SettingValues.prefs == null) {
+            return false;
+        }
+        return SettingValues.prefs.getBoolean(SettingValues.PREF_REDDIT_ENABLE_OVERRIDES, false);
     }
 
     public enum BackButtonBehaviorOptions {

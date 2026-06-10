@@ -1351,6 +1351,32 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
 
         userAgentLayout.setOnClickListener(v -> showUserAgentDialog());
 
+        // * Enable overrides toggle
+        {
+            SwitchCompat enableOverridesSwitch =
+                    context.findViewById(R.id.settings_general_enable_overrides);
+
+            // Grey out and disable the override rows when overrides are turned off.
+            setOverrideRowsEnabled(
+                    SettingValues.redditEnableOverrides, clientId, redirectUri, userAgentLayout);
+
+            if (enableOverridesSwitch != null) {
+                enableOverridesSwitch.setChecked(SettingValues.redditEnableOverrides);
+                enableOverridesSwitch.setOnCheckedChangeListener(
+                        (buttonView, isChecked) -> {
+                            SettingValues.redditEnableOverrides = isChecked;
+                            SettingValues.prefs
+                                    .edit()
+                                    .putBoolean(
+                                            SettingValues.PREF_REDDIT_ENABLE_OVERRIDES, isChecked)
+                                    .apply();
+
+                            setOverrideRowsEnabled(
+                                    isChecked, clientId, redirectUri, userAgentLayout);
+                        });
+            }
+        }
+
         // Add notification permission request button for Android 13+
         RelativeLayout notifPermLayout = context.findViewById(R.id.settings_general_notification_permission);
         if (notifPermLayout != null) {
@@ -1934,6 +1960,21 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 })
                 .setNegativeButton(R.string.btn_cancel, null)
                 .show();
+    }
+
+    /**
+     * Enables or disables (and greys out) the Reddit client ID, redirect URI, and user agent
+     * override rows. When disabled, the rows are non-clickable and dimmed to signal that the app
+     * defaults are in use.
+     */
+    private void setOverrideRowsEnabled(boolean enabled, View... rows) {
+        for (View row : rows) {
+            if (row != null) {
+                row.setEnabled(enabled);
+                row.setClickable(enabled);
+                row.setAlpha(enabled ? 1f : 0.5f);
+            }
+        }
     }
 
     private void showUserAgentDialog() {

@@ -585,7 +585,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 new net.dean.jraw.managers.AccountManager(Authentication.reddit)
                         .reply(replyTo, text);
                 sent = true;
-            } catch (ApiException e) {
+            } catch (ApiException | RuntimeException e) {
                 sent = false;
                 e.printStackTrace();
             }
@@ -665,7 +665,11 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         @Override
         protected Void doInBackground(Message... params) {
-            new InboxManager(Authentication.reddit).setRead(b, params[0]);
+            try {
+                new InboxManager(Authentication.reddit).setRead(b, params[0]);
+            } catch (RuntimeException e) {
+                // Connection failures surface as a bare RuntimeException (not NetworkException)
+            }
             return null;
         }
     }

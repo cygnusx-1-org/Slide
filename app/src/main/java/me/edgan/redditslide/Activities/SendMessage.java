@@ -235,7 +235,7 @@ public class SendMessage extends BaseActivity {
                 try {
                     new net.dean.jraw.managers.AccountManager(Authentication.reddit)
                             .reply(previousMessage, bodytext);
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     messageSent = false;
                     e.printStackTrace();
                 }
@@ -269,6 +269,11 @@ public class SendMessage extends BaseActivity {
                     }
 
                     // todo show captcha
+                } catch (RuntimeException e) {
+                    // Connection failures surface as a bare RuntimeException; leave
+                    // messageSentStatus null so onPostExecute shows the generic failure.
+                    messageSent = false;
+                    e.printStackTrace();
                 }
             }
         }

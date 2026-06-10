@@ -61,7 +61,6 @@ import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
 
 import net.dean.jraw.ApiException;
-import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.managers.ModerationManager;
 import net.dean.jraw.models.Comment;
@@ -870,7 +869,7 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             protected Boolean doInBackground(Void... params) {
                 try {
                     new ModerationManager(Authentication.reddit).approve(comment);
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                     return false;
                 }
@@ -905,7 +904,7 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 try {
                     new ModerationManager(Authentication.reddit)
                             .setDistinguishedStatus(comment, DistinguishedStatus.MODERATOR);
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                     return false;
                 }
@@ -940,7 +939,7 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 try {
                     new ModerationManager(Authentication.reddit)
                             .setDistinguishedStatus(comment, DistinguishedStatus.NORMAL);
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                     return false;
                 }
@@ -978,7 +977,7 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             protected Boolean doInBackground(Void... params) {
                 try {
                     new ModerationManager(Authentication.reddit).remove(comment, spam);
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                     return false;
                 }
@@ -1064,7 +1063,7 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                             .setDistinguishedStatus(
                                     Authentication.reddit.get(comment.getFullName()).get(0),
                                     DistinguishedStatus.MODERATOR);
-                } catch (ApiException | NetworkException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                     return false;
                 }
@@ -1105,7 +1104,7 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     } else {
                         new ModerationManager(Authentication.reddit).setUnlocked(comment);
                     }
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                     return false;
                 }

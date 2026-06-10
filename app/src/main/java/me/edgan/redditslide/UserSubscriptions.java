@@ -17,7 +17,6 @@ import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.StringUtil;
 
 import net.dean.jraw.ApiException;
-import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.managers.MultiRedditManager;
 import net.dean.jraw.models.MultiReddit;
@@ -410,7 +409,7 @@ public class UserSubscriptions {
                             multiPath);
                 }
             }
-        } catch (ApiException | NetworkException e) {
+        } catch (ApiException | RuntimeException e) {
             e.printStackTrace();
         }
     }

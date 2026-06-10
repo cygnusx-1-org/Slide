@@ -442,6 +442,23 @@ public class CreateMulti extends BaseActivityAnim {
                                         .show();
                             }
                         });
+            } catch (RuntimeException e) {
+                // Connection failures surface as a bare RuntimeException, not
+                // NetworkException/ApiException, so handle them here to avoid crashing.
+                runOnUiThread(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                new AlertDialog.Builder(CreateMulti.this)
+                                        .setTitle(R.string.err_title)
+                                        .setMessage(R.string.misc_err)
+                                        .setNeutralButton(
+                                                R.string.btn_ok, (dialogInterface, i) -> finish())
+                                        .create()
+                                        .show();
+                            }
+                        });
+                e.printStackTrace();
             }
             return null;
         }

@@ -1365,8 +1365,12 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                                         "moderators");
                                                         paginator.setSorting(Sorting.HOT);
                                                         paginator.setTimePeriod(TimePeriod.ALL);
-                                                        while (paginator.hasNext()) {
-                                                            mods.addAll(paginator.next());
+                                                        try {
+                                                            while (paginator.hasNext()) {
+                                                                mods.addAll(paginator.next());
+                                                            }
+                                                        } catch (RuntimeException e) {
+                                                            // Connection failure; show whatever mods loaded instead of crashing
                                                         }
                                                         return null;
                                                     }

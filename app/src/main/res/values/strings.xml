@@ -1317,6 +1317,8 @@
     <string name="settings_reddit_redirect_uri_invalid">Invalid redirect URI: must be in the form scheme://hostname</string>
     <string name="reddit_user_agent_override">Reddit User Agent Override</string>
     <string name="click_custom_user_agent">Click to set custom user agent</string>
+    <string name="settings_enable_overrides">Enable Overrides</string>
+    <string name="settings_enable_overrides_desc">Use your custom client ID, redirect URI, and user agent instead of the app defaults. Leave off unless you know you need it.</string>
 
     <string name="settings_section_sound">Sound</string>
     <string name="settings_unmute_default">Unmute videos by default</string>

@@ -665,6 +665,8 @@ public class Crosspost extends BaseActivity {
                             true);
                     Crosspost.this.finish();
                 } catch (final ApiException e) {
+                    // Network/connection failures (bare RuntimeException) propagate to the
+                    // outer catch (Exception) below; this branch is just for API errors.
                     e.printStackTrace();
 
                     runOnUiThread(

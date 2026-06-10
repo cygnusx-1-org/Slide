@@ -69,7 +69,6 @@ import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
 
 import net.dean.jraw.ApiException;
-import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.http.oauth.InvalidScopeException;
 import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.managers.ModerationManager;
@@ -276,10 +275,15 @@ public class CommentAdapterHelper {
                                 new AsyncTask<Void, Void, Ruleset>() {
                                     @Override
                                     protected Ruleset doInBackground(Void... voids) {
-                                        return Authentication.reddit.getRules(
-                                                adapter.currentBaseNode
-                                                        .getComment()
-                                                        .getSubredditName());
+                                        try {
+                                            return Authentication.reddit.getRules(
+                                                    adapter.currentBaseNode
+                                                            .getComment()
+                                                            .getSubredditName());
+                                        } catch (RuntimeException e) {
+                                            // Connection failures surface as a bare RuntimeException
+                                            return null;
+                                        }
                                     }
 
                                     @Override
@@ -288,6 +292,10 @@ public class CommentAdapterHelper {
                                                 .getCustomView()
                                                 .findViewById(R.id.report_loading)
                                                 .setVisibility(View.GONE);
+                                        if (rules == null) {
+                                            // Could not load rules (offline); leave the dialog as-is
+                                            return;
+                                        }
                                         if (rules.getSubredditRules().size() > 0) {
                                             TextView subHeader = new TextView(mContext);
                                             subHeader.setText(
@@ -411,7 +419,7 @@ public class CommentAdapterHelper {
                     new AccountManager(Authentication.reddit)
                             .sendRepliesToInbox(comment, showReplies);
 
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                 }
 
@@ -488,7 +496,7 @@ public class CommentAdapterHelper {
                         ActionStates.setSaved(comment, true);
                     }
 
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                 }
 
@@ -683,7 +691,7 @@ public class CommentAdapterHelper {
                                                                             Authentication.reddit)
                                                                     .save(comment, t);
                                                             return true;
-                                                        } catch (ApiException e) {
+                                                        } catch (ApiException | RuntimeException e) {
                                                             e.printStackTrace();
                                                             return false;
                                                         }
@@ -1135,7 +1143,7 @@ public class CommentAdapterHelper {
                 try {
                     new ModerationManager(Authentication.reddit)
                             .setDistinguishedStatus(comment, DistinguishedStatus.MODERATOR);
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                     return false;
                 }
@@ -1170,7 +1178,7 @@ public class CommentAdapterHelper {
                 try {
                     new ModerationManager(Authentication.reddit)
                             .setDistinguishedStatus(comment, DistinguishedStatus.NORMAL);
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                     return false;
                 }
@@ -1204,7 +1212,7 @@ public class CommentAdapterHelper {
             protected Boolean doInBackground(Void... params) {
                 try {
                     new ModerationManager(Authentication.reddit).setSticky(comment, true);
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                     return false;
                 }
@@ -1274,7 +1282,7 @@ public class CommentAdapterHelper {
             protected Boolean doInBackground(Void... params) {
                 try {
                     new ModerationManager(Authentication.reddit).approve(comment);
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                     return false;
                 }
@@ -1308,7 +1316,7 @@ public class CommentAdapterHelper {
             protected Boolean doInBackground(Void... params) {
                 try {
                     new ModerationManager(Authentication.reddit).setSticky(comment, false);
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                     return false;
                 }
@@ -1352,7 +1360,7 @@ public class CommentAdapterHelper {
             protected Boolean doInBackground(Void... params) {
                 try {
                     new ModerationManager(Authentication.reddit).remove(comment, spam);
-                } catch (ApiException | NetworkException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                     return false;
                 }
@@ -1450,7 +1458,7 @@ public class CommentAdapterHelper {
                             .setDistinguishedStatus(
                                     Authentication.reddit.get(comment.getFullName()).get(0),
                                     DistinguishedStatus.MODERATOR);
-                } catch (ApiException | NetworkException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                     return false;
                 }
@@ -1491,7 +1499,7 @@ public class CommentAdapterHelper {
                     } else {
                         new ModerationManager(Authentication.reddit).setUnlocked(comment);
                     }
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                     return false;
                 }
@@ -2036,7 +2044,7 @@ public class CommentAdapterHelper {
                 new ModerationManager(Authentication.reddit).delete(baseNode.getComment());
                 adapter.deleted.add(baseNode.getComment().getFullName());
                 return true;
-            } catch (ApiException e) {
+            } catch (ApiException | RuntimeException e) {
                 e.printStackTrace();
                 return false;
             }
@@ -2056,7 +2064,7 @@ public class CommentAdapterHelper {
         protected Void doInBackground(String... reason) {
             try {
                 new AccountManager(Authentication.reddit).report(baseNode.getComment(), reason[0]);
-            } catch (ApiException e) {
+            } catch (ApiException | RuntimeException e) {
                 e.printStackTrace();
             }
             return null;

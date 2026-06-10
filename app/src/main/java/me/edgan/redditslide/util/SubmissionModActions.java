@@ -28,7 +28,6 @@ import com.google.android.material.snackbar.Snackbar;
 import net.dean.jraw.ApiException;
 import net.dean.jraw.fluent.FlairReference;
 import net.dean.jraw.fluent.FluentRedditClient;
-import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.http.oauth.InvalidScopeException;
 import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.managers.ModerationManager;
@@ -411,7 +410,7 @@ public class SubmissionModActions {
                             .setDistinguishedStatus(
                                     Authentication.reddit.get("t1_" + toDistinguish).get(0),
                                     DistinguishedStatus.MODERATOR);
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                     return false;
                 }
@@ -473,7 +472,7 @@ public class SubmissionModActions {
             protected Boolean doInBackground(Void... params) {
                 try {
                     new ModerationManager(Authentication.reddit).remove(submission, spam);
-                } catch (ApiException | NetworkException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                     return false;
                 }
@@ -593,7 +592,7 @@ public class SubmissionModActions {
                     new ModerationManager(Authentication.reddit)
                             .setFlair(submission.getSubredditName(), t, flair, submission);
                     return true;
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                     return false;
                 }
@@ -685,7 +684,7 @@ public class SubmissionModActions {
             protected Boolean doInBackground(Void... params) {
                 try {
                     new ModerationManager(Authentication.reddit).setSticky(submission, true);
-                } catch (ApiException | NetworkException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
 
                     return false;
@@ -719,7 +718,7 @@ public class SubmissionModActions {
             protected Boolean doInBackground(Void... params) {
                 try {
                     new ModerationManager(Authentication.reddit).setSticky(submission, false);
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                     return false;
                 }
@@ -752,7 +751,7 @@ public class SubmissionModActions {
             protected Boolean doInBackground(Void... params) {
                 try {
                     new ModerationManager(Authentication.reddit).setLocked(submission);
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                     return false;
                 }
@@ -781,7 +780,7 @@ public class SubmissionModActions {
             protected Boolean doInBackground(Void... params) {
                 try {
                     new ModerationManager(Authentication.reddit).setUnlocked(submission);
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
                     return false;
                 }
@@ -811,7 +810,7 @@ public class SubmissionModActions {
             protected Boolean doInBackground(Void... params) {
                 try {
                     new ModerationManager(Authentication.reddit).setDistinguishedStatus(submission, DistinguishedStatus.MODERATOR);
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
 
                     return false;
@@ -841,7 +840,7 @@ public class SubmissionModActions {
                 try {
                     // JRAW requires MODERATOR to undistinguish as well
                     new ModerationManager(Authentication.reddit).setDistinguishedStatus(submission, DistinguishedStatus.MODERATOR);
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
 
                     return false;
@@ -872,7 +871,7 @@ public class SubmissionModActions {
             protected Boolean doInBackground(Void... params) {
                 try {
                     new ModerationManager(Authentication.reddit).setNsfw(submission, true);
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
 
                     return false;
@@ -904,7 +903,7 @@ public class SubmissionModActions {
             protected Boolean doInBackground(Void... params) {
                 try {
                     new ModerationManager(Authentication.reddit).setNsfw(submission, false);
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
 
                     return false;
@@ -939,7 +938,7 @@ public class SubmissionModActions {
             protected Boolean doInBackground(Void... params) {
                 try {
                     new ModerationManager(Authentication.reddit).setSpoiler(submission, true);
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
 
                     return false;
@@ -972,7 +971,7 @@ public class SubmissionModActions {
             protected Boolean doInBackground(Void... params) {
                 try {
                     new ModerationManager(Authentication.reddit).setSpoiler(submission, false);
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
 
                     return false;
@@ -1020,7 +1019,7 @@ public class SubmissionModActions {
             protected Boolean doInBackground(Void... params) {
                 try {
                     new ModerationManager(Authentication.reddit).approve(submission);
-                } catch (ApiException e) {
+                } catch (ApiException | RuntimeException e) {
                     e.printStackTrace();
 
                     return false;

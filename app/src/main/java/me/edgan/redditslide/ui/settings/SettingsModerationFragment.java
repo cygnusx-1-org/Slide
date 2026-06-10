@@ -18,7 +18,6 @@ import me.edgan.redditslide.SettingValues.ToolboxRemovalMessageType;
 import me.edgan.redditslide.Toolbox.Toolbox;
 import me.edgan.redditslide.UserSubscriptions;
 
-import net.dean.jraw.http.NetworkException;
 
 public class SettingsModerationFragment {
 
@@ -263,12 +262,14 @@ public class SettingsModerationFragment {
             for (String sub : UserSubscriptions.modOf) {
                 try {
                     Toolbox.downloadToolboxConfig(sub);
-                } catch (NetworkException ignored) {
+                } catch (RuntimeException ignored) {
+                    // Connection failures surface as a bare RuntimeException (not NetworkException)
                 }
                 publishProgress();
                 try {
                     Toolbox.downloadUsernotes(sub);
-                } catch (NetworkException ignored) {
+                } catch (RuntimeException ignored) {
+                    // Connection failures surface as a bare RuntimeException (not NetworkException)
                 }
                 publishProgress();
             }
