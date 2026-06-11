@@ -16,6 +16,7 @@
 
 package me.edgan.redditslide.Activities;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -126,6 +127,9 @@ public class CreateMulti extends BaseActivityAnim {
     }
 
     @Override
+    // Intentionally intercepts Back to show a save/discard prompt instead of finishing;
+    // calling super.onBackPressed() would close the activity and defeat the dialog.
+    @SuppressLint("MissingSuperCall")
     public void onBackPressed() {
         new AlertDialog.Builder(CreateMulti.this)
                 .setTitle(R.string.general_confirm_exit)
@@ -353,10 +357,19 @@ public class CreateMulti extends BaseActivityAnim {
 
     /** Saves a Multireddit with applicable data in an async task */
     public class SaveMulti extends AsyncTask<Void, Void, Void> {
+        // Snapshot of the title field, read on the UI thread; doInBackground()
+        // runs on a worker thread and must not touch Views directly.
+        private String titleText;
+
+        @Override
+        protected void onPreExecute() {
+            titleText = title.getText().toString();
+        }
+
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                String multiName = title.getText().toString().replace(" ", "").replace("-", "_");
+                String multiName = titleText.replace(" ", "").replace("-", "_");
                 Pattern validName = Pattern.compile("^[A-Za-z0-9][A-Za-z0-9_]{2,20}$");
                 Matcher m = validName.matcher(multiName);
 
@@ -427,7 +440,7 @@ public class CreateMulti extends BaseActivityAnim {
                                         .show();
                             }
                         });
-                e.printStackTrace();
+                LogUtil.e(e, "CreateMulti.run failed");
             } catch (IllegalArgumentException e) {
                 runOnUiThread(
                         new Runnable() {
@@ -458,7 +471,7 @@ public class CreateMulti extends BaseActivityAnim {
                                         .show();
                             }
                         });
-                e.printStackTrace();
+                LogUtil.e(e, "CreateMulti.run failed");
             }
             return null;
         }
@@ -530,7 +543,7 @@ public class CreateMulti extends BaseActivityAnim {
                                                                         .show();
                                                             }
                                                         });
-                                                e.printStackTrace();
+                                                LogUtil.e(e, "CreateMulti.run failed");
                                             }
                                             return null;
                                         }

@@ -109,10 +109,12 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             position -= 1;
         }
 
-        if (dataSet.posts.get(position).getFullName().startsWith("t1")) // IS COMMENT
-        return COMMENT;
-        if (dataSet.posts.get(position).getFullName().startsWith("t4")) // IS MESSAGE
-        return MESSAGE;
+        if (dataSet.posts.get(position).getFullName().startsWith("t1")) { // IS COMMENT
+            return COMMENT;
+        }
+        if (dataSet.posts.get(position).getFullName().startsWith("t4")) { // IS MESSAGE
+            return MESSAGE;
+        }
         return POST;
     }
 
@@ -475,10 +477,10 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             if (Authentication.isLoggedIn) {
                 if (ActionStates.getVoteDirection(comment) == VoteDirection.UPVOTE) {
                     holder.score.setTextColor(
-                            mContext.getResources().getColor(R.color.md_orange_500));
+                            ContextCompat.getColor(mContext, R.color.md_orange_500));
                 } else if (ActionStates.getVoteDirection(comment) == VoteDirection.DOWNVOTE) {
                     holder.score.setTextColor(
-                            mContext.getResources().getColor(R.color.md_blue_500));
+                            ContextCompat.getColor(mContext, R.color.md_blue_500));
                 } else {
                     holder.score.setTextColor(holder.time.getCurrentTextColor());
                 }
@@ -870,7 +872,7 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 try {
                     new ModerationManager(Authentication.reddit).approve(comment);
                 } catch (ApiException | RuntimeException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "ModeratorAdapter.doInBackground failed");
                     return false;
                 }
                 return true;
@@ -905,7 +907,7 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     new ModerationManager(Authentication.reddit)
                             .setDistinguishedStatus(comment, DistinguishedStatus.MODERATOR);
                 } catch (ApiException | RuntimeException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "ModeratorAdapter.doInBackground failed");
                     return false;
                 }
                 return true;
@@ -940,7 +942,7 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     new ModerationManager(Authentication.reddit)
                             .setDistinguishedStatus(comment, DistinguishedStatus.NORMAL);
                 } catch (ApiException | RuntimeException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "ModeratorAdapter.doInBackground failed");
                     return false;
                 }
                 return true;
@@ -978,7 +980,7 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 try {
                     new ModerationManager(Authentication.reddit).remove(comment, spam);
                 } catch (ApiException | RuntimeException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "ModeratorAdapter.doInBackground failed");
                     return false;
                 }
                 return true;
@@ -1064,7 +1066,7 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                                     Authentication.reddit.get(comment.getFullName()).get(0),
                                     DistinguishedStatus.MODERATOR);
                 } catch (ApiException | RuntimeException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "ModeratorAdapter.doInBackground failed");
                     return false;
                 }
                 return true;
@@ -1105,7 +1107,7 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                         new ModerationManager(Authentication.reddit).setUnlocked(comment);
                     }
                 } catch (ApiException | RuntimeException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "ModeratorAdapter.doInBackground failed");
                     return false;
                 }
                 return true;

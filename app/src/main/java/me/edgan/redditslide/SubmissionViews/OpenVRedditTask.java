@@ -39,7 +39,7 @@ public class OpenVRedditTask extends AsyncTask<String, Void, Void> {
             OpenRedditLink.openUrl(contextActivity.get(), secondURL, true);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.e(e, "OpenVRedditTask.doInBackground failed");
             LinkUtil.openUrl(url, Palette.getColor(subreddit), contextActivity.get());
         }
         return null;

@@ -614,14 +614,24 @@ public class Crosspost extends BaseActivity {
 
     private class AsyncDo extends AsyncTask<Void, Void, Void> {
 
+        // Snapshot of View state, captured on the UI thread in onPreExecute().
+        // doInBackground() runs on a worker thread and must not touch Views directly.
+        private String subreddit;
+        private String title;
+        private boolean sendReplies;
+
         @Override
-        protected Void doInBackground(Void... voids) {
-            final String subreddit =
+        protected void onPreExecute() {
+            subreddit =
                     ((AutoCompleteTextView) findViewById(R.id.subreddittext))
                             .getText()
                             .toString();
-            final String title =
-                    ((EditText) findViewById(R.id.titletext)).getText().toString();
+            title = ((EditText) findViewById(R.id.titletext)).getText().toString();
+            sendReplies = inboxReplies.isChecked();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
             try {
                 try {
                     Map<String, String> args = new HashMap<>();
@@ -631,7 +641,7 @@ public class Crosspost extends BaseActivity {
                     args.put("sr", subreddit);
                     args.put("crosspost_fullname", toCrosspost.getFullName());
                     args.put("title", title);
-                    args.put("sendreplies", String.valueOf(inboxReplies.isChecked()));
+                    args.put("sendreplies", String.valueOf(sendReplies));
                     if (selectedFlairID != null) {
                         args.put("flair_id", selectedFlairID);
                     }
@@ -667,7 +677,7 @@ public class Crosspost extends BaseActivity {
                 } catch (final ApiException e) {
                     // Network/connection failures (bare RuntimeException) propagate to the
                     // outer catch (Exception) below; this branch is just for API errors.
-                    e.printStackTrace();
+                    LogUtil.e(e, "Crosspost.doInBackground failed");
 
                     runOnUiThread(
                             new Runnable() {
@@ -683,7 +693,7 @@ public class Crosspost extends BaseActivity {
                             });
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.e(e, "Crosspost.run failed");
 
                 runOnUiThread(
                         new Runnable() {

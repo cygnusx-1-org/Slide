@@ -25,6 +25,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import me.edgan.redditslide.util.LogUtil;
 
 public class ReaderMode extends BaseActivityAnim {
     private int mSubredditColor;
@@ -112,7 +113,7 @@ public class ReaderMode extends BaseActivityAnim {
                     articleText = readability.outerHtml();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.e(e, "ReaderMode.doInBackground failed");
             }
             return null;
         }

@@ -33,7 +33,7 @@ public class AdBlocker {
                 try {
                     loadFromAssets(context);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "AdBlocker.doInBackground failed");
                 }
                 return null;
             }
@@ -62,7 +62,7 @@ public class AdBlocker {
             String host = new URL(url).getHost();
             return host != null && hostMatches(host);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            LogUtil.e(e, "AdBlocker.isAd failed");
         }
         return false;
     }

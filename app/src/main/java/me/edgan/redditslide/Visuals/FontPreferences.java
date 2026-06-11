@@ -123,6 +123,7 @@ public class FontPreferences {
         private final int typeface;
         private final String title;
 
+        @RobotoTypefaces.RobotoTypeface
         public int getTypeface() {
             return typeface;
         }
@@ -152,6 +153,7 @@ public class FontPreferences {
         private final int typeface;
         private final String title;
 
+        @RobotoTypefaces.RobotoTypeface
         public int getTypeface() {
             return typeface;
         }

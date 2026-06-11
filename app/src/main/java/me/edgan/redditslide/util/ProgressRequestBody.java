@@ -33,7 +33,7 @@ public class ProgressRequestBody extends RequestBody {
         try {
             return mDelegate.contentLength();
         } catch (IOException e) {
-            e.printStackTrace();
+            LogUtil.e(e, "ProgressRequestBody.contentLength failed");
         }
         return -1;
     }

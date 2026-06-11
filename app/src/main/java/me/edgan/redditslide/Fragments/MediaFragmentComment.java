@@ -286,7 +286,7 @@ public class MediaFragmentComment extends Fragment {
                                 getContext().startActivity(i);
                             }
                         } catch (Exception e2) {
-                            e2.printStackTrace();
+                            LogUtil.e(e2, "MediaFragmentComment.onLongClick failed");
                             Intent i = new Intent(getContext(), Website.class);
                             i.putExtra(LinkUtil.EXTRA_URL, finalUrl);
                             getContext().startActivity(i);

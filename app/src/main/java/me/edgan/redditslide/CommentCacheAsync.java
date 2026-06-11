@@ -155,7 +155,7 @@ public class CommentCacheAsync extends AsyncTask<Void, Void, Void> {
                     try {
                         submissions.addAll(p.next());
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtil.e(e, "CommentCacheAsync.doInBackground failed");
                     }
                 }
 

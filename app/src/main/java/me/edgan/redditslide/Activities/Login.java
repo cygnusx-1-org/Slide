@@ -70,6 +70,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import androidx.core.content.ContextCompat;
 
 /** Created by ccrama on 5/27/2015. */
 public class Login extends BaseActivityAnim {
@@ -506,7 +507,7 @@ public class Login extends BaseActivityAnim {
             builder.setShareState(CustomTabsIntent.SHARE_STATE_ON);
             builder.setDefaultColorSchemeParams(
                     new CustomTabColorSchemeParams.Builder()
-                            .setToolbarColor(getResources().getColor(R.color.md_blue_500))
+                            .setToolbarColor(ContextCompat.getColor(Login.this, R.color.md_blue_500))
                             .build());
             CustomTabsIntent customTabsIntent = builder.build();
             customTabsIntent.intent.setPackage(
@@ -625,7 +626,7 @@ public class Login extends BaseActivityAnim {
             Log.e(
                     LOGIN_TAG,
                     "Proxy login request failed: " + e.getMessage());
-            e.printStackTrace();
+            LogUtil.e(e, "Login.proxyLoginRequest failed");
         }
 
         // Return null to let the WebView handle the original request normally
@@ -763,7 +764,7 @@ public class Login extends BaseActivityAnim {
             } catch (IllegalStateException | NetworkException | OAuthException e) {
                 Log.e(LOGIN_TAG, "OAuth failed: " + e.getClass().getSimpleName());
                 Log.e(LOGIN_TAG, "OAuth error message: " + e.getMessage());
-                e.printStackTrace();
+                LogUtil.e(e, "Login.doInBackground failed");
             } catch (RuntimeException e) {
                 // Catch runtime exceptions, which include Protocol exceptions from OkHttp
                 if (e.getCause() instanceof java.net.ProtocolException &&
@@ -774,11 +775,11 @@ public class Login extends BaseActivityAnim {
                     if (e.getCause() != null) {
                         Log.e(LOGIN_TAG, "Caused by: " + e.getCause().getClass().getSimpleName() + ": " + e.getCause().getMessage());
                     }
-                    e.printStackTrace();
+                    LogUtil.e(e, "Login.doInBackground failed");
                 }
             } catch (Exception e) {
                 Log.e(LOGIN_TAG, "Unexpected error during OAuth: " + e.getClass().getSimpleName() + ": " + e.getMessage());
-                e.printStackTrace();
+                LogUtil.e(e, "Login.doInBackground failed");
             }
             return null;
         }

@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
@@ -37,6 +38,7 @@ import androidx.media3.exoplayer.dash.manifest.AdaptationSet;
 import androidx.media3.exoplayer.dash.manifest.DashManifest;
 import androidx.media3.exoplayer.dash.manifest.DashManifestParser;
 import androidx.media3.exoplayer.dash.manifest.Representation;
+import androidx.media3.common.util.UnstableApi;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -79,6 +81,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 /** GIF handling utilities */
+@OptIn(markerClass = UnstableApi.class)
 public class GifUtils {
     private static final String TAG = "GifUtils";
 
@@ -950,7 +953,7 @@ public class GifUtils {
                         }
 
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        LogUtil.e(e, "GifUtils.loadGfycat failed");
                     }
                 }
 
@@ -1082,7 +1085,9 @@ public class GifUtils {
                                                             .setPositiveButton(R.string.btn_ok, (dialog, which) -> c.finish())
                                                             .create()
                                                             .show();
-                                                } catch (Exception ignored) {}
+                                                } catch (Exception e) {
+                                                    LogUtil.e(e, "Failed to show video-not-found dialog");
+                                                }
                                             }
                                         });
                             }
@@ -1203,7 +1208,7 @@ public class GifUtils {
                                 }
                             });
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "GifUtils.run failed");
                 }
             } else {
                 DataSource.Factory downloader =
@@ -1325,6 +1330,23 @@ public class GifUtils {
      * @param outputFile Output file path
      * @return Whether the muxing completed successfully
      */
+    /**
+     * Translates {@link MediaExtractor#getSampleFlags()} values (the
+     * {@code SAMPLE_FLAG_*} typedef) into {@link MediaCodec.BufferInfo#flags}
+     * values (the {@code BUFFER_FLAG_*} typedef) for muxing. The two APIs use
+     * distinct {@code @IntDef} typedefs even though the sync-frame bit coincides.
+     */
+    private static int sampleFlagsToBufferFlags(int sampleFlags) {
+        int bufferFlags = 0;
+        if ((sampleFlags & MediaExtractor.SAMPLE_FLAG_SYNC) != 0) {
+            bufferFlags |= MediaCodec.BUFFER_FLAG_KEY_FRAME;
+        }
+        if ((sampleFlags & MediaExtractor.SAMPLE_FLAG_PARTIAL_FRAME) != 0) {
+            bufferFlags |= MediaCodec.BUFFER_FLAG_PARTIAL_FRAME;
+        }
+        return bufferFlags;
+    }
+
     private static boolean mux(String videoFile, String audioFile, String outputFile) {
         MediaMuxer muxer = null;
         MediaExtractor videoExtractor = null;
@@ -1383,7 +1405,7 @@ public class GifUtils {
                 bufferInfo.offset = 0;
                 bufferInfo.size = sampleSize;
                 bufferInfo.presentationTimeUs = videoExtractor.getSampleTime();
-                bufferInfo.flags = videoExtractor.getSampleFlags();
+                bufferInfo.flags = sampleFlagsToBufferFlags(videoExtractor.getSampleFlags());
 
                 muxer.writeSampleData(videoTrackIndex, buffer, bufferInfo);
                 videoExtractor.advance();
@@ -1397,7 +1419,7 @@ public class GifUtils {
                 bufferInfo.offset = 0;
                 bufferInfo.size = sampleSize;
                 bufferInfo.presentationTimeUs = audioExtractor.getSampleTime();
-                bufferInfo.flags = audioExtractor.getSampleFlags();
+                bufferInfo.flags = sampleFlagsToBufferFlags(audioExtractor.getSampleFlags());
 
                 muxer.writeSampleData(audioTrackIndex, buffer, bufferInfo);
                 audioExtractor.advance();

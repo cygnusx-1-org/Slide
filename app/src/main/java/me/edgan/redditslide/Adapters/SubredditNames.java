@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import me.edgan.redditslide.util.LogUtil;
 
 /**
  * This class is reponsible for loading a list of subreddits from an endpoint {@link
@@ -135,7 +136,7 @@ public class SubredditNames {
                         }
 
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtil.e(e, "SubredditNames.doInBackground failed");
                         if (e.getMessage().contains("Forbidden")) {
                             Reddit.authentication.updateToken(context);
                         }
@@ -160,7 +161,7 @@ public class SubredditNames {
                         }
 
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtil.e(e, "SubredditNames.doInBackground failed");
                         if (e.getMessage().contains("Forbidden")) {
                             Reddit.authentication.updateToken(context);
                         }

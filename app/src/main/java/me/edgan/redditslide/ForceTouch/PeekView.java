@@ -7,6 +7,8 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.os.Build;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -184,10 +186,17 @@ public class PeekView extends FrameLayout {
         androidContentView = (FrameLayout) context.findViewById(android.R.id.content).getRootView();
 
         // initialize the display size
-        WindowMetrics windowMetrics = context.getWindowManager().getCurrentWindowMetrics();
-        Rect bounds = windowMetrics.getBounds();
-        screenHeight = bounds.height();
-        screenWidth = bounds.width();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowMetrics windowMetrics = context.getWindowManager().getCurrentWindowMetrics();
+            Rect bounds = windowMetrics.getBounds();
+            screenHeight = bounds.height();
+            screenWidth = bounds.width();
+        } else {
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            context.getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
+            screenHeight = displayMetrics.heightPixels;
+            screenWidth = displayMetrics.widthPixels;
+        }
 
         // set up the content we want to show
         this.content = content;

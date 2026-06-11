@@ -73,6 +73,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import me.edgan.redditslide.util.LogUtil;
 
 /** Created by ccrama on 9/19/2015. */
 public class PopulateSubmissionViewHolder {
@@ -648,7 +649,7 @@ public class PopulateSubmissionViewHolder {
                 downvotebutton.setVisibility(View.GONE);
             }
         } catch (Exception ignored) {
-            ignored.printStackTrace();
+            LogUtil.e(ignored, "PopulateSubmissionViewHolder.onClick failed");
         }
         final View edit = holder.edit;
 
@@ -679,7 +680,7 @@ public class PopulateSubmissionViewHolder {
                                         }
                                         return finalFlairs;
                                     } catch (Exception e) {
-                                        e.printStackTrace();
+                                        LogUtil.e(e, "PopulateSubmissionViewHolder.doInBackground failed");
                                         // sub probably has no flairs?
                                     }
 
@@ -980,8 +981,7 @@ public class PopulateSubmissionViewHolder {
                                                                                                         } catch (
                                                                                                                 ApiException
                                                                                                                         e) {
-                                                                                                            e
-                                                                                                                    .printStackTrace();
+                                                                                                            LogUtil.e(e, "PopulateSubmissionViewHolder.doInBackground failed");
                                                                                                         }
                                                                                                         return null;
                                                                                                     }
@@ -1148,8 +1148,7 @@ public class PopulateSubmissionViewHolder {
                                                                                                                                     } catch (
                                                                                                                                             ApiException
                                                                                                                                                     e) {
-                                                                                                                                        e
-                                                                                                                                                .printStackTrace();
+                                                                                                                                        LogUtil.e(e, "PopulateSubmissionViewHolder.doInBackground failed");
                                                                                                                                         return false;
                                                                                                                                     }
                                                                                                                                 }
@@ -1247,8 +1246,7 @@ public class PopulateSubmissionViewHolder {
                                                                                                             } catch (
                                                                                                                     ApiException
                                                                                                                             e) {
-                                                                                                                e
-                                                                                                                        .printStackTrace();
+                                                                                                                LogUtil.e(e, "PopulateSubmissionViewHolder.doInBackground failed");
                                                                                                                 return false;
                                                                                                             }
                                                                                                         }

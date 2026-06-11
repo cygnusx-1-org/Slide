@@ -64,6 +64,7 @@ import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
+import androidx.core.content.ContextCompat;
 
 public class DrawerController {
 
@@ -1043,7 +1044,7 @@ public class DrawerController {
 
         final EditText input = new EditText(contextThemeWrapper);
         input.setHint(mainActivity.getString(R.string.user_enter));
-        input.setHintTextColor(mainActivity.getResources().getColor(R.color.md_grey_700));
+        input.setHintTextColor(ContextCompat.getColor(mainActivity, R.color.md_grey_700));
         input.setSingleLine(true);
         input.setInputType(InputType.TYPE_CLASS_TEXT);
 

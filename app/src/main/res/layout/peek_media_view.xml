@@ -3,6 +3,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         xmlns:cardview="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         cardview:cardBackgroundColor="@android:color/transparent"
         android:gravity="center"
         cardview:cardCornerRadius="5dp"
@@ -62,7 +63,8 @@
                 android:background="#fff"
                 android:layout_height="match_parent"
                 android:layout_alignParentTop="true"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                tools:ignore="WebViewLayout" />
 
         <GridView
                 android:layout_width="match_parent"

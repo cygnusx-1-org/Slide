@@ -344,7 +344,7 @@ public class ImageDownloadNotificationService extends Service {
         }
 
         private void onError(Exception e) {
-            e.printStackTrace();
+            LogUtil.e(e, "ImageDownloadNotificationService.onError failed");
             mNotifyManager.cancel(id);
             stopSelf();
             try {

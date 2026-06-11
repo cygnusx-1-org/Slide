@@ -341,7 +341,7 @@ public class MainActivity extends BaseActivity
                         new AccountManager(Authentication.reddit).storeVisits(returned);
                         SynccitRead.newVisited = new ArrayList<>();
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtil.e(e, "MainActivity.doInBackground failed");
                     }
                     return null;
                 }
@@ -886,7 +886,7 @@ public class MainActivity extends BaseActivity
                                                 }
                                             }
                                         } catch (Exception e) {
-                                            e.printStackTrace();
+                                            LogUtil.e(e, "MainActivity.doInBackground failed");
                                         }
 
                                         return null;

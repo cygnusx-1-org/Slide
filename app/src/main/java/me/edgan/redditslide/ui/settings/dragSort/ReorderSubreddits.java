@@ -67,6 +67,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.lang.ref.WeakReference;
 import java.util.stream.Collectors;
+import me.edgan.redditslide.util.LogUtil;
 
 public class ReorderSubreddits extends BaseActivityAnim {
 
@@ -590,11 +591,11 @@ public class ReorderSubreddits extends BaseActivityAnim {
     // The original dialog code moved to a separate method
     private void multiRedditCreateDialog() {
         final String[] subreddits = new String[UserSubscriptions.getSubscriptions(this).size()];
-            int i = 0;
+        int i = 0;
         for (String s : UserSubscriptions.getSubscriptions(this)) {
             subreddits[i] = s;
-                i++;
-            }
+            i++;
+        }
 
         // Create a boolean array to track selections
         final boolean[] checkedItems = new boolean[subreddits.length];
@@ -788,7 +789,7 @@ public class ReorderSubreddits extends BaseActivityAnim {
 
                         return true;
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtil.e(e, "ReorderSubreddits.doInBackground failed");
                         return false;
                     }
                 }
@@ -835,7 +836,7 @@ public class ReorderSubreddits extends BaseActivityAnim {
                 }
             }.execute();
         } catch (JSONException e) {
-            e.printStackTrace();
+            LogUtil.e(e, "ReorderSubreddits.doInBackground failed");
             AlertDialog jsonErrorDialog = new MaterialAlertDialogBuilder(ReorderSubreddits.this)
                 .setTitle(R.string.err_title)
                 .setMessage(R.string.multireddit_json_error)
@@ -1376,7 +1377,7 @@ public class ReorderSubreddits extends BaseActivityAnim {
                 recyclerView.smoothScrollToPosition(pos);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.e(e, "ReorderSubreddits.addDomainUrl failed");
             AlertDialog urlErrorDialog = new MaterialAlertDialogBuilder(ReorderSubreddits.this)
                     .setTitle(R.string.reorder_url_err)
                     .setMessage(R.string.misc_please_try_again)

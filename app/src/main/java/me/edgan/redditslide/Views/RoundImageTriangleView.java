@@ -5,7 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.AttributeSet;
 
-import androidx.annotation.ColorRes;
+import androidx.annotation.ColorInt;
 
 import com.makeramen.roundedimageview.RoundedImageView;
 
@@ -26,7 +26,7 @@ public class RoundImageTriangleView extends RoundedImageView {
 
     int color = Color.TRANSPARENT;
 
-    public void setFlagColor(@ColorRes int color) {
+    public void setFlagColor(@ColorInt int color) {
         this.color = color;
         invalidate();
     }

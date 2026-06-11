@@ -56,7 +56,7 @@ public class UploadImgur extends AsyncTask<Uri, Integer, JSONObject> {
             if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
             return new JSONObject(response.body().string());
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.e(e, "UploadImgur.doInBackground failed");
         }
         return null;
     }

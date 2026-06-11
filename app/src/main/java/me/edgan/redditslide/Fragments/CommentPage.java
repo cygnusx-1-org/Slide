@@ -125,6 +125,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import me.edgan.redditslide.util.LogUtil;
 
 /**
  * Fragment which displays comment trees.
@@ -1084,7 +1085,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                             getActivity().overridePendingTransition(R.anim.slideright, R.anim.fade_out);
                                         }
                                     } catch (Exception e) {
-                                        e.printStackTrace();
+                                        LogUtil.e(e, "CommentPage.Pager failed");
                                         // If parsing fails, gracefully open externally as a fallback
                                         LinkUtil.openExternally(adapter.submission.getUrl());
                                     }
@@ -1613,8 +1614,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                                                                                                 });
                                                                                                             }
                                                                                                         });
-                                                                                        e
-                                                                                                .printStackTrace();
+                                                                                        LogUtil.e(e, "CommentPage.run failed");
                                                                                     }
                                                                                     return null;
                                                                                 }
@@ -2074,7 +2074,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                 !NetworkUtil.isConnected(getActivity()),
                                 new ObjectMapper().reader());
             } catch (IOException e) {
-                e.printStackTrace();
+                LogUtil.e(e, "CommentPage.doAdapter failed");
             }
             if (s != null && s.getComments() != null) {
                 doRefresh(false);

@@ -110,10 +110,14 @@ public class SettingsGeneral extends BaseActivityAnim implements StorageUtil.Dir
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 try {
-                    final int takeFlags =
-                            data.getFlags()
-                                    & (Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    final int dataFlags = data.getFlags();
+                    int takeFlags = 0;
+                    if ((dataFlags & Intent.FLAG_GRANT_READ_URI_PERMISSION) != 0) {
+                        takeFlags |= Intent.FLAG_GRANT_READ_URI_PERMISSION;
+                    }
+                    if ((dataFlags & Intent.FLAG_GRANT_WRITE_URI_PERMISSION) != 0) {
+                        takeFlags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+                    }
                     getContentResolver().takePersistableUriPermission(uri, takeFlags);
                 } catch (Exception e) {
                     LogUtil.e(

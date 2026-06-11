@@ -11,6 +11,11 @@
         <uses-permission android:name="android.permission.WAKE_LOCK"/>
         <uses-permission android:name="android.permission.CAMERA" />
 
+        <!-- Camera is used for the QR scanner but is not required; declare it optional so the
+             app remains installable on devices without a camera (e.g. ChromeOS). -->
+        <uses-feature android:name="android.hardware.camera" android:required="false" />
+        <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+
         <queries>
                 <intent>
                 <action android:name="android.intent.action.VIEW" />
@@ -579,10 +584,6 @@
                         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
                         android:theme="@style/swipeable"/>
                 <activity
-                        android:name=".Activities.SwipeTutorial"
-                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                        android:theme="@style/swipeable"/>
-                <activity
                         android:name=".ui.settings.SettingsAbout"
                         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
                         android:theme="@style/swipeable"/>
@@ -696,6 +697,7 @@
                 <service
                         android:name=".Widget.ListViewWidgetService"
                         android:enabled="true"
+                        android:exported="false"
                         android:permission="android.permission.BIND_REMOTEVIEWS"/>
 
                 <service
@@ -725,10 +727,10 @@
                         android:name="com.sec.android.multiwindow.MINIMUM_SIZE_W"
                         android:resource="@dimen/app_minimumsize_w"/>
 
-                <receiver android:name=".Notifications.CheckForMail"></receiver>
-                <receiver android:name=".Notifications.CheckForMailSingle"></receiver>
+                <receiver android:name=".Notifications.CheckForMail" android:exported="false"></receiver>
+                <receiver android:name=".Notifications.CheckForMailSingle" android:exported="false"></receiver>
 
-                <receiver android:name=".Autocache.CacheAll"></receiver>
+                <receiver android:name=".Autocache.CacheAll" android:exported="false"></receiver>
 
                 <meta-data
                         android:name="com.sec.android.multiwindow.MINIMUM_SIZE_H"

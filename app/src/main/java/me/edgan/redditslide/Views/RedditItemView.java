@@ -50,6 +50,7 @@ import net.dean.jraw.models.VoteDirection;
 
 import java.util.List;
 import java.util.Locale;
+import androidx.core.content.ContextCompat;
 
 /** Created by ccrama on 3/5/2015. */
 public class RedditItemView extends RelativeLayout {
@@ -401,10 +402,10 @@ public class RedditItemView extends RelativeLayout {
         if (Authentication.isLoggedIn) {
             if (ActionStates.getVoteDirection(comment) == VoteDirection.UPVOTE) {
                 holder.score.setTextColor(
-                        getContext().getResources().getColor(R.color.md_orange_500));
+                        ContextCompat.getColor(getContext(), R.color.md_orange_500));
             } else if (ActionStates.getVoteDirection(comment) == VoteDirection.DOWNVOTE) {
                 holder.score.setTextColor(
-                        getContext().getResources().getColor(R.color.md_blue_500));
+                        ContextCompat.getColor(getContext(), R.color.md_blue_500));
             } else {
                 holder.score.setTextColor(holder.time.getCurrentTextColor());
             }

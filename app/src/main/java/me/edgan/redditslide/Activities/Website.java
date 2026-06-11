@@ -61,7 +61,7 @@ public class Website extends BaseActivityAnim {
             if (domain == null) return "";
             return domain.startsWith("www.") ? domain.substring(4) : domain;
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            LogUtil.e(e, "Website.getDomainName failed");
         }
         return url;
     }

@@ -1,6 +1,7 @@
 package me.edgan.redditslide.Adapters;
 
 /** Created by ccrama on 3/22/2015. */
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -58,6 +59,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import androidx.core.content.ContextCompat;
 
 public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements BaseAdapter {
@@ -151,6 +153,10 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     @Override
+    // Listeners capture the bound Submission and recompute the live position via
+    // dataSet.posts.indexOf(submission) when needed, so the bind-time position is never
+    // used for stale lookups.
+    @SuppressLint("RecyclerView")
     public void onBindViewHolder(final RecyclerView.ViewHolder firstHolder, final int pos) {
         int i = pos != 0 ? pos - 1 : pos;
 
@@ -472,10 +478,10 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             if (Authentication.isLoggedIn) {
                 if (ActionStates.getVoteDirection(comment) == VoteDirection.UPVOTE) {
                     holder.score.setTextColor(
-                            mContext.getResources().getColor(R.color.md_orange_500));
+                            ContextCompat.getColor(mContext, R.color.md_orange_500));
                 } else if (ActionStates.getVoteDirection(comment) == VoteDirection.DOWNVOTE) {
                     holder.score.setTextColor(
-                            mContext.getResources().getColor(R.color.md_blue_500));
+                            ContextCompat.getColor(mContext, R.color.md_blue_500));
                 } else {
                     holder.score.setTextColor(holder.time.getCurrentTextColor());
                 }

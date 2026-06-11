@@ -13,6 +13,7 @@ import android.os.Environment;
 import androidx.core.content.ContextCompat;
 
 import java.io.File;
+import me.edgan.redditslide.util.LogUtil;
 
 /** Created by ccrama on 9/28/2015. */
 public class DeleteFile extends Activity {
@@ -67,7 +68,7 @@ public class DeleteFile extends Activity {
                             }
                         });
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.e(e, "DeleteFile.onScanCompleted failed");
             }
         }
         finish();

@@ -177,7 +177,7 @@ public class Authentication {
                             }
                             Log.v(LogUtil.getTag(), "AUTHENTICATED");
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            LogUtil.e(e, "Authentication.doInBackground failed");
                         }
 
                     } else {
@@ -326,7 +326,7 @@ public class Authentication {
                     }
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "Authentication.doVerify failed");
                     if (e instanceof NetworkException) {
                         Toast.makeText(
                                         mContext,
@@ -366,7 +366,7 @@ public class Authentication {
                     didOnline = true;
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "Authentication.doVerify failed");
                     if (e instanceof NetworkException) {
                         Toast.makeText(
                                         mContext,

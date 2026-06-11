@@ -57,6 +57,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import androidx.core.content.ContextCompat;
 
 /** Misc UI stuff for toolbox - usernote display, removal display, etc. */
 public class ToolboxUI {
@@ -448,7 +449,7 @@ public class ToolboxUI {
 
         noteBuilder.setSpan(
                 new RoundedBackgroundSpan(
-                        context.getResources().getColor(android.R.color.white),
+                        ContextCompat.getColor(context, android.R.color.white),
                         notes.getDisplayColorForUser(user),
                         false,
                         context),

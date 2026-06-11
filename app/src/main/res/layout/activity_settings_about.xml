@@ -36,7 +36,7 @@
                     android:paddingEnd="16dp"
                     android:paddingTop="16dp"
                     app:srcCompat="@drawable/ic_info"
-                    android:tint="?attr/tintColor"/>
+                    app:tint="?attr/tintColor"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -65,7 +65,7 @@
                     android:paddingEnd="16dp"
                     android:paddingTop="16dp"
                     app:srcCompat="@drawable/ic_report"
-                    android:tint="?attr/tintColor"/>
+                    app:tint="?attr/tintColor"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -94,7 +94,7 @@
                     android:paddingEnd="16dp"
                     android:paddingTop="16dp"
                     app:srcCompat="@drawable/ic_info"
-                    android:tint="?attr/tintColor"/>
+                    app:tint="?attr/tintColor"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -123,7 +123,7 @@
                     android:paddingEnd="16dp"
                     android:paddingTop="16dp"
                     app:srcCompat="@drawable/ic_star"
-                    android:tint="?attr/tintColor"/>
+                    app:tint="?attr/tintColor"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -150,7 +150,7 @@
                     android:paddingEnd="16dp"
                     android:paddingTop="16dp"
                     app:srcCompat="@drawable/ic_bookmark_border"
-                    android:tint="?attr/tintColor"/>
+                    app:tint="?attr/tintColor"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -178,7 +178,7 @@
                     android:paddingEnd="16dp"
                     android:paddingTop="16dp"
                     app:srcCompat="@drawable/ic_info"
-                    android:tint="?attr/tintColor"/>
+                    app:tint="?attr/tintColor"/>
 
                 <TextView
                     android:layout_width="wrap_content"

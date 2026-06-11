@@ -50,7 +50,7 @@
                 android:layout_height="56dp"
                 android:padding="15dp"
                 android:theme="@style/Ripple.List"
-                android:tint="@android:color/white"
+                app:tint="@android:color/white"
                 android:layout_alignParentLeft="true"
                 app:srcCompat="@drawable/ic_forum" />
 
@@ -71,7 +71,7 @@
                 android:padding="15dp"
                 android:layout_toLeftOf="@+id/mute"
                 app:srcCompat="@drawable/ic_high_quality"
-                android:tint="#e1e1e1" />
+                app:tint="#e1e1e1" />
 
             <ImageView
                 android:id="@+id/mute"
@@ -81,7 +81,7 @@
                 android:padding="15dp"
                 android:layout_toLeftOf="@+id/rotate_left"
                 app:srcCompat="@drawable/ic_volume_off"
-                android:tint="#e1e1e1" />
+                app:tint="#e1e1e1" />
 
             <ImageView
                 android:id="@+id/save"
@@ -89,7 +89,7 @@
                 android:layout_height="56dp"
                 android:padding="15dp"
                 android:theme="@style/Ripple.List"
-                android:tint="@android:color/white"
+                app:tint="@android:color/white"
                 android:layout_toLeftOf="@+id/more"
                 app:srcCompat="@drawable/ic_download" />
 
@@ -102,7 +102,7 @@
                 android:theme="@style/Ripple.List"
                 android:padding="15dp"
                 app:srcCompat="@drawable/ic_speed"
-                android:tint="#e1e1e1"
+                app:tint="#e1e1e1"
                 android:contentDescription="@string/video_speed_control_content_desc"
                 android:visibility="gone" />
 
@@ -115,7 +115,7 @@
                 android:theme="@style/Ripple.List"
                 android:padding="15dp"
                 app:srcCompat="@drawable/ic_rotate_right"
-                android:tint="#e1e1e1"
+                app:tint="#e1e1e1"
                 android:visibility="gone"
                 android:contentDescription="@string/image_rotate_content_desc" />
 
@@ -128,7 +128,7 @@
                 android:theme="@style/Ripple.List"
                 android:padding="15dp"
                 app:srcCompat="@drawable/ic_rotate_left"
-                android:tint="#e1e1e1"
+                app:tint="#e1e1e1"
                 android:visibility="gone"
                 android:contentDescription="@string/image_rotate_left_content_desc" />
 

@@ -31,6 +31,7 @@ import org.apache.commons.text.StringEscapeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import me.edgan.redditslide.util.LogUtil;
 
 public class CheckForMailSingle extends BroadcastReceiver {
 
@@ -68,7 +69,7 @@ public class CheckForMailSingle extends BroadcastReceiver {
                                         cv);
 
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        LogUtil.e(ex, "CheckForMailSingle.onPostExecute failed");
                     }
                 }
                 Message message = messages.get(0);
@@ -234,7 +235,7 @@ public class CheckForMailSingle extends BroadcastReceiver {
                     return messages;
                 }
             } catch (Exception ignored) {
-                ignored.printStackTrace();
+                LogUtil.e(ignored, "CheckForMailSingle.doInBackground failed");
             }
             return null;
         }

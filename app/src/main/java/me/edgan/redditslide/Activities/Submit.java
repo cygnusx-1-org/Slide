@@ -304,7 +304,7 @@ public class Submit extends BaseActivity {
                                         try {
                                             return TitleExtractor.getPageTitle(params[0]);
                                         } catch (Exception e) {
-                                            e.printStackTrace();
+                                            LogUtil.e(e, "Submit.doInBackground failed");
                                         }
                                         return null;
                                     }
@@ -699,38 +699,55 @@ public class Submit extends BaseActivity {
             try {
                 new UploadImgurSubmit(this, uris.get(0));
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.e(e, "Submit.handleImageIntent failed");
             }
         } else {
             // Multiple images
             try {
                 new UploadImgurAlbumSubmit(this, uris.toArray(new Uri[0]));
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.e(e, "Submit.handleImageIntent failed");
             }
         }
     }
 
     private class AsyncDo extends AsyncTask<Void, Void, Void> {
 
+        // Snapshot of all View state, captured on the UI thread in onPreExecute().
+        // doInBackground() runs on a worker thread and must not touch Views directly.
+        private boolean selfVisible;
+        private boolean linkVisible;
+        private boolean imageVisible;
+        private String bodyText;
+        private String subredditText;
+        private String titleText;
+        private String urlText;
+        private boolean sendReplies;
+
+        @Override
+        protected void onPreExecute() {
+            selfVisible = self.getVisibility() == View.VISIBLE;
+            linkVisible = link.getVisibility() == View.VISIBLE;
+            imageVisible = image.getVisibility() == View.VISIBLE;
+            bodyText = ((EditText) findViewById(R.id.bodytext)).getText().toString();
+            subredditText =
+                    ((AutoCompleteTextView) findViewById(R.id.subreddittext))
+                            .getText()
+                            .toString();
+            titleText = ((EditText) findViewById(R.id.titletext)).getText().toString();
+            urlText = ((EditText) findViewById(R.id.urltext)).getText().toString();
+            sendReplies = inboxReplies.isChecked();
+        }
+
         @Override
         protected Void doInBackground(Void... voids) {
             try {
-                if (self.getVisibility() == View.VISIBLE) {
-                    final String text =
-                            ((EditText) findViewById(R.id.bodytext)).getText().toString();
+                if (selfVisible) {
+                    final String text = bodyText;
                     try {
                         AccountManager.SubmissionBuilder builder =
                                 new AccountManager.SubmissionBuilder(
-                                        ((EditText) findViewById(R.id.bodytext))
-                                                .getText()
-                                                .toString(),
-                                        ((AutoCompleteTextView) findViewById(R.id.subreddittext))
-                                                .getText()
-                                                .toString(),
-                                        ((EditText) findViewById(R.id.titletext))
-                                                .getText()
-                                                .toString());
+                                        bodyText, subredditText, titleText);
 
                         if (selectedFlairID != null) {
                             builder.flairID(selectedFlairID);
@@ -738,13 +755,11 @@ public class Submit extends BaseActivity {
 
                         Submission s = new AccountManager(Authentication.reddit).submit(builder);
                         new AccountManager(Authentication.reddit)
-                                .sendRepliesToInbox(s, inboxReplies.isChecked());
+                                .sendRepliesToInbox(s, sendReplies);
                         OpenRedditLink.openUrl(
                                 Submit.this,
                                 "reddit.com/r/"
-                                        + ((AutoCompleteTextView) findViewById(R.id.subreddittext))
-                                                .getText()
-                                                .toString()
+                                        + subredditText
                                         + "/comments/"
                                         + s.getFullName().substring(3),
                                 true);
@@ -753,7 +768,7 @@ public class Submit extends BaseActivity {
                         // Network failures (bare RuntimeException) propagate to the outer
                         // catch (Exception); this branch only handles Reddit API errors.
                         Drafts.addDraft(text);
-                        e.printStackTrace();
+                        LogUtil.e(e, "Submit.doInBackground failed");
 
                         runOnUiThread(
                                 new Runnable() {
@@ -768,35 +783,21 @@ public class Submit extends BaseActivity {
                                     }
                                 });
                     }
-                } else if (link.getVisibility() == View.VISIBLE) {
+                } else if (linkVisible) {
                     try {
                         Submission s =
                                 new AccountManager(Authentication.reddit)
                                         .submit(
                                                 new AccountManager.SubmissionBuilder(
-                                                        new URL(
-                                                                ((EditText)
-                                                                                findViewById(
-                                                                                        R.id
-                                                                                                .urltext))
-                                                                        .getText()
-                                                                        .toString()),
-                                                        ((AutoCompleteTextView)
-                                                                        findViewById(
-                                                                                R.id.subreddittext))
-                                                                .getText()
-                                                                .toString(),
-                                                        ((EditText) findViewById(R.id.titletext))
-                                                                .getText()
-                                                                .toString()));
+                                                        new URL(urlText),
+                                                        subredditText,
+                                                        titleText));
                         new AccountManager(Authentication.reddit)
-                                .sendRepliesToInbox(s, inboxReplies.isChecked());
+                                .sendRepliesToInbox(s, sendReplies);
                         OpenRedditLink.openUrl(
                                 Submit.this,
                                 "reddit.com/r/"
-                                        + ((AutoCompleteTextView) findViewById(R.id.subreddittext))
-                                                .getText()
-                                                .toString()
+                                        + subredditText
                                         + "/comments/"
                                         + s.getFullName().substring(3),
                                 true);
@@ -805,7 +806,7 @@ public class Submit extends BaseActivity {
                     } catch (final ApiException e) {
                         // Network failures (bare RuntimeException) propagate to the outer
                         // catch (Exception); this branch only handles Reddit API errors.
-                        e.printStackTrace();
+                        LogUtil.e(e, "Submit.run failed");
 
                         runOnUiThread(
                                 new Runnable() {
@@ -830,29 +831,21 @@ public class Submit extends BaseActivity {
                                     }
                                 });
                     }
-                } else if (image.getVisibility() == View.VISIBLE) {
+                } else if (imageVisible) {
                     try {
                         Submission s =
                                 new AccountManager(Authentication.reddit)
                                         .submit(
                                                 new AccountManager.SubmissionBuilder(
                                                         new URL(URL),
-                                                        ((AutoCompleteTextView)
-                                                                        findViewById(
-                                                                                R.id.subreddittext))
-                                                                .getText()
-                                                                .toString(),
-                                                        ((EditText) findViewById(R.id.titletext))
-                                                                .getText()
-                                                                .toString()));
+                                                        subredditText,
+                                                        titleText));
                         new AccountManager(Authentication.reddit)
-                                .sendRepliesToInbox(s, inboxReplies.isChecked());
+                                .sendRepliesToInbox(s, sendReplies);
                         OpenRedditLink.openUrl(
                                 Submit.this,
                                 "reddit.com/r/"
-                                        + ((AutoCompleteTextView) findViewById(R.id.subreddittext))
-                                                .getText()
-                                                .toString()
+                                        + subredditText
                                         + "/comments/"
                                         + s.getFullName().substring(3),
                                 true);
@@ -883,7 +876,7 @@ public class Submit extends BaseActivity {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.e(e, "Submit.run failed");
 
                 runOnUiThread(
                         new Runnable() {
@@ -951,7 +944,7 @@ public class Submit extends BaseActivity {
                         .setMessage(R.string.editor_err_msg)
                         .setPositiveButton(R.string.btn_ok, null)
                         .show();
-                e.printStackTrace();
+                LogUtil.e(e, "Submit.onPostExecute failed");
             }
         }
     }
@@ -1009,7 +1002,7 @@ public class Submit extends BaseActivity {
                         .setMessage(R.string.editor_err_msg)
                         .setPositiveButton(R.string.btn_ok, null)
                         .show();
-                e.printStackTrace();
+                LogUtil.e(e, "Submit.onPostExecute failed");
             }
         }
     }

@@ -23,6 +23,7 @@ import net.dean.jraw.paginators.TimePeriod;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import me.edgan.redditslide.util.LogUtil;
 
 /** Created by ccrama on 9/17/2015. */
 public class SubredditSearchPosts extends GeneralPosts {
@@ -218,7 +219,7 @@ public class SubredditSearchPosts extends GeneralPosts {
                 return newSubmissions;
             } catch (Exception e) {
                 error = e;
-                e.printStackTrace();
+                LogUtil.e(e, "SubredditSearchPosts.doInBackground failed");
                 return null;
             }
         }

@@ -64,6 +64,7 @@ import net.dean.jraw.models.PrivateMessage;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import me.edgan.redditslide.util.LogUtil;
 
 public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements BaseAdapter {
@@ -232,7 +233,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 tagNew.setSpan(
                         new RoundedBackgroundSpan(
                                 Color.WHITE,
-                                mContext.getResources().getColor(R.color.md_green_400),
+                                ContextCompat.getColor(mContext, R.color.md_green_400),
                                 true,
                                 mContext),
                         0,
@@ -587,7 +588,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 sent = true;
             } catch (ApiException | RuntimeException e) {
                 sent = false;
-                e.printStackTrace();
+                LogUtil.e(e, "InboxAdapter.sendMessage failed");
             }
         }
 

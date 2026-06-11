@@ -812,7 +812,7 @@ public class SubredditView extends BaseActivity {
                                 }
                             }
                         } catch (Exception e1) {
-                            e1.printStackTrace();
+                            LogUtil.e(e1, "SubredditView.doInBackground failed");
                         }
                         return params[0];
                     }
@@ -923,8 +923,7 @@ public class SubredditView extends BaseActivity {
                                                                                                         } catch (
                                                                                                                 Exception
                                                                                                                         e) {
-                                                                                                            e
-                                                                                                                    .printStackTrace();
+                                                                                                            LogUtil.e(e, "SubredditView.doInBackground failed");
                                                                                                             return false;
                                                                                                         }
                                                                                                     }
@@ -1030,8 +1029,7 @@ public class SubredditView extends BaseActivity {
                                                                                 } catch (
                                                                                         Exception
                                                                                                 e) {
-                                                                                    e
-                                                                                            .printStackTrace();
+                                                                                    LogUtil.e(e, "SubredditView.doInBackground failed");
                                                                                     return false;
                                                                                 }
                                                                             }
@@ -1561,7 +1559,7 @@ public class SubredditView extends BaseActivity {
                                                                                                     });
                                                                                         }
                                                                                     });
-                                                                            e.printStackTrace();
+                                                                            LogUtil.e(e, "SubredditView.run failed");
                                                                         }
                                                                         return null;
                                                                     }
@@ -2236,7 +2234,7 @@ public class SubredditView extends BaseActivity {
                                 }
                             }
                         });
-                e.printStackTrace();
+                LogUtil.e(e, "SubredditView.run failed");
 
                 return null;
             }

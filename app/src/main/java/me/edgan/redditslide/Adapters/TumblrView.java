@@ -1,5 +1,6 @@
 package me.edgan.redditslide.Adapters;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
@@ -48,6 +49,7 @@ import androidx.annotation.NonNull;
 
 // Import for NavigationUtils
 import me.edgan.redditslide.ForceTouch.util.NavigationUtils;
+import me.edgan.redditslide.util.LogUtil;
 
 public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final List<Photo> users;
@@ -174,13 +176,16 @@ public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     return VIEW_TYPE_IMAGE;
                 }
             } catch (URISyntaxException e) {
-                e.printStackTrace();
+                LogUtil.e(e, "TumblrView.URI failed");
                 return VIEW_TYPE_IMAGE;
             }
         }
     }
 
     @Override
+    // The click listener captures the bound Photo (stable data), not the raw position, so
+    // there is no stale-position lookup to convert to getBindingAdapterPosition().
+    @SuppressLint("RecyclerView")
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int i) {
         if (holder instanceof AlbumViewHolder) {
             final int position = paddingBottom ? i : i - 1;
@@ -198,9 +203,6 @@ public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             if (albumHolder.body != null) {
                 albumHolder.body.setVisibility(View.VISIBLE);
-            }
-            if (albumHolder.text != null) {
-                albumHolder.text.setVisibility(View.VISIBLE);
             }
             View imageView = albumHolder.image;
 
@@ -239,28 +241,12 @@ public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
                 albumHolder.body.setTypeface(typeface);
             }
-            if (albumHolder.text != null) {
-                int type =
-                        new FontPreferences(albumHolder.text.getContext())
-                                .getFontTypeTitle()
-                                .getTypeface();
-                Typeface typeface;
-                if (type >= 0) {
-                    typeface = RobotoTypefaces.obtainTypeface(albumHolder.text.getContext(), type);
-                } else {
-                    typeface = Typeface.DEFAULT;
-                }
-                albumHolder.text.setTypeface(typeface);
-            }
 
             if (user.getCaption() != null) {
                 List<String> textBlocks = SubmissionParser.getBlocks(user.getCaption());
                 String captionText = textBlocks.get(0).trim();
                 if (albumHolder.body != null) {
                     LinkUtil.setTextWithLinks(captionText, albumHolder.body);
-                }
-                if (albumHolder.text != null) {
-                    albumHolder.text.setVisibility(View.GONE);
                 }
 
                 boolean bodyIsEmpty = true;
@@ -278,9 +264,6 @@ public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     }
                 }
             } else {
-                if (albumHolder.text != null) {
-                    albumHolder.text.setVisibility(View.GONE);
-                }
                 if (albumHolder.body != null) {
                     albumHolder.body.setVisibility(View.GONE);
                 }
@@ -441,13 +424,11 @@ public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public static class AlbumViewHolder extends RecyclerView.ViewHolder {
-        final SpoilerRobotoTextView text;
         final SpoilerRobotoTextView body;
         final ImageView image;
 
         public AlbumViewHolder(View itemView) {
             super(itemView);
-            text = itemView.findViewById(R.id.text);
             body = itemView.findViewById(R.id.body);
             image = itemView.findViewById(R.id.image);
         }

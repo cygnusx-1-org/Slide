@@ -259,7 +259,7 @@
     <string name="mail_hint_recipient">Primatelj</string>
     <string name="mail_hint_subject">Tema</string>
     <string name="mail_hint_body">Sadržaj</string>
-    <string name="mail_send_to">Pošaljite poruku korisniku</string>
+    <string name="mail_send_to">Pošaljite poruku korisniku %1$s</string>
     <string name="mail_send">Pošalji poruku</string>
     <string name="mail_notification_msg_from">Nova poruka od %1$s</string>
     <string name="mail_notification_msg_via">Nova poruka preko /r/%1$s</string>

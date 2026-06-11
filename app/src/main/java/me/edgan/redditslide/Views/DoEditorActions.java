@@ -1,5 +1,6 @@
 package me.edgan.redditslide.Views;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -60,6 +61,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import me.edgan.redditslide.util.LogUtil;
 
 /** Created by carlo_000 on 10/18/2015. */
 public class DoEditorActions {
@@ -550,17 +552,6 @@ public class DoEditorActions {
                                 final LinearLayout layout =
                                         (LinearLayout) inflater.inflate(R.layout.insert_link, null);
 
-                                int[] attrs = {R.attr.fontColor};
-
-                                TypedArray ta =
-                                        baseView.getContext()
-                                                .obtainStyledAttributes(
-                                                        new ColorPreferences(baseView.getContext())
-                                                                .getFontStyle()
-                                                                .getBaseId(),
-                                                        attrs);
-                                ta.recycle();
-
                                 String selectedText = "";
                                 // if the user highlighted text before inputting a URL, use that
                                 // text for the descriptionBox
@@ -854,6 +845,9 @@ public class DoEditorActions {
         }
 
         @Override
+        // Reading a single themed attribute (R.attr.fontColor) from a specific style via a
+        // manual int[]; lint's @StyleableRes typedef is too strict for this idiom.
+        @SuppressLint("ResourceType")
         protected void onPostExecute(final JSONObject result) {
             dialog.dismiss();
             try {
@@ -926,7 +920,7 @@ public class DoEditorActions {
                         .setMessage(R.string.editor_err_msg)
                         .setPositiveButton(R.string.btn_ok, null)
                         .show();
-                e.printStackTrace();
+                LogUtil.e(e, "DoEditorActions.onClick failed");
             }
         }
     }
@@ -944,6 +938,9 @@ public class DoEditorActions {
         }
 
         @Override
+        // Reading a single themed attribute (R.attr.fontColor) from a specific style via a
+        // manual int[]; lint's @StyleableRes typedef is too strict for this idiom.
+        @SuppressLint("ResourceType")
         protected void onPostExecute(final String result) {
             dialog.dismiss();
             try {
@@ -1006,7 +1003,7 @@ public class DoEditorActions {
                         .setMessage(R.string.editor_err_msg)
                         .setPositiveButton(R.string.btn_ok, null)
                         .show();
-                e.printStackTrace();
+                LogUtil.e(e, "DoEditorActions.onClick failed");
             }
         }
     }
@@ -1021,14 +1018,14 @@ public class DoEditorActions {
             try {
                 new UploadImgurDEA(c).execute(uris.get(0));
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.e(e, "DoEditorActions.handleImageIntent failed");
             }
         } else {
             // Multiple images
             try {
                 new UploadImgurAlbumDEA(c).execute(uris.toArray(new Uri[0]));
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.e(e, "DoEditorActions.handleImageIntent failed");
             }
         }
     }

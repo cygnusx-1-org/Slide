@@ -86,7 +86,7 @@ public class Inbox extends BaseActivityAnim {
                             new InboxManager(Authentication.reddit).setAllRead();
                             changed = true;
                         } catch (Exception ignored) {
-                            ignored.printStackTrace();
+                            LogUtil.e(ignored, "Inbox.doInBackground failed");
                         }
                         return null;
                     }

@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import me.edgan.redditslide.util.LogUtil;
 
 /** Created by ccrama on 9/17/2015. */
 public class HistoryPosts extends GeneralPosts {
@@ -168,7 +169,7 @@ public class HistoryPosts extends GeneralPosts {
 
                 return newData;
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.e(e, "HistoryPosts.doInBackground failed");
                 return null;
             }
         }

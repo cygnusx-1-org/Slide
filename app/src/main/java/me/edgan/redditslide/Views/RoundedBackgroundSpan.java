@@ -10,6 +10,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 
 import com.devspark.robototextview.RobotoTypefaces;
+import androidx.core.content.ContextCompat;
 
 /** Created by carlo_000 on 3/11/2016. */
 public class RoundedBackgroundSpan extends ReplacementSpan {
@@ -22,8 +23,8 @@ public class RoundedBackgroundSpan extends ReplacementSpan {
     public RoundedBackgroundSpan(
             Context context, @ColorRes int textColor, @ColorRes int backgroundColor, boolean half) {
         super();
-        this.backgroundColor = context.getResources().getColor(backgroundColor);
-        this.textColor = context.getResources().getColor(textColor);
+        this.backgroundColor = ContextCompat.getColor(context, backgroundColor);
+        this.textColor = ContextCompat.getColor(context, textColor);
         this.half = half;
         this.c = context;
     }

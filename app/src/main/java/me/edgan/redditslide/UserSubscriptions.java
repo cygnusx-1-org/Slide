@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import me.edgan.redditslide.util.LogUtil;
 
 /** Created by carlo_000 on 1/16/2016. */
 public class UserSubscriptions {
@@ -382,7 +383,7 @@ public class UserSubscriptions {
                 }
             } catch (Exception e) {
                 // failed;
-                e.printStackTrace();
+                LogUtil.e(e, "UserSubscriptions.syncSubreddits failed");
             }
             addSubsToHistory(toReturn);
         } else {
@@ -410,7 +411,7 @@ public class UserSubscriptions {
                 }
             }
         } catch (ApiException | RuntimeException e) {
-            e.printStackTrace();
+            LogUtil.e(e, "UserSubscriptions.syncMultiReddits failed");
         }
     }
 
@@ -465,7 +466,7 @@ public class UserSubscriptions {
                         new ArrayList<>(new MultiRedditManager(Authentication.reddit).mine());
             } catch (Exception e) {
                 multireddits = null;
-                e.printStackTrace();
+                LogUtil.e(e, "UserSubscriptions.loadMultireddits failed");
             }
         }
     }
@@ -501,7 +502,7 @@ public class UserSubscriptions {
                                             .getPublicMultis(profile)));
                 } catch (Exception e) {
                     public_multireddits.put(profile, null);
-                    e.printStackTrace();
+                    LogUtil.e(e, "UserSubscriptions.doInBackground failed");
                 }
                 return public_multireddits.get(profile);
             }
@@ -529,7 +530,7 @@ public class UserSubscriptions {
             cacheModOf();
         } catch (Exception e) {
             // failed;
-            e.printStackTrace();
+            LogUtil.e(e, "UserSubscriptions.doModOf failed");
         }
 
         return finished;
@@ -563,7 +564,7 @@ public class UserSubscriptions {
 
             } catch (Exception e) {
                 // failed;
-                e.printStackTrace();
+                LogUtil.e(e, "UserSubscriptions.doFriendsOf failed");
             }
         }
         return friends;
@@ -721,7 +722,7 @@ public class UserSubscriptions {
 
             } catch (Exception e) {
                 // failed;
-                e.printStackTrace();
+                LogUtil.e(e, "UserSubscriptions.syncSubredditsGetObject failed");
             }
 
             addSubsToHistory(toReturn);
@@ -747,7 +748,7 @@ public class UserSubscriptions {
 
                     } catch (Exception e) {
                         // failed;
-                        e.printStackTrace();
+                        LogUtil.e(e, "UserSubscriptions.doInBackground failed");
                     }
                 }
                 return null;

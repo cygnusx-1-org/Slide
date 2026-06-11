@@ -375,6 +375,8 @@ public class PeekMediaView extends RelativeLayout {
             final String apiUrl = "https://api.imgur.com/3/image/" + hash;
             LogUtil.v(apiUrl);
 
+            // Capture the Context on the UI thread; doInBackground() runs on a worker thread.
+            final Context context = getContext();
             new AsyncTask<Void, Void, JsonObject>() {
                 @Override
                 protected JsonObject doInBackground(Void... params) {
@@ -382,7 +384,7 @@ public class PeekMediaView extends RelativeLayout {
                             Reddit.client,
                             new Gson(),
                             apiUrl,
-                            SecretConstants.getImgurApiKey(getContext()));
+                            SecretConstants.getImgurApiKey(context));
                 }
 
                 @Override
@@ -475,6 +477,8 @@ public class PeekMediaView extends RelativeLayout {
             progress.setIndeterminate(true);
 
             final String finalUrl2 = contentUrl;
+            // Capture the Context on the UI thread; doInBackground() runs on a worker thread.
+            final Context context = getContext();
             new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... params) {
@@ -482,7 +486,7 @@ public class PeekMediaView extends RelativeLayout {
                         URL obj = new URL(finalUrl2);
                         URLConnection conn = obj.openConnection();
                         final String type = conn.getHeaderField("Content-Type");
-                        ((PeekViewActivity) getContext())
+                        ((PeekViewActivity) context)
                                 .runOnUiThread(
                                         new Runnable() {
                                             @Override
@@ -508,7 +512,7 @@ public class PeekMediaView extends RelativeLayout {
                                         });
 
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        LogUtil.e(e, "PeekMediaView.run failed");
                     }
                     return null;
                 }

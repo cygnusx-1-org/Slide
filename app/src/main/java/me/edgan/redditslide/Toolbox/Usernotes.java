@@ -3,8 +3,10 @@ package me.edgan.redditslide.Toolbox;
 import android.util.Base64;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.OptIn;
 
 import androidx.media3.common.util.ColorParser;
+import androidx.media3.common.util.UnstableApi;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -30,6 +32,7 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
 /** A group of usernotes for a subreddit */
+@OptIn(markerClass = UnstableApi.class)
 public class Usernotes {
     @SerializedName("ver")
     private int schema;

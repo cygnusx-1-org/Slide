@@ -405,7 +405,7 @@ public class Profile extends BaseActivityAnim {
                         }
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "Profile.doInBackground failed");
                 }
                 // Return false if not found or an error occurred.
                 return false;
@@ -446,7 +446,7 @@ public class Profile extends BaseActivityAnim {
                         }
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "Profile.doInBackground failed");
                 }
                 return false;
             }
@@ -686,7 +686,7 @@ public class Profile extends BaseActivityAnim {
                             categories.add(0, "No category");
                             return categories;
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            LogUtil.e(e, "Profile.doInBackground failed");
                             // probably has no categories?
                             return new ArrayList<String>() {
                                 {

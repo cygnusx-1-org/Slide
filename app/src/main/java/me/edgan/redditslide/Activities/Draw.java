@@ -33,6 +33,7 @@ import me.edgan.redditslide.util.MiscUtil;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import me.edgan.redditslide.util.LogUtil;
 
 /** Created by ccrama on 5/27/2015. */
 public class Draw extends BaseActivity implements ColorChooserDialog.ColorCallback {
@@ -121,7 +122,7 @@ public class Draw extends BaseActivity implements ColorChooserDialog.ColorCallba
                     }
                 }
             } catch (IOException | NullPointerException e) {
-                e.printStackTrace();
+                LogUtil.e(e, "Draw.onOptionsItemSelected failed");
                 // todo error Toast.makeText(this, getString(R.string.err_share_image),
                 // Toast.LENGTH_LONG).show();
             }

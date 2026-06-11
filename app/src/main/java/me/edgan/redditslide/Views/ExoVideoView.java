@@ -20,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.OptIn;
 import androidx.core.content.ContextCompat;
 import androidx.media.AudioAttributesCompat;
 import androidx.media.AudioFocusRequestCompat;
@@ -41,6 +42,7 @@ import androidx.media3.datasource.DataSource;
 import androidx.media3.datasource.cache.CacheDataSource;
 import androidx.media3.common.MimeTypes;
 import androidx.media3.common.VideoSize;
+import androidx.media3.common.util.UnstableApi;
 
 
 import me.edgan.redditslide.R;
@@ -55,6 +57,7 @@ import me.edgan.redditslide.util.NetworkUtil;
  * (e.g., when scrolling in the gallery) the video decoder's surface is reused and the video does
  * not go blank.
  */
+@OptIn(markerClass = UnstableApi.class)
 public class ExoVideoView extends RelativeLayout {
     private static final String TAG = "ExoVideoView";
 
@@ -576,7 +579,7 @@ public class ExoVideoView extends RelativeLayout {
                             } else {
                                 player.setVolume(0f);
                                 mute.setImageResource(R.drawable.ic_volume_off);
-                                BlendModeUtil.tintImageViewAsSrcAtop(mute, getResources().getColor(R.color.md_red_500));
+                                BlendModeUtil.tintImageViewAsSrcAtop(mute, ContextCompat.getColor(getContext(), R.color.md_red_500));
                                 // Lose focus only if helper exists and video has audio
                                 if (audioFocusHelper != null && hasAudio) {
                                      audioFocusHelper.loseFocus();
@@ -603,7 +606,7 @@ public class ExoVideoView extends RelativeLayout {
                                     SettingValues.isMuted = true;
                                     SettingValues.prefs.edit().putBoolean(SettingValues.PREF_MUTE, true).apply();
                                     mute.setImageResource(R.drawable.ic_volume_off);
-                                    BlendModeUtil.tintImageViewAsSrcAtop(mute, getResources().getColor(R.color.md_red_500));
+                                    BlendModeUtil.tintImageViewAsSrcAtop(mute, ContextCompat.getColor(getContext(), R.color.md_red_500));
                                     // Lose focus only if helper exists and video has audio
                                     if (audioFocusHelper != null && hasAudio) {
                                         audioFocusHelper.loseFocus();

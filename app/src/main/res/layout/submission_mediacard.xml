@@ -69,7 +69,7 @@
                 android:layout_height="72dp"
                 android:padding="16dp"
                 android:layout_centerInParent="true"
-                android:tint="#e1e1e1"
+                app:tint="#e1e1e1"
                 />
 
         <ProgressBar
@@ -135,7 +135,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="4dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/img_score"
                 sothree:srcCompat="@drawable/ic_arrow_upward" />
 
@@ -162,7 +162,7 @@
                 android:layout_marginEnd="4dp"
                 android:layout_toRightOf="@+id/score"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/img_comments"
                 sothree:srcCompat="@drawable/ic_forum" />
 
@@ -190,7 +190,7 @@
                 android:layout_toLeftOf="@+id/upvote"
                 android:padding="8dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/btn_save"
                 sothree:srcCompat="@drawable/ic_star" />
 
@@ -204,7 +204,7 @@
                 android:padding="8dp"
 
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/btn_upvote"
                 sothree:srcCompat="@drawable/ic_arrow_upward" />
 
@@ -218,7 +218,7 @@
                 android:layout_toLeftOf="@+id/menu"
                 android:padding="8dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/btn_downvote"
                 sothree:srcCompat="@drawable/ic_arrow_downward" />
 
@@ -232,7 +232,7 @@
                 android:layout_below="@+id/innerrelative"
                 android:padding="8dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/btn_menu"
                 sothree:srcCompat="@drawable/ic_more_vert" />
         </me.edgan.redditslide.Views.RevealRelativeLayout>

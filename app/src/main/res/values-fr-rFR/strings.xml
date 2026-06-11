@@ -310,7 +310,7 @@
     <string name="mail_view_full_thread">Charger le fil complet</string>
     <string name="mail_message_copied">Message copié</string>
     <plurals name="mail_notification_title">
-        <item quantity="one">Vous avez un nouveau message !</item>
+        <item quantity="one">Vous avez %1$d nouveau message !</item>
         <item quantity="other">Vous avez %1$d nouveaux messages !</item>
     </plurals>
     <plurals name="mod_mail_notification_title">

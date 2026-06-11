@@ -411,7 +411,7 @@ public class SubmissionModActions {
                                     Authentication.reddit.get("t1_" + toDistinguish).get(0),
                                     DistinguishedStatus.MODERATOR);
                 } catch (ApiException | RuntimeException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "SubmissionModActions.doInBackground failed");
                     return false;
                 }
                 return true;
@@ -473,7 +473,7 @@ public class SubmissionModActions {
                 try {
                     new ModerationManager(Authentication.reddit).remove(submission, spam);
                 } catch (ApiException | RuntimeException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "SubmissionModActions.doInBackground failed");
                     return false;
                 }
                 return true;
@@ -502,7 +502,7 @@ public class SubmissionModActions {
                     }
                     return finalFlairs;
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "SubmissionModActions.doInBackground failed");
                     // sub probably has no flairs?
                 }
                 return null;
@@ -593,7 +593,7 @@ public class SubmissionModActions {
                             .setFlair(submission.getSubredditName(), t, flair, submission);
                     return true;
                 } catch (ApiException | RuntimeException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "SubmissionModActions.doInBackground failed");
                     return false;
                 }
             }
@@ -685,7 +685,7 @@ public class SubmissionModActions {
                 try {
                     new ModerationManager(Authentication.reddit).setSticky(submission, true);
                 } catch (ApiException | RuntimeException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "SubmissionModActions.doInBackground failed");
 
                     return false;
                 }
@@ -719,7 +719,7 @@ public class SubmissionModActions {
                 try {
                     new ModerationManager(Authentication.reddit).setSticky(submission, false);
                 } catch (ApiException | RuntimeException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "SubmissionModActions.doInBackground failed");
                     return false;
                 }
                 return true;
@@ -752,7 +752,7 @@ public class SubmissionModActions {
                 try {
                     new ModerationManager(Authentication.reddit).setLocked(submission);
                 } catch (ApiException | RuntimeException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "SubmissionModActions.doInBackground failed");
                     return false;
                 }
                 return true;
@@ -781,7 +781,7 @@ public class SubmissionModActions {
                 try {
                     new ModerationManager(Authentication.reddit).setUnlocked(submission);
                 } catch (ApiException | RuntimeException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "SubmissionModActions.doInBackground failed");
                     return false;
                 }
                 return true;
@@ -811,7 +811,7 @@ public class SubmissionModActions {
                 try {
                     new ModerationManager(Authentication.reddit).setDistinguishedStatus(submission, DistinguishedStatus.MODERATOR);
                 } catch (ApiException | RuntimeException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "SubmissionModActions.doInBackground failed");
 
                     return false;
                 }
@@ -841,7 +841,7 @@ public class SubmissionModActions {
                     // JRAW requires MODERATOR to undistinguish as well
                     new ModerationManager(Authentication.reddit).setDistinguishedStatus(submission, DistinguishedStatus.MODERATOR);
                 } catch (ApiException | RuntimeException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "SubmissionModActions.doInBackground failed");
 
                     return false;
                 }
@@ -872,7 +872,7 @@ public class SubmissionModActions {
                 try {
                     new ModerationManager(Authentication.reddit).setNsfw(submission, true);
                 } catch (ApiException | RuntimeException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "SubmissionModActions.doInBackground failed");
 
                     return false;
                 }
@@ -904,7 +904,7 @@ public class SubmissionModActions {
                 try {
                     new ModerationManager(Authentication.reddit).setNsfw(submission, false);
                 } catch (ApiException | RuntimeException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "SubmissionModActions.doInBackground failed");
 
                     return false;
                 }
@@ -939,7 +939,7 @@ public class SubmissionModActions {
                 try {
                     new ModerationManager(Authentication.reddit).setSpoiler(submission, true);
                 } catch (ApiException | RuntimeException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "SubmissionModActions.doInBackground failed");
 
                     return false;
                 }
@@ -972,7 +972,7 @@ public class SubmissionModActions {
                 try {
                     new ModerationManager(Authentication.reddit).setSpoiler(submission, false);
                 } catch (ApiException | RuntimeException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "SubmissionModActions.doInBackground failed");
 
                     return false;
                 }
@@ -1006,7 +1006,9 @@ public class SubmissionModActions {
                     try {
                         Snackbar s = Snackbar.make(holder.itemView, R.string.mod_approved, Snackbar.LENGTH_LONG);
                         LayoutUtils.showSnackbar(s);
-                    } catch (Exception ignored) {}
+                    } catch (Exception e) {
+                        LogUtil.e(e, "Failed to show mod-approved snackbar");
+                    }
                 } else {
                     new AlertDialog.Builder(mContext)
                         .setTitle(R.string.err_general)
@@ -1020,7 +1022,7 @@ public class SubmissionModActions {
                 try {
                     new ModerationManager(Authentication.reddit).approve(submission);
                 } catch (ApiException | RuntimeException e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "SubmissionModActions.doInBackground failed");
 
                     return false;
                 }
@@ -1078,12 +1080,18 @@ public class SubmissionModActions {
                                     .setCancelable(false)
                                     .show();
                         } else {
+                            // Snapshot View state on the UI thread; the AsyncTask below
+                            // runs doInBackground() on a worker thread.
+                            final String noteText = note.getText().toString();
+                            final String messageText = message.getText().toString();
+                            final String timeText = time.getText().toString();
+                            final String reasonText = reason.getText().toString();
                             new AsyncTask<Void, Void, Boolean>() {
                                 @Override
                                 protected Boolean doInBackground(Void... params) {
                                     try {
-                                        String n = note.getText().toString();
-                                        String m = message.getText().toString();
+                                        String n = noteText;
+                                        String m = messageText;
 
                                         if (n.isEmpty()) {
                                             n = null;
@@ -1091,19 +1099,19 @@ public class SubmissionModActions {
                                         if (m.isEmpty()) {
                                             m = null;
                                         }
-                                        if (time.getText().toString().isEmpty()) {
+                                        if (timeText.isEmpty()) {
                                             new ModerationManager(Authentication.reddit)
-                                                .banUserPermanently(submission.getSubredditName(), submission.getAuthor(), reason.getText().toString(), n, m);
+                                                .banUserPermanently(submission.getSubredditName(), submission.getAuthor(), reasonText, n, m);
                                         } else {
                                             new ModerationManager(Authentication.reddit)
-                                                .banUser(submission.getSubredditName(), submission.getAuthor(), reason.getText().toString(), n, m, Integer.parseInt(time.getText().toString()));
+                                                .banUser(submission.getSubredditName(), submission.getAuthor(), reasonText, n, m, Integer.parseInt(timeText));
                                         }
                                         return true;
                                     } catch (Exception e) {
                                         if (e instanceof InvalidScopeException) {
                                             scope = true;
                                         }
-                                        e.printStackTrace();
+                                        LogUtil.e(e, "SubmissionModActions.doInBackground failed");
                                         return false;
                                     }
                                 }

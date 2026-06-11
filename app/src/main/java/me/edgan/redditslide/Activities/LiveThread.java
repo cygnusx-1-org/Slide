@@ -63,6 +63,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import androidx.core.content.ContextCompat;
 
 public class LiveThread extends BaseActivityAnim {
 
@@ -153,10 +154,10 @@ public class LiveThread extends BaseActivityAnim {
                     (findViewById(R.id.toolbar)).setBackgroundResource(R.color.md_red_300);
                     (findViewById(R.id.header_sub)).setBackgroundResource(R.color.md_red_300);
                     themeSystemBars(
-                            Palette.getDarkerColor(getResources().getColor(R.color.md_red_300)));
+                            Palette.getDarkerColor(ContextCompat.getColor(LiveThread.this, R.color.md_red_300)));
                     setRecentBar(
                             getString(R.string.livethread_recents_title, thread.getTitle()),
-                            getResources().getColor(R.color.md_red_300));
+                            ContextCompat.getColor(LiveThread.this, R.color.md_red_300));
 
                     doPaginator();
                 }
@@ -220,7 +221,7 @@ public class LiveThread extends BaseActivityAnim {
                                                             }
                                                         });
                                             } catch (IOException e) {
-                                                e.printStackTrace();
+                                                LogUtil.e(e, "LiveThread.run failed");
                                             }
                                         } else if (s.contains("embeds_ready")) {
                                             String node = updates.get(0).getDataNode().toString();
@@ -244,7 +245,7 @@ public class LiveThread extends BaseActivityAnim {
                                                             }
                                                         });
                                             } catch (Exception e) {
-                                                e.printStackTrace();
+                                                LogUtil.e(e, "LiveThread.run failed");
                                             }
                                         } /* todoelse if(s.contains("delete")){
                                               updates.remove(0);
@@ -254,7 +255,7 @@ public class LiveThread extends BaseActivityAnim {
                                 });
                         ws.connect();
                     } catch (IOException | WebSocketException e) {
-                        e.printStackTrace();
+                        LogUtil.e(e, "LiveThread.run failed");
                     }
                     return null;
                 }
@@ -370,7 +371,7 @@ public class LiveThread extends BaseActivityAnim {
                     LogUtil.v("Got " + CompatUtil.fromHtml(result.toString()));
                     twitter = new ObjectMapper().readValue(result.toString(), TwitterObject.class);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "LiveThread.parseJson failed");
                 }
             }
 

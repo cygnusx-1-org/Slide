@@ -230,7 +230,7 @@ public class MultiredditPosts implements PostLoader {
                 }
 
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.e(e, "MultiredditPosts.doInBackground failed");
                 if (e.getMessage().contains("Forbidden")) {
                     Reddit.authentication.updateToken(context);
                 }

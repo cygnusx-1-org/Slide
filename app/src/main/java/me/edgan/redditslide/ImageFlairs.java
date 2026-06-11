@@ -139,7 +139,7 @@ public class ImageFlairs {
                         if (backgroundURL == null) backgroundURL = flairStylesheet.defaultURL;
                         if (!allImages.contains(backgroundURL)) allImages.add(backgroundURL);
                     } catch (Exception e) {
-                        //  e.printStackTrace();
+                        //  LogUtil.e(e, "ImageFlairs.doInBackground failed");
                     }
                 }
                 if (flairStylesheet.defaultURL != null) {
@@ -151,7 +151,7 @@ public class ImageFlairs {
                 }
                 return flairStylesheet;
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.e(e, "ImageFlairs.doInBackground failed");
                 return null;
             }
         }
@@ -656,7 +656,7 @@ public class ImageFlairs {
                                                 flairLocation.y)
                                         .transform(loadedImage, flairLocation.isPercentage);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtil.e(e, "ImageFlairs.loadingComplete failed");
                     }
                     try {
                         getFlairImageLoader(context)
@@ -668,7 +668,7 @@ public class ImageFlairs {
                                         newBit);
                         count += 1;
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtil.e(e, "ImageFlairs.loadingComplete failed");
                     }
                 }
                 loadedImage.recycle();

@@ -65,6 +65,7 @@ import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.SortingUtil;
 import me.edgan.redditslide.util.StringUtil;
 import me.edgan.redditslide.util.SubmissionParser;
+import me.edgan.redditslide.util.LogUtil;
 
 public class SidebarController {
 
@@ -373,7 +374,7 @@ public class SidebarController {
                                         }
                                     }
                                 } catch (Exception e1) {
-                                    e1.printStackTrace();
+                                    LogUtil.e(e1, "SidebarController.doInBackground failed");
                                 }
 
                                 return params[0];
@@ -430,7 +431,7 @@ public class SidebarController {
 
                                                                                                 return true;
                                                                                             } catch (Exception e) {
-                                                                                                e.printStackTrace();
+                                                                                                LogUtil.e(e, "SidebarController.doInBackground failed");
 
                                                                                                 return false;
                                                                                             }
@@ -481,7 +482,7 @@ public class SidebarController {
 
                                                                                 return true;
                                                                             } catch (Exception e) {
-                                                                                e.printStackTrace();
+                                                                                LogUtil.e(e, "SidebarController.doInBackground failed");
                                                                                 return false;
                                                                             }
                                                                         }
@@ -744,7 +745,7 @@ public class SidebarController {
                                                                                 });
                                                                         }
                                                                     });
-                                                                e.printStackTrace();
+                                                                LogUtil.e(e, "SidebarController.run failed");
                                                             }
                                                             return null;
                                                         }

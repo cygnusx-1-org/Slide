@@ -325,7 +325,7 @@ public class SubredditPostsRealm implements PostLoader {
                     }
                     return getNextFiltered();
                 }
-                e.printStackTrace();
+                LogUtil.e(e, "SubredditPostsRealm.getNextFiltered failed");
                 error = e;
                 if (e.getMessage() != null && e.getMessage().contains("Forbidden")) {
                     Reddit.authentication.updateToken(context);

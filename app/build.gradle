@@ -25,8 +25,8 @@ android {
 
             if (flavors.contains("withGPlay")) {
                 artifactName = "${appName}-${versionName}"
-            } else if (flavors.contains("NoGPlay")) {
-                artifactName = "${appName}-${flavor}-${versionName}"
+            } else if (flavors.contains("noGPlay")) {
+                artifactName = "${appName}-${flavors}-${versionName}"
             } else if (buildType == "debug") {
                 artifactName = "${appName}-${buildType}-${versionName}"
             }
@@ -101,8 +101,10 @@ android {
         }
     }
 
-    packagingOptions {
-        exclude 'META-INF/*'
+    packaging {
+        resources {
+            excludes += 'META-INF/*'
+        }
     }
 
     compileOptions {
@@ -112,11 +114,14 @@ android {
     }
 
     lint {
-        quiet true
-        abortOnError false
-        ignoreWarnings true
-        // Translations are crowd-sourced
-        disable 'MissingTranslation', 'ExtraTranslation',
+        // Lint errors are kept at zero; fail the build if a new one is introduced.
+        // Warnings do not abort (see the large existing warning backlog).
+        abortOnError true
+        // Translations are crowd-sourced. ImpliedQuantity fires on the count-less
+        // abbreviation plurals (points -> "pt"/"pts", comments -> "cmt"/"cmts")
+        // whose quantity is rendered separately, so no %d belongs in the string;
+        // this is inherent to Slavic/Romance plural rules and recurs per locale.
+        disable 'MissingTranslation', 'ExtraTranslation', 'ImpliedQuantity',
                 'StaticFieldLeak', 'ClickableViewAccessibility', 'NotSibling'
     }
 

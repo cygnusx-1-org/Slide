@@ -61,6 +61,7 @@ import net.dean.jraw.models.VoteDirection;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import me.edgan.redditslide.util.LogUtil;
 
 /** Created by carlo_000 on 2/27/2016. */
 public class PopulateShadowboxInfo {
@@ -218,7 +219,7 @@ public class PopulateShadowboxInfo {
                                                     ActionStates.setSaved(s, true);
                                                 }
                                             } catch (ApiException | RuntimeException e) {
-                                                e.printStackTrace();
+                                                LogUtil.e(e, "PopulateShadowboxInfo.doInBackground failed");
                                             }
 
                                             return null;
@@ -403,7 +404,7 @@ public class PopulateShadowboxInfo {
                         downvotebutton.setVisibility(View.GONE);
                     }
                 } catch (Exception ignored) {
-                    ignored.printStackTrace();
+                    LogUtil.e(ignored, "PopulateShadowboxInfo.onClick failed");
                 }
                 rootView.findViewById(R.id.menu)
                         .setOnClickListener(
@@ -596,7 +597,7 @@ public class PopulateShadowboxInfo {
                                                     ActionStates.setSaved(s, true);
                                                 }
                                             } catch (ApiException | RuntimeException e) {
-                                                e.printStackTrace();
+                                                LogUtil.e(e, "PopulateShadowboxInfo.doInBackground failed");
                                             }
 
                                             return null;
@@ -769,7 +770,7 @@ public class PopulateShadowboxInfo {
                         downvotebutton.setVisibility(View.GONE);
                     }
                 } catch (Exception ignored) {
-                    ignored.printStackTrace();
+                    LogUtil.e(ignored, "PopulateShadowboxInfo.onClick failed");
                 }
             }
         }

@@ -1179,7 +1179,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                                     Spanned.SPAN_INCLUSIVE_INCLUSIVE);
                         } catch (Exception ignored) {
                             // catch out of bounds
-                            ignored.printStackTrace();
+                            LogUtil.e(ignored, "SpoilerRobotoTextView.setOrRemoveSpoilerSpans failed");
                         }
                     }
                 }

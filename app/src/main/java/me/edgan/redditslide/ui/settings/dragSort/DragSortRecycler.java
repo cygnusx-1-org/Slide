@@ -187,8 +187,9 @@ class DragSortRecycler extends RecyclerView.ItemDecoration
 
             int itemPos = rv.getChildAdapterPosition(view);
 
-            if (itemPos == selectedDragItemPos) // Don't check against itself!
-            continue;
+            if (itemPos == selectedDragItemPos) { // Don't check against itself!
+                continue;
+            }
 
             float viewMiddleY = view.getTop() + view.getHeight() / 2.0f;
             if (floatMiddleY > viewMiddleY) // Is above this item
@@ -202,8 +203,9 @@ class DragSortRecycler extends RecyclerView.ItemDecoration
         debugLog("above = " + above + " below = " + below);
 
         if (below != Integer.MAX_VALUE) {
-            if (below < selectedDragItemPos) // Need to count itself
-            below++;
+            if (below < selectedDragItemPos) { // Need to count itself
+                below++;
+            }
             return below - 1;
         } else {
             if (above < selectedDragItemPos) above++;
@@ -312,8 +314,9 @@ class DragSortRecycler extends RecyclerView.ItemDecoration
             floatingItemBounds.top = fingerY - fingerOffsetInViewY;
 
             if (floatingItemBounds.top
-                    < -floatingItemStatingBounds.height() / 2) // Allow half the view out the top
-            floatingItemBounds.top = -floatingItemStatingBounds.height() / 2;
+                    < -floatingItemStatingBounds.height() / 2) { // Allow half the view out the top
+                floatingItemBounds.top = -floatingItemStatingBounds.height() / 2;
+            }
 
             floatingItemBounds.bottom = floatingItemBounds.top + floatingItemStatingBounds.height();
 

@@ -37,6 +37,7 @@ import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.ImageSaveUtils;
 import me.edgan.redditslide.util.LinkUtil;
+import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
 
 import java.util.ArrayList;
@@ -274,7 +275,9 @@ public class Album extends BaseSaveActivity {
                                                 getActivity().finish();
                                             })
                                         .show();
-                                } catch (Exception e) {}
+                                } catch (Exception e) {
+                                    LogUtil.e(e, "Failed to show album-not-found dialog");
+                                }
                             }
                         }
                     );

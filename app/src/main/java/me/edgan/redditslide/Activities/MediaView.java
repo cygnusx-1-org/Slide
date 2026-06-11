@@ -193,7 +193,7 @@ public class MediaView extends BaseSaveActivity {
                     contentUrl = contentUrl.replace(".gifv", ".gif");
                 }
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                LogUtil.e(e, "MediaView.URL failed");
             }
             b.sheet(6, file, getString(R.string.mediaview_save, type));
         }
@@ -376,7 +376,7 @@ public class MediaView extends BaseSaveActivity {
                                     }
                                 });
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtil.e(e, "MediaView.onScanCompleted failed");
                     }
                 }
                 return null;
@@ -874,7 +874,7 @@ public class MediaView extends BaseSaveActivity {
                                 if (!imageShown) doLoadImage(finalUrl);
                             }
                         } catch (Exception e2) {
-                            e2.printStackTrace();
+                            LogUtil.e(e2, "MediaView.onPostExecute failed");
                             Intent i = new Intent(MediaView.this, Website.class);
                             i.putExtra(LinkUtil.EXTRA_URL, finalUrl);
                             MediaView.this.startActivity(i);
@@ -938,7 +938,7 @@ public class MediaView extends BaseSaveActivity {
                                 finish();
                             }
                         } catch (Exception e2) {
-                            e2.printStackTrace();
+                            LogUtil.e(e2, "MediaView.onLongClick failed");
                             Intent i = new Intent(MediaView.this, Website.class);
                             i.putExtra(LinkUtil.EXTRA_URL, finalUrl);
                             MediaView.this.startActivity(i);
@@ -1047,7 +1047,7 @@ public class MediaView extends BaseSaveActivity {
                                 });
 
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        LogUtil.e(e, "MediaView.run failed");
                     }
                     return null;
                 }

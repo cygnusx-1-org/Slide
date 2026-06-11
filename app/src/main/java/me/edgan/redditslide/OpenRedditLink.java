@@ -126,7 +126,7 @@ public class OpenRedditLink {
                         });
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "OpenRedditLink.openUrl failed");
                 }
             }).start();
             return true;

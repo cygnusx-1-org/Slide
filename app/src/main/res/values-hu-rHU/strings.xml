@@ -484,7 +484,7 @@
     <string name="settings_mail_check">Üzenetek ellenőrzése</string>
     <string name="settings_mail_info">Minél kisebb az időköz, vélhetően annál több energiát fog használni a Slide a háttérben!</string>
     <string name="settings_main_color_title">Fő szín módosítása</string>
-    <string name="settings_notification">Üzenet-ellenőrzési időköz:</string>
+    <string name="settings_notification">Üzenet-ellenőrzési időköz: %1$s</string>
     <string name="settings_notification_newline">Beérkezett üzenetek ellenőrzésének időköze\n%1$s</string>
     <string name="settings_notification_short">Ellenőrzési időköz: %1$s</string>
     <string name="settings_disable_nsfw_photo">Az össze kifogásolható kép elrejtése</string>

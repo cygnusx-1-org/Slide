@@ -14,6 +14,7 @@ import me.edgan.redditslide.Notifications.CheckForMail;
 import me.edgan.redditslide.util.NetworkUtil;
 
 import net.dean.jraw.managers.InboxManager;
+import me.edgan.redditslide.util.LogUtil;
 
 /** Created by brent on 1/27/16. */
 public class MarkAsReadService extends IntentService {
@@ -56,7 +57,7 @@ public class MarkAsReadService extends IntentService {
                     inboxManager.setRead(message, true);
                 } catch (RuntimeException e) {
                     // Connection failures surface as a bare RuntimeException (not NetworkException)
-                    e.printStackTrace();
+                    LogUtil.e(e, "MarkAsReadService.onHandleIntent failed");
                     return;
                 }
             }

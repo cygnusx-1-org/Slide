@@ -907,10 +907,7 @@ public class CanvasView extends View {
      * @return This is returned as byte array of bitmap.
      */
     public byte[] getBitmapAsByteArray(CompressFormat format, int quality) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        this.getBitmap().compress(format, quality, byteArrayOutputStream);
-
-        return byteArrayOutputStream.toByteArray();
+        return getBitmapAsByteArray(this.getBitmap(), format, quality);
     }
 
     /**

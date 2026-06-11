@@ -13,6 +13,7 @@ import net.dean.jraw.ApiException;
 import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.models.PublicContribution;
 import net.dean.jraw.models.VoteDirection;
+import me.edgan.redditslide.util.LogUtil;
 
 /** Created by ccrama on 9/19/2015. */
 public class Vote extends AsyncTask<PublicContribution, Void, Void> {
@@ -42,7 +43,7 @@ public class Vote extends AsyncTask<PublicContribution, Void, Void> {
                 new AccountManager(Authentication.reddit).vote(sub[0], direction);
             } catch (ApiException | RuntimeException e) {
                 createVoteSnackbar(R.string.vote_err);
-                e.printStackTrace();
+                LogUtil.e(e, "Vote.doInBackground failed");
             }
         } else {
             createVoteSnackbar(R.string.vote_err_login);

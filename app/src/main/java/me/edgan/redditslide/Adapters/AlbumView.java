@@ -2,6 +2,7 @@ package me.edgan.redditslide.Adapters;
 
 import static me.edgan.redditslide.Notifications.ImageDownloadNotificationService.EXTRA_SUBMISSION_TITLE;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
@@ -139,6 +140,9 @@ public class AlbumView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     @Override
+    // The click listener captures the bound Image (stable data), not the raw position, so
+    // there is no stale-position lookup to convert to getBindingAdapterPosition().
+    @SuppressLint("RecyclerView")
     public void onBindViewHolder(RecyclerView.ViewHolder holder2, int i) {
         if (holder2 instanceof AlbumViewHolder) {
             final int position = paddingBottom ? i : i - 1;

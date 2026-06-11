@@ -21,7 +21,8 @@ import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import androidx.appcompat.view.menu.ActionMenuItemView;
+import android.widget.TextView;
+
 import androidx.appcompat.widget.ActionMenuView;
 import androidx.appcompat.widget.Toolbar;
 
@@ -64,12 +65,14 @@ public class ToolbarColorizeHelper {
                     // Colorize the ActionViews -> all icons that are NOT: back button | overflow
                     // menu
                     final View innerView = ((ActionMenuView) v).getChildAt(j);
-                    if (innerView instanceof ActionMenuItemView) {
+                    // ActionMenuItemView (the menu-item child) is a @RestrictTo TextView
+                    // subclass; cast to TextView and use the public getCompoundDrawables()
+                    // API instead of referencing the restricted class.
+                    if (innerView instanceof TextView) {
                         for (int k = 0;
-                                k < ((ActionMenuItemView) innerView).getCompoundDrawables().length;
+                                k < ((TextView) innerView).getCompoundDrawables().length;
                                 k++) {
-                            if (((ActionMenuItemView) innerView).getCompoundDrawables()[k]
-                                    != null) {
+                            if (((TextView) innerView).getCompoundDrawables()[k] != null) {
                                 final int finalK = k;
 
                                 // Important to set the color filter in seperate thread, by adding
@@ -80,7 +83,7 @@ public class ToolbarColorizeHelper {
                                             @Override
                                             public void run() {
                                                 BlendModeUtil.tintDrawableAsModulate(
-                                                        ((ActionMenuItemView) innerView)
+                                                        ((TextView) innerView)
                                                                 .getCompoundDrawables()[finalK],
                                                         toolbarIconsColor);
                                             }

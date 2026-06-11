@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import me.edgan.redditslide.util.LogUtil;
 
 /** Created by carlo_000 on 11/19/2015. */
 public class OfflineSubreddit {
@@ -65,7 +66,7 @@ public class OfflineSubreddit {
             writer.flush();
             writer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            LogUtil.e(e, "OfflineSubreddit.writeSubmissionToStorage failed");
         }
     }
 
@@ -232,7 +233,7 @@ public class OfflineSubreddit {
                                 o.submissions.add(sub);
                             }
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            LogUtil.e(e, "OfflineSubreddit.getSubreddit failed");
                         }
                     }
                 }
@@ -272,7 +273,7 @@ public class OfflineSubreddit {
                 reader.close();
                 return new String(chars);
             } catch (IOException e) {
-                e.printStackTrace();
+                LogUtil.e(e, "OfflineSubreddit.getStringFromFile failed");
             }
         } else {
             return "";

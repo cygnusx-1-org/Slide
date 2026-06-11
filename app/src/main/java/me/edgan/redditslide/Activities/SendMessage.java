@@ -37,6 +37,7 @@ import net.dean.jraw.models.PrivateMessage;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import me.edgan.redditslide.util.LogUtil;
 
 /** Created by ccrama on 3/5/2015. */
 public class SendMessage extends BaseActivity {
@@ -237,7 +238,7 @@ public class SendMessage extends BaseActivity {
                             .reply(previousMessage, bodytext);
                 } catch (ApiException | RuntimeException e) {
                     messageSent = false;
-                    e.printStackTrace();
+                    LogUtil.e(e, "SendMessage.sendMessage failed");
                 }
             } else {
                 try {
@@ -258,7 +259,7 @@ public class SendMessage extends BaseActivity {
 
                 } catch (ApiException e) {
                     messageSent = false;
-                    e.printStackTrace();
+                    LogUtil.e(e, "SendMessage.sendMessage failed");
 
                     // Display a Toast with an error if the user doesn't exist
                     if (e.getReason().equals("USER_DOESNT_EXIST")
@@ -273,7 +274,7 @@ public class SendMessage extends BaseActivity {
                     // Connection failures surface as a bare RuntimeException; leave
                     // messageSentStatus null so onPostExecute shows the generic failure.
                     messageSent = false;
-                    e.printStackTrace();
+                    LogUtil.e(e, "SendMessage.sendMessage failed");
                 }
             }
         }

@@ -31,7 +31,7 @@
             android:layout_marginEnd="16dp"
             android:padding="16dp"
             app:srcCompat="@drawable/ic_palette"
-            android:tint="?attr/tintColor" />
+            app:tint="?attr/tintColor" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -55,7 +55,7 @@
             android:layout_marginEnd="16dp"
             android:padding="16dp"
             app:srcCompat="@drawable/ic_colorize"
-            android:tint="?attr/tintColor"/>
+            app:tint="?attr/tintColor"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -79,7 +79,7 @@
             android:layout_marginEnd="16dp"
             android:padding="16dp"
             app:srcCompat="@drawable/ic_invert_colors"
-            android:tint="?attr/tintColor" />
+            app:tint="?attr/tintColor" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -103,7 +103,7 @@
             android:layout_marginEnd="16dp"
             android:padding="16dp"
             app:srcCompat="@drawable/ic_dark_mode"
-            android:tint="?attr/tintColor" />
+            app:tint="?attr/tintColor" />
 
         <TextView
             android:layout_width="wrap_content"

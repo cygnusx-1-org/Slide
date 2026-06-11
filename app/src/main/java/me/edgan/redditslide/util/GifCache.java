@@ -27,7 +27,7 @@ public class GifCache {
             ((LruDiskCache) discCache).setBufferSize(5 * 1024);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            LogUtil.e(e, "GifCache.init failed");
             discCache = new UnlimitedDiskCache(dir);
         }
     }
@@ -40,7 +40,7 @@ public class GifCache {
         try {
             LogUtil.v(discCache.save(url, stream, listener) + "DONE ");
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.e(e, "GifCache.writeGif failed");
         } finally {
             IoUtils.closeSilently(stream);
         }

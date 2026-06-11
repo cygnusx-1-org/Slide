@@ -199,7 +199,6 @@
         android:background="?android:selectableItemBackground"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:onClick="onSaveLocationClick"
         android:clickable="true"
         android:focusable="true"
         android:paddingEnd="16dp"

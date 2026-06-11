@@ -93,7 +93,7 @@ public class TumblrUtils {
                             }
                         });
             } catch (IOException e) {
-                e.printStackTrace();
+                LogUtil.e(e, "TumblrUtils.run failed");
                 LogUtil.e(e, "parseJson error, baseData [" + baseData + "]");
             }
         }

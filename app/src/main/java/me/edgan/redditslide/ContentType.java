@@ -14,6 +14,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Locale;
+import me.edgan.redditslide.util.LogUtil;
 
 /** Created by ccrama on 5/26/2015. */
 public class ContentType {
@@ -237,7 +238,7 @@ public class ContentType {
             {
                 return Type.LINK;
             }
-            e.printStackTrace();
+            LogUtil.e(e, "ContentType.getContentType failed");
             return Type.NONE;
         }
     }

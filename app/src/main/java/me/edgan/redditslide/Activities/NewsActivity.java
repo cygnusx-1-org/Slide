@@ -1,6 +1,7 @@
 package me.edgan.redditslide.Activities;
 
 import android.animation.ArgbEvaluator;
+import android.annotation.SuppressLint;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -79,6 +80,9 @@ public class NewsActivity extends BaseActivity
     public int reloadItemNumber = -2;
 
     @Override
+    // Intentionally finishes directly on Back rather than deferring to the default
+    // handling; super.onBackPressed() is not called by design.
+    @SuppressLint("MissingSuperCall")
     public void onBackPressed() {
         finish();
     }
@@ -110,7 +114,7 @@ public class NewsActivity extends BaseActivity
                         new AccountManager(Authentication.reddit).storeVisits(returned);
                         SynccitRead.newVisited = new ArrayList<>();
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtil.e(e, "NewsActivity.doInBackground failed");
                     }
                     return null;
                 }

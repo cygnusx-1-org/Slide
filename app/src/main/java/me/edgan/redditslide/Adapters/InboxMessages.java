@@ -15,6 +15,7 @@ import net.dean.jraw.paginators.InboxPaginator;
 import net.dean.jraw.paginators.Paginator;
 
 import java.util.ArrayList;
+import me.edgan.redditslide.util.LogUtil;
 
 /** Created by ccrama on 9/17/2015. */
 public class InboxMessages extends GeneralPosts {
@@ -109,7 +110,7 @@ public class InboxMessages extends GeneralPosts {
                 }
                 return null;
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.e(e, "InboxMessages.doInBackground failed");
                 return null;
             }
         }

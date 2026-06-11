@@ -539,7 +539,7 @@ public class SubmissionBottomSheetActions {
                     }
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "SubmissionBottomSheetActions.doInBackground failed");
                 }
 
                 return null;
@@ -604,7 +604,7 @@ public class SubmissionBottomSheetActions {
                     categories.add("New category");
                     return categories;
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "SubmissionBottomSheetActions.doInBackground failed");
                     return new ArrayList<String>() {
                         {
                             add("New category");
@@ -638,7 +638,7 @@ public class SubmissionBottomSheetActions {
                                                             new net.dean.jraw.managers.AccountManager(Authentication.reddit).save(submission, flair);
                                                             return true;
                                                         } catch (ApiException | RuntimeException e) {
-                                                            e.printStackTrace();
+                                                            LogUtil.e(e, "SubmissionBottomSheetActions.doInBackground failed");
 
                                                             return false;
                                                         }
@@ -671,7 +671,7 @@ public class SubmissionBottomSheetActions {
 
                                             return true;
                                         } catch (ApiException | RuntimeException e) {
-                                            e.printStackTrace();
+                                            LogUtil.e(e, "SubmissionBottomSheetActions.doInBackground failed");
 
                                             return false;
                                         }
@@ -700,7 +700,9 @@ public class SubmissionBottomSheetActions {
                     if (d != null) {
                         d.dismiss();
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception e) {
+                    LogUtil.e(e, "Failed to dismiss flair dialog");
+                }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -725,7 +727,9 @@ public class SubmissionBottomSheetActions {
                     try {
                         s.hide(pos);
                         success = true;
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                        LogUtil.e(e, "Failed to hide submission in offline subreddit");
+                    }
                 } else {
                     success = false;
                     s = null;
@@ -768,7 +772,7 @@ public class SubmissionBottomSheetActions {
             try {
                 new net.dean.jraw.managers.AccountManager(Authentication.reddit).report(submission, reason[0]);
             } catch (ApiException | RuntimeException e) {
-                e.printStackTrace();
+                LogUtil.e(e, "SubmissionBottomSheetActions.doInBackground failed");
             }
             return null;
         }

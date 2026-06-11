@@ -29,6 +29,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.multidex.MultiDexApplication;
 
+import androidx.annotation.OptIn;
+import androidx.media3.common.util.UnstableApi;
 import androidx.media3.database.DatabaseProvider;
 import androidx.media3.database.ExoDatabaseProvider;
 import androidx.media3.datasource.cache.Cache;
@@ -77,6 +79,7 @@ import java.util.List;
 import java.util.Locale;
 
 /** Created by ccrama on 9/17/2015. */
+@OptIn(markerClass = UnstableApi.class)
 public class Reddit extends MultiDexApplication implements Application.ActivityLifecycleCallbacks {
     private static Application mApplication;
 
@@ -359,12 +362,12 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
                                                         + " 'android.content.Context"
                                                         + " android.view.ViewGroup.getContext()' on"
                                                         + " a null object reference")) {
-                                t.printStackTrace();
+                                LogUtil.e(t, "Reddit.run failed");
                             } else if (t instanceof WindowManager.BadTokenException) {
-                                t.printStackTrace();
+                                LogUtil.e(t, "Reddit.run failed");
                             } else if (t instanceof IllegalArgumentException
                                     && t.getMessage().contains("pointerIndex out of range")) {
-                                t.printStackTrace();
+                                LogUtil.e(t, "Reddit.run failed");
                             } else {
                                 appRestart
                                         .edit()

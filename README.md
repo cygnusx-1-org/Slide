@@ -69,9 +69,9 @@ helps greatly if people document any bugs they find to ensure that they get
 fixed promptly.
 
 You can view a list of known issues and feature requests using
-[the issue tracker](https://github.com/edgan/Slide/issues).
+[the issue tracker](https://github.com/cygnusx-1-org/Slide/issues).
 If you don't see your issue (or you aren't sure), feel free to
-[submit it!](https://github.com/edgan/Slide/issues/new).
+[submit it!](https://github.com/cygnusx-1-org/Slide/issues/new).
 
 Where appropriate, a screenshot works wonders to help us see exactly what the
 issue is. You can upload screenshots directly using the GitHub issue tracker or
@@ -84,7 +84,7 @@ project and submit a pull request.
 ## Changelog
 The file [CHANGELOG.md](CHANGELOG.md) provides an overview of the changes for a
 release; for a more detailed look at changes to the app,
-[view individual commits](https://github.com/edgan/Slide/commits/master).
+[view individual commits](https://github.com/cygnusx-1-org/Slide/commits/master).
 
 # Related project
 Another [Reddit](https://www.reddit.com/) Android client app is [Continuum](https://github.com/cygnusx-1-org/continuum/). It is a fork of [Infinity for Reddit](https://github.com/Docile-Alligator/Infinity-For-Reddit/), but allows you to enter your own `Client ID` like `Slide`. It is open source, ad-free and completely free.

@@ -98,7 +98,7 @@ public class RedditGalleryFull extends Fragment {
             LogUtil.v("Found " + galleryImages.size() + " gallery images");
         } catch (Exception e) {
             LogUtil.e("Error extracting gallery images: " + e.getMessage());
-            e.printStackTrace();
+            LogUtil.e(e, "RedditGalleryFull.extractGalleryImages failed");
         }
         return galleryImages;
     }

@@ -44,6 +44,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import me.edgan.redditslide.util.LogUtil;
 
 public class CheckForMail extends BroadcastReceiver {
 
@@ -91,7 +92,7 @@ public class CheckForMail extends BroadcastReceiver {
                                         cv);
 
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        LogUtil.e(ex, "CheckForMail.onPostExecute failed");
                     }
                 }
                 // create arraylist of the messages fullName for markasread action
@@ -268,7 +269,7 @@ public class CheckForMail extends BroadcastReceiver {
                     return messages;
                 }
             } catch (Exception ignored) {
-                ignored.printStackTrace();
+                LogUtil.e(ignored, "CheckForMail.doInBackground failed");
             }
             return null;
         }
@@ -400,7 +401,7 @@ public class CheckForMail extends BroadcastReceiver {
                 }
             } catch (Exception ignored) {
 
-                ignored.printStackTrace();
+                LogUtil.e(ignored, "CheckForMail.doInBackground failed");
             }
             return null;
         }
@@ -553,7 +554,7 @@ public class CheckForMail extends BroadcastReceiver {
                 return toReturn;
 
             } catch (Exception ignored) {
-                ignored.printStackTrace();
+                LogUtil.e(ignored, "CheckForMail.doInBackground failed");
             }
             return null;
         }

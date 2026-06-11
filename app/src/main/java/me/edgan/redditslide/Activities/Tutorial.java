@@ -1,6 +1,7 @@
 package me.edgan.redditslide.Activities;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -105,11 +106,14 @@ public class Tutorial extends AppCompatActivity {
     }
 
     @Override
+    // Intentionally intercepts Back to step the tutorial pager backwards rather than
+    // finishing; super.onBackPressed() is deliberately not called.
+    @SuppressLint("MissingSuperCall")
     public void onBackPressed() {
         final int currentItem = binding.tutorialViewPager.getCurrentItem();
         if (currentItem == POS_WELCOME) {
-            // If the user is currently looking at the first step, allow the system to handle the
-            // Back button. This calls finish() on this activity and pops the back stack.
+            // On the first step, Back exits the tutorial.
+            finish();
         } else {
             // Otherwise, select the previous step.
             binding.tutorialViewPager.setCurrentItem(currentItem - 1);

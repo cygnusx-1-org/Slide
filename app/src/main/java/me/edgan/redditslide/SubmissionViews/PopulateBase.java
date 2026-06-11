@@ -18,6 +18,7 @@ import me.edgan.redditslide.util.LayoutUtils;
 import net.dean.jraw.ApiException;
 import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.models.Submission;
+import me.edgan.redditslide.util.LogUtil;
 
 /** Created by TacoTheDank on 04/04/2021. */
 public class PopulateBase {
@@ -55,7 +56,7 @@ public class PopulateBase {
             try {
                 new AccountManager(Authentication.reddit).report(submission, reason[0]);
             } catch (ApiException | RuntimeException e) {
-                e.printStackTrace();
+                LogUtil.e(e, "PopulateBase.doInBackground failed");
             }
             return null;
         }
