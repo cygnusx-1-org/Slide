@@ -47,7 +47,7 @@ android {
         applicationId "me.edgan.redditslide"
         minSdk 29
         multiDexEnabled true
-        targetSdk 35
+        targetSdk 36
         vectorDrawables.useSupportLibrary true
         versionCode 758
         versionName androidGitVersion.name()

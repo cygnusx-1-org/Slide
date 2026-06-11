@@ -8,14 +8,22 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import me.edgan.redditslide.ForceTouch.PeekViewActivity;
 import me.edgan.redditslide.R;
@@ -31,6 +39,8 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.GifUtils;
 
 import java.util.Locale;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * This is an activity which is the base for most of Slide's activities. It has support for handling
@@ -44,6 +54,18 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
     protected boolean overrideSwipeFromAnywhere = false;
     protected boolean verticalExit = false;
     protected GifUtils.AsyncLoadGif currentGif;
+
+    /**
+     * Subclasses that want their content to draw behind the system bars (full-bleed media
+     * viewers) can set this to true before onPostCreate() runs.
+     */
+    protected boolean disableEdgeToEdgePadding = false;
+
+    @Nullable private View mStatusBarScrim;
+    @Nullable private View mNavBarScrim;
+    private int mSystemBarColor;
+    private boolean mSystemBarColorSet = false;
+    private final Map<View, int[]> mInitialPadding = new WeakHashMap<>();
 
     /** Enable fullscreen immersive mode if setting is checked */
     @Override
@@ -192,6 +214,135 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         if (enableSwipeBackLayout) mHelper.onPostCreate();
+        setupEdgeToEdge();
+    }
+
+    /**
+     * Handles window insets manually now that edge-to-edge is enforced (targetSdk 36 ignores
+     * windowOptOutEdgeToEdgeEnforcement on Android 16+). Pads the activity content by the system
+     * bar insets and draws colored scrims behind the status and navigation bars so activities
+     * keep the same look they had before enforcement. Below API 35 the decor still fits system
+     * windows, so this is skipped and the legacy setStatusBarColor() path applies.
+     */
+    private void setupEdgeToEdge() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            return;
+        }
+        if (disableEdgeToEdgePadding) {
+            return;
+        }
+        final FrameLayout contentFrame =
+                (FrameLayout) getWindow().getDecorView().findViewById(android.R.id.content);
+        if (contentFrame == null) {
+            return;
+        }
+
+        mStatusBarScrim = new View(this);
+        contentFrame.addView(
+                mStatusBarScrim,
+                new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT, 0, Gravity.TOP));
+        mNavBarScrim = new View(this);
+        contentFrame.addView(
+                mNavBarScrim,
+                new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT, 0, Gravity.BOTTOM));
+        applyScrimColors();
+
+        ViewCompat.setOnApplyWindowInsetsListener(
+                contentFrame,
+                (v, windowInsets) -> {
+                    Insets bars =
+                            windowInsets.getInsets(
+                                    WindowInsetsCompat.Type.systemBars()
+                                            | WindowInsetsCompat.Type.displayCutout());
+                    Insets ime = windowInsets.getInsets(WindowInsetsCompat.Type.ime());
+                    int bottom = Math.max(bars.bottom, ime.bottom);
+                    for (int i = 0; i < contentFrame.getChildCount(); i++) {
+                        View child = contentFrame.getChildAt(i);
+                        if (child == mStatusBarScrim || child == mNavBarScrim) {
+                            continue;
+                        }
+                        if (child instanceof DrawerLayout) {
+                            // DrawerLayout ignores padding in its measure/layout pass,
+                            // so inset it with margins instead
+                            int[] base = mInitialPadding.get(child);
+                            if (base == null) {
+                                ViewGroup.MarginLayoutParams params =
+                                        (ViewGroup.MarginLayoutParams) child.getLayoutParams();
+                                base =
+                                        new int[] {
+                                            params.leftMargin, params.topMargin,
+                                            params.rightMargin, params.bottomMargin
+                                        };
+                                mInitialPadding.put(child, base);
+                            }
+                            ViewGroup.MarginLayoutParams params =
+                                    (ViewGroup.MarginLayoutParams) child.getLayoutParams();
+                            params.leftMargin = base[0] + bars.left;
+                            params.topMargin = base[1] + bars.top;
+                            params.rightMargin = base[2] + bars.right;
+                            params.bottomMargin = base[3] + bottom;
+                            child.setLayoutParams(params);
+                        } else {
+                            int[] base = mInitialPadding.get(child);
+                            if (base == null) {
+                                base =
+                                        new int[] {
+                                            child.getPaddingLeft(), child.getPaddingTop(),
+                                            child.getPaddingRight(), child.getPaddingBottom()
+                                        };
+                                mInitialPadding.put(child, base);
+                            }
+                            child.setPadding(
+                                    base[0] + bars.left,
+                                    base[1] + bars.top,
+                                    base[2] + bars.right,
+                                    base[3] + bottom);
+                        }
+                    }
+                    setScrimHeight(mStatusBarScrim, bars.top);
+                    setScrimHeight(mNavBarScrim, bars.bottom);
+                    return WindowInsetsCompat.CONSUMED;
+                });
+    }
+
+    private static void setScrimHeight(View scrim, int height) {
+        ViewGroup.LayoutParams params = scrim.getLayoutParams();
+        if (params.height != height) {
+            params.height = height;
+            scrim.setLayoutParams(params);
+        }
+    }
+
+    /**
+     * Colors the system bar scrims with the color last passed to themeSystemBars(), falling back
+     * to the theme's bar colors for activities that never set one.
+     */
+    private void applyScrimColors() {
+        if (mStatusBarScrim == null || mNavBarScrim == null) {
+            return;
+        }
+        int color =
+                mSystemBarColorSet
+                        ? mSystemBarColor
+                        : resolveThemeColor(android.R.attr.statusBarColor);
+        if (SettingValues.alwaysBlackStatusbar) {
+            color = Color.BLACK;
+        }
+        mStatusBarScrim.setBackgroundColor(color);
+        mNavBarScrim.setBackgroundColor(
+                SettingValues.colorNavBar
+                        ? color
+                        : resolveThemeColor(android.R.attr.navigationBarColor));
+    }
+
+    private int resolveThemeColor(int attr) {
+        TypedValue typedValue = new TypedValue();
+        if (getTheme().resolveAttribute(attr, typedValue, true)) {
+            return typedValue.data;
+        }
+        return Color.BLACK;
     }
 
     @Override
@@ -422,17 +573,20 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
      * @param color The color to tint the bars with
      */
     protected void themeSystemBars(int color) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (SettingValues.alwaysBlackStatusbar) {
-                color = Color.BLACK;
-            }
-
-            getWindow().setStatusBarColor(color);
-
-            if (SettingValues.colorNavBar) {
-                getWindow().setNavigationBarColor(color);
-            }
+        if (SettingValues.alwaysBlackStatusbar) {
+            color = Color.BLACK;
         }
+
+        mSystemBarColor = color;
+        mSystemBarColorSet = true;
+
+        // No-ops under edge-to-edge enforcement (API 35+); the scrims take over there
+        getWindow().setStatusBarColor(color);
+        if (SettingValues.colorNavBar) {
+            getWindow().setNavigationBarColor(color);
+        }
+
+        applyScrimColors();
     }
 
     /**
