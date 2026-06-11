@@ -1,7 +1,6 @@
 package me.edgan.redditslide.Activities;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -17,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -58,6 +58,7 @@ public class Tutorial extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getOnBackPressedDispatcher().addCallback(this, mBackCallback);
 
         final Resources.Theme theme = getTheme();
         theme.applyStyle(new FontPreferences(this).getCommentFontStyle().getResId(), true);
@@ -105,20 +106,21 @@ public class Tutorial extends AppCompatActivity {
         }
     }
 
-    @Override
-    // Intentionally intercepts Back to step the tutorial pager backwards rather than
-    // finishing; super.onBackPressed() is deliberately not called.
-    @SuppressLint("MissingSuperCall")
-    public void onBackPressed() {
-        final int currentItem = binding.tutorialViewPager.getCurrentItem();
-        if (currentItem == POS_WELCOME) {
-            // On the first step, Back exits the tutorial.
-            finish();
-        } else {
-            // Otherwise, select the previous step.
-            binding.tutorialViewPager.setCurrentItem(currentItem - 1);
-        }
-    }
+    // Intercepts Back to step the tutorial pager backwards rather than finishing
+    private final OnBackPressedCallback mBackCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    final int currentItem = binding.tutorialViewPager.getCurrentItem();
+                    if (currentItem == POS_WELCOME) {
+                        // On the first step, Back exits the tutorial.
+                        finish();
+                    } else {
+                        // Otherwise, select the previous step.
+                        binding.tutorialViewPager.setCurrentItem(currentItem - 1);
+                    }
+                }
+            };
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

@@ -111,7 +111,7 @@ public class SettingsActivity extends BaseActivity implements RestartActivity {
                     findViewById(R.id.settings_search).setVisibility(View.GONE);
                     findViewById(R.id.search).setVisibility(View.VISIBLE);
                 } else {
-                    onBackPressed();
+                    getOnBackPressedDispatcher().onBackPressed();
                 }
                 return true;
             case R.id.search:

@@ -181,7 +181,7 @@ public class Search extends BaseActivityAnim {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                onBackPressed();
+                getOnBackPressedDispatcher().onBackPressed();
                 return true;
             case R.id.time:
                 openTimeFramePopup();
@@ -297,7 +297,7 @@ public class Search extends BaseActivityAnim {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        onBackPressed(); // Simulate a system's "Back" button functionality.
+                        getOnBackPressedDispatcher().onBackPressed(); // Simulate a system's "Back" button functionality.
                     }
                 });
         mToolbar.setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());

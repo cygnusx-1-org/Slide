@@ -68,7 +68,7 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
 
         switch (id) {
             case android.R.id.home:
-                onBackPressed();
+                getOnBackPressedDispatcher().onBackPressed();
                 return true;
 
             case R.id.slider:

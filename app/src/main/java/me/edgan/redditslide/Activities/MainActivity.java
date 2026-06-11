@@ -43,6 +43,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -279,40 +280,54 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)
-                || drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.END)) {
-            drawerLayout.closeDrawers();
-        } else if (commentPager && pager.getCurrentItem() == toOpenComments) {
-            pager.setCurrentItem(pager.getCurrentItem() - 1);
-        } else if ((SettingValues.subredditSearchMethod == Constants.SUBREDDIT_SEARCH_METHOD_TOOLBAR
-                        || SettingValues.subredditSearchMethod
-                                == Constants.SUBREDDIT_SEARCH_METHOD_BOTH)
-                && findViewById(R.id.toolbar_search).getVisibility() == View.VISIBLE) {
-            findViewById(R.id.close_search_toolbar).performClick(); // close GO_TO_SUB_FIELD
-        } else if (SettingValues.backButtonBehavior
-                == Constants.BackButtonBehaviorOptions.OpenDrawer.getValue()) {
-            drawerLayout.openDrawer(GravityCompat.START);
-        } else if (SettingValues.backButtonBehavior
-                == Constants.BackButtonBehaviorOptions.GotoFirst.getValue()) {
-            pager.setCurrentItem(0);
-        } else if (SettingValues.backButtonBehavior
-                == Constants.BackButtonBehaviorOptions.ConfirmExit.getValue()) {
+    private final OnBackPressedCallback mBackCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)
+                            || drawerLayout != null
+                                    && drawerLayout.isDrawerOpen(GravityCompat.END)) {
+                        drawerLayout.closeDrawers();
+                    } else if (commentPager && pager.getCurrentItem() == toOpenComments) {
+                        pager.setCurrentItem(pager.getCurrentItem() - 1);
+                    } else if ((SettingValues.subredditSearchMethod
+                                            == Constants.SUBREDDIT_SEARCH_METHOD_TOOLBAR
+                                    || SettingValues.subredditSearchMethod
+                                            == Constants.SUBREDDIT_SEARCH_METHOD_BOTH)
+                            && findViewById(R.id.toolbar_search).getVisibility() == View.VISIBLE) {
+                        findViewById(R.id.close_search_toolbar)
+                                .performClick(); // close GO_TO_SUB_FIELD
+                    } else if (SettingValues.backButtonBehavior
+                            == Constants.BackButtonBehaviorOptions.OpenDrawer.getValue()) {
+                        drawerLayout.openDrawer(GravityCompat.START);
+                    } else if (SettingValues.backButtonBehavior
+                            == Constants.BackButtonBehaviorOptions.GotoFirst.getValue()) {
+                        pager.setCurrentItem(0);
+                    } else if (SettingValues.backButtonBehavior
+                            == Constants.BackButtonBehaviorOptions.ConfirmExit.getValue()) {
 
-            final Context contextThemeWrapper = new ContextThemeWrapper(MainActivity.this,
-                    new ColorPreferences(MainActivity.this).getFontStyle().getBaseId());
+                        final Context contextThemeWrapper =
+                                new ContextThemeWrapper(
+                                        MainActivity.this,
+                                        new ColorPreferences(MainActivity.this)
+                                                .getFontStyle()
+                                                .getBaseId());
 
-            new MaterialAlertDialogBuilder(contextThemeWrapper)
-                    .setTitle(R.string.general_confirm_exit)
-                    .setMessage(R.string.general_confirm_exit_msg)
-                    .setPositiveButton(R.string.btn_yes, (dialog, which) -> finish())
-                    .setNegativeButton(R.string.btn_no, (dialog, which) -> dialog.dismiss())
-                    .show();
-        } else {
-            super.onBackPressed();
-        }
-    }
+                        new MaterialAlertDialogBuilder(contextThemeWrapper)
+                                .setTitle(R.string.general_confirm_exit)
+                                .setMessage(R.string.general_confirm_exit_msg)
+                                .setPositiveButton(R.string.btn_yes, (dialog, which) -> finish())
+                                .setNegativeButton(
+                                        R.string.btn_no, (dialog, which) -> dialog.dismiss())
+                                .show();
+                    } else {
+                        // Run the system default back behavior
+                        setEnabled(false);
+                        getOnBackPressedDispatcher().onBackPressed();
+                        setEnabled(true);
+                    }
+                }
+            };
 
     @Override
     public void onPause() {
@@ -774,6 +789,7 @@ public class MainActivity extends BaseActivity
         inNightMode = SettingValues.isNight();
         disableSwipeBackLayout();
         super.onCreate(savedInstanceState);
+        getOnBackPressedDispatcher().addCallback(this, mBackCallback);
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             // Activity was brought to front and not created
             finish();

@@ -77,7 +77,7 @@ public class Draw extends BaseActivity implements ColorChooserDialog.ColorCallba
         int id = item.getItemId();
 
         if (id == android.R.id.home) {
-            onBackPressed();
+            getOnBackPressedDispatcher().onBackPressed();
         }
         if (id == R.id.done && enabled) {
             File image; // image to share

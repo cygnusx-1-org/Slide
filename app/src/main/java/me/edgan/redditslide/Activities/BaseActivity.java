@@ -134,7 +134,7 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
 
         if (id == android.R.id.home) {
             try {
-                onBackPressed();
+                getOnBackPressedDispatcher().onBackPressed();
             } catch (IllegalStateException ignored) {
 
             }

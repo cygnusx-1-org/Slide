@@ -20,6 +20,7 @@ import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.widget.Toolbar;
 import androidx.webkit.WebViewClientCompat;
 
@@ -82,14 +83,20 @@ public class Website extends BaseActivityAnim {
         return true;
     }
 
-    @Override
-    public void onBackPressed() {
-        if (v.canGoBack()) {
-            v.goBack();
-        } else if (!isFinishing()) {
-            super.onBackPressed();
-        }
-    }
+    private final OnBackPressedCallback mBackCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    if (v.canGoBack()) {
+                        v.goBack();
+                    } else if (!isFinishing()) {
+                        // Run the system default back behavior
+                        setEnabled(false);
+                        getOnBackPressedDispatcher().onBackPressed();
+                        setEnabled(true);
+                    }
+                }
+            };
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -177,6 +184,7 @@ public class Website extends BaseActivityAnim {
     public void onCreate(Bundle savedInstanceState) {
         overrideSwipeFromAnywhere();
         super.onCreate(savedInstanceState);
+        getOnBackPressedDispatcher().addCallback(this, mBackCallback);
         applyColorTheme("");
         setContentView(R.layout.activity_web);
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());

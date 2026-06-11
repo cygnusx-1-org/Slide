@@ -159,7 +159,7 @@ public class MultiredditOverview extends BaseActivityAnim {
         switch (item.getItemId()) {
             case android.R.id.home:
                 try {
-                    onBackPressed();
+                    getOnBackPressedDispatcher().onBackPressed();
                 } catch (Exception ignored) {
 
                 }

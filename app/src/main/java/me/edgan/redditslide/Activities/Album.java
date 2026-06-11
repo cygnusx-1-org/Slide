@@ -62,7 +62,7 @@ public class Album extends BaseSaveActivity {
         int id = item.getItemId();
 
         if (id == android.R.id.home) {
-            onBackPressed();
+            getOnBackPressedDispatcher().onBackPressed();
         }
 
         if (id == R.id.slider) {

@@ -73,7 +73,7 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
 
         switch (id) {
             case android.R.id.home:
-                onBackPressed();
+                getOnBackPressedDispatcher().onBackPressed();
                 return true;
 
             case R.id.vertical:

@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.AppCompatCheckBox;
@@ -149,17 +150,24 @@ public class SubredditView extends BaseActivity {
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)
-                || drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.END)) {
-            drawerLayout.closeDrawers();
-        } else if (commentPager && pager.getCurrentItem() == 2) {
-            pager.setCurrentItem(pager.getCurrentItem() - 1);
-        } else {
-            super.onBackPressed();
-        }
-    }
+    private final OnBackPressedCallback mBackCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)
+                            || drawerLayout != null
+                                    && drawerLayout.isDrawerOpen(GravityCompat.END)) {
+                        drawerLayout.closeDrawers();
+                    } else if (commentPager && pager.getCurrentItem() == 2) {
+                        pager.setCurrentItem(pager.getCurrentItem() - 1);
+                    } else {
+                        // Run the system default back behavior
+                        setEnabled(false);
+                        getOnBackPressedDispatcher().onBackPressed();
+                        setEnabled(true);
+                    }
+                }
+            };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -170,6 +178,7 @@ public class SubredditView extends BaseActivity {
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         getWindow().getDecorView().setBackground(null);
         super.onCreate(savedInstanceState);
+        getOnBackPressedDispatcher().addCallback(this, mBackCallback);
         if (!restarting) {
             overridePendingTransition(R.anim.slideright, 0);
         } else {
@@ -305,7 +314,7 @@ public class SubredditView extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                onBackPressed();
+                getOnBackPressedDispatcher().onBackPressed();
                 return true;
             case R.id.filter:
                 FilterContentUtil.showFilterDialog(this, subreddit, this::reloadSubs);

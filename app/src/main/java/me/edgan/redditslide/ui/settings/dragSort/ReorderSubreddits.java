@@ -24,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatCheckBox;
@@ -202,17 +203,23 @@ public class ReorderSubreddits extends BaseActivityAnim {
         super.onPause();
     }
 
-    @Override
-    public void onBackPressed() {
-        if (isMultiple) {
-            chosen = new ArrayList<>();
-            doOldToolbar();
-            adapter.notifyDataSetChanged();
-            isMultiple = false;
-        } else {
-            super.onBackPressed();
-        }
-    }
+    private final OnBackPressedCallback mBackCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    if (isMultiple) {
+                        chosen = new ArrayList<>();
+                        doOldToolbar();
+                        adapter.notifyDataSetChanged();
+                        isMultiple = false;
+                    } else {
+                        // Run the system default back behavior
+                        setEnabled(false);
+                        getOnBackPressedDispatcher().onBackPressed();
+                        setEnabled(true);
+                    }
+                }
+            };
 
     private ArrayList<String> chosen = new ArrayList<>();
     HashMap<String, Boolean> isSubscribed;
@@ -223,6 +230,7 @@ public class ReorderSubreddits extends BaseActivityAnim {
     protected void onCreate(Bundle savedInstanceState) {
         disableSwipeBackLayout();
         super.onCreate(savedInstanceState);
+        getOnBackPressedDispatcher().addCallback(this, mBackCallback);
         applyColorTheme();
         setContentView(R.layout.activity_sort);
 

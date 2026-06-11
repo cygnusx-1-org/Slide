@@ -1,7 +1,6 @@
 package me.edgan.redditslide.Activities;
 
 import android.animation.ArgbEvaluator;
-import android.annotation.SuppressLint;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -17,6 +16,7 @@ import android.view.Window;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -79,13 +79,14 @@ public class NewsActivity extends BaseActivity
     private int headerHeight; // height of the header
     public int reloadItemNumber = -2;
 
-    @Override
-    // Intentionally finishes directly on Back rather than deferring to the default
-    // handling; super.onBackPressed() is not called by design.
-    @SuppressLint("MissingSuperCall")
-    public void onBackPressed() {
-        finish();
-    }
+    // Intentionally finishes directly on Back rather than deferring to the default handling
+    private final OnBackPressedCallback mBackCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    finish();
+                }
+            };
 
     @Override
     public void onPause() {
@@ -142,6 +143,7 @@ public class NewsActivity extends BaseActivity
         inNightMode = SettingValues.isNight();
         disableSwipeBackLayout();
         super.onCreate(savedInstanceState);
+        getOnBackPressedDispatcher().addCallback(this, mBackCallback);
 
         applyColorTheme();
 

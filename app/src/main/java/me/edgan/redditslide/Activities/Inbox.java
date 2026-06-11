@@ -66,7 +66,7 @@ public class Inbox extends BaseActivityAnim {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case (android.R.id.home):
-                onBackPressed();
+                getOnBackPressedDispatcher().onBackPressed();
                 break;
             case (R.id.notifs):
                 LayoutInflater inflater = getLayoutInflater();

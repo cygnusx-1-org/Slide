@@ -59,7 +59,7 @@ public class Tumblr extends BaseSaveActivity {
         int id = item.getItemId();
 
         if (id == android.R.id.home) {
-            onBackPressed();
+            getOnBackPressedDispatcher().onBackPressed();
         }
         if (id == R.id.slider) {
             SettingValues.albumSwipe = true;

@@ -816,7 +816,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        getActivity().onBackPressed();
+                        getActivity().getOnBackPressedDispatcher().onBackPressed();
                     }
                 });
         toolbar.inflateMenu(R.menu.menu_comment_items);
@@ -1215,7 +1215,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                 }
                 return true;
             case android.R.id.home:
-                getActivity().onBackPressed();
+                getActivity().getOnBackPressedDispatcher().onBackPressed();
                 return true;
         }
         return false;
