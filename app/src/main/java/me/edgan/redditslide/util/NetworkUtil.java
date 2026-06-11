@@ -33,16 +33,23 @@ public class NetworkUtil {
             return Status.NONE;
         }
 
-        // For normal operation, always return WIFI status unless in forced offline mode
+        // For normal operation, always return WIFI status unless in forced offline mode.
+        // This intentionally keeps auto-offline disabled (see "Disabling auto-offline" commit).
+        // The real connection type is only consulted for the WiFi-vs-mobile distinction needed
+        // by data saving; see getRealConnectivityStatus().
         return Status.WIFI;
+    }
 
-        // Original implementation - commented out but kept for reference
-        /*
+    /**
+     * Determines the actual connection type from the system, used to distinguish WiFi from
+     * metered/mobile connections for data-saving settings. Unlike {@link
+     * #getConnectivityStatus(Context)} this is not overridden to always report WiFi.
+     */
+    private static Status getRealConnectivityStatus(final Context context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return getConnectivityStatusPre23(context);
         }
         return getConnectivityStatusNew(context);
-        */
     }
 
     /** For devices running pre-Marshmallow. */
@@ -141,8 +148,12 @@ public class NetworkUtil {
         if (Reddit.appRestart != null && Reddit.appRestart.getBoolean("forceoffline", false)) {
             return false;
         }
-        // Always return true for WiFi unless in offline mode
-        return true;
+        // Determine the real connection type so data-saving settings ("Mobile data" only)
+        // can correctly distinguish WiFi from metered/mobile connections. Note that
+        // isConnected()/isConnectedNoOverride() intentionally stay always-online to keep
+        // auto-offline disabled; only the WiFi-vs-mobile determination relies on the real
+        // connectivity status here.
+        return getRealConnectivityStatus(context) == Status.WIFI;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)

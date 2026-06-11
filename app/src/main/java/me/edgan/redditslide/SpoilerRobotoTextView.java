@@ -535,6 +535,10 @@ public void setEmoteText(String text, TextView textView) {
  * with one that uses the downloaded image.
  */
 private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int posCount) {
+    // Respect the "Don't load any images" data saving setting.
+    if (SettingValues.shouldSkipImages(getContext())) {
+        return;
+    }
     Log.d("EmoteDebug", "Starting image download for giphy emote: " + request.gifUrl);
     loadThumbnailFromUrl(request.gifUrl, new ImageCallback() {
         @Override
@@ -1332,6 +1336,12 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
     }
 
     private void processRedditPreviewImages(SpannableStringBuilder builder) {
+        // Respect the "Don't load any images" data saving setting. When active, leave the URLs
+        // as plain text/links instead of downloading and inlining the images.
+        if (SettingValues.shouldSkipImages(getContext())) {
+            return;
+        }
+
         Pattern previewPattern = Pattern.compile("https://preview\\.redd\\.it/[^\\s]+");
         Matcher previewMatcher = previewPattern.matcher(builder);
 

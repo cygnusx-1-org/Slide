@@ -561,6 +561,32 @@ public class SettingValues {
         return prefs.getBoolean(PREF_HIDE_NSFW_PREVIEW + Authentication.name, true);
     }
 
+    /**
+     * Whether data saving is currently active for the given context. This mirrors the gate used
+     * throughout the post adapters: data saving applies either always ({@link #lowResAlways}) or on
+     * mobile data only ({@link #lowResMobile}) when not connected to WiFi.
+     *
+     * @param context Context used to determine the current connection type.
+     * @return true if data saving should be applied right now.
+     */
+    public static boolean isDataSavingActive(android.content.Context context) {
+        return lowResAlways
+                || (lowResMobile
+                        && !me.edgan.redditslide.util.NetworkUtil.isConnectedWifi(context));
+    }
+
+    /**
+     * Whether images should be skipped entirely right now. This is true when the user selected
+     * "Don't load any images" ({@link #noImages}) and data saving is active for the current
+     * connection. See {@link #isDataSavingActive(android.content.Context)}.
+     *
+     * @param context Context used to determine the current connection type.
+     * @return true if images should not be loaded.
+     */
+    public static boolean shouldSkipImages(android.content.Context context) {
+        return noImages && isDataSavingActive(context);
+    }
+
     public static void resetSelftextEnabled(String subreddit) {
         prefs.edit().remove("cardtextenabled" + subreddit.toLowerCase(Locale.ENGLISH)).apply();
     }
