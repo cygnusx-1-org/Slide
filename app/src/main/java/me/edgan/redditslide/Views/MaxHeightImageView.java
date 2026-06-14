@@ -21,8 +21,35 @@ public class MaxHeightImageView extends AppCompatImageView {
 
     public static final int maxHeight = 3200;
 
+    /**
+     * Image aspect ratio expressed as height/width. When set (> 0), the view derives its height
+     * from its measured width at measure time, independent of the (asynchronously loaded) drawable.
+     * This reserves the correct slot height up front so that loading the image never resizes the
+     * view, which previously caused the feed to "jump" while scrolling up.
+     */
+    private double aspectRatio = 0;
+
+    public void setAspectRatio(double ratio) {
+        if (aspectRatio != ratio) {
+            aspectRatio = ratio;
+            requestLayout();
+        }
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (aspectRatio > 0) {
+            int wSize = MeasureSpec.getSize(widthMeasureSpec);
+            int wMode = MeasureSpec.getMode(widthMeasureSpec);
+            if (wSize > 0 && (wMode == MeasureSpec.EXACTLY || wMode == MeasureSpec.AT_MOST)) {
+                int h = (int) Math.min(wSize * aspectRatio, maxHeight);
+                super.onMeasure(
+                        MeasureSpec.makeMeasureSpec(wSize, MeasureSpec.EXACTLY),
+                        MeasureSpec.makeMeasureSpec(h, MeasureSpec.EXACTLY));
+                return;
+            }
+        }
+
         int hSize = MeasureSpec.getSize(heightMeasureSpec);
         int hMode = MeasureSpec.getMode(heightMeasureSpec);
 

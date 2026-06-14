@@ -43,6 +43,7 @@ import me.edgan.redditslide.HasSeen;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.Views.MaxHeightImageView;
 import me.edgan.redditslide.Views.PeekMediaView;
 import me.edgan.redditslide.Views.TransparentTagTextView;
 import me.edgan.redditslide.util.BlendModeUtil;
@@ -81,7 +82,7 @@ public class HeaderImageLinkView extends RelativeLayout {
     float position;
     private TextView title;
     private TextView info;
-    public ImageView backdrop;
+    public MaxHeightImageView backdrop;
     private boolean forceThumb;
 
     private static final List<String> PLACEHOLDER_URLS =
@@ -154,6 +155,7 @@ public class HeaderImageLinkView extends RelativeLayout {
     boolean thumbUsed;
 
     public void doImageAndText(final Submission submission, boolean full, String baseSub, boolean news) {
+        backdrop.setAspectRatio(0);
         backdrop.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         boolean fullImage = ContentType.fullImage(type);
@@ -860,28 +862,25 @@ public class HeaderImageLinkView extends RelativeLayout {
     }
 
     private void setFixedHeightLayoutParams(int heightDp) {
+        backdrop.setAspectRatio(0);
         backdrop.setLayoutParams(
                 new RelativeLayout.LayoutParams(
                         LayoutParams.MATCH_PARENT, dpToPx(heightDp)));
     }
 
     private void setAspectRatioLayoutParams(int height, int width) {
-        double h = getHeightFromAspectRatio(height, width);
-        if (h != 0) {
-            if (h > 3200) {
-                backdrop.setLayoutParams(
-                        new RelativeLayout.LayoutParams(
-                                LayoutParams.MATCH_PARENT, 3200));
-            } else {
-                backdrop.setLayoutParams(
-                        new RelativeLayout.LayoutParams(
-                                LayoutParams.MATCH_PARENT, (int) h));
-            }
+        // Reserve the slot height from the known aspect ratio so the asynchronously loaded image
+        // never resizes the view (which made the feed jump while scrolling up). The actual pixel
+        // height is derived from the real measured width in MaxHeightImageView.onMeasure, so this
+        // is correct for any column count and even before the view has been measured.
+        if (height > 0 && width > 0) {
+            backdrop.setAspectRatio((double) height / (double) width);
         } else {
-            backdrop.setLayoutParams(
-                    new RelativeLayout.LayoutParams(
-                            LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+            backdrop.setAspectRatio(0);
         }
+        backdrop.setLayoutParams(
+                new RelativeLayout.LayoutParams(
+                        LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
     }
 
     private void handleThumbnailDisplay(Submission submission, boolean full, boolean forceThumb,
@@ -1166,12 +1165,23 @@ public class HeaderImageLinkView extends RelativeLayout {
                         String url = null;
 
                         // Try to get source URL first
+                        JsonNode dims = null;
                         if (mediaInfo.has("s") && mediaInfo.get("s").has("u")) {
                             url = mediaInfo.get("s").get("u").asText();
+                            dims = mediaInfo.get("s");
                         }
                         // Fall back to preview array if source not available
                         else if (mediaInfo.has("p") && mediaInfo.get("p").size() > 0) {
                             url = mediaInfo.get("p").get(0).get("u").asText();
+                            dims = mediaInfo.get("p").get(0);
+                        }
+
+                        // Reserve the lead-image height from the gallery item's dimensions so the
+                        // asynchronously loaded image does not resize the view while scrolling.
+                        if (dims != null && dims.has("x") && dims.has("y")) {
+                            setBackdropLayoutParams(
+                                    dims.get("y").asInt(), dims.get("x").asInt(),
+                                    full, ContentType.fullImage(type), type);
                         }
 
                         if (url != null) {

@@ -13,10 +13,16 @@ public class CatchStaggeredGridLayoutManager extends StaggeredGridLayoutManager 
     public CatchStaggeredGridLayoutManager(
             Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        // Prevent items from being shuffled between spans when re-filling upward,
+        // which causes visible "jumping" when scrolling back up.
+        setGapStrategy(GAP_HANDLING_NONE);
     }
 
     public CatchStaggeredGridLayoutManager(int spanCount, int orientation) {
         super(spanCount, orientation);
+        // Prevent items from being shuffled between spans when re-filling upward,
+        // which causes visible "jumping" when scrolling back up.
+        setGapStrategy(GAP_HANDLING_NONE);
     }
 
     @Override

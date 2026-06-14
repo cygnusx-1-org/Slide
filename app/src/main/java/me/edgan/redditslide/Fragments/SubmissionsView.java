@@ -811,14 +811,6 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                             super.onScrolled(recyclerView, dx, dy);
 
-                            // Stabilize layout during scrolling
-                            if (Math.abs(dy) > 0
-                                    && rv.getLayoutManager()
-                                            instanceof CatchStaggeredGridLayoutManager) {
-                                ((CatchStaggeredGridLayoutManager) rv.getLayoutManager())
-                                        .invalidateSpanAssignments();
-                            }
-
                             if (!posts.loading
                                     && !posts.nomore
                                     && !posts.offline
