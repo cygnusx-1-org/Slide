@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Activities;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -432,11 +434,11 @@ public class Crosspost extends BaseActivity {
                             if (s.getSubredditType().equals("RESTRICTED")) {
                                 subredditText.setText("");
                                 lastCheckedSubreddit = "";
-                                new AlertDialog.Builder(Crosspost.this)
+                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(Crosspost.this)
                                         .setTitle(R.string.err_submit_restricted)
                                         .setMessage(R.string.err_submit_restricted_text)
                                         .setPositiveButton(R.string.btn_ok, null)
-                                        .show();
+                                        );
                                 return;
                             }
 
@@ -711,7 +713,7 @@ public class Crosspost extends BaseActivity {
     }
 
     private void showErrorRetryDialog(String message) {
-        new AlertDialog.Builder(Crosspost.this)
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(Crosspost.this)
                 .setTitle(R.string.err_title)
                 .setMessage(message)
                 .setNegativeButton(R.string.btn_no, (dialogInterface, i) -> finish())
@@ -721,7 +723,6 @@ public class Crosspost extends BaseActivity {
                                 ((FloatingActionButton) findViewById(R.id.send)).show())
                 .setOnDismissListener(
                         dialog -> ((FloatingActionButton) findViewById(R.id.send)).show())
-                .create()
-                .show();
+                );
     }
 }

@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Activities;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -187,12 +189,12 @@ public class Reauthenticate extends BaseActivityAnim {
             // Dismiss old progress dialog
             mMaterialDialog.dismiss();
 
-            new AlertDialog.Builder(Reauthenticate.this)
+            DialogUtil.showWithCardBackground(new AlertDialog.Builder(Reauthenticate.this)
                     .setTitle(R.string.reauth_complete)
                     .setPositiveButton(R.string.btn_ok, (dialog, which) -> finish())
                     .setCancelable(false)
                     .setOnCancelListener(dialog -> finish())
-                    .show();
+                    );
         }
     }
 }

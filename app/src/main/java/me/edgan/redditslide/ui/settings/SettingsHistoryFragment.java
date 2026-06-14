@@ -1,5 +1,7 @@
 package me.edgan.redditslide.ui.settings;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.app.Activity;
 import android.widget.RelativeLayout;
 
@@ -87,10 +89,10 @@ public class SettingsHistoryFragment {
     }
 
     private void showHistoryClearedDialog() {
-        new AlertDialog.Builder(context)
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(context)
                 .setTitle(R.string.alert_history_cleared)
                 .setPositiveButton(android.R.string.ok, null)
-                .show();
+                );
     }
 
     private void editSharedBooleanPreference(

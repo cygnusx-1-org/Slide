@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Activities;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -134,12 +136,11 @@ public class Wiki extends BaseActivityAnim implements WikiPage.WikiPageListener 
         if (pages.contains(wikiPageTitle)) {
             pager.setCurrentItem(pages.indexOf(wikiPageTitle));
         } else {
-            new AlertDialog.Builder(this)
+            DialogUtil.showWithCardBackground(new AlertDialog.Builder(this)
                     .setTitle(R.string.page_not_found)
                     .setMessage(R.string.page_does_not_exist)
                     .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
-                    .create()
-                    .show();
+                    );
         }
     }
 
@@ -173,7 +174,7 @@ public class Wiki extends BaseActivityAnim implements WikiPage.WikiPageListener 
                             @Override
                             public void run() {
                                 try {
-                                    new AlertDialog.Builder(Wiki.this)
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(Wiki.this)
                                             .setTitle(R.string.wiki_err)
                                             .setMessage(R.string.wiki_err_msg)
                                             .setPositiveButton(
@@ -183,7 +184,7 @@ public class Wiki extends BaseActivityAnim implements WikiPage.WikiPageListener 
                                                         finish();
                                                     })
                                             .setOnDismissListener(dialog -> finish())
-                                            .show();
+                                            );
                                 } catch (Exception ignored) {
 
                                 }
@@ -203,7 +204,7 @@ public class Wiki extends BaseActivityAnim implements WikiPage.WikiPageListener 
                 }
             } else {
                 try {
-                    new AlertDialog.Builder(Wiki.this)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(Wiki.this)
                             .setTitle(R.string.wiki_err)
                             .setMessage(R.string.wiki_err_msg)
                             .setPositiveButton(
@@ -213,7 +214,7 @@ public class Wiki extends BaseActivityAnim implements WikiPage.WikiPageListener 
                                         finish();
                                     })
                             .setOnDismissListener(dialog -> finish())
-                            .show();
+                            );
                 } catch (Exception e) {
 
                 }

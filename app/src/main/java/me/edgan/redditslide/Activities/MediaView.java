@@ -917,14 +917,14 @@ public class MediaView extends BaseSaveActivity {
                                                     @Override
                                                     public boolean onLongClick(View v) {
                                                         try {
-                                                            new AlertDialog.Builder(MediaView.this)
+                                                            DialogUtil.showWithCardBackground(new AlertDialog.Builder(MediaView.this)
                                                                     .setTitle(
                                                                             result.get("safe_title")
                                                                                     .getAsString())
                                                                     .setMessage(
                                                                             result.get("alt")
                                                                                     .getAsString())
-                                                                    .show();
+                                                                    );
                                                         } catch (Exception ignored) {
 
                                                         }

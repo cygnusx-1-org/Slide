@@ -1,19 +1,20 @@
 package me.edgan.redditslide.ui.settings;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.app.Activity;
-import android.content.res.Resources;
-import android.os.Build;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 import com.google.common.collect.ImmutableList;
-import com.rey.material.app.TimePickerDialog;
 
 import me.edgan.redditslide.Autocache.AutoCacheScheduler;
 import me.edgan.redditslide.CommentCacheAsync;
@@ -22,7 +23,6 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.UserSubscriptions;
-import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.StringUtil;
 import me.edgan.redditslide.util.TimeUtils;
@@ -106,7 +106,7 @@ public class ManageOfflineContentFragment {
                                 final String commentDepth =
                                         SettingValues.prefs.getString(
                                                 SettingValues.COMMENT_DEPTH, "2");
-                                new AlertDialog.Builder(context)
+                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(context)
                                         .setTitle(R.string.comments_depth)
                                         .setSingleChoiceItems(
                                                 commentDepths.toArray(commentDepthArray),
@@ -118,7 +118,7 @@ public class ManageOfflineContentFragment {
                                                                         SettingValues.COMMENT_DEPTH,
                                                                         commentDepths.get(which))
                                                                 .apply())
-                                        .show();
+                                        );
                             }
                         });
 
@@ -133,7 +133,7 @@ public class ManageOfflineContentFragment {
                                 final String commentCount =
                                         SettingValues.prefs.getString(
                                                 SettingValues.COMMENT_COUNT, "2");
-                                new AlertDialog.Builder(context)
+                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(context)
                                         .setTitle(R.string.comments_count)
                                         .setSingleChoiceItems(
                                                 commentCounts.toArray(commentCountArray),
@@ -145,7 +145,7 @@ public class ManageOfflineContentFragment {
                                                                         SettingValues.COMMENT_COUNT,
                                                                         commentCounts.get(which))
                                                                 .apply())
-                                        .show();
+                                        );
                             }
                         });
 
@@ -175,7 +175,7 @@ public class ManageOfflineContentFragment {
                                 }
 
                                 final ArrayList<String> toCheck = new ArrayList<>(s2);
-                                new AlertDialog.Builder(context)
+                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(context)
                                         .setMultiChoiceItems(
                                                 all,
                                                 checked,
@@ -199,7 +199,7 @@ public class ManageOfflineContentFragment {
                                                             .apply();
                                                     updateBackup();
                                                 })
-                                        .show();
+                                        );
                             }
                         });
         updateTime();
@@ -209,48 +209,28 @@ public class ManageOfflineContentFragment {
                             @Override
                             public void onClick(View v) {
 
-                                final TimePickerDialog d = new TimePickerDialog(context);
-                                d.hour(Reddit.cachedData.getInt("hour", 0));
-                                d.minute(Reddit.cachedData.getInt("minute", 0));
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                                    d.applyStyle(
-                                            new ColorPreferences(context)
-                                                    .getFontStyle()
-                                                    .getBaseId());
-                                d.positiveAction("SET");
-                                TypedValue typedValue = new TypedValue();
-                                Resources.Theme theme = context.getTheme();
-                                theme.resolveAttribute(
-                                        R.attr.activity_background, typedValue, true);
-                                int color = typedValue.data;
-                                d.backgroundColor(color);
-                                d.actionTextColor(
-                                        context.getResources()
-                                                .getColor(
-                                                        new ColorPreferences(context)
-                                                                .getFontStyle()
-                                                                .getColor()));
-                                d.positiveActionClickListener(
-                                        new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                Reddit.cachedData
-                                                        .edit()
-                                                        .putInt("hour", d.getHour())
-                                                        .putInt("minute", d.getMinute())
-                                                        .commit();
-                                                Reddit.autoCache = new AutoCacheScheduler(context);
-                                                Reddit.autoCache.start();
-                                                updateTime();
-                                                d.dismiss();
-                                            }
+                                final MaterialTimePicker d =
+                                        new MaterialTimePicker.Builder()
+                                                .setTimeFormat(TimeFormat.CLOCK_12H)
+                                                .setHour(Reddit.cachedData.getInt("hour", 0))
+                                                .setMinute(Reddit.cachedData.getInt("minute", 0))
+                                                .setTitleText(R.string.choose_sync_time)
+                                                .setTheme(R.style.ThemeOverlay_App_TimePicker)
+                                                .build();
+                                d.addOnPositiveButtonClickListener(
+                                        view -> {
+                                            Reddit.cachedData
+                                                    .edit()
+                                                    .putInt("hour", d.getHour())
+                                                    .putInt("minute", d.getMinute())
+                                                    .commit();
+                                            Reddit.autoCache = new AutoCacheScheduler(context);
+                                            Reddit.autoCache.start();
+                                            updateTime();
                                         });
-                                theme.resolveAttribute(R.attr.fontColor, typedValue, true);
-                                int color2 = typedValue.data;
-
-                                d.setTitle(context.getString(R.string.choose_sync_time));
-                                d.titleColor(color2);
-                                d.show();
+                                d.show(
+                                        ((AppCompatActivity) context).getSupportFragmentManager(),
+                                        "autocache_time_picker");
                             }
                         });
     }

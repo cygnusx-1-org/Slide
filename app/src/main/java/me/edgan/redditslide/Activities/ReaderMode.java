@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Activities;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -126,7 +128,7 @@ public class ReaderMode extends BaseActivityAnim {
             if (articleText != null) {
                 display(title, articleText);
             } else {
-                new AlertDialog.Builder(ReaderMode.this)
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(ReaderMode.this)
                         .setTitle(R.string.internal_browser_extracting_error)
                         .setPositiveButton(R.string.btn_ok, (dialog, which) -> finish())
                         .setNeutralButton(
@@ -138,7 +140,7 @@ public class ReaderMode extends BaseActivityAnim {
                                     finish();
                                 })
                         .setCancelable(false)
-                        .show();
+                        );
             }
         }
 

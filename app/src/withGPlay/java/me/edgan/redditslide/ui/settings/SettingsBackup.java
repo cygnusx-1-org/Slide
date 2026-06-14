@@ -32,6 +32,7 @@ import com.jakewharton.processphoenix.ProcessPhoenix;
 
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.R;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.StorageUtil;
 import me.edgan.redditslide.util.MiscUtil;
@@ -186,15 +187,15 @@ public class SettingsBackup extends BaseActivityAnim {
             initializeDriveService(account);
         }
 
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.general_confirm)
-                .setMessage(R.string.backup_confirm)
-                .setPositiveButton(
-                        R.string.btn_ok,
-                        (dialog, whichButton) -> new BackupToDriveAsyncTask().execute())
-                .setNegativeButton(R.string.btn_no, null)
-                .setCancelable(false)
-                .show();
+        showThemedDialog(
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.general_confirm)
+                        .setMessage(R.string.backup_confirm)
+                        .setPositiveButton(
+                                R.string.btn_ok,
+                                (dialog, whichButton) -> new BackupToDriveAsyncTask().execute())
+                        .setNegativeButton(R.string.btn_no, null)
+                        .setCancelable(false));
     }
 
     /** Handle the Restore-from-Google-Drive button click */
@@ -212,26 +213,27 @@ public class SettingsBackup extends BaseActivityAnim {
             initializeDriveService(account);
         }
 
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.general_confirm)
-                .setMessage(R.string.backup_restore_confirm)
-                .setPositiveButton(
-                        R.string.btn_ok,
-                        (dialog, whichButton) -> new RestoreFromDriveAsyncTask().execute())
-                .setNegativeButton(R.string.btn_no, null)
-                .setCancelable(false)
-                .show();
+        showThemedDialog(
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.general_confirm)
+                        .setMessage(R.string.backup_restore_confirm)
+                        .setPositiveButton(
+                                R.string.btn_ok,
+                                (dialog, whichButton) -> new RestoreFromDriveAsyncTask().execute())
+                        .setNegativeButton(R.string.btn_no, null)
+                        .setCancelable(false));
     }
 
     /** Show dialog to choose backup-to-directory options */
     private void showBackupToDirDialog() {
         Log.d(TAG, "showBackupToDirDialog() called.");
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.backup_question)
-                .setPositiveButton(R.string.btn_ok, (dialog, which) -> launchCreateBackupFile())
-                .setNeutralButton(R.string.btn_cancel, null)
-                .setCancelable(false)
-                .show();
+        showThemedDialog(
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.backup_question)
+                        .setPositiveButton(
+                                R.string.btn_ok, (dialog, which) -> launchCreateBackupFile())
+                        .setNeutralButton(R.string.btn_cancel, null)
+                        .setCancelable(false));
     }
 
     /** Launch SAF ACTION_CREATE_DOCUMENT to let the user choose where to save the backup. */
@@ -473,7 +475,8 @@ public class SettingsBackup extends BaseActivityAnim {
                     return;
                 }
                 // Show success dialog with a "View" button
-                new AlertDialog.Builder(SettingsBackup.this)
+                showThemedDialog(
+                        new AlertDialog.Builder(SettingsBackup.this)
                         .setTitle(R.string.backup_complete)
                         .setMessage(R.string.backup_saved_downloads)
                         .setPositiveButton(
@@ -507,8 +510,7 @@ public class SettingsBackup extends BaseActivityAnim {
                                     }
                                 })
                         .setNegativeButton(R.string.btn_close, null)
-                        .setCancelable(false)
-                        .show();
+                        .setCancelable(false));
             }
         }.execute();
     }
@@ -560,7 +562,8 @@ public class SettingsBackup extends BaseActivityAnim {
             }
             if (success) {
                 // Show final restart dialog
-                new AlertDialog.Builder(SettingsBackup.this)
+                showThemedDialog(
+                        new AlertDialog.Builder(SettingsBackup.this)
                         .setTitle(R.string.backup_restore_settings)
                         .setMessage(R.string.backup_restarting)
                         .setOnDismissListener(
@@ -580,8 +583,7 @@ public class SettingsBackup extends BaseActivityAnim {
                                                     + " local file restore.");
                                     ProcessPhoenix.triggerRebirth(SettingsBackup.this);
                                 })
-                        .setCancelable(false)
-                        .show();
+                        .setCancelable(false));
             } else {
                 Log.w(TAG, "Restore from local file failed or invalid file.");
                 showErrorDialog(R.string.err_not_valid_backup, R.string.err_not_valid_backup_msg);
@@ -693,11 +695,11 @@ public class SettingsBackup extends BaseActivityAnim {
                 progress.dismiss();
             }
             if (success) {
-                new AlertDialog.Builder(SettingsBackup.this)
-                        .setTitle(R.string.backup_success)
-                        .setPositiveButton(R.string.btn_close, (dialog, which) -> finish())
-                        .setCancelable(false)
-                        .show();
+                showThemedDialog(
+                        new AlertDialog.Builder(SettingsBackup.this)
+                                .setTitle(R.string.backup_success)
+                                .setPositiveButton(R.string.btn_close, (dialog, which) -> finish())
+                                .setCancelable(false));
             } else {
                 showErrorDialog(R.string.err_general, R.string.backup_failed_msg);
             }
@@ -804,7 +806,8 @@ public class SettingsBackup extends BaseActivityAnim {
                 return;
             }
 
-            new AlertDialog.Builder(SettingsBackup.this)
+            showThemedDialog(
+                    new AlertDialog.Builder(SettingsBackup.this)
                     .setTitle(R.string.backup_restore_settings)
                     .setMessage(R.string.backup_restarting)
                     .setOnDismissListener(
@@ -824,8 +827,7 @@ public class SettingsBackup extends BaseActivityAnim {
                                                 + " (Drive restore).");
                                 ProcessPhoenix.triggerRebirth(SettingsBackup.this);
                             })
-                    .setCancelable(false)
-                    .show();
+                    .setCancelable(false));
         }
     }
 
@@ -896,11 +898,21 @@ public class SettingsBackup extends BaseActivityAnim {
     /** Show an error dialog with the specified title and message. */
     private void showErrorDialog(int titleResId, int messageResId) {
         Log.d(TAG, "showErrorDialog: title=" + titleResId + ", message=" + messageResId);
-        new AlertDialog.Builder(this)
-                .setTitle(titleResId)
-                .setMessage(messageResId)
-                .setPositiveButton(R.string.btn_ok, null)
-                .setCancelable(false)
-                .show();
+        showThemedDialog(
+                new AlertDialog.Builder(this)
+                        .setTitle(titleResId)
+                        .setMessage(messageResId)
+                        .setPositiveButton(R.string.btn_ok, null)
+                        .setCancelable(false));
+    }
+
+    /**
+     * Creates the dialog from the builder, matches its window to the app's themed card_background
+     * (AppCompat dialogs otherwise show a gray panel), and shows it.
+     */
+    private void showThemedDialog(AlertDialog.Builder builder) {
+        AlertDialog dialog = builder.create();
+        DialogUtil.matchDialogToCardBackground(this, dialog);
+        dialog.show();
     }
 }

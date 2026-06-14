@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Adapters;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import static me.edgan.redditslide.Notifications.ImageDownloadNotificationService.EXTRA_SUBMISSION_TITLE;
 
 import android.annotation.SuppressLint;
@@ -96,6 +98,7 @@ public class AlbumView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                                     d.dismiss();
                                                 }
                                             });
+                                    DialogUtil.matchDialogToCardBackground(d);
                                     d.show();
                                 }
                             });

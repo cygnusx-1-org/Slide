@@ -181,10 +181,10 @@ public class SubmissionModActions {
 
                                 @Override
                                 public void onPostExecute(ArrayList<String> data) {
-                                    new AlertDialog.Builder(mContext)
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                                             .setTitle(R.string.mod_reports)
                                             .setItems(data.toArray(new CharSequence[0]), null)
-                                            .show();
+                                            );
                                 }
                             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
@@ -274,10 +274,10 @@ public class SubmissionModActions {
                                                     Snackbar s = Snackbar.make(holder.itemView, R.string.submission_removed, Snackbar.LENGTH_LONG);
                                                     LayoutUtils.showSnackbar(s);
                                                 } else {
-                                                    new AlertDialog.Builder(mContext)
+                                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                                                         .setTitle(R.string.err_general)
                                                         .setMessage(R.string.err_retry_later)
-                                                        .show();
+                                                        );
                                                 }
                                             }
                                         });
@@ -382,10 +382,10 @@ public class SubmissionModActions {
                     LayoutUtils.showSnackbar(s);
 
                 } else {
-                    new AlertDialog.Builder(mContext)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                             .setTitle(R.string.err_general)
                             .setMessage(R.string.err_retry_later)
-                            .show();
+                            );
                 }
             }
 
@@ -450,10 +450,10 @@ public class SubmissionModActions {
                     LayoutUtils.showSnackbar(s);
 
                 } else {
-                    new AlertDialog.Builder(mContext)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                             .setTitle(R.string.err_general)
                             .setMessage(R.string.err_retry_later)
-                            .show();
+                            );
                 }
             }
 
@@ -501,10 +501,9 @@ public class SubmissionModActions {
             public void onPostExecute(final ArrayList<String> data) {
                 try {
                     if (data == null || data.isEmpty()) { // Added null check
-                        new AlertDialog.Builder(mContext)
+                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                                 .setTitle(R.string.mod_flair_none_found)
-                                .setPositiveButton(R.string.btn_ok, null)
-                                .show();
+                                .setPositiveButton(R.string.btn_ok, null));
                     } else {
                         showFlairSelectionDialog(mContext, submission, data, flair, holder);
                     }
@@ -651,10 +650,10 @@ public class SubmissionModActions {
                     LayoutUtils.showSnackbar(s);
 
                 } else {
-                    new AlertDialog.Builder(mContext)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                             .setTitle(R.string.err_general)
                             .setMessage(R.string.err_retry_later)
-                            .show();
+                            );
                 }
             }
 
@@ -685,10 +684,10 @@ public class SubmissionModActions {
                     LayoutUtils.showSnackbar(s);
 
                 } else {
-                    new AlertDialog.Builder(mContext)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                         .setTitle(R.string.err_general)
                         .setMessage(R.string.err_retry_later)
-                        .show();
+                        );
                 }
             }
 
@@ -718,10 +717,10 @@ public class SubmissionModActions {
                     LayoutUtils.showSnackbar(s);
 
                 } else {
-                    new AlertDialog.Builder(mContext)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                         .setTitle(R.string.err_general)
                         .setMessage(R.string.err_retry_later)
-                        .show();
+                        );
                 }
             }
 
@@ -747,10 +746,10 @@ public class SubmissionModActions {
                     LayoutUtils.showSnackbar(s);
 
                 } else {
-                    new AlertDialog.Builder(mContext)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                         .setTitle(R.string.err_general)
                         .setMessage(R.string.err_retry_later)
-                        .show();
+                        );
                 }
             }
 
@@ -777,10 +776,10 @@ public class SubmissionModActions {
                     LayoutUtils.showSnackbar(s);
 
                 } else {
-                    new AlertDialog.Builder(mContext)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                         .setTitle(R.string.err_general)
                         .setMessage(R.string.err_retry_later)
-                        .show();
+                        );
                 }
             }
 
@@ -806,10 +805,10 @@ public class SubmissionModActions {
                     Snackbar s = Snackbar.make(holder.itemView, R.string.submission_distinguished_removed, Snackbar.LENGTH_LONG);
                     LayoutUtils.showSnackbar(s);
                 } else {
-                    new AlertDialog.Builder(mContext)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                         .setTitle(R.string.err_general)
                         .setMessage(R.string.err_retry_later)
-                        .show();
+                        );
                 }
             }
 
@@ -838,10 +837,10 @@ public class SubmissionModActions {
                     // TODO: Update UI immediately
 
                 } else {
-                    new AlertDialog.Builder(mContext)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                         .setTitle(R.string.err_general)
                         .setMessage(R.string.err_retry_later)
-                        .show();
+                        );
                 }
             }
 
@@ -870,10 +869,10 @@ public class SubmissionModActions {
                     // TODO: Update UI immediately
 
                 } else {
-                    new AlertDialog.Builder(mContext)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                         .setTitle(R.string.err_general)
                         .setMessage(R.string.err_retry_later)
-                        .show();
+                        );
                 }
             }
 
@@ -905,10 +904,10 @@ public class SubmissionModActions {
                     // TODO: Update UI immediately
 
                 } else {
-                    new AlertDialog.Builder(mContext)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                         .setTitle(R.string.err_general)
                         .setMessage(R.string.err_retry_later)
-                        .show();
+                        );
                 }
             }
 
@@ -938,10 +937,10 @@ public class SubmissionModActions {
                     // TODO: Update UI immediately
 
                 } else {
-                    new AlertDialog.Builder(mContext)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                         .setTitle(R.string.err_general)
                         .setMessage(R.string.err_retry_later)
-                        .show();
+                        );
                 }
             }
 
@@ -988,10 +987,10 @@ public class SubmissionModActions {
                         LogUtil.e(e, "Failed to show mod-approved snackbar");
                     }
                 } else {
-                    new AlertDialog.Builder(mContext)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                         .setTitle(R.string.err_general)
                         .setMessage(R.string.err_retry_later)
-                        .show();
+                        );
                 }
             }
 
@@ -1039,7 +1038,7 @@ public class SubmissionModActions {
         time.setInputType(InputType.TYPE_CLASS_NUMBER);
         l.addView(time);
 
-        new AlertDialog.Builder(mContext)
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                 .setView(l)
                 .setTitle(mContext.getString(R.string.mod_ban_title, submission.getAuthor()))
                 .setCancelable(true)
@@ -1048,7 +1047,7 @@ public class SubmissionModActions {
                     (dialog, which) -> {
                         // to ban
                         if (reason.getText().toString().isEmpty()) {
-                            new AlertDialog.Builder(mContext)
+                            DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                                     .setTitle(R.string.mod_ban_reason_required)
                                     .setMessage(R.string.misc_please_try_again)
                                     .setPositiveButton(
@@ -1056,7 +1055,7 @@ public class SubmissionModActions {
                                             (dialog1, which1) ->
                                                     showBan(mContext, mToolbar, submission, reason.getText().toString(), note.getText().toString(), message.getText().toString(), time.getText().toString()))
                                     .setCancelable(false)
-                                    .show();
+                                    );
                         } else {
                             // Snapshot View state on the UI thread; the AsyncTask below
                             // runs doInBackground() on a worker thread.
@@ -1103,7 +1102,7 @@ public class SubmissionModActions {
                                         s = Snackbar.make(mToolbar, R.string.mod_ban_success, Snackbar.LENGTH_SHORT);
                                     } else {
                                         if (scope) {
-                                            new AlertDialog.Builder(mContext)
+                                            DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                                                     .setTitle(R.string.mod_ban_reauth)
                                                     .setMessage(R.string.mod_ban_reauth_question)
                                                     .setPositiveButton(
@@ -1115,7 +1114,7 @@ public class SubmissionModActions {
                                                     .setNegativeButton(
                                                             R.string.misc_maybe_later, null)
                                                     .setCancelable(false)
-                                                    .show();
+                                                    );
                                         }
                                         s = Snackbar.make(mToolbar, R.string.mod_ban_fail, Snackbar.LENGTH_INDEFINITE)
                                             .setAction(
@@ -1146,6 +1145,6 @@ public class SubmissionModActions {
                                 }
                             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                         }
-                    }).setNegativeButton(R.string.btn_cancel, null).show();
+                    }).setNegativeButton(R.string.btn_cancel, null));
     }
 }

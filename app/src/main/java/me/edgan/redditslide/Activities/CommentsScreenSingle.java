@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Activities;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -256,13 +258,13 @@ public class CommentsScreenSingle extends BaseActivityAnim {
                             new Runnable() {
                                 @Override
                                 public void run() {
-                                    new AlertDialog.Builder(CommentsScreenSingle.this)
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(CommentsScreenSingle.this)
                                             .setTitle(R.string.submission_not_found)
                                             .setMessage(R.string.submission_not_found_msg)
                                             .setPositiveButton(
                                                     R.string.btn_ok, (dialog, which) -> finish())
                                             .setOnDismissListener(dialog -> finish())
-                                            .show();
+                                            );
                                 }
                             });
                 } catch (Exception ignored) {

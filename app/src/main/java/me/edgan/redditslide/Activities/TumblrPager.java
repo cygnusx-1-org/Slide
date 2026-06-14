@@ -285,6 +285,7 @@ public class TumblrPager extends BaseSaveActivity {
                                                     d.dismiss();
                                                 }
                                             });
+                                    DialogUtil.matchDialogToCardBackground(d);
                                     d.show();
                                 }
                             });

@@ -14,14 +14,16 @@
         <item name="android:background">?android:selectableItemBackgroundBorderless</item>
     </style>
 
-    <style name="swipestyle" parent="Theme.AppCompat.NoActionBar">
+    <style name="swipestyle" parent="Theme.MaterialComponents.NoActionBar.Bridge">
+        <item name="elevationOverlayEnabled">false</item>
         <item name="android:windowSharedElementsUseOverlay">false</item>
         <item name="android:alertDialogTheme">@style/Theme.AppCompat.Dialog.Alert</item>
         <item name="android:alertDialogStyle">@style/Theme.AppCompat.Dialog.Alert</item>
         <item name="colorAccent">@color/md_amber_A400</item>
     </style>
 
-    <style name="swipestylelight" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="swipestylelight" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+        <item name="elevationOverlayEnabled">false</item>
         <item name="android:windowSharedElementsUseOverlay">false</item>
         <item name="android:alertDialogTheme">@style/Theme.AppCompat.Light.Dialog.Alert</item>
         <item name="android:alertDialogStyle">@style/Theme.AppCompat.Light.Dialog.Alert</item>

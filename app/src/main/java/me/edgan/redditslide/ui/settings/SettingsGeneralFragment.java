@@ -1,5 +1,7 @@
 package me.edgan.redditslide.ui.settings;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import static me.edgan.redditslide.Constants.BackButtonBehaviorOptions;
 import static me.edgan.redditslide.Constants.FAB_DISMISS;
 import static me.edgan.redditslide.Constants.FAB_POST;
@@ -186,6 +188,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
         final AlertDialog.Builder builder = new AlertDialog.Builder(context).setView(dialoglayout);
         final Dialog dialog = builder.create();
         dialog.setCancelable(false);
+        DialogUtil.matchDialogToCardBackground(dialog);
         dialog.show();
         dialog.setOnDismissListener(
                 new DialogInterface.OnDismissListener() {
@@ -1138,13 +1141,13 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                                         sortingStrings.remove(skip);
                                     }
 
-                                    new AlertDialog.Builder(SettingsGeneralFragment.this.context)
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(SettingsGeneralFragment.this.context)
                                             .setTitle(R.string.sorting_choose)
                                             .setSingleChoiceItems(
                                                     sortingStrings.toArray(new String[0]),
                                                     SortingUtil.getSortingId(""),
                                                     l2)
-                                            .show();
+                                            );
                                 });
             }
         }
@@ -1205,13 +1208,13 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                                     List<String> sortingStrings =
                                             new ArrayList<>(
                                                     Arrays.asList(SortingUtil.getSortingStrings()));
-                                    new AlertDialog.Builder(SettingsGeneralFragment.this.context)
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(SettingsGeneralFragment.this.context)
                                             .setTitle(R.string.sorting_choose)
                                             .setSingleChoiceItems(
                                                     sortingStrings.toArray(new String[0]),
                                                     SortingUtil.getSortingIdFrontpage(),
                                                     l2)
-                                            .show();
+                                            );
                                 });
             }
         }
@@ -1287,7 +1290,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
 
                                     Resources res = context.getBaseContext().getResources();
 
-                                    new AlertDialog.Builder(SettingsGeneralFragment.this.context)
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(SettingsGeneralFragment.this.context)
                                             .setTitle(R.string.sorting_choose)
                                             .setSingleChoiceItems(
                                                     new String[] {
@@ -1301,7 +1304,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                                                     },
                                                     i2,
                                                     l2)
-                                            .show();
+                                            );
                                 });
             }
         }
@@ -1532,13 +1535,13 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                     }
                 };
 
-        new AlertDialog.Builder(SettingsGeneralFragment.this.context)
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(SettingsGeneralFragment.this.context)
                 .setTitle(R.string.sorting_choose)
                 .setSingleChoiceItems(
                         SortingUtil.getSortingTimesStrings(),
                         SortingUtil.getSortingTimeId(sub),
                         l2)
-                .show();
+                );
     }
 
     private void setSubText() {
@@ -1625,7 +1628,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
 
         final ArrayList<String> toCheck = new ArrayList<>(subThresholds.keySet());
         final String[] finalAll = all;
-        new AlertDialog.Builder(SettingsGeneralFragment.this.context)
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(SettingsGeneralFragment.this.context)
                 .setMultiChoiceItems(
                         finalAll,
                         checked,
@@ -1659,7 +1662,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                                         .onPositive(d -> new AsyncGetSubreddit().execute(input))
                                         .negativeText(R.string.btn_cancel)
                                         .show())
-                .show();
+                );
     }
 
     private void showThresholdDialog(ArrayList<String> strings, boolean search) {
@@ -1746,7 +1749,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 context.runOnUiThread(
                         () -> {
                             try {
-                                new AlertDialog.Builder(SettingsGeneralFragment.this.context)
+                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(SettingsGeneralFragment.this.context)
                                         .setTitle(R.string.subreddit_err)
                                         .setMessage(
                                                 context.getString(
@@ -1755,7 +1758,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                                                 R.string.btn_ok,
                                                 (dialog, which) -> dialog.dismiss())
                                         .setOnDismissListener(null)
-                                        .show();
+                                        );
                             } catch (Exception ignored) {
                             }
                         });

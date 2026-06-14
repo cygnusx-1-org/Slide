@@ -268,7 +268,7 @@ public class CommentStateUtil {
                                 final ArrayList<String> keys = new ArrayList<>(accounts.keySet());
                                 final int i = keys.indexOf(adapter.changedProfile);
 
-                                new AlertDialog.Builder(adapter.mContext)
+                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(adapter.mContext)
                                     .setTitle(R.string.sorting_choose)
                                     .setSingleChoiceItems(
                                         keys.toArray(new String[0]),
@@ -278,7 +278,7 @@ public class CommentStateUtil {
                                             profile.setText("/u/" + adapter.changedProfile);
                                         })
                                     .setNegativeButton(R.string.btn_cancel, null)
-                                    .show();
+                                    );
                             }
                         });
                     replyLine.requestFocus();
@@ -389,7 +389,7 @@ public class CommentStateUtil {
                                         final ArrayList<String> keys = new ArrayList<>(accounts.keySet());
                                         final int i = keys.indexOf(adapter.changedProfile);
 
-                                        new AlertDialog.Builder(adapter.mContext)
+                                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(adapter.mContext)
                                             .setTitle(R.string.sorting_choose)
                                             .setSingleChoiceItems(
                                                 keys.toArray(new String[0]),
@@ -400,7 +400,7 @@ public class CommentStateUtil {
                                                 })
                                             .setNegativeButton(
                                                     R.string.btn_cancel, null)
-                                            .show();
+                                            );
                                     }
                                 });
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {

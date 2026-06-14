@@ -130,7 +130,6 @@
 
                     <androidx.appcompat.widget.AppCompatSpinner
                             android:id="@+id/start_spinner"
-                            style="@style/Material.Widget.Spinner"
                             android:layout_width="128dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp">
@@ -153,7 +152,6 @@
 
                     <androidx.appcompat.widget.AppCompatSpinner
                             android:id="@+id/end_spinner"
-                            style="@style/Material.Widget.Spinner"
                             android:layout_width="128dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp">

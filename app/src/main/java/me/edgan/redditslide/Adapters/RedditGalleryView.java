@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Adapters;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import static me.edgan.redditslide.Notifications.ImageDownloadNotificationService.EXTRA_SUBMISSION_TITLE;
 
 import android.app.Activity;
@@ -146,6 +148,7 @@ public class RedditGalleryView extends RecyclerView.Adapter<RecyclerView.ViewHol
                                             d.dismiss();
                                         }
                                     });
+                            DialogUtil.matchDialogToCardBackground(d);
                             d.show();
                         }
                     });

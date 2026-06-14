@@ -213,7 +213,7 @@ public class AlbumPager extends BaseSaveActivity {
                         @Override
                         public void run() {
                             try {
-                                new AlertDialog.Builder(AlbumPager.this)
+                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(AlbumPager.this)
                                         .setTitle(R.string.error_album_not_found)
                                         .setMessage(R.string.error_album_not_found_text)
                                         .setNegativeButton(
@@ -229,7 +229,7 @@ public class AlbumPager extends BaseSaveActivity {
                                                     startActivity(i);
                                                     finish();
                                                 })
-                                        .show();
+                                        );
                             } catch (Exception e) {
 
                             }
@@ -305,6 +305,7 @@ public class AlbumPager extends BaseSaveActivity {
                                                                     d.dismiss();
                                                                 }
                                                             });
+                                                    DialogUtil.matchDialogToCardBackground(d);
                                                     d.show();
                                                 }
                                             });

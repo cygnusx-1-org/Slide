@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Activities;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Dialog;
@@ -229,13 +231,13 @@ public class Profile extends BaseActivityAnim {
     private void doClick() {
         if (account == null) {
             try {
-                new AlertDialog.Builder(Profile.this)
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(Profile.this)
                         .setTitle(R.string.profile_err_title)
                         .setMessage(R.string.profile_err_msg)
                         .setPositiveButton(R.string.btn_ok, null)
                         .setCancelable(false)
                         .setOnDismissListener(dialog -> onBackPressed())
-                        .show();
+                        );
             } catch (WindowManager.BadTokenException e) {
                 Log.w(LogUtil.getTag(), "Activity already in background, dialog not shown " + e);
             }
@@ -245,12 +247,12 @@ public class Profile extends BaseActivityAnim {
                 && account.getDataNode().get("is_suspended").asBoolean()
                 && !name.equalsIgnoreCase(Authentication.name)) {
             try {
-                new AlertDialog.Builder(Profile.this)
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(Profile.this)
                         .setTitle(R.string.account_suspended)
                         .setCancelable(false)
                         .setPositiveButton(R.string.btn_ok, (dialog, whichButton) -> finish())
                         .setOnDismissListener(dialog -> finish())
-                        .show();
+                        );
             } catch (WindowManager.BadTokenException e) {
                 Log.w(LogUtil.getTag(), "Activity already in background, dialog not shown " + e);
             }

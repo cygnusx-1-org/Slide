@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Adapters;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 /** Created by ccrama on 3/22/2015. */
 import android.app.Activity;
 import android.content.Intent;
@@ -317,7 +319,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                 }
                             } else {
                                 if (!Reddit.appRestart.contains("offlinepopup")) {
-                                    new AlertDialog.Builder(context)
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(context)
                                             .setTitle(R.string.cache_no_comments_found)
                                             .setMessage(R.string.cache_no_comments_found_message)
                                             .setCancelable(false)
@@ -328,7 +330,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                                                     .edit()
                                                                     .putString("offlinepopup", "")
                                                                     .apply())
-                                            .show();
+                                            );
                                 } else {
                                     Snackbar s =
                                             Snackbar.make(
@@ -340,7 +342,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                             new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View v) {
-                                                    new AlertDialog.Builder(context)
+                                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(context)
                                                             .setTitle(
                                                                     R.string
                                                                             .cache_no_comments_found)
@@ -357,7 +359,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                                                                             "offlinepopup",
                                                                                             "")
                                                                                     .apply())
-                                                            .show();
+                                                            );
                                                 }
                                             });
                                     LayoutUtils.showSnackbar(s);

@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Toolbox;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -301,7 +303,7 @@ public class ToolboxUI {
     public static void showUsernotes(
             final Context context, String author, String subreddit, String currentLink) {
         final UsernoteListAdapter adapter = new UsernoteListAdapter(context, subreddit, author);
-        new AlertDialog.Builder(context)
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(context)
                 .setTitle(context.getResources().getString(R.string.mod_usernotes_title, author))
                 .setAdapter(adapter, null)
                 .setNeutralButton(
@@ -431,7 +433,7 @@ public class ToolboxUI {
                             noteDialog.show();
                         })
                 .setPositiveButton(R.string.btn_close, null)
-                .show();
+                );
     }
 
     /**
@@ -953,7 +955,7 @@ public class ToolboxUI {
                 if (context == null) {
                     return;
                 }
-                new AlertDialog.Builder(context)
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(context)
                         .setTitle(R.string.toolbox_wiki_edit_reauth)
                         .setMessage(R.string.toolbox_wiki_edit_reauth_question)
                         .setNegativeButton(R.string.misc_maybe_later, null)
@@ -962,7 +964,7 @@ public class ToolboxUI {
                                 (dialog1, which1) ->
                                         context.startActivity(
                                                 new Intent(context, Reauthenticate.class)))
-                        .show();
+                        );
             }
         }
     }

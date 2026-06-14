@@ -122,7 +122,7 @@ public class DoEditorActions {
                                             String author = "/u/" + authors[0];
                                             insertBefore(author, editText);
                                         } else {
-                                            new AlertDialog.Builder(a)
+                                            DialogUtil.showWithCardBackground(new AlertDialog.Builder(a)
                                                     .setTitle(R.string.authors_above)
                                                     .setItems(
                                                             authors,
@@ -132,7 +132,7 @@ public class DoEditorActions {
                                                                 insertBefore(author, editText);
                                                             })
                                                     .setNeutralButton(R.string.btn_cancel, null)
-                                                    .show();
+                                                    );
                                         }
                                     }
                                 });
@@ -255,7 +255,7 @@ public class DoEditorActions {
                                     DialogUtil.matchDialogToCardBackground(a, noDrafts);
                                     noDrafts.show();
                                 } else {
-                                    new AlertDialog.Builder(a)
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(a)
                                             .setTitle(R.string.choose_draft)
                                             .setItems(
                                                     draftText,
@@ -269,7 +269,7 @@ public class DoEditorActions {
                                                     (dialog, which) -> {
                                                         final boolean[] selected =
                                                                 new boolean[drafts.size()];
-                                                        new AlertDialog.Builder(a)
+                                                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(a)
                                                                 .setTitle(R.string.choose_draft)
                                                                 .setNeutralButton(
                                                                         R.string.btn_cancel, null)
@@ -328,9 +328,9 @@ public class DoEditorActions {
                                                                                 isChecked) ->
                                                                                 selected[which12] =
                                                                                         isChecked)
-                                                                .show();
+                                                                );
                                                     })
-                                            .show();
+                                            );
                                 }
                             }
                         });
@@ -551,7 +551,7 @@ public class DoEditorActions {
                                         dialoglayout.findViewById(R.id.firstTextView),
                                         dialoglayout.findViewById(R.id.commentOverflow));
 
-                                new AlertDialog.Builder(a).setView(dialoglayout).show();
+                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(a).setView(dialoglayout));
                             }
                         });
 
@@ -943,11 +943,11 @@ public class DoEditorActions {
                 linkDialog.show();
 
             } catch (Exception e) {
-                new AlertDialog.Builder(c)
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(c)
                         .setTitle(R.string.err_title)
                         .setMessage(R.string.editor_err_msg)
                         .setPositiveButton(R.string.btn_ok, null)
-                        .show();
+                        );
                 LogUtil.e(e, "DoEditorActions.onClick failed");
             }
         }
@@ -1034,11 +1034,11 @@ public class DoEditorActions {
                 linkDialog.show();
 
             } catch (Exception e) {
-                new AlertDialog.Builder(c)
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(c)
                         .setTitle(R.string.err_title)
                         .setMessage(R.string.editor_err_msg)
                         .setPositiveButton(R.string.btn_ok, null)
-                        .show();
+                        );
                 LogUtil.e(e, "DoEditorActions.onClick failed");
             }
         }

@@ -1,5 +1,7 @@
 package me.edgan.redditslide;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -213,7 +215,7 @@ public class Authentication {
                                                     public void run() {
                                                         try {
 
-                                                            new AlertDialog.Builder(context)
+                                                            DialogUtil.showWithCardBackground(new AlertDialog.Builder(context)
                                                                     .setTitle(R.string.err_general)
                                                                     .setMessage(
                                                                             R.string
@@ -233,7 +235,7 @@ public class Authentication {
                                                                                             .forceRestart(
                                                                                                     context,
                                                                                                     false))
-                                                                    .show();
+                                                                    );
                                                         } catch (Exception ignored) {
 
                                                         }

@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Activities;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -639,7 +641,7 @@ public class Login extends BaseActivityAnim {
         }
         subNames = UserSubscriptions.sort(subNames);
         if (!subNames.contains("slideforreddit")) {
-            new AlertDialog.Builder(Login.this)
+            DialogUtil.showWithCardBackground(new AlertDialog.Builder(Login.this)
                     .setTitle(R.string.login_subscribe_rslideforreddit)
                     .setMessage(R.string.login_subscribe_rslideforreddit_desc)
                     .setPositiveButton(
@@ -656,7 +658,7 @@ public class Login extends BaseActivityAnim {
                                 Reddit.forceRestart(Login.this, true);
                             })
                     .setCancelable(false)
-                    .show();
+                    );
         } else {
             UserSubscriptions.setSubscriptions(subNames);
             Reddit.forceRestart(Login.this, true);
@@ -666,7 +668,7 @@ public class Login extends BaseActivityAnim {
     public void doLastStuff(final ArrayList<Subreddit> subs) {
 
         d.dismiss();
-        new AlertDialog.Builder(Login.this)
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(Login.this)
                 .setTitle(R.string.login_sync_colors)
                 .setMessage(R.string.login_sync_colors_desc)
                 .setPositiveButton(
@@ -690,8 +692,7 @@ public class Login extends BaseActivityAnim {
                         })
                 .setNegativeButton(R.string.btn_no, (dialog, which) -> doSubStrings(subs))
                 .setOnDismissListener(dialog -> doSubStrings(subs))
-                .create()
-                .show();
+                );
     }
 
     private final class UserChallengeTask extends AsyncTask<String, Void, OAuthData> {
@@ -807,7 +808,7 @@ public class Login extends BaseActivityAnim {
             } else {
                 Log.e(LOGIN_TAG, "Login failed: OAuthData was null in onPostExecute");
                 // Show a dialog if data is null
-                new AlertDialog.Builder(Login.this)
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(Login.this)
                         .setTitle(R.string.err_authentication)
                         .setMessage(R.string.login_failed_err_decline)
                         .setNeutralButton(
@@ -815,8 +816,7 @@ public class Login extends BaseActivityAnim {
                                 (dialog, which) -> {
                                     Reddit.forceRestart(Login.this, true);
                                     finish();
-                                })
-                        .show();
+                                }));
             }
         }
     }

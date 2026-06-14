@@ -259,6 +259,7 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
                                                 d.dismiss();
                                             }
                                         });
+                                DialogUtil.matchDialogToCardBackground(d);
                                 d.show();
                             }
                         });
@@ -347,6 +348,7 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
                     d.dismiss();
                 });
 
+        DialogUtil.matchDialogToCardBackground(d);
         d.show();
     }
 

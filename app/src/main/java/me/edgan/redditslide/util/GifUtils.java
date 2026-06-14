@@ -964,7 +964,7 @@ public class GifUtils {
                                 @Override
                                 public void run() {
                                     try {
-                                        new AlertDialog.Builder(c)
+                                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(c)
                                                 .setTitle(R.string.gif_err_title)
                                                 .setMessage(R.string.gif_err_msg)
                                                 .setCancelable(false)
@@ -977,8 +977,7 @@ public class GifUtils {
                                                             LinkUtil.openExternally(fullUrl);
                                                             c.finish();
                                                         })
-                                                .create()
-                                                .show();
+                                                );
                                     } catch (Exception ignored) {
                                     }
                                 }
@@ -1078,13 +1077,12 @@ public class GifUtils {
                                             @Override
                                             public void run() {
                                                 try { // Added try-catch for safety
-                                                    new AlertDialog.Builder(c)
+                                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(c)
                                                             .setTitle(R.string.error_video_not_found)
                                                             .setMessage(R.string.error_video_message)
                                                             .setCancelable(false)
                                                             .setPositiveButton(R.string.btn_ok, (dialog, which) -> c.finish())
-                                                            .create()
-                                                            .show();
+                                                            );
                                                 } catch (Exception e) {
                                                     LogUtil.e(e, "Failed to show video-not-found dialog");
                                                 }
@@ -1117,13 +1115,12 @@ public class GifUtils {
                                         @Override
                                         public void run() {
                                             try {
-                                                new AlertDialog.Builder(c)
+                                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(c)
                                                         .setTitle(R.string.error_video_not_found)
                                                         .setMessage(R.string.error_video_message)
                                                         .setCancelable(false)
                                                         .setPositiveButton(R.string.btn_ok, (dialog, which) -> c.finish())
-                                                        .create()
-                                                        .show();
+                                                        );
                                             } catch (Exception ignored) {
                                             }
                                         }

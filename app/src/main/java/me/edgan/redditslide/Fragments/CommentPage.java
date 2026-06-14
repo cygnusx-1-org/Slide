@@ -42,7 +42,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.rey.material.widget.Slider;
+import com.google.android.material.slider.Slider;
 
 import me.edgan.redditslide.Activities.Album;
 import me.edgan.redditslide.Activities.AlbumPager;
@@ -551,7 +551,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                 }
                                             }
                                         }
-                                        new AlertDialog.Builder(getActivity())
+                                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(getActivity())
                                                 .setTitle(R.string.set_nav_mode)
                                                 .setSingleChoiceItems(
                                                         StringUtil.stringToArray(
@@ -620,27 +620,17 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                                                     .findViewById(
                                                                                             R.id
                                                                                                     .time_string);
-                                                                    landscape.setValueRange(
-                                                                            60, 18000, false);
+                                                                    landscape.setValueFrom(60);
+                                                                    landscape.setValueTo(18000);
+                                                                    landscape.setStepSize(15);
                                                                     landscape
-                                                                            .setOnPositionChangeListener(
-                                                                                    new Slider
-                                                                                            .OnPositionChangeListener() {
-                                                                                        @Override
-                                                                                        public void
-                                                                                                onPositionChanged(
-                                                                                                        Slider
-                                                                                                                slider,
-                                                                                                        boolean
-                                                                                                                b,
-                                                                                                        float
-                                                                                                                v12,
-                                                                                                        float
-                                                                                                                v1,
-                                                                                                        int
-                                                                                                                i,
-                                                                                                        int
-                                                                                                                i1) {
+                                                                            .addOnChangeListener(
+                                                                                    (slider,
+                                                                                            value,
+                                                                                            fromUser) -> {
+                                                                                            int i1 =
+                                                                                                    (int)
+                                                                                                            value;
                                                                                             Calendar
                                                                                                     c =
                                                                                                             Calendar
@@ -682,9 +672,8 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                                                                                     + " ("
                                                                                                                     + commentcount
                                                                                                                     + " comments)");
-                                                                                        }
                                                                                     });
-                                                                    landscape.setValue(600, false);
+                                                                    landscape.setValue(600);
 
                                                                     final AlertDialog timeDialog =
                                                                             new AlertDialog.Builder(
@@ -721,7 +710,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                                     break;
                                                             }
                                                         })
-                                                .show();
+                                                );
                                     }
                                 }
                             });
@@ -847,7 +836,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
         doTopBar();
 
         if (Authentication.didOnline && !NetworkUtil.isConnectedNoOverride(getActivity())) {
-            new AlertDialog.Builder(getActivity())
+            DialogUtil.showWithCardBackground(new AlertDialog.Builder(getActivity())
                     .setTitle(R.string.err_title)
                     .setMessage(R.string.err_connection_failed_msg)
                     .setNegativeButton(
@@ -863,7 +852,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                 Reddit.appRestart.edit().putBoolean("forceoffline", true).commit();
                                 Reddit.forceRestart(getActivity(), false);
                             })
-                    .show();
+                    );
         }
 
         doAdapter(
@@ -893,10 +882,10 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                 return true;
             case R.id.related:
                 if (adapter.submission.isSelfPost()) {
-                    new AlertDialog.Builder(getActivity())
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(getActivity())
                             .setTitle("Selftext posts have no related submissions")
                             .setPositiveButton(R.string.btn_ok, null)
-                            .show();
+                            );
                 } else {
                     Intent i = new Intent(getActivity(), Related.class);
                     i.putExtra(Related.EXTRA_URL, adapter.submission.getUrl());
@@ -1135,9 +1124,9 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                 dialoglayout.findViewById(R.id.firstTextView),
                                                 dialoglayout.findViewById(R.id.commentOverflow));
 
-                                        new AlertDialog.Builder(getActivity())
+                                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(getActivity())
                                                 .setView(dialoglayout)
-                                                .show();
+                                                );
                                     }
                                     break;
                                 case ALBUM:
@@ -1654,7 +1643,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                     new View.OnClickListener() {
                                         private void doSubscribe() {
                                             if (Authentication.isLoggedIn) {
-                                                new AlertDialog.Builder(getActivity())
+                                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(getActivity())
                                                         .setTitle(
                                                                 getString(
                                                                         R.string.subscribe_to,
@@ -1761,7 +1750,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                                                             .LENGTH_SHORT);
                                                                     LayoutUtils.showSnackbar(s);
                                                                 })
-                                                        .show();
+                                                        );
                                             } else {
                                                 changeSubscription(baseSub, true);
                                             }
@@ -1780,7 +1769,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
 
                                         private void doUnsubscribe() {
                                             if (Authentication.didOnline) {
-                                                new AlertDialog.Builder(getContext())
+                                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(getContext())
                                                         .setTitle(
                                                                 getString(
                                                                         R.string.unsubscribe_from,
@@ -1887,7 +1876,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                                 })
                                                         .setNegativeButton(
                                                                 R.string.btn_cancel, null)
-                                                        .show();
+                                                        );
                                             } else {
                                                 changeSubscription(baseSub, false);
                                             }
@@ -2448,7 +2437,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
             if (adapter.currentlyEditing != null
                     && !adapter.currentlyEditing.getText().toString().isEmpty()) {
                 final int finalToGoto = toGoto;
-                new AlertDialog.Builder(getActivity())
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(getActivity())
                         .setTitle(R.string.discard_comment_title)
                         .setMessage(R.string.comment_discard_msg)
                         .setPositiveButton(
@@ -2458,7 +2447,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                     doGoUp(finalToGoto);
                                 })
                         .setNegativeButton(R.string.btn_no, null)
-                        .show();
+                        );
 
             } else {
                 doGoUp(toGoto);
@@ -2569,7 +2558,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
             if (adapter.currentlyEditing != null
                     && !adapter.currentlyEditing.getText().toString().isEmpty()) {
                 final int finalToGoto = toGoto;
-                new AlertDialog.Builder(getActivity())
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(getActivity())
                         .setTitle(R.string.discard_comment_title)
                         .setMessage(R.string.comment_discard_msg)
                         .setPositiveButton(
@@ -2579,7 +2568,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                     doGoDown(finalToGoto);
                                 })
                         .setNegativeButton(R.string.btn_no, null)
-                        .show();
+                        );
 
             } else {
                 doGoDown(toGoto);

@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Fragments;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -177,7 +179,7 @@ public class NewsView extends Fragment implements SubmissionDisplay {
                             @Override
                             public void onClick(View v) {
                                 if (!Reddit.fabClear) {
-                                    new AlertDialog.Builder(getActivity())
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(getActivity())
                                             .setTitle(R.string.settings_fabclear)
                                             .setMessage(R.string.settings_fabclear_msg)
                                             .setPositiveButton(
@@ -193,7 +195,7 @@ public class NewsView extends Fragment implements SubmissionDisplay {
                                                         Reddit.fabClear = true;
                                                         clearSeenPosts(false);
                                                     })
-                                            .show();
+                                            );
                                 } else {
                                     clearSeenPosts(false);
                                 }
@@ -226,7 +228,7 @@ public class NewsView extends Fragment implements SubmissionDisplay {
                             public void run() {
                                 fab.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
                                 if (!Reddit.fabClear) {
-                                    new AlertDialog.Builder(getActivity())
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(getActivity())
                                             .setTitle(R.string.settings_fabclear)
                                             .setMessage(R.string.settings_fabclear_msg)
                                             .setPositiveButton(
@@ -242,7 +244,7 @@ public class NewsView extends Fragment implements SubmissionDisplay {
                                                         Reddit.fabClear = true;
                                                         clearSeenPosts(true);
                                                     })
-                                            .show();
+                                            );
                                 } else {
                                     clearSeenPosts(true);
                                 }

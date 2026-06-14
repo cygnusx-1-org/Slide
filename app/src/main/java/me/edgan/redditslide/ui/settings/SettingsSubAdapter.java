@@ -1,5 +1,7 @@
 package me.edgan.redditslide.ui.settings;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
@@ -70,7 +72,7 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                new AlertDialog.Builder(context)
+                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(context)
                                         .setTitle(
                                                 context.getString(
                                                         R.string.settings_delete_sub_settings,
@@ -98,7 +100,7 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
                                         .setNegativeButton(
                                                 R.string.btn_no,
                                                 (dialog, which) -> dialog.dismiss())
-                                        .show();
+                                        );
                             }
                         });
         convertView
@@ -340,7 +342,7 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
                                     titleStart = titleStart.replace("/r/frontpage", "frontpage");
                                 }
 
-                                new AlertDialog.Builder(context)
+                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(context)
                                         .setTitle(titleStart)
                                         .setPositiveButton(
                                                 R.string.btn_yes,
@@ -371,7 +373,7 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
                                                     }
                                                 })
                                         .setNegativeButton(R.string.btn_no, null)
-                                        .show();
+                                        );
                             })
                     .setPositiveButton(
                             R.string.btn_ok,
@@ -463,6 +465,7 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
                             })
                     .create();
 
+            DialogUtil.matchDialogToCardBackground(themeDialog);
             themeDialog.show();
 
             // The dialog content is a CardView using ?attr/card_background from the subreddit

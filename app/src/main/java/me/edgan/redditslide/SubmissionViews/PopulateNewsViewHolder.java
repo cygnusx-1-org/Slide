@@ -672,7 +672,7 @@ public class PopulateNewsViewHolder {
                                         };
                                 oldChosen = chosen.clone();
 
-                                new AlertDialog.Builder(mContext)
+                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                                         .setTitle(R.string.filter_title)
                                         .setMultiChoiceItems(
                                                 choices,
@@ -832,7 +832,7 @@ public class PopulateNewsViewHolder {
                                                     }
                                                 })
                                         .setNegativeButton(R.string.btn_cancel, null)
-                                        .show();
+                                        );
                                 break;
                             case 5:
                                 hideSubmission(submission, posts, baseSub, recyclerview, mContext);

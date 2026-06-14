@@ -1,5 +1,7 @@
 package me.edgan.redditslide;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -249,7 +251,7 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
                                             @Override
                                             public void run() {
                                                 try {
-                                                    new AlertDialog.Builder(c)
+                                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(c)
                                                             .setTitle(R.string.err_title)
                                                             .setMessage(
                                                                     R.string
@@ -275,7 +277,7 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
                                                                         Reddit.forceRestart(
                                                                                 c, false);
                                                                     })
-                                                            .show();
+                                                            );
                                                 } catch (Exception ignored) {
 
                                                 }
@@ -290,7 +292,7 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
                                             @Override
                                             public void run() {
                                                 try {
-                                                    new AlertDialog.Builder(c)
+                                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(c)
                                                             .setTitle(R.string.err_title)
                                                             .setMessage(
                                                                     R.string
@@ -309,7 +311,7 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
                                                                     (dialog, which) ->
                                                                             authentication
                                                                                     .updateToken(c))
-                                                            .show();
+                                                            );
                                                 } catch (Exception ignored) {
 
                                                 }
@@ -324,7 +326,7 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
                                             @Override
                                             public void run() {
                                                 try {
-                                                    new AlertDialog.Builder(c)
+                                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(c)
                                                             .setTitle(R.string.err_title)
                                                             .setMessage(
                                                                     R.string
@@ -338,7 +340,7 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
                                                                             ((Activity) c).finish();
                                                                         }
                                                                     })
-                                                            .show();
+                                                            );
                                                 } catch (Exception ignored) {
 
                                                 }

@@ -211,7 +211,7 @@ public class SubmissionBottomSheetActions {
                         }
 
 
-                        new AlertDialog.Builder(mContext)
+                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                             .setTitle(R.string.filter_title)
                             .setMultiChoiceItems(choices, chosen, (dialog1, which1, isChecked) -> chosen[which1] = isChecked)
                             .setPositiveButton(R.string.filter_btn, (dialog12, which12) -> {
@@ -298,7 +298,7 @@ public class SubmissionBottomSheetActions {
                                     s.writeToMemoryNoStorage();
                                     recyclerview.getAdapter().notifyDataSetChanged();
                                 }
-                            }).setNegativeButton(R.string.btn_cancel, null).show();
+                            }).setNegativeButton(R.string.btn_cancel, null));
 
                         break;
                     case 3:

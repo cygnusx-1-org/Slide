@@ -1,5 +1,7 @@
 package me.edgan.redditslide.ui.settings;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -295,7 +297,7 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
                                 context.restartActivity();
                             });
 
-                    new AlertDialog.Builder(context).setView(choosemainBinding.getRoot()).show();
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(context).setView(choosemainBinding.getRoot()));
                 });
     }
 
@@ -348,7 +350,7 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
                                 context.restartActivity();
                             });
 
-                    new AlertDialog.Builder(context).setView(chooseaccentBinding.getRoot()).show();
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(context).setView(chooseaccentBinding.getRoot()));
                 });
     }
 
@@ -394,7 +396,7 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
                                         });
                     }
 
-                    new AlertDialog.Builder(context).setView(root).show();
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(context).setView(root));
                 });
     }
 
@@ -412,6 +414,7 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
                         final AlertDialog.Builder builder =
                                 new AlertDialog.Builder(context).setView(root);
                         final Dialog dialog = builder.create();
+                        DialogUtil.matchDialogToCardBackground(dialog);
                         dialog.show();
                         dialog.setOnDismissListener(
                                 dialog1 -> {

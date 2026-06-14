@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Activities;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -536,7 +538,7 @@ public class MainActivity extends BaseActivity
 
                     final AlertDialog.Builder builder =
                             new AlertDialog.Builder(MainActivity.this).setView(dialoglayout);
-                    final Dialog d = builder.show();
+                    final Dialog d = DialogUtil.showWithCardBackground(builder);
                     back = new ColorPreferences(MainActivity.this).getFontStyle().getThemeType();
                     if (SettingValues.isNight()) {
                         dialoglayout.findViewById(R.id.nightmsg).setVisibility(View.VISIBLE);

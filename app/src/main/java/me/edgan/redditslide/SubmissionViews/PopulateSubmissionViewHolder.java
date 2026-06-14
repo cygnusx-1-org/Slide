@@ -1,5 +1,7 @@
 package me.edgan.redditslide.SubmissionViews;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -953,7 +955,7 @@ public class PopulateSubmissionViewHolder {
                                                                     break;
                                                                 case 2:
                                                                     {
-                                                                        new AlertDialog.Builder(
+                                                                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(
                                                                                         mContext)
                                                                                 .setTitle(
                                                                                         R.string
@@ -1052,7 +1054,7 @@ public class PopulateSubmissionViewHolder {
                                                                                         R.string
                                                                                                 .btn_cancel,
                                                                                         null)
-                                                                                .show();
+                                                                                );
                                                                     }
                                                                     break;
                                                                 case 3:

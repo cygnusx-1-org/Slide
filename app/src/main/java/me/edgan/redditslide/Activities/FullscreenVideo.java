@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Activities;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -68,7 +70,7 @@ public class FullscreenVideo extends FullScreenActivity {
             v.loadUrl(dat);
             if ((dat.contains("youtube.co") || dat.contains("youtu.be"))
                     && !Reddit.appRestart.contains("showYouTubePopup")) {
-                new AlertDialog.Builder(FullscreenVideo.this)
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(FullscreenVideo.this)
                         .setTitle(R.string.load_videos_internally)
                         .setMessage(R.string.load_videos_internally_content)
                         .setPositiveButton(
@@ -85,7 +87,7 @@ public class FullscreenVideo extends FullScreenActivity {
                                                 .edit()
                                                 .putBoolean("showYouTubePopup", false)
                                                 .apply())
-                        .show();
+                        );
             }
         } else {
             LogUtil.v(dat);

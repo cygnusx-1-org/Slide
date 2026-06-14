@@ -261,7 +261,7 @@ public class Album extends BaseSaveActivity {
                             @Override
                             public void run() {
                                 try {
-                                    new AlertDialog.Builder(getActivity())
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(getActivity())
                                         .setTitle(R.string.error_album_not_found)
                                         .setMessage(R.string.error_album_not_found_text)
                                         .setNegativeButton(R.string.btn_no, (dialog, which) -> getActivity().finish())
@@ -274,7 +274,7 @@ public class Album extends BaseSaveActivity {
                                                 startActivity(i);
                                                 getActivity().finish();
                                             })
-                                        .show();
+                                        );
                                 } catch (Exception e) {
                                     LogUtil.e(e, "Failed to show album-not-found dialog");
                                 }

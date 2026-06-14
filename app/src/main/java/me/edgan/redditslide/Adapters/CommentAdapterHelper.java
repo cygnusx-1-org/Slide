@@ -483,7 +483,7 @@ final AlertDialog reportDialog =
                         dialoglayout.findViewById(R.id.firstTextView),
                         dialoglayout.findViewById(R.id.commentOverflow));
 
-                new AlertDialog.Builder(mContext).setView(dialoglayout).show();
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext).setView(dialoglayout));
                 break;
             }
         }
@@ -913,11 +913,11 @@ final AlertDialog reportDialog =
                                                                         adapter.submission,
                                                                         adapter));
                                                     } else {
-                                                        new AlertDialog.Builder(mContext)
+                                                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                                                                 .setTitle(R.string.err_general)
                                                                 .setMessage(
                                                                         R.string.err_retry_later)
-                                                                .show();
+                                                                );
                                                     }
                                                 }
                                             });
@@ -990,7 +990,7 @@ final AlertDialog reportDialog =
         time.setInputType(InputType.TYPE_CLASS_NUMBER);
         l.addView(time);
 
-        new AlertDialog.Builder(mContext)
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                 .setView(l)
                 .setTitle(mContext.getString(R.string.mod_ban_title, submission.getAuthor()))
                 .setCancelable(true)
@@ -999,7 +999,7 @@ final AlertDialog reportDialog =
                         (dialog, which) -> {
                             // to ban
                             if (reason.getText().toString().isEmpty()) {
-                                new AlertDialog.Builder(mContext)
+                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                                         .setTitle(R.string.mod_ban_reason_required)
                                         .setMessage(R.string.misc_please_try_again)
                                         .setPositiveButton(
@@ -1014,7 +1014,7 @@ final AlertDialog reportDialog =
                                                                 message.getText().toString(),
                                                                 time.getText().toString()))
                                         .setCancelable(false)
-                                        .show();
+                                        );
                             } else {
                                 // Snapshot View state on the UI thread; the AsyncTask below
                                 // runs doInBackground() on a worker thread.
@@ -1076,7 +1076,7 @@ final AlertDialog reportDialog =
                                                             Snackbar.LENGTH_SHORT);
                                         } else {
                                             if (scope) {
-                                                new AlertDialog.Builder(mContext)
+                                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                                                         .setTitle(R.string.mod_ban_reauth)
                                                         .setMessage(
                                                                 R.string.mod_ban_reauth_question)
@@ -1093,7 +1093,7 @@ final AlertDialog reportDialog =
                                                         .setNegativeButton(
                                                                 R.string.misc_maybe_later, null)
                                                         .setCancelable(false)
-                                                        .show();
+                                                        );
                                             }
                                             s =
                                                     Snackbar.make(
@@ -1130,7 +1130,7 @@ final AlertDialog reportDialog =
                             }
                         })
                 .setNegativeButton(R.string.btn_cancel, null)
-                .show();
+                );
     }
 
     public static void distinguishComment(
@@ -1147,10 +1147,10 @@ final AlertDialog reportDialog =
                                     Snackbar.LENGTH_LONG);
                     LayoutUtils.showSnackbar(s);
                 } else {
-                    new AlertDialog.Builder(mContext)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                             .setTitle(R.string.err_general)
                             .setMessage(R.string.err_retry_later)
-                            .show();
+                            );
                 }
             }
 
@@ -1182,10 +1182,10 @@ final AlertDialog reportDialog =
                                     Snackbar.LENGTH_LONG);
                     LayoutUtils.showSnackbar(s);
                 } else {
-                    new AlertDialog.Builder(mContext)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                             .setTitle(R.string.err_general)
                             .setMessage(R.string.err_retry_later)
-                            .show();
+                            );
                 }
             }
 
@@ -1217,10 +1217,10 @@ final AlertDialog reportDialog =
                                     Snackbar.LENGTH_LONG);
                     LayoutUtils.showSnackbar(s);
                 } else {
-                    new AlertDialog.Builder(mContext)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                             .setTitle(R.string.err_general)
                             .setMessage(R.string.err_retry_later)
-                            .show();
+                            );
                 }
             }
 
@@ -1260,10 +1260,10 @@ final AlertDialog reportDialog =
 
             @Override
             public void onPostExecute(ArrayList<String> data) {
-                new AlertDialog.Builder(mContext)
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                         .setTitle(R.string.mod_reports)
                         .setItems(data.toArray(new CharSequence[0]), null)
-                        .show();
+                        );
             }
         }.execute();
     }
@@ -1287,10 +1287,10 @@ final AlertDialog reportDialog =
                             .show();
 
                 } else {
-                    new AlertDialog.Builder(mContext)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                             .setTitle(R.string.err_general)
                             .setMessage(R.string.err_retry_later)
-                            .show();
+                            );
                 }
             }
 
@@ -1321,10 +1321,10 @@ final AlertDialog reportDialog =
                                     Snackbar.LENGTH_LONG);
                     LayoutUtils.showSnackbar(s);
                 } else {
-                    new AlertDialog.Builder(mContext)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                             .setTitle(R.string.err_general)
                             .setMessage(R.string.err_retry_later)
-                            .show();
+                            );
                 }
             }
 
@@ -1365,10 +1365,10 @@ final AlertDialog reportDialog =
                             CommentAdapterHelper.getScoreString(
                                     comment, mContext, holder, adapter.submission, adapter));
                 } else {
-                    new AlertDialog.Builder(mContext)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                             .setTitle(R.string.err_general)
                             .setMessage(R.string.err_retry_later)
-                            .show();
+                            );
                 }
             }
 
@@ -1452,10 +1452,10 @@ final AlertDialog reportDialog =
                             CommentAdapterHelper.getScoreString(
                                     comment, mContext, holder, adapter.submission, adapter));
                 } else {
-                    new AlertDialog.Builder(mContext)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                             .setTitle(R.string.err_general)
                             .setMessage(R.string.err_retry_later)
-                            .show();
+                            );
                 }
             }
 
@@ -1494,10 +1494,10 @@ final AlertDialog reportDialog =
                                     Snackbar.LENGTH_LONG);
                     LayoutUtils.showSnackbar(s);
                 } else {
-                    new AlertDialog.Builder(mContext)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                             .setTitle(R.string.err_general)
                             .setMessage(R.string.err_retry_later)
-                            .show();
+                            );
                 }
             }
 
@@ -1904,6 +1904,7 @@ final AlertDialog reportDialog =
         final Dialog d = builder.create();
         d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
+        DialogUtil.matchDialogToCardBackground(d);
         d.show();
         dialoglayout
                 .findViewById(R.id.cancel)
@@ -1932,7 +1933,7 @@ final AlertDialog reportDialog =
             final Context mContext,
             final CommentNode baseNode,
             final CommentViewHolder holder) {
-        new AlertDialog.Builder(mContext)
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                 .setTitle(R.string.comment_delete)
                 .setMessage(R.string.comment_delete_msg)
                 .setPositiveButton(
@@ -1941,7 +1942,7 @@ final AlertDialog reportDialog =
                                 new AsyncDeleteTask(adapter, baseNode, holder, mContext)
                                         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR))
                 .setNegativeButton(R.string.btn_no, (dialog, which) -> dialog.dismiss())
-                .show();
+                );
     }
 
     public static class AsyncEditTask extends AsyncTask<Void, Void, Void> {
@@ -1983,7 +1984,7 @@ final AlertDialog reportDialog =
                                 new Runnable() {
                                     @Override
                                     public void run() {
-                                        new AlertDialog.Builder(mContext)
+                                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                                                 .setTitle(R.string.comment_delete_err)
                                                 .setMessage(R.string.comment_delete_err_msg)
                                                 .setPositiveButton(
@@ -2003,7 +2004,7 @@ final AlertDialog reportDialog =
                                                 .setNegativeButton(
                                                         R.string.btn_no,
                                                         (dialog, which) -> dialog.dismiss())
-                                                .show();
+                                                );
                                     }
                                 });
             }
@@ -2034,7 +2035,7 @@ final AlertDialog reportDialog =
                 holder.firstTextView.setTextHtml(mContext.getString(R.string.content_deleted));
                 holder.content.setText(R.string.content_deleted);
             } else {
-                new AlertDialog.Builder(mContext)
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                         .setTitle(R.string.comment_delete_err)
                         .setMessage(R.string.comment_delete_err_msg)
                         .setPositiveButton(
@@ -2044,7 +2045,7 @@ final AlertDialog reportDialog =
                                     doInBackground();
                                 })
                         .setNegativeButton(R.string.btn_no, (dialog, which) -> dialog.dismiss())
-                        .show();
+                        );
             }
         }
 

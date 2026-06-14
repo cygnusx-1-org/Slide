@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Activities;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -141,13 +143,13 @@ public class LiveThread extends BaseActivityAnim {
             @Override
             public void onPostExecute(Void aVoid) {
                 if (thread == null) {
-                    new AlertDialog.Builder(LiveThread.this)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(LiveThread.this)
                             .setTitle(R.string.livethread_not_found)
                             .setMessage(R.string.misc_please_try_again_soon)
                             .setPositiveButton(R.string.btn_ok, (dialog, which) -> finish())
                             .setOnDismissListener(dialog -> finish())
                             .setCancelable(false)
-                            .show();
+                            );
                 } else {
                     d.dismiss();
                     setupAppBar(R.id.toolbar, thread.getTitle(), true, false);

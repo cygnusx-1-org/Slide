@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Adapters;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -127,6 +129,7 @@ public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                                     d.dismiss();
                                                 }
                                             });
+                                    DialogUtil.matchDialogToCardBackground(d);
                                     d.show();
                                 }
                             });

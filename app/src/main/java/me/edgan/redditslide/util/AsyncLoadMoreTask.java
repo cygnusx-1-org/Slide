@@ -264,7 +264,7 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
                                         .setNegativeButton(R.string.btn_close, null);
 
                                 builder.setPositiveButton(positiveButtonText, null);
-                                builder.show();
+                                DialogUtil.showWithCardBackground(builder);
                             } catch (Exception ignored) {
                                 Log.e(LogUtil.getTag(), "Exception showing error dialog", ignored);
                             }

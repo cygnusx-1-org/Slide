@@ -40,6 +40,7 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.MaterialProgressDialog;
@@ -130,17 +131,20 @@ public class CreateMulti extends BaseActivityAnim {
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    new AlertDialog.Builder(CreateMulti.this)
-                            .setTitle(R.string.general_confirm_exit)
-                            .setMessage(R.string.multi_save_option)
-                            .setPositiveButton(
-                                    R.string.btn_yes,
-                                    (dialog, i) -> {
-                                        MultiredditOverview.multiActivity.finish();
-                                        new SaveMulti().execute();
-                                    })
-                            .setNegativeButton(R.string.btn_no, (dialog, i) -> finish())
-                            .show();
+                    AlertDialog dialog =
+                            new AlertDialog.Builder(CreateMulti.this)
+                                    .setTitle(R.string.general_confirm_exit)
+                                    .setMessage(R.string.multi_save_option)
+                                    .setPositiveButton(
+                                            R.string.btn_yes,
+                                            (d, i) -> {
+                                                MultiredditOverview.multiActivity.finish();
+                                                new SaveMulti().execute();
+                                            })
+                                    .setNegativeButton(R.string.btn_no, (d, i) -> finish())
+                                    .create();
+                    DialogUtil.matchDialogToCardBackground(CreateMulti.this, dialog);
+                    dialog.show();
                 }
             };
 
@@ -189,7 +193,7 @@ public class CreateMulti extends BaseActivityAnim {
         all = list.toArray(new String[0]);
 
         final ArrayList<String> toCheck = new ArrayList<>(subs);
-        new AlertDialog.Builder(this)
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(this)
                 .setMultiChoiceItems(
                         all,
                         checked,
@@ -228,7 +232,7 @@ public class CreateMulti extends BaseActivityAnim {
                                                         new AsyncGetSubreddit().execute(input))
                                         .negativeText(R.string.btn_cancel)
                                         .show())
-                .show();
+                );
     }
 
     private class AsyncGetSubreddit extends AsyncTask<String, Void, Subreddit> {
@@ -254,7 +258,7 @@ public class CreateMulti extends BaseActivityAnim {
                             @Override
                             public void run() {
                                 try {
-                                    new AlertDialog.Builder(CreateMulti.this)
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(CreateMulti.this)
                                             .setTitle(R.string.subreddit_err)
                                             .setMessage(
                                                     getString(
@@ -263,7 +267,7 @@ public class CreateMulti extends BaseActivityAnim {
                                                     R.string.btn_ok,
                                                     (dialog, which) -> dialog.dismiss())
                                             .setOnDismissListener(null)
-                                            .show();
+                                            );
                                 } catch (Exception ignored) {
 
                                 }
@@ -306,7 +310,7 @@ public class CreateMulti extends BaseActivityAnim {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            new AlertDialog.Builder(CreateMulti.this)
+                            DialogUtil.showWithCardBackground(new AlertDialog.Builder(CreateMulti.this)
                                     .setTitle(R.string.really_remove_subreddit_title)
                                     .setPositiveButton(
                                             R.string.btn_yes,
@@ -316,7 +320,7 @@ public class CreateMulti extends BaseActivityAnim {
                                                 recyclerView.setAdapter(adapter);
                                             })
                                     .setNegativeButton(R.string.btn_no, null)
-                                    .show();
+                                    );
                         }
                     });
         }
@@ -413,13 +417,12 @@ public class CreateMulti extends BaseActivityAnim {
                                     errorMsg = getString(R.string.multireddit_save_err);
                                 }
 
-                                new AlertDialog.Builder(CreateMulti.this)
+                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(CreateMulti.this)
                                         .setTitle(R.string.err_title)
                                         .setMessage(errorMsg)
                                         .setNeutralButton(
                                                 R.string.btn_ok, (dialogInterface, i) -> finish())
-                                        .create()
-                                        .show();
+                                        );
                             }
                         });
                 LogUtil.e(e, "CreateMulti.run failed");
@@ -428,13 +431,12 @@ public class CreateMulti extends BaseActivityAnim {
                         new Runnable() {
                             @Override
                             public void run() {
-                                new AlertDialog.Builder(CreateMulti.this)
+                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(CreateMulti.this)
                                         .setTitle(R.string.multireddit_invalid_name)
                                         .setMessage(R.string.multireddit_invalid_name_msg)
                                         .setNeutralButton(
                                                 R.string.btn_ok, (dialogInterface, i) -> finish())
-                                        .create()
-                                        .show();
+                                        );
                             }
                         });
             } catch (RuntimeException e) {
@@ -444,13 +446,12 @@ public class CreateMulti extends BaseActivityAnim {
                         new Runnable() {
                             @Override
                             public void run() {
-                                new AlertDialog.Builder(CreateMulti.this)
+                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(CreateMulti.this)
                                         .setTitle(R.string.err_title)
                                         .setMessage(R.string.misc_err)
                                         .setNeutralButton(
                                                 R.string.btn_ok, (dialogInterface, i) -> finish())
-                                        .create()
-                                        .show();
+                                        );
                             }
                         });
                 LogUtil.e(e, "CreateMulti.run failed");
@@ -471,7 +472,7 @@ public class CreateMulti extends BaseActivityAnim {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.delete:
-                new AlertDialog.Builder(CreateMulti.this)
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(CreateMulti.this)
                         .setTitle(
                                 getString(
                                         R.string.delete_multireddit_title,
@@ -510,7 +511,7 @@ public class CreateMulti extends BaseActivityAnim {
                                                         new Runnable() {
                                                             @Override
                                                             public void run() {
-                                                                new AlertDialog.Builder(
+                                                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(
                                                                                 CreateMulti.this)
                                                                         .setTitle(
                                                                                 R.string.err_title)
@@ -521,8 +522,7 @@ public class CreateMulti extends BaseActivityAnim {
                                                                                 (dialogInterface,
                                                                                         i) ->
                                                                                         finish())
-                                                                        .create()
-                                                                        .show();
+                                                                        );
                                                             }
                                                         });
                                                 LogUtil.e(e, "CreateMulti.run failed");
@@ -531,12 +531,11 @@ public class CreateMulti extends BaseActivityAnim {
                                         }
                                     }.execute();
                                 })
-                        .setNegativeButton(R.string.btn_cancel, null)
-                        .show();
+                        .setNegativeButton(R.string.btn_cancel, null));
                 return true;
             case R.id.save:
                 if (title.getText().toString().isEmpty()) {
-                    new AlertDialog.Builder(CreateMulti.this)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(CreateMulti.this)
                             .setTitle(R.string.multireddit_title_empty)
                             .setMessage(R.string.multireddit_title_empty_msg)
                             .setPositiveButton(
@@ -545,13 +544,13 @@ public class CreateMulti extends BaseActivityAnim {
                                         dialog.dismiss();
                                         title.requestFocus();
                                     })
-                            .show();
+                            );
                 } else if (subs.isEmpty()) {
-                    new AlertDialog.Builder(CreateMulti.this)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(CreateMulti.this)
                             .setTitle(R.string.multireddit_no_subs)
                             .setMessage(R.string.multireddit_no_subs_msg)
                             .setPositiveButton(R.string.btn_ok, (dialog, which) -> dialog.dismiss())
-                            .show();
+                            );
                 } else {
                     new SaveMulti().execute();
                 }

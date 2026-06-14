@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Adapters;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 /** Created by ccrama on 3/22/2015. */
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -775,7 +777,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             final ArrayList<String> keys = new ArrayList<>(accounts.keySet());
                             final int i = keys.indexOf(changedProfile);
 
-                            new AlertDialog.Builder(mContext)
+                            DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                                     .setTitle(R.string.replies_switch_accounts)
                                     .setSingleChoiceItems(
                                             keys.toArray(new String[0]),
@@ -785,7 +787,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                 profile.setText("/u/" + changedProfile);
                                             })
                                     .setNegativeButton(R.string.btn_cancel, null)
-                                    .show();
+                                    );
                         }
                     });
             currentlyEditing.setOnFocusChangeListener(
@@ -1216,7 +1218,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (currentlyEditing != null
                 && !currentlyEditing.getText().toString().isEmpty()
                 && holder.getBindingAdapterPosition() <= editingPosition) {
-            new AlertDialog.Builder(mContext)
+            DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                     .setTitle(R.string.discard_comment_title)
                     .setMessage(R.string.comment_discard_msg)
                     .setPositiveButton(
@@ -1240,7 +1242,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 setCommentStateUnhighlighted(holder, comment, baseNode, true);
                             })
                     .setNegativeButton(R.string.btn_no, null)
-                    .show();
+                    );
         } else {
             currentlySelected = null;
             currentSelectedItem = "";
@@ -1272,7 +1274,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void doLongClick(
             final CommentViewHolder holder, final Comment comment, final CommentNode baseNode) {
         if (currentlyEditing != null && !currentlyEditing.getText().toString().isEmpty()) {
-            new AlertDialog.Builder(mContext)
+            DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                     .setTitle(R.string.discard_comment_title)
                     .setMessage(R.string.comment_discard_msg)
                     .setPositiveButton(
@@ -1296,7 +1298,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 doLongClick(holder, comment, baseNode);
                             })
                     .setNegativeButton(R.string.btn_no, null)
-                    .show();
+                    );
 
         } else {
             if (currentSelectedItem != null
@@ -1326,7 +1328,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (currentlyEditing != null
                 && !currentlyEditing.getText().toString().isEmpty()
                 && holder.getBindingAdapterPosition() <= editingPosition) {
-            new AlertDialog.Builder(mContext)
+            DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                     .setTitle(R.string.discard_comment_title)
                     .setMessage(R.string.comment_discard_msg)
                     .setPositiveButton(
@@ -1350,7 +1352,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 doOnClick(holder, baseNode, comment);
                             })
                     .setNegativeButton(R.string.btn_no, null)
-                    .show();
+                    );
 
         } else {
             if (isClicking) {
@@ -1774,7 +1776,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (commentBack != null && !commentBack.isEmpty()) {
                     Drafts.addDraft(commentBack);
                     try {
-                        new AlertDialog.Builder(mContext)
+                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                                 .setTitle(R.string.err_comment_post)
                                 .setMessage(
                                         ((why == null)
@@ -1785,13 +1787,13 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                 + mContext.getString(
                                                         R.string.err_comment_post_message))
                                 .setPositiveButton(R.string.btn_ok, null)
-                                .show();
+                                );
                     } catch (Exception ignored) {
 
                     }
                 } else {
                     try {
-                        new AlertDialog.Builder(mContext)
+                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                                 .setTitle(R.string.err_comment_post)
                                 .setMessage(
                                         ((why == null)
@@ -1802,7 +1804,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                 + mContext.getString(
                                                         R.string.err_comment_post_nosave_message))
                                 .setPositiveButton(R.string.btn_ok, null)
-                                .show();
+                                );
                     } catch (Exception ignored) {
 
                     }

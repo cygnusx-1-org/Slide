@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Activities;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -244,9 +246,9 @@ public class Tutorial extends AppCompatActivity {
                                     finishDialogLayout();
                                 });
 
-                        new AlertDialog.Builder(getContext())
+                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(getContext())
                                 .setView(choosemainBinding.getRoot())
-                                .show();
+                                );
                     });
 
             personalizeBinding.secondaryColor.setOnClickListener(
@@ -292,9 +294,9 @@ public class Tutorial extends AppCompatActivity {
                                     finishDialogLayout();
                                 });
 
-                        new AlertDialog.Builder(getActivity())
+                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(getActivity())
                                 .setView(accentBinding.getRoot())
-                                .show();
+                                );
                     });
 
             personalizeBinding.baseColor.setOnClickListener(
@@ -334,9 +336,9 @@ public class Tutorial extends AppCompatActivity {
                                             });
                         }
 
-                        new AlertDialog.Builder(getActivity())
+                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(getActivity())
                                 .setView(themesmallBindingRoot)
-                                .show();
+                                );
                     });
 
             personalizeBinding.done.setOnClickListener(v1 -> {

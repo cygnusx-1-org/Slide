@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Adapters;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 /** Created by ccrama on 3/22/2015. */
 import android.app.Activity;
 import android.app.Dialog;
@@ -537,6 +539,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         final Dialog d = builder.create();
         d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
+        DialogUtil.matchDialogToCardBackground(d);
         d.show();
         dialoglayout
                 .findViewById(R.id.cancel)

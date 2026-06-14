@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Activities;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.content.DialogInterface;
 import android.text.Spannable;
 import android.view.Gravity;
@@ -244,10 +246,10 @@ public class SubredditSortController {
                         activity.reloadSubs();
                     }
                 };
-        new AlertDialog.Builder(activity) // Use activity context
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(activity) // Use activity context
                 .setTitle(R.string.sorting_choose)
                 .setSingleChoiceItems(
                         SortingUtil.getSortingTimesStrings(), SortingUtil.getSortingTimeId(""), l2)
-                .show();
+                );
     }
 }

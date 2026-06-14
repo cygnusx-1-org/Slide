@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Activities;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -122,13 +124,13 @@ public class Search extends BaseActivityAnim {
                                                         time.name().toLowerCase(Locale.ENGLISH)));
                     }
                 };
-        new AlertDialog.Builder(Search.this)
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(Search.this)
                 .setTitle(R.string.sorting_time_choose)
                 .setSingleChoiceItems(
                         SortingUtil.getSortingTimesStrings(),
                         SortingUtil.getSortingSearchId(this),
                         l2)
-                .show();
+                );
     }
 
     public void openSearchTypePopup() {
@@ -167,10 +169,10 @@ public class Search extends BaseActivityAnim {
                                                         time.name().toLowerCase(Locale.ENGLISH)));
                     }
                 };
-        new AlertDialog.Builder(Search.this)
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(Search.this)
                 .setTitle(R.string.sorting_choose)
                 .setSingleChoiceItems(SortingUtil.getSearch(), SortingUtil.getSearchType(), l2)
-                .show();
+                );
     }
 
     public TimePeriod time;

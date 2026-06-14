@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Activities;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -61,12 +63,12 @@ public class Related extends BaseActivityAnim {
             url = intent.getStringExtra(EXTRA_URL);
         }
         if (url == null || url.isEmpty()) {
-            new AlertDialog.Builder(this)
+            DialogUtil.showWithCardBackground(new AlertDialog.Builder(this)
                     .setTitle("URL is empty")
                     .setMessage("Try again with a different link!")
                     .setCancelable(false)
                     .setPositiveButton(R.string.btn_ok, (dialogInterface, i) -> finish())
-                    .show();
+                    );
         }
 
         setupAppBar(R.id.toolbar, "Related links", true, true);

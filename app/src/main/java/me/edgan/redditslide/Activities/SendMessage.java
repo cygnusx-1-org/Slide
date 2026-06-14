@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Activities;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -157,11 +159,10 @@ public class SendMessage extends BaseActivity {
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                new AlertDialog.Builder(SendMessage.this)
+                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(SendMessage.this)
                                         .setTitle(getString(R.string.mail_author_wrote, name))
                                         .setMessage(previousMessage.getBody())
-                                        .create()
-                                        .show();
+                                        );
                             }
                         });
             } else {

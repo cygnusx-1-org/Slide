@@ -1,5 +1,7 @@
 package me.edgan.redditslide.ui.settings;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -543,6 +545,7 @@ public class SettingsActivity extends BaseActivity implements RestartActivity {
                                         new AlertDialog.Builder(SettingsActivity.this)
                                                 .setView(dialoglayout);
                                 final Dialog dialog = builder.create();
+                                DialogUtil.matchDialogToCardBackground(dialog);
                                 dialog.show();
                                 dialog.setOnDismissListener(
                                         new DialogInterface.OnDismissListener() {

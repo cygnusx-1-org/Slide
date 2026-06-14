@@ -192,9 +192,6 @@
         <item name="fontColor">#DEFFFFFF</item> <!-- 87% white -->
         <item name="list_background">@android:color/black</item>
         <item name="tintColor">#8AFFFFFF</item> <!-- 54% white -->
-        <item name="tp_backgroundColor">?attr/card_background</item>
-        <item name="tp_selectionColor">?android:colorAccent</item>
-        <item name="tp_textColor">?attr/fontColor</item>
     </style>
 
     <style parent="swipestyle" name="Theme.AMOLED_lighter">
@@ -207,9 +204,6 @@
         <item name="fontColor">#deffffff</item> <!-- 87% white -->
         <item name="list_background">@android:color/black</item>
         <item name="tintColor">#8affffff</item> <!-- 54% white -->
-        <item name="tp_backgroundColor">?attr/card_background</item>
-        <item name="tp_selectionColor">?android:colorAccent</item>
-        <item name="tp_textColor">?attr/fontColor</item>
     </style>
 
     <style parent="swipestyle" name="Theme.DARK">
@@ -222,9 +216,6 @@
         <item name="fontColor">#deffffff</item> <!-- 87% white -->
         <item name="list_background">#212121</item>
         <item name="tintColor">#8affffff</item> <!-- 54% white -->
-        <item name="tp_backgroundColor">?attr/card_background</item>
-        <item name="tp_selectionColor">?android:colorAccent</item>
-        <item name="tp_textColor">?attr/fontColor</item>
     </style>
 
     <style parent="swipestyle" name="Theme.DARK_BLUE">
@@ -237,9 +228,6 @@
         <item name="fontColor">#deffffff</item> <!-- 87% white -->
         <item name="list_background">#263238</item>
         <item name="tintColor">#8affffff</item> <!-- 54% white -->
-        <item name="tp_backgroundColor">?attr/card_background</item>
-        <item name="tp_selectionColor">?android:colorAccent</item>
-        <item name="tp_textColor">?attr/fontColor</item>
     </style>
 
     <style parent="swipestyle" name="Theme.DEEP">
@@ -252,9 +240,6 @@
         <item name="fontColor">#deffffff</item> <!-- 87% white -->
         <item name="list_background">#1c1b21</item>
         <item name="tintColor">#8affffff</item> <!-- 54% white -->
-        <item name="tp_backgroundColor">?attr/card_background</item>
-        <item name="tp_selectionColor">?android:colorAccent</item>
-        <item name="tp_textColor">?attr/fontColor</item>
     </style>
 
     <style parent="swipestyle" name="Theme.PIXEL">
@@ -267,9 +252,6 @@
         <item name="fontColor">#deffffff</item> <!-- 87% white -->
         <item name="list_background">#3a3a3a</item>
         <item name="tintColor">#8affffff</item> <!-- 54% white -->
-        <item name="tp_backgroundColor">?attr/card_background</item>
-        <item name="tp_selectionColor">?android:colorAccent</item>
-        <item name="tp_textColor">?attr/fontColor</item>
     </style>
 
     <style parent="swipestyle" name="Theme.NIGHT_RED">
@@ -282,9 +264,6 @@
         <item name="fontColor">#defff7ed</item> <!-- 87% white -->
         <item name="list_background">#261a1a</item>
         <item name="tintColor">#8affebcf</item> <!-- 54% white -->
-        <item name="tp_backgroundColor">?attr/card_background</item>
-        <item name="tp_selectionColor">?android:colorAccent</item>
-        <item name="tp_textColor">?attr/fontColor</item>
     </style>
 
     <style parent="swipestyle" name="Theme.SEPIA">
@@ -302,9 +281,6 @@
         <item name="fontColor">#de3e3d36</item> <!-- 87% black -->
         <item name="list_background">#cac5ad</item>
         <item name="tintColor">#8A3e3d36</item> <!-- 54% black -->
-        <item name="tp_backgroundColor">?attr/card_background</item>
-        <item name="tp_selectionColor">?android:colorAccent</item>
-        <item name="tp_textColor">?attr/fontColor</item>
     </style>
 
     <style parent="swipestylelight" name="Theme.LIGHT">
@@ -322,9 +298,6 @@
         <item name="fontColor">#de000000</item> <!-- 87% black -->
         <item name="list_background">#e5e5e5</item>
         <item name="tintColor">#8a000000</item> <!-- 54% black -->
-        <item name="tp_backgroundColor">?attr/card_background</item>
-        <item name="tp_selectionColor">?android:colorAccent</item>
-        <item name="tp_textColor">?attr/fontColor</item>
     </style>
 
     <!-- AMOLED Theme Subthemes !-->
@@ -479,7 +452,11 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
-    <style parent="Theme.AppCompat.Light.NoActionBar" name="swipestylelight">
+    <style parent="Theme.MaterialComponents.Light.NoActionBar.Bridge" name="swipestylelight">
+        <!-- Bridge enables Material's dark elevation overlay, which tints colorSurface
+             with colorOnSurface (amber here) and turned dialogs olive. Disable it to
+             keep the previous flat dialog/surface colors. -->
+        <item name="elevationOverlayEnabled">false</item>
         <item name="colorAccent">@color/md_amber_A400</item>
         <!-- We keep colorSurface as #FF000000 here unless changed. -->
         <item name="colorSurface">#FF000000</item>
@@ -497,17 +474,22 @@
         <item name="actionMenuTextColor">#DE000000</item>
         <item name="android:actionMenuTextColor">#DE000000</item>
         <item name="android:colorBackground">#dedede</item>
-        <item name="tp_selectionColor">?android:colorAccent</item>
-        <item name="tp_textColor">?attr/fontColor</item>
-        <item name="tp_backgroundColor">?attr/card_background</item>
     </style>
 
-    <style parent="Theme.AppCompat.NoActionBar" name="swipestyle">
+    <style parent="Theme.MaterialComponents.NoActionBar.Bridge" name="swipestyle">
+        <!-- See swipestylelight: avoid the Material dark elevation overlay tinting surfaces. -->
+        <item name="elevationOverlayEnabled">false</item>
         <item name="colorAccent">@color/md_amber_A400</item>
         <item name="colorSurface">#FF000000</item>
         <item name="colorOnSurface">?android:colorAccent</item>
         <item name="android:windowActivityTransitions">true</item>
     </style>
+
+    <!-- Full Material theme overlay for MaterialTimePicker. The app's base themes
+         are MaterialComponents *.Bridge, which keep AppCompat widget styling and
+         therefore do not define materialTimePickerTheme / the chip & clock styles
+         the picker needs. Pass this explicitly via the picker builder's setTheme(). -->
+    <style name="ThemeOverlay.App.TimePicker" parent="ThemeOverlay.MaterialComponents.TimePicker"/>
 
     <!-- Dark Theme Subthemes !-->
     <!-- Matches parent's android:colorBackground = #212121 -->

@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="swipestyle" parent="Theme.AppCompat.NoActionBar">
+    <style name="swipestyle" parent="Theme.MaterialComponents.NoActionBar.Bridge">
+        <item name="elevationOverlayEnabled">false</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="colorAccent">@color/md_amber_A400</item>
     </style>
 
-    <style name="swipestylelight" parent="Theme.AppCompat.NoActionBar">
+    <style name="swipestylelight" parent="Theme.MaterialComponents.NoActionBar.Bridge">
+        <item name="elevationOverlayEnabled">false</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="colorAccent">@color/md_amber_A400</item>
     </style>

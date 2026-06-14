@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Activities;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.DialogInterface;
@@ -127,7 +129,7 @@ public class SetupWidget extends BaseActivity {
                         SubredditWidgetProvider.setViewType(appWidgetId, view, SetupWidget.this);
                         SubredditWidgetProvider.setSorting(appWidgetId, i, SetupWidget.this);
                         if (i == 3 || i == 4) {
-                            new AlertDialog.Builder(SetupWidget.this)
+                            DialogUtil.showWithCardBackground(new AlertDialog.Builder(SetupWidget.this)
                                     .setTitle(R.string.sorting_choose)
                                     .setSingleChoiceItems(
                                             SortingUtil.getSortingTimesStrings(),
@@ -158,7 +160,7 @@ public class SetupWidget extends BaseActivity {
 
                                                 finish();
                                             })
-                                    .show();
+                                    );
                         } else {
                             {
                                 Intent intent = new Intent();
@@ -181,11 +183,11 @@ public class SetupWidget extends BaseActivity {
                     }
                 };
 
-        new AlertDialog.Builder(SetupWidget.this)
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(SetupWidget.this)
                 .setTitle(R.string.sorting_choose)
                 .setSingleChoiceItems(
                         SortingUtil.getSortingStrings(), SortingUtil.getSortingId(""), l2)
-                .show();
+                );
         // this intent is essential to show the widget
         // if this intent is not included,you can't show
         // widget on homescreen

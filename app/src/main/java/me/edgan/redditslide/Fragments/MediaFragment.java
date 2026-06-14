@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Fragments;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import static me.edgan.redditslide.Notifications.ImageDownloadNotificationService.EXTRA_SUBMISSION_TITLE;
 
 import android.animation.ValueAnimator;
@@ -774,14 +776,14 @@ public class MediaFragment extends Fragment {
                                                     @Override
                                                     public boolean onLongClick(View v) {
                                                         try {
-                                                            new AlertDialog.Builder(getContext())
+                                                            DialogUtil.showWithCardBackground(new AlertDialog.Builder(getContext())
                                                                     .setTitle(
                                                                             result.get("safe_title")
                                                                                     .getAsString())
                                                                     .setMessage(
                                                                             result.get("alt")
                                                                                     .getAsString())
-                                                                    .show();
+                                                                    );
                                                         } catch (Exception ignored) {
 
                                                         }

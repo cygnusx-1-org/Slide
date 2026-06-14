@@ -1,5 +1,7 @@
 package me.edgan.redditslide.ui.settings;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -75,12 +77,12 @@ public class SettingsBackup extends BaseActivityAnim {
 
     /** Ask user for confirmation, then launch SAF file picker to create backup file. */
     private void showBackupToDirDialog() {
-        new AlertDialog.Builder(this)
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(this)
                 .setTitle(R.string.backup_question)
                 .setPositiveButton(R.string.btn_ok, (dialog, which) -> launchCreateBackupFile())
                 .setNeutralButton(R.string.btn_cancel, null)
                 .setCancelable(false)
-                .show();
+                );
     }
 
     /** Launch SAF ACTION_CREATE_DOCUMENT to let the user choose where to save the backup. */
@@ -194,7 +196,7 @@ public class SettingsBackup extends BaseActivityAnim {
                 }
 
                 // Show success dialog with a "View" button
-                new AlertDialog.Builder(SettingsBackup.this)
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(SettingsBackup.this)
                         .setTitle(R.string.backup_complete)
                         .setMessage(R.string.backup_saved_downloads)
                         .setPositiveButton(
@@ -228,8 +230,7 @@ public class SettingsBackup extends BaseActivityAnim {
                                     }
                                 })
                         .setNegativeButton(R.string.btn_close, null)
-                        .setCancelable(false)
-                        .show();
+                        .setCancelable(false));
             }
         }.execute();
     }
@@ -345,7 +346,7 @@ public class SettingsBackup extends BaseActivityAnim {
                 progress.dismiss();
             }
             if (success) {
-                new AlertDialog.Builder(SettingsBackup.this)
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(SettingsBackup.this)
                         .setTitle(R.string.backup_restore_settings)
                         .setMessage(R.string.backup_restarting)
                         .setOnDismissListener(
@@ -366,7 +367,7 @@ public class SettingsBackup extends BaseActivityAnim {
                                     ProcessPhoenix.triggerRebirth(SettingsBackup.this);
                                 })
                         .setCancelable(false)
-                        .show();
+                        );
             } else {
                 Log.w(TAG, "Restore from local file failed or invalid file.");
                 showErrorDialog(R.string.err_not_valid_backup, R.string.err_not_valid_backup_msg);
@@ -423,11 +424,11 @@ public class SettingsBackup extends BaseActivityAnim {
 
     /** Show an error dialog with the specified title and message. */
     private void showErrorDialog(int titleResId, int messageResId) {
-        new AlertDialog.Builder(this)
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(this)
                 .setTitle(titleResId)
                 .setMessage(messageResId)
                 .setPositiveButton(R.string.btn_ok, null)
                 .setCancelable(false)
-                .show();
+                );
     }
 }

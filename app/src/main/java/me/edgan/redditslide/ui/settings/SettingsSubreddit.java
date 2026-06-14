@@ -1,5 +1,7 @@
 package me.edgan.redditslide.ui.settings;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -80,7 +82,7 @@ public class SettingsSubreddit extends BaseActivityAnim {
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                new AlertDialog.Builder(SettingsSubreddit.this)
+                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(SettingsSubreddit.this)
                                         .setTitle(R.string.clear_all_sub_themes)
                                         .setMessage(R.string.clear_all_sub_themes_msg)
                                         .setPositiveButton(
@@ -99,7 +101,7 @@ public class SettingsSubreddit extends BaseActivityAnim {
                                                     reloadSubList();
                                                 })
                                         .setNegativeButton(R.string.btn_no, null)
-                                        .show();
+                                        );
                             }
                         });
         findViewById(R.id.post_floating_action_button)
@@ -152,7 +154,7 @@ public class SettingsSubreddit extends BaseActivityAnim {
                             @Override
                             public void onClick(View v) {
                                 if (Authentication.isLoggedIn) {
-                                    new AlertDialog.Builder(SettingsSubreddit.this)
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(SettingsSubreddit.this)
                                             .setTitle(R.string.dialog_color_sync_title)
                                             .setMessage(R.string.dialog_color_sync_message)
                                             .setPositiveButton(
@@ -230,7 +232,7 @@ public class SettingsSubreddit extends BaseActivityAnim {
                                                                 reloadSubList();
                                                                 Resources res = getResources();
 
-                                                                new AlertDialog.Builder(
+                                                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(
                                                                                 SettingsSubreddit
                                                                                         .this)
                                                                         .setTitle(
@@ -247,13 +249,13 @@ public class SettingsSubreddit extends BaseActivityAnim {
                                                                         .setPositiveButton(
                                                                                 R.string.btn_ok,
                                                                                 null)
-                                                                        .show();
+                                                                        );
                                                             }
                                                         }.execute();
                                                         d.show();
                                                     })
                                             .setNegativeButton(R.string.btn_cancel, null)
-                                            .show();
+                                            );
                                 } else {
                                     Snackbar s =
                                             Snackbar.make(

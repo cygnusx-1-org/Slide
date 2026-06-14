@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Activities;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -329,10 +331,10 @@ public class Submit extends BaseActivity {
                                             d.dismiss();
                                         } else {
                                             d.dismiss();
-                                            new AlertDialog.Builder(Submit.this)
+                                            DialogUtil.showWithCardBackground(new AlertDialog.Builder(Submit.this)
                                                     .setTitle(R.string.title_not_found)
                                                     .setPositiveButton(R.string.btn_ok, null)
-                                                    .show();
+                                                    );
                                         }
                                     }
                                 }.execute(
@@ -570,11 +572,11 @@ public class Submit extends BaseActivity {
                             if (s.getSubredditType().equals("RESTRICTED")) {
                                 subredditText.setText("");
                                 lastCheckedSubreddit = "";
-                                new AlertDialog.Builder(Submit.this)
+                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(Submit.this)
                                         .setTitle(R.string.err_submit_restricted)
                                         .setMessage(R.string.err_submit_restricted_text)
                                         .setPositiveButton(R.string.btn_ok, null)
-                                        .show();
+                                        );
                                 return;
                             }
                             fetchFlairRequirement(subreddit);
@@ -930,11 +932,11 @@ public class Submit extends BaseActivity {
                 setImage(url);
 
             } catch (Exception e) {
-                new AlertDialog.Builder(c)
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(c)
                         .setTitle(R.string.err_title)
                         .setMessage(R.string.editor_err_msg)
                         .setPositiveButton(R.string.btn_ok, null)
-                        .show();
+                        );
                 LogUtil.e(e, "Submit.onPostExecute failed");
             }
         }
@@ -978,18 +980,18 @@ public class Submit extends BaseActivity {
                 link.setVisibility(View.VISIBLE);
                 ((EditText) findViewById(R.id.urltext)).setText(finalUrl);
             } catch (Exception e) {
-                new AlertDialog.Builder(c)
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(c)
                         .setTitle(R.string.err_title)
                         .setMessage(R.string.editor_err_msg)
                         .setPositiveButton(R.string.btn_ok, null)
-                        .show();
+                        );
                 LogUtil.e(e, "Submit.onPostExecute failed");
             }
         }
     }
 
     private void showErrorRetryDialog(String message) {
-        new AlertDialog.Builder(Submit.this)
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(Submit.this)
                 .setTitle(R.string.err_title)
                 .setMessage(message)
                 .setNegativeButton(R.string.btn_no, (dialogInterface, i) -> finish())
@@ -999,7 +1001,6 @@ public class Submit extends BaseActivity {
                                 ((FloatingActionButton) findViewById(R.id.send)).show())
                 .setOnDismissListener(
                         dialog -> ((FloatingActionButton) findViewById(R.id.send)).show())
-                .create()
-                .show();
+                );
     }
 }

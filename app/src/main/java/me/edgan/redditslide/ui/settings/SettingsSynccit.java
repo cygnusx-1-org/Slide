@@ -1,5 +1,7 @@
 package me.edgan.redditslide.ui.settings;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -50,7 +52,7 @@ public class SettingsSynccit extends BaseActivityAnim {
                             public void onClick(View v) {
                                 if (!SettingValues.synccitAuth.isEmpty()) {
 
-                                    new AlertDialog.Builder(SettingsSynccit.this)
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(SettingsSynccit.this)
                                             .setTitle(R.string.settings_synccit_delete)
                                             .setPositiveButton(
                                                     R.string.btn_yes,
@@ -73,7 +75,7 @@ public class SettingsSynccit extends BaseActivityAnim {
                                                                 Collections.singleton("16noez"));
                                                     })
                                             .setNegativeButton(R.string.btn_no, null)
-                                            .show();
+                                            );
                                 }
                             }
                         });
@@ -110,31 +112,31 @@ public class SettingsSynccit extends BaseActivityAnim {
                                         e.apply();
                                         (findViewById(R.id.remove)).setEnabled(true);
 
-                                        new AlertDialog.Builder(SettingsSynccit.this)
+                                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(SettingsSynccit.this)
                                                 .setTitle(R.string.settings_synccit_connected)
                                                 .setMessage(R.string.settings_synccit_active)
                                                 .setPositiveButton(
                                                         R.string.btn_ok,
                                                         (dialog, which) -> finish())
                                                 .setOnDismissListener(dialog -> finish())
-                                                .show();
+                                                );
                                     } else {
                                         d.dismiss();
 
-                                        new AlertDialog.Builder(SettingsSynccit.this)
+                                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(SettingsSynccit.this)
                                                 .setTitle(R.string.settings_synccit_failed)
                                                 .setMessage(R.string.settings_synccit_failed_msg)
                                                 .setPositiveButton(R.string.btn_ok, null)
-                                                .show();
+                                                );
                                     }
                                 } catch (Exception e) {
                                     d.dismiss();
 
-                                    new AlertDialog.Builder(SettingsSynccit.this)
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(SettingsSynccit.this)
                                             .setTitle(R.string.settings_synccit_failed)
                                             .setMessage(R.string.settings_synccit_failed_msg)
                                             .setPositiveButton(R.string.btn_ok, null)
-                                            .show();
+                                            );
                                 }
                             }
                         });

@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Activities;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -226,7 +228,7 @@ public class SidebarController {
                                     }
                                 };
 
-                            new AlertDialog.Builder(mainActivity)
+                            DialogUtil.showWithCardBackground(new AlertDialog.Builder(mainActivity)
                                 .setTitle(R.string.sorting_choose)
                                 .setSingleChoiceItems(SortingUtil.getSortingStrings(), sortid, l2)
                                 .setNegativeButton(
@@ -247,7 +249,7 @@ public class SidebarController {
 
                                         mainActivity.reloadSubs();
                                     })
-                                .show();
+                                );
                         }
                     }
                 );
@@ -577,10 +579,10 @@ public class SidebarController {
                 }
             };
 
-        new AlertDialog.Builder(mainActivity)
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(mainActivity)
             .setTitle(R.string.sorting_choose)
             .setSingleChoiceItems(SortingUtil.getSortingTimesStrings(), SortingUtil.getSortingTimeId(""), l2)
-            .show();
+            );
     }
 
     public void doSubSidebarNoLoad(final String subreddit) {
@@ -787,7 +789,7 @@ public class SidebarController {
                                         && !sub.contains("+")
                                         && !sub.contains(".")
                                         && !sub.contains("/m/")) {
-                                    new AlertDialog.Builder(mainActivity)
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mainActivity)
                                         .setTitle(mainActivity.getString(R.string.sub_post_notifs_title, sub))
                                         .setMessage(R.string.sub_post_notifs_msg)
                                         .setPositiveButton(
@@ -832,7 +834,7 @@ public class SidebarController {
                                             (dialog, which) -> notifyStateCheckBox.setChecked(false)
                                         )
                                         .setOnCancelListener(dialog -> notifyStateCheckBox.setChecked(false))
-                                        .show();
+                                        );
                                 } else {
                                     notifyStateCheckBox.setChecked(false);
                                     Toast.makeText(mainActivity, R.string.sub_post_notifs_err, Toast.LENGTH_SHORT).show();
@@ -858,7 +860,7 @@ public class SidebarController {
                 new View.OnClickListener() {
                     private void doSubscribe() {
                         if (Authentication.isLoggedIn) {
-                            new AlertDialog.Builder(mainActivity)
+                            DialogUtil.showWithCardBackground(new AlertDialog.Builder(mainActivity)
                                 .setTitle(mainActivity.getString(R.string.subscribe_to, subreddit.getDisplayName()))
                                 .setPositiveButton(
                                     R.string.reorder_add_subscribe,
@@ -867,7 +869,7 @@ public class SidebarController {
                                         public void onPostExecute(
                                                 Boolean success) {
                                             if (!success) { // If subreddit was removed from account or not
-                                                new AlertDialog.Builder(mainActivity)
+                                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(mainActivity)
                                                     .setTitle(R.string.force_change_subscription)
                                                     .setMessage(R.string.force_change_subscription_desc)
                                                     .setPositiveButton(
@@ -881,8 +883,7 @@ public class SidebarController {
                                                             LayoutUtils.showSnackbar(s);
                                                         })
                                                     .setNegativeButton(R.string.btn_no, null)
-                                                    .setCancelable(false)
-                                                    .show();
+                                                    .setCancelable(false));
                                             } else {
                                                 mainActivity.sidebarActions.changeSubscription(
                                                         subreddit, true);
@@ -908,7 +909,7 @@ public class SidebarController {
                                             LayoutUtils.showSnackbar(s);
                                         })
                                 .setNegativeButton(R.string.btn_cancel, null)
-                                .show();
+                                );
                         } else {
                             mainActivity.sidebarActions.changeSubscription(subreddit, true);
                         }
@@ -916,7 +917,7 @@ public class SidebarController {
 
                     private void doUnsubscribe() {
                         if (Authentication.didOnline) {
-                            new AlertDialog.Builder(mainActivity)
+                            DialogUtil.showWithCardBackground(new AlertDialog.Builder(mainActivity)
                                 .setTitle(mainActivity.getString(R.string.unsubscribe_from, subreddit.getDisplayName()))
                                 .setPositiveButton(
                                     R.string.reorder_remove_unsubscribe,
@@ -924,7 +925,7 @@ public class SidebarController {
                                         @Override
                                         public void onPostExecute(Boolean success) {
                                             if (!success) { // If subreddit was remove from account or not
-                                                new AlertDialog.Builder(mainActivity)
+                                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(mainActivity)
                                                     .setTitle(R.string.force_change_subscription)
                                                     .setMessage(R.string.force_change_subscription_desc)
                                                     .setPositiveButton(R.string.btn_yes,
@@ -939,8 +940,7 @@ public class SidebarController {
                                                         }
                                                     )
                                                     .setNegativeButton(R.string.btn_no, null)
-                                                    .setCancelable(false)
-                                                    .show();
+                                                    .setCancelable(false));
                                             } else {
                                                 mainActivity.sidebarActions.changeSubscription(subreddit, false);
                                             }
@@ -965,7 +965,7 @@ public class SidebarController {
                                     }
                                 )
                                 .setNegativeButton(R.string.btn_cancel, null)
-                                .show();
+                                );
                         } else {
                             mainActivity.sidebarActions.changeSubscription(subreddit, false);
                         }

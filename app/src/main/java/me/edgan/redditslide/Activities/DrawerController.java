@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Activities;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -491,7 +493,7 @@ public class DrawerController {
                                 new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        new AlertDialog.Builder(mainActivity)
+                                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(mainActivity)
                                             .setTitle(R.string.profile_remove)
                                             .setMessage(R.string.profile_remove_account)
                                             .setNegativeButton(
@@ -559,7 +561,7 @@ public class DrawerController {
                                                         }
                                                     })
                                             .setPositiveButton(R.string.btn_cancel, null)
-                                            .show();
+                                            );
                                     }
                                 });
                 t.setOnClickListener(

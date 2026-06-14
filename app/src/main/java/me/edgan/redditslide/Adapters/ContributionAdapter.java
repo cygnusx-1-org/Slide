@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Adapters;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 /** Created by ccrama on 3/22/2015. */
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -345,7 +347,7 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                             final AlertDialog.Builder builder =
                                     new AlertDialog.Builder(mContext).setView(dialoglayout);
-                            final Dialog d = builder.show();
+                            final Dialog d = DialogUtil.showWithCardBackground(builder);
                             dialoglayout
                                     .findViewById(R.id.hide)
                                     .setOnClickListener(

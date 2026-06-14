@@ -1,5 +1,7 @@
 package me.edgan.redditslide;
 
+import me.edgan.redditslide.util.DialogUtil;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -50,14 +52,13 @@ public class ImageFlairs {
                 if (flairStylesheet != null) {
                     flairs.edit().putBoolean(subreddit.toLowerCase(Locale.ENGLISH), true).commit();
                     d =
-                            new AlertDialog.Builder(context)
+                            DialogUtil.showWithCardBackground(new AlertDialog.Builder(context)
                                     .setTitle("Subreddit flairs synced")
                                     .setMessage(
                                             "Slide found and synced "
                                                     + flairStylesheet.count
                                                     + " image flairs")
-                                    .setPositiveButton(R.string.btn_ok, null)
-                                    .show();
+                                    .setPositiveButton(R.string.btn_ok, null));
                 } else {
                     final AlertDialog.Builder b =
                             new AlertDialog.Builder(context)
@@ -87,7 +88,7 @@ public class ImageFlairs {
                                 });
                     }
 
-                    d = b.show();
+                    d = DialogUtil.showWithCardBackground(b);
                 }
             }
 
