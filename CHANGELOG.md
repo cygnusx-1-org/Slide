@@ -4,6 +4,11 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.6.0 / 2026-6-14
+============
+* Fixed jumpy content on scroll up
+* Fixed all dialogs to match the theming
+
 7.5.9 / 2026-6-13
 ============
 * Implemented Feature Request: Update Discover Section #67
