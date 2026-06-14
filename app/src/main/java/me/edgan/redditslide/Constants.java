@@ -10,6 +10,9 @@ public class Constants {
     /** Default paginator page size, matching JRAW's DEFAULT_LIMIT */
     public static final int DEFAULT_PAGINATOR_LIMIT = 25;
 
+    /** Number of new subreddits resolved per scroll batch for the Discover "Trending" list */
+    public static final int TRENDING_BATCH_SIZE = 10;
+
     /**
      * This is the estimated height of the Tabs view mode in dp. Use this for calculating the
      * SwipeToRefresh (PTR) progresses indicator offset when using "Tabs" view mode.

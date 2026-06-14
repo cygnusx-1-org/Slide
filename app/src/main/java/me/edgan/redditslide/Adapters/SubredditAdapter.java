@@ -241,25 +241,20 @@ public class SubredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         List<String> blocks = SubmissionParser.getBlocks(rawHTML);
 
-        int startIndex = 0;
-        // the <div class="md"> case is when the body contains a table or code block first
-        if (!blocks.get(0).equals("<div class=\"md\">")) {
+        // In the Discover list we only show a short preview: the first text block. Rendering the
+        // remaining blocks (horizontal rules, link lists, tables and other sidebar content) caused
+        // large amounts of empty/dead space for subreddits with rich descriptions such as
+        // r/Deltarune, so the overflow is intentionally skipped here.
+        // The <div class="md"> case is when the description leads with a table or code block.
+        if (!blocks.isEmpty() && !blocks.get(0).equals("<div class=\"md\">")) {
             firstTextView.setVisibility(View.VISIBLE);
             firstTextView.setTextHtml(blocks.get(0), subredditName);
-            startIndex = 1;
         } else {
             firstTextView.setText("");
             firstTextView.setVisibility(View.GONE);
         }
 
-        if (blocks.size() > 1) {
-            if (startIndex == 0) {
-                commentOverflow.setViews(blocks, subredditName);
-            } else {
-                commentOverflow.setViews(blocks.subList(startIndex, blocks.size()), subredditName);
-            }
-        } else {
-            commentOverflow.removeAllViews();
-        }
+        commentOverflow.removeAllViews();
+        commentOverflow.setVisibility(View.GONE);
     }
 }

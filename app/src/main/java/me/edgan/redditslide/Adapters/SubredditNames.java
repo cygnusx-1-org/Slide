@@ -10,8 +10,10 @@ import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 
+import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Subreddit;
 import net.dean.jraw.paginators.Paginator;
+import net.dean.jraw.paginators.SubredditPaginator;
 import net.dean.jraw.paginators.SubredditSearchPaginator;
 import net.dean.jraw.paginators.SubredditStream;
 
@@ -35,6 +37,8 @@ public class SubredditNames {
     public boolean loading;
     public SubredditListView parent;
     private Paginator<Subreddit> paginator;
+    private SubredditPaginator trendingPaginator;
+    private LinkedHashSet<String> trendingSeen;
     Context c;
 
     public SubredditNames(String where, Context c, SubredditListView parent) {
@@ -112,12 +116,45 @@ public class SubredditNames {
             List<Subreddit> things = new ArrayList<>();
             try {
                 if (subredditPaginators[0].equalsIgnoreCase("trending")) {
-                    List<String> trending = Authentication.reddit.getTrendingSubreddits();
-
-                    for (String s : trending) {
-                        things.add(Authentication.reddit.getSubreddit(s));
+                    // Reddit no longer maintains /r/trendingsubreddits, so derive a live
+                    // "trending" list from /r/all instead: walk the hot feed and collect the
+                    // subreddits the posts belong to, deduped in order of first appearance.
+                    // Only a batch is resolved per call so the list paginates on scroll and we
+                    // avoid resolving (one API call each) hundreds of subreddits up front.
+                    stillShow = true;
+                    if (reset || trendingPaginator == null) {
+                        trendingPaginator = new SubredditPaginator(Authentication.reddit, "all");
+                        trendingPaginator.setLimit(Constants.DEFAULT_PAGINATOR_LIMIT);
+                        trendingSeen = new LinkedHashSet<>();
                     }
-                    nomore = true;
+
+                    try {
+                        int added = 0;
+                        while (added < Constants.TRENDING_BATCH_SIZE
+                                && trendingPaginator.hasNext()) {
+                            for (Submission s : trendingPaginator.next()) {
+                                String name = s.getSubredditName();
+                                if (name == null || name.isEmpty()) continue;
+                                // already shown in a previous batch
+                                if (!trendingSeen.add(name)) continue;
+                                try {
+                                    things.add(Authentication.reddit.getSubreddit(name));
+                                    added++;
+                                } catch (Exception e) {
+                                    LogUtil.e(e, "SubredditNames trending: failed /r/" + name);
+                                }
+                                if (added >= Constants.TRENDING_BATCH_SIZE) break;
+                            }
+                        }
+                        if (!trendingPaginator.hasNext()) {
+                            nomore = true;
+                        }
+                    } catch (Exception e) {
+                        LogUtil.e(e, "SubredditNames.doInBackground trending failed");
+                        if (e.getMessage() != null && e.getMessage().contains("Forbidden")) {
+                            Reddit.authentication.updateToken(context);
+                        }
+                    }
                 } else if (subredditPaginators[0].equalsIgnoreCase("popular")) {
                     stillShow = true;
                     if (reset || paginator == null) {
