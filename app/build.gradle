@@ -49,7 +49,7 @@ android {
         multiDexEnabled true
         targetSdk 36
         vectorDrawables.useSupportLibrary true
-        versionCode 758
+        versionCode 759
         versionName androidGitVersion.name()
     }
 

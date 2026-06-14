@@ -4,6 +4,14 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.5.9 / 2026-6-13
+============
+* Implemented Feature Request: Update Discover Section #67
+* Fixed theme colors of various dialogs and snackbars
+* Fixed navigation bar scrim flickering/transparency under edge-to-edge
+* Enabled predictive back
+* Fixed Images continue to load when Data saving has been set to "Don't load any images" #287
+
 7.5.8 / 2026-6-10
 ============
 * The new default is the RedReader client ID. 
