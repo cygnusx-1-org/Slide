@@ -8,14 +8,13 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AlertDialog;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Synccit.MySynccitReadTask;
 import me.edgan.redditslide.Synccit.MySynccitUpdateTask;
 import me.edgan.redditslide.Synccit.SynccitRead;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 
 import java.util.Collections;
@@ -85,12 +84,13 @@ public class SettingsSynccit extends BaseActivityAnim {
                             @Override
                             public void onClick(View v) {
                                 final Dialog d =
-                                        new MaterialDialog.Builder(SettingsSynccit.this)
+                                        new MaterialProgressDialog.Builder(SettingsSynccit.this)
                                                 .title(R.string.settings_synccit_authenticate)
                                                 .progress(true, 100)
                                                 .content(R.string.misc_please_wait)
                                                 .cancelable(false)
-                                                .show();
+                                                .show()
+                                                .getDialog();
                                 new MySynccitUpdateTask().execute("16noez");
                                 SettingValues.synccitName = name.getText().toString();
                                 SettingValues.synccitAuth = auth.getText().toString();

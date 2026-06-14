@@ -43,8 +43,6 @@ import androidx.browser.customtabs.CustomTabsService;
 import androidx.webkit.WebViewCompat;
 import androidx.webkit.WebViewFeature;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.CaseInsensitiveArrayList;
 import me.edgan.redditslide.Constants;
@@ -54,6 +52,7 @@ import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Visuals.GetClosestColor;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 
 import net.dean.jraw.http.NetworkException;
@@ -699,7 +698,7 @@ public class Login extends BaseActivityAnim {
         private static final String LOGIN_TAG = "Log into Reddit";
         private final OAuthHelper mOAuthHelper;
         private final Credentials mCredentials;
-        private MaterialDialog mMaterialDialog;
+        private MaterialProgressDialog mMaterialDialog;
 
         public UserChallengeTask(OAuthHelper oAuthHelper, Credentials credentials) {
             Log.v(LOGIN_TAG, "UserChallengeTask created");
@@ -711,8 +710,8 @@ public class Login extends BaseActivityAnim {
         protected void onPreExecute() {
             Log.v(LOGIN_TAG, "UserChallengeTask starting OAuth exchange");
             // Show a dialog to indicate progress
-            MaterialDialog.Builder builder =
-                    new MaterialDialog.Builder(Login.this)
+            MaterialProgressDialog.Builder builder =
+                    new MaterialProgressDialog.Builder(Login.this)
                             .title(R.string.login_authenticating)
                             .progress(true, 0)
                             .content(R.string.misc_please_wait)
@@ -795,12 +794,13 @@ public class Login extends BaseActivityAnim {
 
                 UserSubscriptions.switchAccounts();
                 d =
-                        new MaterialDialog.Builder(Login.this)
+                        new MaterialProgressDialog.Builder(Login.this)
                                 .cancelable(false)
                                 .title(R.string.login_starting)
                                 .progress(true, 0)
                                 .content(R.string.login_starting_desc)
-                                .build();
+                                .build()
+                                .getDialog();
                 d.show();
 
                 UserSubscriptions.syncSubredditsGetObjectAsync(Login.this);

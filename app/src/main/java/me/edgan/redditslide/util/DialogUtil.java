@@ -13,7 +13,9 @@ import me.edgan.redditslide.R;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
+import android.util.TypedValue;
 
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.Palette;
@@ -94,6 +96,25 @@ public class DialogUtil {
                 // Apply the drawable to the dialog window
                 dialog.getWindow().setBackgroundDrawable(drawable);
             }
+        }
+    }
+
+    /**
+     * Matches an AlertDialog's window (and therefore its button bar) to the app's themed
+     * card_background color. AppCompat dialogs otherwise keep a gray default background that
+     * clashes with the dark/black card content Slide uses, leaving a gray panel behind the
+     * dialog buttons. Call before dialog.show() to avoid a visual flash.
+     *
+     * @param context Context whose theme defines card_background
+     * @param dialog The AlertDialog to recolor
+     */
+    public static void matchDialogToCardBackground(Context context, AlertDialog dialog) {
+        if (dialog == null || dialog.getWindow() == null) {
+            return;
+        }
+        TypedValue cardBackground = new TypedValue();
+        if (context.getTheme().resolveAttribute(R.attr.card_background, cardBackground, true)) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(cardBackground.data));
         }
     }
 }

@@ -37,10 +37,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.rey.material.widget.Slider;
@@ -93,9 +92,11 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.handler.ToolbarScrollHideHandler;
 import me.edgan.redditslide.ui.settings.SettingsSubAdapter;
 import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LinkUtil;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
@@ -341,12 +342,19 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            final MaterialDialog replyDialog =
-                                    new MaterialDialog.Builder(getActivity())
-                                            .customView(R.layout.edit_comment, false)
-                                            .cancelable(false)
-                                            .build();
-                            final View replyView = replyDialog.getCustomView();
+                            final View replyView =
+                                    LayoutInflater.from(
+                                                    new ContextThemeWrapper(
+                                                            getActivity(),
+                                                            new ColorPreferences(getActivity())
+                                                                    .getFontStyle()
+                                                                    .getBaseId()))
+                                            .inflate(R.layout.edit_comment, null);
+                            final AlertDialog replyDialog =
+                                    new MaterialAlertDialogBuilder(replyView.getContext())
+                                            .setView(replyView)
+                                            .setCancelable(false)
+                                            .create();
 
                             // Make the account selector visible
                             replyView.findViewById(R.id.profile).setVisibility(View.VISIBLE);
@@ -410,28 +418,24 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                     new ArrayList<>(accounts.keySet());
                                             final int i = keys.indexOf(changedProfile[0]);
 
-                                            MaterialDialog.Builder builder =
-                                                    new MaterialDialog.Builder(getContext());
-                                            builder.title(
+                                            MaterialAlertDialogBuilder builder =
+                                                    new MaterialAlertDialogBuilder(
+                                                            new ContextThemeWrapper(
+                                                                    getContext(),
+                                                                    new ColorPreferences(
+                                                                                    getContext())
+                                                                            .getFontStyle()
+                                                                            .getBaseId()));
+                                            builder.setTitle(
                                                     getString(R.string.replies_switch_accounts));
-                                            builder.items(keys.toArray(new String[0]));
-                                            builder.itemsCallbackSingleChoice(
+                                            builder.setSingleChoiceItems(
+                                                    keys.toArray(new String[0]),
                                                     i,
-                                                    new MaterialDialog.ListCallbackSingleChoice() {
-                                                        @Override
-                                                        public boolean onSelection(
-                                                                MaterialDialog dialog,
-                                                                View itemView,
-                                                                int which,
-                                                                CharSequence text) {
-                                                            changedProfile[0] = keys.get(which);
-                                                            profile.setText(
-                                                                    "/u/" + changedProfile[0]);
-                                                            return true;
-                                                        }
+                                                    (dialog, which) -> {
+                                                        changedProfile[0] = keys.get(which);
+                                                        profile.setText("/u/" + changedProfile[0]);
                                                     });
-                                            builder.alwaysCallSingleChoiceCallback();
-                                            builder.negativeText(R.string.btn_cancel);
+                                            builder.setNegativeButton(R.string.btn_cancel, null);
                                             builder.show();
                                         }
                                     });
@@ -682,14 +686,21 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                                                     });
                                                                     landscape.setValue(600, false);
 
-                                                                    new AlertDialog.Builder(
-                                                                                    getActivity())
-                                                                            .setView(dialoglayout)
-                                                                            .setPositiveButton(
-                                                                                    R.string
-                                                                                            .btn_set,
-                                                                                    null)
-                                                                            .show();
+                                                                    final AlertDialog timeDialog =
+                                                                            new AlertDialog.Builder(
+                                                                                            getActivity())
+                                                                                    .setView(
+                                                                                            dialoglayout)
+                                                                                    .setPositiveButton(
+                                                                                            R.string
+                                                                                                    .btn_set,
+                                                                                            null)
+                                                                                    .create();
+                                                                    DialogUtil
+                                                                            .matchDialogToCardBackground(
+                                                                                    getActivity(),
+                                                                                    timeDialog);
+                                                                    timeDialog.show();
                                                                     break;
                                                                 case 5:
                                                                     currentSort =
@@ -1347,12 +1358,14 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                             @Override
                                             public void onClick(View v) {
                                                 final Dialog d =
-                                                        new MaterialDialog.Builder(getActivity())
+                                                        new MaterialProgressDialog.Builder(
+                                                                        getActivity())
                                                                 .title(R.string.sidebar_findingmods)
                                                                 .cancelable(true)
                                                                 .content(R.string.misc_please_wait)
                                                                 .progress(true, 100)
-                                                                .show();
+                                                                .show()
+                                                                .getDialog();
                                                 new AsyncTask<Void, Void, Void>() {
                                                     ArrayList<UserRecord> mods;
 
@@ -1384,61 +1397,46 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                             names.add(rec.getFullName());
                                                         }
                                                         d.dismiss();
-                                                        new MaterialDialog.Builder(getActivity())
-                                                                .title(
+                                                        new MaterialAlertDialogBuilder(
+                                                                        new ContextThemeWrapper(
+                                                                                getActivity(),
+                                                                                new ColorPreferences(
+                                                                                                getActivity())
+                                                                                        .getFontStyle()
+                                                                                        .getBaseId()))
+                                                                .setTitle(
                                                                         getString(
                                                                                 R.string
                                                                                         .sidebar_submods,
                                                                                 subreddit))
-                                                                .items(names)
-                                                                .itemsCallback(
-                                                                        new MaterialDialog
-                                                                                .ListCallback() {
-                                                                            @Override
-                                                                            public void onSelection(
-                                                                                    MaterialDialog
-                                                                                            dialog,
-                                                                                    View itemView,
-                                                                                    int which,
-                                                                                    CharSequence
-                                                                                            text) {
-                                                                                Intent i =
-                                                                                        new Intent(
-                                                                                                getActivity(),
-                                                                                                Profile
-                                                                                                        .class);
-                                                                                i.putExtra(
-                                                                                        Profile
-                                                                                                .EXTRA_PROFILE,
-                                                                                        names.get(
-                                                                                                which));
-                                                                                startActivity(i);
-                                                                            }
+                                                                .setItems(
+                                                                        names.toArray(
+                                                                                new CharSequence[0]),
+                                                                        (dialog, which) -> {
+                                                                            Intent i =
+                                                                                    new Intent(
+                                                                                            getActivity(),
+                                                                                            Profile
+                                                                                                    .class);
+                                                                            i.putExtra(
+                                                                                    Profile
+                                                                                            .EXTRA_PROFILE,
+                                                                                    names.get(which));
+                                                                            startActivity(i);
                                                                         })
-                                                                .positiveText(R.string.btn_message)
-                                                                .onPositive(
-                                                                        new MaterialDialog
-                                                                                .SingleButtonCallback() {
-                                                                            @Override
-                                                                            public void onClick(
-                                                                                    @NonNull
-                                                                                            MaterialDialog
-                                                                                                    dialog,
-                                                                                    @NonNull
-                                                                                            DialogAction
-                                                                                                    which) {
-                                                                                Intent i =
-                                                                                        new Intent(
-                                                                                                getActivity(),
-                                                                                                SendMessage
-                                                                                                        .class);
-                                                                                i.putExtra(
-                                                                                        SendMessage
-                                                                                                .EXTRA_NAME,
-                                                                                        "/r/"
-                                                                                                + subreddit);
-                                                                                startActivity(i);
-                                                                            }
+                                                                .setPositiveButton(
+                                                                        R.string.btn_message,
+                                                                        (dialog, which) -> {
+                                                                            Intent i =
+                                                                                    new Intent(
+                                                                                            getActivity(),
+                                                                                            SendMessage
+                                                                                                    .class);
+                                                                            i.putExtra(
+                                                                                    SendMessage
+                                                                                            .EXTRA_NAME,
+                                                                                    "/r/" + subreddit);
+                                                                            startActivity(i);
                                                                         })
                                                                 .show();
                                                     }
@@ -1487,23 +1485,30 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
 
                                                 @Override
                                                 protected void onPostExecute(Void aVoid) {
-                                                    new MaterialDialog.Builder(getContext())
-                                                            .title(
+                                                    new MaterialAlertDialogBuilder(
+                                                                    new ContextThemeWrapper(
+                                                                            getContext(),
+                                                                            new ColorPreferences(
+                                                                                            getContext())
+                                                                                    .getFontStyle()
+                                                                                    .getBaseId()))
+                                                            .setTitle(
                                                                     "Add /r/"
                                                                             + baseSub
                                                                                     .getDisplayName()
                                                                             + " to")
-                                                            .items(multis.keySet())
-                                                            .itemsCallback(
-                                                                    new MaterialDialog
-                                                                            .ListCallback() {
+                                                            .setItems(
+                                                                    multis.keySet()
+                                                                            .toArray(
+                                                                                    new CharSequence
+                                                                                            [0]),
+                                                                    new DialogInterface
+                                                                            .OnClickListener() {
                                                                         @Override
-                                                                        public void onSelection(
-                                                                                MaterialDialog
+                                                                        public void onClick(
+                                                                                DialogInterface
                                                                                         dialog,
-                                                                                View itemView,
-                                                                                final int which,
-                                                                                CharSequence text) {
+                                                                                final int which) {
                                                                             new AsyncTask<
                                                                                     Void,
                                                                                     Void,
@@ -1935,10 +1940,13 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                         sidebar.findViewById(R.id.active_users).setVisibility(View.VISIBLE);
                     }
 
-                    new AlertDialog.Builder(getContext())
-                            .setPositiveButton(R.string.btn_close, null)
-                            .setView(sidebar)
-                            .show();
+                    final AlertDialog sidebarDialog =
+                            new AlertDialog.Builder(getContext())
+                                    .setPositiveButton(R.string.btn_close, null)
+                                    .setView(sidebar)
+                                    .create();
+                    DialogUtil.matchDialogToCardBackground(getContext(), sidebarDialog);
+                    sidebarDialog.show();
                 } catch (NullPointerException e) { // activity has been killed
                 }
             }
@@ -1962,12 +1970,13 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
         @Override
         protected void onPreExecute() {
             d =
-                    new MaterialDialog.Builder(getActivity())
+                    new MaterialProgressDialog.Builder(getActivity())
                             .title(R.string.subreddit_sidebar_progress)
                             .progress(true, 100)
                             .content(R.string.misc_please_wait)
                             .cancelable(false)
-                            .show();
+                            .show()
+                            .getDialog();
         }
     }
 
@@ -2316,27 +2325,31 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
 
             Resources res = requireActivity().getBaseContext().getResources();
 
-            new AlertDialog.Builder(requireActivity())
-                    .setTitle(R.string.sorting_choose)
-                    .setSingleChoiceItems(
-                            new String[] {
-                                res.getString(R.string.sorting_best),
-                                res.getString(R.string.sorting_top),
-                                res.getString(R.string.sorting_new),
-                                res.getString(R.string.sorting_controversial),
-                                res.getString(R.string.sorting_old),
-                                res.getString(R.string.sorting_ama)
-                            },
-                            i,
-                            l2)
-                    .setPositiveButton(R.string.btn_ok, (dialog, which) -> reloadSubs())
-                    .setNeutralButton(
-                            getString(R.string.sorting_defaultfor, subreddit),
-                            (dialog, which) -> {
-                                SettingValues.setDefaultCommentSorting(commentSorting, subreddit);
-                                reloadSubs();
-                            })
-                    .show();
+            final AlertDialog sortDialog =
+                    new AlertDialog.Builder(requireActivity())
+                            .setTitle(R.string.sorting_choose)
+                            .setSingleChoiceItems(
+                                    new String[] {
+                                        res.getString(R.string.sorting_best),
+                                        res.getString(R.string.sorting_top),
+                                        res.getString(R.string.sorting_new),
+                                        res.getString(R.string.sorting_controversial),
+                                        res.getString(R.string.sorting_old),
+                                        res.getString(R.string.sorting_ama)
+                                    },
+                                    i,
+                                    l2)
+                            .setPositiveButton(R.string.btn_ok, (dialog, which) -> reloadSubs())
+                            .setNeutralButton(
+                                    getString(R.string.sorting_defaultfor, subreddit),
+                                    (dialog, which) -> {
+                                        SettingValues.setDefaultCommentSorting(
+                                                commentSorting, subreddit);
+                                        reloadSubs();
+                                    })
+                            .create();
+            DialogUtil.matchDialogToCardBackground(requireActivity(), sortDialog);
+            sortDialog.show();
         }
     }
 

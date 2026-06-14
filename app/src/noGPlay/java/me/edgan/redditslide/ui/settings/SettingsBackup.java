@@ -9,13 +9,13 @@ import android.provider.DocumentsContract;
 import android.util.Log;
 
 import androidx.appcompat.app.AlertDialog;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.snackbar.Snackbar;
 import com.jakewharton.processphoenix.ProcessPhoenix;
 
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.StorageUtil;
 import me.edgan.redditslide.util.MiscUtil;
 
@@ -45,7 +45,7 @@ public class SettingsBackup extends BaseActivityAnim {
     private static final int RC_CREATE_DOCUMENT = 103;
 
     // Progress dialog
-    private MaterialDialog progress;
+    private MaterialProgressDialog progress;
 
     // We’ll store the final URI of the newly created local backup file so we can offer to "View" it.
     private Uri localBackupFileUri = null;
@@ -105,7 +105,7 @@ public class SettingsBackup extends BaseActivityAnim {
     /** Performs the actual local backup writing to the user-chosen file URI. */
     private void backupToFile(Uri fileUri) {
         progress =
-                new MaterialDialog.Builder(SettingsBackup.this)
+                new MaterialProgressDialog.Builder(SettingsBackup.this)
                         .title(R.string.backup_backing_up)
                         .content(R.string.misc_please_wait)
                         .cancelable(false)
@@ -285,7 +285,7 @@ public class SettingsBackup extends BaseActivityAnim {
 
             // Start async restore
             progress =
-                    new MaterialDialog.Builder(this)
+                    new MaterialProgressDialog.Builder(this)
                             .title(R.string.backup_restoring)
                             .content(R.string.misc_please_wait)
                             .cancelable(false)

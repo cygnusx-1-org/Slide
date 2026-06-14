@@ -23,6 +23,7 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.text.style.TypefaceSpan;
 import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -37,9 +38,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentManager;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.bottomsheet.BottomSheet;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import me.edgan.redditslide.ActionStates;
@@ -56,14 +56,18 @@ import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.UserTags;
 import me.edgan.redditslide.Views.DoEditorActions;
 import me.edgan.redditslide.Views.RoundedBackgroundSpan;
+import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.ClipboardUtil;
 import me.edgan.redditslide.util.CompatUtil;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.DisplayUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LinkUtil;
+import me.edgan.redditslide.util.MaterialInputDialog;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
@@ -202,20 +206,22 @@ public class CommentAdapterHelper {
                                 break;
                             case 16:
                                 // report
-                                final MaterialDialog reportDialog =
-                                        new MaterialDialog.Builder(mContext)
-                                                .customView(R.layout.report_dialog, true)
-                                                .title(R.string.report_comment)
-                                                .positiveText(R.string.btn_report)
-                                                .negativeText(R.string.btn_cancel)
-                                                .onPositive(
-                                                        new MaterialDialog.SingleButtonCallback() {
-                                                            @Override
-                                                            public void onClick(
-                                                                    MaterialDialog dialog,
-                                                                    DialogAction which) {
+                                final Context contextThemeWrapper =
+        new ContextThemeWrapper(mContext, new ColorPreferences(mContext).getFontStyle().getBaseId());
+final View reportView =
+        LayoutInflater.from(contextThemeWrapper).inflate(R.layout.report_dialog, null);
+final AlertDialog reportDialog =
+        new MaterialAlertDialogBuilder(contextThemeWrapper)
+                .setView(reportView)
+                .setTitle(R.string.report_comment)
+                .setNegativeButton(R.string.btn_cancel, null)
+                .setPositiveButton(
+                        R.string.btn_report,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
                                                                 RadioGroup reasonGroup =
-                                                                        dialog.getCustomView()
+                                                                        reportView
                                                                                 .findViewById(
                                                                                         R.id
                                                                                                 .report_reasons);
@@ -225,7 +231,7 @@ public class CommentAdapterHelper {
                                                                         == R.id.report_other) {
                                                                     reportReason =
                                                                             ((EditText)
-                                                                                            dialog.getCustomView()
+                                                                                            reportView
                                                                                                     .findViewById(
                                                                                                             R
                                                                                                                     .id
@@ -248,11 +254,10 @@ public class CommentAdapterHelper {
                                                                         .execute(reportReason);
                                                             }
                                                         })
-                                                .build();
+                                                .create();
 
                                 final RadioGroup reasonGroup =
-                                        reportDialog
-                                                .getCustomView()
+                                        reportView
                                                 .findViewById(R.id.report_reasons);
 
                                 reasonGroup.setOnCheckedChangeListener(
@@ -261,13 +266,11 @@ public class CommentAdapterHelper {
                                             public void onCheckedChanged(
                                                     RadioGroup group, int checkedId) {
                                                 if (checkedId == R.id.report_other)
-                                                    reportDialog
-                                                            .getCustomView()
+                                                    reportView
                                                             .findViewById(R.id.input_report_reason)
                                                             .setVisibility(View.VISIBLE);
                                                 else
-                                                    reportDialog
-                                                            .getCustomView()
+                                                    reportView
                                                             .findViewById(R.id.input_report_reason)
                                                             .setVisibility(View.GONE);
                                             }
@@ -290,8 +293,7 @@ public class CommentAdapterHelper {
 
                                     @Override
                                     protected void onPostExecute(Ruleset rules) {
-                                        reportDialog
-                                                .getCustomView()
+                                        reportView
                                                 .findViewById(R.id.report_loading)
                                                 .setVisibility(View.GONE);
                                         if (rules == null) {
@@ -352,7 +354,8 @@ public class CommentAdapterHelper {
                                 int sixteen = DisplayUtil.dpToPxVertical(24);
                                 showText.setPadding(sixteen, 0, sixteen, 0);
 
-                                new AlertDialog.Builder(mContext)
+                                final AlertDialog copyDialog =
+                                        new AlertDialog.Builder(mContext)
                                         .setView(showText)
                                         .setTitle("Select text to copy")
                                         .setCancelable(true)
@@ -394,7 +397,9 @@ public class CommentAdapterHelper {
                                                                     Toast.LENGTH_SHORT)
                                                             .show();
                                                 })
-                                        .show();
+                                        .create();
+                                DialogUtil.matchDialogToCardBackground(mContext, copyDialog);
+                                copyDialog.show();
                                 break;
                             case 4:
                                 // Share comment
@@ -550,11 +555,12 @@ public class CommentAdapterHelper {
             @Override
             public void onPreExecute() {
                 d =
-                        new MaterialDialog.Builder(mContext)
+                        new MaterialProgressDialog.Builder(mContext)
                                 .progress(true, 100)
                                 .content(R.string.misc_please_wait)
                                 .title(R.string.profile_category_loading)
-                                .show();
+                                .show()
+                                .getDialog();
             }
 
             @Override
@@ -578,36 +584,40 @@ public class CommentAdapterHelper {
             @Override
             public void onPostExecute(final List<String> data) {
                 try {
-                    new MaterialDialog.Builder(mContext)
-                            .items(data)
-                            .title(R.string.sidebar_select_flair)
-                            .itemsCallback(
-                                    new MaterialDialog.ListCallback() {
+                    final View itemView =
+                            ((android.app.Activity) mContext)
+                                    .findViewById(android.R.id.content);
+                    new MaterialAlertDialogBuilder(
+                                    new ContextThemeWrapper(
+                                            mContext,
+                                            new ColorPreferences(mContext)
+                                                    .getFontStyle()
+                                                    .getBaseId()))
+                            .setTitle(R.string.sidebar_select_flair)
+                            .setItems(
+                                    data.toArray(new CharSequence[0]),
+                                    new DialogInterface.OnClickListener() {
                                         @Override
-                                        public void onSelection(
-                                                MaterialDialog dialog,
-                                                final View itemView,
-                                                int which,
-                                                CharSequence text) {
+                                        public void onClick(
+                                                DialogInterface listDialog, int which) {
                                             final String t = data.get(which);
                                             if (which == data.size() - 1) {
-                                                new MaterialDialog.Builder(mContext)
+                                                new MaterialInputDialog.Builder(mContext)
                                                         .title(R.string.category_set_name)
                                                         .input(
                                                                 mContext.getString(
                                                                         R.string
                                                                                 .category_set_name_hint),
                                                                 null,
-                                                                false,
-                                                                (dialog1, input) -> {})
+                                                                null)
                                                         .positiveText(R.string.btn_set)
                                                         .onPositive(
-                                                                new MaterialDialog
-                                                                        .SingleButtonCallback() {
+                                                                new MaterialInputDialog
+                                                                        .ButtonCallback() {
                                                                     @Override
                                                                     public void onClick(
-                                                                            MaterialDialog dialog,
-                                                                            DialogAction which) {
+                                                                            MaterialInputDialog
+                                                                                    dialog) {
                                                                         final String flair =
                                                                                 dialog.getInputEditText()
                                                                                         .getText()
@@ -1388,29 +1398,23 @@ public class CommentAdapterHelper {
             final CommentViewHolder holder,
             final Comment comment,
             final CommentAdapter adapter) {
-        new MaterialDialog.Builder(mContext)
+        new MaterialInputDialog.Builder(mContext)
                 .title(R.string.mod_remove_title)
                 .positiveText(R.string.btn_remove)
-                .alwaysCallInputCallback()
+                .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
                 .input(
                         mContext.getString(R.string.mod_remove_hint),
                         mContext.getString(R.string.mod_remove_template),
-                        false,
-                        (dialog, input) -> {})
-                .inputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
+                        null)
                 .neutralText(R.string.mod_remove_insert_draft)
                 .onPositive(
-                        new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(final MaterialDialog dialog, DialogAction which) {
+                        dialog ->
                                 removeCommentReason(
                                         comment,
                                         mContext,
                                         holder,
                                         adapter,
-                                        dialog.getInputEditText().getText().toString());
-                            }
-                        })
+                                        dialog.getInputEditText().getText().toString()))
                 .negativeText(R.string.btn_cancel)
                 .show();
     }

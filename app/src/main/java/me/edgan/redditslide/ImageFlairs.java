@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiskCache;
@@ -24,6 +23,7 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 import me.edgan.redditslide.Activities.SendMessage;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.OkHttpImageDownloader;
 
 import net.dean.jraw.http.HttpRequest;
@@ -94,12 +94,13 @@ public class ImageFlairs {
             @Override
             protected void onPreExecute() {
                 d =
-                        new MaterialDialog.Builder(context)
+                        new MaterialProgressDialog.Builder(context)
                                 .progress(true, 100)
                                 .content(R.string.misc_please_wait)
                                 .title("Syncing flairs...")
                                 .cancelable(false)
-                                .show();
+                                .show()
+                                .getDialog();
             }
         }.execute();
     }

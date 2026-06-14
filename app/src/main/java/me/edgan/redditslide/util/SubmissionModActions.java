@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.text.InputType;
 import android.text.SpannableStringBuilder;
 import android.text.style.AbsoluteSizeSpan;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -20,9 +21,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.bottomsheet.BottomSheet;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import net.dean.jraw.ApiException;
@@ -51,6 +51,7 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionCache;
 import me.edgan.redditslide.Toolbox.ToolboxUI;
+import me.edgan.redditslide.Visuals.ColorPreferences;
 
 /**
  * Handles Moderation actions for Submission views.
@@ -322,31 +323,19 @@ public class SubmissionModActions {
             final RecyclerView recyclerview,
             final SubmissionViewHolder holder) {
         reason = "";
-        new MaterialDialog.Builder(mContext)
+        new MaterialInputDialog.Builder(mContext)
                 .title(R.string.mod_remove_title)
                 .positiveText(R.string.btn_remove)
-                .alwaysCallInputCallback()
+                .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
                 .input(
                         mContext.getString(R.string.mod_remove_hint),
                         mContext.getString(R.string.mod_remove_template),
-                        false,
-                        new MaterialDialog.InputCallback() {
-                            @Override
-                            public void onInput(MaterialDialog dialog, CharSequence input) {
-                                reason = input.toString();
-                            }
-                        })
-                .inputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
+                        (dialog, input) -> reason = input.toString())
                 .neutralText(R.string.mod_remove_insert_draft)
                 .onPositive(
-                        new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(final MaterialDialog dialog, DialogAction which) {
-
+                        dialog ->
                                 removeSubmissionReason(
-                                        submission, mContext, posts, reason, holder, recyclerview);
-                            }
-                        })
+                                        submission, mContext, posts, reason, holder, recyclerview))
                 .negativeText(R.string.btn_cancel)
                 .onNegative(null)
                 .show();
@@ -532,23 +521,19 @@ public class SubmissionModActions {
             ArrayList<String> data,
             final ArrayList<FlairTemplate> flair,
             final SubmissionViewHolder holder) {
-        new MaterialDialog.Builder(mContext)
-                .items(data)
-                .title(R.string.sidebar_select_flair)
-                .itemsCallback(
-                        new MaterialDialog.ListCallback() {
-                            @Override
-                            public void onSelection(
-                                    MaterialDialog dialog,
-                                    View itemView,
-                                    int which,
-                                    CharSequence text) {
-                                final FlairTemplate t = flair.get(which);
-                                if (t.isTextEditable()) {
-                                    showFlairEditDialog(mContext, submission, t, holder);
-                                } else {
-                                    setFlair(mContext, null, submission, t, holder);
-                                }
+        new MaterialAlertDialogBuilder(
+                        new ContextThemeWrapper(
+                                mContext,
+                                new ColorPreferences(mContext).getFontStyle().getBaseId()))
+                .setTitle(R.string.sidebar_select_flair)
+                .setItems(
+                        data.toArray(new CharSequence[0]),
+                        (dialog, which) -> {
+                            final FlairTemplate t = flair.get(which);
+                            if (t.isTextEditable()) {
+                                showFlairEditDialog(mContext, submission, t, holder);
+                            } else {
+                                setFlair(mContext, null, submission, t, holder);
                             }
                         })
                 .show();
@@ -559,21 +544,14 @@ public class SubmissionModActions {
             final Submission submission,
             final FlairTemplate t,
             final SubmissionViewHolder holder) {
-        new MaterialDialog.Builder(mContext)
+        new MaterialInputDialog.Builder(mContext)
                 .title(R.string.sidebar_select_flair_text)
-                .input(
-                        mContext.getString(R.string.mod_flair_hint),
-                        t.getText(),
-                        true,
-                        (dialog, input) -> {})
+                .input(mContext.getString(R.string.mod_flair_hint), t.getText(), null)
                 .positiveText(R.string.btn_set)
                 .onPositive(
-                        new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(MaterialDialog dialog, DialogAction which) {
-                                final String flair = dialog.getInputEditText().getText().toString();
-                                setFlair(mContext, flair, submission, t, holder);
-                            }
+                        dialog -> {
+                            final String flair = dialog.getInputEditText().getText().toString();
+                            setFlair(mContext, flair, submission, t, holder);
                         })
                 .negativeText(R.string.btn_cancel)
                 .show();

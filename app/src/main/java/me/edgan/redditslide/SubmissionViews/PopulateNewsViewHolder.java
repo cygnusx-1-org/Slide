@@ -13,6 +13,8 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.text.SpannableStringBuilder;
 import android.text.style.AbsoluteSizeSpan;
+import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -28,9 +30,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.bottomsheet.BottomSheet;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import me.edgan.redditslide.ActionStates;
@@ -64,10 +65,12 @@ import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionCache;
 import me.edgan.redditslide.Views.CreateCardView;
+import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.ClipboardUtil;
 import me.edgan.redditslide.util.CompatUtil;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.DisplayUtil;
 import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.GifUtils;
@@ -878,7 +881,7 @@ public class PopulateNewsViewHolder {
                                                         new boolean[] {true, true})
                                                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                                     }
-                                    s.show();
+                                    LayoutUtils.showSnackbar(s);
                                 } else {
                                     ReadLater.setReadLater(submission, false);
                                     if (isReadLater || !Authentication.didOnline) {
@@ -923,7 +926,7 @@ public class PopulateNewsViewHolder {
                                                 view2.findViewById(
                                                         com.google.android.material.R.id
                                                                 .snackbar_text);
-                                        s2.show();
+                                        LayoutUtils.showSnackbar(s2);
                                     }
                                     OfflineSubreddit.newSubreddit(
                                                     CommentCacheAsync.SAVED_SUBMISSIONS)
@@ -937,20 +940,22 @@ public class PopulateNewsViewHolder {
                                         mContext);
                                 break;
                             case 12:
-                                final MaterialDialog reportDialog =
-                                        new MaterialDialog.Builder(mContext)
-                                                .customView(R.layout.report_dialog, true)
-                                                .title(R.string.report_post)
-                                                .positiveText(R.string.btn_report)
-                                                .negativeText(R.string.btn_cancel)
-                                                .onPositive(
-                                                        new MaterialDialog.SingleButtonCallback() {
-                                                            @Override
-                                                            public void onClick(
-                                                                    MaterialDialog dialog,
-                                                                    DialogAction which) {
+                                final Context contextThemeWrapper =
+        new ContextThemeWrapper(mContext, new ColorPreferences(mContext).getFontStyle().getBaseId());
+final View reportView =
+        LayoutInflater.from(contextThemeWrapper).inflate(R.layout.report_dialog, null);
+final AlertDialog reportDialog =
+        new MaterialAlertDialogBuilder(contextThemeWrapper)
+                .setView(reportView)
+                .setTitle(R.string.report_post)
+                .setNegativeButton(R.string.btn_cancel, null)
+                .setPositiveButton(
+                        R.string.btn_report,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
                                                                 RadioGroup reasonGroup =
-                                                                        dialog.getCustomView()
+                                                                        reportView
                                                                                 .findViewById(
                                                                                         R.id
                                                                                                 .report_reasons);
@@ -960,7 +965,7 @@ public class PopulateNewsViewHolder {
                                                                         == R.id.report_other) {
                                                                     reportReason =
                                                                             ((EditText)
-                                                                                            dialog.getCustomView()
+                                                                                            reportView
                                                                                                     .findViewById(
                                                                                                             R
                                                                                                                     .id
@@ -986,11 +991,10 @@ public class PopulateNewsViewHolder {
                                                                                 reportReason);
                                                             }
                                                         })
-                                                .build();
+                                                .create();
 
                                 final RadioGroup reasonGroup =
-                                        reportDialog
-                                                .getCustomView()
+                                        reportView
                                                 .findViewById(R.id.report_reasons);
 
                                 reasonGroup.setOnCheckedChangeListener(
@@ -999,13 +1003,11 @@ public class PopulateNewsViewHolder {
                                             public void onCheckedChanged(
                                                     RadioGroup group, int checkedId) {
                                                 if (checkedId == R.id.report_other)
-                                                    reportDialog
-                                                            .getCustomView()
+                                                    reportView
                                                             .findViewById(R.id.input_report_reason)
                                                             .setVisibility(View.VISIBLE);
                                                 else
-                                                    reportDialog
-                                                            .getCustomView()
+                                                    reportView
                                                             .findViewById(R.id.input_report_reason)
                                                             .setVisibility(View.GONE);
                                             }
@@ -1026,8 +1028,7 @@ public class PopulateNewsViewHolder {
 
                                     @Override
                                     protected void onPostExecute(Ruleset rules) {
-                                        reportDialog
-                                                .getCustomView()
+                                        reportView
                                                 .findViewById(R.id.report_loading)
                                                 .setVisibility(View.GONE);
                                         if (rules == null) {
@@ -1101,7 +1102,8 @@ public class PopulateNewsViewHolder {
                                 showText.setTextIsSelectable(true);
                                 int sixteen = DisplayUtil.dpToPxVertical(24);
                                 showText.setPadding(sixteen, 0, sixteen, 0);
-                                new AlertDialog.Builder(mContext)
+                                final AlertDialog copyDialog =
+                                        new AlertDialog.Builder(mContext)
                                         .setView(showText)
                                         .setTitle("Select text to copy")
                                         .setCancelable(true)
@@ -1155,7 +1157,9 @@ public class PopulateNewsViewHolder {
                                                                     Toast.LENGTH_SHORT)
                                                             .show();
                                                 })
-                                        .show();
+                                        .create();
+                                DialogUtil.matchDialogToCardBackground(mContext, copyDialog);
+                                copyDialog.show();
                                 break;
                         }
                     }

@@ -181,7 +181,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/profile_message"
-                        android:textColor="?attr/fontColor"
+                        android:textColor="?attr/colorAccent"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -207,7 +207,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/profile_friend"
-                        android:textColor="?attr/fontColor"
+                        android:textColor="?attr/colorAccent"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -232,7 +232,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/title_multireddits"
-                        android:textColor="?attr/fontColor"
+                        android:textColor="?attr/colorAccent"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -258,7 +258,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/theme_subreddit_color"
-                        android:textColor="?attr/fontColor"
+                        android:textColor="?attr/colorAccent"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -284,7 +284,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/profile_tag_user"
-                        android:textColor="?attr/fontColor"
+                        android:textColor="?attr/colorAccent"
                         android:textSize="16sp" />
                 </LinearLayout>
                 <LinearLayout
@@ -309,7 +309,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/profile_block_user"
-                            android:textColor="?attr/fontColor"
+                            android:textColor="?attr/colorAccent"
                             android:textSize="16sp" />
                 </LinearLayout>
             </LinearLayout>
@@ -354,6 +354,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_margin="8dp"
                     android:padding="8dp"
+                    android:textColor="?attr/colorAccent"
                     android:text="@string/btn_ok" />
                 <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/reset"
@@ -364,6 +365,7 @@
                         android:layout_alignParentBottom="true"
                         android:layout_margin="8dp"
                         android:padding="8dp"
+                        android:textColor="?attr/colorAccent"
                         android:text="@string/btn_reset_color" />
 
             </RelativeLayout>

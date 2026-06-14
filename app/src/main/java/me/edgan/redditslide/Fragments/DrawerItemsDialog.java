@@ -1,48 +1,36 @@
 package me.edgan.redditslide.Fragments;
 
-import android.os.Bundle;
+import android.content.Context;
+import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.ui.settings.SettingsThemeFragment;
 
-public class DrawerItemsDialog extends MaterialDialog {
-    public DrawerItemsDialog(final Builder builder) {
-        super(
-                builder.customView(R.layout.dialog_drawer_items, false)
-                        .title(R.string.settings_general_title_drawer_items)
-                        .positiveText(android.R.string.ok)
-                        .canceledOnTouchOutside(false)
-                        .onPositive(
-                                new SingleButtonCallback() {
-                                    @Override
-                                    public void onClick(
-                                            @NonNull MaterialDialog dialog,
-                                            @NonNull DialogAction which) {
-                                        if (SettingsThemeFragment.changed) {
-                                            SettingValues.prefs
-                                                    .edit()
-                                                    .putLong(
-                                                            SettingValues
-                                                                    .PREF_SELECTED_DRAWER_ITEMS,
-                                                            SettingValues.selectedDrawerItems)
-                                                    .apply();
-                                        }
-                                    }
-                                }));
-    }
+/**
+ * Dialog letting the user pick which items appear in the navigation drawer. Migrated from extending
+ * the deprecated afollestad {@code MaterialDialog} to a {@link MaterialAlertDialogBuilder}-backed
+ * helper.
+ */
+public class DrawerItemsDialog {
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    /** Builds and shows the drawer-items selection dialog. */
+    public static void show(final Context base) {
+        final Context contextThemeWrapper =
+                new ContextThemeWrapper(
+                        base, new ColorPreferences(base).getFontStyle().getBaseId());
+        final View view =
+                LayoutInflater.from(contextThemeWrapper)
+                        .inflate(R.layout.dialog_drawer_items, null);
 
         if (SettingValues.selectedDrawerItems == -1) {
             SettingValues.selectedDrawerItems = 0;
@@ -57,42 +45,53 @@ public class DrawerItemsDialog extends MaterialDialog {
                     .apply();
         }
 
-        setupViews();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        SettingValues.prefs
-                .edit()
-                .putLong(
-                        SettingValues.PREF_SELECTED_DRAWER_ITEMS, SettingValues.selectedDrawerItems)
-                .apply();
-    }
-
-    private void setupViews() {
         for (final SettingsDrawerEnum settingDrawerItem : SettingsDrawerEnum.values()) {
-            findViewById(settingDrawerItem.layoutId)
+            view.findViewById(settingDrawerItem.layoutId)
                     .setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    CheckBox checkBox =
-                                            (CheckBox) findViewById(settingDrawerItem.checkboxId);
-                                    if (checkBox.isChecked()) {
-                                        SettingValues.selectedDrawerItems -=
-                                                settingDrawerItem.value;
-                                    } else {
-                                        SettingValues.selectedDrawerItems +=
-                                                settingDrawerItem.value;
-                                    }
-                                    checkBox.setChecked(!checkBox.isChecked());
+                            v -> {
+                                CheckBox checkBox =
+                                        (CheckBox)
+                                                view.findViewById(settingDrawerItem.checkboxId);
+                                if (checkBox.isChecked()) {
+                                    SettingValues.selectedDrawerItems -= settingDrawerItem.value;
+                                } else {
+                                    SettingValues.selectedDrawerItems += settingDrawerItem.value;
                                 }
+                                checkBox.setChecked(!checkBox.isChecked());
                             });
             SettingsThemeFragment.changed = true;
-            ((CheckBox) findViewById(settingDrawerItem.checkboxId))
+            ((CheckBox) view.findViewById(settingDrawerItem.checkboxId))
                     .setChecked((SettingValues.selectedDrawerItems & settingDrawerItem.value) != 0);
         }
+
+        final AlertDialog dialog =
+                new MaterialAlertDialogBuilder(contextThemeWrapper)
+                        .setView(view)
+                        .setTitle(R.string.settings_general_title_drawer_items)
+                        .setPositiveButton(
+                                android.R.string.ok,
+                                (d, which) -> {
+                                    if (SettingsThemeFragment.changed) {
+                                        SettingValues.prefs
+                                                .edit()
+                                                .putLong(
+                                                        SettingValues.PREF_SELECTED_DRAWER_ITEMS,
+                                                        SettingValues.selectedDrawerItems)
+                                                .apply();
+                                    }
+                                })
+                        // Mirror the previous onStop() persistence.
+                        .setOnDismissListener(
+                                d ->
+                                        SettingValues.prefs
+                                                .edit()
+                                                .putLong(
+                                                        SettingValues.PREF_SELECTED_DRAWER_ITEMS,
+                                                        SettingValues.selectedDrawerItems)
+                                                .apply())
+                        .create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
     }
 
     public enum SettingsDrawerEnum {

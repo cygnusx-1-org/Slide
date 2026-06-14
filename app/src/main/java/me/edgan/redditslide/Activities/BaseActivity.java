@@ -326,7 +326,7 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
         int color =
                 mSystemBarColorSet
                         ? mSystemBarColor
-                        : resolveThemeColor(android.R.attr.statusBarColor);
+                        : opaqueOrBlack(resolveThemeColor(android.R.attr.statusBarColor));
         if (SettingValues.alwaysBlackStatusbar) {
             color = Color.BLACK;
         }
@@ -334,7 +334,18 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
         mNavBarScrim.setBackgroundColor(
                 SettingValues.colorNavBar
                         ? color
-                        : resolveThemeColor(android.R.attr.navigationBarColor));
+                        : opaqueOrBlack(resolveThemeColor(android.R.attr.navigationBarColor)));
+    }
+
+    /**
+     * The system bar scrims must be opaque so they hide the content behind them. Under edge-to-edge
+     * enforcement (API 35+) the framework default for android:navigationBarColor/statusBarColor is
+     * transparent, and our themes never override it, so resolveThemeColor() returns a fully
+     * transparent color. A transparent scrim paints nothing, which let the post list and FAB bleed
+     * through the navigation bar area and flicker. Fall back to black in that case.
+     */
+    private static int opaqueOrBlack(int color) {
+        return Color.alpha(color) == 0 ? Color.BLACK : color;
     }
 
     private int resolveThemeColor(int attr) {

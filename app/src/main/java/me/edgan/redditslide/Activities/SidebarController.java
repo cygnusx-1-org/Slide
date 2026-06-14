@@ -13,16 +13,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import net.dean.jraw.ApiException;
@@ -60,6 +58,8 @@ import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.ui.settings.SettingsSubAdapter;
 import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.MaterialInputDialog;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.SortingUtil;
@@ -274,12 +274,13 @@ public class SidebarController {
                             @Override
                             public void onClick(View v) {
                                 final Dialog d =
-                                    new MaterialDialog.Builder(mainActivity)
+                                    new MaterialProgressDialog.Builder(mainActivity)
                                         .title(R.string.sidebar_findingmods)
                                         .cancelable(true)
                                         .content(R.string.misc_please_wait)
                                         .progress(true, 100)
-                                        .show();
+                                        .show()
+                                        .getDialog();
                                 new AsyncTask<Void, Void, Void>() {
                                     ArrayList<UserRecord> mods;
 
@@ -308,27 +309,26 @@ public class SidebarController {
                                             names.add(rec.getFullName());
                                         }
                                         d.dismiss();
-                                        new MaterialDialog.Builder(mainActivity)
-                                            .title(mainActivity.getString(R.string.sidebar_submods, subreddit))
-                                            .items(names)
-                                            .itemsCallback(
-                                                new MaterialDialog.ListCallback() {
-                                                    @Override
-                                                    public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
-                                                        Intent i = new Intent(mainActivity, Profile.class);
-                                                        i.putExtra(Profile.EXTRA_PROFILE, names.get(which));
-                                                        mainActivity.startActivity(i);
-                                                    }
+                                        new MaterialAlertDialogBuilder(
+                                                        new ContextThemeWrapper(
+                                                                mainActivity,
+                                                                new ColorPreferences(mainActivity)
+                                                                        .getFontStyle()
+                                                                        .getBaseId()))
+                                            .setTitle(mainActivity.getString(R.string.sidebar_submods, subreddit))
+                                            .setItems(
+                                                names.toArray(new CharSequence[0]),
+                                                (dialog, which) -> {
+                                                    Intent i = new Intent(mainActivity, Profile.class);
+                                                    i.putExtra(Profile.EXTRA_PROFILE, names.get(which));
+                                                    mainActivity.startActivity(i);
                                                 })
-                                            .positiveText(R.string.btn_message)
-                                            .onPositive(
-                                                new MaterialDialog.SingleButtonCallback() {
-                                                    @Override
-                                                    public void onClick(@NonNull MaterialDialog  dialog, @NonNull DialogAction which) {
-                                                        Intent i = new Intent(mainActivity, SendMessage.class);
-                                                        i.putExtra(SendMessage.EXTRA_NAME, "/r/" + subreddit);
-                                                        mainActivity.startActivity(i);
-                                                    }
+                                            .setPositiveButton(
+                                                R.string.btn_message,
+                                                (dialog, which) -> {
+                                                    Intent i = new Intent(mainActivity, SendMessage.class);
+                                                    i.putExtra(SendMessage.EXTRA_NAME, "/r/" + subreddit);
+                                                    mainActivity.startActivity(i);
                                                 })
                                             .show();
                                     }
@@ -394,25 +394,28 @@ public class SidebarController {
                                         new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
-                                                new MaterialDialog.Builder(mainActivity)
-                                                    .items(flairText)
-                                                    .title(R.string.sidebar_select_flair)
-                                                    .itemsCallback(
-                                                        new MaterialDialog.ListCallback() {
+                                                new MaterialAlertDialogBuilder(
+                                                        new ContextThemeWrapper(
+                                                                mainActivity,
+                                                                new ColorPreferences(mainActivity).getFontStyle().getBaseId()))
+                                                    .setTitle(R.string.sidebar_select_flair)
+                                                    .setItems(
+                                                        flairText.toArray(new CharSequence[0]),
+                                                        new DialogInterface.OnClickListener() {
                                                             @Override
-                                                            public void onSelection(
-                                                                    MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                                                            public void onClick(
+                                                                    DialogInterface listDialog, int which) {
                                                                 final FlairTemplate t = flairs.get(which);
                                                                 if (t.isTextEditable()) {
-                                                                    new MaterialDialog.Builder(mainActivity)
+                                                                    new MaterialInputDialog.Builder(mainActivity)
                                                                         .title(R.string.sidebar_select_flair_text)
-                                                                        .input(mainActivity.getString(R.string.mod_flair_hint), t.getText(), true, (dialog1, input) -> {})
+                                                                        .input(mainActivity.getString(R.string.mod_flair_hint), t.getText(), null)
                                                                         .positiveText(R.string.btn_set)
                                                                         .onPositive(
-                                                                            new MaterialDialog.SingleButtonCallback() {
+                                                                            new MaterialInputDialog.ButtonCallback() {
                                                                                 @Override
                                                                                 public
-                                                                                void onClick(MaterialDialog dialog, DialogAction which) {
+                                                                                void onClick(MaterialInputDialog dialog) {
                                                                                     final String flair = dialog.getInputEditText().getText().toString();
                                                                                     new AsyncTask<Void, Void, Boolean>() {
                                                                                         @Override
@@ -681,13 +684,16 @@ public class SidebarController {
 
                                 @Override
                                 protected void onPostExecute(Void aVoid) {
-                                    new MaterialDialog.Builder(mainActivity)
-                                        .title(mainActivity.getString(R.string.multi_add_to, subreddit.getDisplayName()))
-                                        .items(multis.keySet())
-                                        .itemsCallback(
-                                            new MaterialDialog.ListCallback() {
+                                    new MaterialAlertDialogBuilder(
+                                            new ContextThemeWrapper(
+                                                    mainActivity,
+                                                    new ColorPreferences(mainActivity).getFontStyle().getBaseId()))
+                                        .setTitle(mainActivity.getString(R.string.multi_add_to, subreddit.getDisplayName()))
+                                        .setItems(
+                                            multis.keySet().toArray(new CharSequence[0]),
+                                            new DialogInterface.OnClickListener() {
                                                 @Override
-                                                public void onSelection(MaterialDialog dialog, View itemView, final int which, CharSequence text) {
+                                                public void onClick(DialogInterface dialog, final int which) {
                                                     new AsyncTask<Void, Void, Void>() {
                                                         @Override
                                                         protected Void doInBackground(Void... params) {
@@ -788,29 +794,19 @@ public class SidebarController {
                                             R.string.btn_ok,
                                             (dialog, which) -> {
                                                 final int[] selectedThreshold = {0}; // Default to index 0 ("1")
-                                                new MaterialDialog.Builder(mainActivity)
-                                                    .title(R.string.sub_post_notifs_threshold)
-                                                    .items(
+                                                new MaterialAlertDialogBuilder(
+                                                        new ContextThemeWrapper(
+                                                                mainActivity,
+                                                                new ColorPreferences(mainActivity).getFontStyle().getBaseId()))
+                                                    .setTitle(R.string.sub_post_notifs_threshold)
+                                                    .setSingleChoiceItems(
                                                         new String[] {
                                                             "1", "5", "10",
                                                             "20", "40", "50"
-                                                        }
-                                                    )
-                                                    .alwaysCallSingleChoiceCallback()
-                                                    .itemsCallbackSingleChoice(
+                                                        },
                                                         0,
-                                                        new MaterialDialog
-                                                                .ListCallbackSingleChoice() {
-                                                            @Override
-                                                            public boolean onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
-                                                                selectedThreshold[0] = which;
-                                                                return true;
-                                                            }
-                                                        }
-                                                    )
-                                                    .positiveText(R.string.btn_ok)
-                                                    .negativeText(R.string.btn_cancel)
-                                                    .onPositive((dialog1, which1) -> {
+                                                        (selDialog, selWhich) -> selectedThreshold[0] = selWhich)
+                                                    .setPositiveButton(R.string.btn_ok, (dialog1, which1) -> {
                                                         String[] thresholds = new String[] {
                                                             "1", "5", "10",
                                                             "20", "40", "50"
@@ -824,10 +820,10 @@ public class SidebarController {
                                                             StringUtil.arrayToString(subs)
                                                         ).commit();
                                                     })
-                                                    .onNegative((dialog1, which1) -> {
+                                                    .setNegativeButton(R.string.btn_cancel, (dialog1, which1) -> {
                                                         notifyStateCheckBox.setChecked(false);
                                                     })
-                                                    .cancelable(true)
+                                                    .setCancelable(true)
                                                     .show();
                                             })
                                         .setNegativeButton(R.string.btn_cancel, null)

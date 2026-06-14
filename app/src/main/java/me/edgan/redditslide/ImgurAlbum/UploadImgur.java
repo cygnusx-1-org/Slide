@@ -4,11 +4,10 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.util.ImgurUtils;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.ProgressRequestBody;
 
 import okhttp3.MediaType;
@@ -25,7 +24,7 @@ import java.io.IOException;
 
 public class UploadImgur extends AsyncTask<Uri, Integer, JSONObject> {
     public Context c;
-    public MaterialDialog dialog;
+    public MaterialProgressDialog dialog;
 
     @Override
     protected JSONObject doInBackground(Uri... sub) {

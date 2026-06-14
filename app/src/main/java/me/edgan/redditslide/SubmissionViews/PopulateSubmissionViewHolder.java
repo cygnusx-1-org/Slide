@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -22,10 +23,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.devspark.robototextview.RobotoTypefaces;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import me.edgan.redditslide.ActionStates;
@@ -44,6 +44,7 @@ import me.edgan.redditslide.SubmissionCache;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Views.CreateCardView;
 import me.edgan.redditslide.Views.DoEditorActions;
+import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.Vote;
@@ -51,6 +52,7 @@ import me.edgan.redditslide.util.AnimatorUtil;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.SubmissionBottomSheetActions;
 import me.edgan.redditslide.util.SubmissionModActions;
@@ -1055,27 +1057,14 @@ public class PopulateSubmissionViewHolder {
                                                                     break;
                                                                 case 3:
                                                                     {
-                                                                        new MaterialDialog.Builder(
-                                                                                        mContext)
-                                                                                .items(data)
-                                                                                .title(
-                                                                                        R.string
-                                                                                                .sidebar_select_flair)
-                                                                                .itemsCallback(
-                                                                                        new MaterialDialog
-                                                                                                .ListCallback() {
+                                                                        new MaterialAlertDialogBuilder(
+        new ContextThemeWrapper(mContext, new ColorPreferences(mContext).getFontStyle().getBaseId()))
+        .setTitle(R.string.sidebar_select_flair)
+        .setItems(
+                data.toArray(new CharSequence[0]),
+                new DialogInterface.OnClickListener() {
                                                                                             @Override
-                                                                                            public
-                                                                                            void
-                                                                                                    onSelection(
-                                                                                                            MaterialDialog
-                                                                                                                    dialog,
-                                                                                                            View
-                                                                                                                    itemView,
-                                                                                                            int
-                                                                                                                    which,
-                                                                                                            CharSequence
-                                                                                                                    text) {
+                                                                                            public void onClick(DialogInterface dialog, int which) {
                                                                                                 final
                                                                                                 FlairTemplate
                                                                                                         t =
@@ -1084,9 +1073,7 @@ public class PopulateSubmissionViewHolder {
                                                                                                                                 which);
                                                                                                 if (t
                                                                                                         .isTextEditable()) {
-                                                                                                    new MaterialDialog
-                                                                                                                    .Builder(
-                                                                                                                    mContext)
+                                                                                                    new MaterialInputDialog.Builder(mContext)
                                                                                                             .title(
                                                                                                                     R
                                                                                                                             .string
@@ -1097,26 +1084,15 @@ public class PopulateSubmissionViewHolder {
                                                                                                                                     R
                                                                                                                                             .string
                                                                                                                                             .mod_flair_hint),
-                                                                                                                    t
-                                                                                                                            .getText(),
-                                                                                                                    true,
-                                                                                                                    (dialog14,
-                                                                                                                            input) -> {})
+                                                                                                                    t.getText(), null)
                                                                                                             .positiveText(
                                                                                                                     R
                                                                                                                             .string
                                                                                                                             .btn_set)
                                                                                                             .onPositive(
-                                                                                                                    new MaterialDialog
-                                                                                                                            .SingleButtonCallback() {
+                                                                                                                    new MaterialInputDialog.ButtonCallback() {
                                                                                                                         @Override
-                                                                                                                        public
-                                                                                                                        void
-                                                                                                                                onClick(
-                                                                                                                                        MaterialDialog
-                                                                                                                                                dialog,
-                                                                                                                                        DialogAction
-                                                                                                                                                which) {
+                                                                                                                        public void onClick(MaterialInputDialog dialog) {
                                                                                                                             final
                                                                                                                             String
                                                                                                                                     flair =

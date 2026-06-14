@@ -13,6 +13,7 @@ import android.os.Looper;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -30,11 +31,10 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SwitchCompat;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -55,9 +55,11 @@ import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Views.DoEditorActions;
 import me.edgan.redditslide.Views.ImageInsertEditText;
+import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.util.HttpUtil;
 import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TitleExtractor;
@@ -312,11 +314,12 @@ public class Submit extends BaseActivity {
                                     @Override
                                     protected void onPreExecute() {
                                         d =
-                                                new MaterialDialog.Builder(Submit.this)
+                                                new MaterialProgressDialog.Builder(Submit.this)
                                                         .progress(true, 100)
                                                         .title(R.string.editor_finding_title)
                                                         .content(R.string.misc_please_wait)
-                                                        .show();
+                                                        .show()
+                                                        .getDialog();
                                     }
 
                                     @Override
@@ -433,12 +436,13 @@ public class Submit extends BaseActivity {
         String subreddit = ((EditText) findViewById(R.id.subreddittext)).getText().toString();
 
         final Dialog d =
-                new MaterialDialog.Builder(Submit.this)
+                new MaterialProgressDialog.Builder(Submit.this)
                         .title(R.string.submit_findingflairs)
                         .cancelable(true)
                         .content(R.string.misc_please_wait)
                         .progress(true, 100)
-                        .show();
+                        .show()
+                        .getDialog();
         new AsyncTask<Void, Void, JsonArray>() {
             ArrayList<JsonObject> flairs;
 
@@ -487,22 +491,20 @@ public class Submit extends BaseActivity {
 
                         ArrayList<String> allKeys = new ArrayList<>(flairs.keySet());
 
-                        new MaterialDialog.Builder(Submit.this)
-                                .title(getString(R.string.submit_flairchoices, subreddit))
-                                .items(allKeys)
-                                .itemsCallback(
-                                        new MaterialDialog.ListCallback() {
-                                            @Override
-                                            public void onSelection(
-                                                    MaterialDialog dialog,
-                                                    View itemView,
-                                                    int which,
-                                                    CharSequence text) {
-                                                RichFlair selected = flairs.get(allKeys.get(which));
-                                                selectedFlairID = selected.getId();
-                                                selectedFlairText = selected.getText();
-                                                refreshFlairState();
-                                            }
+                        new MaterialAlertDialogBuilder(
+                                        new ContextThemeWrapper(
+                                                Submit.this,
+                                                new ColorPreferences(Submit.this)
+                                                        .getFontStyle()
+                                                        .getBaseId()))
+                                .setTitle(getString(R.string.submit_flairchoices, subreddit))
+                                .setItems(
+                                        allKeys.toArray(new CharSequence[0]),
+                                        (dialog, which) -> {
+                                            RichFlair selected = flairs.get(allKeys.get(which));
+                                            selectedFlairID = selected.getId();
+                                            selectedFlairText = selected.getText();
+                                            refreshFlairState();
                                         })
                                 .show();
                     } catch (Exception e) {
@@ -899,35 +901,24 @@ public class Submit extends BaseActivity {
             this.uri = u;
 
             dialog =
-                    new MaterialDialog.Builder(c)
+                    new MaterialProgressDialog.Builder(c)
                             .title(c.getString(R.string.editor_uploading_image))
                             .progress(false, 100)
                             .cancelable(false)
-                            .autoDismiss(false)
                             .build();
 
-            new MaterialDialog.Builder(c)
-                    .title(c.getString(R.string.editor_upload_image_question))
-                    .cancelable(false)
-                    .autoDismiss(false)
-                    .positiveText(c.getString(R.string.btn_upload))
-                    .onPositive(
-                            new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(MaterialDialog d, DialogAction w) {
-                                    d.dismiss();
-                                    dialog.show();
-                                    execute(uri);
-                                }
+            new MaterialAlertDialogBuilder(
+                            new ContextThemeWrapper(
+                                    c, new ColorPreferences(c).getFontStyle().getBaseId()))
+                    .setTitle(c.getString(R.string.editor_upload_image_question))
+                    .setCancelable(false)
+                    .setPositiveButton(
+                            c.getString(R.string.btn_upload),
+                            (d, w) -> {
+                                dialog.show();
+                                execute(uri);
                             })
-                    .negativeText(c.getString(R.string.btn_cancel))
-                    .onNegative(
-                            new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(MaterialDialog d, DialogAction w) {
-                                    d.dismiss();
-                                }
-                            })
+                    .setNegativeButton(c.getString(R.string.btn_cancel), null)
                     .show();
         }
 
@@ -958,34 +949,24 @@ public class Submit extends BaseActivity {
             this.uris = u;
 
             dialog =
-                    new MaterialDialog.Builder(c)
+                    new MaterialProgressDialog.Builder(c)
                             .title(c.getString(R.string.editor_uploading_image))
                             .progress(false, 100)
                             .cancelable(false)
                             .build();
 
-            new MaterialDialog.Builder(c)
-                    .title(c.getString(R.string.editor_upload_image_question))
-                    .cancelable(false)
-                    .autoDismiss(false)
-                    .positiveText(c.getString(R.string.btn_upload))
-                    .onPositive(
-                            new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(MaterialDialog d, DialogAction w) {
-                                    d.dismiss();
-                                    dialog.show();
-                                    execute(uris);
-                                }
+            new MaterialAlertDialogBuilder(
+                            new ContextThemeWrapper(
+                                    c, new ColorPreferences(c).getFontStyle().getBaseId()))
+                    .setTitle(c.getString(R.string.editor_upload_image_question))
+                    .setCancelable(false)
+                    .setPositiveButton(
+                            c.getString(R.string.btn_upload),
+                            (d, w) -> {
+                                dialog.show();
+                                execute(uris);
                             })
-                    .negativeText(c.getString(R.string.btn_cancel))
-                    .onNegative(
-                            new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(MaterialDialog d, DialogAction w) {
-                                    d.dismiss();
-                                }
-                            })
+                    .setNegativeButton(c.getString(R.string.btn_cancel), null)
                     .show();
         }
 

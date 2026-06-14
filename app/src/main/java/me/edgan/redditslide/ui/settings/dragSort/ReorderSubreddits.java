@@ -38,6 +38,7 @@ import com.nambimobile.widgets.efab.FabOption;
 
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.Authentication;
+import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.CaseInsensitiveArrayList;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
@@ -1122,10 +1123,10 @@ public class ReorderSubreddits extends BaseActivityAnim {
                                     CompoundButton buttonView, boolean isChecked) {
                                 if (!isChecked) {
                                     new UserSubscriptions.UnsubscribeTask().execute(origPos);
-                                    Snackbar.make(mToolbar, getString(R.string.reorder_unsubscribed_toast, origPos), Snackbar.LENGTH_SHORT).show();
+                                    LayoutUtils.showSnackbar(Snackbar.make(mToolbar, getString(R.string.reorder_unsubscribed_toast, origPos), Snackbar.LENGTH_SHORT));
                                 } else {
                                     new UserSubscriptions.SubscribeTask(ReorderSubreddits.this).execute(origPos);
-                                    Snackbar.make(mToolbar, getString(R.string.reorder_subscribed_toast, origPos), Snackbar.LENGTH_SHORT).show();
+                                    LayoutUtils.showSnackbar(Snackbar.make(mToolbar, getString(R.string.reorder_subscribed_toast, origPos), Snackbar.LENGTH_SHORT));
                                 }
                                 isSubscribed.put(origPos.toLowerCase(Locale.ENGLISH), isChecked);
                             }

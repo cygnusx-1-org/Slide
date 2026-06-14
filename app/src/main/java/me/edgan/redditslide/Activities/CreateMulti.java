@@ -31,13 +31,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.R;
@@ -45,6 +41,8 @@ import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MaterialInputDialog;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 
 import net.dean.jraw.ApiException;
@@ -214,38 +212,20 @@ public class CreateMulti extends BaseActivityAnim {
                 .setNegativeButton(
                         R.string.reorder_add_subreddit,
                         (dialog, which) ->
-                                new MaterialDialog.Builder(CreateMulti.this)
+                                new MaterialInputDialog.Builder(CreateMulti.this)
                                         .title(R.string.reorder_add_subreddit)
-                                        .inputRangeRes(2, 21, R.color.md_red_500)
-                                        .alwaysCallInputCallback()
+                                        .inputRange(2, 21)
                                         .input(
                                                 getString(R.string.reorder_subreddit_name),
                                                 null,
-                                                false,
-                                                new MaterialDialog.InputCallback() {
-                                                    @Override
-                                                    public void onInput(
-                                                            @NonNull MaterialDialog dialog,
-                                                            CharSequence raw) {
+                                                (inputDialog, raw) ->
                                                         input =
                                                                 raw.toString()
-                                                                        .replaceAll(
-                                                                                "\\s",
-                                                                                ""); // remove
-                                                        // whitespace
-                                                        // from input
-                                                    }
-                                                })
+                                                                        .replaceAll("\\s", ""))
                                         .positiveText(R.string.btn_add)
                                         .onPositive(
-                                                new MaterialDialog.SingleButtonCallback() {
-                                                    @Override
-                                                    public void onClick(
-                                                            @NonNull MaterialDialog dialog,
-                                                            @NonNull DialogAction which) {
-                                                        new AsyncGetSubreddit().execute(input);
-                                                    }
-                                                })
+                                                inputDialog ->
+                                                        new AsyncGetSubreddit().execute(input))
                                         .negativeText(R.string.btn_cancel)
                                         .show())
                 .show();
@@ -501,7 +481,7 @@ public class CreateMulti extends BaseActivityAnim {
                                 R.string.btn_yes,
                                 (dialog, which) -> {
                                     MultiredditOverview.multiActivity.finish();
-                                    new MaterialDialog.Builder(CreateMulti.this)
+                                    new MaterialProgressDialog.Builder(CreateMulti.this)
                                             .title(R.string.deleting)
                                             .progress(true, 100)
                                             .content(R.string.misc_please_wait)

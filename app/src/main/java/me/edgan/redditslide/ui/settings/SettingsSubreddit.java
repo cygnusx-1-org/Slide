@@ -1,16 +1,18 @@
 package me.edgan.redditslide.ui.settings;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -24,6 +26,7 @@ import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.GetClosestColor;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 
 import net.dean.jraw.models.Subreddit;
@@ -110,33 +113,36 @@ public class SettingsSubreddit extends BaseActivityAnim {
                                                         SettingsSubreddit.this));
                                 final CharSequence[] subsAsChar = subs.toArray(new CharSequence[0]);
 
-                                MaterialDialog.Builder builder =
-                                        new MaterialDialog.Builder(SettingsSubreddit.this);
-                                builder.title(R.string.dialog_choose_subreddits_to_edit)
-                                        .items(subsAsChar)
-                                        .itemsCallbackMultiChoice(
-                                                null,
-                                                new MaterialDialog.ListCallbackMultiChoice() {
-                                                    @Override
-                                                    public boolean onSelection(
-                                                            MaterialDialog dialog,
-                                                            Integer[] which,
-                                                            CharSequence[] text) {
-                                                        ArrayList<String> selectedSubs =
-                                                                new ArrayList<>();
-                                                        for (int i : which) {
+                                final boolean[] checkedSubs = new boolean[subsAsChar.length];
+                                final Context contextThemeWrapper =
+                                        new ContextThemeWrapper(
+                                                SettingsSubreddit.this,
+                                                new ColorPreferences(SettingsSubreddit.this)
+                                                        .getFontStyle()
+                                                        .getBaseId());
+                                new MaterialAlertDialogBuilder(contextThemeWrapper)
+                                        .setTitle(R.string.dialog_choose_subreddits_to_edit)
+                                        .setMultiChoiceItems(
+                                                subsAsChar,
+                                                checkedSubs,
+                                                (dialog, which, isChecked) ->
+                                                        checkedSubs[which] = isChecked)
+                                        .setPositiveButton(
+                                                R.string.btn_select,
+                                                (dialog, w) -> {
+                                                    ArrayList<String> selectedSubs =
+                                                            new ArrayList<>();
+                                                    for (int i = 0; i < checkedSubs.length; i++) {
+                                                        if (checkedSubs[i]) {
                                                             selectedSubs.add(
                                                                     subsAsChar[i].toString());
                                                         }
-                                                        if (mSettingsSubAdapter != null)
-                                                            mSettingsSubAdapter
-                                                                    .prepareAndShowSubEditor(
-                                                                            selectedSubs);
-                                                        return true;
                                                     }
+                                                    if (mSettingsSubAdapter != null)
+                                                        mSettingsSubAdapter.prepareAndShowSubEditor(
+                                                                selectedSubs);
                                                 })
-                                        .positiveText(R.string.btn_select)
-                                        .negativeText(R.string.btn_cancel)
+                                        .setNegativeButton(R.string.btn_cancel, null)
                                         .show();
                             }
                         });
@@ -152,8 +158,8 @@ public class SettingsSubreddit extends BaseActivityAnim {
                                             .setPositiveButton(
                                                     R.string.misc_continue,
                                                     (dialog, which) -> {
-                                                        final MaterialDialog d =
-                                                                new MaterialDialog.Builder(
+                                                        final MaterialProgressDialog d =
+                                                                new MaterialProgressDialog.Builder(
                                                                                 SettingsSubreddit
                                                                                         .this)
                                                                         .title(

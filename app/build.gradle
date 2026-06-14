@@ -240,8 +240,8 @@ dependencies {
 
 /**** Frontend (UI-related) ****/
 
-    // Custom dialogs
-    implementation 'com.afollestad.material-dialogs:commons:0.9.6.0'
+    // Color picker (used by the in-app Draw screen)
+    implementation 'com.github.skydoves:colorpickerview:2.3.0'
 
     // Snackbar engagement for rating
     implementation 'com.github.ligi.snackengage:snackengage-core:0.30'

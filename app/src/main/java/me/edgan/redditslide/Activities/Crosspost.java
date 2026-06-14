@@ -1,6 +1,7 @@
 package me.edgan.redditslide.Activities;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -10,6 +11,7 @@ import android.os.Looper;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -22,10 +24,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SwitchCompat;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -39,8 +41,10 @@ import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Views.CommentOverflow;
+import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.util.HttpUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
@@ -499,12 +503,13 @@ public class Crosspost extends BaseActivity {
         final Gson gson = new Gson();
 
         final Dialog d =
-                new MaterialDialog.Builder(Crosspost.this)
+                new MaterialProgressDialog.Builder(Crosspost.this)
                         .title(R.string.submit_findingflairs)
                         .cancelable(true)
                         .content(R.string.misc_please_wait)
                         .progress(true, 100)
-                        .show();
+                        .show()
+                        .getDialog();
         new AsyncTask<Void, Void, JsonArray>() {
             @Override
             protected JsonArray doInBackground(Void... params) {
@@ -550,23 +555,21 @@ public class Crosspost extends BaseActivity {
 
                         ArrayList<String> allKeys = new ArrayList<>(flairs.keySet());
 
-                        new MaterialDialog.Builder(Crosspost.this)
-                                .title(getString(R.string.submit_flairchoices, subreddit))
-                                .items(allKeys)
-                                .itemsCallback(
-                                        new MaterialDialog.ListCallback() {
-                                            @Override
-                                            public void onSelection(
-                                                    MaterialDialog dialog,
-                                                    View itemView,
-                                                    int which,
-                                                    CharSequence text) {
-                                                RichFlair selected =
-                                                        flairs.get(allKeys.get(which));
-                                                selectedFlairID = selected.getId();
-                                                selectedFlairText = selected.getText();
-                                                refreshInputState(subreddit);
-                                            }
+                        final Context contextThemeWrapper =
+                                new ContextThemeWrapper(
+                                        Crosspost.this,
+                                        new ColorPreferences(Crosspost.this)
+                                                .getFontStyle()
+                                                .getBaseId());
+                        new MaterialAlertDialogBuilder(contextThemeWrapper)
+                                .setTitle(getString(R.string.submit_flairchoices, subreddit))
+                                .setItems(
+                                        allKeys.toArray(new CharSequence[0]),
+                                        (dialog, which) -> {
+                                            RichFlair selected = flairs.get(allKeys.get(which));
+                                            selectedFlairID = selected.getId();
+                                            selectedFlairText = selected.getText();
+                                            refreshInputState(subreddit);
                                         })
                                 .show();
                     } catch (Exception e) {

@@ -1,7 +1,6 @@
 package me.edgan.redditslide.ui.settings;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
@@ -9,14 +8,13 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.SwitchCompat;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SettingValues.RemovalReasonType;
 import me.edgan.redditslide.SettingValues.ToolboxRemovalMessageType;
 import me.edgan.redditslide.Toolbox.Toolbox;
 import me.edgan.redditslide.UserSubscriptions;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 
 
 public class SettingsModerationFragment {
@@ -214,17 +212,17 @@ public class SettingsModerationFragment {
         // Set up force refresh button
         refreshLayout.setEnabled(SettingValues.toolboxEnabled);
         refreshLayout.setOnClickListener(
-                v ->
-                        new MaterialDialog.Builder(context)
-                                .content(R.string.settings_mod_toolbox_refreshing)
-                                .progress(false, UserSubscriptions.modOf.size() * 2)
-                                .showListener(
-                                        dialog ->
-                                                new AsyncRefreshToolboxTask(dialog)
-                                                        .executeOnExecutor(
-                                                                AsyncTask.THREAD_POOL_EXECUTOR))
-                                .cancelable(false)
-                                .show());
+                v -> {
+                    MaterialProgressDialog dialog =
+                            new MaterialProgressDialog.Builder(context)
+                                    .content(R.string.settings_mod_toolbox_refreshing)
+                                    .progress(false, UserSubscriptions.modOf.size() * 2)
+                                    .cancelable(false)
+                                    .build();
+                    dialog.show();
+                    new AsyncRefreshToolboxTask(dialog)
+                            .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                });
     }
 
     private void setToolboxRemovalMessageType(
@@ -251,10 +249,10 @@ public class SettingsModerationFragment {
     }
 
     private static class AsyncRefreshToolboxTask extends AsyncTask<Void, Void, Void> {
-        final MaterialDialog dialog;
+        final MaterialProgressDialog dialog;
 
-        AsyncRefreshToolboxTask(DialogInterface dialog) {
-            this.dialog = (MaterialDialog) dialog;
+        AsyncRefreshToolboxTask(MaterialProgressDialog dialog) {
+            this.dialog = dialog;
         }
 
         @Override

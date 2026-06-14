@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
+import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 
@@ -45,6 +47,11 @@ public class LayoutUtils {
 
     public static void showSnackbar(final Snackbar s) {
         final View view = s.getView();
+        // Theme the snackbar background to match the rest of the UI instead of the gray default.
+        final TypedValue cardBg = new TypedValue();
+        if (view.getContext().getTheme().resolveAttribute(R.attr.card_background, cardBg, true)) {
+            view.setBackgroundColor(cardBg.data);
+        }
         final TextView tv = view.findViewById(com.google.android.material.R.id.snackbar_text);
         tv.setTextColor(Color.WHITE);
         s.show();

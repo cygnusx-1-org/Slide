@@ -10,7 +10,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import com.afollestad.materialdialogs.MaterialDialog;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -72,7 +72,7 @@ public class SettingsBackup extends BaseActivityAnim {
     private Drive mDriveService;
 
     // Progress dialog
-    private MaterialDialog progress;
+    private MaterialProgressDialog progress;
 
     // For counting errors during tasks
     private int errors = 0;
@@ -368,7 +368,7 @@ public class SettingsBackup extends BaseActivityAnim {
 
             // Start async restore
             progress =
-                    new MaterialDialog.Builder(this)
+                    new MaterialProgressDialog.Builder(this)
                             .title(R.string.backup_restoring)
                             .content(R.string.misc_please_wait)
                             .cancelable(false)
@@ -386,7 +386,7 @@ public class SettingsBackup extends BaseActivityAnim {
     /** Performs the actual local backup writing to the user-chosen file URI. */
     private void backupToFile(Uri fileUri) {
         progress =
-                new MaterialDialog.Builder(SettingsBackup.this)
+                new MaterialProgressDialog.Builder(SettingsBackup.this)
                         .title(R.string.backup_backing_up)
                         .content(R.string.misc_please_wait)
                         .cancelable(false)
@@ -596,7 +596,7 @@ public class SettingsBackup extends BaseActivityAnim {
         protected void onPreExecute() {
             Log.d(TAG, "BackupToDriveAsyncTask: started");
             progress =
-                    new MaterialDialog.Builder(SettingsBackup.this)
+                    new MaterialProgressDialog.Builder(SettingsBackup.this)
                             .title(R.string.backup_backing_up)
                             .content(R.string.misc_please_wait)
                             .cancelable(false)
@@ -731,7 +731,7 @@ public class SettingsBackup extends BaseActivityAnim {
         protected void onPreExecute() {
             Log.d(TAG, "RestoreFromDriveAsyncTask: started");
             progress =
-                    new MaterialDialog.Builder(SettingsBackup.this)
+                    new MaterialProgressDialog.Builder(SettingsBackup.this)
                             .title(R.string.backup_restoring)
                             .content(R.string.misc_please_wait)
                             .cancelable(false)

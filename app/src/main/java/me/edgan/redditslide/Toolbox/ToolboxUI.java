@@ -1,6 +1,7 @@
 package me.edgan.redditslide.Toolbox;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -12,6 +13,7 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,8 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import me.edgan.redditslide.Activities.Reauthenticate;
 import me.edgan.redditslide.Authentication;
@@ -37,6 +38,7 @@ import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Views.RoundedBackgroundSpan;
+import me.edgan.redditslide.Visuals.ColorPreferences;
 
 import net.dean.jraw.ApiException;
 import net.dean.jraw.http.NetworkException;
@@ -73,11 +75,15 @@ public class ToolboxUI {
             final PublicContribution thing,
             final CompletedRemovalCallback callback) {
         final RemovalReasons removalReasons;
-        final MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
+        final MaterialAlertDialogBuilder builder =
+                new MaterialAlertDialogBuilder(
+                        new ContextThemeWrapper(
+                                context,
+                                new ColorPreferences(context).getFontStyle().getBaseId()));
 
         // Set the dialog title
         if (thing instanceof Comment) {
-            builder.title(
+            builder.setTitle(
                     context.getResources()
                             .getString(
                                     R.string.toolbox_removal_title,
@@ -85,7 +91,7 @@ public class ToolboxUI {
             removalReasons =
                     Toolbox.getConfig(((Comment) thing).getSubredditName()).getRemovalReasons();
         } else if (thing instanceof Submission) {
-            builder.title(
+            builder.setTitle(
                     context.getResources()
                             .getString(
                                     R.string.toolbox_removal_title,
@@ -165,14 +171,13 @@ public class ToolboxUI {
         actionLock.setChecked(SettingValues.toolboxLock);
 
         // Set up dialog buttons
-        builder.customView(dialogContent, false);
-        builder.positiveText(R.string.mod_btn_remove);
-        builder.negativeText(R.string.btn_cancel);
-        builder.onPositive(
-                new MaterialDialog.SingleButtonCallback() {
+        builder.setView(dialogContent);
+        builder.setNegativeButton(R.string.btn_cancel, null);
+        builder.setPositiveButton(
+                R.string.mod_btn_remove,
+                new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(
-                            @NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                    public void onClick(DialogInterface dialog, int which) {
                         StringBuilder removalString = new StringBuilder();
                         StringBuilder flairText = new StringBuilder();
                         StringBuilder flairCSS = new StringBuilder();
@@ -230,7 +235,7 @@ public class ToolboxUI {
                     }
                 });
 
-        builder.build().show();
+        builder.create().show();
     }
 
     /**
@@ -377,43 +382,53 @@ public class ToolboxUI {
                                             types));
 
                             // show add note dialog
-                            new MaterialDialog.Builder(context)
-                                    .customView(layout, true)
-                                    .autoDismiss(false)
-                                    .positiveText(R.string.btn_add)
-                                    .onPositive(
-                                            new MaterialDialog.SingleButtonCallback() {
-                                                @Override
-                                                public void onClick(
-                                                        @NonNull MaterialDialog dialog,
-                                                        @NonNull DialogAction which) {
-                                                    if (noteText.getText().length() == 0) {
-                                                        noteText.setError(
-                                                                context.getString(
-                                                                        R.string
-                                                                                .toolbox_note_text_required));
-                                                        return;
-                                                    }
-                                                    int selected =
-                                                            spinner.getSelectedItemPosition();
-                                                    new AsyncAddUsernoteTask(context)
-                                                            .execute(
-                                                                    subreddit,
-                                                                    author,
-                                                                    noteText.getText().toString(),
-                                                                    currentLink,
-                                                                    selected - 1 >= 0
-                                                                            ? typeMap.keySet()
-                                                                                    .toArray()[
-                                                                                    selected - 1]
-                                                                                    .toString()
-                                                                            : null);
-                                                    dialog.dismiss();
-                                                }
-                                            })
-                                    .negativeText(R.string.btn_cancel)
-                                    .onNegative((dialog1, which1) -> dialog1.dismiss())
-                                    .show();
+                            final AlertDialog noteDialog =
+                                    new MaterialAlertDialogBuilder(
+                                                    new ContextThemeWrapper(
+                                                            context,
+                                                            new ColorPreferences(context)
+                                                                    .getFontStyle()
+                                                                    .getBaseId()))
+                                            .setView(layout)
+                                            .setPositiveButton(R.string.btn_add, null)
+                                            .setNegativeButton(R.string.btn_cancel, null)
+                                            .create();
+                            noteDialog.setOnShowListener(
+                                    d ->
+                                            noteDialog
+                                                    .getButton(DialogInterface.BUTTON_POSITIVE)
+                                                    .setOnClickListener(
+                                                            v -> {
+                                                                if (noteText.getText().length()
+                                                                        == 0) {
+                                                                    noteText.setError(
+                                                                            context.getString(
+                                                                                    R.string
+                                                                                            .toolbox_note_text_required));
+                                                                    return;
+                                                                }
+                                                                int selected =
+                                                                        spinner
+                                                                                .getSelectedItemPosition();
+                                                                new AsyncAddUsernoteTask(context)
+                                                                        .execute(
+                                                                                subreddit,
+                                                                                author,
+                                                                                noteText.getText()
+                                                                                        .toString(),
+                                                                                currentLink,
+                                                                                selected - 1 >= 0
+                                                                                        ? typeMap
+                                                                                                .keySet()
+                                                                                                .toArray()
+                                                                                                [
+                                                                                                selected
+                                                                                                        - 1]
+                                                                                                .toString()
+                                                                                        : null);
+                                                                noteDialog.dismiss();
+                                                            }));
+                            noteDialog.show();
                         })
                 .setPositiveButton(R.string.btn_close, null)
                 .show();
@@ -884,12 +899,15 @@ public class ToolboxUI {
                 if (context == null) {
                     return;
                 }
-                new MaterialDialog.Builder(context)
-                        .title(R.string.toolbox_wiki_edit_reauth)
-                        .content(R.string.toolbox_wiki_edit_reauth_question)
-                        .negativeText(R.string.misc_maybe_later)
-                        .positiveText(R.string.btn_yes)
-                        .onPositive(
+                new MaterialAlertDialogBuilder(
+                                new ContextThemeWrapper(
+                                        context,
+                                        new ColorPreferences(context).getFontStyle().getBaseId()))
+                        .setTitle(R.string.toolbox_wiki_edit_reauth)
+                        .setMessage(R.string.toolbox_wiki_edit_reauth_question)
+                        .setNegativeButton(R.string.misc_maybe_later, null)
+                        .setPositiveButton(
+                                R.string.btn_yes,
                                 (dialog1, which1) ->
                                         context.startActivity(
                                                 new Intent(context, Reauthenticate.class)))

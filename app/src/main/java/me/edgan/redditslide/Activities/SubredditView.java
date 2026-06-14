@@ -41,8 +41,6 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager.widget.ViewPager;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -70,6 +68,8 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.ui.settings.SettingsSubAdapter;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MaterialInputDialog;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.SortingUtil;
@@ -361,34 +361,20 @@ public class SubredditView extends BaseActivity {
                 }
                 return true;
             case R.id.search:
-                MaterialDialog.Builder builder =
-                        new MaterialDialog.Builder(this)
+                MaterialInputDialog.Builder builder =
+                        new MaterialInputDialog.Builder(this)
                                 .title(R.string.search_title)
-                                .alwaysCallInputCallback()
                                 .input(
                                         getString(R.string.search_msg),
                                         "",
-                                        new MaterialDialog.InputCallback() {
-                                            @Override
-                                            public void onInput(
-                                                    MaterialDialog materialDialog,
-                                                    CharSequence charSequence) {
-                                                term = charSequence.toString();
-                                            }
-                                        })
+                                        (dialog, charSequence) -> term = charSequence.toString())
                                 .neutralText(R.string.search_all)
                                 .onNeutral(
-                                        new MaterialDialog.SingleButtonCallback() {
-                                            @Override
-                                            public void onClick(
-                                                    @NonNull MaterialDialog materialDialog,
-                                                    @NonNull DialogAction dialogAction) {
-                                                Intent i =
-                                                        new Intent(
-                                                                SubredditView.this, Search.class);
-                                                i.putExtra(Search.EXTRA_TERM, term);
-                                                startActivity(i);
-                                            }
+                                        dialog -> {
+                                            Intent searchIntent =
+                                                    new Intent(SubredditView.this, Search.class);
+                                            searchIntent.putExtra(Search.EXTRA_TERM, term);
+                                            startActivity(searchIntent);
                                         });
 
                 // Add "search current sub" if it is not frontpage/all/random
@@ -402,19 +388,15 @@ public class SubredditView extends BaseActivity {
                         && !subreddit.equalsIgnoreCase("mod")) {
                     builder.positiveText(getString(R.string.search_subreddit, subreddit))
                             .onPositive(
-                                    new MaterialDialog.SingleButtonCallback() {
-                                        @Override
-                                        public void onClick(
-                                                @NonNull MaterialDialog materialDialog,
-                                                @NonNull DialogAction dialogAction) {
-                                            Intent i = new Intent(SubredditView.this, Search.class);
-                                            i.putExtra(Search.EXTRA_TERM, term);
-                                            i.putExtra(Search.EXTRA_SUBREDDIT, subreddit);
-                                            Log.v(
-                                                    LogUtil.getTag(),
-                                                    "INTENT SHOWS " + term + " AND " + subreddit);
-                                            startActivity(i);
-                                        }
+                                    dialog -> {
+                                        Intent searchIntent =
+                                                new Intent(SubredditView.this, Search.class);
+                                        searchIntent.putExtra(Search.EXTRA_TERM, term);
+                                        searchIntent.putExtra(Search.EXTRA_SUBREDDIT, subreddit);
+                                        Log.v(
+                                                LogUtil.getTag(),
+                                                "INTENT SHOWS " + term + " AND " + subreddit);
+                                        startActivity(searchIntent);
                                     });
                 }
                 builder.show();
@@ -699,12 +681,13 @@ public class SubredditView extends BaseActivity {
                                 @Override
                                 public void onClick(View v) {
                                     final Dialog d =
-                                            new MaterialDialog.Builder(SubredditView.this)
+                                            new MaterialProgressDialog.Builder(SubredditView.this)
                                                     .title(R.string.sidebar_findingmods)
                                                     .cancelable(true)
                                                     .content(R.string.misc_please_wait)
                                                     .progress(true, 100)
-                                                    .show();
+                                                    .show()
+                                                    .getDialog();
                                     new AsyncTask<Void, Void, Void>() {
                                         ArrayList<UserRecord> mods;
 
@@ -735,54 +718,41 @@ public class SubredditView extends BaseActivity {
                                                 names.add(rec.getFullName());
                                             }
                                             d.dismiss();
-                                            new MaterialDialog.Builder(SubredditView.this)
-                                                    .title(
+                                            new MaterialAlertDialogBuilder(
+                                                            new ContextThemeWrapper(
+                                                                    SubredditView.this,
+                                                                    new ColorPreferences(
+                                                                                    SubredditView
+                                                                                            .this)
+                                                                            .getFontStyle()
+                                                                            .getBaseId()))
+                                                    .setTitle(
                                                             getString(
                                                                     R.string.sidebar_submods,
                                                                     subreddit))
-                                                    .items(names)
-                                                    .itemsCallback(
-                                                            new MaterialDialog.ListCallback() {
-                                                                @Override
-                                                                public void onSelection(
-                                                                        MaterialDialog dialog,
-                                                                        View itemView,
-                                                                        int which,
-                                                                        CharSequence text) {
-                                                                    Intent i =
-                                                                            new Intent(
-                                                                                    SubredditView
-                                                                                            .this,
-                                                                                    Profile.class);
-                                                                    i.putExtra(
-                                                                            Profile.EXTRA_PROFILE,
-                                                                            names.get(which));
-                                                                    startActivity(i);
-                                                                }
+                                                    .setItems(
+                                                            names.toArray(new CharSequence[0]),
+                                                            (dialog, which) -> {
+                                                                Intent i =
+                                                                        new Intent(
+                                                                                SubredditView.this,
+                                                                                Profile.class);
+                                                                i.putExtra(
+                                                                        Profile.EXTRA_PROFILE,
+                                                                        names.get(which));
+                                                                startActivity(i);
                                                             })
-                                                    .positiveText(R.string.btn_message)
-                                                    .onPositive(
-                                                            new MaterialDialog
-                                                                    .SingleButtonCallback() {
-                                                                @Override
-                                                                public void onClick(
-                                                                        @NonNull
-                                                                                MaterialDialog
-                                                                                        dialog,
-                                                                        @NonNull
-                                                                                DialogAction
-                                                                                        which) {
-                                                                    Intent i =
-                                                                            new Intent(
-                                                                                    SubredditView
-                                                                                            .this,
-                                                                                    SendMessage
-                                                                                            .class);
-                                                                    i.putExtra(
-                                                                            SendMessage.EXTRA_NAME,
-                                                                            "/r/" + subOverride);
-                                                                    startActivity(i);
-                                                                }
+                                                    .setPositiveButton(
+                                                            R.string.btn_message,
+                                                            (dialog, which) -> {
+                                                                Intent i =
+                                                                        new Intent(
+                                                                                SubredditView.this,
+                                                                                SendMessage.class);
+                                                                i.putExtra(
+                                                                        SendMessage.EXTRA_NAME,
+                                                                        "/r/" + subOverride);
+                                                                startActivity(i);
                                                             })
                                                     .show();
                                         }
@@ -841,21 +811,22 @@ public class SubredditView extends BaseActivity {
                                     new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            new MaterialDialog.Builder(SubredditView.this)
-                                                    .items(flairText)
-                                                    .title(R.string.sidebar_select_flair)
-                                                    .itemsCallback(
-                                                            new MaterialDialog.ListCallback() {
+                                            new MaterialAlertDialogBuilder(
+                                                            new ContextThemeWrapper(
+                                                                    SubredditView.this,
+                                                                    new ColorPreferences(SubredditView.this).getFontStyle().getBaseId()))
+                                                    .setTitle(R.string.sidebar_select_flair)
+                                                    .setItems(
+                                                            flairText.toArray(new CharSequence[0]),
+                                                            new DialogInterface.OnClickListener() {
                                                                 @Override
-                                                                public void onSelection(
-                                                                        MaterialDialog dialog,
-                                                                        View itemView,
-                                                                        int which,
-                                                                        CharSequence text) {
+                                                                public void onClick(
+                                                                        DialogInterface listDialog,
+                                                                        int which) {
                                                                     final FlairTemplate t =
                                                                             flairs.get(which);
                                                                     if (t.isTextEditable()) {
-                                                                        new MaterialDialog.Builder(
+                                                                        new MaterialInputDialog.Builder(
                                                                                         SubredditView
                                                                                                 .this)
                                                                                 .title(
@@ -867,23 +838,19 @@ public class SubredditView extends BaseActivity {
                                                                                                         .string
                                                                                                         .mod_flair_hint),
                                                                                         t.getText(),
-                                                                                        true,
-                                                                                        (dialog1,
-                                                                                                input) -> {})
+                                                                                        null)
                                                                                 .positiveText(
                                                                                         R.string
                                                                                                 .btn_set)
                                                                                 .onPositive(
-                                                                                        new MaterialDialog
-                                                                                                .SingleButtonCallback() {
+                                                                                        new MaterialInputDialog
+                                                                                                .ButtonCallback() {
                                                                                             @Override
                                                                                             public
                                                                                             void
                                                                                                     onClick(
-                                                                                                            MaterialDialog
-                                                                                                                    dialog,
-                                                                                                            DialogAction
-                                                                                                                    which) {
+                                                                                                            MaterialInputDialog
+                                                                                                                    dialog) {
                                                                                                 final
                                                                                                 String
                                                                                                         flair =
@@ -1453,20 +1420,21 @@ public class SubredditView extends BaseActivity {
 
                                     @Override
                                     protected void onPostExecute(Void aVoid) {
-                                        new MaterialDialog.Builder(SubredditView.this)
-                                                .title(
+                                        new MaterialAlertDialogBuilder(
+                                                        new ContextThemeWrapper(
+                                                                SubredditView.this,
+                                                                new ColorPreferences(SubredditView.this).getFontStyle().getBaseId()))
+                                                .setTitle(
                                                         "Add /r/"
                                                                 + subreddit.getDisplayName()
                                                                 + " to")
-                                                .items(multis.keySet())
-                                                .itemsCallback(
-                                                        new MaterialDialog.ListCallback() {
+                                                .setItems(
+                                                        multis.keySet().toArray(new CharSequence[0]),
+                                                        new DialogInterface.OnClickListener() {
                                                             @Override
-                                                            public void onSelection(
-                                                                    MaterialDialog dialog,
-                                                                    View itemView,
-                                                                    final int which,
-                                                                    CharSequence text) {
+                                                            public void onClick(
+                                                                    DialogInterface dialog,
+                                                                    final int which) {
                                                                 new AsyncTask<Void, Void, Void>() {
                                                                     @Override
                                                                     protected Void doInBackground(

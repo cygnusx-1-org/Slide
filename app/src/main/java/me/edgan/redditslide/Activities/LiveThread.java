@@ -25,7 +25,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.gson.Gson;
@@ -47,6 +46,7 @@ import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.HttpUtil;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
@@ -113,12 +113,12 @@ public class LiveThread extends BaseActivityAnim {
         baseRecycler = (RecyclerView) findViewById(R.id.content_view);
         baseRecycler.setLayoutManager(new LinearLayoutManager(LiveThread.this));
         new AsyncTask<Void, Void, Void>() {
-            MaterialDialog d;
+            MaterialProgressDialog d;
 
             @Override
             public void onPreExecute() {
                 d =
-                        new MaterialDialog.Builder(LiveThread.this)
+                        new MaterialProgressDialog.Builder(LiveThread.this)
                                 .title(R.string.livethread_loading_title)
                                 .content(R.string.misc_please_wait)
                                 .progress(true, 100)

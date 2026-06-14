@@ -59,8 +59,6 @@ import androidx.customview.widget.ViewDragHelper;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
@@ -98,6 +96,7 @@ import me.edgan.redditslide.util.ImageUtil;
 import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.NetworkStateReceiver;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
@@ -169,7 +168,7 @@ public class MainActivity extends BaseActivity
     boolean changed;
     String term;
     View headerMain;
-    MaterialDialog d;
+    Dialog d;
     public AsyncTask<View, Void, View> currentFlair;
     View accountsArea;
     SideArrayAdapter sideArrayAdapter;
@@ -1102,12 +1101,13 @@ public class MainActivity extends BaseActivity
                 @Override
                 protected void onPreExecute() {
                     d =
-                            new MaterialDialog.Builder(MainActivity.this)
+                            new MaterialProgressDialog.Builder(MainActivity.this)
                                     .title(R.string.misc_setting_up)
                                     .content(R.string.misc_setting_up_message)
                                     .progress(true, 100)
                                     .cancelable(false)
-                                    .build();
+                                    .build()
+                                    .getDialog();
                     d.show();
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -1320,33 +1320,30 @@ public class MainActivity extends BaseActivity
                                             new OnSingleClickListener() {
                                                 @Override
                                                 public void onSingleClick(View view) {
-                                                    new MaterialDialog.Builder(MainActivity.this)
-                                                            .title("Friends")
-                                                            .items(friends)
-                                                            .itemsCallback(
-                                                                    new MaterialDialog
-                                                                            .ListCallback() {
-                                                                        @Override
-                                                                        public void onSelection(
-                                                                                MaterialDialog
-                                                                                        dialog,
-                                                                                View itemView,
-                                                                                int which,
-                                                                                CharSequence text) {
-                                                                            Intent i =
-                                                                                    new Intent(
+                                                    new MaterialAlertDialogBuilder(
+                                                                    new ContextThemeWrapper(
+                                                                            MainActivity.this,
+                                                                            new ColorPreferences(
                                                                                             MainActivity
-                                                                                                    .this,
-                                                                                            Profile
-                                                                                                    .class);
-                                                                            i.putExtra(
-                                                                                    Profile
-                                                                                            .EXTRA_PROFILE,
-                                                                                    friends.get(
-                                                                                            which));
-                                                                            startActivity(i);
-                                                                            dialog.dismiss();
-                                                                        }
+                                                                                                    .this)
+                                                                                    .getFontStyle()
+                                                                                    .getBaseId()))
+                                                            .setTitle("Friends")
+                                                            .setItems(
+                                                                    friends.toArray(
+                                                                            new CharSequence[0]),
+                                                                    (dialog, which) -> {
+                                                                        Intent i =
+                                                                                new Intent(
+                                                                                        MainActivity
+                                                                                                .this,
+                                                                                        Profile
+                                                                                                .class);
+                                                                        i.putExtra(
+                                                                                Profile.EXTRA_PROFILE,
+                                                                                friends.get(which));
+                                                                        startActivity(i);
+                                                                        dialog.dismiss();
                                                                     })
                                                             .show();
                                                 }
@@ -1743,33 +1740,22 @@ public class MainActivity extends BaseActivity
         if (subs.isEmpty() && !NetworkUtil.isConnected(this)) {
             findViewById(R.id.toolbar).setVisibility(View.GONE);
             d =
-                    new MaterialDialog.Builder(MainActivity.this)
-                            .title(R.string.offline_no_content_found)
-                            .positiveText(R.string.offline_enter_online)
-                            .negativeText(R.string.btn_close)
-                            .cancelable(false)
-                            .onNegative(
-                                    new MaterialDialog.SingleButtonCallback() {
-                                        @Override
-                                        public void onClick(
-                                                @NonNull MaterialDialog dialog,
-                                                @NonNull DialogAction which) {
-                                            finish();
-                                        }
+                    new MaterialAlertDialogBuilder(
+                                    new ContextThemeWrapper(
+                                            MainActivity.this,
+                                            new ColorPreferences(MainActivity.this)
+                                                    .getFontStyle()
+                                                    .getBaseId()))
+                            .setTitle(R.string.offline_no_content_found)
+                            .setNegativeButton(
+                                    R.string.btn_close, (dialog, which) -> finish())
+                            .setPositiveButton(
+                                    R.string.offline_enter_online,
+                                    (dialog, which) -> {
+                                        Reddit.appRestart.edit().remove("forceoffline").commit();
+                                        Reddit.forceRestart(MainActivity.this, false);
                                     })
-                            .onPositive(
-                                    new MaterialDialog.SingleButtonCallback() {
-                                        @Override
-                                        public void onClick(
-                                                @NonNull MaterialDialog dialog,
-                                                @NonNull DialogAction which) {
-                                            Reddit.appRestart
-                                                    .edit()
-                                                    .remove("forceoffline")
-                                                    .commit();
-                                            Reddit.forceRestart(MainActivity.this, false);
-                                        }
-                                    })
+                            .setCancelable(false)
                             .show();
         } else {
             drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);

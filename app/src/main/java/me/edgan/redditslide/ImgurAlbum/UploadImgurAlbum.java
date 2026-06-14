@@ -4,10 +4,9 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.util.ImgurUtils;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.ProgressRequestBody;
 
 import okhttp3.MediaType;
@@ -30,7 +29,7 @@ public class UploadImgurAlbum extends AsyncTask<Uri, Integer, String> {
     public Context c;
     public int totalCount;
     public int uploadCount;
-    public MaterialDialog dialog;
+    public MaterialProgressDialog dialog;
 
     @Override
     protected String doInBackground(Uri... sub) {

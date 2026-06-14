@@ -9,6 +9,8 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -23,9 +25,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.bottomsheet.BottomSheet;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import net.dean.jraw.ApiException;
@@ -56,6 +57,7 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.SubmissionViews.ReadLater;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 
 /**
@@ -349,7 +351,7 @@ public class SubmissionBottomSheetActions {
                                 ).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                             }
 
-                            s.show();
+                            LayoutUtils.showSnackbar(s);
                         } else {
                             ReadLater.setReadLater(submission, false);
                             if (isReadLater || !Authentication.didOnline) {
@@ -374,9 +376,7 @@ public class SubmissionBottomSheetActions {
                                 );
                             } else {
                                 Snackbar s2 = Snackbar.make(holder.itemView, "Removed from read later", Snackbar.LENGTH_SHORT);
-                                View view2 = s2.getView();
-                                TextView tv2 = view2.findViewById(com.google.android.material.R.id.snackbar_text);
-                                s2.show();
+                                LayoutUtils.showSnackbar(s2);
                             }
                             OfflineSubreddit.newSubreddit(CommentCacheAsync.SAVED_SUBMISSIONS).deleteFromMemory(submission.getFullName());
                         }
@@ -387,20 +387,24 @@ public class SubmissionBottomSheetActions {
 
                         break;
                     case 12:
-                        final MaterialDialog reportDialog =
-                            new MaterialDialog.Builder(mContext)
-                                .customView(R.layout.report_dialog, true)
-                                .title(R.string.report_post)
-                                .positiveText(R.string.btn_report)
-                                .negativeText(R.string.btn_cancel)
-                                .onPositive(
-                                    new MaterialDialog.SingleButtonCallback() {
-                                        @Override
-                                        public void onClick(MaterialDialog dialog, DialogAction which) {
-                                            RadioGroup reasonGroup = dialog.getCustomView().findViewById(R.id.report_reasons);
+                        final Context contextThemeWrapper =
+        new ContextThemeWrapper(mContext, new ColorPreferences(mContext).getFontStyle().getBaseId());
+final View reportView =
+        LayoutInflater.from(contextThemeWrapper).inflate(R.layout.report_dialog, null);
+final AlertDialog reportDialog =
+        new MaterialAlertDialogBuilder(contextThemeWrapper)
+                .setView(reportView)
+                .setTitle(R.string.report_post)
+                .setNegativeButton(R.string.btn_cancel, null)
+                .setPositiveButton(
+                        R.string.btn_report,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                            RadioGroup reasonGroup = reportView.findViewById(R.id.report_reasons);
                                             String reportReason;
                                             if (reasonGroup.getCheckedRadioButtonId() == R.id.report_other) {
-                                                reportReason = ((EditText) dialog.getCustomView().findViewById(R.id.input_report_reason)).getText().toString();
+                                                reportReason = ((EditText) reportView.findViewById(R.id.input_report_reason)).getText().toString();
                                             } else {
                                                 reportReason = ((RadioButton) reasonGroup.findViewById(reasonGroup.getCheckedRadioButtonId())).getText().toString();
                                             }
@@ -408,18 +412,18 @@ public class SubmissionBottomSheetActions {
                                             new AsyncReportTask(submission, holder.itemView).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, reportReason);
                                         }
                                     }
-                                ).build();
+                                ).create();
 
-                        final RadioGroup reasonGroup = reportDialog.getCustomView().findViewById(R.id.report_reasons);
+                        final RadioGroup reasonGroup = reportView.findViewById(R.id.report_reasons);
 
                         reasonGroup.setOnCheckedChangeListener(
                             new RadioGroup.OnCheckedChangeListener() {
                                 @Override
                                 public void onCheckedChanged(RadioGroup group, int checkedId) {
                                     if (checkedId == R.id.report_other) {
-                                        reportDialog.getCustomView().findViewById(R.id.input_report_reason).setVisibility(View.VISIBLE);
+                                        reportView.findViewById(R.id.input_report_reason).setVisibility(View.VISIBLE);
                                     } else {
-                                        reportDialog.getCustomView().findViewById(R.id.input_report_reason).setVisibility(View.GONE);
+                                        reportView.findViewById(R.id.input_report_reason).setVisibility(View.GONE);
                                     }
                                 }
                             }
@@ -440,7 +444,7 @@ public class SubmissionBottomSheetActions {
 
                             @Override
                             protected void onPostExecute(Ruleset rules) {
-                                reportDialog.getCustomView().findViewById(R.id.report_loading).setVisibility(View.GONE);
+                                reportView.findViewById(R.id.report_loading).setVisibility(View.GONE);
                                 if (rules == null) {
                                     // Could not load rules (offline); leave the dialog as-is
                                     return;
@@ -497,7 +501,8 @@ public class SubmissionBottomSheetActions {
                         showText.setTextIsSelectable(true);
                         int sixteen = DisplayUtil.dpToPxVertical(24);
                         showText.setPadding(sixteen, 0, sixteen, 0);
-                        new AlertDialog.Builder(mContext)
+                        final AlertDialog copyDialog =
+                            new AlertDialog.Builder(mContext)
                             .setView(showText)
                             .setTitle("Select text to copy")
                             .setCancelable(true)
@@ -516,7 +521,9 @@ public class SubmissionBottomSheetActions {
                             .setNeutralButton("COPY ALL", (dialog14, which14) -> {
                                 ClipboardUtil.copyToClipboard(mContext, "Selftext", StringEscapeUtils.unescapeHtml4(submission.getTitle() + "\n\n" + submission.getSelftext()));
                                 Toast.makeText(mContext, R.string.submission_text_copied, Toast.LENGTH_SHORT).show();
-                            }).show();
+                            }).create();
+                        DialogUtil.matchDialogToCardBackground(mContext, copyDialog);
+                        copyDialog.show();
 
                         break;
                 }
@@ -594,7 +601,7 @@ public class SubmissionBottomSheetActions {
 
             @Override
             public void onPreExecute() {
-                d = new MaterialDialog.Builder(mContext).progress(true, 100).title(R.string.profile_category_loading).content(R.string.misc_please_wait).show();
+                d = new MaterialProgressDialog.Builder(mContext).progress(true, 100).title(R.string.profile_category_loading).content(R.string.misc_please_wait).show().getDialog();
             }
 
             @Override
@@ -617,19 +624,19 @@ public class SubmissionBottomSheetActions {
             @Override
             public void onPostExecute(final List<String> data) {
                 try {
-                    new MaterialDialog.Builder(mContext).items(data).title(R.string.sidebar_select_flair).itemsCallback(new MaterialDialog.ListCallback() {
+                    new MaterialAlertDialogBuilder(new ContextThemeWrapper(mContext, new ColorPreferences(mContext).getFontStyle().getBaseId())).setTitle(R.string.sidebar_select_flair).setItems(data.toArray(new CharSequence[0]), new DialogInterface.OnClickListener() {
                         @Override
-                        public void onSelection(MaterialDialog dialog, final View itemView, int which, CharSequence text) {
+                        public void onClick(DialogInterface listDialog, int which) {
                             final String t = data.get(which);
                             if (which == data.size() - 1) {
-                                new MaterialDialog.Builder(mContext)
+                                new MaterialInputDialog.Builder(mContext)
                                     .title(R.string.category_set_name)
-                                    .input(mContext.getString(R.string.category_set_name_hint), null, false, (dialog1, input) -> {})
+                                    .input(mContext.getString(R.string.category_set_name_hint), null, null)
                                     .positiveText(R.string.btn_set)
                                     .onPositive(
-                                        new MaterialDialog.SingleButtonCallback() {
+                                        new MaterialInputDialog.ButtonCallback() {
                                             @Override
-                                            public void onClick(MaterialDialog dialog, DialogAction which) {
+                                            public void onClick(MaterialInputDialog dialog) {
                                                 final String flair = dialog.getInputEditText().getText().toString();
                                                 new AsyncTask<Void, Void, Boolean>() {
                                                     @Override

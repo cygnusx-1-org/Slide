@@ -3,6 +3,7 @@ package me.edgan.redditslide.Views;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -11,6 +12,7 @@ import android.net.Uri;
 
 import android.text.Editable;
 import android.util.Base64;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -21,15 +23,13 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.activity.ComponentActivity;
@@ -42,8 +42,11 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.Visuals.ColorPreferences;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.DisplayUtil;
 import me.edgan.redditslide.util.KeyboardUtil;
+import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.SubmissionParser;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -228,7 +231,7 @@ public class DoEditorActions {
                                                 Drafts.deleteDraft(Drafts.getDrafts().size() - 1);
                                             }
                                         });
-                                s.show();
+                                LayoutUtils.showSnackbar(s);
                             }
                         });
         baseView.findViewById(R.id.draft)
@@ -243,11 +246,14 @@ public class DoEditorActions {
                                     draftText[i] = drafts.get(i);
                                 }
                                 if (drafts.isEmpty()) {
-                                    new AlertDialog.Builder(a)
-                                            .setTitle(R.string.dialog_no_drafts)
-                                            .setMessage(R.string.dialog_no_drafts_msg)
-                                            .setPositiveButton(R.string.btn_ok, null)
-                                            .show();
+                                    final AlertDialog noDrafts =
+                                            new AlertDialog.Builder(a)
+                                                    .setTitle(R.string.dialog_no_drafts)
+                                                    .setMessage(R.string.dialog_no_drafts_msg)
+                                                    .setPositiveButton(R.string.btn_ok, null)
+                                                    .create();
+                                    DialogUtil.matchDialogToCardBackground(a, noDrafts);
+                                    noDrafts.show();
                                 } else {
                                     new AlertDialog.Builder(a)
                                             .setTitle(R.string.choose_draft)
@@ -417,17 +423,23 @@ public class DoEditorActions {
                                     showText.setTextIsSelectable(true);
                                     int sixteen = DisplayUtil.dpToPxVertical(24);
                                     showText.setPadding(sixteen, 0, sixteen, 0);
-                                    MaterialDialog.Builder builder = new MaterialDialog.Builder(a);
-                                    builder.customView(showText, false)
-                                            .title(R.string.editor_actions_quote_comment)
-                                            .cancelable(true)
-                                            .positiveText(a.getString(R.string.btn_select))
-                                            .onPositive(
-                                                    new MaterialDialog.SingleButtonCallback() {
+                                    MaterialAlertDialogBuilder builder =
+                                            new MaterialAlertDialogBuilder(
+                                                    new ContextThemeWrapper(
+                                                            a,
+                                                            new ColorPreferences(a)
+                                                                    .getFontStyle()
+                                                                    .getBaseId()));
+                                    builder.setView(showText)
+                                            .setTitle(R.string.editor_actions_quote_comment)
+                                            .setCancelable(true)
+                                            .setPositiveButton(
+                                                    a.getString(R.string.btn_select),
+                                                    new DialogInterface.OnClickListener() {
                                                         @Override
                                                         public void onClick(
-                                                                @NonNull MaterialDialog dialog,
-                                                                @NonNull DialogAction which) {
+                                                                DialogInterface dialog,
+                                                                int which) {
                                                             String selected =
                                                                     showText.getText()
                                                                             .toString()
@@ -450,7 +462,7 @@ public class DoEditorActions {
                                                                     editText);
                                                         }
                                                     })
-                                            .negativeText(a.getString(R.string.btn_cancel))
+                                            .setNegativeButton(a.getString(R.string.btn_cancel), null)
                                             .show();
                                     KeyboardUtil.hideKeyboard(
                                             editText.getContext(), editText.getWindowToken(), 0);
@@ -567,26 +579,31 @@ public class DoEditorActions {
 
                                 final boolean selectedTextNotEmpty = !selectedText.isEmpty();
 
-                                final MaterialDialog dialog =
-                                        new MaterialDialog.Builder(editText.getContext())
-                                                .title(R.string.editor_title_link)
-                                                .customView(layout, false)
-                                                .positiveColorAttr(R.attr.tintColor)
-                                                .positiveText(R.string.editor_action_link)
-                                                .onPositive(
-                                                        new MaterialDialog.SingleButtonCallback() {
+                                final AlertDialog dialog =
+                                        new MaterialAlertDialogBuilder(
+                                                        new ContextThemeWrapper(
+                                                                editText.getContext(),
+                                                                new ColorPreferences(
+                                                                                editText.getContext())
+                                                                        .getFontStyle()
+                                                                        .getBaseId()))
+                                                .setTitle(R.string.editor_title_link)
+                                                .setView(layout)
+                                                .setPositiveButton(
+                                                        R.string.editor_action_link,
+                                                        new DialogInterface.OnClickListener() {
                                                             @Override
                                                             public void onClick(
-                                                                    @NonNull MaterialDialog dialog,
-                                                                    @NonNull DialogAction which) {
+                                                                    DialogInterface dialog,
+                                                                    int which) {
                                                                 final EditText urlBox =
                                                                         (EditText)
-                                                                                dialog.findViewById(
+                                                                                layout.findViewById(
                                                                                         R.id
                                                                                                 .url_box);
                                                                 final EditText textBox =
                                                                         (EditText)
-                                                                                dialog.findViewById(
+                                                                                layout.findViewById(
                                                                                         R.id
                                                                                                 .text_box);
                                                                 dialog.dismiss();
@@ -625,25 +642,25 @@ public class DoEditorActions {
                                                                 }
                                                             }
                                                         })
-                                                .build();
+                                                .create();
 
                                 // Tint the hint text if the base theme is Sepia
                                 if (SettingValues.currentTheme == 5) {
-                                    ((EditText) dialog.findViewById(R.id.url_box))
+                                    ((EditText) layout.findViewById(R.id.url_box))
                                             .setHintTextColor(
                                                     ContextCompat.getColor(
-                                                            dialog.getContext(),
+                                                            layout.getContext(),
                                                             R.color.md_grey_600));
-                                    ((EditText) dialog.findViewById(R.id.text_box))
+                                    ((EditText) layout.findViewById(R.id.text_box))
                                             .setHintTextColor(
                                                     ContextCompat.getColor(
-                                                            dialog.getContext(),
+                                                            layout.getContext(),
                                                             R.color.md_grey_600));
                                 }
 
                                 // use the selected text as the text for the link
                                 if (!selectedText.isEmpty()) {
-                                    ((EditText) dialog.findViewById(R.id.text_box))
+                                    ((EditText) layout.findViewById(R.id.text_box))
                                             .setText(selectedText);
                                 }
 
@@ -837,7 +854,7 @@ public class DoEditorActions {
         public UploadImgurDEA(Context c) {
             this.c = c;
             dialog =
-                    new MaterialDialog.Builder(c)
+                    new MaterialProgressDialog.Builder(c)
                             .title(c.getString(R.string.editor_uploading_image))
                             .progress(false, 100)
                             .cancelable(false)
@@ -880,39 +897,50 @@ public class DoEditorActions {
                 int sixteen = DisplayUtil.dpToPxVertical(16);
                 layout.setPadding(sixteen, sixteen, sixteen, sixteen);
                 layout.addView(descriptionBox);
-                new MaterialDialog.Builder(c)
-                        .title(R.string.editor_title_link)
-                        .customView(layout, false)
-                        .positiveText(R.string.editor_action_link)
-                        .onPositive(
-                                new MaterialDialog.SingleButtonCallback() {
-                                    @Override
-                                    public void onClick(
-                                            @NonNull MaterialDialog dialog,
-                                            @NonNull DialogAction which) {
-                                        dialog.dismiss();
-                                        String s =
-                                                "["
-                                                        + descriptionBox.getText().toString()
-                                                        + "]("
-                                                        + url
-                                                        + ")";
-                                        if (descriptionBox.getText().toString().trim().isEmpty()) {
-                                            s = url + " ";
-                                        }
-                                        int start = Math.max(sStart, 0);
-                                        int end = Math.max(sEnd, 0);
-                                        if (DoEditorActions.e != null) {
-                                            DoEditorActions.e.insert(Math.max(start, end), s);
-                                            DoEditorActions.e.delete(start, end);
-                                            DoEditorActions.e = null;
-                                        }
-                                        sStart = 0;
-                                        sEnd = 0;
-                                    }
-                                })
-                        .canceledOnTouchOutside(false)
-                        .show();
+                final AlertDialog linkDialog =
+                        new MaterialAlertDialogBuilder(
+                                        new ContextThemeWrapper(
+                                                c,
+                                                new ColorPreferences(c).getFontStyle().getBaseId()))
+                                .setTitle(R.string.editor_title_link)
+                                .setView(layout)
+                                .setPositiveButton(
+                                        R.string.editor_action_link,
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(
+                                                    DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                                String s =
+                                                        "["
+                                                                + descriptionBox
+                                                                        .getText()
+                                                                        .toString()
+                                                                + "]("
+                                                                + url
+                                                                + ")";
+                                                if (descriptionBox
+                                                        .getText()
+                                                        .toString()
+                                                        .trim()
+                                                        .isEmpty()) {
+                                                    s = url + " ";
+                                                }
+                                                int start = Math.max(sStart, 0);
+                                                int end = Math.max(sEnd, 0);
+                                                if (DoEditorActions.e != null) {
+                                                    DoEditorActions.e.insert(
+                                                            Math.max(start, end), s);
+                                                    DoEditorActions.e.delete(start, end);
+                                                    DoEditorActions.e = null;
+                                                }
+                                                sStart = 0;
+                                                sEnd = 0;
+                                            }
+                                        })
+                                .create();
+                linkDialog.setCanceledOnTouchOutside(false);
+                linkDialog.show();
 
             } catch (Exception e) {
                 new AlertDialog.Builder(c)
@@ -930,7 +958,7 @@ public class DoEditorActions {
         public UploadImgurAlbumDEA(Context c) {
             this.c = c;
             dialog =
-                    new MaterialDialog.Builder(c)
+                    new MaterialProgressDialog.Builder(c)
                             .title(c.getString(R.string.editor_uploading_image))
                             .progress(false, 100)
                             .cancelable(false)
@@ -970,32 +998,40 @@ public class DoEditorActions {
                 int sixteen = DisplayUtil.dpToPxVertical(16);
                 layout.setPadding(sixteen, sixteen, sixteen, sixteen);
                 layout.addView(descriptionBox);
-                new MaterialDialog.Builder(c)
-                        .title(R.string.editor_title_link)
-                        .customView(layout, false)
-                        .onPositive(
-                                new MaterialDialog.SingleButtonCallback() {
-                                    @Override
-                                    public void onClick(MaterialDialog dialog, DialogAction which) {
-                                        dialog.dismiss();
-                                        String s =
-                                                "["
-                                                        + descriptionBox.getText().toString()
-                                                        + "]("
-                                                        + finalUrl
-                                                        + ")";
-                                        int start = Math.max(sStart, 0);
-                                        int end = Math.max(sEnd, 0);
-                                        DoEditorActions.e.insert(Math.max(start, end), s);
-                                        DoEditorActions.e.delete(start, end);
-                                        DoEditorActions.e = null;
-                                        sStart = 0;
-                                        sEnd = 0;
-                                    }
-                                })
-                        .positiveText(R.string.editor_action_link)
-                        .canceledOnTouchOutside(false)
-                        .show();
+                final AlertDialog linkDialog =
+                        new MaterialAlertDialogBuilder(
+                                        new ContextThemeWrapper(
+                                                c,
+                                                new ColorPreferences(c).getFontStyle().getBaseId()))
+                                .setTitle(R.string.editor_title_link)
+                                .setView(layout)
+                                .setPositiveButton(
+                                        R.string.editor_action_link,
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(
+                                                    DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                                String s =
+                                                        "["
+                                                                + descriptionBox
+                                                                        .getText()
+                                                                        .toString()
+                                                                + "]("
+                                                                + finalUrl
+                                                                + ")";
+                                                int start = Math.max(sStart, 0);
+                                                int end = Math.max(sEnd, 0);
+                                                DoEditorActions.e.insert(Math.max(start, end), s);
+                                                DoEditorActions.e.delete(start, end);
+                                                DoEditorActions.e = null;
+                                                sStart = 0;
+                                                sEnd = 0;
+                                            }
+                                        })
+                                .create();
+                linkDialog.setCanceledOnTouchOutside(false);
+                linkDialog.show();
 
             } catch (Exception e) {
                 new AlertDialog.Builder(c)

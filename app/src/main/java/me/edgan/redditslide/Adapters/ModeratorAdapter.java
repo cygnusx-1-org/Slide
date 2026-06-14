@@ -28,8 +28,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -55,6 +53,7 @@ import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.SubmissionParser;
@@ -997,28 +996,22 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
      */
     public static void doRemoveCommentReason(
             final Context mContext, final ProfileCommentViewHolder holder, final Comment comment) {
-        new MaterialDialog.Builder(mContext)
+        new MaterialInputDialog.Builder(mContext)
                 .title(R.string.mod_remove_title)
                 .positiveText(R.string.btn_remove)
-                .alwaysCallInputCallback()
+                .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
                 .input(
                         mContext.getString(R.string.mod_remove_hint),
                         mContext.getString(R.string.mod_remove_template),
-                        false,
-                        (dialog, input) -> {})
-                .inputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
+                        null)
                 .neutralText(R.string.mod_remove_insert_draft)
                 .onPositive(
-                        new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(final MaterialDialog dialog, DialogAction which) {
+                        dialog ->
                                 removeCommentReason(
                                         comment,
                                         mContext,
                                         holder,
-                                        dialog.getInputEditText().getText().toString());
-                            }
-                        })
+                                        dialog.getInputEditText().getText().toString()))
                 .negativeText(R.string.btn_cancel)
                 .show();
     }

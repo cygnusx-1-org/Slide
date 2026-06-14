@@ -30,12 +30,11 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager.widget.ViewPager;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.tabs.TabLayout;
 
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.CaseInsensitiveArrayList;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.Fragments.MultiredditView;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
@@ -46,6 +45,7 @@ import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SortingUtil;
 
@@ -187,25 +187,17 @@ public class MultiredditOverview extends BaseActivityAnim {
                                 public void onComplete(List<MultiReddit> multireddits) {
                                     if ((multireddits != null) && !multireddits.isEmpty()) {
                                         searchMulti = multireddits.get(pager.getCurrentItem());
-                                        MaterialDialog.Builder builder =
-                                                new MaterialDialog.Builder(MultiredditOverview.this)
+                                        MaterialInputDialog.Builder builder =
+                                                new MaterialInputDialog.Builder(
+                                                                MultiredditOverview.this)
                                                         .title(R.string.search_title)
-                                                        .alwaysCallInputCallback()
                                                         .input(
                                                                 getString(R.string.search_msg),
                                                                 "",
-                                                                new MaterialDialog.InputCallback() {
-                                                                    @Override
-                                                                    public void onInput(
-                                                                            MaterialDialog
-                                                                                    materialDialog,
-                                                                            CharSequence
-                                                                                    charSequence) {
+                                                                (dialog, charSequence) ->
                                                                         term =
                                                                                 charSequence
-                                                                                        .toString();
-                                                                    }
-                                                                });
+                                                                                        .toString());
 
                                         // Add "search current sub" if it is not
                                         // frontpage/all/random
@@ -216,27 +208,16 @@ public class MultiredditOverview extends BaseActivityAnim {
                                                                         + searchMulti
                                                                                 .getDisplayName()))
                                                 .onPositive(
-                                                        new MaterialDialog.SingleButtonCallback() {
-                                                            @Override
-                                                            public void onClick(
-                                                                    @NonNull
-                                                                            MaterialDialog
-                                                                                    materialDialog,
-                                                                    @NonNull
-                                                                            DialogAction
-                                                                                    dialogAction) {
-                                                                Intent i =
-                                                                        new Intent(
-                                                                                MultiredditOverview
-                                                                                        .this,
-                                                                                Search.class);
-                                                                i.putExtra(Search.EXTRA_TERM, term);
-                                                                i.putExtra(
-                                                                        Search.EXTRA_MULTIREDDIT,
-                                                                        searchMulti
-                                                                                .getDisplayName());
-                                                                startActivity(i);
-                                                            }
+                                                        dialog -> {
+                                                            Intent i =
+                                                                    new Intent(
+                                                                            MultiredditOverview.this,
+                                                                            Search.class);
+                                                            i.putExtra(Search.EXTRA_TERM, term);
+                                                            i.putExtra(
+                                                                    Search.EXTRA_MULTIREDDIT,
+                                                                    searchMulti.getDisplayName());
+                                                            startActivity(i);
                                                         });
 
                                         builder.show();
@@ -320,7 +301,9 @@ public class MultiredditOverview extends BaseActivityAnim {
                         .setMessage(R.string.public_multireddit_err_msg)
                         .setNegativeButton(R.string.btn_go_back, (dialog, which) -> finish());
             }
-            b.show();
+            final AlertDialog multiDialog = b.create();
+            DialogUtil.matchDialogToCardBackground(MultiredditOverview.this, multiDialog);
+            multiDialog.show();
         } catch (Exception e) {
 
         }

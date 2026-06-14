@@ -1,10 +1,12 @@
 package me.edgan.redditslide.Activities;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -18,7 +20,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 
-import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import me.edgan.redditslide.Authentication;
@@ -26,6 +28,7 @@ import me.edgan.redditslide.DataShare;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Views.DoEditorActions;
+import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.MiscUtil;
@@ -113,23 +116,21 @@ public class SendMessage extends BaseActivity {
                             for (String s : UserSubscriptions.modOf) {
                                 items.add("/r/" + s);
                             }
-                        new MaterialDialog.Builder(SendMessage.this)
-                                .title("Send message as")
-                                .items(items)
-                                .itemsCallback(
-                                        new MaterialDialog.ListCallback() {
-                                            @Override
-                                            public void onSelection(
-                                                    MaterialDialog dialog,
-                                                    View itemView,
-                                                    int which,
-                                                    CharSequence text) {
-                                                SendMessage.this.author = (String) text;
-                                                sendingAs.setText("Sending as " + author);
-                                            }
+                        final Context contextThemeWrapper =
+                                new ContextThemeWrapper(
+                                        SendMessage.this,
+                                        new ColorPreferences(SendMessage.this)
+                                                .getFontStyle()
+                                                .getBaseId());
+                        new MaterialAlertDialogBuilder(contextThemeWrapper)
+                                .setTitle("Send message as")
+                                .setItems(
+                                        items.toArray(new CharSequence[0]),
+                                        (dialog, which) -> {
+                                            SendMessage.this.author = items.get(which);
+                                            sendingAs.setText("Sending as " + author);
                                         })
-                                .negativeText(R.string.btn_cancel)
-                                .onNegative(null)
+                                .setNegativeButton(R.string.btn_cancel, null)
                                 .show();
                     }
                 });

@@ -40,8 +40,6 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -59,6 +57,8 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MaterialInputDialog;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.SortingUtil;
 import me.edgan.redditslide.util.TimeUtils;
 import me.edgan.redditslide.util.MiscUtil;
@@ -669,11 +669,12 @@ public class Profile extends BaseActivityAnim {
                     @Override
                     public void onPreExecute() {
                         d =
-                                new MaterialDialog.Builder(Profile.this)
+                                new MaterialProgressDialog.Builder(Profile.this)
                                         .progress(true, 100)
                                         .content(R.string.misc_please_wait)
                                         .title(R.string.profile_category_loading)
-                                        .show();
+                                        .show()
+                                        .getDialog();
                     }
 
                     @Override
@@ -699,30 +700,29 @@ public class Profile extends BaseActivityAnim {
                     @Override
                     public void onPostExecute(final List<String> data) {
                         try {
-                            new MaterialDialog.Builder(Profile.this)
-                                    .items(data)
-                                    .title(R.string.profile_category_select)
-                                    .itemsCallback(
-                                            new MaterialDialog.ListCallback() {
-                                                @Override
-                                                public void onSelection(
-                                                        MaterialDialog dialog,
-                                                        final View itemView,
-                                                        int which,
-                                                        CharSequence text) {
-                                                    final String t = data.get(which);
-                                                    if (which == 0) category = null;
-                                                    else category = t;
-                                                    int current = pager.getCurrentItem();
-                                                    ProfilePagerAdapter adapter =
-                                                            new ProfilePagerAdapter(
-                                                                    getSupportFragmentManager());
-                                                    pager.setAdapter(adapter);
-                                                    pager.setOffscreenPageLimit(1);
+                            final Context contextThemeWrapper =
+                                    new ContextThemeWrapper(
+                                            Profile.this,
+                                            new ColorPreferences(Profile.this)
+                                                    .getFontStyle()
+                                                    .getBaseId());
+                            new MaterialAlertDialogBuilder(contextThemeWrapper)
+                                    .setTitle(R.string.profile_category_select)
+                                    .setItems(
+                                            data.toArray(new CharSequence[0]),
+                                            (dialog, which) -> {
+                                                final String t = data.get(which);
+                                                if (which == 0) category = null;
+                                                else category = t;
+                                                int current = pager.getCurrentItem();
+                                                ProfilePagerAdapter adapter =
+                                                        new ProfilePagerAdapter(
+                                                                getSupportFragmentManager());
+                                                pager.setAdapter(adapter);
+                                                pager.setOffscreenPageLimit(1);
 
-                                                    tabs.setupWithViewPager(pager);
-                                                    pager.setCurrentItem(current);
-                                                }
+                                                tabs.setupWithViewPager(pager);
+                                                pager.setCurrentItem(current);
                                             })
                                     .show();
                             if (d != null) {
@@ -798,8 +798,8 @@ public class Profile extends BaseActivityAnim {
                                     new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            MaterialDialog.Builder b =
-                                                    new MaterialDialog.Builder(Profile.this)
+                                            MaterialInputDialog.Builder b =
+                                                    new MaterialInputDialog.Builder(Profile.this)
                                                             .title(
                                                                     getString(
                                                                             R.string
@@ -808,8 +808,7 @@ public class Profile extends BaseActivityAnim {
                                                             .input(
                                                                     getString(R.string.profile_tag),
                                                                     UserTags.getUserTag(name),
-                                                                    false,
-                                                                    (dialog, input) -> {})
+                                                                    null)
                                                             .positiveText(R.string.profile_btn_tag)
                                                             .neutralText(R.string.btn_cancel);
 
@@ -817,73 +816,57 @@ public class Profile extends BaseActivityAnim {
                                                 b.negativeText(R.string.profile_btn_untag);
                                             }
                                             b.onPositive(
-                                                            new MaterialDialog
-                                                                    .SingleButtonCallback() {
-                                                                @Override
-                                                                public void onClick(
-                                                                        MaterialDialog dialog,
-                                                                        DialogAction which) {
-                                                                    UserTags.setUserTag(
-                                                                            name,
-                                                                            dialog.getInputEditText()
-                                                                                    .getText()
-                                                                                    .toString());
-                                                                    String tag =
-                                                                            UserTags.getUserTag(
-                                                                                    name);
-                                                                    if (tag.isEmpty()) {
-                                                                        tag =
-                                                                                getString(
-                                                                                        R.string
-                                                                                                .profile_tag_user);
-                                                                    } else {
-                                                                        tag =
-                                                                                getString(
-                                                                                        R.string
-                                                                                                .profile_tag_user_existing,
-                                                                                        tag);
-                                                                    }
-                                                                    ((TextView)
-                                                                                    dialoglayout
-                                                                                            .findViewById(
-                                                                                                    R
-                                                                                                            .id
-                                                                                                            .tagged))
-                                                                            .setText(tag);
+                                                            dialog -> {
+                                                                UserTags.setUserTag(
+                                                                        name,
+                                                                        dialog.getInputEditText()
+                                                                                .getText()
+                                                                                .toString());
+                                                                String tag =
+                                                                        UserTags.getUserTag(name);
+                                                                if (tag.isEmpty()) {
+                                                                    tag =
+                                                                            getString(
+                                                                                    R.string
+                                                                                            .profile_tag_user);
+                                                                } else {
+                                                                    tag =
+                                                                            getString(
+                                                                                    R.string
+                                                                                            .profile_tag_user_existing,
+                                                                                    tag);
                                                                 }
+                                                                ((TextView)
+                                                                                dialoglayout
+                                                                                        .findViewById(
+                                                                                                R.id
+                                                                                                        .tagged))
+                                                                        .setText(tag);
                                                             })
                                                     .onNeutral(null)
                                                     .onNegative(
-                                                            new MaterialDialog
-                                                                    .SingleButtonCallback() {
-                                                                @Override
-                                                                public void onClick(
-                                                                        MaterialDialog dialog,
-                                                                        DialogAction which) {
-                                                                    UserTags.removeUserTag(name);
-                                                                    String tag =
-                                                                            UserTags.getUserTag(
-                                                                                    name);
-                                                                    if (tag.isEmpty()) {
-                                                                        tag =
-                                                                                getString(
-                                                                                        R.string
-                                                                                                .profile_tag_user);
-                                                                    } else {
-                                                                        tag =
-                                                                                getString(
-                                                                                        R.string
-                                                                                                .profile_tag_user_existing,
-                                                                                        tag);
-                                                                    }
-                                                                    ((TextView)
-                                                                                    dialoglayout
-                                                                                            .findViewById(
-                                                                                                    R
-                                                                                                            .id
-                                                                                                            .tagged))
-                                                                            .setText(tag);
+                                                            dialog -> {
+                                                                UserTags.removeUserTag(name);
+                                                                String tag =
+                                                                        UserTags.getUserTag(name);
+                                                                if (tag.isEmpty()) {
+                                                                    tag =
+                                                                            getString(
+                                                                                    R.string
+                                                                                            .profile_tag_user);
+                                                                } else {
+                                                                    tag =
+                                                                            getString(
+                                                                                    R.string
+                                                                                            .profile_tag_user_existing,
+                                                                                    tag);
                                                                 }
+                                                                ((TextView)
+                                                                                dialoglayout
+                                                                                        .findViewById(
+                                                                                                R.id
+                                                                                                        .tagged))
+                                                                        .setText(tag);
                                                             })
                                                     .show();
                                         }
@@ -1246,36 +1229,22 @@ public class Profile extends BaseActivityAnim {
         int currentTab = pager.getCurrentItem();
         String tabName = usedArray[currentTab];
 
-        MaterialDialog.Builder builder = new MaterialDialog.Builder(this)
+        MaterialInputDialog.Builder builder = new MaterialInputDialog.Builder(this)
                 .title(String.format(getString(R.string.profile_search_title), tabName))
-                .input(getString(R.string.profile_search_hint), currentSearchQuery, false,
-                        new MaterialDialog.InputCallback() {
-                            @Override
-                            public void onInput(MaterialDialog dialog, CharSequence input) {
-                                // Input will be handled by positive button
-                            }
-                        })
+                .input(getString(R.string.profile_search_hint), currentSearchQuery, null)
                 .positiveText(R.string.profile_search)
                 .negativeText(android.R.string.cancel)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        CharSequence input = dialog.getInputEditText().getText();
-                        if (input != null && input.toString().trim().length() > 0) {
-                            executeSearch(input.toString().trim());
-                        }
+                .onPositive(dialog -> {
+                    CharSequence input = dialog.getInputEditText().getText();
+                    if (input != null && input.toString().trim().length() > 0) {
+                        executeSearch(input.toString().trim());
                     }
                 });
 
         // Only show clear button if search is already active
         if (isSearchActive) {
             builder.neutralText(R.string.profile_search_clear)
-                    .onNeutral(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                            clearSearch();
-                        }
-                    });
+                    .onNeutral(dialog -> clearSearch());
         }
 
         builder.show();
@@ -1365,8 +1334,8 @@ public class Profile extends BaseActivityAnim {
         }
 
         // Show feedback
-        Snackbar.make(findViewById(R.id.header), R.string.profile_search_cleared,
-                Snackbar.LENGTH_SHORT).show();
+        LayoutUtils.showSnackbar(Snackbar.make(findViewById(R.id.header), R.string.profile_search_cleared,
+                Snackbar.LENGTH_SHORT));
     }
 
     @Override

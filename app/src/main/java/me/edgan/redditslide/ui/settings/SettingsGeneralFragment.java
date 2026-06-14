@@ -36,15 +36,12 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -60,8 +57,10 @@ import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.ImageLoaderUtils;
+import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.QrCodeScannerHelper;
 import me.edgan.redditslide.util.SortingUtil;
 import me.edgan.redditslide.util.StorageUtil;
@@ -325,7 +324,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                                                                             "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
                                                         }
                                                     });
-                                            s.show();
+                                            LayoutUtils.showSnackbar(s);
                                         }
                                     });
                         }
@@ -349,8 +348,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 context.findViewById(R.id.settings_general_sorting_current_frontpage);
 
         context.findViewById(R.id.settings_general_drawer_items)
-                .setOnClickListener(
-                        v -> new DrawerItemsDialog(new MaterialDialog.Builder(context)).show());
+                .setOnClickListener(v -> DrawerItemsDialog.show(context));
 
         {
             SwitchCompat immersiveModeSwitch =
@@ -1646,38 +1644,19 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 .setNegativeButton(
                         R.string.sub_post_notifs_settings_search,
                         (dialog, which) ->
-                                new MaterialDialog.Builder(SettingsGeneralFragment.this.context)
+                                new MaterialInputDialog.Builder(
+                                                SettingsGeneralFragment.this.context)
                                         .title(R.string.reorder_add_subreddit)
-                                        .inputRangeRes(2, 21, R.color.md_red_500)
-                                        .alwaysCallInputCallback()
+                                        .inputRange(2, 21)
                                         .input(
                                                 context.getString(R.string.reorder_subreddit_name),
                                                 null,
-                                                false,
-                                                new MaterialDialog.InputCallback() {
-                                                    @Override
-                                                    public void onInput(
-                                                            MaterialDialog dialog,
-                                                            CharSequence raw) {
+                                                (d, raw) ->
                                                         input =
                                                                 raw.toString()
-                                                                        .replaceAll(
-                                                                                "\\s",
-                                                                                ""); // remove
-                                                        // whitespace
-                                                        // from input
-                                                    }
-                                                })
+                                                                        .replaceAll("\\s", ""))
                                         .positiveText(R.string.btn_add)
-                                        .onPositive(
-                                                new MaterialDialog.SingleButtonCallback() {
-                                                    @Override
-                                                    public void onClick(
-                                                            @NonNull MaterialDialog dialog,
-                                                            @NonNull DialogAction which) {
-                                                        new AsyncGetSubreddit().execute(input);
-                                                    }
-                                                })
+                                        .onPositive(d -> new AsyncGetSubreddit().execute(input))
                                         .negativeText(R.string.btn_cancel)
                                         .show())
                 .show();
@@ -1714,32 +1693,25 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
         if (!toAdd.isEmpty()) {
             final int[] selectedThreshold = {0}; // Default to index 0 ("1")
             final String[] thresholds = new String[] {"1", "5", "10", "20", "40", "50"};
-            new MaterialDialog.Builder(SettingsGeneralFragment.this.context)
-                    .title(R.string.sub_post_notifs_threshold)
-                    .items(thresholds)
-                    .alwaysCallSingleChoiceCallback()
-                    .itemsCallbackSingleChoice(
-                            0,
-                            new MaterialDialog.ListCallbackSingleChoice() {
-                                @Override
-                                public boolean onSelection(
-                                        MaterialDialog dialog,
-                                        View itemView,
-                                        int which,
-                                        CharSequence text) {
-                                    selectedThreshold[0] = which;
-                                    return true;
+            new MaterialAlertDialogBuilder(
+                            new ContextThemeWrapper(
+                                    SettingsGeneralFragment.this.context,
+                                    new ColorPreferences(SettingsGeneralFragment.this.context)
+                                            .getFontStyle()
+                                            .getBaseId()))
+                    .setTitle(R.string.sub_post_notifs_threshold)
+                    .setSingleChoiceItems(
+                            thresholds, 0, (dialog, which) -> selectedThreshold[0] = which)
+                    .setPositiveButton(
+                            R.string.btn_ok,
+                            (dialog, which) -> {
+                                for (String s : toAdd) {
+                                    subsRaw.add(s + ":" + thresholds[selectedThreshold[0]]);
                                 }
+                                saveAndUpdateSubs(subsRaw);
                             })
-                    .positiveText(R.string.btn_ok)
-                    .negativeText(R.string.btn_cancel)
-                    .onPositive((dialog, which) -> {
-                        for (String s : toAdd) {
-                            subsRaw.add(s + ":" + thresholds[selectedThreshold[0]]);
-                        }
-                        saveAndUpdateSubs(subsRaw);
-                    })
-                    .cancelable(true)
+                    .setNegativeButton(R.string.btn_cancel, null)
+                    .setCancelable(true)
                     .show();
         } else {
             saveAndUpdateSubs(subsRaw);

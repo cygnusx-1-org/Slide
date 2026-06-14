@@ -14,9 +14,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
-
 import me.edgan.redditslide.Adapters.ContributionAdapter;
 import me.edgan.redditslide.Adapters.SubredditSearchPosts;
 import me.edgan.redditslide.Constants;
@@ -28,6 +25,7 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.handler.ToolbarScrollHideHandler;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.SortingUtil;
 import me.edgan.redditslide.util.TimeUtils;
 import me.edgan.redditslide.util.MiscUtil;
@@ -187,42 +185,30 @@ public class Search extends BaseActivityAnim {
                 openTimeFramePopup();
                 return true;
             case R.id.edit:
-                MaterialDialog.Builder builder =
-                        new MaterialDialog.Builder(this)
+                MaterialInputDialog.Builder builder =
+                        new MaterialInputDialog.Builder(this)
                                 .title(R.string.search_title)
-                                .alwaysCallInputCallback()
                                 .input(
                                         getString(R.string.search_msg),
                                         where,
-                                        new MaterialDialog.InputCallback() {
-                                            @Override
-                                            public void onInput(
-                                                    MaterialDialog materialDialog,
-                                                    CharSequence charSequence) {
-                                                where = charSequence.toString();
-                                            }
-                                        });
+                                        (dialog, charSequence) ->
+                                                where = charSequence.toString());
 
                 // Add "search current sub" if it is not frontpage/all/random
                 builder.positiveText("Search")
                         .onPositive(
-                                new MaterialDialog.SingleButtonCallback() {
-                                    @Override
-                                    public void onClick(
-                                            @NonNull MaterialDialog materialDialog,
-                                            @NonNull DialogAction dialogAction) {
-                                        Intent i = new Intent(Search.this, Search.class);
-                                        i.putExtra(Search.EXTRA_TERM, where);
-                                        if (multireddit) {
-                                            i.putExtra(Search.EXTRA_MULTIREDDIT, subreddit);
-                                        } else {
-                                            i.putExtra(Search.EXTRA_SUBREDDIT, subreddit);
-                                        }
-                                        startActivity(i);
-                                        overridePendingTransition(0, 0);
-                                        finish();
-                                        overridePendingTransition(0, 0);
+                                dialog -> {
+                                    Intent i = new Intent(Search.this, Search.class);
+                                    i.putExtra(Search.EXTRA_TERM, where);
+                                    if (multireddit) {
+                                        i.putExtra(Search.EXTRA_MULTIREDDIT, subreddit);
+                                    } else {
+                                        i.putExtra(Search.EXTRA_SUBREDDIT, subreddit);
                                     }
+                                    startActivity(i);
+                                    overridePendingTransition(0, 0);
+                                    finish();
+                                    overridePendingTransition(0, 0);
                                 });
                 builder.show();
                 return true;

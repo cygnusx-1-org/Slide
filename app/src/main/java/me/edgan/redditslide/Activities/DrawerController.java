@@ -24,15 +24,12 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -61,6 +58,7 @@ import me.edgan.redditslide.util.AnimatorUtil;
 import me.edgan.redditslide.util.EditTextValidator;
 import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
@@ -623,37 +621,25 @@ public class DrawerController {
                             new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    new MaterialDialog.Builder(mainActivity)
+                                    new MaterialInputDialog.Builder(mainActivity)
                                         .inputRange(3, 20)
-                                        .alwaysCallInputCallback()
                                         .input(
                                                 mainActivity.getString(R.string.user_enter),
                                                 null,
-                                                new MaterialDialog.InputCallback() {
-                                                    @Override
-                                                    public void onInput(
-                                                            @NonNull MaterialDialog dialog,
-                                                            CharSequence input) {
-                                                        final EditText editText = dialog.getInputEditText();
-                                                        EditTextValidator.validateUsername(editText);
-                                                        if (input.length() >= 3 && input.length() <= 20) {
-                                                            dialog.getActionButton(DialogAction.POSITIVE).setEnabled(true);
-                                                        }
+                                                (dialog, input) -> {
+                                                    final EditText editText = dialog.getInputEditText();
+                                                    EditTextValidator.validateUsername(editText);
+                                                    if (input.length() >= 3 && input.length() <= 20) {
+                                                        dialog.getActionButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
                                                     }
                                                 })
                                         .positiveText(R.string.user_btn_gotomultis)
                                         .onPositive(
-                                                new MaterialDialog.SingleButtonCallback() {
-                                                    @Override
-                                                    public void onClick(
-                                                            @NonNull MaterialDialog dialog,
-                                                            @NonNull DialogAction which) {
-
-                                                        if (mainActivity.runAfterLoad == null) {
-                                                            Intent inte = new Intent(mainActivity, MultiredditOverview.class);
-                                                            inte.putExtra(Profile.EXTRA_PROFILE, dialog.getInputEditText().getText().toString());
-                                                            mainActivity.startActivity(inte);
-                                                        }
+                                                dialog -> {
+                                                    if (mainActivity.runAfterLoad == null) {
+                                                        Intent inte = new Intent(mainActivity, MultiredditOverview.class);
+                                                        inte.putExtra(Profile.EXTRA_PROFILE, dialog.getInputEditText().getText().toString());
+                                                        mainActivity.startActivity(inte);
                                                     }
                                                 })
                                         .negativeText(R.string.btn_cancel)

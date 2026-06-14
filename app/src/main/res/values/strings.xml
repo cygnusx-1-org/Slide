@@ -1379,4 +1379,10 @@
     <string name="video_speed_control_content_desc">Playback speed control</string>
     <string name="image_rotate_content_desc">Rotate image 90 degrees clockwise</string>
     <string name="image_rotate_left_content_desc">Rotate image 90 degrees counter-clockwise</string>
+
+    <!-- Folder chooser dialog (formerly provided by afollestad material-dialogs commons) -->
+    <string name="md_error_label">Error</string>
+    <string name="md_storage_perm_error">This functionality requires the storage permission, which has not been granted.</string>
+    <string name="md_choose_label">CHOOSE</string>
+    <string name="new_folder">New folder</string>
 </resources>

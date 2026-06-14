@@ -2,6 +2,8 @@ package me.edgan.redditslide.ui.settings;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -290,7 +292,10 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
                 }
             }
 
-            new AlertDialog.Builder(context)
+            // Build from the dialoglayout's context (the subreddit-themed ContextThemeWrapper for
+            // a single sub) so the RESET/CANCEL/OK buttons inherit the same colorAccent as the
+            // toggles inside the dialog, instead of the Activity theme's default amber accent.
+            final AlertDialog themeDialog = new AlertDialog.Builder(dialoglayout.getContext())
                     .setView(dialoglayout)
                     .setCancelable(false)
                     .setNegativeButton(
@@ -456,7 +461,25 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
                                     }
                                 }
                             })
-                    .show();
+                    .create();
+
+            themeDialog.show();
+
+            // The dialog content is a CardView using ?attr/card_background from the subreddit
+            // theme, but the AlertDialog's window (and its button panel) keeps the default
+            // gray dialog background. Match the window to the themed card color so the
+            // RESET/CANCEL/OK bar blends with the rest of the dialog.
+            if (themeDialog.getWindow() != null) {
+                TypedValue cardBackground = new TypedValue();
+                if (dialoglayout
+                        .getContext()
+                        .getTheme()
+                        .resolveAttribute(R.attr.card_background, cardBackground, true)) {
+                    themeDialog
+                            .getWindow()
+                            .setBackgroundDrawable(new ColorDrawable(cardBackground.data));
+                }
+            }
         }
     }
 

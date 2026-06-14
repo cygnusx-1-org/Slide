@@ -1,6 +1,7 @@
 package me.edgan.redditslide.SubmissionViews;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -13,6 +14,8 @@ import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
+import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -22,11 +25,11 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.bottomsheet.BottomSheet;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import me.edgan.redditslide.ActionStates;
@@ -39,6 +42,7 @@ import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Views.RoundedBackgroundSpan;
 import me.edgan.redditslide.Views.TitleTextView;
+import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.Vote;
 import me.edgan.redditslide.util.AnimatorUtil;
@@ -842,21 +846,22 @@ public class PopulateShadowboxInfo {
                                                 mContext);
                                         break;
                                     case 12:
-                                        final MaterialDialog reportDialog =
-                                                new MaterialDialog.Builder(mContext)
-                                                        .customView(R.layout.report_dialog, true)
-                                                        .title(R.string.report_post)
-                                                        .positiveText(R.string.btn_report)
-                                                        .negativeText(R.string.btn_cancel)
-                                                        .onPositive(
-                                                                new MaterialDialog
-                                                                        .SingleButtonCallback() {
-                                                                    @Override
-                                                                    public void onClick(
-                                                                            MaterialDialog dialog,
-                                                                            DialogAction which) {
+                                        final Context contextThemeWrapper =
+        new ContextThemeWrapper(mContext, new ColorPreferences(mContext).getFontStyle().getBaseId());
+final View reportView =
+        LayoutInflater.from(contextThemeWrapper).inflate(R.layout.report_dialog, null);
+final AlertDialog reportDialog =
+        new MaterialAlertDialogBuilder(contextThemeWrapper)
+                .setView(reportView)
+                .setTitle(R.string.report_post)
+                .setNegativeButton(R.string.btn_cancel, null)
+                .setPositiveButton(
+                        R.string.btn_report,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
                                                                         RadioGroup reasonGroup =
-                                                                                dialog.getCustomView()
+                                                                                reportView
                                                                                         .findViewById(
                                                                                                 R.id
                                                                                                         .report_reasons);
@@ -867,7 +872,7 @@ public class PopulateShadowboxInfo {
                                                                                         .report_other) {
                                                                             reportReason =
                                                                                     ((EditText)
-                                                                                                    dialog.getCustomView()
+                                                                                                    reportView
                                                                                                             .findViewById(
                                                                                                                     R
                                                                                                                             .id
@@ -894,10 +899,9 @@ public class PopulateShadowboxInfo {
                                                                                         reportReason);
                                                                     }
                                                                 })
-                                                        .build();
+                                                        .create();
                                         final RadioGroup reasonGroup =
-                                                reportDialog
-                                                        .getCustomView()
+                                                reportView
                                                         .findViewById(R.id.report_reasons);
 
                                         reasonGroup.setOnCheckedChangeListener(
@@ -906,15 +910,13 @@ public class PopulateShadowboxInfo {
                                                     public void onCheckedChanged(
                                                             RadioGroup group, int checkedId) {
                                                         if (checkedId == R.id.report_other)
-                                                            reportDialog
-                                                                    .getCustomView()
+                                                            reportView
                                                                     .findViewById(
                                                                             R.id
                                                                                     .input_report_reason)
                                                                     .setVisibility(View.VISIBLE);
                                                         else
-                                                            reportDialog
-                                                                    .getCustomView()
+                                                            reportView
                                                                     .findViewById(
                                                                             R.id
                                                                                     .input_report_reason)
@@ -937,8 +939,7 @@ public class PopulateShadowboxInfo {
 
                                             @Override
                                             protected void onPostExecute(Ruleset rules) {
-                                                reportDialog
-                                                        .getCustomView()
+                                                reportView
                                                         .findViewById(R.id.report_loading)
                                                         .setVisibility(View.GONE);
                                                 if (rules == null) {

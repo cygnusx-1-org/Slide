@@ -14,13 +14,12 @@ import android.webkit.WebViewClient;
 
 import androidx.appcompat.app.AlertDialog;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 
 import net.dean.jraw.http.NetworkException;
@@ -116,7 +115,7 @@ public class Reauthenticate extends BaseActivityAnim {
     private final class UserChallengeTask extends AsyncTask<String, Void, OAuthData> {
         private final OAuthHelper mOAuthHelper;
         private final Credentials mCredentials;
-        private MaterialDialog mMaterialDialog;
+        private MaterialProgressDialog mMaterialDialog;
 
         public UserChallengeTask(OAuthHelper oAuthHelper, Credentials credentials) {
             Log.v(LogUtil.getTag(), "UserChallengeTask()");
@@ -127,8 +126,8 @@ public class Reauthenticate extends BaseActivityAnim {
         @Override
         protected void onPreExecute() {
             // Show a dialog to indicate progress
-            MaterialDialog.Builder builder =
-                    new MaterialDialog.Builder(Reauthenticate.this)
+            MaterialProgressDialog.Builder builder =
+                    new MaterialProgressDialog.Builder(Reauthenticate.this)
                             .title(R.string.login_authenticating)
                             .progress(true, 0)
                             .content(R.string.misc_please_wait)
