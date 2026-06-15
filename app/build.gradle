@@ -274,9 +274,6 @@ dependencies {
     // Floating action button menu implementation
     implementation 'com.nambimobile.widgets:expandable-fab:1.2.1'
 
-    // ViewAnimationUtils.createCircularReveal for pre-Lollipop APIs
-    implementation 'com.github.ozodrukh.CircularReveal:circualreveal:2.1.0'
-
     // RecyclerView animations
     implementation 'com.mikepenz:itemanimators:1.1.0@aar'
 
@@ -330,12 +327,9 @@ dependencies {
 /** Testing **/
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.mockito:mockito-core:5.23.0'
-    testImplementation 'org.mockito:mockito-inline:5.2.0'
     testImplementation 'org.robolectric:robolectric:4.16.1'
     testImplementation 'androidx.test:core:1.7.0'
     testImplementation 'org.hamcrest:hamcrest:3.0'
-    testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
-    testImplementation 'org.powermock:powermock-api-mockito2:2.0.9'
 }
 
 spotless {

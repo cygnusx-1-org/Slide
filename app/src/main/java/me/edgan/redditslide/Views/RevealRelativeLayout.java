@@ -1,21 +1,16 @@
 package me.edgan.redditslide.Views;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.RelativeLayout;
 
-import io.codetail.animation.RevealViewGroup;
-import io.codetail.animation.ViewRevealManager;
+// Previously backed the io.codetail CircularReveal library's ViewRevealManager to clip
+// circular reveals on pre-Lollipop. minSdk is 29, so android.view.ViewAnimationUtils
+// clips the reveal at the framework level and the manager is no longer needed. Kept as a
+// thin RelativeLayout subclass because it is referenced by class name in the submission
+// card layouts (submission_list.xml, submission_largecard.xml, etc.).
 
-// Adapted from
-// https://github.com/MajeurAndroid/CircularReveal/commit/a87e3ad4daac96f942be0e240ebfc098a79f5419
-// And migrated to 2.1.0
-
-public class RevealRelativeLayout extends RelativeLayout implements RevealViewGroup {
-
-    private ViewRevealManager manager;
+public class RevealRelativeLayout extends RelativeLayout {
 
     public RevealRelativeLayout(Context context) {
         this(context, null);
@@ -27,31 +22,6 @@ public class RevealRelativeLayout extends RelativeLayout implements RevealViewGr
 
     public RevealRelativeLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        manager = new ViewRevealManager();
-    }
-
-    @Override
-    protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
-        try {
-            canvas.save();
-
-            manager.transform(canvas, child);
-            return super.drawChild(canvas, child, drawingTime);
-        } finally {
-            canvas.restore();
-        }
-    }
-
-    @Override
-    public ViewRevealManager getViewRevealManager() {
-        return manager;
-    }
-
-    public void setViewRevealManager(ViewRevealManager manager) {
-        if (manager == null) {
-            throw new NullPointerException("ViewRevealManager is null");
-        }
-        this.manager = manager;
     }
 
     @Override

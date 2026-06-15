@@ -5,12 +5,11 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
-
-import io.codetail.animation.ViewAnimationUtils;
 
 import me.edgan.redditslide.R;
 
