@@ -28,7 +28,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 
-import com.cocosw.bottomsheet.BottomSheet;
+import me.edgan.redditslide.util.BottomSheet;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 

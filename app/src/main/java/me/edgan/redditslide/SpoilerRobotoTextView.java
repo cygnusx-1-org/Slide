@@ -46,7 +46,7 @@ import android.widget.TextView;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.content.ContextCompat;
 
-import com.cocosw.bottomsheet.BottomSheet;
+import me.edgan.redditslide.util.BottomSheet;
 import com.devspark.robototextview.widget.RobotoTextView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;

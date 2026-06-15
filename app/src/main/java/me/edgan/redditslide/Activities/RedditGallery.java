@@ -366,7 +366,7 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
                 java.util.Arrays.asList(external, share, image, save), color);
 
         // Build the bottom sheet
-        com.cocosw.bottomsheet.BottomSheet.Builder builder = new com.cocosw.bottomsheet.BottomSheet.Builder(this)
+        me.edgan.redditslide.util.BottomSheet.Builder builder = new me.edgan.redditslide.util.BottomSheet.Builder(this)
                 .title(contentUrl);
 
         builder.sheet(2, external, getString(R.string.open_externally));

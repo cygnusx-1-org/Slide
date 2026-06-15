@@ -24,7 +24,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.cocosw.bottomsheet.BottomSheet;
+import me.edgan.redditslide.util.BottomSheet;
 import com.devspark.robototextview.RobotoTypefaces;
 import com.google.android.material.snackbar.Snackbar;
 

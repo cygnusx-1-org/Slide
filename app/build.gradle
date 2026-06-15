@@ -255,10 +255,6 @@ dependencies {
     // Image cropping
     implementation 'com.vanniktech:android-image-cropper:4.7.0'
 
-    // Bottom sheet implementation
-    //  NOTE: Deprecated in favor of official Google bottom sheets
-    implementation 'com.cocosw:bottomsheet:1.5.0@aar'
-
     // Blurring
     implementation 'com.github.wasabeef:Blurry:4.0.0'
 

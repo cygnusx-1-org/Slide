@@ -17,7 +17,7 @@ import android.widget.RelativeLayout;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.cocosw.bottomsheet.BottomSheet;
+import me.edgan.redditslide.util.BottomSheet;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import me.edgan.redditslide.Activities.Album;
