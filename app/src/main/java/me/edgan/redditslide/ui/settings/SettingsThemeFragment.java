@@ -7,7 +7,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.os.Build;
 import android.util.Pair;
 import android.view.View;
 import android.view.Window;
@@ -261,16 +260,14 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
                                 if (toolbar != null)
                                     toolbar.setBackgroundColor(colorPicker2.getColor());
 
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                    Window window = context.getWindow();
-                                    int color = Palette.getDarkerColor(colorPicker2.getColor());
+                                Window window = context.getWindow();
+                                int color = Palette.getDarkerColor(colorPicker2.getColor());
 
-                                    if (SettingValues.alwaysBlackStatusbar) {
-                                        color = Color.BLACK;
-                                    }
-
-                                    window.setStatusBarColor(color);
+                                if (SettingValues.alwaysBlackStatusbar) {
+                                    color = Color.BLACK;
                                 }
+
+                                window.setStatusBarColor(color);
                                 context.setRecentBar(
                                         context.getString(R.string.title_theme_settings),
                                         colorPicker2.getColor());

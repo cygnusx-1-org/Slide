@@ -2,7 +2,6 @@ package me.edgan.redditslide.util;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -403,21 +402,19 @@ public class CommentStateUtil {
                                             );
                                     }
                                 });
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                                replyLine.setOnFocusChangeListener(
-                                    (view, b) -> {
-                                        if (b) {
-                                            view.postDelayed(
-                                                () -> {
-                                                    if (!view.hasFocus()) {
-                                                        view.requestFocus();
-                                                    }
-                                                },
-                                                100
-                                            );
-                                        }
-                                    });
-                            }
+                            replyLine.setOnFocusChangeListener(
+                                (view, b) -> {
+                                    if (b) {
+                                        view.postDelayed(
+                                            () -> {
+                                                if (!view.hasFocus()) {
+                                                    view.requestFocus();
+                                                }
+                                            },
+                                            100
+                                        );
+                                    }
+                                });
                             replyLine.requestFocus(); // TODO: Not working when called a second time
                             // time
                             KeyboardUtil.toggleKeyboard(adapter.mContext, InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);

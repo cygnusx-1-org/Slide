@@ -2,7 +2,6 @@ package me.edgan.redditslide;
 
 import me.edgan.redditslide.util.DialogUtil;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
@@ -15,7 +14,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -29,7 +27,6 @@ import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.multidex.MultiDexApplication;
 
 import androidx.annotation.OptIn;
 import androidx.media3.common.util.UnstableApi;
@@ -82,7 +79,7 @@ import java.util.Locale;
 
 /** Created by ccrama on 9/17/2015. */
 @OptIn(markerClass = UnstableApi.class)
-public class Reddit extends MultiDexApplication implements Application.ActivityLifecycleCallbacks {
+public class Reddit extends Application implements Application.ActivityLifecycleCallbacks {
     private static Application mApplication;
 
     public static final String EMPTY_STRING = "NOTHING";
@@ -160,10 +157,7 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
     }
 
     public static HashMap<String, String> getInstalledBrowsers() {
-        int packageMatcher =
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                        ? PackageManager.MATCH_ALL
-                        : PackageManager.GET_DISABLED_COMPONENTS;
+        int packageMatcher = PackageManager.MATCH_ALL;
 
         HashMap<String, String> browserMap = new HashMap<>();
 
@@ -445,9 +439,7 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
             client = new OkHttpClient();
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            setCanUseNightModeAuto();
-        }
+        setCanUseNightModeAuto();
 
         overrideLanguage =
                 getSharedPreferences("SETTINGS", 0)
@@ -641,7 +633,6 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
         return mApplication.getApplicationContext();
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     private static void setCanUseNightModeAuto() {
         UiModeManager uiModeManager = getAppContext().getSystemService(UiModeManager.class);
         canUseNightModeAuto = uiModeManager != null;

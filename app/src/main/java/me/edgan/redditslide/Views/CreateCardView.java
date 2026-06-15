@@ -1,7 +1,6 @@
 package me.edgan.redditslide.Views;
 
 import android.animation.ValueAnimator;
-import android.os.Build;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,9 +50,7 @@ public class CreateCardView {
                                 .inflate(R.layout.submission_list, viewGroup, false);
 
                 // if the radius is set to 0 on KitKat--it crashes.
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    ((CardView) v.findViewById(R.id.card)).setRadius(0f);
-                }
+                ((CardView) v.findViewById(R.id.card)).setRadius(0f);
                 break;
             case DESKTOP:
                 v =
@@ -61,9 +58,7 @@ public class CreateCardView {
                                 .inflate(R.layout.submission_list_desktop, viewGroup, false);
 
                 // if the radius is set to 0 on KitKat--it crashes.
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    ((CardView) v.findViewById(R.id.card)).setRadius(0f);
-                }
+                ((CardView) v.findViewById(R.id.card)).setRadius(0f);
                 break;
         }
 
@@ -391,11 +386,7 @@ public class CreateCardView {
                     picParams.bottomMargin);
 
             layoutParams.addRule(RelativeLayout.LEFT_OF, R.id.thumbimage2);
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
-                layoutParams.removeRule(RelativeLayout.RIGHT_OF);
-            } else {
-                layoutParams.addRule(RelativeLayout.RIGHT_OF, 0);
-            }
+            layoutParams.removeRule(RelativeLayout.RIGHT_OF);
         }
         if (!SettingValues.bigPicEnabled) {
             v.findViewById(R.id.thumbimage2).setVisibility(View.VISIBLE);

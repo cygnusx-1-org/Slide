@@ -3,7 +3,6 @@ package me.edgan.redditslide.Activities;
 import me.edgan.redditslide.util.DialogUtil;
 
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
@@ -43,12 +42,10 @@ public class FullscreenVideo extends FullScreenActivity {
         String data = getIntent().getExtras().getString(EXTRA_HTML);
         v = (WebView) findViewById(R.id.webgif);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = this.getWindow();
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(Color.BLACK);
-        }
+        Window window = this.getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(Color.BLACK);
 
         String dat = data;
         final WebSettings settings = v.getSettings();

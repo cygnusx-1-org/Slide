@@ -2,7 +2,6 @@ package me.edgan.redditslide.Views;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
@@ -54,11 +53,10 @@ public class ImageInsertEditText extends AppCompatEditText {
                     public boolean onCommitContent(
                             InputContentInfoCompat inputContentInfo, int flags, Bundle opts) {
                         if (callback != null) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1
-                                    && (flags
-                                                    & InputConnectionCompat
-                                                            .INPUT_CONTENT_GRANT_READ_URI_PERMISSION)
-                                            != 0) {
+                            if ((flags
+                                            & InputConnectionCompat
+                                                    .INPUT_CONTENT_GRANT_READ_URI_PERMISSION)
+                                    != 0) {
                                 try {
                                     inputContentInfo.requestPermission();
                                 } catch (Exception e) {

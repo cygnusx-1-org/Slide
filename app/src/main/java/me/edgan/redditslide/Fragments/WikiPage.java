@@ -1,7 +1,6 @@
 package me.edgan.redditslide.Fragments;
 
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -115,9 +114,7 @@ public class WikiPage extends Fragment {
                     }
                 });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG);
-        }
+        WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG);
     }
 
     private void onDomRetrieved(String dom) {

@@ -2,7 +2,6 @@ package me.edgan.redditslide.Activities;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -10,7 +9,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 import android.webkit.DownloadListener;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -205,17 +203,8 @@ public class Website extends BaseActivityAnim {
 
         if (!SettingValues.cookies) {
             final CookieManager cookieManager = CookieManager.getInstance();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                cookieManager.removeAllCookies(null);
-                cookieManager.flush();
-            } else {
-                final CookieSyncManager cookieSyncMngr = CookieSyncManager.createInstance(this);
-                cookieSyncMngr.startSync();
-                cookieManager.removeAllCookie();
-                cookieManager.removeSessionCookie();
-                cookieSyncMngr.stopSync();
-                cookieSyncMngr.sync();
-            }
+            cookieManager.removeAllCookies(null);
+            cookieManager.flush();
             cookieManager.setAcceptCookie(false);
 
             WebSettings ws = v.getSettings();

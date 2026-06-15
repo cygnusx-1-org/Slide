@@ -79,12 +79,10 @@ public class Tutorial extends AppCompatActivity {
             binding.tutorialViewPager.setCurrentItem(1);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            final Window window = this.getWindow();
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(Palette.getDarkerColor(Color.parseColor("#FF5252")));
-        }
+        final Window window = this.getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(Palette.getDarkerColor(Color.parseColor("#FF5252")));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             LogUtil.v("Checking notification permission on Android 13+");
@@ -187,10 +185,8 @@ public class Tutorial extends AppCompatActivity {
             BlendModeUtil.tintImageViewAsSrcAtop(
                     personalizeBinding.primaryColorPreview, Palette.getDefaultColor());
             personalizeBinding.header.setBackgroundColor(Palette.getDefaultColor());
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                final Window window = getActivity().getWindow();
-                window.setStatusBarColor(Palette.getDarkerColor(Palette.getDefaultColor()));
-            }
+            final Window window = getActivity().getWindow();
+            window.setStatusBarColor(Palette.getDarkerColor(Palette.getDefaultColor()));
 
             personalizeBinding.primaryColor.setOnClickListener(
                     v -> {
@@ -227,12 +223,11 @@ public class Tutorial extends AppCompatActivity {
                                     personalizeBinding.header.setBackgroundColor(
                                             choosemainBinding.picker2.getColor());
 
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                        final Window window = getActivity().getWindow();
-                                        window.setStatusBarColor(
-                                                Palette.getDarkerColor(
-                                                        choosemainBinding.picker2.getColor()));
-                                    }
+                                    getActivity()
+                                            .getWindow()
+                                            .setStatusBarColor(
+                                                    Palette.getDarkerColor(
+                                                            choosemainBinding.picker2.getColor()));
                                 });
 
                         choosemainBinding.ok.setOnClickListener(

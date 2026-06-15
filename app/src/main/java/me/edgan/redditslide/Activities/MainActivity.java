@@ -19,7 +19,6 @@ import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -996,16 +995,14 @@ public class MainActivity extends BaseActivity
             toGoto = getIntent().getIntExtra(EXTRA_PAGE_TO, 0);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = this.getWindow();
-            int color = Palette.getDarkerColor(Palette.getDarkerColor(Palette.getDefaultColor()));
+        Window window = this.getWindow();
+        int color = Palette.getDarkerColor(Palette.getDarkerColor(Palette.getDefaultColor()));
 
-            if (SettingValues.alwaysBlackStatusbar) {
-                color = Color.BLACK;
-            }
-
-            window.setStatusBarColor(color);
+        if (SettingValues.alwaysBlackStatusbar) {
+            color = Color.BLACK;
         }
+
+        window.setStatusBarColor(color);
 
         mTabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
         header = findViewById(R.id.header);
@@ -1717,16 +1714,14 @@ public class MainActivity extends BaseActivity
         if (accountsArea != null) {
             accountsArea.setBackgroundColor(Palette.getDarkerColor(color));
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            int finalColor = Palette.getDarkerColor(color);
+        Window window = getWindow();
+        int finalColor = Palette.getDarkerColor(color);
 
-            if (SettingValues.alwaysBlackStatusbar) {
-                finalColor = Color.BLACK;
-            }
-
-            window.setStatusBarColor(finalColor);
+        if (SettingValues.alwaysBlackStatusbar) {
+            finalColor = Color.BLACK;
         }
+
+        window.setStatusBarColor(finalColor);
         setRecentBar(subreddit, color);
         View headerSubView = findViewById(R.id.header_sub);
         if (headerSubView != null) {

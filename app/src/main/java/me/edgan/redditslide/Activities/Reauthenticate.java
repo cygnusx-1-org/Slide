@@ -5,7 +5,6 @@ import me.edgan.redditslide.util.DialogUtil;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -81,11 +80,7 @@ public class Reauthenticate extends BaseActivityAnim {
         authorizationUrl = authorizationUrl.replace("%3A%2F%2Fi", "://www");
         Log.v(LogUtil.getTag(), "Auth URL: " + authorizationUrl);
         final CookieManager cookieManager = CookieManager.getInstance();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            cookieManager.removeAllCookies(null);
-        } else {
-            cookieManager.removeAllCookie();
-        }
+        cookieManager.removeAllCookies(null);
         final WebView webView = (WebView) findViewById(R.id.web);
 
         webView.loadUrl(authorizationUrl);

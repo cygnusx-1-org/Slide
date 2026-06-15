@@ -6,10 +6,8 @@ import android.graphics.BlendMode;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.util.AttributeSet;
 
 import androidx.appcompat.widget.AppCompatTextView;
@@ -101,11 +99,7 @@ public class TransparentTagTextView extends AppCompatTextView {
 
         // Draw mask
         if (mMaskCanvas != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                mMaskCanvas.drawColor(Color.BLACK, BlendMode.CLEAR);
-            } else {
-                mMaskCanvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR);
-            }
+            mMaskCanvas.drawColor(Color.BLACK, BlendMode.CLEAR);
             super.onDraw(mMaskCanvas);
             mBackgroundCanvas.drawBitmap(mMaskBitmap, 0.f, 0.f, mPaint);
             canvas.drawBitmap(mBackgroundBitmap, 0.f, 0.f, null);

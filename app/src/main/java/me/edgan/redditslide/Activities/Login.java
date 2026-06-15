@@ -2,7 +2,6 @@ package me.edgan.redditslide.Activities;
 
 import me.edgan.redditslide.util.DialogUtil;
 
-import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -12,7 +11,6 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -20,7 +18,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -152,17 +149,8 @@ public class Login extends BaseActivityAnim {
         webSettings.setMinimumLogicalFontSize(1);
 
         final CookieManager cookieManager = CookieManager.getInstance();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            cookieManager.removeAllCookies(null);
-            cookieManager.flush();
-        } else {
-            final CookieSyncManager cookieSyncMngr = CookieSyncManager.createInstance(this);
-            cookieSyncMngr.startSync();
-            cookieManager.removeAllCookie();
-            cookieManager.removeSessionCookie();
-            cookieSyncMngr.stopSync();
-            cookieSyncMngr.sync();
-        }
+        cookieManager.removeAllCookies(null);
+        cookieManager.flush();
 
         String userAgent = webSettings.getUserAgentString();
         Log.v("Log into Reddit", "WebView original User-Agent: " + userAgent);
@@ -322,7 +310,6 @@ public class Login extends BaseActivityAnim {
                     }
 
                     @Override
-                    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
                     public WebResourceResponse shouldInterceptRequest(
                             WebView view, WebResourceRequest request) {
                         String url = request.getUrl().toString();
@@ -356,7 +343,6 @@ public class Login extends BaseActivityAnim {
                     }
 
                     @Override
-                    @TargetApi(Build.VERSION_CODES.M)
                     public void onReceivedError(
                             WebView view,
                             WebResourceRequest request,
@@ -372,7 +358,6 @@ public class Login extends BaseActivityAnim {
                     }
 
                     @Override
-                    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
                     public void onReceivedHttpError(
                             WebView view,
                             WebResourceRequest request,
@@ -545,12 +530,10 @@ public class Login extends BaseActivityAnim {
     }
 
     @Override
-    @TargetApi(Build.VERSION_CODES.O)
     protected void setAutofill() {
         getWindow().getDecorView().setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_AUTO);
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private WebResourceResponse proxyLoginRequest(WebResourceRequest request) {
         final String LOGIN_TAG = "Log into Reddit";
         try {

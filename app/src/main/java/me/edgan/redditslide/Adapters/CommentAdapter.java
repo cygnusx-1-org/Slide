@@ -15,7 +15,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 import android.util.TypedValue;
@@ -806,18 +805,16 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         }
                     });
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                replyLine.setOnFocusChangeListener(
-                        (v, b) -> {
-                            if (b) {
-                                v.postDelayed(
-                                        () -> {
-                                            if (!v.hasFocus()) v.requestFocus();
-                                        },
-                                        100);
-                            }
-                        });
-            }
+            replyLine.setOnFocusChangeListener(
+                    (v, b) -> {
+                        if (b) {
+                            v.postDelayed(
+                                    () -> {
+                                        if (!v.hasFocus()) v.requestFocus();
+                                    },
+                                    100);
+                        }
+                    });
             replyLine.requestFocus();
             KeyboardUtil.toggleKeyboard(
                     mContext,

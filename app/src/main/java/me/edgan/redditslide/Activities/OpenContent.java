@@ -3,7 +3,6 @@ package me.edgan.redditslide.Activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -51,11 +50,7 @@ public class OpenContent extends Activity {
     public void onResume() {
         super.onResume();
         if (second) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                finishAndRemoveTask();
-            } else {
-                finish();
-            }
+            finishAndRemoveTask();
         } else {
             second = true;
         }

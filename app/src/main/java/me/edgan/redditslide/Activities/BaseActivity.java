@@ -1,10 +1,7 @@
 package me.edgan.redditslide.Activities;
 
-import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,7 +14,6 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
@@ -164,9 +160,7 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
         applyOverrideLanguage();
 
         super.onCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            setAutofill();
-        }
+        setAutofill();
 
         /**
          * Enable fullscreen immersive mode if setting is checked
@@ -203,7 +197,6 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
     protected void setAutofill() {
         getWindow()
                 .getDecorView()
@@ -616,28 +609,19 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
      * @param color Color for the recent app bar
      */
     public void setRecentBar(@Nullable String title, int color) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (title == null || title.isEmpty()) {
-                title = getString(R.string.app_name);
-            }
-            setRecentBarTaskDescription(title, color);
+        if (title == null || title.isEmpty()) {
+            title = getString(R.string.app_name);
         }
+        setRecentBarTaskDescription(title, color);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setRecentBarTaskDescription(@Nullable String title, int color) {
         int icon =
                 title.equalsIgnoreCase("androidcirclejerk")
                         ? R.drawable.matiasduarte
                         : R.drawable.ic_launcher;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            setTaskDescription(new ActivityManager.TaskDescription(title, icon, color));
-        } else {
-            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), icon);
-            setTaskDescription(new ActivityManager.TaskDescription(title, bitmap, color));
-            bitmap.recycle();
-        }
+        setTaskDescription(new ActivityManager.TaskDescription(title, icon, color));
     }
 
     @Override

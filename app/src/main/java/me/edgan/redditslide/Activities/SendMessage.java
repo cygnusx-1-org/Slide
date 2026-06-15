@@ -5,7 +5,6 @@ import me.edgan.redditslide.util.DialogUtil;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.ContextThemeWrapper;
@@ -183,11 +182,9 @@ public class SendMessage extends BaseActivity {
             subject.setText(getIntent().getStringExtra(EXTRA_SUBJECT));
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = this.getWindow();
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        }
+        Window window = this.getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         setupUserAppBar(R.id.toolbar, null, true, name);
         setRecentBar(b.getTitle().toString(), Palette.getDefaultColor());
 

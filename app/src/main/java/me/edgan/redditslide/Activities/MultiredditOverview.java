@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.util.Log;
@@ -633,16 +632,14 @@ public class MultiredditOverview extends BaseActivityAnim {
                         new ColorPreferences(MultiredditOverview.this)
                                 .getColor(usedArray.get(0).getDisplayName()));
                 doDrawerSubs(0);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Window window = this.getWindow();
-                    int color = Palette.getDarkerColor(usedArray.get(0).getDisplayName());
+                Window window = this.getWindow();
+                int color = Palette.getDarkerColor(usedArray.get(0).getDisplayName());
 
-                    if (SettingValues.alwaysBlackStatusbar) {
-                        color = Color.BLACK;
-                    }
-
-                    window.setStatusBarColor(color);
+                if (SettingValues.alwaysBlackStatusbar) {
+                    color = Color.BLACK;
                 }
+
+                window.setStatusBarColor(color);
                 final View header = findViewById(R.id.header);
                 tabs.addOnTabSelectedListener(
                         new TabLayout.ViewPagerOnTabSelectedListener(pager) {
@@ -738,18 +735,16 @@ public class MultiredditOverview extends BaseActivityAnim {
                                     .setBackgroundColor(
                                             Palette.getColor(
                                                     usedArray.get(position).getDisplayName()));
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                Window window = getWindow();
-                                int color =
-                                        Palette.getDarkerColor(
-                                                usedArray.get(position).getDisplayName());
+                            Window window = getWindow();
+                            int color =
+                                    Palette.getDarkerColor(
+                                            usedArray.get(position).getDisplayName());
 
-                                if (SettingValues.alwaysBlackStatusbar) {
-                                    color = Color.BLACK;
-                                }
-
-                                window.setStatusBarColor(color);
+                            if (SettingValues.alwaysBlackStatusbar) {
+                                color = Color.BLACK;
                             }
+
+                            window.setStatusBarColor(color);
                             tabs.setSelectedTabIndicatorColor(
                                     new ColorPreferences(MultiredditOverview.this)
                                             .getColor(usedArray.get(position).getDisplayName()));

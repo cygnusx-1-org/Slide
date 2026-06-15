@@ -286,8 +286,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
         {
             View notifs = context.findViewById(R.id.settings_general_redditnotifs);
             if (notifs != null) {
-                if (!Reddit.isPackageInstalled("com.reddit.frontpage")
-                        || Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                if (!Reddit.isPackageInstalled("com.reddit.frontpage")) {
                     notifs.setVisibility(View.GONE);
                     if (context.findViewById(R.id.settings_general_installreddit) != null) {
                         context.findViewById(R.id.settings_general_installreddit)

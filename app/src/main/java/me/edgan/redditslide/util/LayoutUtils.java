@@ -3,7 +3,6 @@ package me.edgan.redditslide.util;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.os.Build;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -61,10 +60,8 @@ public class LayoutUtils {
     public static int getNumColumns(final int orientation, final Activity activity) {
         final int numColumns;
         boolean singleColumnMultiWindow = false;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            singleColumnMultiWindow =
-                    activity.isInMultiWindowMode() && SettingValues.singleColumnMultiWindow;
-        }
+        singleColumnMultiWindow =
+                activity.isInMultiWindowMode() && SettingValues.singleColumnMultiWindow;
         if (orientation == Configuration.ORIENTATION_LANDSCAPE && !singleColumnMultiWindow) {
             numColumns = Reddit.dpWidth;
         } else if (orientation == Configuration.ORIENTATION_PORTRAIT) {

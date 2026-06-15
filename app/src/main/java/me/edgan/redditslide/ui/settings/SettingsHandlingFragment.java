@@ -1,7 +1,6 @@
 package me.edgan.redditslide.ui.settings;
 
 import android.app.Activity;
-import android.os.Build;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -164,9 +163,7 @@ public class SettingsHandlingFragment implements CompoundButton.OnCheckedChangeL
 
                         for (Map.Entry<String, String> entry : installedBrowsers.entrySet()) {
                             final MenuItem menuItem = popupMenu.getMenu().add(entry.getValue());
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                menuItem.setTooltipText(entry.getKey());
-                            }
+                            menuItem.setTooltipText(entry.getKey());
 
                             packageNames.put(menuItem, entry.getKey());
                         }

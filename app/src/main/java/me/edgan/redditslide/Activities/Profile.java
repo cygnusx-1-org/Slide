@@ -1078,16 +1078,14 @@ public class Profile extends BaseActivityAnim {
                                             .setBackgroundColor(colorPicker2.getColor());
                                     if (mToolbar != null)
                                         mToolbar.setBackgroundColor(colorPicker2.getColor());
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                        Window window = getWindow();
-                                        int color = Palette.getDarkerColor(colorPicker2.getColor());
+                                    Window window = getWindow();
+                                    int color = Palette.getDarkerColor(colorPicker2.getColor());
 
-                                        if (SettingValues.alwaysBlackStatusbar) {
-                                            color = Color.BLACK;
-                                        }
-
-                                        window.setStatusBarColor(color);
+                                    if (SettingValues.alwaysBlackStatusbar) {
+                                        color = Color.BLACK;
                                     }
+
+                                    window.setStatusBarColor(color);
                                     title.setBackgroundColor(colorPicker2.getColor());
                                 }
                             });
@@ -1106,26 +1104,19 @@ public class Profile extends BaseActivityAnim {
                                         int cy = center.getHeight() / 2;
 
                                         int initialRadius = body.getWidth();
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                        Animator anim =
+                                                ViewAnimationUtils.createCircularReveal(
+                                                        body, cx, cy, initialRadius, 0);
 
-                                            Animator anim =
-                                                    ViewAnimationUtils.createCircularReveal(
-                                                            body, cx, cy, initialRadius, 0);
-
-                                            anim.addListener(
-                                                    new AnimatorListenerAdapter() {
-                                                        @Override
-                                                        public void onAnimationEnd(
-                                                                Animator animation) {
-                                                            super.onAnimationEnd(animation);
-                                                            body.setVisibility(View.GONE);
-                                                        }
-                                                    });
-                                            anim.start();
-
-                                        } else {
-                                            body.setVisibility(View.GONE);
-                                        }
+                                        anim.addListener(
+                                                new AnimatorListenerAdapter() {
+                                                    @Override
+                                                    public void onAnimationEnd(Animator animation) {
+                                                        super.onAnimationEnd(animation);
+                                                        body.setVisibility(View.GONE);
+                                                    }
+                                                });
+                                        anim.start();
                                     }
                                 });
                     }
@@ -1149,26 +1140,19 @@ public class Profile extends BaseActivityAnim {
                                         int cy = center.getHeight() / 2;
 
                                         int initialRadius = body.getWidth();
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                        Animator anim =
+                                                ViewAnimationUtils.createCircularReveal(
+                                                        body, cx, cy, initialRadius, 0);
 
-                                            Animator anim =
-                                                    ViewAnimationUtils.createCircularReveal(
-                                                            body, cx, cy, initialRadius, 0);
-
-                                            anim.addListener(
-                                                    new AnimatorListenerAdapter() {
-                                                        @Override
-                                                        public void onAnimationEnd(
-                                                                Animator animation) {
-                                                            super.onAnimationEnd(animation);
-                                                            body.setVisibility(View.GONE);
-                                                        }
-                                                    });
-                                            anim.start();
-
-                                        } else {
-                                            body.setVisibility(View.GONE);
-                                        }
+                                        anim.addListener(
+                                                new AnimatorListenerAdapter() {
+                                                    @Override
+                                                    public void onAnimationEnd(Animator animation) {
+                                                        super.onAnimationEnd(animation);
+                                                        body.setVisibility(View.GONE);
+                                                    }
+                                                });
+                                        anim.start();
                                     }
                                 });
                     }
@@ -1197,16 +1181,14 @@ public class Profile extends BaseActivityAnim {
                                         findViewById(R.id.header).setBackgroundColor(currentColor);
                                         if (mToolbar != null)
                                             mToolbar.setBackgroundColor(currentColor);
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                            Window window = getWindow();
-                                            int color = Palette.getDarkerColor(currentColor);
+                                        Window window = getWindow();
+                                        int color = Palette.getDarkerColor(currentColor);
 
-                                            if (SettingValues.alwaysBlackStatusbar) {
-                                                color = Color.BLACK;
-                                            }
-
-                                            window.setStatusBarColor(color);
+                                        if (SettingValues.alwaysBlackStatusbar) {
+                                            color = Color.BLACK;
                                         }
+
+                                        window.setStatusBarColor(color);
                                     })
                             .setView(dialoglayout)
                             .show();
