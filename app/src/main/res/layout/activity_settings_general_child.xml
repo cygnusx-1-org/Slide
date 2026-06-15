@@ -1055,6 +1055,50 @@
             android:background="?attr/tintColor" />
 
     <RelativeLayout
+            android:id="@+id/settings_general_comment_image_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingLeft="16dp">
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="64dp"
+                android:layout_marginRight="64dp"
+                android:orientation="vertical">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/comment_image_size"
+                    android:textColor="?attr/fontColor"
+                    android:textSize="14sp" />
+
+            <TextView
+                    android:id="@+id/settings_general_comment_image_size_current"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha=".86"
+                    android:text="@string/description_comment_image_size"
+                    android:textColor="?attr/fontColor"
+                    android:textSize="13sp"
+                    android:paddingBottom="8dp" />
+
+        </LinearLayout>
+    </RelativeLayout>
+
+    <View
+            android:layout_width="match_parent"
+            android:layout_height="0.25dp"
+            android:alpha=".25"
+            android:background="?attr/tintColor" />
+
+    <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?android:selectableItemBackground"

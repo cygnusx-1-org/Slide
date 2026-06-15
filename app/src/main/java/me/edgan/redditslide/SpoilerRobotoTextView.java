@@ -66,6 +66,7 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.handler.TextViewLinkHandler;
 import me.edgan.redditslide.util.AnimatedImageSpan;
 import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.CommentImageUtil;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.GifDrawable;
 import me.edgan.redditslide.util.GifUtils;
@@ -1388,7 +1389,13 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
     // Inline comment images are routed through the app's shared ImageLoader (shared memory + 100MB
     // disk cache) so they survive view recycling and never re-download or flash a placeholder on
     // scroll. Decode to a bounded size matching the on-screen scaling below.
-    private static final ImageSize INLINE_IMAGE_SIZE = new ImageSize(500, 300);
+
+    /** Decode box scaled by the comment-image-size setting so "large" inline images stay sharp. */
+    private static ImageSize inlineImageSize() {
+        int box = Math.max(720, (int) (500 * CommentImageUtil.sizeMultiplier()));
+        return new ImageSize(box, box);
+    }
+
     private static DisplayImageOptions inlineImageOptions;
 
     private static DisplayImageOptions getInlineImageOptions() {
@@ -1422,7 +1429,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
         try {
             File diskFile = loader.getDiskCache().get(url);
             if (diskFile != null && diskFile.exists()) {
-                return loader.loadImageSync(url, INLINE_IMAGE_SIZE, getInlineImageOptions());
+                return loader.loadImageSync(url, inlineImageSize(), getInlineImageOptions());
             }
         } catch (Exception e) {
             Log.e("SpoilerRobotoTextView", "disk decode failed " + url, e);
@@ -1507,7 +1514,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
         for (final RedditImageMatch m : missing) {
             loader.loadImage(
                     m.url,
-                    INLINE_IMAGE_SIZE,
+                    inlineImageSize(),
                     getInlineImageOptions(),
                     new SimpleImageLoadingListener() {
                         @Override
@@ -1555,9 +1562,13 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                 continue;
             }
             try {
+                // Scale the bounds by the comment-image-size setting so inline images grow the same
+                // way the block path (CommentImageUtil) does.
+                double mult = CommentImageUtil.sizeMultiplier();
+                int baseMaxWidth = (int) (500 * mult);
                 int viewWidth = getWidth() - getPaddingLeft() - getPaddingRight();
-                int maxWidth = viewWidth > 0 ? Math.min(viewWidth, 500) : 500;
-                int maxHeight = 300;
+                int maxWidth = viewWidth > 0 ? Math.min(viewWidth, baseMaxWidth) : baseMaxWidth;
+                int maxHeight = (int) (300 * mult);
 
                 float widthScale = (float) maxWidth / bitmap.getWidth();
                 float heightScale = (float) maxHeight / bitmap.getHeight();

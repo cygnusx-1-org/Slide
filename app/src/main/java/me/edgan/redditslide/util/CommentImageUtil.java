@@ -3,7 +3,9 @@ package me.edgan.redditslide.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Movie;
 import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +26,10 @@ import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Views.MaxHeightImageView;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -51,11 +56,43 @@ public final class CommentImageUtil {
 
     private CommentImageUtil() {}
 
-    /** Matches the previous inline-image bounds so images keep the size they had before. */
-    private static final int MAX_WIDTH_PX = 500;
-    private static final int MAX_HEIGHT_PX = 300;
+    /**
+     * "Small" bounds match the previous inline-image bounds. "Medium" (the default) is 1.5x and
+     * "Large" is 2x, selected via {@link SettingValues#commentImageSize}.
+     */
+    private static final int BASE_WIDTH_PX = 500;
+    private static final int BASE_HEIGHT_PX = 300;
 
-    private static final ImageSize DECODE_SIZE = new ImageSize(720, 720);
+    /**
+     * Display scale for comment images: 1.0 (small), 1.5 (medium, default) or 2.0 (large). Public so
+     * the legacy inline-{@link android.text.style.ImageSpan} path ({@code applyImageSpans}) scales by
+     * the same factor as the block path here.
+     */
+    public static double sizeMultiplier() {
+        switch (SettingValues.commentImageSize) {
+            case SettingValues.COMMENT_IMAGE_SIZE_LARGE:
+                return 2.0;
+            case SettingValues.COMMENT_IMAGE_SIZE_MEDIUM:
+                return 1.5;
+            case SettingValues.COMMENT_IMAGE_SIZE_SMALL:
+            default:
+                return 1.0;
+        }
+    }
+
+    private static int maxWidthPx() {
+        return (int) (BASE_WIDTH_PX * sizeMultiplier());
+    }
+
+    private static int maxHeightPx() {
+        return (int) (BASE_HEIGHT_PX * sizeMultiplier());
+    }
+
+    /** Decode box big enough to keep the largest displayed image sharp (at least 720px). */
+    private static ImageSize decodeSize() {
+        int box = Math.max(720, maxWidthPx());
+        return new ImageSize(box, box);
+    }
 
     /** url -> aspect ratio (height/width), so a not-yet-loaded image can reserve its slot. */
     private static final Map<String, Double> RATIO_CACHE = new ConcurrentHashMap<>();
@@ -96,6 +133,15 @@ public final class CommentImageUtil {
 
         ImageLoader loader = ((Reddit) context.getApplicationContext()).getImageLoader();
 
+        // Animated comment gifs (giphy / i.redd.it .gif): when the user has enabled comment
+        // animation, render the gif as a looping Movie instead of a static first frame.
+        if (isGifUrl(url)
+                && SettingValues.commentEmoteAnimation
+                && !SettingValues.shouldSkipImages(context)
+                && displayAnimatedGif(imageView, loader, url)) {
+            return;
+        }
+
         Bitmap cached = syncBitmap(loader, url);
         if (cached != null) {
             recordRatio(url, cached);
@@ -125,6 +171,47 @@ public final class CommentImageUtil {
                 });
     }
 
+    /** Whether {@code url} points at a gif we can animate (giphy media / i.redd.it / preview .gif). */
+    private static boolean isGifUrl(String url) {
+        return url != null && url.contains(".gif");
+    }
+
+    /**
+     * Renders {@code url} as a looping animated gif into {@code imageView} using the raw gif bytes
+     * already in the shared disk cache (warmed by {@link #preloadBlocking}). The {@link GifDrawable}
+     * self-invalidates to drive the animation; the ImageView's FIT_CENTER matrix scales it to the
+     * pre-sized slot. Returns false (so the caller falls back to a static frame) if the gif is not on
+     * disk yet, is a single still frame, or cannot be decoded by {@link Movie}.
+     */
+    private static boolean displayAnimatedGif(
+            MaxHeightImageView imageView, ImageLoader loader, String url) {
+        try {
+            File diskFile = loader.getDiskCache().get(url);
+            if (diskFile == null || !diskFile.exists()) {
+                return false;
+            }
+            Movie movie;
+            try (InputStream in = new BufferedInputStream(new FileInputStream(diskFile))) {
+                movie = Movie.decodeStream(in);
+            }
+            // duration() == 0 means a single-frame gif: nothing to animate, use the static path.
+            if (movie == null || movie.width() <= 0 || movie.height() <= 0 || movie.duration() <= 0) {
+                return false;
+            }
+            RATIO_CACHE.put(url, (double) movie.height() / movie.width());
+            int[] size = boundedSize(movie.width(), movie.height());
+            applySize(imageView, size[0], size[1]);
+            // Movie.draw is unreliable on a hardware-accelerated canvas; force software for this view.
+            imageView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            GifDrawable drawable = new GifDrawable(movie, null);
+            imageView.setImageDrawable(drawable);
+            drawable.start();
+            return true;
+        } catch (Throwable ignored) {
+            return false;
+        }
+    }
+
     /** Returns the cached bitmap (memory, or synchronously decoded from disk) or null. No network. */
     private static Bitmap syncBitmap(ImageLoader loader, String url) {
         List<Bitmap> mem = MemoryCacheUtils.findCachedBitmapsForImageUri(url, loader.getMemoryCache());
@@ -136,7 +223,7 @@ public final class CommentImageUtil {
         try {
             File diskFile = loader.getDiskCache().get(url);
             if (diskFile != null && diskFile.exists()) {
-                return loader.loadImageSync(url, DECODE_SIZE, options());
+                return loader.loadImageSync(url, decodeSize(), options());
             }
         } catch (Exception ignored) {
         }
@@ -161,7 +248,7 @@ public final class CommentImageUtil {
             pool.execute(
                     () -> {
                         try {
-                            recordRatio(url, loader.loadImageSync(url, DECODE_SIZE, opts));
+                            recordRatio(url, loader.loadImageSync(url, decodeSize(), opts));
                         } catch (Exception ignored) {
                         }
                     });
@@ -185,32 +272,45 @@ public final class CommentImageUtil {
         }
     }
 
-    /** Display size for a bitmap, preserving aspect ratio and bounded like the old inline images. */
+    /**
+     * Display size for a bitmap, preserving aspect ratio by scaling it to fill the size box (500x300
+     * times the chosen multiplier). The image is scaled to fit that box in whichever dimension is
+     * tighter — and is <b>upscaled</b> when smaller than the box, matching the pre-block (release)
+     * inline-image behavior so that low-resolution sources (e.g. small giphy gifs) are not left tiny.
+     */
     private static int[] boundedSize(int width, int height) {
+        int maxWidth = maxWidthPx();
+        int maxHeight = maxHeightPx();
         if (width <= 0 || height <= 0) {
-            return new int[] {MAX_WIDTH_PX, MAX_HEIGHT_PX};
+            return new int[] {maxWidth, maxHeight};
         }
-        double scale =
-                Math.min(
-                        1.0,
-                        Math.min(
-                                (double) MAX_WIDTH_PX / width, (double) MAX_HEIGHT_PX / height));
-        return new int[] {
-            Math.max(1, (int) (width * scale)), Math.max(1, (int) (height * scale))
-        };
+        double scale = Math.min((double) maxWidth / width, (double) maxHeight / height);
+        int w = (int) (width * scale);
+        int h = (int) (height * scale);
+        // At "large", a wide image can exceed the screen width and clip; cap it (keeping ratio).
+        int screen = Resources.getSystem().getDisplayMetrics().widthPixels;
+        if (screen > 0 && w > screen) {
+            h = (int) ((long) h * screen / w);
+            w = screen;
+        }
+        return new int[] {Math.max(1, w), Math.max(1, h)};
     }
 
     private static int[] boundedFromRatio(double ratio) {
+        double multiplier = sizeMultiplier();
         if (ratio <= 0) {
-            return new int[] {MAX_WIDTH_PX, (int) (MAX_WIDTH_PX * 0.6)};
+            int w = (int) (BASE_WIDTH_PX * multiplier);
+            return new int[] {w, (int) (w * 0.6)};
         }
-        int width = MAX_WIDTH_PX;
-        int height = (int) (MAX_WIDTH_PX * ratio);
-        if (height > MAX_HEIGHT_PX) {
-            height = MAX_HEIGHT_PX;
-            width = (int) (MAX_HEIGHT_PX / ratio);
+        int width = BASE_WIDTH_PX;
+        int height = (int) (BASE_WIDTH_PX * ratio);
+        if (height > BASE_HEIGHT_PX) {
+            height = BASE_HEIGHT_PX;
+            width = (int) (BASE_HEIGHT_PX / ratio);
         }
-        return new int[] {Math.max(1, width), Math.max(1, height)};
+        return new int[] {
+            Math.max(1, (int) (width * multiplier)), Math.max(1, (int) (height * multiplier))
+        };
     }
 
     private static void applySize(ImageView imageView, int width, int height) {

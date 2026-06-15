@@ -411,6 +411,47 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
         }
 
         {
+            final TextView commentImageSizeCurrent =
+                    context.findViewById(R.id.settings_general_comment_image_size_current);
+            final View commentImageSizeRow =
+                    context.findViewById(R.id.settings_general_comment_image_size);
+            if (commentImageSizeRow != null) {
+                final String[] sizeLabels = {
+                    context.getString(R.string.comment_image_size_small),
+                    context.getString(R.string.comment_image_size_medium),
+                    context.getString(R.string.comment_image_size_large)
+                };
+                if (commentImageSizeCurrent != null) {
+                    commentImageSizeCurrent.setText(sizeLabels[SettingValues.commentImageSize]);
+                }
+                commentImageSizeRow.setOnClickListener(
+                        v ->
+                                DialogUtil.showWithCardBackground(
+                                        new AlertDialog.Builder(
+                                                        SettingsGeneralFragment.this.context)
+                                                .setTitle(R.string.comment_image_size)
+                                                .setSingleChoiceItems(
+                                                        sizeLabels,
+                                                        SettingValues.commentImageSize,
+                                                        (dialog, which) -> {
+                                                            SettingValues.commentImageSize = which;
+                                                            SettingValues.prefs
+                                                                    .edit()
+                                                                    .putInt(
+                                                                            SettingValues
+                                                                                    .PREF_COMMENT_IMAGE_SIZE,
+                                                                            which)
+                                                                    .apply();
+                                                            if (commentImageSizeCurrent != null) {
+                                                                commentImageSizeCurrent.setText(
+                                                                        sizeLabels[which]);
+                                                            }
+                                                            dialog.dismiss();
+                                                        })));
+            }
+        }
+
+        {
             SwitchCompat commentEmoteAnimationSwitch =
                     context.findViewById(R.id.settings_general_comment_emote_animation);
             if (commentEmoteAnimationSwitch != null) {

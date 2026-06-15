@@ -1262,6 +1262,11 @@
     <string name="description_high_colorspace">Loads full colorspace on images, potentially leading to higher memory usage</string>
     <string name="comment_emote_animation">Comment emote animation</string>
     <string name="description_comment_emote_animation">Toggles if non-giphy emotes in comments are animated or not</string>
+    <string name="comment_image_size">Comment image size</string>
+    <string name="description_comment_image_size">How large inline images in comments are displayed</string>
+    <string name="comment_image_size_small">Small</string>
+    <string name="comment_image_size_medium">Medium</string>
+    <string name="comment_image_size_large">Large</string>
     <string name="no_preview_image_longclick">No longclicks on preview images of any content type</string>
     <string name="description_no_preview_image_longclick">Toggles if longclicks work on preview images of any content type. It disables the peek content feature.</string>
     <string name="editor_btn_select_flair">Select flair</string>
