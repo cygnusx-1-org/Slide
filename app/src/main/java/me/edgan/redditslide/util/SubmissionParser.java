@@ -348,4 +348,112 @@ public class SubmissionParser {
         matcher.appendTail(sb);
         return sb.toString();
     }
+
+    /**
+     * Marker for a block produced by {@link #extractImageBlocks(List)} that is a single inline
+     * comment image. The remainder of the block string is the image URL. Renderers detect this and
+     * draw a real (pre-sized) ImageView instead of inline text.
+     */
+    public static final String IMAGE_BLOCK_PREFIX = "img";
+
+    private static final Pattern GIPHY_ANCHOR_WITH_IMG_PATTERN =
+            Pattern.compile(
+                    "<a\\s+href=\"https://giphy\\.com/gifs/[^\"]+\"[^>]*>\\s*<img\\s+src=\""
+                            + "(https://(?:external-preview\\.redd\\.it|i\\.giphy\\.com)/[^\"]+)\""
+                            + "[^>]*>\\s*</a>");
+    private static final Pattern GIPHY_PLAIN_LINK_PATTERN =
+            Pattern.compile("<a\\s+href=\"https://giphy\\.com/gifs/([^\"]+)\"[^>]*>[^<]*</a>");
+    private static final Pattern GIPHY_BARE_IMG_PATTERN =
+            Pattern.compile(
+                    "<img\\s+src=\"(https://(?:external-preview\\.redd\\.it|i\\.giphy\\.com)/[^\"]+)\""
+                            + "[^>]*>");
+    private static final Pattern TAG_PATTERN = Pattern.compile("<[^>]*>");
+
+    /**
+     * Splits standalone inline comment images out of the text blocks so they can be rendered as
+     * real (pre-sized) ImageViews rather than inline spans. A block whose only visible content is a
+     * single image URL (preview.redd.it / i.redd.it / external-preview.redd.it / i.giphy.com — after
+     * rewriting giphy links) becomes {@link #IMAGE_BLOCK_PREFIX} + url. All other blocks (text,
+     * tables, code, and the rare text-with-embedded-image) pass through unchanged.
+     */
+    /**
+     * Returns the image URLs that {@link #extractImageBlocks} would render for this comment body, in
+     * the exact same string form, so a preloader warms the cache under the identical keys the
+     * renderer later requests.
+     */
+    public static List<String> imageUrlsFor(String rawHtml) {
+        List<String> urls = new ArrayList<>();
+        if (rawHtml == null || rawHtml.isEmpty()) {
+            return urls;
+        }
+        for (String block : extractImageBlocks(getBlocks(rawHtml))) {
+            if (block.startsWith(IMAGE_BLOCK_PREFIX)) {
+                urls.add(block.substring(IMAGE_BLOCK_PREFIX.length()));
+            }
+        }
+        return urls;
+    }
+
+    public static List<String> extractImageBlocks(List<String> blocks) {
+        List<String> out = new ArrayList<>(blocks.size());
+        for (String block : blocks) {
+            String url = pureImageUrl(convertGiphyToImageUrls(block));
+            if (url != null) {
+                out.add(IMAGE_BLOCK_PREFIX + url);
+            } else {
+                out.add(block);
+            }
+        }
+        return out;
+    }
+
+    private static String pureImageUrl(String block) {
+        if (block == null) {
+            return null;
+        }
+        String stripped = TAG_PATTERN.matcher(block).replaceAll(" ").trim();
+        if (stripped.isEmpty() || stripped.contains(" ") || stripped.contains("\n")) {
+            return null; // empty, or more than a bare URL -> not a standalone image
+        }
+        return isImageUrl(stripped) ? stripped : null;
+    }
+
+    private static boolean isImageUrl(String url) {
+        boolean okDomain =
+                url.startsWith("https://preview.redd.it/")
+                        || url.startsWith("https://i.redd.it/")
+                        || url.startsWith("https://external-preview.redd.it/")
+                        || url.startsWith("https://i.giphy.com/");
+        return okDomain
+                && (url.endsWith(".jpeg")
+                        || url.endsWith(".jpg")
+                        || url.endsWith(".png")
+                        || url.contains(".gif")
+                        || url.contains("format=pjpg")
+                        || url.contains("format=png"));
+    }
+
+    private static String convertGiphyToImageUrls(String html) {
+        if (html == null || html.indexOf("giphy") < 0 && !html.contains("external-preview.redd.it")) {
+            return html;
+        }
+        html = replaceGiphyMatches(html, GIPHY_ANCHOR_WITH_IMG_PATTERN, false);
+        html = replaceGiphyMatches(html, GIPHY_PLAIN_LINK_PATTERN, true);
+        html = replaceGiphyMatches(html, GIPHY_BARE_IMG_PATTERN, false);
+        return html;
+    }
+
+    private static String replaceGiphyMatches(String html, Pattern pattern, boolean buildGiphyMedia) {
+        Matcher matcher = pattern.matcher(html);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String url =
+                    buildGiphyMedia
+                            ? "https://i.giphy.com/media/" + matcher.group(1) + "/giphy.gif"
+                            : matcher.group(1);
+            matcher.appendReplacement(sb, Matcher.quoteReplacement(" " + url + " "));
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
 }

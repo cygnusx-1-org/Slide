@@ -878,23 +878,28 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
         List<String> blocks = SubmissionParser.getBlocks(rawHTML);
+        if (!SettingValues.shouldSkipImages(mContext)) {
+            blocks = SubmissionParser.extractImageBlocks(blocks);
+        }
 
-        int startIndex = 0;
+        int startIndex;
+        String first = blocks.get(0);
+        boolean firstIsImage = first.startsWith(SubmissionParser.IMAGE_BLOCK_PREFIX);
         // the <div class="md"> case is when the body contains a table or code block first
-        if (!blocks.get(0).equals("<div class=\"md\">")) {
+        if (!firstIsImage && !first.equals("<div class=\"md\">")) {
             firstTextView.setVisibility(View.VISIBLE);
-            firstTextView.setTextHtml(blocks.get(0), subredditName);
+            firstTextView.setTextHtml(first, subredditName);
             startIndex = 1;
         } else {
             firstTextView.setText("");
+            firstTextView.setVisibility(firstIsImage ? View.GONE : View.VISIBLE);
+            startIndex = 0;
         }
 
-        if (blocks.size() > 1) {
-            if (startIndex == 0) {
-                commentOverflow.setViews(blocks, subredditName);
-            } else {
-                commentOverflow.setViews(blocks.subList(startIndex, blocks.size()), subredditName);
-            }
+        List<String> overflow =
+                startIndex == 0 ? blocks : blocks.subList(startIndex, blocks.size());
+        if (!overflow.isEmpty()) {
+            commentOverflow.setViews(overflow, subredditName);
         } else {
             commentOverflow.removeAllViews();
         }
@@ -912,27 +917,30 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
         List<String> blocks = SubmissionParser.getBlocks(rawHTML);
-
-        int startIndex = 0;
-        // the <div class="md"> case is when the body contains a table or code block first
-        if (!blocks.get(0).equals("<div class=\"md\">")) {
-            firstTextView.setVisibility(View.VISIBLE);
-            firstTextView.setTextHtml(blocks.get(0) + " ", subredditName);
-            startIndex = 1;
-        } else {
-            firstTextView.setText("");
+        if (!SettingValues.shouldSkipImages(mContext)) {
+            // Split standalone images into their own blocks so they render as pre-sized ImageViews.
+            blocks = SubmissionParser.extractImageBlocks(blocks);
         }
 
-        if (blocks.size() > 1) {
-            if (startIndex == 0) {
-                commentOverflow.setViews(blocks, subredditName, click, onLongClickListener);
-            } else {
-                commentOverflow.setViews(
-                        blocks.subList(startIndex, blocks.size()),
-                        subredditName,
-                        click,
-                        onLongClickListener);
-            }
+        int startIndex;
+        String first = blocks.get(0);
+        boolean firstIsImage = first.startsWith(SubmissionParser.IMAGE_BLOCK_PREFIX);
+        // the <div class="md"> case is when the body contains a table or code block first
+        if (!firstIsImage && !first.equals("<div class=\"md\">")) {
+            firstTextView.setVisibility(View.VISIBLE);
+            firstTextView.setTextHtml(first + " ", subredditName);
+            startIndex = 1;
+        } else {
+            // First block is an image (or table/code); render everything via CommentOverflow.
+            firstTextView.setText("");
+            firstTextView.setVisibility(firstIsImage ? View.GONE : View.VISIBLE);
+            startIndex = 0;
+        }
+
+        List<String> overflow =
+                startIndex == 0 ? blocks : blocks.subList(startIndex, blocks.size());
+        if (!overflow.isEmpty()) {
+            commentOverflow.setViews(overflow, subredditName, click, onLongClickListener);
         } else {
             commentOverflow.removeAllViews();
         }

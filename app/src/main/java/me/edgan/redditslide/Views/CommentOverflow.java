@@ -20,7 +20,9 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.FontPreferences;
+import me.edgan.redditslide.util.CommentImageUtil;
 import me.edgan.redditslide.util.DisplayUtil;
+import me.edgan.redditslide.util.SubmissionParser;
 
 import java.util.List;
 
@@ -147,6 +149,20 @@ public class CommentOverflow extends LinearLayout {
                 table.setPaddingRelative(0, 0, 0, DisplayUtil.dpToPxVertical(10));
                 scrollView.addView(table);
                 addView(scrollView);
+            } else if (block.startsWith(SubmissionParser.IMAGE_BLOCK_PREFIX)) {
+                // A standalone inline comment image: render a real, pre-sized ImageView (loaded
+                // from the shared cache) so the image is in place with no placeholder and no reflow.
+                String url = block.substring(SubmissionParser.IMAGE_BLOCK_PREFIX.length());
+                MaxHeightImageView imageView = new MaxHeightImageView(context);
+                LinearLayout.LayoutParams imageParams =
+                        new LinearLayout.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT);
+                imageParams.setMargins(0, 16, 0, 16);
+                imageView.setLayoutParams(imageParams);
+                CommentImageUtil.display(imageView, url, subreddit);
+                if (longClick != null) imageView.setOnLongClickListener(longClick);
+                addView(imageView);
             } else if (block.equals("<hr/>")) {
                 View line = new View(context);
                 line.setLayoutParams(HR_PARAMS);
