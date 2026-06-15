@@ -262,9 +262,6 @@ dependencies {
     // Blurring
     implementation 'com.github.wasabeef:Blurry:4.0.0'
 
-    // ImageView that supports rounded corners
-    implementation 'com.makeramen:roundedimageview:2.3.0'
-
     // Draggable sliding up panel
     //implementation 'com.sothree.slidinguppanel:library:3.4.0'
 

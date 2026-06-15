@@ -42,7 +42,7 @@
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
                 android:src="@drawable/chameleon"
-                app:riv_corner_radius="2dp" />
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Slide.Corner2dp" />
 
             <ImageView
                 android:id="@+id/secondMenu"

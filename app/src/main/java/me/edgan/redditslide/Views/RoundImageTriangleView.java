@@ -7,10 +7,10 @@ import android.util.AttributeSet;
 
 import androidx.annotation.ColorInt;
 
-import com.makeramen.roundedimageview.RoundedImageView;
+import com.google.android.material.imageview.ShapeableImageView;
 
 /** Created by Carlos on 9/13/2016. */
-public class RoundImageTriangleView extends RoundedImageView {
+public class RoundImageTriangleView extends ShapeableImageView {
 
     public RoundImageTriangleView(Context context) {
         super(context);
