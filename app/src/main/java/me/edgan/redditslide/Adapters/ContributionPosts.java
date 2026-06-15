@@ -20,6 +20,7 @@ import net.dean.jraw.paginators.UserContributionPaginator;
 import net.dean.jraw.paginators.UserProfilePaginator;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /** Created by ccrama on 9/17/2015. */
 public class ContributionPosts extends GeneralPosts {
@@ -109,8 +110,21 @@ public class ContributionPosts extends GeneralPosts {
             ArrayList<Contribution> newData = new ArrayList<>();
             try {
                 if (reset || paginator == null) {
+                    // Reddit only returns post previews/thumbnails when the request asks for
+                    // them; otherwise it honors the account's media preference, which is why
+                    // thumbnails went missing here (issue #274). Request them the same way the
+                    // main feed (SubredditPaginator) does.
                     paginator =
-                            new UserProfilePaginator(Authentication.reddit, where, subreddit);
+                            new UserProfilePaginator(Authentication.reddit, where, subreddit) {
+                                @Override
+                                protected Map<String, String> getExtraQueryArgs() {
+                                    Map<String, String> args = super.getExtraQueryArgs();
+                                    args.put("feature", "link_preview");
+                                    args.put("always_show_media", "1");
+                                    args.put("sr_detail", "true");
+                                    return args;
+                                }
+                            };
 
                     paginator.setSorting(Profile.profSort != null ? Profile.profSort : Sorting.HOT);
                     paginator.setTimePeriod(Profile.profTime != null ? Profile.profTime : TimePeriod.ALL);
