@@ -61,8 +61,6 @@
     <string name="card_save_button">\"Lagre innlegg\"</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Flerkolonneinnstillinger</string>
-    <string name="multi_column_landscape">Landskap</string>
-    <string name="multi_column_portrait">Dobbelkolonne i portrettmodus</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Deg</string>
     <string name="drawer_support">Gå Pro</string>
@@ -541,10 +539,6 @@
     <string name="filter_content">Filtrer dette innholdet</string>
     <string name="btn_collapse_children_all">Slå sammen barnekommentarer</string>
     <string name="btn_open_content">Åpne innhold</string>
-    <plurals name="landscape_columns">
-        <item quantity="one">%d kolonne i landskap</item>
-        <item quantity="other">%d kolonner i landskap</item>
-    </plurals>
     <string name="datasave_always">Mobildata og Wi-Fi</string>
     <string name="datasave_mobile">Mobildata</string>
     <string name="never">Aldri</string>

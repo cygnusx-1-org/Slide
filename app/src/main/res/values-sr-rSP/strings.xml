@@ -86,8 +86,6 @@
     <string name="card_save_button">„Сачувај пост” дугме у акционој траци</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Више колона</string>
-    <string name="multi_column_landscape">Водоравно</string>
-    <string name="multi_column_portrait">Дупле колоне у портрет оријентацији</string>
     <string name="single_column_multi_window">Једна колона у режиму рада са више прозора</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Ви</string>

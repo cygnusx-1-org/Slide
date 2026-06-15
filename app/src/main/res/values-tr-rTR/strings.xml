@@ -84,8 +84,6 @@
     <string name="card_save_button">Eylemçubuğunda \"Gönderiyi kaydet\" butonu</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Çoklu-sütun</string>
-    <string name="multi_column_landscape">Yatay</string>
-    <string name="multi_column_portrait">Dikey modda iki sütun göster</string>
     <string name="single_column_multi_window">Çoklu Pencere modunda tek sütun</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Siz</string>
@@ -950,10 +948,6 @@
     <string name="load_videos_internally_content">Slayt Video eklentisini denemek ister misiniz? Bu eklenti video (YouTube gibi) uygulama içinde görüntülemenize olanak sağlayacak!</string>
     <string name="do_not_show_again">Tekrar gösterme</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Filtrelemek için metin girin (subreddit:etiket_metin), eklemek için tıklayın</string>
-    <plurals name="landscape_columns">
-        <item quantity="one">Yatayda %d sütun</item>
-        <item quantity="other">Yatayda %d sütun</item>
-    </plurals>
     <string name="datasave_always">Mobil veri ve Wi-Fi</string>
     <string name="datasave_mobile">Mobil veri</string>
     <string name="never">Hiç bir zaman</string>

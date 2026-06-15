@@ -78,8 +78,6 @@
     <string name="card_save_button">\"I-save ang post\" button ng actionbar</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Maramihang-kolum</string>
-    <string name="multi_column_landscape">I-Landscape</string>
-    <string name="multi_column_portrait">Dalawahang mga kolum sa portrait na mod</string>
     <string name="single_column_multi_window">Isang kolum sa maramihang-window na mode</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Ikaw</string>

@@ -84,8 +84,6 @@
     <string name="card_save_button">„Bejegyzés mentése” gomb a műveletsávban</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Több oszlop</string>
-    <string name="multi_column_landscape">Fekvő</string>
-    <string name="multi_column_portrait">Kettő oszlop álló módban</string>
     <string name="single_column_multi_window">Egy oszlop, több ablakos módban</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Ön</string>
@@ -726,10 +724,6 @@
     <string name="load_videos_internally">Videók betöltése az alkalmazáson belül</string>
     <string name="load_videos_internally_content">Ki szeretnéd próbálni a Slide videó bővítményt? Ez lehetővé teszi a videók (pl: YouTube) megtekintését az alkalmazáson belül!</string>
     <string name="do_not_show_again">Ne mutasd többször</string>
-    <plurals name="landscape_columns">
-        <item quantity="one">%d oszlop fekvő módban</item>
-        <item quantity="other">%d oszlop fekvő módban</item>
-    </plurals>
     <string name="datasave_always">Mobiladat és WiFi</string>
     <string name="datasave_mobile">Mobiladat</string>
     <string name="never">Soha</string>

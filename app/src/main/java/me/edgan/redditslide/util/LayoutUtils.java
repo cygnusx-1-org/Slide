@@ -67,9 +67,8 @@ public class LayoutUtils {
         }
         if (orientation == Configuration.ORIENTATION_LANDSCAPE && !singleColumnMultiWindow) {
             numColumns = Reddit.dpWidth;
-        } else if (orientation == Configuration.ORIENTATION_PORTRAIT
-                && SettingValues.dualPortrait) {
-            numColumns = 2;
+        } else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            numColumns = SettingValues.portraitColumns;
         } else {
             numColumns = 1;
         }

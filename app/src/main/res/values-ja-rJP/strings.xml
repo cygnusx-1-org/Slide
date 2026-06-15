@@ -81,8 +81,6 @@
     <string name="card_save_button">アクションバー \'\'投稿を保存\'\' ボタン</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">複数列</string>
-    <string name="multi_column_landscape">横向き</string>
-    <string name="multi_column_portrait">ポートレート モードで二列表示</string>
     <string name="single_column_multi_window">マルチウィンドウモードで一つの列</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">あなた</string>
@@ -954,9 +952,6 @@
     <string name="load_videos_internally_content">Slideアプリの動画プラグインを試してみますか? このプラグインで動画(例えばyoutube) を当アプリ内で閲覧できます!</string>
     <string name="do_not_show_again">次回から表示しない</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">フィルターするテキストを入力 (subreddit:flair_text)。Enter をクリックして追加します</string>
-    <plurals name="landscape_columns">
-        <item quantity="other">画面内に%d行表示する</item>
-    </plurals>
     <string name="datasave_always">モバイル データ通信と Wi-Fi</string>
     <string name="datasave_mobile">モバイル データ通信</string>
     <string name="never">なし</string>

@@ -95,8 +95,6 @@ Möchten Sie Slide for Reddit unterstützen?</string>
     <string name="card_save_button">\"Beitrag speichern\" Schaltfläche in Aktionsleiste</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Mehrspaltiges Layout</string>
-    <string name="multi_column_landscape">Querformat</string>
-    <string name="multi_column_portrait">Zwei Spalten im Hochformat</string>
     <string name="single_column_multi_window">Einzelne Spalte in Multi-Fenster-Modus</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Ich</string>
@@ -961,10 +959,6 @@ Möchten Sie Slide for Reddit unterstützen?</string>
     <string name="load_videos_internally_content">Möchtest du das Slide Video Plugin ausprobieren? Es erlaubt Dir Videos (z.B. YouTube) in der App anzuzeigen!</string>
     <string name="do_not_show_again">Nicht erneut anzeigen</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Gib den Filtertext ein (subreddit:flair_text), klicke Enter zum Hinzufügen</string>
-    <plurals name="landscape_columns">
-        <item quantity="one">Eine Spalte im Querformat</item>
-        <item quantity="other">%d Spalten im Querformat</item>
-    </plurals>
     <string name="datasave_always">Mobile Daten und Wlan</string>
     <string name="datasave_mobile">Mobile Daten</string>
     <string name="never">Niemals</string>

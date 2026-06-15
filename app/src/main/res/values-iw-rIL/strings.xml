@@ -43,7 +43,6 @@
     <!-- For editing the submission card layout -->
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">הגדרות עמודות מרובות</string>
-    <string name="multi_column_landscape">רוחב</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_goto_profile">צפה בפרופיל</string>
     <string name="drawer_add_account">הוסף משתמש</string>

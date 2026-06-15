@@ -84,8 +84,6 @@
     <string name="card_save_button">Botó \"Desar publicació\" a la barra d\'accions</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Columna múltiple</string>
-    <string name="multi_column_landscape">Apaïsat</string>
-    <string name="multi_column_portrait">Dues columnes en mode retrat</string>
     <string name="single_column_multi_window">Una columna en el mode multi-finestra</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Tú</string>
@@ -950,10 +948,6 @@
     <string name="load_videos_internally_content">Voldrieu provar el complement Slide Video? Us permetrà visionar vídeos (com ara YouTube) de manera interna!</string>
     <string name="do_not_show_again">No tornis a mostrar-ho</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Introduiu el text a filtrar (subreddit:text_bandereta), premeu entar per tal d\'afegir-lo</string>
-    <plurals name="landscape_columns">
-        <item quantity="one">%d columna en mode paisatge</item>
-        <item quantity="other">%d columnes en mode paisatge</item>
-    </plurals>
     <string name="datasave_always">Dades mòbils i Wi-Fi</string>
     <string name="datasave_mobile">Dades mòbils</string>
     <string name="never">Mai</string>

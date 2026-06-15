@@ -81,8 +81,6 @@
     <string name="card_save_button">Tombol \"Simpan pos\" di bilah tindakan</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Multi kolom</string>
-    <string name="multi_column_landscape">Lanskap</string>
-    <string name="multi_column_portrait">Kolom ganda dalam mode potret</string>
     <string name="single_column_multi_window">Kolom tunggal dalam mode banyak-jendela</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Anda</string>
@@ -936,9 +934,6 @@
     <string name="load_videos_internally_content">Apakah Anda ingin mencoba plugin Slide Video? Ini akan memungkinkan Anda melihat video (seperti YouTube) secara internal!</string>
     <string name="do_not_show_again">Jangan tampilkan lagi</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Masukkan teks untuk disaring (subreddit: flair_text), klik enter untuk menambahkan</string>
-    <plurals name="landscape_columns">
-        <item quantity="other">%d kolom dalam lanskap</item>
-    </plurals>
     <string name="datasave_always">Data seluler dan Wi-Fi</string>
     <string name="datasave_mobile">Data Seluler</string>
     <string name="never">Tidak pernah</string>

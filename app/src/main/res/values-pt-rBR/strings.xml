@@ -84,8 +84,6 @@
     <string name="card_save_button">Botão \'\'Salvar post\'\' na barra de ações</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Multi-colunas</string>
-    <string name="multi_column_landscape">Paisagem</string>
-    <string name="multi_column_portrait">Duas colunas em modo retrato</string>
     <string name="single_column_multi_window">Coluna única no modo de multi-janela</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Você</string>
@@ -971,10 +969,6 @@
     <string name="load_videos_internally_content">Deseja experimentar o plugin de vídeo do Slide? Isso permitirá que você veja os vídeos (como YouTube) internamente!</string>
     <string name="do_not_show_again">Não exibir novamente</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Digite o texto a filtrar (subreddit:flair_text), pressione enter para adicionar</string>
-    <plurals name="landscape_columns">
-        <item quantity="one">%d coluna no Modo Paisagem</item>
-        <item quantity="other">%d colunas no Modo Paisagem</item>
-    </plurals>
     <string name="datasave_always">Dados móveis e Wi-Fi</string>
     <string name="datasave_mobile">Dados móveis</string>
     <string name="never">Nunca</string>

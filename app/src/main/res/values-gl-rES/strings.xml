@@ -24,7 +24,6 @@
     <!-- For editing the submission card layout -->
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Axustes da Multi-Columna</string>
-    <string name="multi_column_landscape">Apaisado</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_goto_profile">Ir ao perfil</string>
     <string name="drawer_add_account">Engadir unha conta</string>

@@ -84,8 +84,6 @@
     <string name="card_save_button">Bouton \"Sauvegarder le post\" dans la barre d\'action</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Paramètres multi-colonnes</string>
-    <string name="multi_column_landscape">Paysage</string>
-    <string name="multi_column_portrait">Deux colonnes en mode portrait</string>
     <string name="single_column_multi_window">Une seule colonne en mode multi-fenêtres</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Vous</string>
@@ -962,10 +960,6 @@
     <string name="load_videos_internally_content">Vous souhaitez essayer le plugin vidéo Slide ? Cela vous permettra d\'afficher des vidéos (comme YouTube) en interne !</string>
     <string name="do_not_show_again">Ne plus afficher</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Entrez le texte à filtrer (subreddit:texte_du_flair), cliquez sur Entrée pour ajouter</string>
-    <plurals name="landscape_columns">
-        <item quantity="one">%d colonnes en mode paysage</item>
-        <item quantity="other">%d colonnes en mode paysage</item>
-    </plurals>
     <string name="datasave_always">Données mobiles et Wi-Fi</string>
     <string name="datasave_mobile">Données mobiles</string>
     <string name="never">Jamais</string>

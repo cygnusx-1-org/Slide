@@ -85,8 +85,6 @@
     <string name="card_save_button">\"Spremi post\" gumb u akcijskoj traci</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Više-stupačni način</string>
-    <string name="multi_column_landscape">Vodoravno</string>
-    <string name="multi_column_portrait">Dvostruki stupci u portretnom načinu</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Ti</string>
     <string name="drawer_support">Kupi Pro</string>

@@ -80,8 +80,6 @@
     <string name="card_save_button">\"Tallenna viesti\" nappi Action Barissa</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Usean sarakkeen asetukset</string>
-    <string name="multi_column_landscape">Vaakakuva</string>
-    <string name="multi_column_portrait">Kaksisarakkeinen pystyasento</string>
     <string name="single_column_multi_window">Yksi sarake moni-ikkuna tilassa</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Sinä</string>

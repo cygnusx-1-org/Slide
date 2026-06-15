@@ -88,8 +88,6 @@
     <string name="card_save_button">زر حفظ البوست في شريط العمل</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">متعدد الأعمدة</string>
-    <string name="multi_column_landscape">أفقي</string>
-    <string name="multi_column_portrait">أعمدة مزدوجة في الوضع العامودي</string>
     <string name="single_column_multi_window">عمود واحد في وضع متعدد النوافذ</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">أنت</string>

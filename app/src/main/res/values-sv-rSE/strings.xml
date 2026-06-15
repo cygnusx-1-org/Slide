@@ -68,8 +68,6 @@
     <string name="card_save_button">\"Spara tråd\"-knapp i åtgärdsfältet</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Flerkolumnsinställningar</string>
-    <string name="multi_column_landscape">Landskap</string>
-    <string name="multi_column_portrait">Två kolumner i porträttläge</string>
     <string name="single_column_multi_window">Enfärgad kolumn i multifönsterläge</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Du</string>

@@ -93,8 +93,8 @@
 
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Multi-column</string>
-    <string name="multi_column_landscape">Landscape</string>
-    <string name="multi_column_portrait">Dual columns in portrait mode</string>
+    <string name="multi_column_portrait_count">Columns in portrait</string>
+    <string name="multi_column_landscape_count">Columns in landscape</string>
     <string name="single_column_multi_window">Single column in multi-window mode</string>
 
 
@@ -1123,10 +1123,6 @@
         <item quantity="other">%1$d filters (%2$d max shown)</item>
     </plurals>
     <string name="filter_limit_reached">Showing first %1$d of %2$d. Search to narrow the results.</string>
-    <plurals name="landscape_columns">
-        <item quantity="one">%d column in landscape</item>
-        <item quantity="other">%d columns in landscape</item>
-    </plurals>
     <string name="datasave_always">Mobile data and Wi-Fi</string>
     <string name="datasave_mobile">Mobile data</string>
     <string name="never">Never</string>

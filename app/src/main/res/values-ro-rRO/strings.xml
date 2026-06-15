@@ -69,8 +69,6 @@
     <string name="card_save_button">Buton „Salvează post” în bara de acțiuni</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Setări coloane multiple</string>
-    <string name="multi_column_landscape">Orizontală</string>
-    <string name="multi_column_portrait">Două coloane în modul portret</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Tu</string>
     <string name="drawer_support">Cumpără Pro</string>

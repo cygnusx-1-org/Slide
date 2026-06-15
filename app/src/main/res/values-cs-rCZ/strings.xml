@@ -90,8 +90,6 @@
     <string name="card_save_button">Tlačítko “Ulož příspěvek” v liště akcí</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Více sloupců</string>
-    <string name="multi_column_landscape">Na šířku</string>
-    <string name="multi_column_portrait">Dvojité sloupce v režimu na výšku</string>
     <string name="single_column_multi_window">Jednoduchý sloupec v režimu mnoha oken</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Ty</string>
@@ -980,12 +978,6 @@
     <string name="load_videos_internally_content">Chcete vyzkoušet Slide Video plugin? To vám umožní interně prohlížet videa (jako YouTube)!</string>
     <string name="do_not_show_again">Příště již neukázat</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Zadejte text pro filtrování (subreddit:flair_text), klikněte enter pro přidání</string>
-    <plurals name="landscape_columns">
-        <item quantity="one">%d sloupec v režimu na šířku</item>
-        <item quantity="few">%d sloupce v režimu na šířku</item>
-        <item quantity="many">%d sloupců v režimu na šířku</item>
-        <item quantity="other">%d sloupců v režimu na šířku</item>
-    </plurals>
     <string name="datasave_always">Mobilní data a Wi-Fi</string>
     <string name="datasave_mobile">Mobilní data</string>
     <string name="never">Nikdy</string>

@@ -81,8 +81,6 @@
     <string name="card_save_button">操作栏添加 “保存帖子” 按钮</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">多列设置</string>
-    <string name="multi_column_landscape">横屏</string>
-    <string name="multi_column_portrait">竖屏时显示双列</string>
     <string name="single_column_multi_window">在多窗口模式下使用单列布局</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">你</string>
@@ -956,9 +954,6 @@
     <string name="load_videos_internally_content">你想尝试 Slide 视频插件吗？这将允许你在内部查看视频（如YouTube）！</string>
     <string name="do_not_show_again">不再显示</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">输入文本以过滤(subreddit:flair_text)，单击输入以添加</string>
-    <plurals name="landscape_columns">
-        <item quantity="other">横屏时显示%d列</item>
-    </plurals>
     <string name="datasave_always">移动数据和WIFI</string>
     <string name="datasave_mobile">移动数据</string>
     <string name="never">从不</string>

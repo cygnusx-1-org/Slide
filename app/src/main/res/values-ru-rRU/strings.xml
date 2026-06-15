@@ -90,8 +90,6 @@
     <string name="card_save_button">Кнопка «Сохранить пост» в actionbar</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Многоколоночный</string>
-    <string name="multi_column_landscape">Горизонтально</string>
-    <string name="multi_column_portrait">Две колонки в портретном режиме</string>
     <string name="single_column_multi_window">Одна колонка в многооконном режиме</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Вы</string>
@@ -1001,12 +999,6 @@
     <string name="load_videos_internally_content">Хотите ли вы попробовать плагин Slide Video? Он позволит вам смотреть видео (например, с YouTube) не выходя из приложения!</string>
     <string name="do_not_show_again">Не показывать снова</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Введите текст фильтра (сабреддит:флейр), нажмите \'Enter\' чтобы добавить</string>
-    <plurals name="landscape_columns">
-        <item quantity="one">%d колонка в ландшафтном режиме</item>
-        <item quantity="few">%d колонки в ландшафтном режиме</item>
-        <item quantity="many">%d колонок в ландшафтном режиме</item>
-        <item quantity="other">%d колонок в ландшафтном режиме</item>
-    </plurals>
     <string name="datasave_always">Мобильное подключение и Wi-Fi</string>
     <string name="datasave_mobile">Мобильное подключение</string>
     <string name="never">Никогда</string>

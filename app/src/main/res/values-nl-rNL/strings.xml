@@ -75,8 +75,6 @@
     <string name="card_save_button">\"Bericht opslaan\"-knop in de actiebalk</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Multikolom-instellingen</string>
-    <string name="multi_column_landscape">Landschapsmodus</string>
-    <string name="multi_column_portrait">Dubbele kolommen in portretmodus</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Jij</string>
     <string name="drawer_support">Neem Pro</string>
@@ -682,10 +680,6 @@
     <string name="load_videos_internally">Video\'s intern laden</string>
     <string name="load_videos_internally_content">Wil je de Slide Video Plugin proberen? Hiermee kan je onder andere YouTube-video\'s intern laden!</string>
     <string name="do_not_show_again">Niet meer tonen</string>
-    <plurals name="landscape_columns">
-        <item quantity="one">%d kolom in landschapsmodus</item>
-        <item quantity="other">%d kolommen in landschapsmodus</item>
-    </plurals>
     <string name="datasave_always">Mobiele data en Wi-Fi</string>
     <string name="datasave_mobile">Mobiele data</string>
     <string name="never">Nooit</string>

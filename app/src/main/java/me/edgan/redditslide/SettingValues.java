@@ -70,7 +70,7 @@ public class SettingValues {
     public static final String PREF_COLLAPSE_DELETED_COMMENTS = "collapseDeletedComments";
     public static final String PREF_COLLAPSE_STICKY_COMMENT = "collapseStickyComment";
     public static final String PREF_RIGHT_HANDED_COMMENT_MENU = "rightHandedCommentMenu";
-    public static final String PREF_DUAL_PORTRAIT = "dualPortrait";
+    public static final String PREF_PORTRAIT_COLUMNS = "portraitColumns";
     public static final String PREF_SINGLE_COLUMN_MULTI = "singleColumnMultiWindow";
     public static final String PREF_CROP_IMAGE = "cropImage";
     public static final String PREF_COMMENT_FAB = "commentFab";
@@ -258,7 +258,7 @@ public class SettingValues {
     public static boolean hideButton;
     public static boolean customtabs;
     public static boolean titleTop;
-    public static boolean dualPortrait;
+    public static int portraitColumns;
     public static boolean singleColumnMultiWindow;
     public static int nightModeState;
     public static boolean imageSubfolders;
@@ -486,7 +486,7 @@ public class SettingValues {
         flairFilters = new HashSet<>(prefs.getStringSet(PREF_FLAIR_FILTERS, new HashSet<>()));
         userFilters = new HashSet<>(prefs.getStringSet(PREF_USER_FILTERS, new HashSet<>()));
 
-        dualPortrait = prefs.getBoolean(PREF_DUAL_PORTRAIT, false);
+        portraitColumns = prefs.getInt(PREF_PORTRAIT_COLUMNS, 1);
         singleColumnMultiWindow = prefs.getBoolean(PREF_SINGLE_COLUMN_MULTI, false);
         colorSubName = prefs.getBoolean(PREF_COLOR_SUB_NAME, false);
 

@@ -3,10 +3,8 @@ package me.edgan.redditslide.ui.settings;
 import me.edgan.redditslide.util.DialogUtil;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.KeyEvent;
@@ -22,7 +20,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -497,85 +494,121 @@ public class SettingsActivity extends BaseActivity implements RestartActivity {
                                 Overview.this.startActivity(inte);*/
                                 LayoutInflater inflater = getLayoutInflater();
                                 final View dialoglayout = inflater.inflate(R.layout.tabletui, null);
-                                final Resources res = getResources();
 
                                 dialoglayout
                                         .findViewById(R.id.title)
                                         .setBackgroundColor(Palette.getDefaultColor());
-                                // todo final Slider portrait = (Slider)
-                                // dialoglayout.findViewById(R.id.portrait);
-                                final SeekBar landscape = dialoglayout.findViewById(R.id.landscape);
 
-                                // todo  portrait.setBackgroundColor(Palette.getDefaultColor());
-                                landscape.setProgress(Reddit.dpWidth - 1);
+                                // Column counts 1 through 8 for the portrait and landscape
+                                // selectors.
+                                final String[] columnOptions = {
+                                    "1", "2", "3", "4", "5", "6", "7", "8"
+                                };
 
-                                ((TextView) dialoglayout.findViewById(R.id.progressnumber))
-                                        .setText(
-                                                res.getQuantityString(
-                                                        R.plurals.landscape_columns,
-                                                        landscape.getProgress() + 1,
-                                                        landscape.getProgress() + 1));
+                                final TextView portraitCurrent =
+                                        dialoglayout.findViewById(R.id.portrait_current);
+                                portraitCurrent.setText(
+                                        String.valueOf(SettingValues.portraitColumns));
+                                dialoglayout
+                                        .findViewById(R.id.portrait)
+                                        .setOnClickListener(
+                                                v ->
+                                                        DialogUtil.showWithCardBackground(
+                                                                new AlertDialog.Builder(
+                                                                                SettingsActivity
+                                                                                        .this)
+                                                                        .setTitle(
+                                                                                R.string
+                                                                                        .multi_column_portrait_count)
+                                                                        .setSingleChoiceItems(
+                                                                                columnOptions,
+                                                                                Math.max(
+                                                                                        0,
+                                                                                        Math.min(
+                                                                                                columnOptions
+                                                                                                                .length
+                                                                                                        - 1,
+                                                                                                SettingValues
+                                                                                                                .portraitColumns
+                                                                                                        - 1)),
+                                                                                (d, which) -> {
+                                                                                    SettingValues
+                                                                                                    .portraitColumns =
+                                                                                            which + 1;
+                                                                                    SettingValues
+                                                                                            .prefs
+                                                                                            .edit()
+                                                                                            .putInt(
+                                                                                                    SettingValues
+                                                                                                            .PREF_PORTRAIT_COLUMNS,
+                                                                                                    which
+                                                                                                            + 1)
+                                                                                            .apply();
+                                                                                    portraitCurrent
+                                                                                            .setText(
+                                                                                                    String
+                                                                                                            .valueOf(
+                                                                                                                    which
+                                                                                                                            + 1));
+                                                                                    SettingsActivity
+                                                                                                    .changed =
+                                                                                            true;
+                                                                                    d.dismiss();
+                                                                                })));
 
-                                landscape.setOnSeekBarChangeListener(
-                                        new SeekBar.OnSeekBarChangeListener() {
-                                            @Override
-                                            public void onProgressChanged(
-                                                    SeekBar seekBar,
-                                                    int progress,
-                                                    boolean fromUser) {
-                                                ((TextView)
-                                                                dialoglayout.findViewById(
-                                                                        R.id.progressnumber))
-                                                        .setText(
-                                                                res.getQuantityString(
-                                                                        R.plurals.landscape_columns,
-                                                                        landscape.getProgress() + 1,
-                                                                        landscape.getProgress()
-                                                                                + 1));
-                                                SettingsActivity.changed = true;
-                                            }
+                                final TextView landscapeCurrent =
+                                        dialoglayout.findViewById(R.id.landscape_current);
+                                landscapeCurrent.setText(String.valueOf(Reddit.dpWidth));
+                                dialoglayout
+                                        .findViewById(R.id.landscape)
+                                        .setOnClickListener(
+                                                v ->
+                                                        DialogUtil.showWithCardBackground(
+                                                                new AlertDialog.Builder(
+                                                                                SettingsActivity
+                                                                                        .this)
+                                                                        .setTitle(
+                                                                                R.string
+                                                                                        .multi_column_landscape_count)
+                                                                        .setSingleChoiceItems(
+                                                                                columnOptions,
+                                                                                Math.max(
+                                                                                        0,
+                                                                                        Math.min(
+                                                                                                columnOptions
+                                                                                                                .length
+                                                                                                        - 1,
+                                                                                                Reddit
+                                                                                                                .dpWidth
+                                                                                                        - 1)),
+                                                                                (d, which) -> {
+                                                                                    Reddit.dpWidth =
+                                                                                            which + 1;
+                                                                                    Reddit.colors
+                                                                                            .edit()
+                                                                                            .putInt(
+                                                                                                    "tabletOVERRIDE",
+                                                                                                    which
+                                                                                                            + 1)
+                                                                                            .apply();
+                                                                                    landscapeCurrent
+                                                                                            .setText(
+                                                                                                    String
+                                                                                                            .valueOf(
+                                                                                                                    which
+                                                                                                                            + 1));
+                                                                                    SettingsActivity
+                                                                                                    .changed =
+                                                                                            true;
+                                                                                    d.dismiss();
+                                                                                })));
 
-                                            @Override
-                                            public void onStartTrackingTouch(SeekBar seekBar) {}
-
-                                            @Override
-                                            public void onStopTrackingTouch(SeekBar seekBar) {}
-                                        });
                                 final AlertDialog.Builder builder =
                                         new AlertDialog.Builder(SettingsActivity.this)
                                                 .setView(dialoglayout);
                                 final Dialog dialog = builder.create();
                                 DialogUtil.matchDialogToCardBackground(dialog);
                                 dialog.show();
-                                dialog.setOnDismissListener(
-                                        new DialogInterface.OnDismissListener() {
-                                            @Override
-                                            public void onDismiss(DialogInterface dialog) {
-                                                Reddit.dpWidth = landscape.getProgress() + 1;
-                                                Reddit.colors
-                                                        .edit()
-                                                        .putInt(
-                                                                "tabletOVERRIDE",
-                                                                landscape.getProgress() + 1)
-                                                        .apply();
-                                            }
-                                        });
-                                SwitchCompat s = dialog.findViewById(R.id.dualcolumns);
-                                s.setChecked(SettingValues.dualPortrait);
-                                s.setOnCheckedChangeListener(
-                                        new CompoundButton.OnCheckedChangeListener() {
-                                            @Override
-                                            public void onCheckedChanged(
-                                                    CompoundButton buttonView, boolean isChecked) {
-                                                SettingValues.dualPortrait = isChecked;
-                                                SettingValues.prefs
-                                                        .edit()
-                                                        .putBoolean(
-                                                                SettingValues.PREF_DUAL_PORTRAIT,
-                                                                isChecked)
-                                                        .apply();
-                                            }
-                                        });
                                 SwitchCompat s2 = dialog.findViewById(R.id.fullcomment);
                                 s2.setChecked(SettingValues.fullCommentOverride);
                                 s2.setOnCheckedChangeListener(

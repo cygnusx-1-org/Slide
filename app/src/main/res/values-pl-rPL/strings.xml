@@ -78,8 +78,6 @@
     <string name="card_save_button">Przycisk \"Zapisz post\" na pasku akcji</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Tryb wielokulumnowy</string>
-    <string name="multi_column_landscape">Horyzontalnie</string>
-    <string name="multi_column_portrait">Dwie kolumny w trybie pionowym</string>
     <string name="single_column_multi_window">Pojedyncza kolumna w trybie wielu okien</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Ty</string>

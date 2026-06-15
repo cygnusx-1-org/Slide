@@ -505,16 +505,10 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
 
         fabClear = colors.getBoolean(SettingValues.PREF_FAB_CLEAR, false);
 
-        int widthDp = this.getResources().getConfiguration().screenWidthDp;
-        int heightDp = this.getResources().getConfiguration().screenHeightDp;
-
-        int fina = Math.max(widthDp, heightDp);
-        fina += 99;
-
         if (colors.contains("tabletOVERRIDE")) {
-            dpWidth = colors.getInt("tabletOVERRIDE", fina / 300);
+            dpWidth = colors.getInt("tabletOVERRIDE", 1);
         } else {
-            dpWidth = fina / 300;
+            dpWidth = 1;
         }
 
         if (colors.contains("notificationOverride")) {

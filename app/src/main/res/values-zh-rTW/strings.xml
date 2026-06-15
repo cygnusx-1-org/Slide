@@ -81,8 +81,6 @@
     <string name="card_save_button">在動作列中顯示「儲存貼文」按鈕</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">多列版面</string>
-    <string name="multi_column_landscape">橫向</string>
-    <string name="multi_column_portrait">在縱向時顯示多列</string>
     <string name="single_column_multi_window">在多窗口模式下使用單列佈局</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">你</string>
@@ -806,9 +804,6 @@
     <string name="load_videos_internally">內部載入視頻</string>
     <string name="load_videos_internally_content">你想試試幻燈片視頻外掛程式嗎？這將允許您在內部觀賞視頻（比如 YouTube）！</string>
     <string name="do_not_show_again">不要再顯示</string>
-    <plurals name="landscape_columns">
-        <item quantity="other">在橫向時顯示 %d 列</item>
-    </plurals>
     <string name="datasave_always">流動數據及 Wi-Fi</string>
     <string name="datasave_mobile">流動數據</string>
     <string name="never">永不</string>

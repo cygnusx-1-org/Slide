@@ -84,8 +84,6 @@
     <string name="card_save_button">Bottone \"salva post\" nella barra azioni</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Multi-colonna</string>
-    <string name="multi_column_landscape">Orizzontale</string>
-    <string name="multi_column_portrait">Due colonne in modalità ritratto</string>
     <string name="single_column_multi_window">Colonna singola in modalità multi-finestra</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Tu</string>
@@ -969,10 +967,6 @@
     <string name="load_videos_internally_content">Vorresti provare il plugin Slide Video? Ti permetterà di visualizzare i video (come quelli di YouTube) internamente!</string>
     <string name="do_not_show_again">Non mostrare ancora</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Immetti il testo da filtrare (subreddit:flair_text), premi invio per aggiungere</string>
-    <plurals name="landscape_columns">
-        <item quantity="one">%d colonna in modalità landscape</item>
-        <item quantity="other">%d colonne in modalità landscape</item>
-    </plurals>
     <string name="datasave_always">Dati cellulare e Wi-Fi</string>
     <string name="datasave_mobile">Dati cellulare</string>
     <string name="never">Mai</string>
