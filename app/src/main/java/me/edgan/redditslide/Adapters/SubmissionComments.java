@@ -305,8 +305,6 @@ public class SubmissionComments {
                         // Skip comments we can't parse; they'll still load on bind.
                     }
                 }
-                android.util.Log.d(
-                        "InlineImg", "preloadCommentImages extracted urls=" + urls.size());
                 CommentImageUtil.preloadBlocking(Reddit.getAppContext(), urls);
             } catch (Exception ignored) {
             }

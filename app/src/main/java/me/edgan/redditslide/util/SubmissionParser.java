@@ -394,28 +394,79 @@ public class SubmissionParser {
         return urls;
     }
 
+    private static final Pattern IMAGE_ANCHOR_PATTERN =
+            Pattern.compile(
+                    "<a\\s+href=\""
+                            + "(https://(?:preview\\.redd\\.it|i\\.redd\\.it|external-preview\\.redd\\.it|i\\.giphy\\.com)/[^\"]+)\""
+                            + "[^>]*>[^<]*</a>");
+    private static final Pattern IMAGE_URL_PATTERN =
+            Pattern.compile(
+                    "https://(?:preview\\.redd\\.it|i\\.redd\\.it|external-preview\\.redd\\.it|i\\.giphy\\.com)/[^\\s\"<]+");
+
     public static List<String> extractImageBlocks(List<String> blocks) {
         List<String> out = new ArrayList<>(blocks.size());
         for (String block : blocks) {
-            String url = pureImageUrl(convertGiphyToImageUrls(block));
-            if (url != null) {
-                out.add(IMAGE_BLOCK_PREFIX + url);
-            } else {
+            if (block.startsWith("<table>")
+                    || block.startsWith("<pre>")
+                    || block.equals("<hr/>")
+                    || block.equals("<div class=\"md\">")) {
                 out.add(block);
+            } else {
+                out.addAll(splitBlockImages(block));
             }
         }
         return out;
     }
 
-    private static String pureImageUrl(String block) {
-        if (block == null) {
-            return null;
+    /**
+     * Pulls every inline image out of a single text block into its own {@link #IMAGE_BLOCK_PREFIX}
+     * block, keeping the surrounding text as text blocks. This covers both whole-block images and
+     * images embedded in a paragraph of text, so they all render as pre-sized ImageViews instead of
+     * popping in via inline spans.
+     */
+    private static List<String> splitBlockImages(String block) {
+        List<String> result = new ArrayList<>();
+        // Rewrite giphy links and direct image anchors to bare URLs so they can be split out.
+        String normalized = imageAnchorsToUrls(convertGiphyToImageUrls(block));
+        Matcher matcher = IMAGE_URL_PATTERN.matcher(normalized);
+        int last = 0;
+        boolean found = false;
+        while (matcher.find()) {
+            String url = StringEscapeUtils.unescapeHtml4(matcher.group());
+            if (!isImageUrl(url)) {
+                continue;
+            }
+            found = true;
+            String before = normalized.substring(last, matcher.start());
+            if (hasRenderableText(before)) {
+                result.add(before);
+            }
+            result.add(IMAGE_BLOCK_PREFIX + url);
+            last = matcher.end();
         }
-        String stripped = TAG_PATTERN.matcher(block).replaceAll(" ").trim();
-        if (stripped.isEmpty() || stripped.contains(" ") || stripped.contains("\n")) {
-            return null; // empty, or more than a bare URL -> not a standalone image
+        if (!found) {
+            result.add(block); // no images: leave the original block untouched
+            return result;
         }
-        return isImageUrl(stripped) ? stripped : null;
+        String after = normalized.substring(last);
+        if (hasRenderableText(after)) {
+            result.add(after);
+        }
+        return result;
+    }
+
+    private static String imageAnchorsToUrls(String html) {
+        Matcher matcher = IMAGE_ANCHOR_PATTERN.matcher(html);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(sb, Matcher.quoteReplacement(" " + matcher.group(1) + " "));
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    private static boolean hasRenderableText(String fragment) {
+        return !TAG_PATTERN.matcher(fragment).replaceAll(" ").trim().isEmpty();
     }
 
     private static boolean isImageUrl(String url) {

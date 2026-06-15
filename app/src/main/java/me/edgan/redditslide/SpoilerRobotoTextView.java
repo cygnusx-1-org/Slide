@@ -1425,7 +1425,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                 return loader.loadImageSync(url, INLINE_IMAGE_SIZE, getInlineImageOptions());
             }
         } catch (Exception e) {
-            Log.e("InlineImg", "disk decode failed " + url, e);
+            Log.e("SpoilerRobotoTextView", "disk decode failed " + url, e);
         }
         return null;
     }

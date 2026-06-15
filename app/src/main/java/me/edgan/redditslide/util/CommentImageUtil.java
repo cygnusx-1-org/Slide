@@ -17,6 +17,8 @@ import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 
+import org.apache.commons.text.StringEscapeUtils;
+
 import me.edgan.redditslide.Activities.MediaView;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
@@ -84,7 +86,10 @@ public final class CommentImageUtil {
      * and the image is loaded asynchronously. Tapping opens the image in the media viewer.
      */
     public static void display(
-            final MaxHeightImageView imageView, final String url, final String subreddit) {
+            final MaxHeightImageView imageView, final String rawUrl, final String subreddit) {
+        // Normalize HTML entities so the cache key matches what the preloader warmed (and what the
+        // shared loader stores) — escaped vs unescaped here was the cause of images popping in.
+        final String url = StringEscapeUtils.unescapeHtml4(rawUrl);
         final Context context = imageView.getContext();
         imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         imageView.setOnClickListener(v -> openImage(context, url, subreddit));
@@ -92,7 +97,6 @@ public final class CommentImageUtil {
         ImageLoader loader = ((Reddit) context.getApplicationContext()).getImageLoader();
 
         Bitmap cached = syncBitmap(loader, url);
-        android.util.Log.d("InlineImg", "display " + (cached != null ? "SYNC-HIT " : "MISS->async ") + url);
         if (cached != null) {
             recordRatio(url, cached);
             int[] size = boundedSize(cached.getWidth(), cached.getHeight());
@@ -145,9 +149,6 @@ public final class CommentImageUtil {
      * so that by the time rows bind the bitmaps are cached and render in place.
      */
     public static void preloadBlocking(Context context, Collection<String> urls) {
-        android.util.Log.d(
-                "InlineImg",
-                "preloadBlocking START urls=" + (urls == null ? "null" : urls.size()));
         if (urls == null || urls.isEmpty() || SettingValues.shouldSkipImages(context)) {
             return;
         }
@@ -155,7 +156,8 @@ public final class CommentImageUtil {
         final DisplayImageOptions opts = options();
         int threads = Math.min(6, Math.max(1, urls.size()));
         ExecutorService pool = Executors.newFixedThreadPool(threads);
-        for (final String url : new ArrayList<>(urls)) {
+        for (final String rawUrl : new ArrayList<>(urls)) {
+            final String url = StringEscapeUtils.unescapeHtml4(rawUrl);
             pool.execute(
                     () -> {
                         try {
@@ -170,7 +172,6 @@ public final class CommentImageUtil {
         } catch (InterruptedException ignored) {
             pool.shutdownNow();
         }
-        android.util.Log.d("InlineImg", "preloadBlocking DONE");
     }
 
     private static double knownRatio(String url) {
