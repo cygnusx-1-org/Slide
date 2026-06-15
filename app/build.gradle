@@ -312,9 +312,6 @@ dependencies {
     // Convert Java objects into JSON and back
     implementation 'com.google.code.gson:gson:2.14.0'
 
-    // WebSocket client
-    implementation 'com.neovisionaries:nv-websocket-client:2.14'
-
     // Read, write, and create MP4 files
     implementation 'org.mp4parser:isoparser:1.9.56'
     implementation 'org.mp4parser:muxer:1.9.56'
