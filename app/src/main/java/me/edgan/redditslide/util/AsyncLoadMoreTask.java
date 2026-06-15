@@ -17,6 +17,10 @@ import me.edgan.redditslide.Adapters.MoreChildItem;
 import me.edgan.redditslide.Adapters.MoreCommentViewHolder;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.R;
+import me.edgan.redditslide.Reddit;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
 import net.dean.jraw.models.CommentNode;
 import net.dean.jraw.models.MoreChildren;
 import java.io.PrintWriter;
@@ -25,6 +29,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -338,6 +343,33 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
             itemsAddedCount++;
         }
 
+        // Download the newly fetched child comments' images before they're inserted/shown (we're on
+        // a background thread), so they render in place with their comment instead of popping in,
+        // matching SubmissionComments.LoadData.
+        preloadCommentImages(finalData);
+
         return itemsAddedCount;
+    }
+
+    private void preloadCommentImages(List<CommentObject> built) {
+        try {
+            LinkedHashSet<String> urls = new LinkedHashSet<>();
+            for (CommentObject o : built) {
+                if (o == null || !o.isComment() || o.comment == null) {
+                    continue;
+                }
+                try {
+                    JsonNode dataNode = o.comment.getComment().getDataNode();
+                    String html =
+                            SubmissionParser.replaceProcessingImgPlaceholders(
+                                    dataNode.get("body_html").asText(), dataNode);
+                    urls.addAll(SubmissionParser.imageUrlsFor(html));
+                } catch (Exception ignored) {
+                    // Skip comments we can't parse; they'll still load on bind.
+                }
+            }
+            CommentImageUtil.preloadBlocking(Reddit.getAppContext(), urls);
+        } catch (Exception ignored) {
+        }
     }
 }
