@@ -4,6 +4,13 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.6.1 / 2026-6-15
+============
+* Created a "Comment image size" setting with a new default of medium/1.5x
+* Fixed Comment emote animation
+* Massive improvement to the loading of comment images
+* Fixed Multi-column borken on 7.5.9 #292
+
 7.6.0 / 2026-6-14
 ============
 * Fixed jumpy content on scroll up
