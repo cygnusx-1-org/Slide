@@ -28,8 +28,8 @@ import com.davemorrissey.labs.subscaleview.decoder.ImageRegionDecoder;
 import java.util.Arrays;
 import java.util.List;
 
+import me.edgan.redditslide.Views.FallbackImageRegionDecoder;
 import me.edgan.redditslide.Views.ImageSource;
-import me.edgan.redditslide.Views.RapidImageRegionDecoder;
 import me.edgan.redditslide.Views.SubsamplingScaleImageView;
 
 /**
@@ -438,16 +438,16 @@ public class SubsamplingScaleImageViewLoader {
         }
     }
 
-    public void doLoader(boolean rapid) {
-        doLoader(this.savedImageSource, rapid);
+    public void doLoader(boolean useFallbackDecoder) {
+        doLoader(this.savedImageSource, useFallbackDecoder);
     }
 
-    public void doLoader(ImageSource imageSource, boolean rapid) {
+    public void doLoader(ImageSource imageSource, boolean useFallbackDecoder) {
         if (imageSource.getTile() || view.sRegion != null) {
 
             // Load the bitmap using tile decoding.
-            if (rapid) {
-                view.setRegionDecoderClass(RapidImageRegionDecoder.class); // Assuming this method remains public or becomes public
+            if (useFallbackDecoder) {
+                view.setRegionDecoderClass(FallbackImageRegionDecoder.class); // Assuming this method remains public or becomes public
                 TilesInitTask task = new TilesInitTask(view, view.getContext(), view.regionDecoderFactory, view.uri); // regionDecoderFactory and uri are public
                 view.execute(task);
             } else {

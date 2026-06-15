@@ -300,8 +300,6 @@ dependencies {
     // Utilities to assist with developing IO functionality
     implementation 'commons-io:commons-io:2.22.0'
 
-    // Simplified bitmap decoding and scaling
-    implementation 'com.github.suckgamony.RapidDecoder:library:7cdfca47fa'
 
     // HTTP client
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
