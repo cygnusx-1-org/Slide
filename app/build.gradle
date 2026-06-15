@@ -194,8 +194,6 @@ dependencies {
     withGPlayImplementation 'com.google.apis:google-api-services-drive:v3-rev20241206-2.0.0'
 
 /** Custom **/
-    // Draggable sliding up panel
-    implementation 'com.github.edgan:AndroidSlidingUpPanel:8413b22a2a'
     implementation 'com.github.edgan:JRAW:e5e405835e'
 
     def commonmarkVersion = '0ebc0749c7'
@@ -259,7 +257,6 @@ dependencies {
     implementation 'com.github.wasabeef:Blurry:4.0.0'
 
     // Draggable sliding up panel
-    //implementation 'com.sothree.slidinguppanel:library:3.4.0'
 
     // Floating action button menu implementation
     implementation 'com.nambimobile.widgets:expandable-fab:1.2.1'
