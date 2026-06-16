@@ -166,6 +166,33 @@
                 android:layout_marginTop="8dp"
                 android:orientation="vertical">
 
+                <RadioGroup
+                    android:id="@+id/imageHostGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <RadioButton
+                        android:id="@+id/imageHostReddit"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:checked="true"
+                        android:text="@string/submit_image_host_reddit"
+                        android:textAllCaps="true"
+                        android:textColor="?attr/fontColor" />
+
+                    <RadioButton
+                        android:id="@+id/imageHostImgur"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/submit_image_host_imgur"
+                        android:textAllCaps="true"
+                        android:textColor="?attr/fontColor" />
+                </RadioGroup>
+
                 <TextView
                     android:id="@+id/selImage"
                     android:layout_width="wrap_content"

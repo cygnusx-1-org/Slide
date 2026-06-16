@@ -447,11 +447,15 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                 public void onClick(View v) {
                                                     adapter.dataSet.refreshLayout.setRefreshing(
                                                             true);
-                                                    adapter
-                                                            .new ReplyTaskComment(
+                                                    CommentAdapter.ReplyTaskComment replyTask =
+                                                            adapter
+                                                                    .new ReplyTaskComment(
                                                                     adapter.submission,
-                                                                    changedProfile[0])
-                                                            .execute(e.getText().toString());
+                                                                    changedProfile[0]);
+                                                    replyTask.uploadedImages =
+                                                            me.edgan.redditslide.util
+                                                                    .RedditImageUploads.consume(e);
+                                                    replyTask.execute(e.getText().toString());
                                                     replyDialog.dismiss();
                                                 }
                                             });

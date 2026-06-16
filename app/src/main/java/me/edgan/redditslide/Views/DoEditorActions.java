@@ -19,6 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
@@ -35,6 +36,7 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.activity.ComponentActivity;
 
 import me.edgan.redditslide.Activities.Draw;
+import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Drafts;
 import me.edgan.redditslide.ImgurAlbum.UploadImgur;
 import me.edgan.redditslide.ImgurAlbum.UploadImgurAlbum;
@@ -334,57 +336,32 @@ public class DoEditorActions {
                                 }
                             }
                         });
-        baseView.findViewById(R.id.imagerep)
-                .setOnClickListener(
-                        v -> {
-                            e = editText.getText();
-                            sStart = editText.getSelectionStart();
-                            sEnd = editText.getSelectionEnd();
+        final View imageButton = baseView.findViewById(R.id.imagerep);
+        imageButtons.put(editText, imageButton);
+        // Reset the button state for reused editors: comments are limited to one inline Reddit
+        // image, so the button is disabled once one has been added.
+        setImageButtonEnabled(
+                imageButton,
+                editText.getId() == R.id.bodytext
+                        || me.edgan.redditslide.util.RedditImageUploads.get(editText).isEmpty());
+        imageButton.setOnClickListener(
+                v -> {
+                    e = editText.getText();
+                    sStart = editText.getSelectionStart();
+                    sEnd = editText.getSelectionEnd();
+                    currentImageTarget = editText;
 
-                            if (imageLauncher != null) {
-                                currentImageTarget = editText;
-                                imageLauncher.launch(
-                                        new PickVisualMediaRequest.Builder()
-                                                .setMediaType(
-                                                        ActivityResultContracts.PickVisualMedia
-                                                                .ImageOnly.INSTANCE)
-                                                .build());
-                            } else if (a instanceof ComponentActivity) {
-                                currentImageTarget = editText;
-                                ComponentActivity componentActivity = (ComponentActivity) a;
-                                String key =
-                                        "doEditorImage_"
-                                                + registryCounter.getAndIncrement();
-                                ActivityResultLauncher<PickVisualMediaRequest> launcher =
-                                        componentActivity
-                                                .getActivityResultRegistry()
-                                                .register(
-                                                        key,
-                                                        new ActivityResultContracts
-                                                                .PickVisualMedia(),
-                                                        uri -> {
-                                                            if (uri != null) {
-                                                                ArrayList<Uri> uriList =
-                                                                        new ArrayList<>();
-                                                                uriList.add(uri);
-                                                                handleImageIntent(
-                                                                        uriList,
-                                                                        editText,
-                                                                        editText.getContext());
-                                                                KeyboardUtil.hideKeyboard(
-                                                                        editText.getContext(),
-                                                                        editText.getWindowToken(),
-                                                                        0);
-                                                            }
-                                                        });
-                                launcher.launch(
-                                        new PickVisualMediaRequest.Builder()
-                                                .setMediaType(
-                                                        ActivityResultContracts.PickVisualMedia
-                                                                .ImageOnly.INSTANCE)
-                                                .build());
-                            }
-                        });
+                    showImageUploadChoice(
+                            a,
+                            () -> {
+                                uploadToReddit = false;
+                                launchImagePicker(editText, a, imageLauncher);
+                            },
+                            () -> {
+                                uploadToReddit = true;
+                                launchImagePicker(editText, a, imageLauncher);
+                            });
+                });
         baseView.findViewById(R.id.draw)
                 .setOnClickListener(
                         new View.OnClickListener() {
@@ -697,6 +674,12 @@ public class DoEditorActions {
     public static Editable e;
     public static int sStart, sEnd;
     public static EditText currentImageTarget;
+    // When true, the next picked image is uploaded to Reddit (inline) instead of Imgur (link).
+    public static boolean uploadToReddit;
+    // The image-toolbar button per editor, so it can be greyed out after a comment's one allowed
+    // Reddit image.
+    private static final java.util.WeakHashMap<EditText, View> imageButtons =
+            new java.util.WeakHashMap<>();
 
     public static void doDraw(final Activity a, final EditText editText, final FragmentManager fm) {
         final Intent intent = new Intent(a, Draw.class);
@@ -1045,7 +1028,171 @@ public class DoEditorActions {
     }
 
     public static void handleImageIntent(List<Uri> uris, EditText ed, Context c) {
-        handleImageIntent(uris, ed.getText(), c);
+        if (uploadToReddit) {
+            uploadToReddit = false;
+            uploadImageToReddit(uris, ed, c);
+        } else {
+            handleImageIntent(uris, ed.getText(), c);
+        }
+    }
+
+    /**
+     * Ask the user whether the selected image should be uploaded to Reddit (rendered inline) or to
+     * Imgur (inserted as a link). When the user is logged out, Reddit upload is not possible so we
+     * go straight to Imgur.
+     */
+    private static void showImageUploadChoice(
+            final Activity a, final Runnable onImgur, final Runnable onReddit) {
+        if (!Authentication.isLoggedIn
+                || Authentication.name == null
+                || Authentication.name.equalsIgnoreCase("LOGGEDOUT")) {
+            onImgur.run();
+            return;
+        }
+
+        new MaterialAlertDialogBuilder(
+                        new ContextThemeWrapper(
+                                a, new ColorPreferences(a).getFontStyle().getBaseId()))
+                .setTitle(R.string.editor_upload_image_title)
+                .setItems(
+                        new CharSequence[] {
+                            a.getString(R.string.editor_upload_reddit),
+                            a.getString(R.string.editor_upload_imgur)
+                        },
+                        (dialog, which) -> {
+                            if (which == 0) {
+                                onReddit.run();
+                            } else {
+                                onImgur.run();
+                            }
+                        })
+                .setNegativeButton(R.string.btn_cancel, null)
+                .show();
+    }
+
+    private static void launchImagePicker(
+            final EditText editText,
+            final Activity a,
+            @Nullable final ActivityResultLauncher<PickVisualMediaRequest> imageLauncher) {
+        if (imageLauncher != null) {
+            imageLauncher.launch(
+                    new PickVisualMediaRequest.Builder()
+                            .setMediaType(
+                                    ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                            .build());
+        } else if (a instanceof ComponentActivity) {
+            ComponentActivity componentActivity = (ComponentActivity) a;
+            String key = "doEditorImage_" + registryCounter.getAndIncrement();
+            ActivityResultLauncher<PickVisualMediaRequest> launcher =
+                    componentActivity
+                            .getActivityResultRegistry()
+                            .register(
+                                    key,
+                                    new ActivityResultContracts.PickVisualMedia(),
+                                    uri -> {
+                                        if (uri != null) {
+                                            ArrayList<Uri> uriList = new ArrayList<>();
+                                            uriList.add(uri);
+                                            handleImageIntent(
+                                                    uriList, editText, editText.getContext());
+                                            KeyboardUtil.hideKeyboard(
+                                                    editText.getContext(),
+                                                    editText.getWindowToken(),
+                                                    0);
+                                        }
+                                    });
+            launcher.launch(
+                    new PickVisualMediaRequest.Builder()
+                            .setMediaType(
+                                    ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                            .build());
+        }
+    }
+
+    public static void uploadImageToReddit(List<Uri> uris, EditText editText, Context c) {
+        if (uris.isEmpty()) {
+            return;
+        }
+        try {
+            new UploadRedditImageTask(c, editText).execute(uris.get(0));
+        } catch (Exception e) {
+            LogUtil.e(e, "DoEditorActions.uploadImageToReddit failed");
+        }
+    }
+
+    private static void setImageButtonEnabled(View v, boolean enabled) {
+        if (v == null) {
+            return;
+        }
+        v.setEnabled(enabled);
+        v.setAlpha(enabled ? 1f : 0.4f);
+    }
+
+    /** Inserts a Reddit-uploaded image reference at the editor's cursor, newline-aware. */
+    private static void insertRedditImage(EditText editText, String key) {
+        int start = Math.max(editText.getSelectionStart(), 0);
+        int end = Math.max(editText.getSelectionEnd(), 0);
+        int realStart = Math.min(start, end);
+
+        String insert;
+        if (realStart > 0
+                && editText.getText().toString().charAt(realStart - 1) != '\n') {
+            insert = "\n![](" + key + ")\n";
+        } else {
+            insert = "![](" + key + ")\n";
+        }
+        editText.getText().replace(realStart, Math.max(start, end), insert);
+    }
+
+    private static class UploadRedditImageTask extends android.os.AsyncTask<Uri, Void, Object> {
+        private final Context c;
+        private final EditText editText;
+        private MaterialProgressDialog dialog;
+
+        UploadRedditImageTask(Context c, EditText editText) {
+            this.c = c;
+            this.editText = editText;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            dialog =
+                    new MaterialProgressDialog.Builder(c)
+                            .title(c.getString(R.string.editor_uploading_reddit))
+                            .progress(true, 0)
+                            .cancelable(false)
+                            .show();
+        }
+
+        @Override
+        protected Object doInBackground(Uri... uris) {
+            try {
+                return me.edgan.redditslide.util.RedditMediaUpload.upload(c, uris[0]);
+            } catch (Exception e) {
+                LogUtil.e(e, "RedditMediaUpload failed");
+                return e;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Object result) {
+            if (dialog != null) {
+                dialog.dismiss();
+            }
+            if (result instanceof me.edgan.redditslide.markdown.UploadedImage) {
+                me.edgan.redditslide.markdown.UploadedImage image =
+                        (me.edgan.redditslide.markdown.UploadedImage) result;
+                insertRedditImage(editText, image.imageUrlOrKey);
+                me.edgan.redditslide.util.RedditImageUploads.add(editText, image);
+                // Comments allow only one inline Reddit image; grey out the button after the first.
+                if (editText.getId() != R.id.bodytext) {
+                    setImageButtonEnabled(imageButtons.get(editText), false);
+                }
+                Toast.makeText(c, R.string.editor_reddit_upload_success, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(c, R.string.editor_reddit_upload_failed, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     public static void handleImageIntent(List<Uri> uris, Editable ed, Context c) {

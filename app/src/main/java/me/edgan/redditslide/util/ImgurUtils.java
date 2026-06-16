@@ -9,6 +9,15 @@ import androidx.annotation.Nullable;
 
 import me.edgan.redditslide.Reddit;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+import org.json.JSONObject;
+
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
@@ -19,6 +28,45 @@ import java.io.InputStream;
 
 // Following methods sourced from https://github.com/Kennyc1012/Opengur, Code by Kenny Campagna
 public class ImgurUtils {
+
+    /**
+     * Uploads an image to Imgur and returns its link. Must be called off the main thread. Mirrors
+     * {@link me.edgan.redditslide.ImgurAlbum.UploadImgur} but runs synchronously so it can be done
+     * as part of a submit action.
+     */
+    public static String uploadSync(Context c, Uri uri) throws IOException {
+        File file = createFile(uri, c);
+        if (file == null) {
+            throw new IOException("Could not read image");
+        }
+        OkHttpClient client = Reddit.client;
+        RequestBody formBody =
+                new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart(
+                                "image",
+                                file.getName(),
+                                RequestBody.create(MediaType.parse("image/*"), file))
+                        .build();
+        Request request =
+                new Request.Builder()
+                        .header("Authorization", "Client-ID bef87913eb202e9")
+                        .url("https://api.imgur.com/3/image")
+                        .post(formBody)
+                        .build();
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Imgur upload failed: " + response.code());
+            }
+            try {
+                JSONObject json = new JSONObject(response.body().string());
+                return json.getJSONObject("data").getString("link");
+            } catch (Exception e) {
+                throw new IOException("Could not parse Imgur response", e);
+            }
+        }
+    }
+
     public static File createFile(Uri uri, @NonNull Context context) {
         InputStream in;
         ContentResolver resolver = context.getContentResolver();

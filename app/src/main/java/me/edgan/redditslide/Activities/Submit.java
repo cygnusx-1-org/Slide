@@ -3,7 +3,6 @@ package me.edgan.redditslide.Activities;
 import me.edgan.redditslide.util.DialogUtil;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -46,8 +45,6 @@ import com.google.gson.JsonObject;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Drafts;
 import me.edgan.redditslide.Flair.RichFlair;
-import me.edgan.redditslide.ImgurAlbum.UploadImgur;
-import me.edgan.redditslide.ImgurAlbum.UploadImgurAlbum;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
@@ -76,7 +73,6 @@ import net.dean.jraw.models.Subreddit;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
-import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -89,7 +85,9 @@ public class Submit extends BaseActivity {
 
     private boolean sent;
     private String trying;
-    private String URL;
+    // The locally-picked image for an image post. The upload to Reddit/Imgur is deferred until
+    // submit, so this holds the content Uri in the meantime.
+    private Uri selectedImageUri;
     private String selectedFlairID;
     private String selectedFlairText;
     private boolean isFlairRequired = false;
@@ -261,6 +259,7 @@ public class Submit extends BaseActivity {
 
                                 image.setVisibility(View.GONE);
                                 link.setVisibility(View.GONE);
+                                updateSubmitEnabled();
                             }
                         });
         findViewById(R.id.imageradio)
@@ -271,6 +270,7 @@ public class Submit extends BaseActivity {
                                 self.setVisibility(View.GONE);
                                 image.setVisibility(View.VISIBLE);
                                 link.setVisibility(View.GONE);
+                                updateSubmitEnabled();
                             }
                         });
         findViewById(R.id.linkradio)
@@ -281,6 +281,7 @@ public class Submit extends BaseActivity {
                                 self.setVisibility(View.GONE);
                                 image.setVisibility(View.GONE);
                                 link.setVisibility(View.VISIBLE);
+                                updateSubmitEnabled();
                             }
                         });
         findViewById(R.id.flair)
@@ -394,6 +395,7 @@ public class Submit extends BaseActivity {
             String data = intent.getStringExtra(Intent.EXTRA_SUBJECT);
             ((EditText) findViewById(R.id.titletext)).setText(data);
         }
+        updateSubmitEnabled();
         findViewById(R.id.send)
                 .setOnClickListener(
                         new View.OnClickListener() {
@@ -411,21 +413,6 @@ public class Submit extends BaseActivity {
                                 new AsyncDo().execute();
                             }
                         });
-    }
-
-    private void setImage(final String URL) {
-        this.URL = URL;
-
-        runOnUiThread(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        findViewById(R.id.imagepost).setVisibility(View.VISIBLE);
-                        ((Reddit) getApplication())
-                                .getImageLoader()
-                                .displayImage(URL, ((ImageView) findViewById(R.id.imagepost)));
-                    }
-                });
     }
 
     private void showFlairChooser() {
@@ -695,21 +682,33 @@ public class Submit extends BaseActivity {
     }
 
     public void handleImageIntent(List<Uri> uris) {
-        if (uris.size() == 1) {
-            // Get the Image from data (single image)
-            try {
-                new UploadImgurSubmit(this, uris.get(0));
-            } catch (Exception e) {
-                LogUtil.e(e, "Submit.handleImageIntent failed");
-            }
-        } else {
-            // Multiple images
-            try {
-                new UploadImgurAlbumSubmit(this, uris.toArray(new Uri[0]));
-            } catch (Exception e) {
-                LogUtil.e(e, "Submit.handleImageIntent failed");
-            }
+        if (uris.isEmpty()) {
+            return;
         }
+        // Just select the image; the actual upload (to Reddit or Imgur) is deferred until submit.
+        selectedImageUri = uris.get(0);
+
+        ImageView preview = (ImageView) findViewById(R.id.imagepost);
+        preview.setVisibility(View.VISIBLE);
+        preview.setImageURI(selectedImageUri);
+
+        ((TextView) findViewById(R.id.selImage)).setText(R.string.submit_change_img);
+
+        updateSubmitEnabled();
+    }
+
+    /**
+     * For an image post the submit button stays disabled until an image is picked, so the user
+     * can't submit an empty image post.
+     */
+    private void updateSubmitEnabled() {
+        FloatingActionButton send = (FloatingActionButton) findViewById(R.id.send);
+        if (send == null) {
+            return;
+        }
+        boolean enabled = image.getVisibility() != View.VISIBLE || selectedImageUri != null;
+        send.setEnabled(enabled);
+        send.setAlpha(enabled ? 1f : 0.5f);
     }
 
     private class AsyncDo extends AsyncTask<Void, Void, Void> {
@@ -724,13 +723,21 @@ public class Submit extends BaseActivity {
         private String titleText;
         private String urlText;
         private boolean sendReplies;
+        private boolean imageReddit;
+        private Uri imageUri;
+        private java.util.List<me.edgan.redditslide.markdown.UploadedImage> uploadedImages;
 
         @Override
         protected void onPreExecute() {
             selfVisible = self.getVisibility() == View.VISIBLE;
             linkVisible = link.getVisibility() == View.VISIBLE;
             imageVisible = image.getVisibility() == View.VISIBLE;
+            imageReddit = ((RadioButton) findViewById(R.id.imageHostReddit)).isChecked();
+            imageUri = selectedImageUri;
             bodyText = ((EditText) findViewById(R.id.bodytext)).getText().toString();
+            uploadedImages =
+                    me.edgan.redditslide.util.RedditImageUploads.consume(
+                            (EditText) findViewById(R.id.bodytext));
             subredditText =
                     ((AutoCompleteTextView) findViewById(R.id.subreddittext))
                             .getText()
@@ -745,6 +752,44 @@ public class Submit extends BaseActivity {
             try {
                 if (selfVisible) {
                     final String text = bodyText;
+
+                    if (uploadedImages != null && !uploadedImages.isEmpty()) {
+                        // Inline Reddit images require submitting selftext as richtext_json,
+                        // which JRAW's submit() cannot do.
+                        try {
+                            String fullName =
+                                    me.edgan.redditslide.util.RichtextSubmission.submitSelf(
+                                            Authentication.reddit,
+                                            subredditText,
+                                            titleText,
+                                            bodyText,
+                                            uploadedImages,
+                                            sendReplies,
+                                            selectedFlairID);
+                            OpenRedditLink.openUrl(
+                                    Submit.this,
+                                    "reddit.com/r/"
+                                            + subredditText
+                                            + "/comments/"
+                                            + fullName.substring(3),
+                                    true);
+                            Submit.this.finish();
+                        } catch (final Exception e) {
+                            Drafts.addDraft(text);
+                            LogUtil.e(e, "Submit richtext self failed");
+                            runOnUiThread(
+                                    () ->
+                                            showErrorRetryDialog(
+                                                    getString(R.string.misc_err)
+                                                            + ": "
+                                                            + e.getMessage()
+                                                            + "\n"
+                                                            + getString(
+                                                                    R.string.misc_retry_draft)));
+                        }
+                        return null;
+                    }
+
                     try {
                         AccountManager.SubmissionBuilder builder =
                                 new AccountManager.SubmissionBuilder(
@@ -832,13 +877,50 @@ public class Submit extends BaseActivity {
                                     }
                                 });
                     }
+                } else if (imageVisible && imageReddit) {
+                    // Upload to Reddit's media bucket, then submit a native image post
+                    // (kind=image) pointing at the uploaded media URL.
+                    try {
+                        String mediaUrl =
+                                me.edgan.redditslide.util.RedditMediaUpload.uploadForPostUrl(
+                                        Submit.this, imageUri);
+                        String permalink =
+                                me.edgan.redditslide.util.RichtextSubmission.submitImage(
+                                        Authentication.reddit,
+                                        subredditText,
+                                        titleText,
+                                        mediaUrl,
+                                        sendReplies,
+                                        selectedFlairID);
+                        OpenRedditLink.openUrl(
+                                Submit.this,
+                                permalink != null
+                                        ? permalink
+                                        : "reddit.com/r/" + subredditText,
+                                true);
+                        Submit.this.finish();
+                    } catch (final Exception e) {
+                        LogUtil.e(e, "Submit reddit image failed");
+                        runOnUiThread(
+                                () ->
+                                        showErrorRetryDialog(
+                                                getString(R.string.misc_err)
+                                                        + ": "
+                                                        + e.getMessage()
+                                                        + "\n"
+                                                        + getString(R.string.misc_retry)));
+                    }
                 } else if (imageVisible) {
                     try {
+                        // Upload to Imgur, then submit the resulting link as the post URL.
+                        String imgurUrl =
+                                me.edgan.redditslide.util.ImgurUtils.uploadSync(
+                                        Submit.this, imageUri);
                         Submission s =
                                 new AccountManager(Authentication.reddit)
                                         .submit(
                                                 new AccountManager.SubmissionBuilder(
-                                                        new URL(URL),
+                                                        new URL(imgurUrl),
                                                         subredditText,
                                                         titleText));
                         new AccountManager(Authentication.reddit)
@@ -888,102 +970,6 @@ public class Submit extends BaseActivity {
                         });
             }
             return null;
-        }
-    }
-
-    private class UploadImgurSubmit extends UploadImgur {
-
-        private final Uri uri;
-
-        public UploadImgurSubmit(Context c, Uri u) {
-            this.c = c;
-            this.uri = u;
-
-            dialog =
-                    new MaterialProgressDialog.Builder(c)
-                            .title(c.getString(R.string.editor_uploading_image))
-                            .progress(false, 100)
-                            .cancelable(false)
-                            .build();
-
-            new MaterialAlertDialogBuilder(
-                            new ContextThemeWrapper(
-                                    c, new ColorPreferences(c).getFontStyle().getBaseId()))
-                    .setTitle(c.getString(R.string.editor_upload_image_question))
-                    .setCancelable(false)
-                    .setPositiveButton(
-                            c.getString(R.string.btn_upload),
-                            (d, w) -> {
-                                dialog.show();
-                                execute(uri);
-                            })
-                    .setNegativeButton(c.getString(R.string.btn_cancel), null)
-                    .show();
-        }
-
-        @Override
-        protected void onPostExecute(final JSONObject result) {
-            dialog.dismiss();
-            try {
-                final String url = result.getJSONObject("data").getString("link");
-                setImage(url);
-
-            } catch (Exception e) {
-                DialogUtil.showWithCardBackground(new AlertDialog.Builder(c)
-                        .setTitle(R.string.err_title)
-                        .setMessage(R.string.editor_err_msg)
-                        .setPositiveButton(R.string.btn_ok, null)
-                        );
-                LogUtil.e(e, "Submit.onPostExecute failed");
-            }
-        }
-    }
-
-    private class UploadImgurAlbumSubmit extends UploadImgurAlbum {
-
-        private final Uri[] uris;
-
-        public UploadImgurAlbumSubmit(Context c, Uri... u) {
-            this.c = c;
-            this.uris = u;
-
-            dialog =
-                    new MaterialProgressDialog.Builder(c)
-                            .title(c.getString(R.string.editor_uploading_image))
-                            .progress(false, 100)
-                            .cancelable(false)
-                            .build();
-
-            new MaterialAlertDialogBuilder(
-                            new ContextThemeWrapper(
-                                    c, new ColorPreferences(c).getFontStyle().getBaseId()))
-                    .setTitle(c.getString(R.string.editor_upload_image_question))
-                    .setCancelable(false)
-                    .setPositiveButton(
-                            c.getString(R.string.btn_upload),
-                            (d, w) -> {
-                                dialog.show();
-                                execute(uris);
-                            })
-                    .setNegativeButton(c.getString(R.string.btn_cancel), null)
-                    .show();
-        }
-
-        @Override
-        protected void onPostExecute(final String result) {
-            dialog.dismiss();
-            try {
-                ((RadioButton) findViewById(R.id.linkradio)).setChecked(true);
-                link.setVisibility(View.VISIBLE);
-                ((EditText) findViewById(R.id.urltext)).setText(finalUrl);
-            } catch (Exception e) {
-                DialogUtil.showWithCardBackground(new AlertDialog.Builder(c)
-                        .setTitle(R.string.err_title)
-                        .setMessage(R.string.editor_err_msg)
-                        .setPositiveButton(R.string.btn_ok, null)
-                        );
-                LogUtil.e(e, "Submit.onPostExecute failed");
-            }
         }
     }
 

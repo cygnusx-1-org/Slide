@@ -839,8 +839,12 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     mPage.overrideFab = false;
                                     if (currentlyEditing != null) {
                                         String text = currentlyEditing.getText().toString();
-                                        new ReplyTaskComment(submission, changedProfile)
-                                                .execute(text);
+                                        ReplyTaskComment replyTask =
+                                                new ReplyTaskComment(submission, changedProfile);
+                                        replyTask.uploadedImages =
+                                                me.edgan.redditslide.util.RedditImageUploads
+                                                        .consume(currentlyEditing);
+                                        replyTask.execute(text);
                                         replyArea.setVisibility(View.GONE);
                                         currentlyEditing.setText("");
                                         currentlyEditing = null;
@@ -1829,22 +1833,33 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         String why;
         String commentBack;
+        public java.util.List<me.edgan.redditslide.markdown.UploadedImage> uploadedImages;
 
         @Override
         protected String doInBackground(String... comment) {
             if (Authentication.me != null) {
                 try {
                     commentBack = comment[0];
-                    if (profileName.equals(Authentication.name)) {
-                        return new AccountManager(Authentication.reddit).reply(sub, comment[0]);
-                    } else {
-                        LogUtil.v("Switching to " + profileName);
-                        return new AccountManager(getAuthenticatedClient(profileName))
-                                .reply(sub, comment[0]);
+                    RedditClient client =
+                            profileName.equals(Authentication.name)
+                                    ? Authentication.reddit
+                                    : getAuthenticatedClient(profileName);
+
+                    if (uploadedImages != null && !uploadedImages.isEmpty()) {
+                        // Inline Reddit images require submitting the body as richtext_json, which
+                        // JRAW's reply() cannot do.
+                        return me.edgan.redditslide.util.RichtextSubmission.reply(
+                                client, (Contribution) sub, comment[0], uploadedImages);
                     }
+
+                    return new AccountManager(client).reply(sub, comment[0]);
                 } catch (Exception e) {
                     if (e instanceof ApiException) {
                         why = ((ApiException) e).getExplanation();
+                    } else if (e
+                            instanceof
+                            me.edgan.redditslide.util.RichtextSubmission.RedditApiError) {
+                        why = e.getMessage();
                     }
                     return null;
                 }
