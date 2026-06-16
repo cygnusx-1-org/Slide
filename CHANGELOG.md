@@ -4,6 +4,10 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.6.2 / 2026-6-15
+============
+* Fixed Thumbnails don't always work outside the main feed #274
+
 7.6.1 / 2026-6-15
 ============
 * Created a "Comment image size" setting with a new default of medium/1.5x
