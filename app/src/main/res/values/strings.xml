@@ -217,6 +217,9 @@
     <string name="submit_image_host_imgur">Imgur</string>
     <string name="submit_image_host_reddit">Reddit</string>
     <string name="submit_change_img">Change picture</string>
+    <string name="submit_select_gallery">Select pictures</string>
+    <string name="submit_gallery_count">%1$d selected</string>
+    <string name="submit_uploading_gallery">Uploading image %1$d of %2$d</string>
     <string name="editor_select_img">Select picture</string>
     <string name="editor_hint_optional_body">Text (optional)</string>
     <string name="editor_submit">Submit a post</string>

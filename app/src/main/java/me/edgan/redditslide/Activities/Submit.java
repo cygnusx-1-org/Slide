@@ -5,6 +5,7 @@ import me.edgan.redditslide.util.DialogUtil;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -88,6 +90,8 @@ public class Submit extends BaseActivity {
     // The locally-picked image for an image post. The upload to Reddit/Imgur is deferred until
     // submit, so this holds the content Uri in the meantime.
     private Uri selectedImageUri;
+    // The locally-picked images for a Reddit gallery post; uploaded at submit time.
+    private final java.util.ArrayList<Uri> selectedGalleryUris = new java.util.ArrayList<>();
     private String selectedFlairID;
     private String selectedFlairText;
     private boolean isFlairRequired = false;
@@ -95,6 +99,7 @@ public class Submit extends BaseActivity {
     private View image;
     private View link;
     private View self;
+    private View gallery;
     public static final String EXTRA_SUBREDDIT = "subreddit";
     public static final String EXTRA_BODY = "body";
     public static final String EXTRA_IS_SELF = "is_self";
@@ -110,6 +115,8 @@ public class Submit extends BaseActivity {
     private Gson gson;
     private ActivityResultLauncher<PickVisualMediaRequest> submitImageLauncher;
     private ActivityResultLauncher<PickVisualMediaRequest> editorImageLauncher;
+    private ActivityResultLauncher<PickVisualMediaRequest> galleryImageLauncher;
+    private MaterialProgressDialog galleryProgress;
 
     @Override
     public void onDestroy() {
@@ -161,6 +168,14 @@ public class Submit extends BaseActivity {
                                 DoEditorActions.currentImageTarget = null;
                             }
                         });
+        galleryImageLauncher =
+                registerForActivityResult(
+                        new ActivityResultContracts.PickMultipleVisualMedia(20),
+                        uris -> {
+                            if (uris != null && !uris.isEmpty()) {
+                                onGalleryPicked(uris);
+                            }
+                        });
 
         applyColorTheme();
         setContentView(R.layout.activity_submit);
@@ -183,9 +198,11 @@ public class Submit extends BaseActivity {
                 ((AutoCompleteTextView) findViewById(R.id.subreddittext));
         image = findViewById(R.id.image);
         link = findViewById(R.id.url);
+        gallery = findViewById(R.id.gallery);
 
         image.setVisibility(View.GONE);
         link.setVisibility(View.GONE);
+        gallery.setVisibility(View.GONE);
 
         if (subreddit != null
                 && !subreddit.equals("frontpage")
@@ -259,6 +276,7 @@ public class Submit extends BaseActivity {
 
                                 image.setVisibility(View.GONE);
                                 link.setVisibility(View.GONE);
+                                gallery.setVisibility(View.GONE);
                                 updateSubmitEnabled();
                             }
                         });
@@ -270,6 +288,19 @@ public class Submit extends BaseActivity {
                                 self.setVisibility(View.GONE);
                                 image.setVisibility(View.VISIBLE);
                                 link.setVisibility(View.GONE);
+                                gallery.setVisibility(View.GONE);
+                                updateSubmitEnabled();
+                            }
+                        });
+        findViewById(R.id.galleryradio)
+                .setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                self.setVisibility(View.GONE);
+                                image.setVisibility(View.GONE);
+                                link.setVisibility(View.GONE);
+                                gallery.setVisibility(View.VISIBLE);
                                 updateSubmitEnabled();
                             }
                         });
@@ -281,9 +312,19 @@ public class Submit extends BaseActivity {
                                 self.setVisibility(View.GONE);
                                 image.setVisibility(View.GONE);
                                 link.setVisibility(View.VISIBLE);
+                                gallery.setVisibility(View.GONE);
                                 updateSubmitEnabled();
                             }
                         });
+        findViewById(R.id.selGallery)
+                .setOnClickListener(
+                        v ->
+                                galleryImageLauncher.launch(
+                                        new PickVisualMediaRequest.Builder()
+                                                .setMediaType(
+                                                        ActivityResultContracts.PickVisualMedia
+                                                                .ImageOnly.INSTANCE)
+                                                .build()));
         findViewById(R.id.flair)
                 .setOnClickListener(
                         new View.OnClickListener() {
@@ -697,18 +738,67 @@ public class Submit extends BaseActivity {
         updateSubmitEnabled();
     }
 
+    /** Records the picked gallery images and shows a thumbnail strip + count. */
+    private void onGalleryPicked(List<Uri> uris) {
+        selectedGalleryUris.clear();
+        selectedGalleryUris.addAll(uris);
+
+        LinearLayout thumbs = (LinearLayout) findViewById(R.id.galleryThumbs);
+        thumbs.removeAllViews();
+        int size = (int) (64 * Resources.getSystem().getDisplayMetrics().density);
+        int margin = (int) (4 * Resources.getSystem().getDisplayMetrics().density);
+        for (Uri uri : selectedGalleryUris) {
+            ImageView iv = new ImageView(this);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(size, size);
+            lp.setMargins(margin, 0, margin, 0);
+            iv.setLayoutParams(lp);
+            iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            iv.setImageURI(uri);
+            thumbs.addView(iv);
+        }
+
+        TextView count = (TextView) findViewById(R.id.galleryCount);
+        count.setVisibility(View.VISIBLE);
+        count.setText(getString(R.string.submit_gallery_count, selectedGalleryUris.size()));
+
+        updateSubmitEnabled();
+    }
+
     /**
-     * For an image post the submit button stays disabled until an image is picked, so the user
-     * can't submit an empty image post.
+     * For an image/gallery post the submit button stays disabled until image(s) are picked, so the
+     * user can't submit an empty post.
      */
     private void updateSubmitEnabled() {
         FloatingActionButton send = (FloatingActionButton) findViewById(R.id.send);
         if (send == null) {
             return;
         }
-        boolean enabled = image.getVisibility() != View.VISIBLE || selectedImageUri != null;
+        boolean enabled = true;
+        if (image.getVisibility() == View.VISIBLE) {
+            enabled = selectedImageUri != null;
+        } else if (gallery.getVisibility() == View.VISIBLE) {
+            enabled = !selectedGalleryUris.isEmpty();
+        }
         send.setEnabled(enabled);
         send.setAlpha(enabled ? 1f : 0.5f);
+    }
+
+    private void showGalleryProgress(String message) {
+        if (galleryProgress == null) {
+            galleryProgress =
+                    new MaterialProgressDialog.Builder(this)
+                            .progress(true, 0)
+                            .cancelable(false)
+                            .build();
+        }
+        galleryProgress.setTitle(message);
+        galleryProgress.show();
+    }
+
+    private void dismissGalleryProgress() {
+        if (galleryProgress != null) {
+            galleryProgress.dismiss();
+        }
     }
 
     private class AsyncDo extends AsyncTask<Void, Void, Void> {
@@ -718,6 +808,7 @@ public class Submit extends BaseActivity {
         private boolean selfVisible;
         private boolean linkVisible;
         private boolean imageVisible;
+        private boolean galleryVisible;
         private String bodyText;
         private String subredditText;
         private String titleText;
@@ -725,6 +816,7 @@ public class Submit extends BaseActivity {
         private boolean sendReplies;
         private boolean imageReddit;
         private Uri imageUri;
+        private java.util.ArrayList<Uri> galleryUris;
         private java.util.List<me.edgan.redditslide.markdown.UploadedImage> uploadedImages;
 
         @Override
@@ -732,8 +824,10 @@ public class Submit extends BaseActivity {
             selfVisible = self.getVisibility() == View.VISIBLE;
             linkVisible = link.getVisibility() == View.VISIBLE;
             imageVisible = image.getVisibility() == View.VISIBLE;
+            galleryVisible = gallery.getVisibility() == View.VISIBLE;
             imageReddit = ((RadioButton) findViewById(R.id.imageHostReddit)).isChecked();
             imageUri = selectedImageUri;
+            galleryUris = new java.util.ArrayList<>(selectedGalleryUris);
             bodyText = ((EditText) findViewById(R.id.bodytext)).getText().toString();
             uploadedImages =
                     me.edgan.redditslide.util.RedditImageUploads.consume(
@@ -955,6 +1049,52 @@ public class Submit extends BaseActivity {
                                                             + getString(R.string.misc_retry));
                                         }
                                     }
+                                });
+                    }
+                } else if (galleryVisible) {
+                    // Upload every image to Reddit's media bucket, then submit a gallery post.
+                    try {
+                        java.util.ArrayList<String> assetIds = new java.util.ArrayList<>();
+                        for (int i = 0; i < galleryUris.size(); i++) {
+                            final int index = i + 1;
+                            final int total = galleryUris.size();
+                            runOnUiThread(
+                                    () ->
+                                            showGalleryProgress(
+                                                    getString(
+                                                            R.string.submit_uploading_gallery,
+                                                            index,
+                                                            total)));
+                            assetIds.add(
+                                    me.edgan.redditslide.util.RedditMediaUpload
+                                            .uploadForGalleryAssetId(
+                                                    Submit.this, galleryUris.get(i)));
+                        }
+                        String permalink =
+                                me.edgan.redditslide.util.RichtextSubmission.submitGallery(
+                                        Authentication.reddit,
+                                        subredditText,
+                                        titleText,
+                                        assetIds,
+                                        sendReplies,
+                                        selectedFlairID);
+                        runOnUiThread(Submit.this::dismissGalleryProgress);
+                        OpenRedditLink.openUrl(
+                                Submit.this,
+                                permalink != null ? permalink : "reddit.com/r/" + subredditText,
+                                true);
+                        Submit.this.finish();
+                    } catch (final Exception e) {
+                        LogUtil.e(e, "Submit gallery failed");
+                        runOnUiThread(
+                                () -> {
+                                    dismissGalleryProgress();
+                                    showErrorRetryDialog(
+                                            getString(R.string.misc_err)
+                                                    + ": "
+                                                    + e.getMessage()
+                                                    + "\n"
+                                                    + getString(R.string.misc_retry));
                                 });
                     }
                 }

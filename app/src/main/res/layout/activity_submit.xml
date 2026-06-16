@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:orientation="horizontal"
-                android:weightSum="3">
+                android:weightSum="4">
 
                 <RadioButton
                     android:id="@+id/selftextradio"
@@ -54,6 +54,15 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/type_img"
+                    android:textAllCaps="true"
+                    android:textColor="?attr/fontColor" />
+
+                <RadioButton
+                    android:id="@+id/galleryradio"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/type_gallery"
                     android:textAllCaps="true"
                     android:textColor="?attr/fontColor" />
 
@@ -212,6 +221,50 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:adjustViewBounds="true" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/gallery"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/selGallery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?android:selectableItemBackground"
+                    android:padding="16dp"
+                    android:text="@string/submit_select_gallery"
+                    android:textAllCaps="true"
+                    android:layout_gravity="right"
+                    android:textColor="?attr/fontColor"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/galleryCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:paddingHorizontal="16dp"
+                    android:textColor="?attr/fontColor"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/galleryThumbs"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
             </LinearLayout>
 
             <LinearLayout

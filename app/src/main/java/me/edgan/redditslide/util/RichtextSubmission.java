@@ -3,14 +3,24 @@ package me.edgan.redditslide.util;
 import androidx.annotation.Nullable;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.dean.jraw.RedditClient;
 import net.dean.jraw.http.HttpRequest;
 import net.dean.jraw.http.RestResponse;
 import net.dean.jraw.models.Contribution;
 
+import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.markdown.RichTextJSONConverter;
 import me.edgan.redditslide.markdown.UploadedImage;
+
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -186,6 +196,85 @@ public final class RichtextSubmission {
             return url;
         }
         return null;
+    }
+
+    /**
+     * Submits a Reddit gallery post from a list of uploaded media asset ids. The gallery endpoint
+     * takes a JSON body (not form-encoded), so this is sent with raw okhttp using the OAuth header
+     * borrowed from a JRAW request.
+     *
+     * @return the post permalink if Reddit returned one, otherwise {@code null}
+     */
+    public static String submitGallery(
+            RedditClient client,
+            String subreddit,
+            String title,
+            List<String> assetIds,
+            boolean sendReplies,
+            @Nullable String flairId)
+            throws Exception {
+        JSONObject payload = new JSONObject();
+        payload.put("sr", subreddit);
+        payload.put("submit_type", "subreddit");
+        payload.put("api_type", "json");
+        payload.put("show_error_list", true);
+        payload.put("title", title);
+        payload.put("text", "");
+        payload.put("spoiler", false);
+        payload.put("nsfw", false);
+        payload.put("kind", "self");
+        payload.put("original_content", false);
+        payload.put("post_to_twitter", false);
+        payload.put("sendreplies", sendReplies);
+        payload.put("validate_on_submit", true);
+        if (flairId != null) {
+            payload.put("flair_id", flairId);
+        }
+        JSONArray items = new JSONArray();
+        for (String assetId : assetIds) {
+            JSONObject item = new JSONObject();
+            item.put("caption", "");
+            item.put("outbound_url", "");
+            item.put("media_id", assetId);
+            items.put(item);
+        }
+        payload.put("items", items);
+
+        // Build the request through JRAW only to borrow the authenticated headers and oauth URL.
+        HttpRequest probe =
+                client.request()
+                        .path("/api/submit_gallery_post.json")
+                        .query("resubmit", "true", "raw_json", "1")
+                        .get()
+                        .build();
+
+        Request request =
+                new Request.Builder()
+                        .headers(probe.getHeaders())
+                        .url(probe.getUrl())
+                        .post(
+                                RequestBody.create(
+                                        payload.toString(),
+                                        MediaType.parse("application/json; charset=utf-8")))
+                        .build();
+
+        String body;
+        try (Response response = Reddit.client.newCall(request).execute()) {
+            body = response.body() != null ? response.body().string() : null;
+        }
+        if (body == null) {
+            throw new RedditApiError("Empty response from Reddit");
+        }
+
+        JsonNode root = new ObjectMapper().readTree(body);
+        throwIfError(root);
+
+        String url = root.path("json").path("data").path("url").asText(null);
+        if (url != null && !url.isEmpty()) {
+            return url;
+        }
+        String id = findThingId(root, "t3_");
+        return id != null ? "t3_" + id : null;
     }
 
     private static void throwIfError(JsonNode root) throws RedditApiError {

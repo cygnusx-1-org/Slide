@@ -89,7 +89,24 @@ public final class RedditMediaUpload {
     }
 
     /**
-     * Runs the two-step upload and returns {@code [s3ResponseXml, fileName]}.
+     * Uploads the image at {@code imageUri} to Reddit and returns the media {@code asset_id},
+     * suitable for a gallery post item ({@code media_id}). Must be called off the main thread.
+     *
+     * @return the Reddit media {@code asset_id}
+     * @throws IOException on any network/parse failure
+     */
+    @NonNull
+    public static String uploadForGalleryAssetId(Context context, Uri imageUri) throws IOException {
+        String[] result = doUpload(context, imageUri);
+        String assetId = result[2];
+        if (assetId == null || assetId.isEmpty()) {
+            throw new IOException("Could not parse uploaded image asset id");
+        }
+        return assetId;
+    }
+
+    /**
+     * Runs the two-step upload and returns {@code [s3ResponseXml, fileName, assetId]}.
      */
     private static String[] doUpload(Context context, Uri imageUri) throws IOException {
         ContentResolver contentResolver = context.getContentResolver();
@@ -134,6 +151,7 @@ public final class RedditMediaUpload {
         JsonNode args = root.get("args");
         String action = args.get("action").asText();
         String s3Url = action.startsWith("http") ? action : "https:" + action;
+        String assetId = root.path("asset").path("asset_id").asText(null);
 
         MultipartBody.Builder multipartBuilder =
                 new MultipartBody.Builder().setType(MultipartBody.FORM);
@@ -163,7 +181,7 @@ public final class RedditMediaUpload {
             }
             String xml = s3Response.body().string();
             String name = getFileName(context, imageUri);
-            return new String[] {xml, name};
+            return new String[] {xml, name, assetId};
         }
     }
 
