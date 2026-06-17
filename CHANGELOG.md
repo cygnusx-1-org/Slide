@@ -4,6 +4,13 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.6.3 / 2026-6-17
+============
+* Added Reddit Gallery caption support
+* Implemented Reddit Gallery support in Submit
+* Implemented Allow direct in post and in comment images #176
+* Implemented image posting directly to Reddit in addition to Imgur
+
 7.6.2 / 2026-6-15
 ============
 * Fixed Thumbnails don't always work outside the main feed #274
