@@ -38,6 +38,11 @@ public class JsonUtil {
                 // Set mediaId explicitly
                 image.mediaId = mediaId;
 
+                // Caption lives on the gallery_data item, not in media_metadata
+                if (identifier.has("caption") && !identifier.get("caption").isNull()) {
+                    image.caption = identifier.get("caption").asText();
+                }
+
                 // Make sure metadata exists
                 if (image.metadata == null) {
                     image.metadata = new GalleryImage.MediaMetadata();

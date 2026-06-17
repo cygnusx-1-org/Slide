@@ -17,11 +17,22 @@
         android:paddingBottom="48dp"
         android:orientation="vertical">
 
+        <me.edgan.redditslide.SpoilerRobotoTextView
+            android:id="@+id/galleryCaption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:background="#aa000000"
+            android:padding="8dp"
+            android:textColor="#fff"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
         <me.edgan.redditslide.Views.SubsamplingScaleImageView
             android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
+            android:layout_below="@id/galleryCaption"
              />
 
         <RelativeLayout
@@ -110,7 +121,7 @@
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
+            android:layout_below="@id/galleryCaption"
             android:indeterminate="false"
             android:max="100"
             android:progress="0" />

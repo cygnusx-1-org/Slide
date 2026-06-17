@@ -237,6 +237,16 @@ public class RedditGalleryView extends RecyclerView.Adapter<RecyclerView.ViewHol
             holder.muteButton.setVisibility(View.GONE);
             holder.hqButton.setVisibility(View.GONE);
 
+            // Show the per-image caption above the button bar when present.
+            if (holder.caption != null) {
+                if (image.caption != null && !image.caption.trim().isEmpty()) {
+                    holder.caption.setText(image.caption);
+                    holder.caption.setVisibility(View.VISIBLE);
+                } else {
+                    holder.caption.setVisibility(View.GONE);
+                }
+            }
+
             // Show play button initially
             if (holder.playButton != null) {
                 holder.playButton.setVisibility(View.VISIBLE);
@@ -346,9 +356,14 @@ public class RedditGalleryView extends RecyclerView.Adapter<RecyclerView.ViewHol
             ((Reddit) main.getApplicationContext()).getImageLoader()
                     .displayImage(image.getImageUrl(), holder.image, ImageGridAdapter.options);
 
-            // Title + caption hidden by default
-            holder.body.setVisibility(View.GONE);
+            // Title hidden by default; show the per-image caption when present.
             holder.text.setVisibility(View.GONE);
+            if (image.caption != null && !image.caption.trim().isEmpty()) {
+                holder.body.setText(image.caption);
+                holder.body.setVisibility(View.VISIBLE);
+            } else {
+                holder.body.setVisibility(View.GONE);
+            }
 
             // Adjust image layout params to maintain aspect ratio
             if (holder.image.getWidth() == 0) {
@@ -496,6 +511,7 @@ public class RedditGalleryView extends RecyclerView.Adapter<RecyclerView.ViewHol
         final View muteButton;
         final View hqButton;
         final ImageView playButton;
+        final SpoilerRobotoTextView caption;
         int position = -1;
 
         public AnimatedViewHolder(View itemView) {
@@ -508,6 +524,7 @@ public class RedditGalleryView extends RecyclerView.Adapter<RecyclerView.ViewHol
             this.muteButton = itemView.findViewById(R.id.mute);
             this.hqButton = itemView.findViewById(R.id.hq);
             this.playButton = itemView.findViewById(R.id.playbutton);
+            this.caption = itemView.findViewById(R.id.galleryCaption);
 
             // Add solid background to prevent transparency issues
             itemView.setBackgroundColor(android.graphics.Color.BLACK);

@@ -87,7 +87,11 @@ public class RedditGalleryFull extends Fragment {
                             imageNode.set("s", sourceNode);
 
                             LogUtil.v("Created image node: " + imageNode.toString());
-                            galleryImages.add(new GalleryImage(imageNode));
+                            GalleryImage galleryImage = new GalleryImage(imageNode);
+                            if (item.has("caption") && !item.get("caption").isNull()) {
+                                galleryImage.caption = item.get("caption").asText();
+                            }
+                            galleryImages.add(galleryImage);
                         }
                     }
                 }

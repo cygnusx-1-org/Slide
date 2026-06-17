@@ -210,6 +210,7 @@ public final class RichtextSubmission {
             String subreddit,
             String title,
             List<String> assetIds,
+            @Nullable List<String> captions,
             boolean sendReplies,
             @Nullable String flairId)
             throws Exception {
@@ -231,11 +232,15 @@ public final class RichtextSubmission {
             payload.put("flair_id", flairId);
         }
         JSONArray items = new JSONArray();
-        for (String assetId : assetIds) {
+        for (int i = 0; i < assetIds.size(); i++) {
+            String caption =
+                    (captions != null && i < captions.size() && captions.get(i) != null)
+                            ? captions.get(i)
+                            : "";
             JSONObject item = new JSONObject();
-            item.put("caption", "");
+            item.put("caption", caption);
             item.put("outbound_url", "");
-            item.put("media_id", assetId);
+            item.put("media_id", assetIds.get(i));
             items.put(item);
         }
         payload.put("items", items);

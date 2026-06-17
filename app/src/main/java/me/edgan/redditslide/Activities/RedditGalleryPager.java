@@ -529,6 +529,17 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
             if (panel != null) {
                 panel.setVisibility(View.GONE);
             }
+            // Show the per-image caption above the rotation/download/overflow button bar.
+            android.widget.TextView galleryCaption =
+                    (android.widget.TextView) rootView.findViewById(R.id.galleryCaption);
+            if (galleryCaption != null) {
+                if (current.caption != null && !current.caption.trim().isEmpty()) {
+                    galleryCaption.setText(current.caption);
+                    galleryCaption.setVisibility(View.VISIBLE);
+                } else {
+                    galleryCaption.setVisibility(View.GONE);
+                }
+            }
             View margin = rootView.findViewById(R.id.margin);
             if (margin != null) {
                 margin.setPadding(0, 0, 0, 0);

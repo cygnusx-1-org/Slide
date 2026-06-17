@@ -92,6 +92,8 @@ public class Submit extends BaseActivity {
     private Uri selectedImageUri;
     // The locally-picked images for a Reddit gallery post; uploaded at submit time.
     private final java.util.ArrayList<Uri> selectedGalleryUris = new java.util.ArrayList<>();
+    // Caption EditTexts, one per gallery image, aligned with selectedGalleryUris.
+    private final java.util.ArrayList<EditText> galleryCaptionFields = new java.util.ArrayList<>();
     private String selectedFlairID;
     private String selectedFlairText;
     private boolean isFlairRequired = false;
@@ -738,30 +740,105 @@ public class Submit extends BaseActivity {
         updateSubmitEnabled();
     }
 
-    /** Records the picked gallery images and shows a thumbnail strip + count. */
+    private static final int MAX_GALLERY_IMAGES = 20;
+
+    /**
+     * Appends the newly picked gallery images (one, a batch, or all at once) to the existing
+     * selection, preserving captions already typed. Duplicates are ignored and the total is capped
+     * at Reddit's gallery maximum.
+     */
     private void onGalleryPicked(List<Uri> uris) {
-        selectedGalleryUris.clear();
-        selectedGalleryUris.addAll(uris);
-
-        LinearLayout thumbs = (LinearLayout) findViewById(R.id.galleryThumbs);
-        thumbs.removeAllViews();
-        int size = (int) (64 * Resources.getSystem().getDisplayMetrics().density);
-        int margin = (int) (4 * Resources.getSystem().getDisplayMetrics().density);
-        for (Uri uri : selectedGalleryUris) {
-            ImageView iv = new ImageView(this);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(size, size);
-            lp.setMargins(margin, 0, margin, 0);
-            iv.setLayoutParams(lp);
-            iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            iv.setImageURI(uri);
-            thumbs.addView(iv);
+        for (Uri uri : uris) {
+            if (selectedGalleryUris.size() >= MAX_GALLERY_IMAGES) {
+                break;
+            }
+            if (selectedGalleryUris.contains(uri)) {
+                continue;
+            }
+            addGalleryRow(uri);
         }
-
-        TextView count = (TextView) findViewById(R.id.galleryCount);
-        count.setVisibility(View.VISIBLE);
-        count.setText(getString(R.string.submit_gallery_count, selectedGalleryUris.size()));
-
+        updateGalleryCount();
         updateSubmitEnabled();
+    }
+
+    /** Adds one thumbnail + caption + remove row for a gallery image. */
+    private void addGalleryRow(Uri uri) {
+        LinearLayout items = (LinearLayout) findViewById(R.id.galleryItems);
+        float density = Resources.getSystem().getDisplayMetrics().density;
+        int size = (int) (64 * density);
+        int margin = (int) (8 * density);
+        int fontColor = resolveColorAttr(R.attr.fontColor);
+
+        final LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        LinearLayout.LayoutParams rowLp =
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
+        rowLp.setMargins(0, margin / 2, 0, margin / 2);
+        row.setLayoutParams(rowLp);
+
+        ImageView iv = new ImageView(this);
+        LinearLayout.LayoutParams ivLp = new LinearLayout.LayoutParams(size, size);
+        ivLp.setMargins(0, 0, margin, 0);
+        iv.setLayoutParams(ivLp);
+        iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        iv.setImageURI(uri);
+        row.addView(iv);
+
+        final EditText caption = new EditText(this);
+        LinearLayout.LayoutParams capLp =
+                new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+        caption.setLayoutParams(capLp);
+        caption.setHint(R.string.submit_gallery_caption_hint);
+        caption.setMaxLines(2);
+        caption.setFilters(
+                new android.text.InputFilter[] {new android.text.InputFilter.LengthFilter(180)});
+        caption.setTextColor(fontColor);
+        row.addView(caption);
+
+        TextView remove = new TextView(this);
+        remove.setText("✕");
+        remove.setTextColor(fontColor);
+        remove.setTextSize(18);
+        remove.setPadding(margin, margin, margin, margin);
+        android.util.TypedValue bg = new android.util.TypedValue();
+        getTheme().resolveAttribute(android.R.attr.selectableItemBackground, bg, true);
+        remove.setBackgroundResource(bg.resourceId);
+        row.addView(remove);
+
+        selectedGalleryUris.add(uri);
+        galleryCaptionFields.add(caption);
+        items.addView(row);
+
+        remove.setOnClickListener(
+                v -> {
+                    int idx = galleryCaptionFields.indexOf(caption);
+                    if (idx >= 0) {
+                        selectedGalleryUris.remove(idx);
+                        galleryCaptionFields.remove(idx);
+                    }
+                    items.removeView(row);
+                    updateGalleryCount();
+                    updateSubmitEnabled();
+                });
+    }
+
+    private void updateGalleryCount() {
+        TextView count = (TextView) findViewById(R.id.galleryCount);
+        if (selectedGalleryUris.isEmpty()) {
+            count.setVisibility(View.GONE);
+        } else {
+            count.setVisibility(View.VISIBLE);
+            count.setText(getString(R.string.submit_gallery_count, selectedGalleryUris.size()));
+        }
+    }
+
+    private int resolveColorAttr(int attr) {
+        android.util.TypedValue tv = new android.util.TypedValue();
+        getTheme().resolveAttribute(attr, tv, true);
+        return tv.data;
     }
 
     /**
@@ -777,7 +854,8 @@ public class Submit extends BaseActivity {
         if (image.getVisibility() == View.VISIBLE) {
             enabled = selectedImageUri != null;
         } else if (gallery.getVisibility() == View.VISIBLE) {
-            enabled = !selectedGalleryUris.isEmpty();
+            // Reddit galleries require at least two images.
+            enabled = selectedGalleryUris.size() >= 2;
         }
         send.setEnabled(enabled);
         send.setAlpha(enabled ? 1f : 0.5f);
@@ -817,6 +895,7 @@ public class Submit extends BaseActivity {
         private boolean imageReddit;
         private Uri imageUri;
         private java.util.ArrayList<Uri> galleryUris;
+        private java.util.ArrayList<String> galleryCaptions;
         private java.util.List<me.edgan.redditslide.markdown.UploadedImage> uploadedImages;
 
         @Override
@@ -828,6 +907,10 @@ public class Submit extends BaseActivity {
             imageReddit = ((RadioButton) findViewById(R.id.imageHostReddit)).isChecked();
             imageUri = selectedImageUri;
             galleryUris = new java.util.ArrayList<>(selectedGalleryUris);
+            galleryCaptions = new java.util.ArrayList<>();
+            for (EditText field : galleryCaptionFields) {
+                galleryCaptions.add(field.getText().toString().trim());
+            }
             bodyText = ((EditText) findViewById(R.id.bodytext)).getText().toString();
             uploadedImages =
                     me.edgan.redditslide.util.RedditImageUploads.consume(
@@ -1076,6 +1159,7 @@ public class Submit extends BaseActivity {
                                         subredditText,
                                         titleText,
                                         assetIds,
+                                        galleryCaptions,
                                         sendReplies,
                                         selectedFlairID);
                         runOnUiThread(Submit.this::dismissGalleryProgress);

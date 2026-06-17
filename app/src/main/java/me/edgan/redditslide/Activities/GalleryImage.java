@@ -16,6 +16,7 @@ public class GalleryImage implements Serializable {
     public int height;
 
     public String mediaId;
+    public String caption;
     public MediaMetadata metadata;
 
     public GalleryImage(JsonNode data) {
