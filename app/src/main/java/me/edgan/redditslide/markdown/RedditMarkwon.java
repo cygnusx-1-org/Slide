@@ -14,9 +14,9 @@ import android.content.Context;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.style.RelativeSizeSpan;
-import android.text.util.Linkify;
 import android.text.style.SuperscriptSpan;
 import android.text.style.URLSpan;
+import android.text.util.Linkify;
 
 import io.noties.markwon.AbstractMarkwonPlugin;
 import io.noties.markwon.Markwon;
@@ -39,8 +39,10 @@ import me.edgan.redditslide.handler.TextViewLinkHandler;
 /**
  * Factory + entry point for the Markwon-based ("new Reddit-style") renderer.
  *
- * <p>One {@link Markwon} instance is cached (parsing/rendering is stateless); it is rebuilt
- * only when the theme changes via {@link #invalidate()}.
+ * <p>One {@link Markwon} instance is cached and reused. Markwon's core/table plugins bake
+ * theme-derived colors (code-block background, blockquote stripe, table borders/headers) into a
+ * {@code MarkwonTheme} at build time, so {@link #invalidate()} drops the cache on a base-theme
+ * change to force a rebuild with the new colors.
  */
 public final class RedditMarkwon {
 
@@ -66,11 +68,6 @@ public final class RedditMarkwon {
         }
     }
 
-    /** Drop the cached instance so the next render rebuilds with current theme colors. */
-    public static void invalidate() {
-        instance = null;
-    }
-
     public static Markwon get(Context context) {
         Markwon local = instance;
         if (local == null) {
@@ -83,6 +80,14 @@ public final class RedditMarkwon {
             }
         }
         return local;
+    }
+
+    /**
+     * Drop the cached instance so the next render rebuilds Markwon with current theme colors. Call
+     * on a base-theme change (see {@code MainActivity.restartTheme}); rebuild is lazy.
+     */
+    public static void invalidate() {
+        instance = null;
     }
 
     private static Markwon build(Context context) {

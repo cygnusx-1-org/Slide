@@ -552,7 +552,7 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 // New Reddit-style: render the raw markdown body via Markwon (issue #179).
                 setViewsMarkdown(
                         comment.getBody(),
-                        comment.getDataNode().get("body_html").asText(),
+                        comment.getDataNode().path("body_html").asText(""),
                         comment.getDataNode(),
                         comment.getSubredditName(),
                         holder);
@@ -560,7 +560,7 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 // Pass search query for highlighting comment body
                 setViews(
                         SubmissionParser.replaceProcessingImgPlaceholders(
-                                comment.getDataNode().get("body_html").asText(),
+                                comment.getDataNode().path("body_html").asText(""),
                                 comment.getDataNode()),
                         comment.getSubredditName(),
                         holder,

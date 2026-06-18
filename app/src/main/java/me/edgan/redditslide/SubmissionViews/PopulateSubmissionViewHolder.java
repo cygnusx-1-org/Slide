@@ -433,9 +433,9 @@ public class PopulateSubmissionViewHolder {
                 && !submission.getSelftext().isEmpty()
                 && !submission.isNsfw()
                 && !submission.getDataNode().get("spoiler").asBoolean()
-                && !submission.getDataNode().get("selftext_html").asText().trim().isEmpty()) {
+                && !submission.getDataNode().path("selftext_html").asText("").trim().isEmpty()) {
             holder.body.setVisibility(View.VISIBLE);
-            String text = submission.getDataNode().get("selftext_html").asText();
+            String text = submission.getDataNode().path("selftext_html").asText("");
             int typef = new FontPreferences(mContext).getFontTypeComment().getTypeface();
             Typeface typeface;
             if (typef >= 0) {
@@ -494,13 +494,13 @@ public class PopulateSubmissionViewHolder {
                     // New Reddit-style: render the raw selftext via Markwon (issue #179).
                     setViewsMarkdown(
                             submission.getSelftext(),
-                            submission.getDataNode().get("selftext_html").asText(),
+                            submission.getDataNode().path("selftext_html").asText(""),
                             submission.getDataNode(),
                             selftextSubreddit,
                             holder);
                 } else {
                     setViews(
-                            submission.getDataNode().get("selftext_html").asText(),
+                            submission.getDataNode().path("selftext_html").asText(""),
                             selftextSubreddit,
                             holder);
                 }

@@ -389,14 +389,14 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     // New Reddit-style: render the raw markdown body via Markwon (issue #179).
                     setViewsMarkdown(
                             comment.getBody(),
-                            comment.getDataNode().get("body_html").asText(),
+                            comment.getDataNode().path("body_html").asText(""),
                             comment.getDataNode(),
                             submission.getSubredditName(),
                             holder);
                 } else {
                     setViews(
                             SubmissionParser.replaceProcessingImgPlaceholders(
-                                    comment.getDataNode().get("body_html").asText(),
+                                    comment.getDataNode().path("body_html").asText(""),
                                     comment.getDataNode()),
                             submission.getSubredditName(),
                             holder,
@@ -1410,14 +1410,14 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         if (SettingValues.markdownNewReddit) {
                             setViewsMarkdown(
                                     comment.getBody(),
-                                    comment.getDataNode().get("body_html").asText(),
+                                    comment.getDataNode().path("body_html").asText(""),
                                     comment.getDataNode(),
                                     submission.getSubredditName(),
                                     holder);
                         } else {
                             setViews(
                                     SubmissionParser.replaceProcessingImgPlaceholders(
-                                            comment.getDataNode().get("body_html").asText(),
+                                            comment.getDataNode().path("body_html").asText(""),
                                             comment.getDataNode()),
                                     submission.getSubredditName(),
                                     holder);

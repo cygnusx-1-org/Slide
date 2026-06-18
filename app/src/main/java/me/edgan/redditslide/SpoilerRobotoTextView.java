@@ -1066,6 +1066,11 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
         if (baseUrl == null || SettingValues.noPreviewImageLongClick) {
             return;
         }
+        // New Reddit-style spoilers use the sentinel "#spoiler" URL; a long-press is not an image
+        // preview, so ignore it (the tap toggle in onLinkClick handles reveal/hide).
+        if ("#spoiler".equals(baseUrl)) {
+            return;
+        }
         final String url = StringEscapeUtils.unescapeHtml4(baseUrl);
 
         performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);

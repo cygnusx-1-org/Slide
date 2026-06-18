@@ -279,7 +279,7 @@ public class LiveThread extends BaseActivityAnim {
             } else {
                 holder.info.setVisibility(View.VISIBLE);
                 holder.info.setTextHtml(
-                        CompatUtil.fromHtml(u.getDataNode().get("body_html").asText()),
+                        CompatUtil.fromHtml(u.getDataNode().path("body_html").asText("")),
                         "NO SUBREDDIT");
             }
             holder.title.setOnClickListener(

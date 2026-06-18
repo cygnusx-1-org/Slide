@@ -506,14 +506,14 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             if (SettingValues.markdownNewReddit) {
                 setViewsMarkdown(
                         comment.getDataNode().get("body").asText(),
-                        comment.getDataNode().get("body_html").asText(),
+                        comment.getDataNode().path("body_html").asText(""),
                         comment.getDataNode(),
                         "FORCE_LINK_CLICK",
                         messageViewHolder);
             } else {
                 setViews(
                         SubmissionParser.replaceProcessingImgPlaceholders(
-                                comment.getDataNode().get("body_html").asText(),
+                                comment.getDataNode().path("body_html").asText(""),
                                 comment.getDataNode()),
                         "FORCE_LINK_CLICK",
                         messageViewHolder);

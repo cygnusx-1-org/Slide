@@ -80,6 +80,7 @@ import me.edgan.redditslide.Notifications.CheckForMail;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.markdown.RedditMarkwon;
 import me.edgan.redditslide.Synccit.MySynccitUpdateTask;
 import me.edgan.redditslide.Synccit.SynccitRead;
 import me.edgan.redditslide.UserSubscriptions;
@@ -1199,6 +1200,9 @@ public class MainActivity extends BaseActivity
             reloadSubs();
             // If the user changed a Setting regarding the app's theme, restartTheme()
             if (SettingsThemeFragment.changed) {
+                // Drop the cached new Reddit-style Markwon so it rebuilds with the new theme
+                // colors (code-block background, table borders, blockquote stripe).
+                RedditMarkwon.invalidate();
                 restartTheme();
             }
 

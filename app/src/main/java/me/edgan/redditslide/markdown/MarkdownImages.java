@@ -126,6 +126,9 @@ public final class MarkdownImages {
         if (markdown == null) {
             return "";
         }
+        if (!markdown.contains("redd.it") && !markdown.contains("giphy")) {
+            return markdown; // fast path: no media URL to strip
+        }
         return MEDIA_URL.matcher(markdown).replaceAll("");
     }
 
@@ -139,6 +142,14 @@ public final class MarkdownImages {
             return;
         }
         if (bodyHtml == null || bodyHtml.isEmpty()) {
+            overflow.removeAllViews();
+            return;
+        }
+        // Fast path: no media host URL and no media_metadata to resolve a placeholder from, so
+        // there are no image blocks — skip the (regex-heavy) getBlocks parse entirely.
+        if (!bodyHtml.contains("redd.it")
+                && !bodyHtml.contains("giphy")
+                && (dataNode == null || !dataNode.has("media_metadata"))) {
             overflow.removeAllViews();
             return;
         }

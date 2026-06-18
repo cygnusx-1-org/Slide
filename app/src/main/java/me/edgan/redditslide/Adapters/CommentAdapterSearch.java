@@ -314,7 +314,7 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
         }
 
         String body = SubmissionParser.replaceProcessingImgPlaceholders(
-                comment.getDataNode().get("body_html").asText(), comment.getDataNode());
+                comment.getDataNode().path("body_html").asText(""), comment.getDataNode());
         if (!search.isEmpty() && StringUtils.isAlphanumericSpace(search)) {
             body = body.replaceAll(search, "[[h[" + search + "]h]]");
         }
@@ -331,7 +331,7 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
         if (SettingValues.markdownNewReddit) {
             setViewsMarkdown(
                     comment.getDataNode().get("body").asText(),
-                    comment.getDataNode().get("body_html").asText(),
+                    comment.getDataNode().path("body_html").asText(""),
                     comment.getDataNode(),
                     comment.getSubredditName(),
                     holder);

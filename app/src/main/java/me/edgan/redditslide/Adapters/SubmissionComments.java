@@ -298,7 +298,7 @@ public class SubmissionComments {
                         JsonNode dataNode = o.comment.getComment().getDataNode();
                         String html =
                                 SubmissionParser.replaceProcessingImgPlaceholders(
-                                        dataNode.get("body_html").asText(), dataNode);
+                                        dataNode.path("body_html").asText(""), dataNode);
                         // Use the SAME extractor the renderer uses so the cache keys match exactly.
                         urls.addAll(SubmissionParser.imageUrlsFor(html));
                     } catch (Exception ignored) {

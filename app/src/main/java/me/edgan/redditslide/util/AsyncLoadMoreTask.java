@@ -362,7 +362,7 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
                     JsonNode dataNode = o.comment.getComment().getDataNode();
                     String html =
                             SubmissionParser.replaceProcessingImgPlaceholders(
-                                    dataNode.get("body_html").asText(), dataNode);
+                                    dataNode.path("body_html").asText(""), dataNode);
                     urls.addAll(SubmissionParser.imageUrlsFor(html));
                 } catch (Exception ignored) {
                     // Skip comments we can't parse; they'll still load on bind.

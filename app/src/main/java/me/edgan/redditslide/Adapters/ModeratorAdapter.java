@@ -569,14 +569,14 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             if (SettingValues.markdownNewReddit) {
                 setViewsMarkdown(
                         comment.getDataNode().get("body").asText(),
-                        comment.getDataNode().get("body_html").asText(),
+                        comment.getDataNode().path("body_html").asText(""),
                         comment.getDataNode(),
                         comment.getSubredditName(),
                         holder);
             } else {
                 setViews(
                         SubmissionParser.replaceProcessingImgPlaceholders(
-                                comment.getDataNode().get("body_html").asText(),
+                                comment.getDataNode().path("body_html").asText(""),
                                 comment.getDataNode()),
                         comment.getSubredditName(),
                         holder);

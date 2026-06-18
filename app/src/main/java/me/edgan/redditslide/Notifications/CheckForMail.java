@@ -214,7 +214,7 @@ public class CheckForMail extends BroadcastReceiver {
 
                     String unescape =
                             StringEscapeUtils.unescapeHtml4(
-                                    m.getDataNode().get("body_html").asText());
+                                    m.getDataNode().path("body_html").asText(""));
                     notiStyle.bigText(Html.fromHtml(unescape, Html.FROM_HTML_MODE_LEGACY));
 
                     PendingIntent readPISingle =
@@ -342,7 +342,7 @@ public class CheckForMail extends BroadcastReceiver {
 
                     String unescape =
                             StringEscapeUtils.unescapeHtml4(
-                                    m.getDataNode().get("body_html").asText());
+                                    m.getDataNode().path("body_html").asText(""));
                     notiStyle.bigText(Html.fromHtml(unescape, Html.FROM_HTML_MODE_LEGACY));
 
                     NotificationCompat.Builder builder =

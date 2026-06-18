@@ -444,7 +444,7 @@ public class PopulateShadowboxInfo {
                 commentTitle.append(level);
             }
             commentTitle.append(
-                    CompatUtil.fromHtml(s.getDataNode().get("body_html").asText().trim()));
+                    CompatUtil.fromHtml(s.getDataNode().path("body_html").asText("").trim()));
             title.setTextHtml(commentTitle);
             title.setMaxLines(3);
 

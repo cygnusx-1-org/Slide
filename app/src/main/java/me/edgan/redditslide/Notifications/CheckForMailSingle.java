@@ -182,7 +182,7 @@ public class CheckForMailSingle extends BroadcastReceiver {
 
                 String unescape =
                         StringEscapeUtils.unescapeHtml4(
-                                message.getDataNode().get("body_html").asText());
+                                message.getDataNode().path("body_html").asText(""));
                 notiStyle.bigText(Html.fromHtml(unescape, Html.FROM_HTML_MODE_LEGACY));
 
                 PendingIntent readPISingle =

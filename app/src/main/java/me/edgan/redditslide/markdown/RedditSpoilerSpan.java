@@ -11,7 +11,8 @@ import android.widget.TextView;
  * {@code SpoilerRobotoTextView.onLinkClick}, which calls {@link #toggle(View)}.
  *
  * <p>Hidden text is painted with the background set to the text color (an opaque block); a tap
- * reveals it. No coupling to the snudown spoiler machinery. See issue #179.
+ * reveals it, leaving a faint tinted background so the revealed text still reads as a spoiler
+ * region. No coupling to the snudown spoiler machinery. See issue #179.
  */
 public class RedditSpoilerSpan extends URLSpan {
 
@@ -42,6 +43,10 @@ public class RedditSpoilerSpan extends URLSpan {
         if (!revealed) {
             // Background == text color hides the glyphs behind a solid block.
             ds.bgColor = ds.getColor();
+        } else {
+            // Once revealed, keep a faint tint of the text color behind the glyphs so the region
+            // still reads as a (now-open) spoiler rather than ordinary text.
+            ds.bgColor = (ds.getColor() & 0x00FFFFFF) | (0x33 << 24);
         }
     }
 }

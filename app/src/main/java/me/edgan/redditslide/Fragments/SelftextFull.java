@@ -43,11 +43,11 @@ public class SelftextFull extends Fragment {
                         rootView.findViewById(R.id.commentOverflow),
                         s.getSubredditName(),
                         s.getSelftext(),
-                        s.getDataNode().get("selftext_html").asText(),
+                        s.getDataNode().path("selftext_html").asText(""),
                         s.getDataNode());
             } else {
                 setViews(
-                        s.getDataNode().get("selftext_html").asText(),
+                        s.getDataNode().path("selftext_html").asText(""),
                         s.getSubredditName(),
                         rootView);
             }

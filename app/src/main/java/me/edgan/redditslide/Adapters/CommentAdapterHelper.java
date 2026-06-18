@@ -460,12 +460,12 @@ final AlertDialog reportDialog =
                     overflow,
                     subreddit,
                     n.getBody(),
-                    n.getDataNode().get("body_html").asText(),
+                    n.getDataNode().path("body_html").asText(""),
                     n.getDataNode());
         } else {
             adapter.setViews(
                     SubmissionParser.replaceProcessingImgPlaceholders(
-                            n.getDataNode().get("body_html").asText(), n.getDataNode()),
+                            n.getDataNode().path("body_html").asText(""), n.getDataNode()),
                     subreddit,
                     first,
                     overflow);
@@ -541,7 +541,7 @@ final AlertDialog reportDialog =
                 Comment parent = o.comment.getComment();
                 adapter.setViews(
                         SubmissionParser.replaceProcessingImgPlaceholders(
-                                parent.getDataNode().get("body_html").asText(),
+                                parent.getDataNode().path("body_html").asText(""),
                                 parent.getDataNode()),
                         adapter.submission.getSubredditName(),
                         dialoglayout.findViewById(R.id.firstTextView),
