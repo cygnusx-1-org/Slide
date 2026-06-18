@@ -4,6 +4,21 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.6.4 / 2026-6-18
+============
+* Implemented Feature Request: Proper Formatting for Code Blocks #179
+* Added a "Settings | Markdown | New Reddit-style markdown", and made it the new default
+* Added a "Show other rendering" option to the overflow menu of a comment
+* Added a "Show other rendering" option to the overflow menu of self-text posts
+
+This is a big change to how self-text posts and comments work, and is the new
+default. Though there is a toggle to disable and go back to the way it was
+before. In addition, given old posts, and that some people will continue to
+use the old style, comments and self-text posts have a "Show other rendering"
+option in their overflow menu. This will show you the opposite of the toggle
+value. So if you have new enabled, you see old. If you have old enabled, you
+see new.
+
 7.6.3 / 2026-6-17
 ============
 * Added Reddit Gallery caption support
