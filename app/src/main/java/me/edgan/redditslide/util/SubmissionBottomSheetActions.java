@@ -15,8 +15,10 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,11 +55,14 @@ import me.edgan.redditslide.Hidden;
 import me.edgan.redditslide.OfflineSubreddit;
 import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.R;
+import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.SubmissionViews.ReadLater;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.markdown.MarkdownImages;
 
 /**
  * Handles Bottom Sheet actions for Submission views.
@@ -94,8 +99,9 @@ public class SubmissionBottomSheetActions {
         Drawable reddit = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_forum, null);
         Drawable filter = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_filter_list, null);
         Drawable crosspost = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_forward, null);
+        Drawable viewmode = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_visibility, null);
 
-        final List<Drawable> drawableSet = Arrays.asList(profile, sub, saved, hide, report, copy, open, link, reddit, readLater, filter, crosspost);
+        final List<Drawable> drawableSet = Arrays.asList(profile, sub, saved, hide, report, copy, open, link, reddit, readLater, filter, crosspost, viewmode);
         BlendModeUtil.tintDrawablesAsSrcAtop(drawableSet, color);
 
         ta.recycle();
@@ -132,6 +138,10 @@ public class SubmissionBottomSheetActions {
 
         if (submission.getSelftext() != null && !submission.getSelftext().isEmpty() && full) {
             b.sheet(25, copy, mContext.getString(R.string.submission_copy_text));
+        }
+
+        if (submission.getSelftext() != null && !submission.getSelftext().isEmpty()) {
+            b.sheet(60, viewmode, mContext.getString(R.string.comment_render_other));
         }
 
         boolean hidden = submission.isHidden();
@@ -525,10 +535,67 @@ final AlertDialog reportDialog =
                         copyDialog.show();
 
                         break;
+                    case 60:
+                        // Preview this self-text with the opposite markdown renderer.
+                        showOppositeRender(mContext, submission);
+                        break;
                 }
             }
         });
         b.show();
+    }
+
+    /**
+     * Show a one-shot dialog rendering {@code submission}'s self-text with the opposite of the
+     * current global markdown setting ({@link SettingValues#markdownNewReddit}). Purely a preview:
+     * it stores no state and does not change the post or the setting. Mirrors the per-comment
+     * "Show other rendering" action. See issue #179.
+     */
+    private static void showOppositeRender(final Activity mContext, final Submission submission) {
+        final boolean showNewReddit = !SettingValues.markdownNewReddit;
+        final String subreddit =
+                submission.getSubredditName() == null ? "all" : submission.getSubredditName();
+        final String bodyHtml = submission.getDataNode().path("selftext_html").asText("");
+
+        LinearLayout container = new LinearLayout(mContext);
+        container.setOrientation(LinearLayout.VERTICAL);
+        int pad = (int) (16 * mContext.getResources().getDisplayMetrics().density);
+        container.setPadding(pad, pad, pad, pad);
+
+        SpoilerRobotoTextView first = new SpoilerRobotoTextView(mContext);
+        CommentOverflow overflow = new CommentOverflow(mContext);
+        container.addView(first);
+        container.addView(overflow);
+
+        ScrollView scroll = new ScrollView(mContext);
+        scroll.addView(container);
+
+        if (showNewReddit) {
+            MarkdownImages.renderInto(
+                    first, overflow, subreddit, submission.getSelftext(), bodyHtml,
+                    submission.getDataNode());
+        } else {
+            // Mirror the old-Reddit self-text path (PopulateSubmissionViewHolder.setViews): split
+            // selftext_html into blocks, first into the TextView, the rest into the overflow.
+            List<String> blocks = SubmissionParser.getBlocks(bodyHtml);
+            int startIndex = 0;
+            if (!blocks.get(0).startsWith("<table>") && !blocks.get(0).startsWith("<pre>")) {
+                first.setTextHtml(blocks.get(0), subreddit);
+                startIndex = 1;
+            }
+            if (blocks.size() > 1) {
+                overflow.setViews(blocks.subList(startIndex, blocks.size()), subreddit);
+            }
+        }
+
+        new MaterialAlertDialogBuilder(mContext)
+                .setTitle(
+                        showNewReddit
+                                ? R.string.markdown_preview_new_reddit
+                                : R.string.markdown_preview_old_reddit)
+                .setView(scroll)
+                .setPositiveButton(R.string.btn_ok, null)
+                .show();
     }
 
     public static void saveSubmission(final Submission submission, final Activity mContext, final SubmissionViewHolder holder, final boolean full) {
