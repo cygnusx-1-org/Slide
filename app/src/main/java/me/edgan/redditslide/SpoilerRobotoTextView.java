@@ -64,6 +64,7 @@ import me.edgan.redditslide.SubmissionViews.OpenVRedditTask;
 import me.edgan.redditslide.Views.CustomQuoteSpan;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.handler.TextViewLinkHandler;
+import me.edgan.redditslide.markdown.RedditSpoilerSpan;
 import me.edgan.redditslide.util.AnimatedImageSpan;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.CommentImageUtil;
@@ -735,6 +736,20 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
         }, textView.getContext());
     }
 
+    /**
+     * Fill the ￼ placeholders left by the new Reddit-style renderer with animated free emotes,
+     * in order. Reuses the same loader as the snudown emote path. See issue #179.
+     */
+    public void loadFreeEmotes(List<String> emoteUrls) {
+        if (emoteUrls == null || emoteUrls.isEmpty()) {
+            return;
+        }
+        for (int i = 0; i < emoteUrls.size(); i++) {
+            String url = emoteUrls.get(i);
+            loadGifEmote(new EmoteSpanRequest(url, 0, 0, url), this, i);
+        }
+    }
+
     // Helper class to keep track of span requests
     private static class EmoteSpanRequest {
         String gifUrl;
@@ -921,6 +936,12 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
 
     @Override
     public void onLinkClick(String url, int xOffset, String subreddit, URLSpan span) {
+        if (span instanceof RedditSpoilerSpan) {
+            // New Reddit-style spoiler: toggle reveal in place, don't navigate. Issue #179.
+            ((RedditSpoilerSpan) span).toggle(this);
+            spoilerClicked = true;
+            return;
+        }
         if (url == null) {
             ((View) getParent()).callOnClick();
             return;

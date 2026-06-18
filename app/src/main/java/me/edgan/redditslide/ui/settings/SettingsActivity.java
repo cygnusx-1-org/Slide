@@ -657,6 +657,16 @@ public class SettingsActivity extends BaseActivity implements RestartActivity {
                             }
                         });
 
+        findViewById(R.id.settings_child_markdown)
+                .setOnClickListener(
+                        new OnSingleClickListener() {
+                            @Override
+                            public void onSingleClick(View v) {
+                                startActivity(
+                                        new Intent(SettingsActivity.this, SettingsMarkdown.class));
+                            }
+                        });
+
         if (Authentication.isLoggedIn && NetworkUtil.isConnected(this)) {
             findViewById(R.id.settings_child_reddit_settings)
                     .setOnClickListener(

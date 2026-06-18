@@ -1,0 +1,291 @@
+[
+  {
+    "id": "bold",
+    "md": "a **bold** b",
+    "text": "a bold b",
+    "spans": [
+      {
+        "type": "BOLD",
+        "start": 2,
+        "end": 6
+      }
+    ]
+  },
+  {
+    "id": "italic",
+    "md": "a *italic* b",
+    "text": "a italic b",
+    "spans": [
+      {
+        "type": "ITALIC",
+        "start": 2,
+        "end": 8
+      }
+    ]
+  },
+  {
+    "id": "bold_italic",
+    "md": "***both***",
+    "text": "both",
+    "spans": [
+      {
+        "type": "BOLD",
+        "start": 0,
+        "end": 4
+      },
+      {
+        "type": "ITALIC",
+        "start": 0,
+        "end": 4
+      }
+    ]
+  },
+  {
+    "id": "strikethrough",
+    "md": "a ~~struck~~ b",
+    "text": "a struck b",
+    "spans": [
+      {
+        "type": "STRIKETHROUGH",
+        "start": 2,
+        "end": 8
+      }
+    ]
+  },
+  {
+    "id": "inline_code",
+    "md": "use `code` here",
+    "text": "use  code  here",
+    "spans": [
+      {
+        "type": "CODE",
+        "start": 4,
+        "end": 10
+      }
+    ]
+  },
+  {
+    "id": "fenced_code",
+    "md": "```\nline1\nline2\n```",
+    "text": " \nline1\nline2\n ",
+    "spans": [
+      {
+        "type": "CODE_BLOCK",
+        "start": 0,
+        "end": 15
+      }
+    ]
+  },
+  {
+    "id": "indented_code",
+    "md": "    indented\n    code",
+    "text": " \nindented\ncode\n ",
+    "spans": [
+      {
+        "type": "CODE_BLOCK",
+        "start": 0,
+        "end": 17
+      }
+    ]
+  },
+  {
+    "id": "link",
+    "md": "see [text](https:\/\/example.com) ok",
+    "text": "see text ok",
+    "spans": [
+      {
+        "type": "LINK",
+        "start": 4,
+        "end": 8,
+        "url": "https:\/\/example.com"
+      }
+    ]
+  },
+  {
+    "id": "autolink",
+    "md": "visit https:\/\/example.com now",
+    "text": "visit https:\/\/example.com now",
+    "spans": [
+      {
+        "type": "LINK",
+        "start": 6,
+        "end": 25,
+        "url": "https:\/\/example.com"
+      }
+    ]
+  },
+  {
+    "id": "heading1",
+    "md": "# Heading one",
+    "text": "Heading one",
+    "spans": [
+      {
+        "type": "HEADING",
+        "start": 0,
+        "end": 11
+      }
+    ]
+  },
+  {
+    "id": "heading3",
+    "md": "### Heading three",
+    "text": "Heading three",
+    "spans": [
+      {
+        "type": "HEADING",
+        "start": 0,
+        "end": 13
+      }
+    ]
+  },
+  {
+    "id": "blockquote",
+    "md": "> quoted text",
+    "text": "quoted text",
+    "spans": [
+      {
+        "type": "BLOCKQUOTE",
+        "start": 0,
+        "end": 11
+      }
+    ]
+  },
+  {
+    "id": "bullet_list",
+    "md": "- one\n- two",
+    "text": "one\ntwo",
+    "spans": [
+      {
+        "type": "LIST",
+        "start": 0,
+        "end": 3
+      },
+      {
+        "type": "LIST",
+        "start": 4,
+        "end": 7
+      }
+    ]
+  },
+  {
+    "id": "ordered_list",
+    "md": "1. one\n2. two",
+    "text": "one\ntwo",
+    "spans": [
+      {
+        "type": "LIST",
+        "start": 0,
+        "end": 3
+      },
+      {
+        "type": "LIST",
+        "start": 4,
+        "end": 7
+      }
+    ]
+  },
+  {
+    "id": "superscript_word",
+    "md": "x^super y",
+    "text": "xsuper y",
+    "spans": [
+      {
+        "type": "SUPERSCRIPT",
+        "start": 1,
+        "end": 2
+      }
+    ]
+  },
+  {
+    "id": "superscript_group",
+    "md": "x^(a b) y",
+    "text": "xa b y",
+    "spans": [
+      {
+        "type": "SUPERSCRIPT",
+        "start": 1,
+        "end": 4
+      }
+    ]
+  },
+  {
+    "id": "superscript_nested",
+    "md": "x^^deep y",
+    "text": "xdeep y",
+    "spans": [
+      {
+        "type": "SUPERSCRIPT",
+        "start": 1,
+        "end": 2
+      }
+    ]
+  },
+  {
+    "id": "spoiler",
+    "md": "a >!secret!< b",
+    "text": "a secret b",
+    "spans": [
+      {
+        "type": "SPOILER",
+        "start": 2,
+        "end": 8
+      }
+    ]
+  },
+  {
+    "id": "spoiler_leading",
+    "md": ">!whole thing!<",
+    "text": "whole thing",
+    "spans": [
+      {
+        "type": "SPOILER",
+        "start": 0,
+        "end": 11
+      }
+    ]
+  },
+  {
+    "id": "mention_user",
+    "md": "ping u\/edgan please",
+    "text": "ping u\/edgan please",
+    "spans": [
+      {
+        "type": "LINK",
+        "start": 5,
+        "end": 12,
+        "url": "\/u\/edgan"
+      }
+    ]
+  },
+  {
+    "id": "mention_subreddit",
+    "md": "join r\/test today",
+    "text": "join r\/test today",
+    "spans": [
+      {
+        "type": "LINK",
+        "start": 5,
+        "end": 11,
+        "url": "\/r\/test"
+      }
+    ]
+  },
+  {
+    "id": "plain",
+    "md": "just plain text",
+    "text": "just plain text",
+    "spans": []
+  },
+  {
+    "id": "code_with_specials",
+    "md": "`a < b && c > d`",
+    "text": " a < b && c > d ",
+    "spans": [
+      {
+        "type": "CODE",
+        "start": 0,
+        "end": 16
+      }
+    ]
+  }
+]

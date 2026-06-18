@@ -37,6 +37,8 @@ import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.MiscUtil;
+import com.fasterxml.jackson.databind.JsonNode;
+import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
 
@@ -326,7 +328,16 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
         }
         holder.firstTextView.setTypeface(typeface);
 
-        setViews(body, comment.getSubredditName(), holder);
+        if (SettingValues.markdownNewReddit) {
+            setViewsMarkdown(
+                    comment.getDataNode().get("body").asText(),
+                    comment.getDataNode().get("body_html").asText(),
+                    comment.getDataNode(),
+                    comment.getSubredditName(),
+                    holder);
+        } else {
+            setViews(body, comment.getSubredditName(), holder);
+        }
 
         holder.childrenNumber.setVisibility(View.GONE);
 
@@ -390,6 +401,22 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
      * @param subredditName
      * @param holder
      */
+    /** New Reddit-style rendering of a search-result comment body via Markwon. Issue #179. */
+    private void setViewsMarkdown(
+            String rawMarkdown,
+            String bodyHtml,
+            JsonNode dataNode,
+            String subredditName,
+            CommentViewHolder holder) {
+        MarkdownImages.renderInto(
+                holder.firstTextView,
+                holder.commentOverflow,
+                subredditName,
+                rawMarkdown,
+                bodyHtml,
+                dataNode);
+    }
+
     private void setViews(String rawHTML, String subredditName, CommentViewHolder holder) {
         if (rawHTML.isEmpty()) {
             return;

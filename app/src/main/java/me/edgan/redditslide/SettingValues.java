@@ -124,6 +124,7 @@ public class SettingValues {
     public static final String PREF_ALBUM_SWIPE = "albumswipe";
     public static final String PREF_COMMENT_NAV = "commentVolumeNav";
     public static final String PREF_COLOR_COMMENT_DEPTH = "colorCommentDepth";
+    public static final String PREF_MARKDOWN_NEW_REDDIT = "markdownNewReddit";
     public static final String COMMENT_DEPTH = "commentDepth";
     public static final String COMMENT_COUNT = "commentcount";
     public static final String PREF_USER_FILTERS = "userFilters";
@@ -211,6 +212,7 @@ public class SettingValues {
     public static boolean gif;
     public static boolean hqgif;
     public static boolean colorCommentDepth;
+    public static boolean markdownNewReddit;
     public static boolean commentVolumeNav;
     public static boolean postNav;
     public static boolean cropImage;
@@ -410,6 +412,7 @@ public class SettingValues {
         shareLongLink = prefs.getBoolean(PREF_LONG_LINK, false);
         colorEverywhere = prefs.getBoolean(PREF_COLOR_EVERYWHERE, true);
         colorCommentDepth = prefs.getBoolean(PREF_COLOR_COMMENT_DEPTH, true);
+        markdownNewReddit = prefs.getBoolean(PREF_MARKDOWN_NEW_REDDIT, true);
         alwaysZoom = prefs.getBoolean(PREF_ZOOM_DEFAULT, true);
         collapseComments = prefs.getBoolean(PREF_COLLAPSE_COMMENTS, false);
         collapseCommentsDefault = prefs.getBoolean(PREF_COLLAPSE_COMMENTS_DEFAULT, false);

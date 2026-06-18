@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.devspark.robototextview.RobotoTypefaces;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.lusfold.androidkeyvaluestore.KVStore;
 import com.mikepenz.itemanimators.AlphaInAnimator;
 import com.mikepenz.itemanimators.SlideRightAlphaAnimator;
@@ -56,6 +57,7 @@ import me.edgan.redditslide.Views.DoEditorActions;
 import me.edgan.redditslide.Views.PreCachingLayoutManagerComments;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.util.AnimatorUtil;
 import me.edgan.redditslide.util.DisplayUtil;
 import me.edgan.redditslide.util.FileUtil;
@@ -383,14 +385,24 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             holder.itemView.setOnClickListener(singleClick);
             holder.commentOverflow.setOnClickListener(singleClick);
             if (!toCollapse.contains(comment.getFullName()) || !SettingValues.collapseComments) {
-                setViews(
-                        SubmissionParser.replaceProcessingImgPlaceholders(
-                                comment.getDataNode().get("body_html").asText(),
-                                comment.getDataNode()),
-                        submission.getSubredditName(),
-                        holder,
-                        singleClick,
-                        onLongClickListener);
+                if (SettingValues.markdownNewReddit) {
+                    // New Reddit-style: render the raw markdown body via Markwon (issue #179).
+                    setViewsMarkdown(
+                            comment.getBody(),
+                            comment.getDataNode().get("body_html").asText(),
+                            comment.getDataNode(),
+                            submission.getSubredditName(),
+                            holder);
+                } else {
+                    setViews(
+                            SubmissionParser.replaceProcessingImgPlaceholders(
+                                    comment.getDataNode().get("body_html").asText(),
+                                    comment.getDataNode()),
+                            submission.getSubredditName(),
+                            holder,
+                            singleClick,
+                            onLongClickListener);
+                }
 
                 // Name media saved from links in this comment after its source:
                 // title_postId_commentId.
@@ -867,6 +879,26 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
             collapseAndHide(replyArea);
         }
+    }
+
+    /**
+     * New Reddit-style rendering: render the raw markdown {@code body} via Markwon into the
+     * single comment TextView (Markwon renders code/tables/blocks inline, so the
+     * {@link CommentOverflow} block list is cleared). See issue #179.
+     */
+    public void setViewsMarkdown(
+            String rawMarkdown,
+            String bodyHtml,
+            JsonNode dataNode,
+            String subredditName,
+            CommentViewHolder holder) {
+        MarkdownImages.renderInto(
+                holder.firstTextView,
+                holder.commentOverflow,
+                subredditName,
+                rawMarkdown,
+                bodyHtml,
+                dataNode);
     }
 
     public void setViews(
@@ -1375,12 +1407,21 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                     if (toCollapse.contains(comment.getFullName())
                             && SettingValues.collapseComments) {
-                        setViews(
-                                SubmissionParser.replaceProcessingImgPlaceholders(
-                                        comment.getDataNode().get("body_html").asText(),
-                                        comment.getDataNode()),
-                                submission.getSubredditName(),
-                                holder);
+                        if (SettingValues.markdownNewReddit) {
+                            setViewsMarkdown(
+                                    comment.getBody(),
+                                    comment.getDataNode().get("body_html").asText(),
+                                    comment.getDataNode(),
+                                    submission.getSubredditName(),
+                                    holder);
+                        } else {
+                            setViews(
+                                    SubmissionParser.replaceProcessingImgPlaceholders(
+                                            comment.getDataNode().get("body_html").asText(),
+                                            comment.getDataNode()),
+                                    submission.getSubredditName(),
+                                    holder);
+                        }
                     }
 
                     CommentAdapterHelper.hideChildrenObject(holder.childrenNumber);

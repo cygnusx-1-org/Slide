@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Renders inline comment images as pre-sized block ImageViews loaded through the app's shared image
- * cache (cf. Continuum/Infinity), instead of inline text spans. Two things make the image "just
+ * cache (like Continuum/Infinity), instead of inline text spans. Two things make the image "just
  * there with the comment" rather than popping in:
  *
  * <ul>

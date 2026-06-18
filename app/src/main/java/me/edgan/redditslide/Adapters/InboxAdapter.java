@@ -54,6 +54,8 @@ import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.ClipboardUtil;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.LayoutUtils;
+import com.fasterxml.jackson.databind.JsonNode;
+import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
 
@@ -501,12 +503,21 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             }
             messageViewHolder.content.setTypeface(typeface);
 
-            setViews(
-                    SubmissionParser.replaceProcessingImgPlaceholders(
-                            comment.getDataNode().get("body_html").asText(),
-                            comment.getDataNode()),
-                    "FORCE_LINK_CLICK",
-                    messageViewHolder);
+            if (SettingValues.markdownNewReddit) {
+                setViewsMarkdown(
+                        comment.getDataNode().get("body").asText(),
+                        comment.getDataNode().get("body_html").asText(),
+                        comment.getDataNode(),
+                        "FORCE_LINK_CLICK",
+                        messageViewHolder);
+            } else {
+                setViews(
+                        SubmissionParser.replaceProcessingImgPlaceholders(
+                                comment.getDataNode().get("body_html").asText(),
+                                comment.getDataNode()),
+                        "FORCE_LINK_CLICK",
+                        messageViewHolder);
+            }
         }
 
         if (viewHolder instanceof SpacerViewHolder) {
@@ -618,6 +629,22 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         public SpacerViewHolder(View itemView) {
             super(itemView);
         }
+    }
+
+    /** New Reddit-style rendering of an inbox item body via Markwon. See issue #179. */
+    private void setViewsMarkdown(
+            String rawMarkdown,
+            String bodyHtml,
+            JsonNode dataNode,
+            String subredditName,
+            MessageViewHolder holder) {
+        MarkdownImages.renderInto(
+                holder.content,
+                holder.commentOverflow,
+                subredditName,
+                rawMarkdown,
+                bodyHtml,
+                dataNode);
     }
 
     private void setViews(String rawHTML, String subredditName, MessageViewHolder holder) {

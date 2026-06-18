@@ -1,0 +1,160 @@
+package me.edgan.redditslide.markdown;
+
+import android.view.View;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+import me.edgan.redditslide.SpoilerRobotoTextView;
+import me.edgan.redditslide.Views.CommentOverflow;
+import me.edgan.redditslide.util.SubmissionParser;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * Renders a comment/self-text's images (emotes, giphy reactions, inline images) for the new
+ * Reddit-style renderer.
+ *
+ * <p>The raw markdown only references media (a bare {@code preview.redd.it} URL, or {@code
+ * ![img](id)} resolved via {@code media_metadata}); the usable URLs live in {@code body_html}. So
+ * we reuse Slide's existing resolution ({@link SubmissionParser#replaceProcessingImgPlaceholders}
+ * + image-block extraction) and draw the images through the same pre-sized {@link CommentOverflow}
+ * path the snudown renderer uses, while stripping the media references out of the Markwon text.
+ * See issue #179.
+ */
+public final class MarkdownImages {
+
+    private MarkdownImages() {}
+
+    private static final Pattern MEDIA_URL =
+            Pattern.compile(
+                    "https://(?:preview\\.redd\\.it|i\\.redd\\.it|external-preview\\.redd\\.it"
+                            + "|i\\.giphy\\.com)/\\S+");
+
+    /** A free emote reference: {@code ![alt](emote|free_emotes_pack|name)}. Group 1 = full id. */
+    private static final Pattern EMOTE_REF =
+            Pattern.compile("!\\[[^\\]]*\\]\\((emote\\|[^)\\s]+)\\)");
+
+    private static final char PLACEHOLDER = '￼'; // object replacement character
+
+    /** Result of {@link #resolveEmotes}: the rewritten markdown and the ordered emote URLs. */
+    public static final class EmoteResolution {
+        public final String markdown;
+        public final List<String> urls;
+
+        EmoteResolution(String markdown, List<String> urls) {
+            this.markdown = markdown;
+            this.urls = urls;
+        }
+    }
+
+    /**
+     * Render {@code rawMarkdown} as new Reddit-style text into {@code textView} (media references
+     * removed, free emotes loaded inline) and draw its resolved images into {@code overflow}.
+     */
+    public static void renderInto(
+            SpoilerRobotoTextView textView,
+            CommentOverflow overflow,
+            String subreddit,
+            String rawMarkdown,
+            String bodyHtml,
+            JsonNode dataNode) {
+        EmoteResolution emotes = resolveEmotes(rawMarkdown, dataNode);
+        String text = stripMediaUrls(emotes.markdown);
+        if (text.trim().isEmpty()) {
+            textView.setText("");
+            textView.setVisibility(View.GONE);
+        } else {
+            textView.setVisibility(View.VISIBLE);
+            RedditMarkwon.setMarkdown(textView, subreddit, text);
+            textView.loadFreeEmotes(emotes.urls);
+        }
+        render(overflow, bodyHtml, dataNode, subreddit);
+    }
+
+    /**
+     * Replace each resolvable free-emote reference with a {@code ￼} placeholder and collect the
+     * emote image URLs (in order) from {@code media_metadata}. Reddit keys emotes by an id like
+     * {@code emote|free_emotes_pack|upvote} whose real gif filename differs, so the URL must come
+     * from {@code media_metadata} — never constructed from the name.
+     */
+    public static EmoteResolution resolveEmotes(String rawMarkdown, JsonNode dataNode) {
+        List<String> urls = new ArrayList<>();
+        if (rawMarkdown == null || rawMarkdown.isEmpty() || rawMarkdown.indexOf("emote|") < 0) {
+            return new EmoteResolution(rawMarkdown == null ? "" : rawMarkdown, urls);
+        }
+        JsonNode mediaMetadata =
+                dataNode != null && dataNode.has("media_metadata")
+                        ? dataNode.get("media_metadata")
+                        : null;
+        Matcher m = EMOTE_REF.matcher(rawMarkdown);
+        StringBuffer sb = new StringBuffer();
+        while (m.find()) {
+            String url = mediaMetadata == null ? null : emoteUrl(mediaMetadata.get(m.group(1)));
+            if (url != null) {
+                urls.add(url);
+                m.appendReplacement(sb, String.valueOf(PLACEHOLDER));
+            } else {
+                m.appendReplacement(sb, Matcher.quoteReplacement(m.group(0)));
+            }
+        }
+        m.appendTail(sb);
+        return new EmoteResolution(sb.toString(), urls);
+    }
+
+    private static String emoteUrl(JsonNode entry) {
+        if (entry == null) {
+            return null;
+        }
+        JsonNode s = entry.get("s");
+        if (s == null) {
+            return null;
+        }
+        if (s.hasNonNull("gif")) {
+            return s.get("gif").asText();
+        }
+        if (s.hasNonNull("u")) {
+            return s.get("u").asText();
+        }
+        return null;
+    }
+
+    /** Remove standalone Reddit media URLs (they are rendered as image blocks instead). */
+    public static String stripMediaUrls(String markdown) {
+        if (markdown == null) {
+            return "";
+        }
+        return MEDIA_URL.matcher(markdown).replaceAll("");
+    }
+
+    /**
+     * Populate {@code overflow} with the image blocks resolved from {@code bodyHtml}; clears it if
+     * there are none.
+     */
+    public static void render(
+            CommentOverflow overflow, String bodyHtml, JsonNode dataNode, String subreddit) {
+        if (overflow == null) {
+            return;
+        }
+        if (bodyHtml == null || bodyHtml.isEmpty()) {
+            overflow.removeAllViews();
+            return;
+        }
+        String resolved = SubmissionParser.replaceProcessingImgPlaceholders(bodyHtml, dataNode);
+        List<String> blocks =
+                SubmissionParser.extractImageBlocks(SubmissionParser.getBlocks(resolved));
+        List<String> images = new ArrayList<>();
+        for (String block : blocks) {
+            if (block.startsWith(SubmissionParser.IMAGE_BLOCK_PREFIX)) {
+                images.add(block);
+            }
+        }
+        if (images.isEmpty()) {
+            overflow.removeAllViews();
+        } else {
+            overflow.setViews(images, subreddit);
+        }
+    }
+}

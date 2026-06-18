@@ -50,6 +50,8 @@ import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.Vote;
+import com.fasterxml.jackson.databind.JsonNode;
+import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.util.AnimatorUtil;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.CompatUtil;
@@ -484,12 +486,24 @@ public class PopulateSubmissionViewHolder {
                 }
                 holder.firstTextView.setTypeface(typeface);
 
-                setViews(
-                        submission.getDataNode().get("selftext_html").asText(),
+                String selftextSubreddit =
                         submission.getSubredditName() == null
                                 ? "all"
-                                : submission.getSubredditName(),
-                        holder);
+                                : submission.getSubredditName();
+                if (SettingValues.markdownNewReddit) {
+                    // New Reddit-style: render the raw selftext via Markwon (issue #179).
+                    setViewsMarkdown(
+                            submission.getSelftext(),
+                            submission.getDataNode().get("selftext_html").asText(),
+                            submission.getDataNode(),
+                            selftextSubreddit,
+                            holder);
+                } else {
+                    setViews(
+                            submission.getDataNode().get("selftext_html").asText(),
+                            selftextSubreddit,
+                            holder);
+                }
                 holder.itemView.findViewById(R.id.body_area).setVisibility(View.VISIBLE);
             } else {
                 holder.itemView.findViewById(R.id.body_area).setVisibility(View.GONE);
@@ -1409,4 +1423,22 @@ public class PopulateSubmissionViewHolder {
         }
     }
 
+    /**
+     * New Reddit-style rendering of self-text: render the raw markdown via Markwon into the
+     * single body TextView and clear the overflow block list. See issue #179.
+     */
+    private void setViewsMarkdown(
+            String rawMarkdown,
+            String bodyHtml,
+            JsonNode dataNode,
+            String subredditName,
+            SubmissionViewHolder holder) {
+        MarkdownImages.renderInto(
+                holder.firstTextView,
+                holder.commentOverflow,
+                subredditName,
+                rawMarkdown,
+                bodyHtml,
+                dataNode);
+    }
 }

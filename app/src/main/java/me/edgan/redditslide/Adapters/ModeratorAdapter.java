@@ -58,6 +58,8 @@ import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
+import com.fasterxml.jackson.databind.JsonNode;
+import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
 
@@ -564,12 +566,21 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
 
             holder.time.setText(titleString);
-            setViews(
-                    SubmissionParser.replaceProcessingImgPlaceholders(
-                            comment.getDataNode().get("body_html").asText(),
-                            comment.getDataNode()),
-                    comment.getSubredditName(),
-                    holder);
+            if (SettingValues.markdownNewReddit) {
+                setViewsMarkdown(
+                        comment.getDataNode().get("body").asText(),
+                        comment.getDataNode().get("body_html").asText(),
+                        comment.getDataNode(),
+                        comment.getSubredditName(),
+                        holder);
+            } else {
+                setViews(
+                        SubmissionParser.replaceProcessingImgPlaceholders(
+                                comment.getDataNode().get("body_html").asText(),
+                                comment.getDataNode()),
+                        comment.getSubredditName(),
+                        holder);
+            }
 
             ((TextView) holder.gild).setText("");
             if (!SettingValues.hideCommentAwards
@@ -636,6 +647,17 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                                     firstHold.itemView.getWidth(),
                                     mContext.findViewById(R.id.header).getHeight()));
         }
+    }
+
+    /** New Reddit-style rendering of a mod-queue comment body via Markwon. Issue #179. */
+    private void setViewsMarkdown(
+            String rawMarkdown,
+            String bodyHtml,
+            JsonNode dataNode,
+            String subredditName,
+            ProfileCommentViewHolder holder) {
+        MarkdownImages.renderInto(
+                holder.content, holder.overflow, subredditName, rawMarkdown, bodyHtml, dataNode);
     }
 
     private void setViews(String rawHTML, String subredditName, ProfileCommentViewHolder holder) {

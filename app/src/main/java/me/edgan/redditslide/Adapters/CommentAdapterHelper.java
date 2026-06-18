@@ -31,6 +31,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,11 +52,14 @@ import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.Toolbox.ToolboxUI;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.UserTags;
+import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Views.DoEditorActions;
 import me.edgan.redditslide.Views.RoundedBackgroundSpan;
+import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
@@ -116,10 +120,12 @@ public class CommentAdapterHelper {
         Drawable replies = mContext.getResources().getDrawable(R.drawable.ic_notifications);
         Drawable permalink = mContext.getResources().getDrawable(R.drawable.ic_link);
         Drawable report = mContext.getResources().getDrawable(R.drawable.ic_report);
+        Drawable viewmode = mContext.getResources().getDrawable(R.drawable.ic_visibility);
 
         final List<Drawable> drawableSet =
                 Arrays.asList(
-                        profile, saved, gild, report, copy, share, parent, permalink, replies);
+                        profile, saved, gild, report, copy, share, parent, permalink, replies,
+                        viewmode);
         BlendModeUtil.tintDrawablesAsSrcAtop(drawableSet, color);
 
         ta.recycle();
@@ -145,7 +151,8 @@ public class CommentAdapterHelper {
         b.sheet(5, gild, mContext.getString(R.string.comment_gild))
                 .sheet(7, copy, mContext.getString(R.string.misc_copy_text))
                 .sheet(23, permalink, mContext.getString(R.string.comment_permalink))
-                .sheet(4, share, mContext.getString(R.string.comment_share));
+                .sheet(4, share, mContext.getString(R.string.comment_share))
+                .sheet(60, viewmode, mContext.getString(R.string.comment_render_other));
         if (!adapter.currentBaseNode.isTopLevel()) {
             b.sheet(10, parent, mContext.getString(R.string.comment_parent));
         }
@@ -411,10 +418,67 @@ final AlertDialog reportDialog =
                                                 + "?context=3",
                                         mContext);
                                 break;
+                            case 60:
+                                // Preview this comment with the opposite markdown renderer.
+                                showOppositeRender(adapter, mContext, n);
+                                break;
                         }
                     }
                 });
         b.show();
+    }
+
+    /**
+     * Show a one-shot dialog rendering {@code n} with the opposite of the current global
+     * markdown setting ({@link SettingValues#markdownNewReddit}). Purely a preview: it stores
+     * no state and does not change the comment in the list or the setting. See issue #179.
+     */
+    private static void showOppositeRender(
+            final CommentAdapter adapter, final Context mContext, final Comment n) {
+        final boolean showNewReddit = !SettingValues.markdownNewReddit;
+        final String subreddit =
+                adapter.submission == null || adapter.submission.getSubredditName() == null
+                        ? "all"
+                        : adapter.submission.getSubredditName();
+
+        LinearLayout container = new LinearLayout(mContext);
+        container.setOrientation(LinearLayout.VERTICAL);
+        int pad = (int) (16 * mContext.getResources().getDisplayMetrics().density);
+        container.setPadding(pad, pad, pad, pad);
+
+        SpoilerRobotoTextView first = new SpoilerRobotoTextView(mContext);
+        CommentOverflow overflow = new CommentOverflow(mContext);
+        container.addView(first);
+        container.addView(overflow);
+
+        ScrollView scroll = new ScrollView(mContext);
+        scroll.addView(container);
+
+        if (showNewReddit) {
+            MarkdownImages.renderInto(
+                    first,
+                    overflow,
+                    subreddit,
+                    n.getBody(),
+                    n.getDataNode().get("body_html").asText(),
+                    n.getDataNode());
+        } else {
+            adapter.setViews(
+                    SubmissionParser.replaceProcessingImgPlaceholders(
+                            n.getDataNode().get("body_html").asText(), n.getDataNode()),
+                    subreddit,
+                    first,
+                    overflow);
+        }
+
+        new MaterialAlertDialogBuilder(mContext)
+                .setTitle(
+                        showNewReddit
+                                ? R.string.markdown_preview_new_reddit
+                                : R.string.markdown_preview_old_reddit)
+                .setView(scroll)
+                .setPositiveButton(R.string.btn_ok, null)
+                .show();
     }
 
     private static void setReplies(

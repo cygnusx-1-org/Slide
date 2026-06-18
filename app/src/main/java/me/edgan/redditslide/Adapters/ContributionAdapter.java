@@ -44,6 +44,8 @@ import me.edgan.redditslide.Views.CatchStaggeredGridLayoutManager;
 import me.edgan.redditslide.Views.CreateCardView;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
+import com.fasterxml.jackson.databind.JsonNode;
+import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LinkUtil;
@@ -546,14 +548,24 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
 
             holder.time.setText(titleString);
-            // Pass search query for highlighting comment body
-            setViews(
-                    SubmissionParser.replaceProcessingImgPlaceholders(
-                            comment.getDataNode().get("body_html").asText(),
-                            comment.getDataNode()),
-                    comment.getSubredditName(),
-                    holder,
-                    hasActiveFilter() ? currentQuery : null);
+            if (SettingValues.markdownNewReddit) {
+                // New Reddit-style: render the raw markdown body via Markwon (issue #179).
+                setViewsMarkdown(
+                        comment.getBody(),
+                        comment.getDataNode().get("body_html").asText(),
+                        comment.getDataNode(),
+                        comment.getSubredditName(),
+                        holder);
+            } else {
+                // Pass search query for highlighting comment body
+                setViews(
+                        SubmissionParser.replaceProcessingImgPlaceholders(
+                                comment.getDataNode().get("body_html").asText(),
+                                comment.getDataNode()),
+                        comment.getSubredditName(),
+                        holder,
+                        hasActiveFilter() ? currentQuery : null);
+            }
 
             int type = new FontPreferences(mContext).getFontTypeComment().getTypeface();
             Typeface typeface;
@@ -646,6 +658,20 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         public SpacerViewHolder(View itemView) {
             super(itemView);
         }
+    }
+
+    /**
+     * New Reddit-style rendering of a profile/saved comment: render the raw markdown via Markwon
+     * into the single content TextView and clear the overflow block list. See issue #179.
+     */
+    private void setViewsMarkdown(
+            String rawMarkdown,
+            String bodyHtml,
+            JsonNode dataNode,
+            String subredditName,
+            ProfileCommentViewHolder holder) {
+        MarkdownImages.renderInto(
+                holder.content, holder.overflow, subredditName, rawMarkdown, bodyHtml, dataNode);
     }
 
     private void setViews(String rawHTML, String subredditName, ProfileCommentViewHolder holder, String searchQuery) {

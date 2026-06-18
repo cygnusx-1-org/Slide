@@ -24,6 +24,7 @@ import org.commonmark.node.HtmlInline;
 import org.commonmark.node.Image;
 import org.commonmark.node.IndentedCodeBlock;
 import org.commonmark.node.Link;
+import org.commonmark.node.LinkReferenceDefinition;
 import org.commonmark.node.ListItem;
 import org.commonmark.node.Node;
 import org.commonmark.node.OrderedList;
@@ -174,6 +175,12 @@ public class RichTextJSONConverter implements Visitor {
                 content.put(TYPE, RAW_E);
             }
         }
+    }
+
+    @Override
+    public void visit(LinkReferenceDefinition linkReferenceDefinition) {
+        // commonmark 0.13 surfaces link reference definitions as document nodes; Reddit's
+        // richtext_json has no representation for them, so they are intentionally ignored.
     }
 
     @Override

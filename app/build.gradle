@@ -196,12 +196,24 @@ dependencies {
 /** Custom **/
     implementation 'com.github.edgan:JRAW:e5e405835e'
 
-    def commonmarkVersion = '0ebc0749c7'
-    implementation "com.github.Haptic-Apps.commonmark-java:commonmark:$commonmarkVersion"
-    implementation "com.github.Haptic-Apps.commonmark-java:commonmark-ext-gfm-strikethrough:$commonmarkVersion"
-    implementation "com.github.Haptic-Apps.commonmark-java:commonmark-ext-gfm-tables:$commonmarkVersion"
+    // Stock commonmark 0.13.0 (Apache-2.0) — shared by Slide's richtext/editor code and
+    // Markwon. Replaced the old Haptic-Apps fork (commonmark 0.5.0 + a one-line heading
+    // tweak) so a single commonmark is on the classpath; see issue #179.
+    def commonmarkVersion = '0.13.0'
+    implementation "com.atlassian.commonmark:commonmark:$commonmarkVersion"
+    implementation "com.atlassian.commonmark:commonmark-ext-gfm-strikethrough:$commonmarkVersion"
+    implementation "com.atlassian.commonmark:commonmark-ext-gfm-tables:$commonmarkVersion"
     implementation 'com.github.Haptic-Apps:JReadability:bb291880a5'
     implementation 'com.github.edgan:Android-RobotoTextView:d368c94b3c'
+
+    // Markwon (Apache-2.0) — Continuum-style markdown renderer (issue #179).
+    // GPL-compatible library; Reddit-specific plugins are written clean-room in-tree.
+    def markwonVersion = '4.6.2'
+    implementation "io.noties.markwon:core:$markwonVersion"
+    implementation "io.noties.markwon:ext-strikethrough:$markwonVersion"
+    implementation "io.noties.markwon:ext-tables:$markwonVersion"
+    implementation "io.noties.markwon:linkify:$markwonVersion"
+    implementation "io.noties.markwon:inline-parser:$markwonVersion"
 
 /** AndroidX **/
     implementation 'androidx.activity:activity:1.13.0'
