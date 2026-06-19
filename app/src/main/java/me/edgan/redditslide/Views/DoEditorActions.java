@@ -44,6 +44,7 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.Visuals.ColorPreferences;
+import me.edgan.redditslide.markdown.RedditMarkwon;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.DisplayUtil;
 import me.edgan.redditslide.util.KeyboardUtil;
@@ -508,25 +509,39 @@ public class DoEditorActions {
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                List<Extension> extensions =
-                                        Arrays.asList(
-                                                TablesExtension.create(),
-                                                StrikethroughExtension.create());
-                                Parser parser = Parser.builder().extensions(extensions).build();
-                                HtmlRenderer renderer =
-                                        HtmlRenderer.builder().extensions(extensions).build();
-                                Node document = parser.parse(editText.getText().toString());
-                                String html = renderer.render(document);
-                                // Process Reddit-style superscript (^text)
-                                html = processSuperscript(html);
                                 LayoutInflater inflater = a.getLayoutInflater();
                                 final View dialoglayout =
                                         inflater.inflate(R.layout.parent_comment_dialog, null);
-                                setViews(
-                                        html,
-                                        "NO sub",
-                                        dialoglayout.findViewById(R.id.firstTextView),
-                                        dialoglayout.findViewById(R.id.commentOverflow));
+                                final SpoilerRobotoTextView firstTextView =
+                                        dialoglayout.findViewById(R.id.firstTextView);
+
+                                // Preview through whichever renderer the post/comment will actually
+                                // use, so the preview matches the result (issue #179). The Markwon
+                                // path is the same one MarkdownImages.renderInto drives for live
+                                // new-Reddit comments/self-text.
+                                if (SettingValues.markdownNewReddit) {
+                                    firstTextView.setVisibility(View.VISIBLE);
+                                    RedditMarkwon.setMarkdown(
+                                            firstTextView, "NO sub", editText.getText().toString());
+                                } else {
+                                    List<Extension> extensions =
+                                            Arrays.asList(
+                                                    TablesExtension.create(),
+                                                    StrikethroughExtension.create());
+                                    Parser parser =
+                                            Parser.builder().extensions(extensions).build();
+                                    HtmlRenderer renderer =
+                                            HtmlRenderer.builder().extensions(extensions).build();
+                                    Node document = parser.parse(editText.getText().toString());
+                                    String html = renderer.render(document);
+                                    // Process Reddit-style superscript (^text)
+                                    html = processSuperscript(html);
+                                    setViews(
+                                            html,
+                                            "NO sub",
+                                            firstTextView,
+                                            dialoglayout.findViewById(R.id.commentOverflow));
+                                }
 
                                 DialogUtil.showWithCardBackground(new AlertDialog.Builder(a).setView(dialoglayout));
                             }
