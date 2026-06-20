@@ -4,6 +4,11 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.6.5 / 2026-6-20
+============
+* Fixed bug with giphy image only comments
+* Implemented respecting the new vs old Reddit style toggle for the preview when creating a comment
+
 7.6.4 / 2026-6-18
 ============
 * Implemented Feature Request: Proper Formatting for Code Blocks #179
