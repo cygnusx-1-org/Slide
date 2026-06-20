@@ -287,5 +287,11 @@
         "end": 16
       }
     ]
+  },
+  {
+    "id": "giphy_only",
+    "md": "![gif](giphy|RXKCMLmch5W2Q)",
+    "text": "",
+    "spans": []
   }
 ]

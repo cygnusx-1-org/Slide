@@ -63,13 +63,20 @@ public final class MarkdownImages {
             JsonNode dataNode) {
         EmoteResolution emotes = resolveEmotes(rawMarkdown, dataNode);
         String text = stripMediaUrls(emotes.markdown);
-        if (text.trim().isEmpty()) {
-            textView.setText("");
-            textView.setVisibility(View.GONE);
-        } else {
-            textView.setVisibility(View.VISIBLE);
+        boolean rendered = false;
+        if (!text.trim().isEmpty()) {
             RedditMarkwon.setMarkdown(textView, subreddit, text);
             textView.loadFreeEmotes(emotes.urls);
+            // The markdown may be image-only (e.g. a lone giphy reaction): its image nodes are
+            // dropped and the gif is drawn from body_html, leaving the text empty. Hide the view
+            // in that case so there's no blank gap above the image.
+            rendered = textView.getText() != null && textView.getText().length() > 0;
+        }
+        if (rendered) {
+            textView.setVisibility(View.VISIBLE);
+        } else {
+            textView.setText("");
+            textView.setVisibility(View.GONE);
         }
         render(overflow, bodyHtml, dataNode, subreddit);
     }

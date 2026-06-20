@@ -92,6 +92,12 @@ public final class RedditMarkwon {
 
     private static Markwon build(Context context) {
         return Markwon.builder(context)
+                // When a comment's whole body is media (e.g. a lone giphy reaction
+                // ![gif](giphy|ID)), ImageDropPostProcessor drops the image node and the
+                // rendered text is empty — the image is drawn separately from body_html. Markwon
+                // defaults to resurrecting the RAW markdown source in that case, which leaked
+                // "![gif](giphy|ID)" as literal text above the gif; disable that fallback.
+                .fallbackToRawInputWhenEmpty(false)
                 // CorePlugin renders fenced/indented code blocks as styled code boxes
                 // (the issue #179 fix).
                 .usePlugin(CorePlugin.create())

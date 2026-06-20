@@ -21,5 +21,6 @@
   {"id": "mention_user", "md": "ping u/edgan please"},
   {"id": "mention_subreddit", "md": "join r/test today"},
   {"id": "plain", "md": "just plain text"},
-  {"id": "code_with_specials", "md": "`a < b && c > d`"}
+  {"id": "code_with_specials", "md": "`a < b && c > d`"},
+  {"id": "giphy_only", "md": "![gif](giphy|RXKCMLmch5W2Q)"}
 ]
