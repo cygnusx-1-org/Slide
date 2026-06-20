@@ -33,7 +33,8 @@ public class InboxMessages extends GeneralPosts {
     public void bindAdapter(InboxAdapter a, SwipeRefreshLayout layout) {
         this.adapter = a;
         this.refreshLayout = layout;
-        loadMore(a, where, true);
+        // The initial load (and every refresh when the tab is shown again) is driven from
+        // InboxPage.onResume() so that switching back to a tab reflects reads made elsewhere.
     }
 
     public void loadMore(InboxAdapter adapter, String where, boolean refresh) {
@@ -74,6 +75,10 @@ public class InboxMessages extends GeneralPosts {
                                     public void run() {
                                         refreshLayout.setRefreshing(false);
                                         loading = false;
+                                        // Recover the real adapter if a previous load had swapped
+                                        // in the error view; otherwise the list stays stuck on the
+                                        // error screen even though this load succeeded.
+                                        adapter.undoSetError();
                                         adapter.notifyDataSetChanged();
                                     }
                                 });

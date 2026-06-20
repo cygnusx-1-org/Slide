@@ -44,6 +44,16 @@ import java.util.Set;
 public class Inbox extends BaseActivityAnim {
 
     public static final String EXTRA_UNREAD = "unread";
+
+    /**
+     * Bumped whenever a single message's read state is toggled in any tab. Each
+     * {@link me.edgan.redditslide.Fragments.InboxPage} records the value it last loaded at and only
+     * re-fetches when it becomes visible again if this has advanced, so sibling tabs (e.g. "unread")
+     * reflect reads made elsewhere without reloading every tab on every resume. ("Mark all read"
+     * recreates the pager's fragments, so it forces a reload without needing this counter.)
+     */
+    public static int readGeneration;
+
     public InboxPagerAdapter adapter;
     private TabLayout tabs;
     private ViewPager pager;

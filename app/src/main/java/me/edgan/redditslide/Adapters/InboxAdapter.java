@@ -23,7 +23,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -88,14 +90,22 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         boolean isSame = false;
     }
 
+    private boolean errorShown;
+
     @Override
     public void setError(Boolean b) {
+        errorShown = true;
         listView.setAdapter(new ErrorAdapter());
     }
 
     @Override
     public void undoSetError() {
-        listView.setAdapter(this);
+        // Only swap the real adapter back in when we are actually showing the error view; calling
+        // setAdapter() on every successful load would needlessly reset scroll position.
+        if (errorShown) {
+            errorShown = false;
+            listView.setAdapter(this);
+        }
     }
 
     @Override
@@ -370,28 +380,10 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                                             break;
                                                         case 2:
                                                             {
-                                                                if (comment.isRead()) {
-                                                                    comment.read = false;
-                                                                    new AsyncSetRead(false)
-                                                                            .execute(comment);
-                                                                    messageViewHolder.title
-                                                                            .setTextColor(
-                                                                                    ContextCompat
-                                                                                            .getColor(
-                                                                                                    mContext,
-                                                                                                    R
-                                                                                                            .color
-                                                                                                            .md_red_400));
-                                                                } else {
-                                                                    comment.read = true;
-                                                                    new AsyncSetRead(true)
-                                                                            .execute(comment);
-                                                                    messageViewHolder.title
-                                                                            .setTextColor(
-                                                                                    messageViewHolder
-                                                                                            .content
-                                                                                            .getCurrentTextColor());
-                                                                }
+                                                                markReadAndRebind(
+                                                                        messageViewHolder,
+                                                                        comment,
+                                                                        !comment.isRead());
                                                             }
                                                             break;
                                                         case 3:
@@ -457,39 +449,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                             true);
                                 }
                             } else {
-                                comment.read = true;
-                                new AsyncSetRead(true).execute(comment);
-
-                                messageViewHolder.title.setTextColor(
-                                        messageViewHolder.content.getCurrentTextColor());
-                                {
-                                    SpannableStringBuilder b =
-                                            new SpannableStringBuilder(comment.getSubject());
-
-                                    if (comment.getDataNode().has("link_title")) {
-                                        SpannableStringBuilder link =
-                                                new SpannableStringBuilder(
-                                                        " "
-                                                                + CompatUtil.fromHtml(
-                                                                        comment.getDataNode()
-                                                                                .get("link_title")
-                                                                                .asText())
-                                                                + " ");
-                                        link.setSpan(
-                                                new StyleSpan(Typeface.BOLD_ITALIC),
-                                                0,
-                                                link.length(),
-                                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                        link.setSpan(
-                                                new RelativeSizeSpan(0.8f),
-                                                0,
-                                                link.length(),
-                                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-                                        b.append(link);
-                                    }
-                                    messageViewHolder.title.setText(b);
-                                }
+                                markReadAndRebind(messageViewHolder, comment, true);
                             }
                         }
                     }); // Set typeface for body
@@ -517,6 +477,14 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                 comment.getDataNode()),
                         "FORCE_LINK_CLICK",
                         messageViewHolder);
+            }
+
+            // For an unread message, make the body's links/images inert so that a tap anywhere on
+            // the row (including a link- or image-only body) bubbles up to the row's click listener
+            // and marks it read. Once read, the next bind leaves links live so taps open them.
+            if (!comment.isRead()) {
+                disableInlineLinkHandling(messageViewHolder.content);
+                disableInlineLinkHandling(messageViewHolder.commentOverflow);
             }
         }
 
@@ -645,6 +613,44 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 rawMarkdown,
                 bodyHtml,
                 dataNode);
+    }
+
+    /**
+     * Sets a message's read state on the server and rebinds its row so the read state (color, NEW
+     * tag) and the body's link/image handling stay in sync, and bumps {@link Inbox#readGeneration}
+     * so sibling tabs refresh when next shown.
+     */
+    private void markReadAndRebind(MessageViewHolder holder, Message comment, boolean read) {
+        comment.read = read;
+        new AsyncSetRead(read).execute(comment);
+        Inbox.readGeneration++;
+
+        int pos = holder.getBindingAdapterPosition();
+        if (pos != RecyclerView.NO_POSITION) {
+            notifyItemChanged(pos);
+        }
+    }
+
+    /**
+     * Makes a rendered body inert to taps so they bubble to the row's click listener: strips the
+     * link-handling movement method from text views (so {@code URLSpan}s don't consume the tap) and
+     * disables clicks on standalone inline images (which set their own open-image listener, see
+     * {@link me.edgan.redditslide.util.CommentImageUtil#display}). Used for unread inbox items so a
+     * tap marks them read even when the body is entirely a link or image. The next bind after the
+     * message is read recreates the views with their handlers intact, so links/images work again.
+     */
+    private void disableInlineLinkHandling(View view) {
+        if (view instanceof TextView) {
+            ((TextView) view).setMovementMethod(null);
+        } else if (view instanceof ImageView) {
+            view.setClickable(false);
+        }
+        if (view instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) view;
+            for (int i = 0; i < group.getChildCount(); i++) {
+                disableInlineLinkHandling(group.getChildAt(i));
+            }
+        }
     }
 
     private void setViews(String rawHTML, String subredditName, MessageViewHolder holder) {
