@@ -4,6 +4,11 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.6.8 / 2026-6-21
+============
+* Resurrected a color flag/triangle feature from 2016, like Relay's and now Continuum's
+* Added "Settings | Post layout | Show colored corner flags on thumbnails" setting
+
 7.6.7 / 2026-6-21
 ============
 * Implemented Feature Request: Open reddit.com links found in clipboard #250
