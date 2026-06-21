@@ -4,6 +4,11 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.6.7 / 2026-6-21
+============
+* Implemented Feature Request: Open reddit.com links found in clipboard #250
+* Fixed issue with notification bar color inconsistency
+
 7.6.6 / 2026-6-20
 ============
 * Added warning dialogs on important login errors
