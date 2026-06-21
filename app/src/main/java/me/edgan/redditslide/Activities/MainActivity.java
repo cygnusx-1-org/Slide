@@ -4,6 +4,8 @@ import me.edgan.redditslide.util.DialogUtil;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -49,6 +51,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.pm.ShortcutInfoCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.core.content.res.ResourcesCompat;
@@ -72,9 +75,11 @@ import me.edgan.redditslide.BuildConfig;
 import me.edgan.redditslide.CaseInsensitiveArrayList;
 import me.edgan.redditslide.CommentCacheAsync;
 import me.edgan.redditslide.Constants;
+import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.ForceTouch.util.DensityUtils;
 import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.Notifications.CheckForMail;
+import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
@@ -496,8 +501,54 @@ public class MainActivity extends BaseActivity
         return true;
     }
 
+    /**
+     * Reads the clipboard and, if it contains a Reddit link, opens it. Otherwise shows a toast.
+     * The clipboard is only read when the menu option is selected.
+     */
+    private void openClipboardRedditLink() {
+        final ClipboardManager clipboard =
+                ContextCompat.getSystemService(this, ClipboardManager.class);
+
+        String clip = null;
+        if (clipboard != null && clipboard.hasPrimaryClip()) {
+            final ClipData data = clipboard.getPrimaryClip();
+            if (data != null && data.getItemCount() > 0) {
+                final CharSequence text = data.getItemAt(0).coerceToText(this);
+                if (text != null) {
+                    clip = text.toString().trim();
+                }
+            }
+        }
+
+        if (clip == null || clip.isEmpty() || !isRedditLink(clip)) {
+            Toast.makeText(this, R.string.clipboard_no_reddit_link, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        OpenRedditLink.openUrl(this, clip, true);
+    }
+
+    /** Returns true if the given url points at Reddit (link, gallery, or v.redd.it video). */
+    private static boolean isRedditLink(String url) {
+        switch (ContentType.getContentType(url)) {
+            case REDDIT:
+            case REDDIT_GALLERY:
+            case VREDDIT_DIRECT:
+            case VREDDIT_REDIRECT:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // Handled independently of the current feed state.
+        if (item.getItemId() == R.id.open_clipboard) {
+            openClipboardRedditLink();
+            return true;
+        }
+
         if (usedArray == null || usedArray.isEmpty() || Reddit.currentPosition < 0 || Reddit.currentPosition >= usedArray.size()) {
             return super.onOptionsItemSelected(item);
         }
