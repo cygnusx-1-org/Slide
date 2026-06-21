@@ -45,6 +45,7 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionCache;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Views.CreateCardView;
+import me.edgan.redditslide.Views.RoundImageTriangleView;
 import me.edgan.redditslide.Views.DoEditorActions;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.FontPreferences;
@@ -85,6 +86,49 @@ import me.edgan.redditslide.util.LogUtil;
 public class PopulateSubmissionViewHolder {
 
     public PopulateSubmissionViewHolder() {}
+
+    /**
+     * Maps a post's {@link ContentType.Type} to the corner-flag color shown on its thumbnail.
+     * Returns {@link Color#TRANSPARENT} for types that should not be flagged (e.g. plain
+     * self/comment posts with no distinct media).
+     */
+    private static int getFlagColor(ContentType.Type type, Activity context) {
+        final int colorRes;
+        switch (type) {
+            case IMAGE:
+            case IMGUR:
+            case DEVIANTART:
+            case XKCD:
+                colorRes = R.color.post_type_flag_image;
+                break;
+            case GIF:
+                colorRes = R.color.post_type_flag_gif;
+                break;
+            case ALBUM:
+            case REDDIT_GALLERY:
+                colorRes = R.color.post_type_flag_gallery;
+                break;
+            case VIDEO:
+            case VREDDIT_DIRECT:
+            case VREDDIT_REDIRECT:
+            case STREAMABLE:
+            case TUMBLR:
+            case EMBEDDED:
+                colorRes = R.color.post_type_flag_video;
+                break;
+            case LINK:
+            case EXTERNAL:
+                colorRes = R.color.post_type_flag_link;
+                break;
+            case SELF:
+                colorRes = R.color.post_type_flag_text;
+                break;
+            default:
+                // NONE, REDDIT, SPOILER, etc. — no flag.
+                return Color.TRANSPARENT;
+        }
+        return ContextCompat.getColor(context, colorRes);
+    }
 
     public <T extends Contribution> void populateSubmissionViewHolder(
             final SubmissionViewHolder holder,
@@ -342,6 +386,14 @@ public class PopulateSubmissionViewHolder {
         }
 
         final ContentType.Type type = ContentType.getContentType(submission);
+
+        if (thumbImage2 instanceof RoundImageTriangleView) {
+            ((RoundImageTriangleView) thumbImage2)
+                    .setFlagColor(
+                            SettingValues.thumbnailFlags
+                                    ? getFlagColor(type, mContext)
+                                    : Color.TRANSPARENT);
+        }
 
         SubmissionClickActions.addClickFunctions(holder.leadImage, type, mContext, submission, holder, full);
 

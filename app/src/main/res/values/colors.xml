@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Post-type corner-flag colors, copied from Continuum's post type indicator (GitHub palette) -->
+    <color name="post_type_flag_text">#6A737D</color>
+    <color name="post_type_flag_image">#2EA44F</color>
+    <color name="post_type_flag_link">#0969DA</color>
+    <color name="post_type_flag_video">#CF222E</color>
+    <color name="post_type_flag_gif">#BF3989</color>
+    <color name="post_type_flag_gallery">#8250DF</color>
+
     <color name="md_amber_200">#ffe082</color>
     <color name="md_amber_300">#ffd54f</color>
     <color name="md_amber_400">#ffca28</color>

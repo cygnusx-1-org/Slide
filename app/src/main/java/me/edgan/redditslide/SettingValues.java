@@ -116,6 +116,7 @@ public class SettingValues {
     public static final String PREF_FAB_CLEAR = "fabClear";
     public static final String PREF_HIDEBUTTON = "Hidebutton";
     public static final String PREF_SAVE_BUTTON = "saveButton";
+    public static final String PREF_THUMBNAIL_FLAGS = "thumbnailFlags";
     public static final String PREF_IMAGE = "image";
     public static final String PREF_SELFTEXT_IMAGE_COMMENT = "selftextImageComment";
     public static final String SYNCCIT_AUTH = "SYNCCIT_AUTH";
@@ -207,6 +208,7 @@ public class SettingValues {
     public static boolean storeNSFWHistory;
     public static boolean scrollSeen;
     public static boolean saveButton;
+    public static boolean thumbnailFlags;
     public static boolean voteGestures;
     public static boolean colorEverywhere;
     public static boolean gif;
@@ -519,6 +521,7 @@ public class SettingValues {
 
         hideButton = prefs.getBoolean(PREF_HIDEBUTTON, false);
         saveButton = prefs.getBoolean(PREF_SAVE_BUTTON, false);
+        thumbnailFlags = prefs.getBoolean(PREF_THUMBNAIL_FLAGS, false);
         actionbarVisible = prefs.getBoolean(PREF_ACTIONBAR_VISIBLE, true);
         actionbarTap = prefs.getBoolean(PREF_ACTIONBAR_TAP, false);
         colorIcon = prefs.getBoolean(PREF_COLOR_ICON, false);

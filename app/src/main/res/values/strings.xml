@@ -755,6 +755,7 @@
     <string name="settings_links_force_external">Force external browser</string>
     <string name="settings_layout_show_domain">Show domain in info line</string>
     <string name="settings_layout_show_content_type">Show content type in info line</string>
+    <string name="settings_layout_thumbnail_flags">Show colored corner flags on thumbnails</string>
     <string name="settings_layout_show_votes_comments">Show votes/comments in info line</string>
     <string name="settings_general_comment_last_visit">Show comment count since last visit</string>
     <string name="settings_fab_create">Show \"create comment\" FAB</string>

@@ -250,6 +250,23 @@ public class EditCardsLayout extends BaseActivityAnim {
         }
 
         {
+            SwitchCompat single = (SwitchCompat) findViewById(R.id.thumbnailflags);
+            single.setChecked(SettingValues.thumbnailFlags);
+            single.setOnCheckedChangeListener(
+                    new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            SettingValues.thumbnailFlags = isChecked;
+                            SettingValues.prefs
+                                    .edit()
+                                    .putBoolean(SettingValues.PREF_THUMBNAIL_FLAGS, isChecked)
+                                    .apply();
+                            SubmissionCache.evictAll();
+                        }
+                    });
+        }
+
+        {
             SwitchCompat single = (SwitchCompat) findViewById(R.id.selftext);
 
             single.setChecked(SettingValues.cardText);
