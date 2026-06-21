@@ -33,6 +33,7 @@ import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.GifUtils;
+import me.edgan.redditslide.util.LogUtil;
 
 import java.util.Locale;
 import java.util.Map;
@@ -314,12 +315,33 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
      */
     private void applyScrimColors() {
         if (mStatusBarScrim == null || mNavBarScrim == null) {
+            LogUtil.v(
+                    "StatusBarColor: applyScrimColors() skipped, scrims not created yet ("
+                            + getClass().getSimpleName()
+                            + ")");
             return;
         }
-        int color =
-                mSystemBarColorSet
-                        ? mSystemBarColor
-                        : opaqueOrBlack(resolveThemeColor(android.R.attr.statusBarColor));
+        int themeFallback = opaqueOrBlack(resolveThemeColor(android.R.attr.statusBarColor));
+        int color = mSystemBarColorSet ? mSystemBarColor : themeFallback;
+        // Intermittent grey is usually this fallback firing before themeSystemBars() has run, or
+        // alwaysBlackStatusbar forcing black; log enough to tell which branch produced the color.
+        LogUtil.v(
+                "StatusBarColor: applyScrimColors() ["
+                        + getClass().getSimpleName()
+                        + "] source="
+                        + (mSystemBarColorSet ? "themeSystemBars" : "themeFallback")
+                        + " systemBarColorSet="
+                        + mSystemBarColorSet
+                        + " systemBarColor="
+                        + colorHex(mSystemBarColor)
+                        + " themeFallback="
+                        + colorHex(themeFallback)
+                        + " alwaysBlackStatusbar="
+                        + SettingValues.alwaysBlackStatusbar
+                        + " colorNavBar="
+                        + SettingValues.colorNavBar
+                        + " -> chosen="
+                        + colorHex(color));
         if (SettingValues.alwaysBlackStatusbar) {
             color = Color.BLACK;
         }
@@ -328,6 +350,11 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
                 SettingValues.colorNavBar
                         ? color
                         : opaqueOrBlack(resolveThemeColor(android.R.attr.navigationBarColor)));
+    }
+
+    /** Formats a color-int as #AARRGGBB for readable logging of bar colors. */
+    private static String colorHex(int color) {
+        return String.format(Locale.ENGLISH, "#%08X", color);
     }
 
     /**
@@ -568,7 +595,21 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
      * @param subreddit The subreddit to base the color on.
      */
     public void themeSystemBars(String subreddit) {
-        themeSystemBars(Palette.getSubredditStatusBarColor(subreddit));
+        int color = Palette.getSubredditStatusBarColor(subreddit);
+        LogUtil.v(
+                "StatusBarColor: themeSystemBars(subreddit=\""
+                        + subreddit
+                        + "\") ["
+                        + getClass().getSimpleName()
+                        + "] subColor="
+                        + colorHex(Palette.getColor(subreddit))
+                        + " defaultColor="
+                        + colorHex(Palette.getDefaultColor())
+                        + " usingDefault="
+                        + (Palette.getColor(subreddit) == Palette.getDefaultColor())
+                        + " -> statusBar="
+                        + colorHex(color));
+        themeSystemBars(color);
     }
 
     /**
@@ -577,6 +618,16 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
      * @param color The color to tint the bars with
      */
     protected void themeSystemBars(int color) {
+        LogUtil.v(
+                "StatusBarColor: themeSystemBars(color="
+                        + colorHex(color)
+                        + ") ["
+                        + getClass().getSimpleName()
+                        + "] alwaysBlackStatusbar="
+                        + SettingValues.alwaysBlackStatusbar
+                        + " colorNavBar="
+                        + SettingValues.colorNavBar);
+
         if (SettingValues.alwaysBlackStatusbar) {
             color = Color.BLACK;
         }

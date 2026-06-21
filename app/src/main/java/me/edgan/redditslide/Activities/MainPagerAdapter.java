@@ -116,19 +116,15 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
 
                                         if (Build.VERSION.SDK_INT
                                                 >= Build.VERSION_CODES.LOLLIPOP) {
-                                            int finalColor = Palette.getDarkerColor(color);
-
-                                            if (SettingValues.alwaysBlackStatusbar) {
-                                                finalColor = android.graphics.Color.BLACK;
-                                            }
-
-                                            mainActivity.getWindow().setStatusBarColor(finalColor);
-
-                                            if (SettingValues.colorNavBar) {
-                                                mainActivity.getWindow()
-                                                        .setNavigationBarColor(
-                                                                Palette.getDarkerColor(color));
-                                            }
+                                            // Route through themeSystemBars() so the system-bar
+                                            // scrims update too. Under edge-to-edge enforcement
+                                            // (API 35+) the visible status bar is the scrim and a
+                                            // direct window.setStatusBarColor() is a no-op, which
+                                            // left the bar stuck on the previous tab's color.
+                                            // themeSystemBars() applies alwaysBlackStatusbar and
+                                            // colorNavBar internally.
+                                            mainActivity.themeSystemBars(
+                                                    Palette.getDarkerColor(color));
                                         }
                                     }
                                 });

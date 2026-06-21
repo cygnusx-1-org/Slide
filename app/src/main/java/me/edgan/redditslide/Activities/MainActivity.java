@@ -14,7 +14,6 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.net.Uri;
@@ -35,7 +34,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
 import android.view.ViewTreeObserver;
-import android.view.Window;
 import android.view.animation.LinearInterpolator;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
@@ -996,14 +994,10 @@ public class MainActivity extends BaseActivity
             toGoto = getIntent().getIntExtra(EXTRA_PAGE_TO, 0);
         }
 
-        Window window = this.getWindow();
-        int color = Palette.getDarkerColor(Palette.getDarkerColor(Palette.getDefaultColor()));
-
-        if (SettingValues.alwaysBlackStatusbar) {
-            color = Color.BLACK;
-        }
-
-        window.setStatusBarColor(color);
+        // Route through themeSystemBars() so the system-bar scrims are colored too; under
+        // edge-to-edge enforcement (API 35+) a direct window.setStatusBarColor() is a no-op.
+        // themeSystemBars() applies alwaysBlackStatusbar internally.
+        themeSystemBars(Palette.getDarkerColor(Palette.getDarkerColor(Palette.getDefaultColor())));
 
         mTabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
         header = findViewById(R.id.header);
@@ -1718,14 +1712,10 @@ public class MainActivity extends BaseActivity
         if (accountsArea != null) {
             accountsArea.setBackgroundColor(Palette.getDarkerColor(color));
         }
-        Window window = getWindow();
-        int finalColor = Palette.getDarkerColor(color);
-
-        if (SettingValues.alwaysBlackStatusbar) {
-            finalColor = Color.BLACK;
-        }
-
-        window.setStatusBarColor(finalColor);
+        // Route through themeSystemBars() so the system-bar scrims update too; a direct
+        // window.setStatusBarColor() is a no-op under edge-to-edge enforcement (API 35+).
+        // themeSystemBars() applies alwaysBlackStatusbar internally.
+        themeSystemBars(Palette.getDarkerColor(color));
         setRecentBar(subreddit, color);
         View headerSubView = findViewById(R.id.header_sub);
         if (headerSubView != null) {
