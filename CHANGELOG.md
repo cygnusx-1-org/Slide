@@ -4,6 +4,13 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.6.6 / 2026-6-20
+============
+* Added warning dialogs on important login errors
+* Improved inbox and unread tabs behavior
+* Added a new slide://localhost redirect URI for external browsers
+* Registered external browser login redirect URIs for BaconReader, Boost, Continuum, Infinity, Joey, RedReader, Relay, RIF, and Slide
+
 7.6.5 / 2026-6-20
 ============
 * Fixed bug with giphy image only comments
