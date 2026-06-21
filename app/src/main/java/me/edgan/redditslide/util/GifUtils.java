@@ -7,15 +7,19 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.MediaCodec;
+import android.media.MediaExtractor;
+import android.media.MediaFormat;
+import android.media.MediaMuxer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
@@ -23,12 +27,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
-
-import android.os.SystemClock;
-import java.util.concurrent.atomic.AtomicReference;
-
 import androidx.media3.common.MimeTypes;
 import androidx.media3.common.Player;
+import androidx.media3.common.util.UnstableApi;
 import androidx.media3.datasource.DataSource;
 import androidx.media3.datasource.DataSourceInputStream;
 import androidx.media3.datasource.DataSpec;
@@ -38,22 +39,9 @@ import androidx.media3.exoplayer.dash.manifest.AdaptationSet;
 import androidx.media3.exoplayer.dash.manifest.DashManifest;
 import androidx.media3.exoplayer.dash.manifest.DashManifestParser;
 import androidx.media3.exoplayer.dash.manifest.Representation;
-import androidx.media3.common.util.UnstableApi;
-
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
-import me.edgan.redditslide.Activities.MediaView;
-import me.edgan.redditslide.Activities.Website;
-import me.edgan.redditslide.R;
-import me.edgan.redditslide.Reddit;
-import me.edgan.redditslide.SettingValues;
-import me.edgan.redditslide.Views.ExoVideoView;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -67,16 +55,16 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-
-import android.media.MediaExtractor;
-import android.media.MediaFormat;
-import android.media.MediaMuxer;
-import android.media.MediaCodec;
-
-import com.fasterxml.jackson.databind.JsonNode;
-
+import me.edgan.redditslide.Activities.MediaView;
+import me.edgan.redditslide.Activities.Website;
+import me.edgan.redditslide.R;
+import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.Views.ExoVideoView;
 import net.dean.jraw.models.Submission;
-
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.StringEscapeUtils;
 

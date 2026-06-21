@@ -1,13 +1,11 @@
 package me.edgan.redditslide.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
-import org.apache.commons.text.StringEscapeUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.text.StringEscapeUtils;
 
 /**
  * Utility methods to transform html received from Reddit into a more parsable format.

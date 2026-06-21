@@ -5,11 +5,10 @@ import android.text.Layout;
 import android.text.Selection;
 import android.text.Spannable;
 import android.text.method.BaseMovementMethod;
-import android.text.style.URLSpan;
 import android.text.style.ImageSpan;
+import android.text.style.URLSpan;
 import android.view.MotionEvent;
 import android.widget.TextView;
-
 import me.edgan.redditslide.ClickableText;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SpoilerRobotoTextView;

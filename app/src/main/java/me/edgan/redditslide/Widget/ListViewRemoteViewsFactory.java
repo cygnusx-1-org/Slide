@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
-
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import me.edgan.redditslide.Activities.OpenContent;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Autocache.AutoCacheScheduler;
@@ -22,7 +24,6 @@ import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.TimeUtils;
-
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Thumbnails;
 import net.dean.jraw.paginators.DomainPaginator;
@@ -30,10 +31,6 @@ import net.dean.jraw.paginators.Paginator;
 import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.SubredditPaginator;
 import net.dean.jraw.paginators.TimePeriod;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 public class ListViewRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     String subreddit;

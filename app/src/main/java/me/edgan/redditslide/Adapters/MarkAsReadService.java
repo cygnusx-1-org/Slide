@@ -6,15 +6,12 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
 import androidx.core.content.ContextCompat;
-
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Notifications.CheckForMail;
-import me.edgan.redditslide.util.NetworkUtil;
-
-import net.dean.jraw.managers.InboxManager;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.NetworkUtil;
+import net.dean.jraw.managers.InboxManager;
 
 /** Created by brent on 1/27/16. */
 public class MarkAsReadService extends IntentService {

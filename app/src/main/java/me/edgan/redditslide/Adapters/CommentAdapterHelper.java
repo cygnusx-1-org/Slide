@@ -34,15 +34,17 @@ import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
-
-import me.edgan.redditslide.util.BottomSheet;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import me.edgan.redditslide.ActionStates;
 import me.edgan.redditslide.Activities.Profile;
 import me.edgan.redditslide.Activities.Reauthenticate;
@@ -59,23 +61,24 @@ import me.edgan.redditslide.UserTags;
 import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Views.DoEditorActions;
 import me.edgan.redditslide.Views.RoundedBackgroundSpan;
-import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.BottomSheet;
 import me.edgan.redditslide.util.ClipboardUtil;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.DisplayUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LinkUtil;
+import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
-
 import net.dean.jraw.ApiException;
 import net.dean.jraw.http.oauth.InvalidScopeException;
 import net.dean.jraw.managers.AccountManager;
@@ -87,16 +90,7 @@ import net.dean.jraw.models.Ruleset;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.SubredditRule;
 import net.dean.jraw.models.VoteDirection;
-
 import org.apache.commons.text.StringEscapeUtils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import me.edgan.redditslide.util.LogUtil;
-import androidx.core.content.ContextCompat;
 
 /** Created by Carlos on 8/4/2016. */
 public class CommentAdapterHelper {

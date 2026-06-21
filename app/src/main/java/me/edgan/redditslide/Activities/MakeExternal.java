@@ -3,11 +3,9 @@ package me.edgan.redditslide.Activities;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import me.edgan.redditslide.SettingValues;
-
 import java.net.MalformedURLException;
 import java.net.URL;
+import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.LogUtil;
 
 /** Created by ccrama on 9/28/2015. */

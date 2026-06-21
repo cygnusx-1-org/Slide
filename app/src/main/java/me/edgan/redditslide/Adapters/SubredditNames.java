@@ -2,26 +2,23 @@ package me.edgan.redditslide.Adapters;
 
 import android.content.Context;
 import android.os.AsyncTask;
-
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.Fragments.SubredditListView;
 import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
-
+import me.edgan.redditslide.util.LogUtil;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Subreddit;
 import net.dean.jraw.paginators.Paginator;
 import net.dean.jraw.paginators.SubredditPaginator;
 import net.dean.jraw.paginators.SubredditSearchPaginator;
 import net.dean.jraw.paginators.SubredditStream;
-
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import me.edgan.redditslide.util.LogUtil;
 
 /**
  * This class is reponsible for loading a list of subreddits from an endpoint {@link

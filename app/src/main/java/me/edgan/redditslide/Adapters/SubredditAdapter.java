@@ -8,9 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
 import androidx.recyclerview.widget.RecyclerView;
-
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Activities.SubredditView;
 import me.edgan.redditslide.Fragments.SubredditListView;
 import me.edgan.redditslide.R;
@@ -21,11 +21,7 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.SubmissionParser;
-
 import net.dean.jraw.models.Subreddit;
-
-import java.util.List;
-import java.util.Locale;
 
 public class SubredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements BaseAdapter {

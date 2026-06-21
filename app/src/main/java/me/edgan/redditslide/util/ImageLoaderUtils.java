@@ -3,7 +3,6 @@ package me.edgan.redditslide.util;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
-
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiskCache;
@@ -13,12 +12,10 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
-
-import me.edgan.redditslide.SettingValues;
-import me.edgan.redditslide.Views.SubsamplingScaleImageView;
-
 import java.io.File;
 import java.io.IOException;
+import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.Views.SubsamplingScaleImageView;
 
 /** Created by carlo_000 on 10/19/2015. */
 /*Adapted from https://github.com/Kennyc1012/Opengur */

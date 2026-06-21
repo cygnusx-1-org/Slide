@@ -5,12 +5,10 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.text.style.ReplacementSpan;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
-
-import com.devspark.robototextview.RobotoTypefaces;
 import androidx.core.content.ContextCompat;
+import com.devspark.robototextview.RobotoTypefaces;
 
 /** Created by carlo_000 on 3/11/2016. */
 public class RoundedBackgroundSpan extends ReplacementSpan {

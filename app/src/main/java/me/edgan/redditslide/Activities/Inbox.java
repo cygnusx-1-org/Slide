@@ -9,15 +9,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-
 import com.google.android.material.tabs.TabLayout;
-
+import java.util.HashSet;
+import java.util.Set;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Autocache.AutoCacheScheduler;
 import me.edgan.redditslide.ContentGrabber;
@@ -34,11 +33,7 @@ import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
-
 import net.dean.jraw.managers.InboxManager;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /** Created by ccrama on 9/17/2015. */
 public class Inbox extends BaseActivityAnim {

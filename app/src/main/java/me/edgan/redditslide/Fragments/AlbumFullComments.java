@@ -8,14 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-
+import java.util.List;
 import me.edgan.redditslide.Activities.ShadowboxComments;
 import me.edgan.redditslide.Adapters.AlbumView;
 import me.edgan.redditslide.Adapters.CommentUrlObject;
@@ -25,10 +23,7 @@ import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SubmissionViews.PopulateShadowboxInfo;
 import me.edgan.redditslide.util.FileUtil;
-
 import net.dean.jraw.models.Comment;
-
-import java.util.List;
 
 /** Created by ccrama on 6/2/2015. */
 public class AlbumFullComments extends Fragment {

@@ -1,33 +1,28 @@
 package me.edgan.redditslide.Activities;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.wuman.jreadability.Readability;
-
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LinkUtil;
+import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
-
 import org.apache.commons.text.StringEscapeUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import me.edgan.redditslide.util.LogUtil;
 
 public class ReaderMode extends BaseActivityAnim {
     private int mSubredditColor;

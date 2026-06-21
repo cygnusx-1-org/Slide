@@ -11,7 +11,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -20,7 +19,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
+import java.util.Locale;
+import java.util.Map;
+import java.util.WeakHashMap;
 import me.edgan.redditslide.ForceTouch.PeekViewActivity;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
@@ -34,10 +35,6 @@ import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.GifUtils;
 import me.edgan.redditslide.util.LogUtil;
-
-import java.util.Locale;
-import java.util.Map;
-import java.util.WeakHashMap;
 
 /**
  * This is an activity which is the base for most of Slide's activities. It has support for handling

@@ -1,14 +1,13 @@
 package me.edgan.redditslide.markdown;
 
-import org.commonmark.node.AbstractVisitor;
-import org.commonmark.node.Node;
-import org.commonmark.node.Text;
-import org.commonmark.parser.PostProcessor;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.commonmark.node.AbstractVisitor;
+import org.commonmark.node.Node;
+import org.commonmark.node.Text;
+import org.commonmark.parser.PostProcessor;
 
 /**
  * Clean-room commonmark post-processor for Reddit superscript: {@code ^(phrase with spaces)} or

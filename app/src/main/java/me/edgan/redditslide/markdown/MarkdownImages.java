@@ -1,17 +1,14 @@
 package me.edgan.redditslide.markdown;
 
 import android.view.View;
-
 import com.fasterxml.jackson.databind.JsonNode;
-
-import me.edgan.redditslide.SpoilerRobotoTextView;
-import me.edgan.redditslide.Views.CommentOverflow;
-import me.edgan.redditslide.util.SubmissionParser;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import me.edgan.redditslide.SpoilerRobotoTextView;
+import me.edgan.redditslide.Views.CommentOverflow;
+import me.edgan.redditslide.util.SubmissionParser;
 
 /**
  * Renders a comment/self-text's images (emotes, giphy reactions, inline images) for the new

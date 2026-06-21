@@ -16,14 +16,25 @@ import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import me.edgan.redditslide.Activities.ModQueue;
+import me.edgan.redditslide.Activities.Profile;
+import me.edgan.redditslide.Activities.Reauthenticate;
+import me.edgan.redditslide.Adapters.SubmissionViewHolder;
+import me.edgan.redditslide.Authentication;
+import me.edgan.redditslide.R;
+import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.SubmissionCache;
+import me.edgan.redditslide.Toolbox.ToolboxUI;
+import me.edgan.redditslide.Visuals.ColorPreferences;
 import net.dean.jraw.ApiException;
 import net.dean.jraw.fluent.FlairReference;
 import net.dean.jraw.fluent.FluentRedditClient;
@@ -35,22 +46,6 @@ import net.dean.jraw.models.DistinguishedStatus;
 import net.dean.jraw.models.FlairTemplate;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Thing;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import me.edgan.redditslide.Activities.ModQueue;
-import me.edgan.redditslide.Activities.Profile;
-import me.edgan.redditslide.Activities.Reauthenticate;
-import me.edgan.redditslide.Adapters.SubmissionViewHolder;
-import me.edgan.redditslide.Authentication;
-import me.edgan.redditslide.R;
-import me.edgan.redditslide.SettingValues;
-import me.edgan.redditslide.SubmissionCache;
-import me.edgan.redditslide.Toolbox.ToolboxUI;
-import me.edgan.redditslide.Visuals.ColorPreferences;
 
 /**
  * Handles Moderation actions for Submission views.

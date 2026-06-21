@@ -1,25 +1,20 @@
 package me.edgan.redditslide.Adapters;
 
 import android.os.AsyncTask;
-
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.lusfold.androidkeyvaluestore.KVStore;
-
-import me.edgan.redditslide.Authentication;
-import me.edgan.redditslide.PostMatch;
-
-import net.dean.jraw.models.Contribution;
-import net.dean.jraw.models.Submission;
-import net.dean.jraw.models.Thing;
-import net.dean.jraw.paginators.FullnamesPaginator;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import me.edgan.redditslide.Authentication;
+import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.util.LogUtil;
+import net.dean.jraw.models.Contribution;
+import net.dean.jraw.models.Submission;
+import net.dean.jraw.models.Thing;
+import net.dean.jraw.paginators.FullnamesPaginator;
 
 /** Created by ccrama on 9/17/2015. */
 public class HistoryPosts extends GeneralPosts {

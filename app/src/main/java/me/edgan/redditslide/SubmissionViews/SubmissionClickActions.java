@@ -6,17 +6,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.android.material.snackbar.Snackbar;
-
-import net.dean.jraw.models.Submission;
-
-import me.edgan.redditslide.util.FileUtil;
-
 import java.util.ArrayList;
-
 import me.edgan.redditslide.Activities.Album;
 import me.edgan.redditslide.Activities.AlbumPager;
 import me.edgan.redditslide.Activities.FullscreenVideo;
@@ -35,17 +27,19 @@ import me.edgan.redditslide.Adapters.SubmissionViewHolder;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.ForceTouch.PeekViewActivity;
 import me.edgan.redditslide.HasSeen;
+import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.CompatUtil;
+import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.JsonUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
-import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.util.SubmissionThumbnailHelper;
+import net.dean.jraw.models.Submission;
 
 /**
  * Handles click actions for Submission views.

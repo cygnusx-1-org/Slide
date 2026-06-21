@@ -1,18 +1,16 @@
 package me.edgan.redditslide.Adapters;
 
+import java.util.ArrayList;
+import java.util.Map;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.HasSeen;
 import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.PhotoLoader;
-
 import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.paginators.UserSavedPaginator;
-
-import java.util.ArrayList;
-import java.util.Map;
 
 /** Created by ccrama on 9/17/2015. */
 public class ContributionPostsSaved extends ContributionPosts {

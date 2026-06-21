@@ -7,19 +7,16 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SwitchCompat;
-
+import java.util.Map;
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionCache;
 import me.edgan.redditslide.Views.CreateCardView;
 import me.edgan.redditslide.util.MiscUtil;
-
-import java.util.Map;
 
 /** Created by ccrama on 9/17/2015. */
 public class EditCardsLayout extends BaseActivityAnim {

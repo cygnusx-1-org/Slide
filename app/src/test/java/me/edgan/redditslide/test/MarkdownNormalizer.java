@@ -2,15 +2,12 @@ package me.edgan.redditslide.test;
 
 import android.text.Spanned;
 import android.text.style.URLSpan;
-
 import io.noties.markwon.core.spans.LinkSpan;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Normalizes a rendered markdown {@link Spanned} to a renderer-independent shape: the display text

@@ -7,10 +7,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import me.edgan.redditslide.util.MaterialProgressDialog;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -29,14 +27,6 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.FileList;
 import com.jakewharton.processphoenix.ProcessPhoenix;
-
-import me.edgan.redditslide.Activities.BaseActivityAnim;
-import me.edgan.redditslide.R;
-import me.edgan.redditslide.util.DialogUtil;
-import me.edgan.redditslide.util.LayoutUtils;
-import me.edgan.redditslide.util.StorageUtil;
-import me.edgan.redditslide.util.MiscUtil;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -51,6 +41,13 @@ import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+import me.edgan.redditslide.Activities.BaseActivityAnim;
+import me.edgan.redditslide.R;
+import me.edgan.redditslide.util.DialogUtil;
+import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.MaterialProgressDialog;
+import me.edgan.redditslide.util.MiscUtil;
+import me.edgan.redditslide.util.StorageUtil;
 
 /**
  * Created by ccrama on 3/5/2015 and updated by edgan on 1/21/2025.

@@ -21,29 +21,17 @@ import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-
-import net.dean.jraw.ApiException;
-import net.dean.jraw.models.Contribution;
-import net.dean.jraw.models.Ruleset;
-import net.dean.jraw.models.Submission;
-import net.dean.jraw.models.SubredditRule;
-
-import org.apache.commons.text.StringEscapeUtils;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-
 import me.edgan.redditslide.ActionStates;
 import me.edgan.redditslide.Activities.PostReadLater;
 import me.edgan.redditslide.Activities.Profile;
@@ -55,14 +43,20 @@ import me.edgan.redditslide.Hidden;
 import me.edgan.redditslide.OfflineSubreddit;
 import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.R;
-import me.edgan.redditslide.SpoilerRobotoTextView;
-import me.edgan.redditslide.SubmissionViews.ReadLater;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.SpoilerRobotoTextView;
+import me.edgan.redditslide.SubmissionViews.ReadLater;
 import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.markdown.MarkdownImages;
+import net.dean.jraw.ApiException;
+import net.dean.jraw.models.Contribution;
+import net.dean.jraw.models.Ruleset;
+import net.dean.jraw.models.Submission;
+import net.dean.jraw.models.SubredditRule;
+import org.apache.commons.text.StringEscapeUtils;
 
 /**
  * Handles Bottom Sheet actions for Submission views.

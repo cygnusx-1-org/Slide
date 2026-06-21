@@ -1,16 +1,12 @@
 package me.edgan.redditslide.Adapters;
 
 import android.os.AsyncTask;
-
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import me.edgan.redditslide.Authentication;
-
-import net.dean.jraw.models.ModAction;
-import net.dean.jraw.paginators.ModLogPaginator;
-
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import me.edgan.redditslide.Authentication;
+import net.dean.jraw.models.ModAction;
+import net.dean.jraw.paginators.ModLogPaginator;
 
 /** Created by ccrama on 9/17/2015. */
 public class ModLogPosts {

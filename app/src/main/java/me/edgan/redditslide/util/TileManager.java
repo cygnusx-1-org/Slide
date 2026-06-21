@@ -2,13 +2,12 @@ package me.edgan.redditslide.util;
 
 import android.graphics.Point;
 import android.graphics.Rect;
-import me.edgan.redditslide.Views.SubsamplingScaleImageView;
-import me.edgan.redditslide.Views.SubsamplingScaleImageView.Tile;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import me.edgan.redditslide.Views.SubsamplingScaleImageView;
+import me.edgan.redditslide.Views.SubsamplingScaleImageView.Tile;
 
 /**
  * Helper class for managing tiles in SubsamplingScaleImageView.

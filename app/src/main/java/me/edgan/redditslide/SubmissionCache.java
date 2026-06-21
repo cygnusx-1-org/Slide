@@ -9,9 +9,11 @@ import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.TypedValue;
-
 import com.fasterxml.jackson.databind.JsonNode;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.WeakHashMap;
 import me.edgan.redditslide.Adapters.CommentAdapterHelper;
 import me.edgan.redditslide.Toolbox.ToolboxUI;
 import me.edgan.redditslide.Views.RoundedBackgroundSpan;
@@ -20,14 +22,8 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.TimeUtils;
-
 import net.dean.jraw.models.DistinguishedStatus;
 import net.dean.jraw.models.Submission;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.WeakHashMap;
 
 /** Created by carlo_000 on 4/22/2016. */
 public class SubmissionCache {

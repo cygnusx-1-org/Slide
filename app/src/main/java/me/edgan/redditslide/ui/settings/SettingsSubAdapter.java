@@ -1,7 +1,5 @@
 package me.edgan.redditslide.ui.settings;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
@@ -10,13 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
+import java.util.ArrayList;
 import me.edgan.redditslide.Activities.MainActivity;
 import me.edgan.redditslide.Activities.SubredditView;
 import me.edgan.redditslide.Constants;
@@ -26,12 +23,10 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
-
 import uz.shift.colorpicker.LineColorPicker;
 import uz.shift.colorpicker.OnColorChangedListener;
-
-import java.util.ArrayList;
 
 /** Created by ccrama on 8/17/2015. */
 public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.ViewHolder> {

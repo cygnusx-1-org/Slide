@@ -18,15 +18,14 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
-
 import androidx.annotation.FloatRange;
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
+import java.util.HashMap;
+import java.util.Map;
 import jp.wasabeef.blurry.Blurry;
-
 import me.edgan.redditslide.ForceTouch.builder.PeekViewOptions;
 import me.edgan.redditslide.ForceTouch.callback.OnButtonUp;
 import me.edgan.redditslide.ForceTouch.callback.OnPeek;
@@ -37,9 +36,6 @@ import me.edgan.redditslide.ForceTouch.util.NavigationUtils;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Views.PeekMediaView;
 import me.edgan.redditslide.util.DisplayUtil;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class PeekView extends FrameLayout {
 

@@ -1,12 +1,14 @@
 package me.edgan.redditslide.Adapters;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Movie;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.os.SystemClock;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,42 +18,31 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.devspark.robototextview.RobotoTypefaces;
-
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
 import me.edgan.redditslide.Activities.MediaView;
 import me.edgan.redditslide.Activities.Tumblr;
 import me.edgan.redditslide.ContentType;
+import me.edgan.redditslide.ForceTouch.util.NavigationUtils;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.Tumblr.Photo;
 import me.edgan.redditslide.Visuals.FontPreferences;
-import me.edgan.redditslide.util.LinkUtil;
-import me.edgan.redditslide.util.SubmissionParser;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.GifDrawable;
 import me.edgan.redditslide.util.GifUtils;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.io.File;
-
-import android.graphics.Movie;
-import android.graphics.drawable.Drawable;
-import android.os.SystemClock;
-import android.util.Log;
-
-import androidx.annotation.NonNull;
-
-// Import for NavigationUtils
-import me.edgan.redditslide.ForceTouch.util.NavigationUtils;
+import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.SubmissionParser;
 
 public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final List<Photo> users;

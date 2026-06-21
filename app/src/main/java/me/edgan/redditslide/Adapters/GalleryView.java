@@ -14,12 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-
 import androidx.recyclerview.widget.RecyclerView;
-
-import me.edgan.redditslide.util.BottomSheet;
 import com.fasterxml.jackson.databind.JsonNode;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import me.edgan.redditslide.Activities.Album;
 import me.edgan.redditslide.Activities.AlbumPager;
 import me.edgan.redditslide.Activities.CommentsScreen;
@@ -36,20 +35,16 @@ import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
-import me.edgan.redditslide.util.SubmissionThumbnailHelper;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.BottomSheet;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.JsonUtil;
 import me.edgan.redditslide.util.LinkUtil;
-
+import me.edgan.redditslide.util.SubmissionThumbnailHelper;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Thumbnails;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final Gallery main;

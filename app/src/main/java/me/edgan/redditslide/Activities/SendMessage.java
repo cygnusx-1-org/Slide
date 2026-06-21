@@ -1,7 +1,5 @@
 package me.edgan.redditslide.Activities;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -14,16 +12,15 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
+import java.util.ArrayList;
+import java.util.Locale;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.DataShare;
 import me.edgan.redditslide.R;
@@ -31,17 +28,14 @@ import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Views.DoEditorActions;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.KeyboardUtil;
+import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
-
 import net.dean.jraw.ApiException;
 import net.dean.jraw.managers.InboxManager;
 import net.dean.jraw.models.Captcha;
 import net.dean.jraw.models.PrivateMessage;
-
-import java.util.ArrayList;
-import java.util.Locale;
-import me.edgan.redditslide.util.LogUtil;
 
 /** Created by ccrama on 3/5/2015. */
 public class SendMessage extends BaseActivity {

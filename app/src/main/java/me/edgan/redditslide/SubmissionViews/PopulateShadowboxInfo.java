@@ -24,14 +24,13 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
-
-import me.edgan.redditslide.util.BottomSheet;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.ActionStates;
 import me.edgan.redditslide.Activities.Profile;
 import me.edgan.redditslide.Activities.SubredditView;
@@ -47,11 +46,12 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.Vote;
 import me.edgan.redditslide.util.AnimatorUtil;
 import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.BottomSheet;
 import me.edgan.redditslide.util.ClipboardUtil;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.LinkUtil;
+import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.TimeUtils;
-
 import net.dean.jraw.ApiException;
 import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.models.Comment;
@@ -61,11 +61,6 @@ import net.dean.jraw.models.Ruleset;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.SubredditRule;
 import net.dean.jraw.models.VoteDirection;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import me.edgan.redditslide.util.LogUtil;
 
 /** Created by carlo_000 on 2/27/2016. */
 public class PopulateShadowboxInfo {

@@ -3,16 +3,14 @@ package me.edgan.redditslide.Synccit.http;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Pair;
-
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public abstract class HttpPostTask<Result> extends AsyncTask<String, Long, Result> {
 

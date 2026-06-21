@@ -2,38 +2,30 @@ package me.edgan.redditslide.util;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.webkit.MimeTypeMap;
-
 import androidx.annotation.NonNull;
-
 import com.fasterxml.jackson.databind.JsonNode;
-
-import net.dean.jraw.http.HttpRequest;
-import net.dean.jraw.http.RestResponse;
-
-import me.edgan.redditslide.Authentication;
-import me.edgan.redditslide.Reddit;
-import me.edgan.redditslide.markdown.UploadedImage;
-
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserFactory;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
-
-import android.database.Cursor;
+import me.edgan.redditslide.Authentication;
+import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.markdown.UploadedImage;
+import net.dean.jraw.http.HttpRequest;
+import net.dean.jraw.http.RestResponse;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 /**
  * Uploads an image to Reddit's own media bucket so it can be referenced inline in a comment or

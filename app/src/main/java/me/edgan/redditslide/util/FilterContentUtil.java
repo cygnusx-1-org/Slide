@@ -4,12 +4,10 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.LinearLayout;
-
+import android.widget.ListView;
 import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 

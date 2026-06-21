@@ -7,15 +7,13 @@ import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import androidx.appcompat.widget.SwitchCompat;
-
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.LogUtil;
-import me.edgan.redditslide.util.StorageUtil;
 import me.edgan.redditslide.util.MiscUtil;
+import me.edgan.redditslide.util.StorageUtil;
 
 /** Created by ccrama on 3/5/2015. */
 public class SettingsGeneral extends BaseActivityAnim implements StorageUtil.DirectoryChooserHost {

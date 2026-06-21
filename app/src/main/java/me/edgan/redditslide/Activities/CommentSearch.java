@@ -3,9 +3,9 @@ package me.edgan.redditslide.Activities;
 import android.os.Bundle;
 import android.text.Editable;
 import android.widget.EditText;
-
 import androidx.recyclerview.widget.RecyclerView;
-
+import java.util.ArrayList;
+import java.util.List;
 import me.edgan.redditslide.Adapters.CommentAdapterSearch;
 import me.edgan.redditslide.Adapters.CommentItem;
 import me.edgan.redditslide.Adapters.CommentObject;
@@ -14,11 +14,7 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.Views.PreCachingLayoutManager;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
-
 import net.dean.jraw.models.CommentNode;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by ccrama on 9/17/2015.

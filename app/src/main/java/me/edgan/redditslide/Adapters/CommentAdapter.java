@@ -1,8 +1,5 @@
 package me.edgan.redditslide.Adapters;
 
-import me.edgan.redditslide.util.DialogUtil;
-
-/** Created by ccrama on 3/22/2015. */
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -26,20 +23,23 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.devspark.robototextview.RobotoTypefaces;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.lusfold.androidkeyvaluestore.KVStore;
 import com.mikepenz.itemanimators.AlphaInAnimator;
 import com.mikepenz.itemanimators.SlideRightAlphaAnimator;
 import com.nostra13.universalimageloader.utils.DiskCacheUtils;
-
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.Drafts;
@@ -59,15 +59,15 @@ import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.util.AnimatorUtil;
+import me.edgan.redditslide.util.AsyncLoadMoreTask;
+import me.edgan.redditslide.util.CommentStateUtil;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.DisplayUtil;
 import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.SubmissionParser;
-import me.edgan.redditslide.util.CommentStateUtil;
-import me.edgan.redditslide.util.AsyncLoadMoreTask;
-
 import net.dean.jraw.ApiException;
 import net.dean.jraw.RedditClient;
 import net.dean.jraw.http.UserAgent;
@@ -76,13 +76,6 @@ import net.dean.jraw.models.Comment;
 import net.dean.jraw.models.CommentNode;
 import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.Submission;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
 
 public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 

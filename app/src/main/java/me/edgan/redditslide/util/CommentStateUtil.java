@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 import me.edgan.redditslide.ActionStates;
 import me.edgan.redditslide.Adapters.CommentAdapter;
+import me.edgan.redditslide.Adapters.CommentAdapterHelper;
 import me.edgan.redditslide.Adapters.CommentViewHolder;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.R;
@@ -35,9 +36,6 @@ import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
 import net.dean.jraw.models.Comment;
 import net.dean.jraw.models.CommentNode;
 import net.dean.jraw.models.VoteDirection;
-
-// Added imports based on usage in the method
-import me.edgan.redditslide.Adapters.CommentAdapterHelper;
 
 public class CommentStateUtil {
 

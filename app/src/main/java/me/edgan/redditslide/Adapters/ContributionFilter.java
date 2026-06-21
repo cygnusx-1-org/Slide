@@ -1,11 +1,10 @@
 package me.edgan.redditslide.Adapters;
 
+import java.util.ArrayList;
+import java.util.Locale;
 import net.dean.jraw.models.Comment;
 import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.Submission;
-
-import java.util.ArrayList;
-import java.util.Locale;
 
 /**
  * Utility class for filtering user contributions (posts and comments) based on search queries.

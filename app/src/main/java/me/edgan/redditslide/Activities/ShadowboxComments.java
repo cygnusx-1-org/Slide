@@ -1,23 +1,19 @@
 package me.edgan.redditslide.Activities;
 
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-
+import java.util.ArrayList;
 import me.edgan.redditslide.Adapters.CommentUrlObject;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.Fragments.AlbumFullComments;
 import me.edgan.redditslide.Fragments.MediaFragmentComment;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.util.MiscUtil;
-
 import net.dean.jraw.models.Comment;
-
-import java.util.ArrayList;
 
 /** Created by ccrama on 9/17/2015. */
 public class ShadowboxComments extends FullScreenActivity {

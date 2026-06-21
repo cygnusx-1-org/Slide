@@ -3,12 +3,7 @@ package me.edgan.redditslide.util;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.webkit.WebResourceResponse;
-
 import androidx.annotation.WorkerThread;
-
-import okio.BufferedSource;
-import okio.Okio;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +11,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
+import okio.BufferedSource;
+import okio.Okio;
 
 /**
  * Created by Carlos on 8/12/2016.

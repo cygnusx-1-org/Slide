@@ -4,9 +4,12 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
-
 import androidx.appcompat.app.ActionBar;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Activities.MainActivity;
 import me.edgan.redditslide.Activities.SubredditView;
 import me.edgan.redditslide.Authentication;
@@ -26,18 +29,11 @@ import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.PhotoLoader;
 import me.edgan.redditslide.util.TimeUtils;
-
 import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.paginators.DomainPaginator;
 import net.dean.jraw.paginators.Paginator;
 import net.dean.jraw.paginators.SubredditPaginator;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * This class is reponsible for loading subreddit specific submissions {@link loadMore(Context,

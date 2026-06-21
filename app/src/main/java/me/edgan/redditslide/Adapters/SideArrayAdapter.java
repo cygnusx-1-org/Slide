@@ -15,12 +15,15 @@ import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import androidx.cardview.widget.CardView;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import me.edgan.redditslide.Activities.MainActivity;
-import me.edgan.redditslide.Activities.SubredditView;
 import me.edgan.redditslide.Activities.MainPagerAdapterComment;
+import me.edgan.redditslide.Activities.SubredditView;
 import me.edgan.redditslide.CaseInsensitiveArrayList;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.R;
@@ -30,14 +33,7 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.StringUtil;
-
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 /** Created by ccrama on 8/17/2015. */
 public class SideArrayAdapter extends ArrayAdapter<String> {

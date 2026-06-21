@@ -11,11 +11,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-
-import me.edgan.redditslide.R;
-
 import java.util.ArrayList;
 import java.util.List;
+import me.edgan.redditslide.R;
 
 public class SwipeBackLayout extends FrameLayout {
     /** Minimum velocity that will be detected as a fling */

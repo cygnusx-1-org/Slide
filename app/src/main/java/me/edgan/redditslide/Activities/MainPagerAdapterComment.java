@@ -2,16 +2,13 @@ package me.edgan.redditslide.Activities;
 
 import android.os.Bundle;
 import android.os.Parcelable;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
-
 import java.util.Locale;
-
-import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Adapters.SubredditPosts;
+import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Fragments.CommentPage;
 import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.SettingValues;

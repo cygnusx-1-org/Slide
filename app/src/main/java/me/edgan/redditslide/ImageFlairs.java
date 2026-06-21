@@ -1,7 +1,5 @@
 package me.edgan.redditslide;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -10,9 +8,7 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AlertDialog;
-
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiskCache;
@@ -22,16 +18,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
-
-import me.edgan.redditslide.Activities.SendMessage;
-import me.edgan.redditslide.util.LogUtil;
-import me.edgan.redditslide.util.MaterialProgressDialog;
-import me.edgan.redditslide.util.OkHttpImageDownloader;
-
-import net.dean.jraw.http.HttpRequest;
-import net.dean.jraw.http.MediaTypes;
-import net.dean.jraw.http.RestResponse;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,6 +26,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import me.edgan.redditslide.Activities.SendMessage;
+import me.edgan.redditslide.util.DialogUtil;
+import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MaterialProgressDialog;
+import me.edgan.redditslide.util.OkHttpImageDownloader;
+import net.dean.jraw.http.HttpRequest;
+import net.dean.jraw.http.MediaTypes;
+import net.dean.jraw.http.RestResponse;
 
 /** Created by Carlos on 4/15/2017. */
 public class ImageFlairs {

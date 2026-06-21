@@ -2,15 +2,9 @@ package me.edgan.redditslide;
 
 import android.content.Context;
 import android.os.Environment;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-
-import net.dean.jraw.models.CommentSort;
-import net.dean.jraw.models.Submission;
-import net.dean.jraw.models.meta.SubmissionSerializer;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -24,6 +18,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import me.edgan.redditslide.util.LogUtil;
+import net.dean.jraw.models.CommentSort;
+import net.dean.jraw.models.Submission;
+import net.dean.jraw.models.meta.SubmissionSerializer;
 
 /** Created by carlo_000 on 11/19/2015. */
 public class OfflineSubreddit {

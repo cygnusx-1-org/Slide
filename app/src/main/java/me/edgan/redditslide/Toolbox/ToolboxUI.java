@@ -1,7 +1,5 @@
 package me.edgan.redditslide.Toolbox;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,13 +25,19 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-
+import androidx.core.content.ContextCompat;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
+import java.lang.ref.WeakReference;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import me.edgan.redditslide.Activities.Reauthenticate;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.OpenRedditLink;
@@ -41,7 +45,7 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Views.RoundedBackgroundSpan;
 import me.edgan.redditslide.Visuals.ColorPreferences;
-
+import me.edgan.redditslide.util.DialogUtil;
 import net.dean.jraw.ApiException;
 import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.http.oauth.InvalidScopeException;
@@ -52,16 +56,6 @@ import net.dean.jraw.models.Comment;
 import net.dean.jraw.models.DistinguishedStatus;
 import net.dean.jraw.models.PublicContribution;
 import net.dean.jraw.models.Submission;
-
-import java.lang.ref.WeakReference;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import androidx.core.content.ContextCompat;
 
 /** Misc UI stuff for toolbox - usernote display, removal display, etc. */
 public class ToolboxUI {

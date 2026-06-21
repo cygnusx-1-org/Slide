@@ -1,7 +1,5 @@
 package me.edgan.redditslide.Activities;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.DialogInterface;
@@ -12,20 +10,18 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioGroup;
-
 import androidx.appcompat.app.AlertDialog;
-
+import java.util.ArrayList;
 import me.edgan.redditslide.Adapters.SubChooseAdapter;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Widget.SubredditWidgetProvider;
+import me.edgan.redditslide.util.DialogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SortingUtil;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
-import me.edgan.redditslide.util.MiscUtil;
-
-import java.util.ArrayList;
 
 /** Created by carlo_000 on 5/4/2016. */
 public class SetupWidget extends BaseActivity {

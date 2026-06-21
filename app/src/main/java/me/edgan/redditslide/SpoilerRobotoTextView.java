@@ -42,11 +42,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
-
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.content.ContextCompat;
-
-import me.edgan.redditslide.util.BottomSheet;
 import com.devspark.robototextview.widget.RobotoTextView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -55,7 +52,19 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
-
+import java.io.File;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import me.edgan.redditslide.Activities.Album;
 import me.edgan.redditslide.Activities.AlbumPager;
 import me.edgan.redditslide.Activities.MediaView;
@@ -67,30 +76,15 @@ import me.edgan.redditslide.handler.TextViewLinkHandler;
 import me.edgan.redditslide.markdown.RedditSpoilerSpan;
 import me.edgan.redditslide.util.AnimatedImageSpan;
 import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.BottomSheet;
 import me.edgan.redditslide.util.CommentImageUtil;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.GifDrawable;
 import me.edgan.redditslide.util.GifUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
-
-import java.io.File;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 
 /** Created by carlo_000 on 1/11/2016. */
@@ -1797,4 +1791,3 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
         return result;
     }
 }
-

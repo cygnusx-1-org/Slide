@@ -1,13 +1,11 @@
 package me.edgan.redditslide.util;
 
 import android.widget.EditText;
-
-import me.edgan.redditslide.markdown.UploadedImage;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import me.edgan.redditslide.markdown.UploadedImage;
 
 /**
  * Tracks the Reddit-hosted images that have been inserted into a particular editor so the send path

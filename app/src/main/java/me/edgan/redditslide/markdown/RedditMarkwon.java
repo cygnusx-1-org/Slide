@@ -17,7 +17,6 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.SuperscriptSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
-
 import io.noties.markwon.AbstractMarkwonPlugin;
 import io.noties.markwon.Markwon;
 import io.noties.markwon.MarkwonSpansFactory;
@@ -29,12 +28,10 @@ import io.noties.markwon.ext.strikethrough.StrikethroughPlugin;
 import io.noties.markwon.ext.tables.TablePlugin;
 import io.noties.markwon.linkify.LinkifyPlugin;
 import io.noties.markwon.movement.MovementMethodPlugin;
-
-import org.commonmark.node.Link;
-import org.commonmark.parser.Parser;
-
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.handler.TextViewLinkHandler;
+import org.commonmark.node.Link;
+import org.commonmark.parser.Parser;
 
 /**
  * Factory + entry point for the Markwon-based ("new Reddit-style") renderer.

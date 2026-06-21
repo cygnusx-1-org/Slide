@@ -1,16 +1,12 @@
 package me.edgan.redditslide.Activities;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import me.edgan.redditslide.Adapters.ContributionAdapter;
 import me.edgan.redditslide.Adapters.SubredditSearchPosts;
 import me.edgan.redditslide.Constants;
@@ -20,6 +16,7 @@ import me.edgan.redditslide.Views.PreCachingLayoutManager;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.handler.ToolbarScrollHideHandler;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.MiscUtil;
 
 public class Related extends BaseActivityAnim {

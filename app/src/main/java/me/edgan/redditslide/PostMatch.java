@@ -1,17 +1,15 @@
 package me.edgan.redditslide;
 
 import android.content.SharedPreferences;
-
-import net.dean.jraw.models.Submission;
-import net.dean.jraw.paginators.Sorting;
-
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Locale;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import net.dean.jraw.models.Submission;
+import net.dean.jraw.paginators.Sorting;
 
 
 /** Created by carlo_000 on 1/13/2016. */

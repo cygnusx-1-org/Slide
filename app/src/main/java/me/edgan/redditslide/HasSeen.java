@@ -2,26 +2,21 @@ package me.edgan.redditslide;
 
 import static com.lusfold.androidkeyvaluestore.core.KVManagerImpl.COLUMN_KEY;
 import static com.lusfold.androidkeyvaluestore.core.KVManagerImpl.TABLE_NAME;
-
 import static me.edgan.redditslide.OpenRedditLink.formatRedditUrl;
 import static me.edgan.redditslide.OpenRedditLink.getRedditLinkType;
 
 import android.database.Cursor;
 import android.net.Uri;
-
 import com.lusfold.androidkeyvaluestore.KVStore;
 import com.lusfold.androidkeyvaluestore.core.KVManger;
 import com.lusfold.androidkeyvaluestore.utils.CursorUtils;
-
-import me.edgan.redditslide.Synccit.SynccitRead;
-
-import net.dean.jraw.models.Contribution;
-import net.dean.jraw.models.Submission;
-import net.dean.jraw.models.VoteDirection;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import me.edgan.redditslide.Synccit.SynccitRead;
+import net.dean.jraw.models.Contribution;
+import net.dean.jraw.models.Submission;
+import net.dean.jraw.models.VoteDirection;
 
 /** Created by ccrama on 7/19/2015. */
 public class HasSeen {

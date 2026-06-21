@@ -5,12 +5,9 @@ import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import me.edgan.redditslide.markdown.MarkdownImages;
-
-import org.junit.Test;
-
 import java.util.Collections;
+import me.edgan.redditslide.markdown.MarkdownImages;
+import org.junit.Test;
 
 /** Tests free-emote URL resolution from media_metadata (issue #179). */
 public class MarkdownImagesEmoteTest {

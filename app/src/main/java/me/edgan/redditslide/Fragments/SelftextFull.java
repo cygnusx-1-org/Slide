@@ -5,9 +5,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.fragment.app.Fragment;
-
+import java.util.List;
 import me.edgan.redditslide.Activities.CommentsScreen;
 import me.edgan.redditslide.Activities.Shadowbox;
 import me.edgan.redditslide.R;
@@ -17,10 +16,7 @@ import me.edgan.redditslide.SubmissionViews.PopulateShadowboxInfo;
 import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.util.SubmissionParser;
-
 import net.dean.jraw.models.Submission;
-
-import java.util.List;
 
 /** Created by ccrama on 6/2/2015. */
 public class SelftextFull extends Fragment {

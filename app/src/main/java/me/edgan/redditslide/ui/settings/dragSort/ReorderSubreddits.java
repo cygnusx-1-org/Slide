@@ -23,7 +23,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -31,14 +30,18 @@ import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.nambimobile.widgets.efab.FabOption;
-
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.Authentication;
-import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.CaseInsensitiveArrayList;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
@@ -49,27 +52,18 @@ import me.edgan.redditslide.ui.settings.SettingsThemeFragment;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.DisplayUtil;
+import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
-
 import net.dean.jraw.http.MultiRedditUpdateRequest;
 import net.dean.jraw.managers.MultiRedditManager;
 import net.dean.jraw.models.MultiReddit;
 import net.dean.jraw.models.Subreddit;
 import net.dean.jraw.paginators.SubredditSearchPaginator;
 import net.dean.jraw.paginators.UserSubredditsPaginator;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.lang.ref.WeakReference;
-import java.util.stream.Collectors;
-import me.edgan.redditslide.util.LogUtil;
 
 public class ReorderSubreddits extends BaseActivityAnim {
 

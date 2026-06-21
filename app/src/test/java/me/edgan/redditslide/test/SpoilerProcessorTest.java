@@ -4,10 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import me.edgan.redditslide.markdown.RedditSpoilerPreprocessor;
 import me.edgan.redditslide.markdown.SpoilerNode;
 import me.edgan.redditslide.markdown.SpoilerPostProcessor;
-
 import org.commonmark.node.AbstractVisitor;
 import org.commonmark.node.BlockQuote;
 import org.commonmark.node.CustomNode;
@@ -15,11 +18,6 @@ import org.commonmark.node.Node;
 import org.commonmark.node.Text;
 import org.commonmark.parser.Parser;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /** Pure-commonmark tests (no Android) for the clean-room spoiler preprocess + post-process. */
 public class SpoilerProcessorTest {

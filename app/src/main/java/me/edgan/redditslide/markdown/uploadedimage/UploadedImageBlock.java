@@ -1,8 +1,7 @@
 package me.edgan.redditslide.markdown.uploadedimage;
 
-import org.commonmark.node.CustomBlock;
-
 import me.edgan.redditslide.markdown.UploadedImage;
+import org.commonmark.node.CustomBlock;
 
 /**
  * A commonmark custom block that wraps a Reddit-uploaded image so the rich-text converter can emit

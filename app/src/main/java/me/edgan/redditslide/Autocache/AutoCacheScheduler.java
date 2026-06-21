@@ -4,12 +4,9 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-
 import androidx.core.content.ContextCompat;
-
-import me.edgan.redditslide.Reddit;
-
 import java.util.Calendar;
+import me.edgan.redditslide.Reddit;
 
 /** Created by carlo_000 on 10/13/2015. */
 public class AutoCacheScheduler {

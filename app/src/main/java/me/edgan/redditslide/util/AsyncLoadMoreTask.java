@@ -9,20 +9,8 @@ import android.util.Log;
 import android.view.View;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
-import com.mikepenz.itemanimators.SlideRightAlphaAnimator;
-import me.edgan.redditslide.Adapters.CommentAdapter;
-import me.edgan.redditslide.Adapters.CommentObject;
-import me.edgan.redditslide.Adapters.CommentItem;
-import me.edgan.redditslide.Adapters.MoreChildItem;
-import me.edgan.redditslide.Adapters.MoreCommentViewHolder;
-import me.edgan.redditslide.Authentication;
-import me.edgan.redditslide.R;
-import me.edgan.redditslide.Reddit;
-
 import com.fasterxml.jackson.databind.JsonNode;
-
-import net.dean.jraw.models.CommentNode;
-import net.dean.jraw.models.MoreChildren;
+import com.mikepenz.itemanimators.SlideRightAlphaAnimator;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -33,6 +21,16 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import me.edgan.redditslide.Adapters.CommentAdapter;
+import me.edgan.redditslide.Adapters.CommentItem;
+import me.edgan.redditslide.Adapters.CommentObject;
+import me.edgan.redditslide.Adapters.MoreChildItem;
+import me.edgan.redditslide.Adapters.MoreCommentViewHolder;
+import me.edgan.redditslide.Authentication;
+import me.edgan.redditslide.R;
+import me.edgan.redditslide.Reddit;
+import net.dean.jraw.models.CommentNode;
+import net.dean.jraw.models.MoreChildren;
 
 public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
     private final MoreCommentViewHolder holder;

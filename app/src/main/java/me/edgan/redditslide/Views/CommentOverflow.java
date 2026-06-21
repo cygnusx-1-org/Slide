@@ -13,9 +13,8 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
-
 import com.devspark.robototextview.RobotoTypefaces;
-
+import java.util.List;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.Visuals.ColorPreferences;
@@ -23,8 +22,6 @@ import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.util.CommentImageUtil;
 import me.edgan.redditslide.util.DisplayUtil;
 import me.edgan.redditslide.util.SubmissionParser;
-
-import java.util.List;
 
 /** Class that provides methods to help bind submissions with multiple blocks of text. */
 public class CommentOverflow extends LinearLayout {

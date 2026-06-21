@@ -26,7 +26,6 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.view.ContextThemeWrapper;
@@ -40,11 +39,13 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager.widget.ViewPager;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.Fragments.BlankFragment;
@@ -66,6 +67,7 @@ import me.edgan.redditslide.Views.ToggleSwipeViewPager;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.ui.settings.SettingsSubAdapter;
+import me.edgan.redditslide.util.FilterContentUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialInputDialog;
@@ -75,8 +77,6 @@ import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.SortingUtil;
 import me.edgan.redditslide.util.StringUtil;
 import me.edgan.redditslide.util.SubmissionParser;
-import me.edgan.redditslide.util.FilterContentUtil;
-
 import net.dean.jraw.ApiException;
 import net.dean.jraw.http.MultiRedditUpdateRequest;
 import net.dean.jraw.http.NetworkException;
@@ -92,11 +92,6 @@ import net.dean.jraw.models.UserRecord;
 import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.TimePeriod;
 import net.dean.jraw.paginators.UserRecordPaginator;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
 
 public class SubredditView extends BaseActivity {
 

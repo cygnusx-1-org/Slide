@@ -5,16 +5,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
-
 import com.fasterxml.jackson.databind.JsonNode;
-
-import net.dean.jraw.models.Submission;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Locale;
 import me.edgan.redditslide.util.LogUtil;
+import net.dean.jraw.models.Submission;
 
 /** Created by ccrama on 5/26/2015. */
 public class ContentType {

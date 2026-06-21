@@ -6,15 +6,12 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.view.View;
 import android.widget.Toast;
-
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-
-import me.edgan.redditslide.R;
-import me.edgan.redditslide.Reddit;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import me.edgan.redditslide.R;
+import me.edgan.redditslide.Reddit;
 
 public class ShareUtil {
     private ShareUtil() {}

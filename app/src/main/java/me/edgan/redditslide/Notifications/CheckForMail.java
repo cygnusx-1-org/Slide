@@ -12,11 +12,14 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.Html;
-
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Activities.CancelSubNotifs;
 import me.edgan.redditslide.Activities.Inbox;
 import me.edgan.redditslide.Activities.ModQueue;
@@ -28,22 +31,14 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.StringUtil;
-
 import net.dean.jraw.models.Message;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.paginators.InboxPaginator;
 import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.SubredditPaginator;
-
 import org.apache.commons.text.StringEscapeUtils;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import me.edgan.redditslide.util.LogUtil;
 
 public class CheckForMail extends BroadcastReceiver {
 

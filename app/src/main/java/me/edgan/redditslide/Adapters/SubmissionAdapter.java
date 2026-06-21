@@ -1,8 +1,5 @@
 package me.edgan.redditslide.Adapters;
 
-import me.edgan.redditslide.util.DialogUtil;
-
-/** Created by ccrama on 3/22/2015. */
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Handler;
@@ -10,16 +7,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.snackbar.Snackbar;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Activities.CommentsScreen;
 import me.edgan.redditslide.Activities.MainActivity;
-import me.edgan.redditslide.Activities.SubredditView;
 import me.edgan.redditslide.Activities.MainPagerAdapterComment;
+import me.edgan.redditslide.Activities.SubredditView;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.R;
@@ -28,14 +25,10 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionViews.PopulateSubmissionViewHolder;
 import me.edgan.redditslide.Views.CatchStaggeredGridLayoutManager;
 import me.edgan.redditslide.Views.CreateCardView;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.OnSingleClickListener;
-
 import net.dean.jraw.models.Submission;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements BaseAdapter {

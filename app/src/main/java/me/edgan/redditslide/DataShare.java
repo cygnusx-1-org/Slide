@@ -1,11 +1,9 @@
 package me.edgan.redditslide;
 
+import java.util.ArrayList;
 import me.edgan.redditslide.Adapters.CommentObject;
-
 import net.dean.jraw.models.PrivateMessage;
 import net.dean.jraw.models.Submission;
-
-import java.util.ArrayList;
 
 /** Created by ccrama on 9/19/2015. */
 public class DataShare {

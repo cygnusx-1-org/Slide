@@ -2,13 +2,12 @@ package me.edgan.redditslide.Activities;
 
 import android.os.Bundle;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-
+import java.util.List;
 import me.edgan.redditslide.Adapters.MultiredditPosts;
 import me.edgan.redditslide.Adapters.SubmissionDisplay;
 import me.edgan.redditslide.Adapters.SubredditPosts;
@@ -27,10 +26,7 @@ import me.edgan.redditslide.PostLoader;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.MiscUtil;
-
 import net.dean.jraw.models.Submission;
-
-import java.util.List;
 
 /** Created by ccrama on 9/17/2015. */
 public class Shadowbox extends FullScreenActivity implements SubmissionDisplay {

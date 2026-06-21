@@ -1,5 +1,14 @@
 package me.edgan.redditslide.markdown;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+import me.edgan.redditslide.markdown.uploadedimage.UploadedImageBlock;
+import me.edgan.redditslide.markdown.uploadedimage.UploadedImageBlockParser;
+import org.commonmark.Extension;
 import org.commonmark.ext.gfm.strikethrough.Strikethrough;
 import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
 import org.commonmark.ext.gfm.tables.TableBlock;
@@ -8,7 +17,6 @@ import org.commonmark.ext.gfm.tables.TableCell;
 import org.commonmark.ext.gfm.tables.TableHead;
 import org.commonmark.ext.gfm.tables.TableRow;
 import org.commonmark.ext.gfm.tables.TablesExtension;
-import org.commonmark.Extension;
 import org.commonmark.node.BlockQuote;
 import org.commonmark.node.BulletList;
 import org.commonmark.node.Code;
@@ -38,16 +46,6 @@ import org.commonmark.parser.Parser;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-
-import me.edgan.redditslide.markdown.uploadedimage.UploadedImageBlock;
-import me.edgan.redditslide.markdown.uploadedimage.UploadedImageBlockParser;
 
 /**
  * Converts Reddit markdown into the {@code richtext_json} representation the Reddit API requires for

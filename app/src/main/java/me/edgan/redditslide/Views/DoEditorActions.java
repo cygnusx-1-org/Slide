@@ -9,7 +9,6 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
-
 import android.text.Editable;
 import android.util.Base64;
 import android.view.ContextThemeWrapper;
@@ -20,7 +19,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.activity.ComponentActivity;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -29,12 +28,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-
-import androidx.activity.ComponentActivity;
-
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import me.edgan.redditslide.Activities.Draw;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Drafts;
@@ -49,25 +50,17 @@ import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.DisplayUtil;
 import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.SubmissionParser;
-
 import org.apache.commons.text.StringEscapeUtils;
 import org.commonmark.Extension;
 import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
 import org.commonmark.ext.gfm.tables.TablesExtension;
-import org.commonmark.renderer.html.HtmlRenderer;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
 import org.json.JSONObject;
-
-import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import me.edgan.redditslide.util.LogUtil;
 
 /** Created by carlo_000 on 10/18/2015. */
 public class DoEditorActions {

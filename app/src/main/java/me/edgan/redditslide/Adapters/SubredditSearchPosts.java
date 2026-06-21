@@ -3,16 +3,16 @@ package me.edgan.redditslide.Adapters;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.widget.Toast;
-
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import me.edgan.redditslide.Activities.MultiredditOverview;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.SortingUtil;
-
 import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.Submission;
@@ -20,10 +20,6 @@ import net.dean.jraw.paginators.Paginator;
 import net.dean.jraw.paginators.SubmissionSearchPaginator;
 import net.dean.jraw.paginators.SubmissionSearchPaginatorMultireddit;
 import net.dean.jraw.paginators.TimePeriod;
-
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import me.edgan.redditslide.util.LogUtil;
 
 /** Created by ccrama on 9/17/2015. */
 public class SubredditSearchPosts extends GeneralPosts {

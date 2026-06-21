@@ -7,10 +7,12 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.StrictMode;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
+import java.util.Objects;
 import me.edgan.redditslide.Activities.CommentsScreenSingle;
 import me.edgan.redditslide.Activities.LiveThread;
 import me.edgan.redditslide.Activities.MainActivity;
@@ -27,11 +29,6 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.GifUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
-
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.List;
-import java.util.Objects;
 
 public class OpenRedditLink {
 

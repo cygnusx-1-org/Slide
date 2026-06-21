@@ -4,21 +4,17 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.util.Pair;
-
 import androidx.core.content.ContextCompat;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Activities.Slide;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
-
 import org.apache.commons.text.StringEscapeUtils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 
 /** Created by ccrama on 7/9/2015. */
 public class ColorPreferences {

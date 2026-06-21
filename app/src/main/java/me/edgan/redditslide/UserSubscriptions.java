@@ -6,16 +6,22 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.widget.Toast;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import me.edgan.redditslide.Activities.Login;
 import me.edgan.redditslide.Activities.MainActivity;
 import me.edgan.redditslide.Activities.MultiredditOverview;
 import me.edgan.redditslide.Activities.NewsActivity;
 import me.edgan.redditslide.Toolbox.Toolbox;
 import me.edgan.redditslide.ui.settings.dragSort.ReorderSubreddits;
+import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.StringUtil;
-
 import net.dean.jraw.ApiException;
 import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.managers.MultiRedditManager;
@@ -24,15 +30,6 @@ import net.dean.jraw.models.Subreddit;
 import net.dean.jraw.models.UserRecord;
 import net.dean.jraw.paginators.ImportantUserPaginator;
 import net.dean.jraw.paginators.UserSubredditsPaginator;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import me.edgan.redditslide.util.LogUtil;
 
 /** Created by carlo_000 on 1/16/2016. */
 public class UserSubscriptions {

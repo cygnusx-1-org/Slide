@@ -3,14 +3,12 @@ package me.edgan.redditslide.test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import me.edgan.redditslide.CaseInsensitiveArrayList;
-import me.edgan.redditslide.UserSubscriptions;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.Arrays;
+import me.edgan.redditslide.CaseInsensitiveArrayList;
+import me.edgan.redditslide.UserSubscriptions;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /** Created by Alex Macleod on 28/03/2016. */
 public class UserSubscriptionsTest {

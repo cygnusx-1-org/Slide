@@ -1,30 +1,24 @@
 package me.edgan.redditslide.util;
 
 import androidx.annotation.Nullable;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.markdown.RichTextJSONConverter;
+import me.edgan.redditslide.markdown.UploadedImage;
 import net.dean.jraw.RedditClient;
 import net.dean.jraw.http.HttpRequest;
 import net.dean.jraw.http.RestResponse;
 import net.dean.jraw.models.Contribution;
-
-import me.edgan.redditslide.Reddit;
-import me.edgan.redditslide.markdown.RichTextJSONConverter;
-import me.edgan.redditslide.markdown.UploadedImage;
-
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Submits comments and self-posts using the Reddit {@code richtext_json} parameter, which is what

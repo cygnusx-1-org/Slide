@@ -8,17 +8,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import androidx.cardview.widget.CardView;
-
+import java.util.ArrayList;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.AnimatorUtil;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.DisplayUtil;
-
-import java.util.ArrayList;
 
 /** Created by ccrama on 9/18/2015. */
 public class CreateCardView {

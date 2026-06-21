@@ -9,19 +9,18 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.widget.Toolbar;
-
 import com.canhub.cropper.CropImageContract;
 import com.canhub.cropper.CropImageContractOptions;
 import com.canhub.cropper.CropImageOptions;
 import com.canhub.cropper.CropImageView;
-
 import com.skydoves.colorpickerview.ColorEnvelope;
 import com.skydoves.colorpickerview.ColorPickerDialog;
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
-
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.Views.CanvasView;
@@ -29,12 +28,8 @@ import me.edgan.redditslide.Views.DoEditorActions;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.FileUtil;
-import me.edgan.redditslide.util.MiscUtil;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 
 /** Created by ccrama on 5/27/2015. */
 public class Draw extends BaseActivity {

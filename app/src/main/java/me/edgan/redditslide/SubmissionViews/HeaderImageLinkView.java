@@ -17,19 +17,17 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.content.ContextCompat;
-
-import me.edgan.redditslide.util.BottomSheet;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-
+import java.util.Arrays;
+import java.util.List;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.ForceTouch.PeekView;
 import me.edgan.redditslide.ForceTouch.PeekViewActivity;
@@ -47,15 +45,12 @@ import me.edgan.redditslide.Views.MaxHeightImageView;
 import me.edgan.redditslide.Views.PeekMediaView;
 import me.edgan.redditslide.Views.TransparentTagTextView;
 import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.BottomSheet;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
-
 import net.dean.jraw.models.Submission;
-
-import java.util.Arrays;
-import java.util.List;
 
 /** Created by carlo_000 on 2/7/2016. */
 public class HeaderImageLinkView extends RelativeLayout {

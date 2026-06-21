@@ -1,7 +1,5 @@
 package me.edgan.redditslide.Activities;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -21,10 +19,8 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SwitchCompat;
-
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,7 +29,13 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Flair.RichFlair;
 import me.edgan.redditslide.OpenRedditLink;
@@ -43,30 +45,21 @@ import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Visuals.ColorPreferences;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.HttpUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
-
 import net.dean.jraw.ApiException;
 import net.dean.jraw.Endpoints;
 import net.dean.jraw.http.HttpRequest;
 import net.dean.jraw.http.RestResponse;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Subreddit;
-
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 
 /** Created by ccrama on 3/5/2015. */
 public class Crosspost extends BaseActivity {

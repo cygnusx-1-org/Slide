@@ -4,11 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Application;
-
 import me.edgan.redditslide.util.OAuthLoginHelper;
 import me.edgan.redditslide.util.OAuthLoginHelper.FailureType;
 import me.edgan.redditslide.util.OAuthLoginHelper.TokenResult;
-
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;

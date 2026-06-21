@@ -1,7 +1,5 @@
 package me.edgan.redditslide.ui.settings;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import static me.edgan.redditslide.Constants.BackButtonBehaviorOptions;
 import static me.edgan.redditslide.Constants.FAB_DISMISS;
 import static me.edgan.redditslide.Constants.FAB_POST;
@@ -17,6 +15,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -37,16 +36,18 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.CaseInsensitiveArrayList;
 import me.edgan.redditslide.Fragments.DrawerItemsDialog;
@@ -58,29 +59,21 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.ImageLoaderUtils;
 import me.edgan.redditslide.util.LayoutUtils;
-import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialInputDialog;
+import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.QrCodeScannerHelper;
 import me.edgan.redditslide.util.SortingUtil;
 import me.edgan.redditslide.util.StorageUtil;
 import me.edgan.redditslide.util.StringUtil;
 import me.edgan.redditslide.util.TimeUtils;
-
 import net.dean.jraw.models.CommentSort;
 import net.dean.jraw.models.Subreddit;
 import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.TimePeriod;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-
-import android.content.pm.PackageManager;
 
 /** Created by ccrama on 3/5/2015. */
 public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {

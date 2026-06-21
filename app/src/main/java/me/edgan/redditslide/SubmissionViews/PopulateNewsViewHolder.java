@@ -23,17 +23,18 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
-import me.edgan.redditslide.util.BottomSheet;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.ActionStates;
 import me.edgan.redditslide.Activities.Album;
 import me.edgan.redditslide.Activities.AlbumPager;
@@ -68,6 +69,7 @@ import me.edgan.redditslide.Views.CreateCardView;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.BottomSheet;
 import me.edgan.redditslide.util.ClipboardUtil;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.DialogUtil;
@@ -78,19 +80,11 @@ import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
-
 import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.Ruleset;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.SubredditRule;
-
 import org.apache.commons.text.StringEscapeUtils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
 
 /** Created by ccrama on 9/19/2015. */
 public class PopulateNewsViewHolder {

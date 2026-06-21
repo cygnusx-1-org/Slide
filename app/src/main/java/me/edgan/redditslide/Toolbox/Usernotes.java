@@ -1,10 +1,8 @@
 package me.edgan.redditslide.Toolbox;
 
 import android.util.Base64;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.OptIn;
-
 import androidx.media3.common.util.ColorParser;
 import androidx.media3.common.util.UnstableApi;
 import com.google.gson.JsonDeserializationContext;
@@ -15,9 +13,6 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.annotations.SerializedName;
-
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -30,6 +25,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
+import org.apache.commons.lang3.StringUtils;
 
 /** A group of usernotes for a subreddit */
 @OptIn(markerClass = UnstableApi.class)

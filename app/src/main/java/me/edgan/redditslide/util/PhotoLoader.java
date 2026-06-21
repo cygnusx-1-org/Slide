@@ -1,15 +1,12 @@
 package me.edgan.redditslide.util;
 
 import android.content.Context;
-
+import java.util.List;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
-
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Thumbnails;
-
-import java.util.List;
 
 /** Created by TacoTheDank on 12/11/2020. */
 public class PhotoLoader {

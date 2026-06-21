@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -24,26 +23,22 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsServiceConnection;
 import androidx.browser.customtabs.CustomTabsSession;
 import androidx.core.content.ContextCompat;
-
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
 import me.edgan.redditslide.Activities.Crosspost;
 import me.edgan.redditslide.Activities.MakeExternal;
 import me.edgan.redditslide.Activities.ReaderMode;
 import me.edgan.redditslide.Activities.Website;
+import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.SubmissionViews.PopulateBase;
-import me.edgan.redditslide.ContentType;
-
 import net.dean.jraw.models.Submission;
-
 import org.apache.commons.text.StringEscapeUtils;
-
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
 
 public class LinkUtil {
 

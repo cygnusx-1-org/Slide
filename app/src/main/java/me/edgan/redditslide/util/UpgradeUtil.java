@@ -19,13 +19,11 @@ package me.edgan.redditslide.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-
-import me.edgan.redditslide.SettingValues;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import me.edgan.redditslide.SettingValues;
 
 public class UpgradeUtil {
     // Increment for each needed change

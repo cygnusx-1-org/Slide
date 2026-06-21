@@ -13,9 +13,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.TextView;
-
 import androidx.core.content.ContextCompat;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Activities.OpenContent;
 import me.edgan.redditslide.Activities.SetupWidget;
 import me.edgan.redditslide.Activities.Shortcut;
@@ -26,10 +27,6 @@ import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.DrawableUtil;
 import me.edgan.redditslide.util.ImageUtil;
 import me.edgan.redditslide.util.LogUtil;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 /** Created by ccrama on 8/17/2015. */
 public class SubChooseAdapter extends ArrayAdapter<String> {

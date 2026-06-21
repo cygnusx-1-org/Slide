@@ -1,15 +1,14 @@
 package me.edgan.redditslide.markdown;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.commonmark.node.AbstractVisitor;
 import org.commonmark.node.Link;
 import org.commonmark.node.Node;
 import org.commonmark.node.Text;
 import org.commonmark.parser.PostProcessor;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Clean-room commonmark post-processor that turns bare Reddit mentions ({@code u/name},

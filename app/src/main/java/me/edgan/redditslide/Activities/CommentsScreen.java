@@ -8,14 +8,15 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.view.Window;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Adapters.MultiredditPosts;
 import me.edgan.redditslide.Adapters.SubmissionDisplay;
 import me.edgan.redditslide.Adapters.SubredditPosts;
@@ -31,12 +32,7 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.CustomViewPager;
 import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.MiscUtil;
-
 import net.dean.jraw.models.Submission;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * This activity is responsible for the view when clicking on a post, showing the post and its

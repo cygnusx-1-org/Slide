@@ -24,11 +24,9 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
-
-import me.edgan.redditslide.SettingValues;
-
 import java.util.ArrayList;
 import java.util.List;
+import me.edgan.redditslide.SettingValues;
 
 /** Helper class for Custom Tabs. */
 public class CustomTabsHelper {

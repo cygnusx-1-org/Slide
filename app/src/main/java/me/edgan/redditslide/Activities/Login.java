@@ -1,7 +1,5 @@
 package me.edgan.redditslide.Activities;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -23,29 +21,33 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
-
+import androidx.appcompat.app.AlertDialog;
+import androidx.browser.customtabs.CustomTabColorSchemeParams;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsService;
+import androidx.core.content.ContextCompat;
+import androidx.webkit.WebViewCompat;
+import androidx.webkit.WebViewFeature;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.browser.customtabs.CustomTabColorSchemeParams;
-import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.browser.customtabs.CustomTabsService;
-import androidx.webkit.WebViewCompat;
-import androidx.webkit.WebViewFeature;
-
+import java.util.Set;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.CaseInsensitiveArrayList;
 import me.edgan.redditslide.Constants;
@@ -55,11 +57,11 @@ import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.GetClosestColor;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.OAuthLoginHelper;
-
 import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.http.RestResponse;
 import net.dean.jraw.http.oauth.Credentials;
@@ -68,14 +70,6 @@ import net.dean.jraw.http.oauth.OAuthException;
 import net.dean.jraw.http.oauth.OAuthHelper;
 import net.dean.jraw.models.LoggedInAccount;
 import net.dean.jraw.models.Subreddit;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import androidx.core.content.ContextCompat;
 
 /** Created by ccrama on 5/27/2015. */
 public class Login extends BaseActivityAnim {

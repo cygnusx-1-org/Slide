@@ -20,15 +20,11 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-
 import android.widget.TextView;
-
 import androidx.appcompat.widget.ActionMenuView;
 import androidx.appcompat.widget.Toolbar;
-
-import me.edgan.redditslide.util.BlendModeUtil;
-
 import java.util.ArrayList;
+import me.edgan.redditslide.util.BlendModeUtil;
 
 /**
  * Helper class that iterates through Toolbar views, and sets dynamically icons and texts color

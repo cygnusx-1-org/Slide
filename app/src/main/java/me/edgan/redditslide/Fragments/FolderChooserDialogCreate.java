@@ -11,7 +11,6 @@ import android.view.ContextThemeWrapper;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -21,19 +20,16 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
-import me.edgan.redditslide.R;
-import me.edgan.redditslide.Visuals.ColorPreferences;
-import me.edgan.redditslide.util.MaterialInputDialog;
-
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import me.edgan.redditslide.R;
+import me.edgan.redditslide.Visuals.ColorPreferences;
+import me.edgan.redditslide.util.MaterialInputDialog;
 
 /**
  * Folder picker dialog. Originally adapted from afollestad material-dialogs 0.9.6.0; migrated off

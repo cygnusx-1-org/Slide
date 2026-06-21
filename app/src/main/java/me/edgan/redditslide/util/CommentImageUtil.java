@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -18,14 +17,6 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
-
-import org.apache.commons.text.StringEscapeUtils;
-
-import me.edgan.redditslide.Activities.MediaView;
-import me.edgan.redditslide.Reddit;
-import me.edgan.redditslide.SettingValues;
-import me.edgan.redditslide.Views.MaxHeightImageView;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,6 +29,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import me.edgan.redditslide.Activities.MediaView;
+import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.Views.MaxHeightImageView;
+import org.apache.commons.text.StringEscapeUtils;
 
 /**
  * Renders inline comment images as pre-sized block ImageViews loaded through the app's shared image

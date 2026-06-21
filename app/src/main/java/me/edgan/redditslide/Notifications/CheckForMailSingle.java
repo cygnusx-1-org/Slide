@@ -11,10 +11,10 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.Html;
-
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-
+import java.util.ArrayList;
+import java.util.List;
 import me.edgan.redditslide.Activities.Inbox;
 import me.edgan.redditslide.Activities.OpenContent;
 import me.edgan.redditslide.Adapters.MarkAsReadService;
@@ -22,15 +22,10 @@ import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
-
+import me.edgan.redditslide.util.LogUtil;
 import net.dean.jraw.models.Message;
 import net.dean.jraw.paginators.InboxPaginator;
-
 import org.apache.commons.text.StringEscapeUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import me.edgan.redditslide.util.LogUtil;
 
 public class CheckForMailSingle extends BroadcastReceiver {
 

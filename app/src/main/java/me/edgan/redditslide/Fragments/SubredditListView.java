@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.fragment.app.Fragment;
@@ -13,9 +12,8 @@ import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.mikepenz.itemanimators.SlideUpAlphaAnimator;
-
+import java.util.List;
 import me.edgan.redditslide.Activities.BaseActivity;
 import me.edgan.redditslide.Adapters.SubredditAdapter;
 import me.edgan.redditslide.Adapters.SubredditNames;
@@ -26,10 +24,7 @@ import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.handler.ToolbarScrollHideHandler;
 import me.edgan.redditslide.util.LogUtil;
-
 import net.dean.jraw.models.Subreddit;
-
-import java.util.List;
 
 public class SubredditListView extends Fragment {
     public SubredditNames posts;

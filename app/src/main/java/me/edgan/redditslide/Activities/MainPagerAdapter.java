@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Activities;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -12,17 +14,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-
-
-
+import com.google.android.material.shape.MaterialShapeDrawable;
+import java.util.Locale;
 import me.edgan.redditslide.Adapters.SubredditPosts;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Constants;
@@ -31,14 +29,10 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.UserSubscriptions;
-import com.google.android.material.shape.MaterialShapeDrawable;
-
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.StringUtil;
-
-import java.util.Locale;
 
 public class MainPagerAdapter extends FragmentStatePagerAdapter {
     protected SubmissionsView mCurrentFragment;

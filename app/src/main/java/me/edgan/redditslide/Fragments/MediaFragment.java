@@ -1,7 +1,5 @@
 package me.edgan.redditslide.Fragments;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import static me.edgan.redditslide.Notifications.ImageDownloadNotificationService.EXTRA_SUBMISSION_TITLE;
 
 import android.animation.ValueAnimator;
@@ -19,10 +17,8 @@ import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -34,7 +30,11 @@ import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
 import me.edgan.redditslide.Activities.Album;
 import me.edgan.redditslide.Activities.AlbumPager;
 import me.edgan.redditslide.Activities.CommentsScreen;
@@ -53,11 +53,11 @@ import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SecretConstants;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionViews.PopulateShadowboxInfo;
-import me.edgan.redditslide.util.SubmissionThumbnailHelper;
 import me.edgan.redditslide.Views.ExoVideoView;
 import me.edgan.redditslide.Views.ImageSource;
 import me.edgan.redditslide.Views.SubsamplingScaleImageView;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.GifUtils;
 import me.edgan.redditslide.util.HttpUtil;
@@ -65,18 +65,10 @@ import me.edgan.redditslide.util.JsonUtil;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
-
+import me.edgan.redditslide.util.SubmissionThumbnailHelper;
 import net.dean.jraw.models.Submission;
-
 import okhttp3.OkHttpClient;
-
 import org.apache.commons.text.StringEscapeUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
 
 /** Created by ccrama on 6/2/2015. */
 public class MediaFragment extends Fragment {

@@ -1,15 +1,13 @@
 package me.edgan.redditslide.util;
 
 /** Created by ccrama on 4/10/2016. */
-import me.edgan.redditslide.Reddit;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import me.edgan.redditslide.Reddit;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class TitleExtractor {
     /* the CASE_INSENSITIVE flag accounts for

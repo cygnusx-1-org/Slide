@@ -2,20 +2,15 @@ package me.edgan.redditslide.Adapters;
 
 import android.app.Activity;
 import android.os.AsyncTask;
-
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.fasterxml.jackson.databind.JsonNode;
-
+import java.util.ArrayList;
 import me.edgan.redditslide.Authentication;
-
+import me.edgan.redditslide.util.LogUtil;
 import net.dean.jraw.models.Message;
 import net.dean.jraw.models.PrivateMessage;
 import net.dean.jraw.paginators.InboxPaginator;
 import net.dean.jraw.paginators.Paginator;
-
-import java.util.ArrayList;
-import me.edgan.redditslide.util.LogUtil;
 
 /** Created by ccrama on 9/17/2015. */
 public class InboxMessages extends GeneralPosts {

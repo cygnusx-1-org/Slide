@@ -3,14 +3,9 @@ package me.edgan.redditslide.util;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.documentfile.provider.DocumentFile;
-
-import net.dean.jraw.models.Comment;
-import net.dean.jraw.models.Submission;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -24,6 +19,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
+import net.dean.jraw.models.Comment;
+import net.dean.jraw.models.Submission;
 
 public class FileUtil {
     private FileUtil() {}

@@ -9,14 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-
+import java.util.List;
 import me.edgan.redditslide.Activities.CommentsScreen;
 import me.edgan.redditslide.Activities.Shadowbox;
 import me.edgan.redditslide.Adapters.TumblrView;
@@ -24,10 +22,7 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.SubmissionViews.PopulateShadowboxInfo;
 import me.edgan.redditslide.Tumblr.Photo;
 import me.edgan.redditslide.Tumblr.TumblrUtils;
-
 import net.dean.jraw.models.Submission;
-
-import java.util.List;
 
 /** Created by ccrama on 6/2/2015. */
 public class TumblrFull extends Fragment {

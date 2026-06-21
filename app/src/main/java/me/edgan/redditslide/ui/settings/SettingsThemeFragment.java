@@ -1,7 +1,5 @@
 package me.edgan.redditslide.ui.settings;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -17,7 +15,6 @@ import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-
 import androidx.annotation.ArrayRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -27,7 +24,9 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import me.edgan.redditslide.Activities.BaseActivity;
 import me.edgan.redditslide.Activities.Slide;
 import me.edgan.redditslide.Constants;
@@ -40,16 +39,11 @@ import me.edgan.redditslide.databinding.ChooseaccentBinding;
 import me.edgan.redditslide.databinding.ChoosemainBinding;
 import me.edgan.redditslide.databinding.ChoosethemesmallBinding;
 import me.edgan.redditslide.databinding.NightmodeBinding;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
-
 import org.apache.commons.lang3.ArrayUtils;
-
 import uz.shift.colorpicker.LineColorPicker;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartActivity> {
 

@@ -1,10 +1,8 @@
 package me.edgan.redditslide;
 
 import android.content.SharedPreferences;
-
-import me.edgan.redditslide.util.StringUtil;
-
 import java.util.ArrayList;
+import me.edgan.redditslide.util.StringUtil;
 
 /** Created by l3d00m on 11/13/2015. */
 public class Drafts {

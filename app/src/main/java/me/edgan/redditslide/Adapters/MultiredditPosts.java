@@ -2,7 +2,10 @@ package me.edgan.redditslide.Adapters;
 
 import android.content.Context;
 import android.os.AsyncTask;
-
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.HasSeen;
@@ -18,15 +21,9 @@ import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.PhotoLoader;
-
 import net.dean.jraw.models.MultiReddit;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.paginators.MultiRedditPaginator;
-
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * This class is reponsible for loading subreddit specific submissions {@link loadMore(Context,

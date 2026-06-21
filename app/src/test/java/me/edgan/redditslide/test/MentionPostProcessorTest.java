@@ -3,7 +3,6 @@ package me.edgan.redditslide.test;
 import static org.junit.Assert.assertEquals;
 
 import me.edgan.redditslide.markdown.MentionPostProcessor;
-
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.junit.Test;

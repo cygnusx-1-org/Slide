@@ -3,20 +3,18 @@ package me.edgan.redditslide.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import me.edgan.redditslide.markdown.SuperscriptNode;
 import me.edgan.redditslide.markdown.SuperscriptPostProcessor;
-
 import org.commonmark.node.AbstractVisitor;
 import org.commonmark.node.CustomNode;
 import org.commonmark.node.Node;
 import org.commonmark.node.Text;
 import org.commonmark.parser.Parser;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /** Pure-commonmark tests (no Android) for the clean-room {@link SuperscriptPostProcessor}. */
 public class SuperscriptPostProcessorTest {

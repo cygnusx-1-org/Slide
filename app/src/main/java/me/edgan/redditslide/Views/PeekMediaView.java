@@ -20,17 +20,23 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
-
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import me.edgan.redditslide.Adapters.ImageGridAdapter;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.ForceTouch.PeekViewActivity;
@@ -46,19 +52,8 @@ import me.edgan.redditslide.util.GifUtils;
 import me.edgan.redditslide.util.HttpUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
-
-import org.apache.commons.text.StringEscapeUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.dean.jraw.models.Submission;
+import org.apache.commons.text.StringEscapeUtils;
 
 /** Created by ccrama on 3/5/2015. */
 public class PeekMediaView extends RelativeLayout {

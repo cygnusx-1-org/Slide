@@ -5,17 +5,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import me.edgan.redditslide.util.OAuthLoginHelper;
 import me.edgan.redditslide.util.OAuthLoginHelper.FailureType;
 import me.edgan.redditslide.util.OAuthLoginHelper.RedirectAction;
 import me.edgan.redditslide.util.OAuthLoginHelper.RedirectResult;
 import me.edgan.redditslide.util.OAuthLoginHelper.TokenResult;
-
 import org.junit.Test;
-
-import java.io.IOException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 
 /**
  * Plain-JVM tests for the parts of {@link OAuthLoginHelper} that don't parse a JSON body: HTTP-status

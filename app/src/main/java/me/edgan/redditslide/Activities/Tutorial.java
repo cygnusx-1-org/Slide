@@ -1,7 +1,5 @@
 package me.edgan.redditslide.Activities;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -27,7 +24,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
-
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.Visuals.ColorPreferences;
@@ -41,9 +37,10 @@ import me.edgan.redditslide.databinding.FragmentPersonalizeBinding;
 import me.edgan.redditslide.databinding.FragmentWelcomeBinding;
 import me.edgan.redditslide.ui.settings.SettingsBackup;
 import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
-import me.edgan.redditslide.util.QrCodeScannerHelper;
 import me.edgan.redditslide.util.MiscUtil;
+import me.edgan.redditslide.util.QrCodeScannerHelper;
 
 /** Created by ccrama on 3/5/2015. */
 public class Tutorial extends AppCompatActivity {

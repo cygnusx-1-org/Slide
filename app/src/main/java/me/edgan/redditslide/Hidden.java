@@ -1,14 +1,12 @@
 package me.edgan.redditslide;
 
 import android.os.AsyncTask;
-
-import net.dean.jraw.managers.AccountManager;
-import net.dean.jraw.models.Contribution;
-import net.dean.jraw.models.Submission;
-
 import java.util.HashSet;
 import java.util.Set;
 import me.edgan.redditslide.util.LogUtil;
+import net.dean.jraw.managers.AccountManager;
+import net.dean.jraw.models.Contribution;
+import net.dean.jraw.models.Submission;
 
 /** Created by carlo_000 on 10/16/2015. */
 public class Hidden {

@@ -1,7 +1,5 @@
 package me.edgan.redditslide.Activities;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -12,26 +10,23 @@ import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
 import androidx.appcompat.app.AlertDialog;
-
+import java.util.HashSet;
+import java.util.Set;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
-
 import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.http.oauth.Credentials;
 import net.dean.jraw.http.oauth.OAuthData;
 import net.dean.jraw.http.oauth.OAuthException;
 import net.dean.jraw.http.oauth.OAuthHelper;
 import net.dean.jraw.models.LoggedInAccount;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /** Created by ccrama on 5/27/2015. */
 public class Reauthenticate extends BaseActivityAnim {

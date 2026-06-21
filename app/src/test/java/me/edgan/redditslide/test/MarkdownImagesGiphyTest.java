@@ -4,17 +4,13 @@ import static org.junit.Assert.assertEquals;
 
 import android.content.Context;
 import android.view.View;
-
 import androidx.test.core.app.ApplicationProvider;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.markdown.RedditMarkwon;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;

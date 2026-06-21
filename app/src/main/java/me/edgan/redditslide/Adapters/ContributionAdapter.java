@@ -1,8 +1,5 @@
 package me.edgan.redditslide.Adapters;
 
-import me.edgan.redditslide.util.DialogUtil;
-
-/** Created by ccrama on 3/22/2015. */
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -20,14 +17,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
-import me.edgan.redditslide.util.BottomSheet;
 import com.devspark.robototextview.RobotoTypefaces;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.android.material.snackbar.Snackbar;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import me.edgan.redditslide.ActionStates;
 import me.edgan.redditslide.Activities.Profile;
 import me.edgan.redditslide.Activities.SubredditView;
@@ -44,26 +44,19 @@ import me.edgan.redditslide.Views.CatchStaggeredGridLayoutManager;
 import me.edgan.redditslide.Views.CreateCardView;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
-import com.fasterxml.jackson.databind.JsonNode;
 import me.edgan.redditslide.markdown.MarkdownImages;
+import me.edgan.redditslide.util.BottomSheet;
 import me.edgan.redditslide.util.CompatUtil;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
-
 import net.dean.jraw.models.Comment;
 import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.VoteDirection;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import androidx.core.content.ContextCompat;
 
 public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements BaseAdapter {

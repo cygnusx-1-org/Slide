@@ -3,7 +3,6 @@ package me.edgan.redditslide.test;
 import static org.junit.Assert.assertEquals;
 
 import me.edgan.redditslide.util.FileUtil;
-
 import org.junit.Test;
 
 public class FileUtilTest {

@@ -1,7 +1,5 @@
 package me.edgan.redditslide.ui.settings;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -9,15 +7,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.View;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.R;
@@ -27,15 +25,11 @@ import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.GetClosestColor;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
-
 import net.dean.jraw.models.Subreddit;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 /** Created by ccrama on 3/5/2015. */
 public class SettingsSubreddit extends BaseActivityAnim {

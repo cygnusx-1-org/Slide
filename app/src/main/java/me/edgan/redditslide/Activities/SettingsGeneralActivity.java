@@ -2,12 +2,9 @@ package me.edgan.redditslide.Activities;
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.widget.Toast;
-
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;

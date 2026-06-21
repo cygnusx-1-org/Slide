@@ -6,23 +6,20 @@ import static org.junit.Assert.assertTrue;
 import android.app.Application;
 import android.text.Spanned;
 import android.widget.TextView;
-
-import me.edgan.redditslide.markdown.RedditMarkwon;
-import me.edgan.redditslide.markdown.RedditSpoilerPreprocessor;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
-
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
+import me.edgan.redditslide.markdown.RedditMarkwon;
+import me.edgan.redditslide.markdown.RedditSpoilerPreprocessor;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 /**
  * Permanent equivalence suite (Slide issue #179): renders a shared markdown corpus through Slide's

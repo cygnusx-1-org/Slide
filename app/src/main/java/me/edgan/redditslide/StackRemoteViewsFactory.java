@@ -7,16 +7,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
-
+import java.util.ArrayList;
+import java.util.List;
 import me.edgan.redditslide.Adapters.SubredditPosts;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.TimeUtils;
-
 import net.dean.jraw.models.Submission;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     private final Context mContext;

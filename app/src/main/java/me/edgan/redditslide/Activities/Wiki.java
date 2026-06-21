@@ -1,34 +1,28 @@
 package me.edgan.redditslide.Activities;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
-
 import com.google.android.material.tabs.TabLayout;
-
+import java.util.ArrayList;
+import java.util.List;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Fragments.WikiPage;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Views.ToggleSwipeViewPager;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
-
 import net.dean.jraw.managers.WikiManager;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /** Created by ccrama on 9/17/2015. */
 public class Wiki extends BaseActivityAnim implements WikiPage.WikiPageListener {

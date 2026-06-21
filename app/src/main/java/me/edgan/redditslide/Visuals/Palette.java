@@ -3,11 +3,9 @@ package me.edgan.redditslide.Visuals;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.TypedValue;
-
+import java.util.Locale;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
-
-import java.util.Locale;
 
 public class Palette {
 

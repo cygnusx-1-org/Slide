@@ -4,16 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Switch;
 import android.widget.TextView;
-
-import me.edgan.redditslide.Activities.BaseActivityAnim;
-import me.edgan.redditslide.R;
-import me.edgan.redditslide.SettingValues;
-import me.edgan.redditslide.PostMatch;
-import me.edgan.redditslide.ui.settings.SettingsFilterList.FilterType;
-import me.edgan.redditslide.util.MiscUtil;
-
 import java.util.HashSet;
 import java.util.Set;
+import me.edgan.redditslide.Activities.BaseActivityAnim;
+import me.edgan.redditslide.PostMatch;
+import me.edgan.redditslide.R;
+import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.ui.settings.SettingsFilterList.FilterType;
+import me.edgan.redditslide.util.MiscUtil;
 
 /** Created by l3d00m on 11/13/2015. */
 public class SettingsFilter extends BaseActivityAnim {

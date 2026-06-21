@@ -3,7 +3,6 @@ package me.edgan.redditslide.Activities;
 import android.content.Intent;
 import android.os.Handler;
 import android.text.Editable;
-import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -13,12 +12,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import androidx.cardview.widget.CardView;
-
 import java.util.ArrayList;
 import java.util.Locale;
-
 import me.edgan.redditslide.Adapters.SideArrayAdapter;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.R;
@@ -26,6 +22,7 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.NetworkUtil;
+import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
 
 public class ToolbarSearchController {
 

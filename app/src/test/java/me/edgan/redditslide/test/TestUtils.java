@@ -1,14 +1,11 @@
 package me.edgan.redditslide.test;
 
 import android.content.SharedPreferences;
-
 import androidx.annotation.Nullable;
-
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.io.IOUtils;
 
 public class TestUtils {
 

@@ -1,16 +1,12 @@
 package me.edgan.redditslide.Adapters;
 
 import android.os.AsyncTask;
-
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import me.edgan.redditslide.Authentication;
-
-import net.dean.jraw.models.PublicContribution;
-import net.dean.jraw.paginators.ModeratorPaginator;
-
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import me.edgan.redditslide.Authentication;
+import net.dean.jraw.models.PublicContribution;
+import net.dean.jraw.paginators.ModeratorPaginator;
 
 /** Created by ccrama on 9/17/2015. */
 public class ModeratorPosts {

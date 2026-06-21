@@ -17,11 +17,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import androidx.appcompat.widget.AppCompatCheckBox;
-
+import androidx.core.content.ContextCompat;
 import com.devspark.robototextview.RobotoTypefaces;
-
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.ActionStates;
 import me.edgan.redditslide.Adapters.ProfileCommentViewHolder;
 import me.edgan.redditslide.Adapters.SubmissionViewHolder;
@@ -41,16 +41,11 @@ import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
-
 import net.dean.jraw.models.Account;
 import net.dean.jraw.models.Comment;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Subreddit;
 import net.dean.jraw.models.VoteDirection;
-
-import java.util.List;
-import java.util.Locale;
-import androidx.core.content.ContextCompat;
 
 /** Created by ccrama on 3/5/2015. */
 public class RedditItemView extends RelativeLayout {

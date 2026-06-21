@@ -11,23 +11,14 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-
-import com.davemorrissey.labs.subscaleview.ImageViewState;
-import com.davemorrissey.labs.subscaleview.decoder.ImageRegionDecoder;
-
-import java.util.List;
-
-import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
-
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.exifinterface.media.ExifInterface;
-
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
+import com.davemorrissey.labs.subscaleview.ImageViewState;
 import com.davemorrissey.labs.subscaleview.decoder.ImageRegionDecoder;
-
 import java.util.Arrays;
 import java.util.List;
-
 import me.edgan.redditslide.Views.FallbackImageRegionDecoder;
 import me.edgan.redditslide.Views.ImageSource;
 import me.edgan.redditslide.Views.SubsamplingScaleImageView;

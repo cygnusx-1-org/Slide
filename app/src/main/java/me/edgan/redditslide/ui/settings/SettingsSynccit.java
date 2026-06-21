@@ -1,25 +1,21 @@
 package me.edgan.redditslide.ui.settings;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-
 import androidx.appcompat.app.AlertDialog;
-
+import java.util.Collections;
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Synccit.MySynccitReadTask;
 import me.edgan.redditslide.Synccit.MySynccitUpdateTask;
 import me.edgan.redditslide.Synccit.SynccitRead;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
-
-import java.util.Collections;
 
 /** Created by ccrama on 2/16/2015. */
 public class SettingsSynccit extends BaseActivityAnim {

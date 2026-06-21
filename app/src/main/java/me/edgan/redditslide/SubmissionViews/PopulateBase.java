@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.view.View;
-
 import com.google.android.material.snackbar.Snackbar;
-
 import me.edgan.redditslide.Activities.MainActivity;
 import me.edgan.redditslide.Activities.MediaView;
 import me.edgan.redditslide.Activities.SubredditView;
@@ -14,11 +12,10 @@ import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.util.LayoutUtils;
-
+import me.edgan.redditslide.util.LogUtil;
 import net.dean.jraw.ApiException;
 import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.models.Submission;
-import me.edgan.redditslide.util.LogUtil;
 
 /** Created by TacoTheDank on 04/04/2021. */
 public class PopulateBase {

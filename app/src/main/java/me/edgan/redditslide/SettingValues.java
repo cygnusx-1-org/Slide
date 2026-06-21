@@ -2,20 +2,17 @@ package me.edgan.redditslide;
 
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-
-import me.edgan.redditslide.Views.CreateCardView;
-import me.edgan.redditslide.Visuals.Palette;
-import me.edgan.redditslide.ui.settings.SettingsHandlingFragment;
-import me.edgan.redditslide.util.SortingUtil;
-
-import net.dean.jraw.models.CommentSort;
-import net.dean.jraw.paginators.Sorting;
-import net.dean.jraw.paginators.TimePeriod;
-
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import me.edgan.redditslide.Views.CreateCardView;
+import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.ui.settings.SettingsHandlingFragment;
+import me.edgan.redditslide.util.SortingUtil;
+import net.dean.jraw.models.CommentSort;
+import net.dean.jraw.paginators.Sorting;
+import net.dean.jraw.paginators.TimePeriod;
 
 /** Created by ccrama on 9/19/2015. */
 public class SettingValues {

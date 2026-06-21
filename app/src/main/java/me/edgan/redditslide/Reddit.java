@@ -1,7 +1,5 @@
 package me.edgan.redditslide;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
@@ -21,14 +19,12 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
-
+import androidx.annotation.OptIn;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
-
-import androidx.annotation.OptIn;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.database.DatabaseProvider;
 import androidx.media3.database.ExoDatabaseProvider;
@@ -38,31 +34,6 @@ import androidx.media3.datasource.cache.SimpleCache;
 import com.jakewharton.processphoenix.ProcessPhoenix;
 import com.lusfold.androidkeyvaluestore.KVStore;
 import com.nostra13.universalimageloader.core.ImageLoader;
-
-import me.edgan.redditslide.Activities.MainActivity;
-import me.edgan.redditslide.Autocache.AutoCacheScheduler;
-import me.edgan.redditslide.ImgurAlbum.AlbumUtils;
-import me.edgan.redditslide.Notifications.NotificationJobScheduler;
-import me.edgan.redditslide.Notifications.NotificationPiggyback;
-import me.edgan.redditslide.Tumblr.TumblrUtils;
-import me.edgan.redditslide.Visuals.Palette;
-import me.edgan.redditslide.util.AdBlocker;
-import me.edgan.redditslide.util.CompatUtil;
-import me.edgan.redditslide.util.GifCache;
-import me.edgan.redditslide.util.ImageLoaderUtils;
-import me.edgan.redditslide.util.LogUtil;
-import me.edgan.redditslide.util.NetworkUtil;
-import me.edgan.redditslide.util.SortingUtil;
-import me.edgan.redditslide.util.UpgradeUtil;
-
-import net.dean.jraw.http.NetworkException;
-
-import okhttp3.Dns;
-import okhttp3.OkHttpClient;
-
-import org.apache.commons.lang3.tuple.Triple;
-import org.apache.commons.text.StringEscapeUtils;
-
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -76,6 +47,27 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import me.edgan.redditslide.Activities.MainActivity;
+import me.edgan.redditslide.Autocache.AutoCacheScheduler;
+import me.edgan.redditslide.ImgurAlbum.AlbumUtils;
+import me.edgan.redditslide.Notifications.NotificationJobScheduler;
+import me.edgan.redditslide.Notifications.NotificationPiggyback;
+import me.edgan.redditslide.Tumblr.TumblrUtils;
+import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.AdBlocker;
+import me.edgan.redditslide.util.CompatUtil;
+import me.edgan.redditslide.util.DialogUtil;
+import me.edgan.redditslide.util.GifCache;
+import me.edgan.redditslide.util.ImageLoaderUtils;
+import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.NetworkUtil;
+import me.edgan.redditslide.util.SortingUtil;
+import me.edgan.redditslide.util.UpgradeUtil;
+import net.dean.jraw.http.NetworkException;
+import okhttp3.Dns;
+import okhttp3.OkHttpClient;
+import org.apache.commons.lang3.tuple.Triple;
+import org.apache.commons.text.StringEscapeUtils;
 
 /** Created by ccrama on 9/17/2015. */
 @OptIn(markerClass = UnstableApi.class)

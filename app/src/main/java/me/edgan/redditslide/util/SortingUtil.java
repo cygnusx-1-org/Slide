@@ -6,20 +6,17 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
-
-import me.edgan.redditslide.Activities.Search;
-import me.edgan.redditslide.R;
-import me.edgan.redditslide.Reddit;
-import me.edgan.redditslide.Visuals.ColorPreferences;
-
-import net.dean.jraw.paginators.Sorting;
-import net.dean.jraw.paginators.SubmissionSearchPaginator;
-import net.dean.jraw.paginators.TimePeriod;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import me.edgan.redditslide.Activities.Search;
+import me.edgan.redditslide.R;
+import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.Visuals.ColorPreferences;
+import net.dean.jraw.paginators.Sorting;
+import net.dean.jraw.paginators.SubmissionSearchPaginator;
+import net.dean.jraw.paginators.TimePeriod;
 
 public class SortingUtil {
     public static final Map<String, TimePeriod> times = new HashMap<>();

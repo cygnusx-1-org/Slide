@@ -1,7 +1,5 @@
 package me.edgan.redditslide.Activities;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Dialog;
@@ -31,7 +29,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ContextThemeWrapper;
@@ -41,11 +38,14 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
-
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import me.edgan.redditslide.Adapters.ContributionAdapter;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Fragments.ContributionsView;
@@ -56,15 +56,15 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.UserTags;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.MaterialProgressDialog;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SortingUtil;
 import me.edgan.redditslide.util.TimeUtils;
-import me.edgan.redditslide.util.MiscUtil;
-
 import net.dean.jraw.fluent.FluentRedditClient;
 import net.dean.jraw.http.RestResponse;
 import net.dean.jraw.managers.AccountManager;
@@ -72,19 +72,10 @@ import net.dean.jraw.models.Account;
 import net.dean.jraw.models.Trophy;
 import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.TimePeriod;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import uz.shift.colorpicker.LineColorPicker;
 import uz.shift.colorpicker.OnColorChangedListener;
-
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 /** Created by ccrama on 9/17/2015. */
 public class Profile extends BaseActivityAnim {

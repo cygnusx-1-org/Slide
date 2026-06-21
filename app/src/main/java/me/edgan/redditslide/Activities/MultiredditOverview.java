@@ -18,7 +18,6 @@ import android.view.Window;
 import android.view.animation.LinearInterpolator;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
@@ -28,12 +27,12 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager.widget.ViewPager;
-
 import com.google.android.material.tabs.TabLayout;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.CaseInsensitiveArrayList;
-import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.Fragments.MultiredditView;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
@@ -43,20 +42,16 @@ import me.edgan.redditslide.Views.PreCachingLayoutManager;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SortingUtil;
-
 import net.dean.jraw.models.MultiReddit;
 import net.dean.jraw.models.MultiSubreddit;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.TimePeriod;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 /** Created by ccrama on 9/17/2015. */
 public class MultiredditOverview extends BaseActivityAnim {

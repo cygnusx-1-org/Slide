@@ -4,16 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.view.View;
-
 import com.google.android.material.snackbar.Snackbar;
-
 import me.edgan.redditslide.util.LayoutUtils;
-
+import me.edgan.redditslide.util.LogUtil;
 import net.dean.jraw.ApiException;
 import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.models.PublicContribution;
 import net.dean.jraw.models.VoteDirection;
-import me.edgan.redditslide.util.LogUtil;
 
 /** Created by ccrama on 9/19/2015. */
 public class Vote extends AsyncTask<PublicContribution, Void, Void> {

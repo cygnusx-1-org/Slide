@@ -1,15 +1,12 @@
 package me.edgan.redditslide.Views;
 
-import me.edgan.redditslide.util.SubsamplingScaleImageViewStateHelper;
-
 import android.graphics.PointF;
 import android.util.Log;
 import androidx.annotation.NonNull;
-
-import me.edgan.redditslide.util.SubsamplingScaleImageViewDrawHelper;
-
 import java.util.Arrays;
 import java.util.List;
+import me.edgan.redditslide.util.SubsamplingScaleImageViewDrawHelper;
+import me.edgan.redditslide.util.SubsamplingScaleImageViewStateHelper;
 
 /**
  * Builder class used to set additional options for a scale animation. Create an instance using

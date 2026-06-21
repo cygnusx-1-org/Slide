@@ -6,13 +6,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
-
+import java.util.Locale;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
-
-import java.util.Locale;
 
 /** Created by ccrama on 9/28/2015. */
 public class OpenContent extends Activity {

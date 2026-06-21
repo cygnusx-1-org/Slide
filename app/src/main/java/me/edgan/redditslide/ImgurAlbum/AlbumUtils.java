@@ -3,25 +3,20 @@ package me.edgan.redditslide.ImgurAlbum;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-
 import androidx.annotation.NonNull;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SecretConstants;
 import me.edgan.redditslide.util.HttpUtil;
 import me.edgan.redditslide.util.LogUtil;
-
 import okhttp3.OkHttpClient;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /** Created by carlo_000 on 2/1/2016. */
 public class AlbumUtils {

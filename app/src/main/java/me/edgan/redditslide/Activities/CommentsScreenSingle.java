@@ -1,7 +1,5 @@
 package me.edgan.redditslide.Activities;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -10,18 +8,15 @@ import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Autocache.AutoCacheScheduler;
 import me.edgan.redditslide.Fragments.BlankFragment;
@@ -34,9 +29,9 @@ import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SwipeLayout.Utils;
 import me.edgan.redditslide.UserSubscriptions;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
-
 import net.dean.jraw.models.Submission;
 
 /**

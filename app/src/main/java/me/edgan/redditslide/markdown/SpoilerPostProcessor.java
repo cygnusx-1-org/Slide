@@ -1,12 +1,11 @@
 package me.edgan.redditslide.markdown;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.commonmark.node.AbstractVisitor;
 import org.commonmark.node.Node;
 import org.commonmark.node.Text;
 import org.commonmark.parser.PostProcessor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Turns matched spoiler sentinel pairs (inserted by {@link RedditSpoilerPreprocessor}) inside

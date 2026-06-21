@@ -1,7 +1,5 @@
 package me.edgan.redditslide.ui.settings;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,12 +19,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SwitchCompat;
-
 import com.google.common.base.Strings;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import me.edgan.redditslide.Activities.BaseActivity;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.R;
@@ -34,14 +32,11 @@ import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.ui.settings.dragSort.ReorderSubreddits;
+import me.edgan.redditslide.util.DialogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
-import me.edgan.redditslide.util.MiscUtil;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /** Created by ccrama on 3/5/2015. */
 public class SettingsActivity extends BaseActivity implements RestartActivity {

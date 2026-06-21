@@ -1,7 +1,5 @@
 package me.edgan.redditslide.Adapters;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import static me.edgan.redditslide.Notifications.ImageDownloadNotificationService.EXTRA_SUBMISSION_TITLE;
 
 import android.app.Activity;
@@ -17,18 +15,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import androidx.viewpager.widget.ViewPager;
-
 import com.devspark.robototextview.RobotoTypefaces;
-
 import java.util.List;
-
 import me.edgan.redditslide.Activities.Album;
 import me.edgan.redditslide.Activities.GalleryImage;
 import me.edgan.redditslide.Activities.MediaView;
@@ -38,6 +32,7 @@ import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.Visuals.FontPreferences;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.GifUtils;
 import me.edgan.redditslide.util.LinkUtil;
 

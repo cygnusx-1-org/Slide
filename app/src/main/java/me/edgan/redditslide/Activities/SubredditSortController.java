@@ -1,7 +1,5 @@
 package me.edgan.redditslide.Activities;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.content.DialogInterface;
 import android.text.Spannable;
 import android.view.Gravity;
@@ -10,10 +8,10 @@ import android.view.View;
 import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
-
 import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.SortingUtil;
 import net.dean.jraw.paginators.Sorting;

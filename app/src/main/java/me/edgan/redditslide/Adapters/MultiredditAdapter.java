@@ -8,12 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.google.android.material.snackbar.Snackbar;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Activities.CommentsScreen;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Fragments.MultiredditView;
@@ -22,12 +22,7 @@ import me.edgan.redditslide.SubmissionViews.PopulateSubmissionViewHolder;
 import me.edgan.redditslide.Views.CatchStaggeredGridLayoutManager;
 import me.edgan.redditslide.Views.CreateCardView;
 import me.edgan.redditslide.util.LayoutUtils;
-
 import net.dean.jraw.models.Submission;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 public class MultiredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements BaseAdapter {

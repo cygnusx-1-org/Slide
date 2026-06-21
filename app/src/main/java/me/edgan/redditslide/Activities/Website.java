@@ -17,11 +17,14 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.widget.Toolbar;
 import androidx.webkit.WebViewClientCompat;
-
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.OpenRedditLink;
@@ -35,12 +38,6 @@ import me.edgan.redditslide.util.AdBlocker;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Website extends BaseActivityAnim {
 

@@ -1,11 +1,10 @@
 package me.edgan.redditslide;
 
+import java.util.ArrayList;
 import net.dean.jraw.models.Comment;
 import net.dean.jraw.models.PublicContribution;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.VoteDirection;
-
-import java.util.ArrayList;
 
 /** Created by carlo_000 on 2/26/2016. */
 public class ActionStates {

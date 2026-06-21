@@ -1,12 +1,10 @@
 package me.edgan.redditslide.Toolbox;
 
 import com.google.gson.annotations.SerializedName;
-
-import org.apache.commons.text.StringEscapeUtils;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
+import org.apache.commons.text.StringEscapeUtils;
 
 public class RemovalReasons {
     @SerializedName("pmsubject")

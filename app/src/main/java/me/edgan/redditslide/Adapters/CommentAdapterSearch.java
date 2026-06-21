@@ -20,12 +20,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
-
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.devspark.robototextview.RobotoTypefaces;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.ActionStates;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.R;
@@ -35,24 +37,16 @@ import me.edgan.redditslide.UserTags;
 import me.edgan.redditslide.Views.RoundedBackgroundSpan;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.MiscUtil;
-import com.fasterxml.jackson.databind.JsonNode;
-import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
-
 import net.dean.jraw.models.Comment;
 import net.dean.jraw.models.CommentNode;
 import net.dean.jraw.models.DistinguishedStatus;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
 
 public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements Filterable {

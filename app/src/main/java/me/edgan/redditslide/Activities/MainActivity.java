@@ -1,7 +1,5 @@
 package me.edgan.redditslide.Activities;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ClipData;
@@ -43,7 +41,6 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -60,14 +57,21 @@ import androidx.core.view.GravityCompat;
 import androidx.customview.widget.ViewDragHelper;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.lusfold.androidkeyvaluestore.KVStore;
 import com.lusfold.androidkeyvaluestore.core.KVManger;
-
-
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import me.edgan.redditslide.Adapters.SideArrayAdapter;
 import me.edgan.redditslide.Adapters.SubredditPosts;
 import me.edgan.redditslide.Authentication;
@@ -83,7 +87,6 @@ import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
-import me.edgan.redditslide.markdown.RedditMarkwon;
 import me.edgan.redditslide.Synccit.MySynccitUpdateTask;
 import me.edgan.redditslide.Synccit.SynccitRead;
 import me.edgan.redditslide.UserSubscriptions;
@@ -92,11 +95,14 @@ import me.edgan.redditslide.Views.PreCachingLayoutManager;
 import me.edgan.redditslide.Views.ToggleSwipeViewPager;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.markdown.RedditMarkwon;
 import me.edgan.redditslide.ui.settings.SettingsActivity;
 import me.edgan.redditslide.ui.settings.SettingsGeneralFragment;
 import me.edgan.redditslide.ui.settings.SettingsSubAdapter;
 import me.edgan.redditslide.ui.settings.SettingsThemeFragment;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.DrawableUtil;
+import me.edgan.redditslide.util.FilterContentUtil;
 import me.edgan.redditslide.util.ImageUtil;
 import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.LayoutUtils;
@@ -106,23 +112,10 @@ import me.edgan.redditslide.util.NetworkStateReceiver;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.TimeUtils;
-import me.edgan.redditslide.util.FilterContentUtil;
-
 import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.models.MultiReddit;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.paginators.SubredditPaginator;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class MainActivity extends BaseActivity
         implements NetworkStateReceiver.NetworkStateReceiverListener {

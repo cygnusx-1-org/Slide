@@ -1,7 +1,12 @@
 package me.edgan.redditslide.markdown.uploadedimage;
 
 import androidx.annotation.Nullable;
-
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import me.edgan.redditslide.markdown.UploadedImage;
 import org.commonmark.node.Block;
 import org.commonmark.parser.block.AbstractBlockParser;
 import org.commonmark.parser.block.AbstractBlockParserFactory;
@@ -9,14 +14,6 @@ import org.commonmark.parser.block.BlockContinue;
 import org.commonmark.parser.block.BlockStart;
 import org.commonmark.parser.block.MatchedBlockParser;
 import org.commonmark.parser.block.ParserState;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import me.edgan.redditslide.markdown.UploadedImage;
 
 /**
  * Recognizes a line of the form {@code ![caption](key)} where {@code key} matches a previously

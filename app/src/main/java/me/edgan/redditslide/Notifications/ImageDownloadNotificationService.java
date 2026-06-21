@@ -10,28 +10,24 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.widget.Toast;
-
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
-
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-
-import me.edgan.redditslide.R;
-import me.edgan.redditslide.Reddit;
-import me.edgan.redditslide.SettingValues;
-import me.edgan.redditslide.util.FileUtil;
-import me.edgan.redditslide.util.LogUtil;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
+import me.edgan.redditslide.R;
+import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.util.FileUtil;
+import me.edgan.redditslide.util.LogUtil;
 
 public class ImageDownloadNotificationService extends Service {
 

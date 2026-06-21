@@ -4,9 +4,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.widget.HorizontalScrollView;
-
 import androidx.appcompat.widget.AppCompatButton;
-
+import java.util.List;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
@@ -17,8 +16,6 @@ import me.edgan.redditslide.Views.TitleTextView;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SubmissionParser;
-
-import java.util.List;
 
 public class Announcement extends BaseActivity {
 

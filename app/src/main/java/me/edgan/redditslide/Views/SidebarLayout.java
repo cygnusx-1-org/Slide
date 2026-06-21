@@ -5,13 +5,10 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-
 import androidx.drawerlayout.widget.DrawerLayout;
-
-import me.edgan.redditslide.R;
-
 import java.util.ArrayList;
 import java.util.List;
+import me.edgan.redditslide.R;
 
 /**
  * Drawer that allows for horizontal scrolling views.

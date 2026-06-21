@@ -5,7 +5,7 @@ import android.text.Editable;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
-
+import java.util.ArrayList;
 import me.edgan.redditslide.Adapters.SubChooseAdapter;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.UserSubscriptions;
@@ -13,8 +13,6 @@ import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
-
-import java.util.ArrayList;
 
 /** Created by ccrama on 10/2/2015. */
 public class Shortcut extends BaseActivity {

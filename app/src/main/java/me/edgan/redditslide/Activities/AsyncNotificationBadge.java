@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Activities;
 
+import static me.edgan.redditslide.UserSubscriptions.modOf;
+
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -7,27 +9,21 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import androidx.core.content.ContextCompat;
-
 import com.google.android.material.snackbar.Snackbar;
-
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
-
 import me.edgan.redditslide.Authentication;
+import me.edgan.redditslide.Autocache.AutoCacheScheduler;
+import me.edgan.redditslide.Notifications.NotificationJobScheduler;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.UserSubscriptions;
-import me.edgan.redditslide.Autocache.AutoCacheScheduler;
-import me.edgan.redditslide.Notifications.NotificationJobScheduler;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import net.dean.jraw.models.LoggedInAccount;
-
-import static me.edgan.redditslide.UserSubscriptions.modOf;
 
 public class AsyncNotificationBadge extends AsyncTask<Void, Void, Void> {
     private MainActivity activity;

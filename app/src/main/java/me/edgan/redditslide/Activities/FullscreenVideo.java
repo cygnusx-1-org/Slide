@@ -1,7 +1,5 @@
 package me.edgan.redditslide.Activities;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Window;
@@ -9,11 +7,10 @@ import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-
 import androidx.appcompat.app.AlertDialog;
-
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;

@@ -1,8 +1,5 @@
 package me.edgan.redditslide.SubmissionViews;
 
-import me.edgan.redditslide.util.DialogUtil;
-
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -18,18 +15,20 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
-import me.edgan.redditslide.util.BottomSheet;
 import com.devspark.robototextview.RobotoTypefaces;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import me.edgan.redditslide.ActionStates;
 import me.edgan.redditslide.Activities.MainActivity;
 import me.edgan.redditslide.Adapters.CommentAdapter;
@@ -45,24 +44,25 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionCache;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Views.CreateCardView;
-import me.edgan.redditslide.Views.RoundImageTriangleView;
 import me.edgan.redditslide.Views.DoEditorActions;
+import me.edgan.redditslide.Views.RoundImageTriangleView;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.Vote;
-import com.fasterxml.jackson.databind.JsonNode;
 import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.util.AnimatorUtil;
 import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.BottomSheet;
 import me.edgan.redditslide.util.CompatUtil;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.SubmissionBottomSheetActions;
 import me.edgan.redditslide.util.SubmissionModActions;
 import me.edgan.redditslide.util.SubmissionParser;
-
 import net.dean.jraw.ApiException;
 import net.dean.jraw.fluent.FlairReference;
 import net.dean.jraw.fluent.FluentRedditClient;
@@ -72,15 +72,7 @@ import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.FlairTemplate;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.VoteDirection;
-
 import org.apache.commons.text.StringEscapeUtils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import me.edgan.redditslide.util.LogUtil;
 
 /** Created by ccrama on 9/19/2015. */
 public class PopulateSubmissionViewHolder {
@@ -388,6 +380,10 @@ public class PopulateSubmissionViewHolder {
         final ContentType.Type type = ContentType.getContentType(submission);
 
         if (thumbImage2 instanceof RoundImageTriangleView) {
+            // Must call setFlagColor() on every bind, including the TRANSPARENT (pref-off) case:
+            // thumbnail views are recycled, so skipping this when the flag is off would leave a
+            // stale triangle from a previously-bound post. Do not guard this whole block behind
+            // SettingValues.thumbnailFlags.
             ((RoundImageTriangleView) thumbImage2)
                     .setFlagColor(
                             SettingValues.thumbnailFlags

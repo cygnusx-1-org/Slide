@@ -2,14 +2,12 @@ package me.edgan.redditslide.test;
 
 import static org.junit.Assert.fail;
 
-import me.edgan.redditslide.SpoilerRobotoTextView;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import me.edgan.redditslide.SpoilerRobotoTextView;
+import org.junit.Before;
+import org.junit.Test;
 
 public class SpoilerTextTest {
     private Pattern htmlSpoilerPattern;

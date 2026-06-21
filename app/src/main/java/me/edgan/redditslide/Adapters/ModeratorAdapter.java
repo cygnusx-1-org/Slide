@@ -1,8 +1,5 @@
 package me.edgan.redditslide.Adapters;
 
-import me.edgan.redditslide.util.DialogUtil;
-
-/** Created by ccrama on 3/22/2015. */
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -25,14 +22,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
-import me.edgan.redditslide.util.BottomSheet;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.android.material.snackbar.Snackbar;
-
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import me.edgan.redditslide.ActionStates;
 import me.edgan.redditslide.Activities.Profile;
 import me.edgan.redditslide.Activities.SubredditView;
@@ -50,19 +48,19 @@ import me.edgan.redditslide.Views.CreateCardView;
 import me.edgan.redditslide.Views.RoundedBackgroundSpan;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.BottomSheet;
 import me.edgan.redditslide.util.CompatUtil;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
-import com.fasterxml.jackson.databind.JsonNode;
-import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
-
 import net.dean.jraw.ApiException;
 import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.managers.ModerationManager;
@@ -71,11 +69,6 @@ import net.dean.jraw.models.DistinguishedStatus;
 import net.dean.jraw.models.PublicContribution;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.VoteDirection;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements BaseAdapter {

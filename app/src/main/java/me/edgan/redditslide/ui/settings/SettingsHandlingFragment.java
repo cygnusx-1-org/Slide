@@ -11,22 +11,18 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import androidx.annotation.IdRes;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SwitchCompat;
-
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.LinkUtil;
-
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 
 public class SettingsHandlingFragment implements CompoundButton.OnCheckedChangeListener {
 

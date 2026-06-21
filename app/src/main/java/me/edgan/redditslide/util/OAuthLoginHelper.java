@@ -1,14 +1,11 @@
 package me.edgan.redditslide.util;
 
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
+import java.io.IOException;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
 
 /**
  * Context-free classification helpers for the Reddit OAuth login flow. Pulling these pure decisions

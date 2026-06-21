@@ -1,7 +1,5 @@
 package me.edgan.redditslide.Activities;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -10,12 +8,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
+import java.util.Locale;
 import me.edgan.redditslide.Adapters.ContributionAdapter;
 import me.edgan.redditslide.Adapters.SubredditSearchPosts;
 import me.edgan.redditslide.Constants;
@@ -26,19 +23,16 @@ import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.handler.ToolbarScrollHideHandler;
 import me.edgan.redditslide.util.CompatUtil;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.MaterialInputDialog;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SortingUtil;
 import me.edgan.redditslide.util.TimeUtils;
-import me.edgan.redditslide.util.MiscUtil;
-
 import net.dean.jraw.paginators.SubmissionSearchPaginator;
 import net.dean.jraw.paginators.TimePeriod;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
-
-import java.util.Locale;
 
 public class Search extends BaseActivityAnim {
 

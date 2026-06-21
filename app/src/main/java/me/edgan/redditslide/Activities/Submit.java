@@ -1,11 +1,9 @@
 package me.edgan.redditslide.Activities;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -26,13 +24,11 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SwitchCompat;
-
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,8 +38,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
-
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Drafts;
 import me.edgan.redditslide.Flair.RichFlair;
@@ -56,6 +55,7 @@ import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Views.DoEditorActions;
 import me.edgan.redditslide.Views.ImageInsertEditText;
 import me.edgan.redditslide.Visuals.ColorPreferences;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.HttpUtil;
 import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.LogUtil;
@@ -64,23 +64,14 @@ import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TitleExtractor;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
-
 import net.dean.jraw.ApiException;
 import net.dean.jraw.http.HttpRequest;
 import net.dean.jraw.http.RestResponse;
 import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Subreddit;
-
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 
 /** Created by ccrama on 3/5/2015. */
 public class Submit extends BaseActivity {

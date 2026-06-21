@@ -2,12 +2,9 @@ package me.edgan.redditslide.util;
 
 import android.util.Log;
 import com.fasterxml.jackson.databind.JsonNode;
-
-import me.edgan.redditslide.Activities.GalleryImage;
-
-import org.apache.commons.text.StringEscapeUtils;
-
 import java.util.ArrayList;
+import me.edgan.redditslide.Activities.GalleryImage;
+import org.apache.commons.text.StringEscapeUtils;
 
 /** Created by TacoTheDank on 04/04/2021. */
 public class JsonUtil {

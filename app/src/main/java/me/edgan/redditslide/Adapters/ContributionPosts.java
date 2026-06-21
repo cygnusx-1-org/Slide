@@ -1,9 +1,9 @@
 package me.edgan.redditslide.Adapters;
 
 import android.os.AsyncTask;
-
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
+import java.util.ArrayList;
+import java.util.Map;
 import me.edgan.redditslide.Activities.Profile;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.HasSeen;
@@ -11,16 +11,12 @@ import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.PhotoLoader;
-
 import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.TimePeriod;
 import net.dean.jraw.paginators.UserContributionPaginator;
 import net.dean.jraw.paginators.UserProfilePaginator;
-
-import java.util.ArrayList;
-import java.util.Map;
 
 /** Created by ccrama on 9/17/2015. */
 public class ContributionPosts extends GeneralPosts {

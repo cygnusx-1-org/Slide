@@ -26,7 +26,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ContextThemeWrapper;
@@ -36,14 +35,19 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.slider.Slider;
-
+import com.google.android.material.snackbar.Snackbar;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Activities.Album;
 import me.edgan.redditslide.Activities.AlbumPager;
 import me.edgan.redditslide.Activities.CommentSearch;
@@ -82,7 +86,6 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SpoilerRobotoTextView;
-import me.edgan.redditslide.util.SubmissionThumbnailHelper;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Views.DoEditorActions;
@@ -96,14 +99,15 @@ import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LinkUtil;
+import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.StringUtil;
 import me.edgan.redditslide.util.SubmissionParser;
+import me.edgan.redditslide.util.SubmissionThumbnailHelper;
 import me.edgan.redditslide.util.TimeUtils;
-
 import net.dean.jraw.ApiException;
 import net.dean.jraw.http.MultiRedditUpdateRequest;
 import net.dean.jraw.http.NetworkException;
@@ -118,15 +122,6 @@ import net.dean.jraw.models.UserRecord;
 import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.TimePeriod;
 import net.dean.jraw.paginators.UserRecordPaginator;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import me.edgan.redditslide.util.LogUtil;
 
 /**
  * Fragment which displays comment trees.

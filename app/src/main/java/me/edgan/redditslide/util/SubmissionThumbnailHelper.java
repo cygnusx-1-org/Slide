@@ -5,8 +5,6 @@ import static me.edgan.redditslide.Notifications.ImageDownloadNotificationServic
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-
-
 import me.edgan.redditslide.Activities.MediaView;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.DataShare;
@@ -15,9 +13,7 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionViews.HeaderImageLinkView;
 import me.edgan.redditslide.SubmissionViews.PopulateBase;
 import me.edgan.redditslide.Visuals.Palette;
-
 import net.dean.jraw.models.Submission;
-
 import org.apache.commons.text.StringEscapeUtils;
 
 

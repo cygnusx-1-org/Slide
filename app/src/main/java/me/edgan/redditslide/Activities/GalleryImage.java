@@ -2,11 +2,9 @@ package me.edgan.redditslide.Activities;
 
 import android.util.Log;
 import com.fasterxml.jackson.databind.JsonNode;
-
-import org.apache.commons.text.StringEscapeUtils;
-
 import java.io.Serializable;
 import java.util.Arrays;
+import org.apache.commons.text.StringEscapeUtils;
 
 /** Created by ccrama on 09/22/2020. */
 public class GalleryImage implements Serializable {

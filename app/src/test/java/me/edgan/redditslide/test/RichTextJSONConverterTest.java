@@ -3,15 +3,13 @@ package me.edgan.redditslide.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
 import me.edgan.redditslide.markdown.RichTextJSONConverter;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-
-import java.util.Collections;
 
 /**
  * Regression guard for the #176 richtext_json submit path after the commonmark 0.13.0 migration

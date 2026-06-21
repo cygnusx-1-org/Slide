@@ -5,27 +5,22 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import me.edgan.redditslide.Activities.BaseSaveActivity;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.util.HttpUtil;
 import me.edgan.redditslide.util.LogUtil;
-
 import okhttp3.OkHttpClient;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /** Created by carlo_000 on 2/1/2016. */
 public class TumblrUtils {

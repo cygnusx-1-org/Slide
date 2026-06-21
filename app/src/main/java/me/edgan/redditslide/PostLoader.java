@@ -1,12 +1,9 @@
 package me.edgan.redditslide;
 
 import android.content.Context;
-
-import me.edgan.redditslide.Adapters.SubmissionDisplay;
-
-import net.dean.jraw.models.Submission;
-
 import java.util.List;
+import me.edgan.redditslide.Adapters.SubmissionDisplay;
+import net.dean.jraw.models.Submission;
 
 /**
  * This interface provides methods for loading and retrieving submissions (such as subreddit or

@@ -1,7 +1,5 @@
 package me.edgan.redditslide.Fragments;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -14,7 +12,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ContextThemeWrapper;
@@ -23,12 +20,12 @@ import androidx.fragment.app.Fragment;
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.mikepenz.itemanimators.AlphaInAnimator;
 import com.mikepenz.itemanimators.SlideUpAlphaAnimator;
-
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Activities.BaseActivity;
 import me.edgan.redditslide.Activities.MainActivity;
 import me.edgan.redditslide.Activities.Submit;
@@ -48,12 +45,9 @@ import me.edgan.redditslide.Views.CreateCardView;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.handler.ToolbarScrollHideHandler;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LayoutUtils;
-
 import net.dean.jraw.models.Submission;
-
-import java.util.List;
-import java.util.Locale;
 
 public class NewsView extends Fragment implements SubmissionDisplay {
     private static int adapterPosition;

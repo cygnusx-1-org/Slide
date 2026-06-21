@@ -1,11 +1,10 @@
 package me.edgan.redditslide.Synccit.http;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
 
 class HttpClientFactory {
 

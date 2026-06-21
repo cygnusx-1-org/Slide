@@ -1,17 +1,13 @@
 package me.edgan.redditslide.util;
 
+import static me.edgan.redditslide.Views.SubsamplingScaleImageView.*;
+
 import android.graphics.PointF;
 import android.graphics.Rect;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-// Needed for getState logic if moved here (kept in main class for now)
-
 import me.edgan.redditslide.Views.SubsamplingScaleImageView;
-import me.edgan.redditslide.Views.SubsamplingScaleImageView.ScaleAndTranslate; // Need access to inner class
-
-// Import necessary classes used by the moved methods
-import static me.edgan.redditslide.Views.SubsamplingScaleImageView.*; // For constants like ORIENTATION_USE_EXIF, SCALE_TYPE_*, PAN_LIMIT_*
+import me.edgan.redditslide.Views.SubsamplingScaleImageView.ScaleAndTranslate;
 
 /**
  * Helper class containing static methods extracted from SubsamplingScaleImageView

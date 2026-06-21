@@ -1,12 +1,11 @@
 package me.edgan.redditslide.markdown;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.commonmark.node.AbstractVisitor;
 import org.commonmark.node.Image;
 import org.commonmark.node.Node;
 import org.commonmark.parser.PostProcessor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Removes markdown image nodes from the text tree. In the new Reddit-style renderer, giphy

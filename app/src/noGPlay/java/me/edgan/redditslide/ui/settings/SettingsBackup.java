@@ -1,7 +1,5 @@
 package me.edgan.redditslide.ui.settings;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -9,18 +7,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.util.Log;
-
 import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.snackbar.Snackbar;
 import com.jakewharton.processphoenix.ProcessPhoenix;
-
-import me.edgan.redditslide.Activities.BaseActivityAnim;
-import me.edgan.redditslide.R;
-import me.edgan.redditslide.util.LayoutUtils;
-import me.edgan.redditslide.util.MaterialProgressDialog;
-import me.edgan.redditslide.util.StorageUtil;
-import me.edgan.redditslide.util.MiscUtil;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -33,6 +22,13 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import me.edgan.redditslide.Activities.BaseActivityAnim;
+import me.edgan.redditslide.R;
+import me.edgan.redditslide.util.DialogUtil;
+import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.MaterialProgressDialog;
+import me.edgan.redditslide.util.MiscUtil;
+import me.edgan.redditslide.util.StorageUtil;
 
 /**
  * Handles local (SAF-based) backup and restore of app settings, and stripped of all Google Drive

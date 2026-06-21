@@ -1,19 +1,18 @@
 package me.edgan.redditslide;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AlertDialog;
-
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.UUID;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
-
 import net.dean.jraw.RedditClient;
 import net.dean.jraw.http.LoggingMode;
 import net.dean.jraw.http.NetworkException;
@@ -23,12 +22,7 @@ import net.dean.jraw.http.oauth.Credentials;
 import net.dean.jraw.http.oauth.OAuthData;
 import net.dean.jraw.http.oauth.OAuthHelper;
 import net.dean.jraw.models.LoggedInAccount;
-
 import okhttp3.Protocol;
-
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.UUID;
 
 /** Created by ccrama on 3/30/2015. */
 public class Authentication {

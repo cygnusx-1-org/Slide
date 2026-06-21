@@ -1,7 +1,5 @@
 package me.edgan.redditslide.Activities;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -25,16 +23,14 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,7 +38,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
 import me.edgan.redditslide.Adapters.SideArrayAdapter;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Constants;
@@ -57,6 +52,7 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.ui.settings.ManageOfflineContent;
 import me.edgan.redditslide.ui.settings.SettingsActivity;
 import me.edgan.redditslide.util.AnimatorUtil;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.EditTextValidator;
 import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.LogUtil;
@@ -64,7 +60,6 @@ import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
-import androidx.core.content.ContextCompat;
 
 public class DrawerController {
 

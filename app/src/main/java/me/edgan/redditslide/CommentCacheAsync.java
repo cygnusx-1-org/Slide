@@ -5,15 +5,18 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
-
 import com.fasterxml.jackson.databind.JsonNode;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.PhotoLoader;
-
 import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.http.RestResponse;
 import net.dean.jraw.http.SubmissionRequest;
@@ -22,14 +25,6 @@ import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.meta.SubmissionSerializer;
 import net.dean.jraw.paginators.SubredditPaginator;
 import net.dean.jraw.util.JrawUtils;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 
 /** Created by carlo_000 on 4/18/2016. */
 public class CommentCacheAsync extends AsyncTask<Void, Void, Void> {

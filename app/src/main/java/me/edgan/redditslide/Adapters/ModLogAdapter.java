@@ -15,10 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
+import java.util.Locale;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
@@ -27,10 +26,7 @@ import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.Views.RoundedBackgroundSpan;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.TimeUtils;
-
 import net.dean.jraw.models.ModAction;
-
-import java.util.Locale;
 
 public class ModLogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements BaseAdapter {

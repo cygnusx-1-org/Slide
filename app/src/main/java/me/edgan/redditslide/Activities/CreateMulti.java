@@ -29,12 +29,15 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.UserSubscriptions;
@@ -45,7 +48,6 @@ import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
-
 import net.dean.jraw.ApiException;
 import net.dean.jraw.http.MultiRedditUpdateRequest;
 import net.dean.jraw.http.NetworkException;
@@ -53,12 +55,6 @@ import net.dean.jraw.managers.MultiRedditManager;
 import net.dean.jraw.models.MultiReddit;
 import net.dean.jraw.models.MultiSubreddit;
 import net.dean.jraw.models.Subreddit;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /** This class handles creation of Multireddits. */
 public class CreateMulti extends BaseActivityAnim {

@@ -2,13 +2,10 @@ package me.edgan.redditslide.Visuals;
 
 import android.content.Context;
 import android.graphics.Color;
-
 import androidx.core.content.ContextCompat;
-
-import me.edgan.redditslide.R;
-
 import java.util.Map;
 import java.util.TreeMap;
+import me.edgan.redditslide.R;
 
 /** Created by carlo_000 on 2/8/2016. */
 public class GetClosestColor {

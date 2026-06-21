@@ -7,27 +7,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import me.edgan.redditslide.Activities.CommentsScreen;
+import me.edgan.redditslide.Activities.GalleryImage;
 import me.edgan.redditslide.Activities.Shadowbox;
 import me.edgan.redditslide.Adapters.RedditGalleryView;
-import me.edgan.redditslide.Activities.GalleryImage;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SubmissionViews.PopulateShadowboxInfo;
 import me.edgan.redditslide.util.LogUtil;
-
 import net.dean.jraw.models.Submission;
 
 public class RedditGalleryFull extends Fragment {

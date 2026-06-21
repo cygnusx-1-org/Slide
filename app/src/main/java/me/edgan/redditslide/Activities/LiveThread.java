@@ -1,7 +1,5 @@
 package me.edgan.redditslide.Activities;
 
-import me.edgan.redditslide.util.DialogUtil;
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -20,18 +18,21 @@ import android.webkit.WebView;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.R;
@@ -41,6 +42,7 @@ import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Views.SidebarLayout;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.CompatUtil;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.HttpUtil;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
@@ -49,22 +51,13 @@ import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
 import me.edgan.redditslide.util.TwitterObject;
-
 import net.dean.jraw.managers.LiveThreadManager;
 import net.dean.jraw.models.LiveUpdate;
 import net.dean.jraw.paginators.LiveThreadPaginator;
-
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import androidx.core.content.ContextCompat;
 
 public class LiveThread extends BaseActivityAnim {
 

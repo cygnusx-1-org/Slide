@@ -15,17 +15,15 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.MiscUtil;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
 /**
  * Displays a single type of post filter (domain, selftext, title, profile, subreddit or flair) as

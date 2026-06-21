@@ -1,27 +1,8 @@
 package me.edgan.redditslide.Adapters;
 
 import android.os.AsyncTask;
-
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.fasterxml.jackson.databind.JsonNode;
-
-import me.edgan.redditslide.Authentication;
-import me.edgan.redditslide.Fragments.CommentPage;
-import me.edgan.redditslide.LastComments;
-import me.edgan.redditslide.Reddit;
-import me.edgan.redditslide.util.CommentImageUtil;
-import me.edgan.redditslide.util.NetworkUtil;
-import me.edgan.redditslide.util.SubmissionParser;
-
-import net.dean.jraw.http.RestResponse;
-import net.dean.jraw.http.SubmissionRequest;
-import net.dean.jraw.models.CommentNode;
-import net.dean.jraw.models.CommentSort;
-import net.dean.jraw.models.Submission;
-import net.dean.jraw.models.meta.SubmissionSerializer;
-import net.dean.jraw.util.JrawUtils;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,6 +11,20 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+import me.edgan.redditslide.Authentication;
+import me.edgan.redditslide.Fragments.CommentPage;
+import me.edgan.redditslide.LastComments;
+import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.util.CommentImageUtil;
+import me.edgan.redditslide.util.NetworkUtil;
+import me.edgan.redditslide.util.SubmissionParser;
+import net.dean.jraw.http.RestResponse;
+import net.dean.jraw.http.SubmissionRequest;
+import net.dean.jraw.models.CommentNode;
+import net.dean.jraw.models.CommentSort;
+import net.dean.jraw.models.Submission;
+import net.dean.jraw.models.meta.SubmissionSerializer;
+import net.dean.jraw.util.JrawUtils;
 
 /** Created by ccrama on 9/17/2015. */
 public class SubmissionComments {

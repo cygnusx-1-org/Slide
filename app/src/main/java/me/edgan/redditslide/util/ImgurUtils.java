@@ -3,21 +3,8 @@ package me.edgan.redditslide.util;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import me.edgan.redditslide.Reddit;
-
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
-import org.json.JSONObject;
-
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
@@ -25,6 +12,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import me.edgan.redditslide.Reddit;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import org.json.JSONObject;
 
 // Following methods sourced from https://github.com/Kennyc1012/Opengur, Code by Kenny Campagna
 public class ImgurUtils {

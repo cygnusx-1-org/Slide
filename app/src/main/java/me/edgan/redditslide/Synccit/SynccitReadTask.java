@@ -1,10 +1,9 @@
 package me.edgan.redditslide.Synccit;
 
+import java.util.HashSet;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.HashSet;
 
 /** https://github.com/drakeapps/synccit#example-json-read-call */
 abstract class SynccitReadTask extends SynccitTask {

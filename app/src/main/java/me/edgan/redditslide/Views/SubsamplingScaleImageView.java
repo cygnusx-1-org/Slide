@@ -24,11 +24,9 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewParent;
-
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.davemorrissey.labs.subscaleview.ImageViewState;
 import com.davemorrissey.labs.subscaleview.R.styleable;
 import com.davemorrissey.labs.subscaleview.decoder.CompatDecoderFactory;
@@ -37,11 +35,6 @@ import com.davemorrissey.labs.subscaleview.decoder.ImageDecoder;
 import com.davemorrissey.labs.subscaleview.decoder.ImageRegionDecoder;
 import com.davemorrissey.labs.subscaleview.decoder.SkiaImageDecoder;
 import com.davemorrissey.labs.subscaleview.decoder.SkiaImageRegionDecoder;
-
-import me.edgan.redditslide.SettingValues;
-import me.edgan.redditslide.util.SubsamplingScaleImageViewDrawHelper;
-import me.edgan.redditslide.util.TouchEventUtil;
-
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.List;
@@ -49,9 +42,12 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.util.SubsamplingScaleImageViewDrawHelper;
+import me.edgan.redditslide.util.SubsamplingScaleImageViewLoader;
 import me.edgan.redditslide.util.SubsamplingScaleImageViewStateHelper;
 import me.edgan.redditslide.util.TileManager;
-import me.edgan.redditslide.util.SubsamplingScaleImageViewLoader;
+import me.edgan.redditslide.util.TouchEventUtil;
 
 /**
  * Displays an image subsampled as necessary to avoid loading too much image data into memory. After

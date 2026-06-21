@@ -7,24 +7,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.webkit.WebViewClientCompat;
-
+import java.lang.ref.WeakReference;
 import me.edgan.redditslide.Activities.Wiki;
 import me.edgan.redditslide.BuildConfig;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Visuals.Palette;
-
 import net.dean.jraw.managers.WikiManager;
-
 import org.apache.commons.text.StringEscapeUtils;
-
-import java.lang.ref.WeakReference;
 
 public class WikiPage extends Fragment {
     private String title;
