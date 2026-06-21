@@ -55,7 +55,13 @@ public class RoundImageTriangleView extends ShapeableImageView {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
+        // If the color was set before the view was measured, setFlagColor() only had the solid
+        // fallback to work with. Now that we have a size, rebuild the gradient and redraw so the
+        // flag isn't left showing the flat fallback color.
         updateShader();
+        if (color != Color.TRANSPARENT) {
+            invalidate();
+        }
     }
 
     private void updateShader() {
