@@ -629,6 +629,63 @@
                                 <category android:name="android.intent.category.BROWSABLE"/>
                                 <data android:scheme="http" android:host="www.ccrama.me"/>
                         </intent-filter>
+                        <intent-filter>
+                                <action android:name="android.intent.action.VIEW"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.BROWSABLE"/>
+                                <data android:scheme="redreader" android:host="rr_oauth_redir"/>
+                        </intent-filter>
+                        <intent-filter>
+                                <action android:name="android.intent.action.VIEW"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.BROWSABLE"/>
+                                <data android:scheme="slide" android:host="localhost"/>
+                                <data android:scheme="slide" android:host="127.0.0.1"/>
+                        </intent-filter>
+                        <intent-filter>
+                                <action android:name="android.intent.action.VIEW"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.BROWSABLE"/>
+                                <data android:scheme="continuum" android:host="localhost"/>
+                                <data android:scheme="continuum" android:host="127.0.0.1"/>
+                        </intent-filter>
+                        <intent-filter>
+                                <action android:name="android.intent.action.VIEW"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.BROWSABLE"/>
+                                <data android:scheme="infinity" android:host="localhost"/>
+                                <data android:scheme="infinity" android:host="127.0.0.1"/>
+                        </intent-filter>
+                        <intent-filter>
+                                <action android:name="android.intent.action.VIEW"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.BROWSABLE"/>
+                                <data android:scheme="redditisfun" android:host="auth"/>
+                        </intent-filter>
+                        <intent-filter>
+                                <action android:name="android.intent.action.VIEW"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.BROWSABLE"/>
+                                <data android:scheme="dbrady" android:host="relay"/>
+                        </intent-filter>
+                        <intent-filter>
+                                <action android:name="android.intent.action.VIEW"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.BROWSABLE"/>
+                                <data android:scheme="http" android:host="rubenmayayo.com"/>
+                        </intent-filter>
+                        <intent-filter>
+                                <action android:name="android.intent.action.VIEW"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.BROWSABLE"/>
+                                <data android:scheme="http" android:host="baconreader.com" android:path="/auth"/>
+                        </intent-filter>
+                        <intent-filter>
+                                <action android:name="android.intent.action.VIEW"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.BROWSABLE"/>
+                                <data android:scheme="https" android:host="127.0.0.1" android:port="65023" android:path="/authorize_callback"/>
+                        </intent-filter>
                 </activity>
                 <activity
                         android:name=".Activities.Reauthenticate"

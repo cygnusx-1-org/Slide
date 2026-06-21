@@ -12,6 +12,10 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -48,13 +52,16 @@ import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.UserSubscriptions;
+import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.GetClosestColor;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
+import me.edgan.redditslide.util.OAuthLoginHelper;
 
 import net.dean.jraw.http.NetworkException;
+import net.dean.jraw.http.RestResponse;
 import net.dean.jraw.http.oauth.Credentials;
 import net.dean.jraw.http.oauth.OAuthData;
 import net.dean.jraw.http.oauth.OAuthException;
@@ -78,6 +85,8 @@ public class Login extends BaseActivityAnim {
     CaseInsensitiveArrayList subNames;
     String authorizationUrl;
     OAuthHelper oAuthHelper;
+    /** The CSRF state JRAW embedded in the authorize URL, validated on the redirect. */
+    String expectedState;
 
     @Override
     public void onCreate(Bundle savedInstance) {
@@ -133,8 +142,11 @@ public class Login extends BaseActivityAnim {
             return;
         }
         oAuthHelper = Authentication.reddit.getOAuthHelper();
-        authorizationUrl =
-                oAuthHelper.getAuthorizationUrl(credentials, true, scopes).toExternalForm();
+        java.net.URL authUrl = oAuthHelper.getAuthorizationUrl(credentials, true, scopes);
+        // Capture the CSRF state JRAW embedded in the authorize URL so the redirect can be validated
+        // (via OAuthLoginHelper.classifyRedirect) before handing off to the token exchange.
+        expectedState = Uri.parse(authUrl.toExternalForm()).getQueryParameter("state");
+        authorizationUrl = authUrl.toExternalForm();
         authorizationUrl = authorizationUrl.replace("www.", "i.");
         authorizationUrl = authorizationUrl.replace("%3A%2F%2Fi", "://www");
         Log.v(LogUtil.getTag(), "Auth URL: " + authorizationUrl);
@@ -169,6 +181,18 @@ public class Login extends BaseActivityAnim {
             public void logFetch(String message) {
                 Log.e("Log into Reddit", "Fetch intercept: " + message);
             }
+
+            // Called from the WebView when a loaded reddit page's text starts with '{'. Confirm it's a
+            // bare-JSON error page (the OAuth flow dead-ended instead of redirecting to our scheme) and,
+            // if so, surface a clear message instead of leaving "{}" on screen. Runs on a binder thread.
+            @JavascriptInterface
+            public void onPossibleErrorPage(String body) {
+                if (!OAuthLoginHelper.looksLikeJsonErrorPage(body)) {
+                    return;
+                }
+                Log.e("Log into Reddit", "OAuth flow dead-ended on an error page: " + body);
+                runOnUiThread(() -> showLoginFailedDialog());
+            }
         }, "LoginDebug");
 
         webView.setWebViewClient(
@@ -182,15 +206,7 @@ public class Login extends BaseActivityAnim {
                                 CookieManager.getInstance().getCookie(url);
                         Log.v(LOGIN_TAG, "Cookies for URL: " + cookies);
                         LogUtil.v(url);
-                        if (url.contains("code=")) {
-                            Log.v(LOGIN_TAG, "Auth code received in URL: " + url);
-                            // Authentication code received, prevent HTTP call from being made.
-                            webView.stopLoading();
-                            new UserChallengeTask(oAuthHelper, credentials).execute(url);
-                            webView.setVisibility(View.GONE);
-                        } else if (url.contains("error=")) {
-                            Log.e(LOGIN_TAG, "Error in URL: " + url);
-                        }
+                        handleOAuthRedirect(url, webView);
                     }
 
                     @Override
@@ -301,6 +317,23 @@ public class Login extends BaseActivityAnim {
                                         + "    'authorize rewrite listener installed');"
                                         + "})()",
                                 value -> Log.v(LOGIN_TAG, "authorize rewrite inject: " + value));
+
+                        // Detect the OAuth flow dead-ending on a bare-JSON error page (e.g. "{}")
+                        // rendered in the WebView when the redirect never fires — otherwise the user is
+                        // stuck with no feedback. The reddit.com host check plus the bare-{…} shape keep
+                        // this from firing on normal consent/login pages.
+                        view.evaluateJavascript(
+                                "(function() {"
+                                        + "  try {"
+                                        + "    if (location.host.indexOf('reddit.com') === -1) return;"
+                                        + "    var t = (document.body ? document.body.innerText : '')"
+                                        + "        .trim();"
+                                        + "    if (t.length > 0 && t.charAt(0) === '{') {"
+                                        + "      LoginDebug.onPossibleErrorPage(t);"
+                                        + "    }"
+                                        + "  } catch (e) {}"
+                                        + "})()",
+                                null);
                     }
 
                     @Override
@@ -478,14 +511,83 @@ public class Login extends BaseActivityAnim {
         super.onNewIntent(intent);
 
         Uri uri = intent.getData();
-        if (uri != null && uri.toString().contains("code=")) {
-            String url = uri.toString();
-            Log.v(LogUtil.getTag(), "Custom Tab redirect URL: " + url);
-            new UserChallengeTask(oAuthHelper, credentials).execute(url);
+        if (uri != null) {
+            Log.v(LogUtil.getTag(), "Custom Tab redirect URL: " + uri);
+            handleOAuthRedirect(uri.toString(), null);
+        }
+    }
+
+    /**
+     * Decides what to do with an OAuth redirect URL via {@link OAuthLoginHelper#classifyRedirect}:
+     * exchange a valid code (after stopping/hiding the WebView, when present), or surface a "Login
+     * Failed" dialog for an access-denied, state-mismatch, or other error. A non-redirect URL (a
+     * normal consent/login page) is left to keep loading. Shared by the in-app WebView
+     * ({@code webView} non-null) and the Custom Tab ({@code webView} null) paths.
+     */
+    private void handleOAuthRedirect(String url, WebView webView) {
+        Uri uri = Uri.parse(url);
+        String code;
+        String state;
+        String error;
+        try {
+            code = uri.getQueryParameter("code");
+            state = uri.getQueryParameter("state");
+            error = uri.getQueryParameter("error");
+        } catch (UnsupportedOperationException e) {
+            // Opaque URI (no query component) — nothing to act on.
+            return;
+        }
+
+        OAuthLoginHelper.RedirectResult result =
+                OAuthLoginHelper.classifyRedirect(code, state, error, expectedState);
+        switch (result.action) {
+            case EXCHANGE_CODE:
+                Log.v("Log into Reddit", "Auth code received, exchanging for token");
+                if (webView != null) {
+                    // Prevent the WebView from making the HTTP call to the redirect URI itself.
+                    webView.stopLoading();
+                    webView.setVisibility(View.GONE);
+                }
+                new UserChallengeTask(oAuthHelper, credentials).execute(url);
+                break;
+            case ACCESS_DENIED:
+                Log.e("Log into Reddit", "OAuth redirect: access denied");
+                if (webView != null) {
+                    webView.stopLoading();
+                }
+                showLoginFailedDialog(R.string.login_failed_err_decline);
+                break;
+            case STATE_MISMATCH:
+            case OAUTH_ERROR:
+                Log.e(
+                        "Log into Reddit",
+                        "OAuth redirect error: action="
+                                + result.action
+                                + " error="
+                                + result.errorValue);
+                if (webView != null) {
+                    webView.stopLoading();
+                }
+                showLoginFailedDialog(R.string.login_failed_oauth_error_page);
+                break;
+            case NONE:
+            default:
+                // Not an OAuth redirect (a normal page) — keep loading.
+                break;
         }
     }
 
     private void openLoginInCustomTab() {
+        // The external browser / Custom Tab relies on a static manifest <intent-filter> to
+        // relaunch the app when Reddit redirects to the configured Redirect URI. If that URI
+        // isn't handled by one of this app's own filters, the redirect silently strands the
+        // browser on Reddit's "Redirecting to…" page, so warn instead of launching.
+        String redirectUri = Constants.getRedirectUrl();
+        if (!isRedirectUriRegistered(redirectUri)) {
+            showUnsupportedRedirectUriDialog(redirectUri);
+            return;
+        }
+
         List<ResolveInfo> resolveInfos = getCustomTabsPackages(getPackageManager());
 
         if (!resolveInfos.isEmpty()) {
@@ -508,6 +610,76 @@ public class Login extends BaseActivityAnim {
             Toast.makeText(this, R.string.website_external, Toast.LENGTH_SHORT).show();
         }
     }
+
+    /**
+     * Resolves the configured Redirect URI against this app's own intent filters via the package
+     * manager. This respects Android's exact scheme/host/port/path matching and stays in sync with
+     * the manifest automatically (no hardcoded list of supported URIs).
+     */
+    private boolean isRedirectUriRegistered(String redirectUri) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(redirectUri));
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        for (ResolveInfo info : getPackageManager().queryIntentActivities(intent, 0)) {
+            if (info.activityInfo != null
+                    && getPackageName().equals(info.activityInfo.packageName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void showUnsupportedRedirectUriDialog(String redirectUri) {
+        int accentColor = new ColorPreferences(Login.this).getColor("");
+        CharSequence styled =
+                warningText(
+                        accentColor,
+                        getString(R.string.login_unsupported_redirect_uri, redirectUri));
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(Login.this)
+                .setTitle(R.string.login_unsupported_redirect_uri_title)
+                .setMessage(styled)
+                .setNeutralButton(android.R.string.ok, (dialog, which) -> dialog.dismiss()));
+    }
+
+    /**
+     * Shows the "Login Failed" dialog when the in-app WebView login dead-ends on a bare-JSON Reddit
+     * error page (typically a misconfigured API Key/Client ID or Redirect URI), then closes the login
+     * screen on dismiss so the user isn't left staring at "{}".
+     */
+    private void showLoginFailedDialog() {
+        showLoginFailedDialog(R.string.login_failed_oauth_error_page);
+    }
+
+    private void showLoginFailedDialog(int messageResId) {
+        if (isFinishing() || isDestroyed()) {
+            return;
+        }
+        int accentColor = new ColorPreferences(Login.this).getColor("");
+        CharSequence styled = warningText(accentColor, getString(messageResId));
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(Login.this)
+                .setTitle(R.string.login_unsupported_redirect_uri_title)
+                .setMessage(styled)
+                .setCancelable(false)
+                .setNeutralButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                .setOnDismissListener(dialog -> finish()));
+    }
+
+    /**
+     * Prefixes {@code text} with a 2×, accent-tinted ⚠ glyph so the message reads as an alert at a
+     * glance, matching how the rest of Slide styles attention text.
+     */
+    private CharSequence warningText(int accentColor, CharSequence text) {
+        String symbol = "⚠";
+        SpannableString styled = new SpannableString(symbol + "  " + text);
+        styled.setSpan(
+                new RelativeSizeSpan(2f), 0, symbol.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        styled.setSpan(
+                new ForegroundColorSpan(accentColor),
+                0,
+                symbol.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return styled;
+    }
+
 
     private List<ResolveInfo> getCustomTabsPackages(PackageManager pm) {
         Intent activityIntent = new Intent()
@@ -683,6 +855,8 @@ public class Login extends BaseActivityAnim {
         private final OAuthHelper mOAuthHelper;
         private final Credentials mCredentials;
         private MaterialProgressDialog mMaterialDialog;
+        /** Classified reason the exchange failed, used to pick the dialog message; null on success. */
+        private OAuthLoginHelper.FailureType failureType;
 
         public UserChallengeTask(OAuthHelper oAuthHelper, Credentials credentials) {
             Log.v(LOGIN_TAG, "UserChallengeTask created");
@@ -744,12 +918,30 @@ public class Login extends BaseActivityAnim {
                     Log.e(LOGIN_TAG, "onUserChallenge returned null OAuthData");
                 }
                 return oAuthData;
-            } catch (IllegalStateException | NetworkException | OAuthException e) {
-                Log.e(LOGIN_TAG, "OAuth failed: " + e.getClass().getSimpleName());
-                Log.e(LOGIN_TAG, "OAuth error message: " + e.getMessage());
+            } catch (NetworkException e) {
+                // JRAW wraps the token-endpoint HTTP response here; classify it (HTTP status + body)
+                // so onPostExecute can show a precise reason instead of a generic decline message.
+                RestResponse response = e.getResponse();
+                failureType =
+                        response != null
+                                ? OAuthLoginHelper.classifyTokenResponse(
+                                                response.getStatusCode(), response.getRaw())
+                                        .failureType
+                                : OAuthLoginHelper.FailureType.NETWORK;
+                Log.e(LOGIN_TAG, "OAuth network failure (" + failureType + "): " + e.getMessage());
+                LogUtil.e(e, "Login.doInBackground failed");
+            } catch (OAuthException e) {
+                failureType = OAuthLoginHelper.FailureType.REDDIT_ERROR;
+                Log.e(LOGIN_TAG, "OAuth error: " + e.getMessage());
+                LogUtil.e(e, "Login.doInBackground failed");
+            } catch (IllegalStateException e) {
+                // JRAW throws this on a state (CSRF) mismatch.
+                failureType = OAuthLoginHelper.FailureType.UNKNOWN;
+                Log.e(LOGIN_TAG, "OAuth state mismatch: " + e.getMessage());
                 LogUtil.e(e, "Login.doInBackground failed");
             } catch (RuntimeException e) {
                 // Catch runtime exceptions, which include Protocol exceptions from OkHttp
+                failureType = OAuthLoginHelper.classifyThrowable(e).failureType;
                 if (e.getCause() instanceof java.net.ProtocolException &&
                     e.getCause().getMessage().contains("Too many follow-up requests")) {
                     Log.e(LOGIN_TAG, "OAuth redirect loop detected: " + e.getCause().getMessage());
@@ -761,6 +953,7 @@ public class Login extends BaseActivityAnim {
                     LogUtil.e(e, "Login.doInBackground failed");
                 }
             } catch (Exception e) {
+                failureType = OAuthLoginHelper.classifyThrowable(e).failureType;
                 Log.e(LOGIN_TAG, "Unexpected error during OAuth: " + e.getClass().getSimpleName() + ": " + e.getMessage());
                 LogUtil.e(e, "Login.doInBackground failed");
             }
@@ -789,11 +982,25 @@ public class Login extends BaseActivityAnim {
 
                 UserSubscriptions.syncSubredditsGetObjectAsync(Login.this);
             } else {
-                Log.e(LOGIN_TAG, "Login failed: OAuthData was null in onPostExecute");
-                // Show a dialog if data is null
+                Log.e(
+                        LOGIN_TAG,
+                        "Login failed: OAuthData was null in onPostExecute (failureType="
+                                + failureType
+                                + ")");
+                // Pick a message from the classified failure: a network problem, a credential/config
+                // problem (bad Client ID / Redirect URI / Reddit error), or — when nothing was thrown
+                // — the user likely declined on the consent screen.
+                int messageRes;
+                if (failureType == OAuthLoginHelper.FailureType.NETWORK) {
+                    messageRes = R.string.err_connection_failed_msg;
+                } else if (failureType != null) {
+                    messageRes = R.string.login_failed_oauth_error_page;
+                } else {
+                    messageRes = R.string.login_failed_err_decline;
+                }
                 DialogUtil.showWithCardBackground(new AlertDialog.Builder(Login.this)
                         .setTitle(R.string.err_authentication)
-                        .setMessage(R.string.login_failed_err_decline)
+                        .setMessage(messageRes)
                         .setNeutralButton(
                                 android.R.string.ok,
                                 (dialog, which) -> {

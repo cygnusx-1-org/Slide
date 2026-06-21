@@ -1144,6 +1144,9 @@
     <string name="card_background_tint">Card background</string>
     <string name="subreddit_name_tint">Subreddit name</string>
     <string name="login_failed_err_decline">Be sure you didn’t select ‘Decline’ on the last screen, and try again in a minute</string>
+    <string name="login_unsupported_redirect_uri">The configured Redirect URI (%1$s) can\'t be received by a browser, so login can\'t complete. Use the in-app WebView login method instead, or set a supported Redirect URI in Settings.</string>
+    <string name="login_unsupported_redirect_uri_title">Login Failed</string>
+    <string name="login_failed_oauth_error_page">Login failed — Reddit returned an error instead of completing login. Check your client ID and redirect URI in Settings.</string>
     <string name="tutorial_swipe_navigation">Swipe navigation</string>
     <string name="tutorial_swipe_description">Swipe from the left edge to exit.\n\nThis applies to images, GIFs, albums, settings and more!</string>
     <string name="handling_browser">Web browser</string>
