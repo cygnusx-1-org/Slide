@@ -636,7 +636,7 @@
     <string name="settings_link_image">Internal image view</string>
     <string name="settings_mail_check">Check for new messages</string>
     <string name="settings_mail_info">The higher the frequency, the more potential battery Slide will use in the background!</string>
-    <string name="settings_main_color_title">Edit main color</string>
+    <string name="settings_main_color_title">Edit primary color</string>
     <string name="settings_notification">Check for new messages every %1$s</string>
     <string name="settings_notification_newline">Check for new messages every\n%1$s</string>
     <string name="settings_notification_short">Check every %1$s</string>
