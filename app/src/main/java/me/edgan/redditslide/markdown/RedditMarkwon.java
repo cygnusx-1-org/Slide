@@ -28,6 +28,7 @@ import io.noties.markwon.ext.strikethrough.StrikethroughPlugin;
 import io.noties.markwon.ext.tables.TablePlugin;
 import io.noties.markwon.linkify.LinkifyPlugin;
 import io.noties.markwon.movement.MovementMethodPlugin;
+import java.util.regex.Pattern;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.handler.TextViewLinkHandler;
 import org.commonmark.node.Link;
@@ -48,6 +49,21 @@ public final class RedditMarkwon {
     private static volatile Markwon instance;
 
     /**
+     * Matches a zero-width-space html entity in the raw markdown: hex ({@code &#x200B;},
+     * upper/lower, zero-padded) or decimal ({@code &#8203;}). Authors paste these (often from new
+     * Reddit's fancy editor) as blank-line spacers.
+     *
+     * <p>Slide fetches the {@code selftext}/{@code body} fields <em>without</em> {@code raw_json=1},
+     * so Reddit html-escapes them and the author's {@code &} arrives as {@code &amp;} — i.e. the
+     * entity reaches us as {@code &amp;#x200B;}. commonmark then resolves {@code &amp;}→{@code &} in
+     * a single pass, leaving the literal text {@code &#x200B;} on screen. Hence the optional
+     * {@code amp;} group: we strip the entity in both its escaped and unescaped forms, rewriting it
+     * to the actual U+200B char so the (otherwise empty) paragraph survives as an invisible spacer.
+     */
+    private static final Pattern ZERO_WIDTH_SPACE_ENTITY =
+            Pattern.compile("&(?:amp;)?#(?:[xX]0*200[bB]|0*8203);");
+
+    /**
      * Render {@code markdown} into {@code textView}, wiring link taps to Slide's routing.
      *
      * @param subreddit context used for link theming/routing, may be {@code null}
@@ -56,6 +72,7 @@ public final class RedditMarkwon {
             SpoilerRobotoTextView textView, String subreddit, String markdown) {
         Markwon markwon = get(textView.getContext());
         String prepared = RedditSpoilerPreprocessor.sentinelize(markdown == null ? "" : markdown);
+        prepared = ZERO_WIDTH_SPACE_ENTITY.matcher(prepared).replaceAll("\u200B");
         Spanned rendered = markwon.toMarkdown(prepared);
         markwon.setParsedMarkdown(textView, rendered);
         CharSequence text = textView.getText();
