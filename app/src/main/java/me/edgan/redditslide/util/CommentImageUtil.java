@@ -151,6 +151,11 @@ public final class CommentImageUtil {
         // ratio so there is no reflow, then load asynchronously.
         int[] reserved = boundedFromRatio(knownRatio(url));
         applySize(imageView, reserved[0], reserved[1]);
+        // Whether the slot should animate once the bytes arrive (same gate as the synchronous path).
+        final boolean animate =
+                isGifUrl(url)
+                        && SettingValues.commentEmoteAnimation
+                        && !SettingValues.shouldSkipImages(context);
         loader.displayImage(
                 url,
                 new ImageViewAware(imageView),
@@ -162,6 +167,12 @@ public final class CommentImageUtil {
                             recordRatio(uri, loadedImage);
                             int[] s = boundedSize(loadedImage.getWidth(), loadedImage.getHeight());
                             applySize(imageView, s[0], s[1]);
+                        }
+                        // The async load just wrote the gif bytes to disk, so upgrade the static
+                        // first frame to the looping animation now instead of waiting for a rebind
+                        // (scroll) to pick it up. ImageViewAware already guards against recycling.
+                        if (animate) {
+                            displayAnimatedGif(imageView, loader, url);
                         }
                     }
                 });
