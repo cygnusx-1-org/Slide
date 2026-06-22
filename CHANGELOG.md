@@ -4,6 +4,12 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.6.9 / 2026-6-22
+============
+* Improved the consistency of comment images and gifs
+* Fixed issue with animated gifs' animation being intermittent
+* Fixed issue with &amp;#x200B; with new-Reddit style enabled
+
 7.6.8 / 2026-6-21
 ============
 * Resurrected a color flag/triangle feature from 2016, like Relay's and now Continuum's
