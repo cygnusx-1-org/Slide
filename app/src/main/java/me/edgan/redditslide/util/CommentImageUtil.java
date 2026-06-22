@@ -280,21 +280,22 @@ public final class CommentImageUtil {
     }
 
     /**
-     * Display size for a bitmap, preserving aspect ratio by scaling it to fill the size box (500x300
-     * times the chosen multiplier). The image is scaled to fit that box in whichever dimension is
-     * tighter — and is <b>upscaled</b> when smaller than the box, matching the pre-block (release)
+     * Display size for a bitmap, preserving aspect ratio by scaling it to a constant on-screen
+     * <b>area</b> (the reference box {@code maxWidthPx() * maxHeightPx()}) rather than fitting it
+     * inside that box. This is the Continuum behavior: a wide image and a tall image occupy roughly
+     * the same amount of screen, just shaped differently — no tiny slivers, no full-screen monsters.
+     * Sources smaller than the target area are <b>upscaled</b>, matching the pre-block (release)
      * inline-image behavior so that low-resolution sources (e.g. small giphy gifs) are not left tiny.
      */
     private static int[] boundedSize(int width, int height) {
-        int maxWidth = maxWidthPx();
-        int maxHeight = maxHeightPx();
         if (width <= 0 || height <= 0) {
-            return new int[] {maxWidth, maxHeight};
+            return new int[] {maxWidthPx(), maxHeightPx()};
         }
-        double scale = Math.min((double) maxWidth / width, (double) maxHeight / height);
+        double targetArea = (double) maxWidthPx() * maxHeightPx();
+        double scale = Math.sqrt(targetArea / ((double) width * height));
         int w = (int) (width * scale);
         int h = (int) (height * scale);
-        // At "large", a wide image can exceed the screen width and clip; cap it (keeping ratio).
+        // A very wide image can still exceed the screen width and clip; cap it (keeping ratio).
         int screen = Resources.getSystem().getDisplayMetrics().widthPixels;
         if (screen > 0 && w > screen) {
             h = (int) ((long) h * screen / w);
@@ -303,21 +304,26 @@ public final class CommentImageUtil {
         return new int[] {Math.max(1, w), Math.max(1, h)};
     }
 
+    /**
+     * Reserve a slot for a not-yet-loaded image from its known aspect {@code ratio} (height/width).
+     * Sized to the same constant target area as {@link #boundedSize} so the reserved slot matches the
+     * final size and there is no reflow on load.
+     */
     private static int[] boundedFromRatio(double ratio) {
-        double multiplier = sizeMultiplier();
         if (ratio <= 0) {
-            int w = (int) (BASE_WIDTH_PX * multiplier);
-            return new int[] {w, (int) (w * 0.6)};
+            return new int[] {maxWidthPx(), maxHeightPx()};
         }
-        int width = BASE_WIDTH_PX;
-        int height = (int) (BASE_WIDTH_PX * ratio);
-        if (height > BASE_HEIGHT_PX) {
-            height = BASE_HEIGHT_PX;
-            width = (int) (BASE_HEIGHT_PX / ratio);
+        double targetArea = (double) maxWidthPx() * maxHeightPx();
+        // area = width * height = width * (width * ratio) => width = sqrt(area / ratio)
+        int width = (int) Math.sqrt(targetArea / ratio);
+        int height = (int) (width * ratio);
+        // Apply the same screen-width cap as boundedSize (keeping ratio).
+        int screen = Resources.getSystem().getDisplayMetrics().widthPixels;
+        if (screen > 0 && width > screen) {
+            height = (int) ((long) height * screen / width);
+            width = screen;
         }
-        return new int[] {
-            Math.max(1, (int) (width * multiplier)), Math.max(1, (int) (height * multiplier))
-        };
+        return new int[] {Math.max(1, width), Math.max(1, height)};
     }
 
     private static void applySize(ImageView imageView, int width, int height) {
