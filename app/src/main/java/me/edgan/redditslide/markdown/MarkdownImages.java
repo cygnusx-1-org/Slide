@@ -59,6 +59,23 @@ public final class MarkdownImages {
             String rawMarkdown,
             String bodyHtml,
             JsonNode dataNode) {
+        renderInto(textView, overflow, subreddit, rawMarkdown, bodyHtml, dataNode, null);
+    }
+
+    /**
+     * As {@link #renderInto}, additionally highlighting every occurrence of {@code searchTerm} in
+     * the rendered text (the new Reddit-style equivalent of the snudown {@code [[h[…]h]]} search
+     * highlight, which can't run here because the text comes from raw markdown). Pass {@code null}
+     * or empty for no highlighting.
+     */
+    public static void renderInto(
+            SpoilerRobotoTextView textView,
+            CommentOverflow overflow,
+            String subreddit,
+            String rawMarkdown,
+            String bodyHtml,
+            JsonNode dataNode,
+            String searchTerm) {
         rawMarkdown = unescapeTransportEntities(rawMarkdown);
         EmoteResolution emotes = resolveEmotes(rawMarkdown, dataNode);
         String text = stripMediaUrls(emotes.markdown);
@@ -66,6 +83,9 @@ public final class MarkdownImages {
         if (!text.trim().isEmpty()) {
             RedditMarkwon.setMarkdown(textView, subreddit, text);
             textView.loadFreeEmotes(emotes.urls);
+            if (searchTerm != null && !searchTerm.isEmpty()) {
+                textView.highlightOccurrences(searchTerm, subreddit);
+            }
             // The markdown may be image-only (e.g. a lone giphy reaction): its image nodes are
             // dropped and the gif is drawn from body_html, leaving the text empty. Hide the view
             // in that case so there's no blank gap above the image.

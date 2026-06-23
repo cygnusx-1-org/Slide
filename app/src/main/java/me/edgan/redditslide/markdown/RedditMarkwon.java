@@ -45,6 +45,18 @@ import org.commonmark.parser.Parser;
  * theme-derived colors (code-block background, blockquote stripe, table borders/headers) into a
  * {@code MarkwonTheme} at build time, so {@link #invalidate()} drops the cache on a base-theme
  * change to force a rebuild with the new colors.
+ *
+ * <p><b>Intentional differences from the snudown ({@code body_html}) path</b> — these are by design
+ * (new Reddit style is meant to improve on old Reddit, not mirror it), so don't "fix" them:
+ *
+ * <ul>
+ *   <li><b>Code:</b> fenced/indented blocks render as real code boxes; snudown collapses ``` to
+ *       inline code. This is the whole point of the new path.
+ *   <li><b>Superscript:</b> whole-token with nesting ({@link SuperscriptPostProcessor}), matching
+ *       new Reddit rather than snudown's single-char behavior.
+ *   <li><b>Ordered lists:</b> commonmark renders real lists and <em>respects the author's start
+ *       number</em>; the snudown path flattens them to plain text and always renumbers from 1.
+ * </ul>
  */
 public final class RedditMarkwon {
 
@@ -145,6 +157,8 @@ public final class RedditMarkwon {
                         builder.postProcessor(new MentionPostProcessor());
                         builder.postProcessor(new SuperscriptPostProcessor());
                         builder.postProcessor(new SpoilerPostProcessor());
+                        // Legacy CSS spoiler links ([x](/s), [teaser](/s "hidden")) → SpoilerNode.
+                        builder.postProcessor(new LegacySpoilerPostProcessor());
                         // Images (giphy/inline) are drawn as resolved blocks from body_html
                         // (MarkdownImages) and free emotes as ￼ placeholders, so drop the
                         // markdown image nodes from the text.

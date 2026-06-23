@@ -928,6 +928,39 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
         }
     }
 
+    /**
+     * Highlight every case-insensitive occurrence of {@code search} in the already-rendered text,
+     * using the same color as the snudown {@code [[h[…]h]]} highlight pass ({@link #setHighlight}).
+     * Used by the new Reddit-style search path, where the marker-injection trick can't run because
+     * the text is rendered from raw markdown rather than the marked-up {@code body_html}. No-op if
+     * {@code search} is empty or the view text isn't spannable.
+     */
+    public void highlightOccurrences(String search, String subreddit) {
+        if (search == null || search.isEmpty()) {
+            return;
+        }
+        CharSequence cs = getText();
+        if (!(cs instanceof Spannable)) {
+            return;
+        }
+        Spannable spannable = (Spannable) cs;
+        String haystack = spannable.toString();
+        int len = search.length();
+        int color = Palette.getColor(subreddit);
+        for (int i = 0; i + len <= haystack.length(); ) {
+            if (haystack.regionMatches(true, i, search, 0, len)) {
+                spannable.setSpan(
+                        new BackgroundColorSpan(color),
+                        i,
+                        i + len,
+                        Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                i += len;
+            } else {
+                i++;
+            }
+        }
+    }
+
     @Override
     public void onLinkClick(String url, int xOffset, String subreddit, URLSpan span) {
         if (span instanceof RedditSpoilerSpan) {

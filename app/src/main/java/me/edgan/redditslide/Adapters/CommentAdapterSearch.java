@@ -408,7 +408,8 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
                 subredditName,
                 rawMarkdown,
                 bodyHtml,
-                dataNode);
+                dataNode,
+                (!search.isEmpty() && StringUtils.isAlphanumericSpace(search)) ? search : null);
     }
 
     private void setViews(String rawHTML, String subredditName, CommentViewHolder holder) {
