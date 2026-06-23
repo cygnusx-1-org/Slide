@@ -17,19 +17,23 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.SuperscriptSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
+import androidx.core.content.ContextCompat;
 import io.noties.markwon.AbstractMarkwonPlugin;
 import io.noties.markwon.Markwon;
 import io.noties.markwon.MarkwonSpansFactory;
 import io.noties.markwon.MarkwonVisitor;
 import io.noties.markwon.SpannableBuilder;
-import io.noties.markwon.core.CorePlugin;
 import io.noties.markwon.core.CoreProps;
+import io.noties.markwon.core.MarkwonTheme;
 import io.noties.markwon.ext.strikethrough.StrikethroughPlugin;
 import io.noties.markwon.ext.tables.TablePlugin;
 import io.noties.markwon.linkify.LinkifyPlugin;
 import io.noties.markwon.movement.MovementMethodPlugin;
 import java.util.regex.Pattern;
+import me.edgan.redditslide.R;
+import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SpoilerRobotoTextView;
+import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.handler.TextViewLinkHandler;
 import org.commonmark.node.Link;
 import org.commonmark.parser.Parser;
@@ -72,13 +76,21 @@ public final class RedditMarkwon {
             SpoilerRobotoTextView textView, String subreddit, String markdown) {
         Markwon markwon = get(textView.getContext());
         String prepared = RedditSpoilerPreprocessor.sentinelize(markdown == null ? "" : markdown);
+        prepared = BlockquoteNormalizer.mergeAdjacentBlockquotes(prepared);
         prepared = ZERO_WIDTH_SPACE_ENTITY.matcher(prepared).replaceAll("\u200B");
         Spanned rendered = markwon.toMarkdown(prepared);
         markwon.setParsedMarkdown(textView, rendered);
         CharSequence text = textView.getText();
         if (text instanceof Spannable) {
-            textView.setMovementMethod(
-                    new TextViewLinkHandler(textView, subreddit, (Spannable) text));
+            Spannable spannable = (Spannable) text;
+            // Color the spoiler blocks with the comment's theme color (matching the snudown path).
+            // Done here, not at build time, because the Markwon instance is cached across subreddits.
+            int spoilerColor = Palette.getDarkerColor(Palette.getColor(subreddit));
+            for (RedditSpoilerSpan span :
+                    spannable.getSpans(0, spannable.length(), RedditSpoilerSpan.class)) {
+                span.setMaskColor(spoilerColor);
+            }
+            textView.setMovementMethod(new TextViewLinkHandler(textView, subreddit, spannable));
         }
     }
 
@@ -112,9 +124,12 @@ public final class RedditMarkwon {
                 // defaults to resurrecting the RAW markdown source in that case, which leaked
                 // "![gif](giphy|ID)" as literal text above the gif; disable that fallback.
                 .fallbackToRawInputWhenEmpty(false)
-                // CorePlugin renders fenced/indented code blocks as styled code boxes
-                // (the issue #179 fix).
-                .usePlugin(CorePlugin.create())
+                // NB: do NOT add CorePlugin.create() explicitly here. Markwon already adds
+                // CorePlugin automatically (it renders fenced/indented code blocks as styled
+                // code boxes — the issue #179 fix). Adding a second instance leaves two
+                // CorePlugins in the registry: LinkifyPlugin attaches its OnTextAddedListener
+                // to one while the Text visitor that actually renders belongs to the other, so
+                // bare URLs in comments silently stop being linkified.
                 .usePlugin(StrikethroughPlugin.create())
                 .usePlugin(TablePlugin.create(context))
                 .usePlugin(LinkifyPlugin.create(Linkify.WEB_URLS))
@@ -170,6 +185,24 @@ public final class RedditMarkwon {
                                 Link.class,
                                 (configuration, props) ->
                                         new URLSpan(CoreProps.LINK_DESTINATION.require(props)));
+                    }
+
+                    @Override
+                    public void configureTheme(MarkwonTheme.Builder builder) {
+                        // Match the snudown path's blockquote stripe (SpoilerRobotoTextView /
+                        // CustomQuoteSpan): theme-aware blue, 4px stripe, 5px gap — instead of
+                        // Markwon's default faded-grey bar. Colors are baked at build time, so
+                        // invalidate() rebuilds on a theme change.
+                        int barColor =
+                                ContextCompat.getColor(
+                                        context,
+                                        SettingValues.currentTheme == 1
+                                                        || SettingValues.currentTheme == 5
+                                                ? R.color.md_blue_600
+                                                : R.color.md_blue_400);
+                        builder.blockQuoteColor(barColor)
+                                .blockQuoteWidth(4) // px stripe, matches CustomQuoteSpan
+                                .blockMargin(9); // px leading margin: stripe (4) + gap (5)
                     }
                 })
                 .build();

@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.util.SubmissionParser;
+import org.apache.commons.text.StringEscapeUtils;
 
 /**
  * Renders a comment/self-text's images (emotes, giphy reactions, inline images) for the new
@@ -58,6 +59,7 @@ public final class MarkdownImages {
             String rawMarkdown,
             String bodyHtml,
             JsonNode dataNode) {
+        rawMarkdown = unescapeTransportEntities(rawMarkdown);
         EmoteResolution emotes = resolveEmotes(rawMarkdown, dataNode);
         String text = stripMediaUrls(emotes.markdown);
         boolean rendered = false;
@@ -123,6 +125,29 @@ public final class MarkdownImages {
             return s.get("u").asText();
         }
         return null;
+    }
+
+    /**
+     * Undo Reddit's transport-level HTML escaping of the raw {@code body}/{@code selftext}.
+     *
+     * <p>Slide fetches these fields <em>without</em> {@code raw_json=1}, so Reddit html-escapes them
+     * and an author's {@code >} (blockquote marker) arrives as {@code &gt;}, {@code <} as {@code
+     * &lt;}, {@code &} as {@code &amp;}, etc. commonmark decides block structure (blockquotes,
+     * spoilers) <em>before</em> it decodes inline entities, so {@code &gt;text} is never recognized
+     * as a blockquote — the inline pass later decodes it to a literal leading {@code >}. Decoding
+     * here, before parsing, lets the block parser (and {@link RedditSpoilerPreprocessor}, which
+     * matches a literal {@code >!}) see the real markers.
+     *
+     * <p>This is a single pass: {@code &amp;gt;} (an author who typed the literal text {@code &gt;})
+     * decodes to {@code &gt;}, not {@code >}. Markdown-level entities the author actually intended
+     * are still handled afterwards by commonmark's own inline entity decoding, so the result matches
+     * the snudown {@code body_html} pipeline. See issue #179.
+     */
+    public static String unescapeTransportEntities(String rawMarkdown) {
+        if (rawMarkdown == null || rawMarkdown.indexOf('&') < 0) {
+            return rawMarkdown; // no entity to decode
+        }
+        return StringEscapeUtils.unescapeHtml4(rawMarkdown);
     }
 
     /** Remove standalone Reddit media URLs (they are rendered as image blocks instead). */

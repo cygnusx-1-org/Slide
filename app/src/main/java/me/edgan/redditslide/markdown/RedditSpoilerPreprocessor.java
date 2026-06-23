@@ -45,7 +45,19 @@ public final class RedditSpoilerPreprocessor {
         final int n = line.length();
         while (i < n) {
             char c = line.charAt(i);
-            if (c == '`') {
+            if (c == '\\') {
+                // A backslash escapes the next char, so \>! is a literal ">!" (not a spoiler open)
+                // and \!< a literal "!<" — matching commonmark, which strips the backslash when it
+                // renders the escaped punctuation. Emit both verbatim and skip past the escaped
+                // char so it can't start/close a sentinel. (A lone trailing "\" is emitted as-is.)
+                out.append(c);
+                if (i + 1 < n) {
+                    out.append(line.charAt(i + 1));
+                    i += 2;
+                } else {
+                    i++;
+                }
+            } else if (c == '`') {
                 int tickStart = i;
                 int ticks = 0;
                 while (i < n && line.charAt(i) == '`') {
