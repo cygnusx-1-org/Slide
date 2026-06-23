@@ -4,6 +4,15 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.7.0 / 2026-6-23
+============
+* Rendered legacy CSS spoiler links as spoilers in new-Reddit markdown
+* Restored comment-search term highlighting in new-Reddit markdown
+* Fixed blockquotes and spoilers showing as raw text in new-Reddit markdown
+* Made new-Reddit blockquotes one continuous bar in the theme color
+* Fixed new-Reddit spoilers breaking on backslashes and code blocks
+* Made new-Reddit spoilers to match the classic hidden/revealed look
+
 7.6.9 / 2026-6-22
 ============
 * Improved the consistency of comment images and gifs
