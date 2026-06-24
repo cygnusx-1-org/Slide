@@ -21,6 +21,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -103,6 +106,33 @@ public class Tutorial extends AppCompatActivity {
         }
     }
 
+    /**
+     * Pads {@code view} for the system bars (navigation bar / display cutout) so its content is
+     * not drawn underneath them. The view's backgrounds stay full-bleed; only the inner content is
+     * inset. The original padding is preserved and the insets are added on top of it.
+     */
+    private static void applySystemBarInsets(final View view) {
+        final int baseLeft = view.getPaddingLeft();
+        final int baseTop = view.getPaddingTop();
+        final int baseRight = view.getPaddingRight();
+        final int baseBottom = view.getPaddingBottom();
+        ViewCompat.setOnApplyWindowInsetsListener(
+                view,
+                (v, windowInsets) -> {
+                    Insets bars =
+                            windowInsets.getInsets(
+                                    WindowInsetsCompat.Type.systemBars()
+                                            | WindowInsetsCompat.Type.displayCutout());
+                    v.setPadding(
+                            baseLeft + bars.left,
+                            baseTop,
+                            baseRight + bars.right,
+                            baseBottom + bars.bottom);
+                    return windowInsets;
+                });
+        ViewCompat.requestApplyInsets(view);
+    }
+
     // Intercepts Back to step the tutorial pager backwards rather than finishing
     private final OnBackPressedCallback mBackCallback =
             new OnBackPressedCallback(true) {
@@ -149,6 +179,9 @@ public class Tutorial extends AppCompatActivity {
                 startActivity(intent);
                 getActivity().finish();
             });
+
+            // Keep the bottom buttons above the navigation bar under edge-to-edge (Android 15+).
+            applySystemBarInsets(welcomeBinding.bottomButtons);
 
             return welcomeBinding.getRoot();
         }
@@ -351,6 +384,11 @@ public class Tutorial extends AppCompatActivity {
                 Reddit.appRestart.edit().apply();
                 Reddit.forceRestart(getActivity(), false);
             });
+
+            // Keep the Done button and scrolling content above the navigation bar under
+            // edge-to-edge (Android 15+).
+            applySystemBarInsets(personalizeBinding.done);
+            applySystemBarInsets(personalizeBinding.personalizeScroll);
 
             return personalizeBinding.getRoot();
         }
