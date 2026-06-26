@@ -9,6 +9,7 @@ import com.google.android.material.snackbar.Snackbar;
 import me.edgan.redditslide.ActionStates;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.R;
+import me.edgan.redditslide.SubmissionViews.LocalSaved;
 import me.edgan.redditslide.util.LayoutUtils;
 
 import net.dean.jraw.managers.AccountManager;
@@ -31,9 +32,11 @@ public class AsyncSave extends AsyncTask<Submission, Void, Void> {
 
             if (subSaved) {
                 new AccountManager(Authentication.reddit).unsave(submissions[0]);
+                LocalSaved.onUnsaved(submissions[0]);
                 s = Snackbar.make(v, R.string.submission_info_unsaved, Snackbar.LENGTH_SHORT);
             } else {
                 new AccountManager(Authentication.reddit).save(submissions[0]);
+                LocalSaved.onSaved(submissions[0]);
                 s = Snackbar.make(v, R.string.submission_info_saved, Snackbar.LENGTH_SHORT);
             }
             runUiThread(s);

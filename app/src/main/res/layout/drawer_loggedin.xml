@@ -266,6 +266,17 @@
                 android:textSize="14sp"/>
 
         <TextView
+                android:id="@+id/local_saved"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:background="?android:selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="24dp"
+                android:text="@string/local_saved"
+                android:textSize="14sp"/>
+
+        <TextView
                 android:id="@+id/commented"
                 android:layout_width="match_parent"
                 android:layout_height="42dp"

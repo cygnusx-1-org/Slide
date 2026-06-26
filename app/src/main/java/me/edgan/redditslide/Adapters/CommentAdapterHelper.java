@@ -55,6 +55,7 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SpoilerRobotoTextView;
+import me.edgan.redditslide.SubmissionViews.LocalSaved;
 import me.edgan.redditslide.Toolbox.ToolboxUI;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.UserTags;
@@ -556,9 +557,11 @@ final AlertDialog reportDialog =
                     if (ActionStates.isSaved(comment)) {
                         new AccountManager(Authentication.reddit).unsave(comment);
                         ActionStates.setSaved(comment, false);
+                        LocalSaved.onUnsaved(comment);
                     } else {
                         new AccountManager(Authentication.reddit).save(comment);
                         ActionStates.setSaved(comment, true);
+                        LocalSaved.onSaved(comment);
                     }
 
                 } catch (ApiException | RuntimeException e) {

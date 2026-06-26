@@ -50,6 +50,7 @@ import me.edgan.redditslide.Adapters.ContributionAdapter;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Fragments.ContributionsView;
 import me.edgan.redditslide.Fragments.HistoryView;
+import me.edgan.redditslide.Fragments.LocalSavedView;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
@@ -154,6 +155,7 @@ public class Profile extends BaseActivityAnim {
                         getString(R.string.profile_upvoted),
                         getString(R.string.profile_downvoted),
                         getString(R.string.profile_saved),
+                        getString(R.string.local_saved),
                         getString(R.string.profile_hidden),
                         getString(R.string.profile_history)
                     });
@@ -208,7 +210,7 @@ public class Profile extends BaseActivityAnim {
             pager.setCurrentItem(2);
         }
         if (getIntent().hasExtra(EXTRA_HISTORY) && name.equals(Authentication.name)) {
-            pager.setCurrentItem(8);
+            pager.setCurrentItem(9);
         }
         if (getIntent().hasExtra(EXTRA_UPVOTE) && name.equals(Authentication.name)) {
             pager.setCurrentItem(4);
@@ -311,45 +313,48 @@ public class Profile extends BaseActivityAnim {
         @NonNull
         @Override
         public Fragment getItem(int i) {
-            if (i < 8) {
-                Fragment f = new ContributionsView();
-                Bundle args = new Bundle();
-
-                args.putString("id", name);
-                String place;
-                switch (i) {
-                    case 1:
-                        place = "comments";
-                        break;
-                    case 2:
-                        place = "submitted";
-                        break;
-                    case 3:
-                        place = "gilded";
-                        break;
-                    case 4:
-                        place = "liked";
-                        break;
-                    case 5:
-                        place = "disliked";
-                        break;
-                    case 6:
-                        place = "saved";
-                        break;
-                    case 7:
-                        place = "hidden";
-                        break;
-                    case 0:
-                    default:
-                        place = "overview";
-                }
-                args.putString("where", place);
-
-                f.setArguments(args);
-                return f;
-            } else {
+            // Local Saved sits right after Saved (index 7); History moves to index 9.
+            if (i == 7) {
+                return new LocalSavedView();
+            } else if (i == 9) {
                 return new HistoryView();
             }
+
+            Fragment f = new ContributionsView();
+            Bundle args = new Bundle();
+
+            args.putString("id", name);
+            String place;
+            switch (i) {
+                case 1:
+                    place = "comments";
+                    break;
+                case 2:
+                    place = "submitted";
+                    break;
+                case 3:
+                    place = "gilded";
+                    break;
+                case 4:
+                    place = "liked";
+                    break;
+                case 5:
+                    place = "disliked";
+                    break;
+                case 6:
+                    place = "saved";
+                    break;
+                case 8:
+                    place = "hidden";
+                    break;
+                case 0:
+                default:
+                    place = "overview";
+            }
+            args.putString("where", place);
+
+            f.setArguments(args);
+            return f;
         }
 
         @Override
@@ -1248,6 +1253,8 @@ public class Profile extends BaseActivityAnim {
             recyclerView = ((ContributionsView) fragment).getRecyclerView();
         } else if (fragment instanceof HistoryView) {
             recyclerView = ((HistoryView) fragment).getRecyclerView();
+        } else if (fragment instanceof LocalSavedView) {
+            recyclerView = ((LocalSavedView) fragment).getRecyclerView();
         }
 
         if (recyclerView != null && recyclerView.getAdapter() instanceof ContributionAdapter) {
@@ -1295,6 +1302,8 @@ public class Profile extends BaseActivityAnim {
                 ((ContributionsView) fragment).clearSearchAndReload();
             } else if (fragment instanceof HistoryView) {
                 ((HistoryView) fragment).clearSearchAndReload();
+            } else if (fragment instanceof LocalSavedView) {
+                ((LocalSavedView) fragment).clearSearchAndReload();
             }
         }
 

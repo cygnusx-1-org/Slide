@@ -141,6 +141,16 @@ public class DrawerController {
                                     mainActivity.startActivity(inte);
                                 }
                             });
+            header.findViewById(R.id.local_saved)
+                    .setOnClickListener(
+                            new OnSingleClickListener() {
+                                @Override
+                                public void onSingleClick(View view) {
+                                    Intent inte =
+                                            new Intent(mainActivity, PostLocalSaved.class);
+                                    mainActivity.startActivity(inte);
+                                }
+                            });
             header.findViewById(R.id.later)
                     .setOnClickListener(
                             new OnSingleClickListener() {

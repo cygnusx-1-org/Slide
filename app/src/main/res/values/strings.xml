@@ -122,6 +122,7 @@
     <string name="profile_karma_comment">Comment karma</string>
     <string name="profile_message">Private message</string>
     <string name="profile_saved">Saved</string>
+    <string name="local_saved">Local Saved</string>
     <string name="profile_read_later">Read Later</string>
     <string name="profile_upvoted">Upvoted</string>
     <string name="profile_err_title">User not found</string>

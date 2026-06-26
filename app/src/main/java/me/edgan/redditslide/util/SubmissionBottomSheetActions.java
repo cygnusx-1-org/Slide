@@ -46,6 +46,7 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SpoilerRobotoTextView;
+import me.edgan.redditslide.SubmissionViews.LocalSaved;
 import me.edgan.redditslide.SubmissionViews.ReadLater;
 import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Visuals.ColorPreferences;
@@ -600,9 +601,11 @@ final AlertDialog reportDialog =
                     if (ActionStates.isSaved(submission)) {
                         new net.dean.jraw.managers.AccountManager(Authentication.reddit).unsave(submission);
                         ActionStates.setSaved(submission, false);
+                        LocalSaved.onUnsaved(submission);
                     } else {
                         new net.dean.jraw.managers.AccountManager(Authentication.reddit).save(submission);
                         ActionStates.setSaved(submission, true);
+                        LocalSaved.onSaved(submission);
                     }
 
                 } catch (Exception e) {
