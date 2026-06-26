@@ -1281,6 +1281,9 @@
     <string name="settings_markdown_new_reddit">New Reddit-style markdown</string>
     <string name="settings_markdown_new_reddit_desc">Render code blocks and formatting like new Reddit (off uses old Reddit\'s renderer)</string>
     <string name="comment_render_other">Show other rendering</string>
+    <string name="recover_post">Recover post</string>
+    <string name="recover_post_loading">Fetching original from archive…</string>
+    <string name="recover_post_failed">Could not recover this post</string>
     <string name="markdown_preview_new_reddit">New Reddit rendering</string>
     <string name="markdown_preview_old_reddit">Old Reddit rendering</string>
     <string name="high_colorspace_images">High-Colorspace Images</string>

@@ -21,6 +21,7 @@ import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.MiscUtil;
+import me.edgan.redditslide.util.PostRecovery;
 import me.edgan.redditslide.util.TimeUtils;
 import net.dean.jraw.models.DistinguishedStatus;
 import net.dean.jraw.models.Submission;
@@ -65,6 +66,12 @@ public class SubmissionCache {
     public static void updateTitleFlair(Submission s, String flair, Context c) {
         if (titles == null) titles = new WeakHashMap<>();
         titles.put(s.getFullName(), getTitleSpannable(s, flair, c));
+    }
+
+    /** Re-render the cached title (e.g. after recovering the original from the archive). */
+    public static void updateTitle(Submission s, Context c) {
+        if (titles == null) titles = new WeakHashMap<>();
+        titles.put(s.getFullName(), getTitleSpannable(s, c));
     }
 
     public static SpannableStringBuilder getTitleLine(Submission s, Context mContext) {
@@ -484,7 +491,10 @@ public class SubmissionCache {
     private static SpannableStringBuilder getTitleSpannable(
             Submission submission, String flairOverride, Context mContext) {
         SpannableStringBuilder titleString = new SpannableStringBuilder();
-        titleString.append(CompatUtil.fromHtml(submission.getTitle()));
+        String recoveredTitle = PostRecovery.getRecoveredTitle(submission.getFullName());
+        titleString.append(
+                CompatUtil.fromHtml(
+                        recoveredTitle != null ? recoveredTitle : submission.getTitle()));
 
         if (submission.isStickied()) {
             SpannableStringBuilder pinned =

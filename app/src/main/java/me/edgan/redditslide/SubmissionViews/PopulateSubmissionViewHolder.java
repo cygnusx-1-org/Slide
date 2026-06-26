@@ -60,6 +60,7 @@ import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.OnSingleClickListener;
+import me.edgan.redditslide.util.PostRecovery;
 import me.edgan.redditslide.util.SubmissionBottomSheetActions;
 import me.edgan.redditslide.util.SubmissionModActions;
 import me.edgan.redditslide.util.SubmissionParser;
@@ -524,7 +525,8 @@ public class PopulateSubmissionViewHolder {
         }
 
         if (full) {
-            if (!submission.getSelftext().isEmpty()) {
+            String recoveredText = PostRecovery.getRecovered(submission.getFullName());
+            if (recoveredText != null || !submission.getSelftext().isEmpty()) {
                 int typef = new FontPreferences(mContext).getFontTypeComment().getTypeface();
                 Typeface typeface;
                 if (typef >= 0) {
@@ -538,7 +540,18 @@ public class PopulateSubmissionViewHolder {
                         submission.getSubredditName() == null
                                 ? "all"
                                 : submission.getSubredditName();
-                if (SettingValues.markdownNewReddit) {
+                if (recoveredText != null) {
+                    // Body recovered from the archive. Arctic Shift returns markdown only (no
+                    // selftext_html), so render via Markwon regardless of the markdownNewReddit
+                    // setting; the empty bodyHtml means inline images in the recovered text aren't
+                    // drawn (text-only recovery).
+                    setViewsMarkdown(
+                            recoveredText,
+                            "",
+                            submission.getDataNode(),
+                            selftextSubreddit,
+                            holder);
+                } else if (SettingValues.markdownNewReddit) {
                     // New Reddit-style: render the raw selftext via Markwon (issue #179).
                     setViewsMarkdown(
                             submission.getSelftext(),

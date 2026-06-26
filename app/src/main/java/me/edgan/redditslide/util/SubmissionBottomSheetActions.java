@@ -46,6 +46,7 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SpoilerRobotoTextView;
+import me.edgan.redditslide.SubmissionCache;
 import me.edgan.redditslide.SubmissionViews.ReadLater;
 import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Visuals.ColorPreferences;
@@ -94,8 +95,9 @@ public class SubmissionBottomSheetActions {
         Drawable filter = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_filter_list, null);
         Drawable crosspost = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_forward, null);
         Drawable viewmode = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_visibility, null);
+        Drawable history = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_history, null);
 
-        final List<Drawable> drawableSet = Arrays.asList(profile, sub, saved, hide, report, copy, open, link, reddit, readLater, filter, crosspost, viewmode);
+        final List<Drawable> drawableSet = Arrays.asList(profile, sub, saved, hide, report, copy, open, link, reddit, readLater, filter, crosspost, viewmode, history);
         BlendModeUtil.tintDrawablesAsSrcAtop(drawableSet, color);
 
         ta.recycle();
@@ -136,6 +138,10 @@ public class SubmissionBottomSheetActions {
 
         if (submission.getSelftext() != null && !submission.getSelftext().isEmpty()) {
             b.sheet(60, viewmode, mContext.getString(R.string.comment_render_other));
+        }
+
+        if (full && PostRecovery.isRemovedOrDeleted(submission)) {
+            b.sheet(61, history, mContext.getString(R.string.recover_post));
         }
 
         boolean hidden = submission.isHidden();
@@ -532,6 +538,48 @@ final AlertDialog reportDialog =
                     case 60:
                         // Preview this self-text with the opposite markdown renderer.
                         showOppositeRender(mContext, submission);
+                        break;
+                    case 61:
+                        // Recover the original body of a removed/deleted post from the archive.
+                        final MaterialProgressDialog recoverProgress =
+                                new MaterialProgressDialog.Builder(mContext)
+                                        .title(R.string.recover_post)
+                                        .content(R.string.recover_post_loading)
+                                        .progress(true, 0)
+                                        .cancelable(false)
+                                        .show();
+                        new AsyncTask<Void, Void, PostRecovery.Result>() {
+                            @Override
+                            protected PostRecovery.Result doInBackground(Void... voids) {
+                                return PostRecovery.fetch(submission);
+                            }
+
+                            @Override
+                            protected void onPostExecute(PostRecovery.Result result) {
+                                // The fetch can outlive the screen; don't touch a dead Activity.
+                                if (mContext.isFinishing() || mContext.isDestroyed()) {
+                                    return;
+                                }
+                                if (recoverProgress.isShowing()) {
+                                    recoverProgress.dismiss();
+                                }
+                                if (result.isEmpty()) {
+                                    Toast.makeText(
+                                                    mContext,
+                                                    R.string.recover_post_failed,
+                                                    Toast.LENGTH_LONG)
+                                            .show();
+                                    return;
+                                }
+                                PostRecovery.store(submission, result);
+                                // Re-render the cached title with the recovered one.
+                                SubmissionCache.updateTitle(submission, mContext);
+                                if (recyclerview != null && recyclerview.getAdapter() != null) {
+                                    // Full post view: pos 0 = spacer, pos 1 = header.
+                                    recyclerview.getAdapter().notifyItemChanged(1);
+                                }
+                            }
+                        }.execute();
                         break;
                 }
             }
