@@ -4,6 +4,14 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.7.3 / 2026-6-27
+============
+* Fixed internal browser opening over reddit-link posts in Shadowbox
+* Fixed blank reddit-link post previews by rewriting external-preview URLs to preview.redd.it
+* Fixed the display of clicked giphy gifs in comments
+* Fixed "Open Reddit link in clipboard" for v.redd.it links
+* Fixed "Open Reddit link in clipboard"for reddit.com/gallery links
+
 7.7.2 / 2026-6-27
 ============
 * Added "Local Saved" to preserve saves Reddit drops from the saved API results
