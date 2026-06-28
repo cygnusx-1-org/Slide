@@ -89,6 +89,9 @@ public class LocalSaved {
                         }
                     });
             for (Map.Entry<String, String> e : entries) {
+                // getByPrefix uses SQL LIKE, where '_' is a wildcard, so "localsaved_%" also
+                // matches "localsavedpending_..." -- keep only literal-prefix matches.
+                if (!e.getKey().startsWith(PROMOTED_PREFIX)) continue;
                 ids.add(e.getKey().substring(PROMOTED_PREFIX.length()));
             }
         } catch (Exception e) {
@@ -149,8 +152,11 @@ public class LocalSaved {
                 return false;
             }
 
+            // getByPrefix uses SQL LIKE ('_' is a wildcard), so guard every scan with a literal
+            // startsWith to avoid cross-matching the localsaved_/localsavedpending_ prefixes.
             Set<String> pendingFullnames = new HashSet<>();
             for (String key : pending.keySet()) {
+                if (!key.startsWith(PENDING_PREFIX)) continue;
                 pendingFullnames.add(key.substring(PENDING_PREFIX.length()));
             }
 
@@ -180,6 +186,7 @@ public class LocalSaved {
             boolean changed = false;
             try {
                 for (Map.Entry<String, String> e : pending.entrySet()) {
+                    if (!e.getKey().startsWith(PENDING_PREFIX)) continue;
                     String fullname = e.getKey().substring(PENDING_PREFIX.length());
                     m.delete(e.getKey());
                     if (!present.contains(fullname)) {
@@ -189,6 +196,7 @@ public class LocalSaved {
                     }
                 }
                 for (Map.Entry<String, String> e : m.getByPrefix(PROMOTED_PREFIX).entrySet()) {
+                    if (!e.getKey().startsWith(PROMOTED_PREFIX)) continue;
                     String fullname = e.getKey().substring(PROMOTED_PREFIX.length());
                     if (present.contains(fullname)) {
                         // Reinstated -- back in Reddit's saved listing, so drop the local copy.

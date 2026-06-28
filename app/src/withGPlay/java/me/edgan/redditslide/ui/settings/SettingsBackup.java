@@ -44,6 +44,7 @@ import java.util.Date;
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.util.DialogUtil;
+import me.edgan.redditslide.util.KVStoreBackup;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
@@ -451,6 +452,16 @@ public class SettingsBackup extends BaseActivityAnim {
                         }
                     }
 
+                    // KVStore-backed collections (Read Later, Local Saved) live outside
+                    // shared_prefs, so back them up as an extra tagged entry.
+                    String kvData = KVStoreBackup.export();
+                    if (!kvData.isEmpty()) {
+                        bw.write("<START" + KVStoreBackup.SENTINEL + ">");
+                        bw.write(kvData);
+                        bw.write("END>");
+                        Log.d(TAG, "Backed up KVStore collections locally.");
+                    }
+
                     bw.close();
                     return true;
 
@@ -643,6 +654,19 @@ public class SettingsBackup extends BaseActivityAnim {
                 } else {
                     Log.d(TAG, "Skipping local file: " + s);
                 }
+            }
+
+            // KVStore-backed collections (Read Later, Local Saved) live outside shared_prefs, so
+            // back them up as an extra tagged entry.
+            String kvData = KVStoreBackup.export();
+            if (!kvData.isEmpty()) {
+                backupBuilder
+                        .append("<START")
+                        .append(KVStoreBackup.SENTINEL)
+                        .append(">")
+                        .append(kvData)
+                        .append("END>");
+                Log.d(TAG, "Adding KVStore collections to single backup.");
             }
 
             // Convert entire backup string to bytes for upload
@@ -856,6 +880,12 @@ public class SettingsBackup extends BaseActivityAnim {
                 String name =
                         innerFile.substring(startIndex + 6, innerFile.indexOf(">", startIndex));
                 String fileContent = innerFile.substring(innerFile.indexOf(">", startIndex) + 1);
+
+                if (KVStoreBackup.SENTINEL.equals(name)) {
+                    KVStoreBackup.restore(fileContent);
+                    Log.d(TAG, "Restored KVStore collections from backup.");
+                    continue;
+                }
 
                 File newF = new File(getApplicationInfo().dataDir + "/shared_prefs/" + name);
                 Log.d(
