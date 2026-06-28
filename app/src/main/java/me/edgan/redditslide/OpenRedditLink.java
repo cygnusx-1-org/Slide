@@ -101,31 +101,18 @@ public class OpenRedditLink {
         }
 
         String path = Objects.requireNonNull(uri.getPath());
+        String host = uri.getHost();
 
-        if (path.matches("(?i)/r/[a-z0-9-_.]+/s/.*")) {
-            new Thread(() -> {
-                try {
-                    StrictMode.ThreadPolicy gfgPolicy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                    StrictMode.setThreadPolicy(gfgPolicy);
-                    URL newUrl = new URL(url);
-                    HttpURLConnection ucon = (HttpURLConnection) newUrl.openConnection();
-                    ucon.setInstanceFollowRedirects(false);
-                    ucon.setRequestProperty("User-Agent", "org.quantumbadger.redreader/1.25.2");
-                    ucon.setRequestProperty("Host", newUrl.getHost());
-                    String location = ucon.getHeaderField("location");
-
-                    if (location != null) {
-                        String finalUrl = new URL(location).toString();
-                        Uri finalUri = formatRedditUrl(location);
-                        // Return to main thread to handle the UI
-                        ((Activity) context).runOnUiThread(() -> {
-                            openUrl(context, finalUrl, openIfOther);
-                        });
-                    }
-                } catch (Exception e) {
-                    LogUtil.e(e, "OpenRedditLink.openUrl failed");
-                }
-            }).start();
+        // Some Reddit links don't encode the destination in the URL and instead redirect to it:
+        //   - share links:  reddit.com/r/$sub/s/$id
+        //   - hosted video: v.redd.it/$id -> reddit.com/video/$id -> the post permalink
+        // Resolve the redirect on a background thread and re-open the resulting URL. Each call
+        // follows a single hop, so the video chain recurses (v.redd.it -> /video/ -> post) until
+        // it lands on the post in-app instead of dropping the user into a browser.
+        if (path.matches("(?i)/r/[a-z0-9-_.]+/s/.*")
+                || "v.redd.it".equals(host)
+                || path.matches("(?i)/video/.*")) {
+            resolveRedirectThenOpen(context, url, openIfOther);
             return true;
         }
 
@@ -339,6 +326,37 @@ public class OpenRedditLink {
             context.startActivity(i);
         }
         return true;
+    }
+
+    /**
+     * Follows a single HTTP redirect for {@code url} on a background thread and re-opens the
+     * resulting location with {@link #openUrl(Context, String, boolean)}. Used for Reddit links
+     * that only resolve to their real destination via a redirect (share links and v.redd.it
+     * videos). Does nothing if the URL doesn't redirect.
+     */
+    private static void resolveRedirectThenOpen(Context context, String url, boolean openIfOther) {
+        new Thread(() -> {
+            try {
+                StrictMode.ThreadPolicy gfgPolicy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                StrictMode.setThreadPolicy(gfgPolicy);
+                URL newUrl = new URL(url);
+                HttpURLConnection ucon = (HttpURLConnection) newUrl.openConnection();
+                ucon.setInstanceFollowRedirects(false);
+                ucon.setRequestProperty("User-Agent", "org.quantumbadger.redreader/1.25.2");
+                ucon.setRequestProperty("Host", newUrl.getHost());
+                String location = ucon.getHeaderField("location");
+
+                if (location != null) {
+                    String finalUrl = new URL(location).toString();
+                    // Return to main thread to handle the UI
+                    ((Activity) context).runOnUiThread(() -> {
+                        openUrl(context, finalUrl, openIfOther);
+                    });
+                }
+            } catch (Exception e) {
+                LogUtil.e(e, "OpenRedditLink.openUrl failed");
+            }
+        }).start();
     }
 
     public static void openUrl(Context c, String submission, String subreddit, String id) {
