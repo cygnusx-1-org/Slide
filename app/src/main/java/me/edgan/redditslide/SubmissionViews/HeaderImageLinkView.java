@@ -47,6 +47,7 @@ import me.edgan.redditslide.Views.TransparentTagTextView;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.BottomSheet;
 import me.edgan.redditslide.util.CompatUtil;
+import me.edgan.redditslide.util.JsonUtil;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
@@ -696,7 +697,7 @@ public class HeaderImageLinkView extends RelativeLayout {
         if (previewUrl == null) {
             previewUrl = extractPreviewUrl(dataNode);
         }
-        return previewUrl;
+        return JsonUtil.normalizeRedditPreviewHost(previewUrl, JsonUtil.linksToReddit(dataNode));
     }
 
     private String extractPreviewUrl(JsonNode node) {

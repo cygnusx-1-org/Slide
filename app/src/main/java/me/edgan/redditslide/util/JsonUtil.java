@@ -10,6 +10,29 @@ import org.apache.commons.text.StringEscapeUtils;
 public class JsonUtil {
     private static final String TAG = "JsonUtil";
 
+    /** Whether this post links to another Reddit post (domain reddit.com or *.reddit.com). */
+    public static boolean linksToReddit(JsonNode dataNode) {
+        if (dataNode == null || !dataNode.has("domain") || dataNode.get("domain").isNull()) {
+            return false;
+        }
+        String domain = dataNode.get("domain").asText("");
+        return domain.equals("reddit.com") || domain.endsWith(".reddit.com");
+    }
+
+    /**
+     * A link post that points at another Reddit post carries that post's image as a preview, but
+     * served from the external-preview host, which isn't reliably loadable and leaves a blank lead
+     * image. The canonical preview.redd.it host (the same signed asset, used by the linked post
+     * itself) loads fine, so rewrite to it — but only for reddit links, so genuine external-link
+     * previews (news sites, etc.) keep their external-preview URLs.
+     */
+    public static String normalizeRedditPreviewHost(String url, boolean linksToReddit) {
+        if (linksToReddit && url != null) {
+            return url.replace("://external-preview.redd.it/", "://preview.redd.it/");
+        }
+        return url;
+    }
+
     public static void getGalleryData(final JsonNode data, final ArrayList<GalleryImage> urls) {
         if (data == null || !data.has("gallery_data") || data.get("gallery_data") == null ||
             !data.get("gallery_data").has("items") || data.get("gallery_data").get("items") == null) {

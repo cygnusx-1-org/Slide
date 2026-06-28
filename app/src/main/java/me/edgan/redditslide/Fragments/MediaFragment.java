@@ -191,7 +191,13 @@ public class MediaFragment extends Fragment {
         if (!s.isNsfw() || !SettingValues.getIsNSFWEnabled()) {
             if (type == ContentType.Type.EXTERNAL
                     || type == ContentType.Type.LINK
+                    || type == ContentType.Type.REDDIT
                     || type == ContentType.Type.VIDEO) {
+                // REDDIT posts link to another Reddit page (post/comment/subreddit), not media.
+                // Load the post's preview image like a LINK; the destination is only opened when
+                // the user taps (addClickFunctions -> openRedditContent). Loading contentUrl here
+                // would fetch the linked page, see text/html, and open the internal browser over
+                // the post.
                 doLoad(firstUrl, type);
             } else {
                 doLoad(contentUrl, type);
