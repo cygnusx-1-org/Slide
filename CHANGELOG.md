@@ -4,6 +4,12 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.7.2 / 2026-6-27
+============
+* Added "Local Saved" to preserve saves Reddit drops from the saved API results
+* Added Read Later and Local Saved to backups
+* Added "Recover post" action in the post overflow menu to restore removed/deleted post title and body from the Arctic Shift archive
+
 7.7.1 / 2026-6-24
 ============
 * Rendered legacy CSS spoiler links as spoilers in new-Reddit markdown
