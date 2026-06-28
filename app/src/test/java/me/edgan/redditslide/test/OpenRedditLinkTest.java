@@ -43,6 +43,11 @@ public class OpenRedditLinkTest {
         assertThat(
                 getType("https://www.reddit.com/r/announcements/comments/eorhm//c19qk6j/"),
                 is(RedditLinkType.COMMENT_PERMALINK));
+        // Newer Reddit permalink form: /comments/$post/comment/$comment (no title slug)
+        assertThat(
+                getType(
+                        "https://www.reddit.com/r/oddlysatisfying/comments/1k1hl95/comment/mnn7j9x/?context=3"),
+                is(RedditLinkType.COMMENT_PERMALINK));
     }
 
     @Test

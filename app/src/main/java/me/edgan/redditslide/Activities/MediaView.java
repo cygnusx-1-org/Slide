@@ -664,7 +664,12 @@ public class MediaView extends BaseSaveActivity {
         final ProgressBar loader = (ProgressBar) findViewById(R.id.gifprogress);
         final String gifUrl = GifUtils.AsyncLoadGif.formatUrl(dat); // Corrected static call
 
-        if (gifUrl.toLowerCase().endsWith(".gif")) {
+        // Check the URL path, not the whole string: giphy/external-preview gifs carry query
+        // params (e.g. ...giphy.gif?width=296&s=...), so endsWith(".gif") on the full URL is false
+        // and they would wrongly fall through to the ExoPlayer branch, which has no GIF extractor
+        // and spins forever. Stripping the query lets real gifs reach the direct-GIF decoder.
+        final String gifPath = Uri.parse(gifUrl).getPath();
+        if (gifPath != null && gifPath.toLowerCase().endsWith(".gif")) {
             // Handle direct .gif URLs with Movie/GifDrawable
             Log.v(TAG, "Loading direct GIF: " + gifUrl); // Changed to Log.v
             findViewById(R.id.gifarea).setVisibility(View.VISIBLE); // Ensure gifarea is visible for progress bar
