@@ -114,6 +114,14 @@ public class OpenRedditLinkTest {
     }
 
     @Test
+    public void detectsGallery() {
+        // Gallery links carry the submission id and must open in-app, not fall through to a browser
+        assertThat(
+                getType("https://www.reddit.com/gallery/1ufupl8"),
+                is(RedditLinkType.SUBMISSION_WITHOUT_SUB));
+    }
+
+    @Test
     public void detectsSubmit() {
         // FIXME:        assertThat(getType("https://www.reddit.com/submit?selftext=true"),
         //                is(RedditLinkType.SUBMIT));

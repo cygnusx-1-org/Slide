@@ -475,6 +475,11 @@ public class OpenRedditLink {
             // Submission without a given subreddit. Format:
             // reddit.com/comments/$post_id/$post_title [optional]
             return RedditLinkType.SUBMISSION_WITHOUT_SUB;
+        } else if (path.matches("(?i)/gallery/\\w+.*")) {
+            // Gallery submission. Format: reddit.com/gallery/$post_id
+            // The id is the submission id, so open it like a subreddit-less submission and let
+            // the post screen render the gallery natively instead of falling through to a browser.
+            return RedditLinkType.SUBMISSION_WITHOUT_SUB;
         } else if (path.matches("(?i)/r/[a-z0-9-_.]+.*")) {
             // Subreddit. Format: reddit.com/r/$subreddit/$sort [optional]
             return RedditLinkType.SUBREDDIT;
