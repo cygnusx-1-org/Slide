@@ -283,7 +283,9 @@ public class EditCardsLayout extends BaseActivityAnim {
         final TextView CURRENT_PICTURE = (TextView) findViewById(R.id.picture_current);
         assert CURRENT_PICTURE != null; // it won't be
 
-        if (SettingValues.bigPicCropped) {
+        if (SettingValues.bigPicLetterboxed) {
+            CURRENT_PICTURE.setText(R.string.mode_letterbox);
+        } else if (SettingValues.bigPicCropped) {
             CURRENT_PICTURE.setText(R.string.mode_cropped);
         } else if (SettingValues.bigPicEnabled) {
             CURRENT_PICTURE.setText(R.string.mode_bigpic);
@@ -335,6 +337,12 @@ public class EditCardsLayout extends BaseActivityAnim {
                                                                 CreateCardView.setBigPicCropped(
                                                                         true, layout));
                                                         break;
+                                                    case R.id.letterbox:
+                                                        layout.removeAllViews();
+                                                        layout.addView(
+                                                                CreateCardView.setBigPicLetterboxed(
+                                                                        true, layout));
+                                                        break;
                                                     case R.id.thumbnail:
                                                         layout.removeAllViews();
                                                         layout.addView(
@@ -383,7 +391,10 @@ public class EditCardsLayout extends BaseActivityAnim {
                                                         break;
                                                 }
 
-                                                if (SettingValues.bigPicCropped) {
+                                                if (SettingValues.bigPicLetterboxed) {
+                                                    CURRENT_PICTURE.setText(
+                                                            R.string.mode_letterbox);
+                                                } else if (SettingValues.bigPicCropped) {
                                                     CURRENT_PICTURE.setText(R.string.mode_cropped);
                                                 } else if (SettingValues.bigPicEnabled) {
                                                     CURRENT_PICTURE.setText(R.string.mode_bigpic);

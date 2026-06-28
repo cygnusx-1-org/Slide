@@ -222,6 +222,9 @@ public class CreateCardView {
         SettingValues.prefs.edit().putBoolean("bigPicCropped", false).apply();
         SettingValues.bigPicCropped = false;
 
+        SettingValues.prefs.edit().putBoolean("bigPicLetterboxed", false).apply();
+        SettingValues.bigPicLetterboxed = false;
+
         return CreateView(parent);
     }
 
@@ -229,8 +232,27 @@ public class CreateCardView {
         SettingValues.prefs.edit().putBoolean("noThumbnails", b).apply();
         SettingValues.noThumbnails = false;
 
+        SettingValues.prefs.edit().putBoolean("bigPicLetterboxed", false).apply();
+        SettingValues.bigPicLetterboxed = false;
+
         SettingValues.prefs.edit().putBoolean("bigPicCropped", b).apply();
         SettingValues.bigPicCropped = b;
+
+        SettingValues.prefs.edit().putBoolean("bigPicEnabled", b).apply();
+        SettingValues.bigPicEnabled = b;
+
+        return CreateView(parent);
+    }
+
+    public static View setBigPicLetterboxed(Boolean b, ViewGroup parent) {
+        SettingValues.prefs.edit().putBoolean("noThumbnails", b).apply();
+        SettingValues.noThumbnails = false;
+
+        SettingValues.prefs.edit().putBoolean("bigPicCropped", false).apply();
+        SettingValues.bigPicCropped = false;
+
+        SettingValues.prefs.edit().putBoolean("bigPicLetterboxed", b).apply();
+        SettingValues.bigPicLetterboxed = b;
 
         SettingValues.prefs.edit().putBoolean("bigPicEnabled", b).apply();
         SettingValues.bigPicEnabled = b;
@@ -244,6 +266,9 @@ public class CreateCardView {
 
         SettingValues.prefs.edit().putBoolean("bigPicCropped", false).apply();
         SettingValues.bigPicCropped = false;
+
+        SettingValues.prefs.edit().putBoolean("bigPicLetterboxed", false).apply();
+        SettingValues.bigPicLetterboxed = false;
 
         SettingValues.prefs.edit().putBoolean("noThumbnails", b).apply();
         SettingValues.noThumbnails = b;
@@ -330,7 +355,11 @@ public class CreateCardView {
         } else {
             v.findViewById(R.id.tag).setVisibility(View.GONE);
         }
-        if (SettingValues.bigPicCropped) {
+        if (SettingValues.bigPicLetterboxed) {
+            ((ImageView) v.findViewById(R.id.leadimage)).setMaxHeight(900);
+            ((ImageView) v.findViewById(R.id.leadimage))
+                    .setScaleType(ImageView.ScaleType.FIT_CENTER);
+        } else if (SettingValues.bigPicCropped) {
             ((ImageView) v.findViewById(R.id.leadimage)).setMaxHeight(900);
             ((ImageView) v.findViewById(R.id.leadimage))
                     .setScaleType(ImageView.ScaleType.CENTER_CROP);

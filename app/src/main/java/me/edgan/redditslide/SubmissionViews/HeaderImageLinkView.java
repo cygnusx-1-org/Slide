@@ -164,6 +164,8 @@ public class HeaderImageLinkView extends RelativeLayout {
         // View recycling: clear any transparency background from the previous bind.
         backdrop.setBackground(null);
         thumbImage2.setBackground(null);
+        // View recycling: reset to the default crop; the letterbox path overrides this below.
+        backdrop.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
         boolean loadLq =
                 (((!NetworkUtil.isConnectedWifi(getContext()) && SettingValues.lowResMobile)
@@ -839,17 +841,30 @@ public class HeaderImageLinkView extends RelativeLayout {
             if (!fullImage && height < dpToPx(50) && type != ContentType.Type.SELF) {
                 return true;
             } else if (SettingValues.cropImage) {
+                backdrop.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 setFixedHeightLayoutParams(200);
             } else {
+                backdrop.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 setAspectRatioLayoutParams(height, width);
+            }
+        } else if (SettingValues.bigPicLetterboxed) {
+            if (!fullImage && height < dpToPx(50)) {
+                return true;
+            } else {
+                // Letterbox: keep a fixed height like a link post, but fit the whole preview
+                // inside it (zoomed out, with bars) instead of cropping to fill.
+                backdrop.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                setFixedHeightLayoutParams(200);
             }
         } else if (SettingValues.bigPicCropped) {
             if (!fullImage && height < dpToPx(50)) {
                 return true;
             } else {
+                backdrop.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 setFixedHeightLayoutParams(200);
             }
         } else if (fullImage || height >= dpToPx(50)) {
+            backdrop.setScaleType(ImageView.ScaleType.CENTER_CROP);
             setAspectRatioLayoutParams(height, width);
         } else {
             return true;

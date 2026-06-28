@@ -1114,6 +1114,7 @@
     <string name="mode_no_thumbnails">No Thumbnail</string>
     <string name="mode_big_thumbnails">Wide thumbnails</string>
     <string name="mode_cropped">Cropped big picture</string>
+    <string name="mode_letterbox">Letterboxed big picture</string>
     <string name="mode_bigpic">Big picture</string>
     <string name="press_actionbar">Press arrow to show actionbar</string>
     <string name="show_top_right">Show top right</string>
