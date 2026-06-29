@@ -92,7 +92,7 @@
                     android:maxLines="1"
                     android:imeOptions="flagNavigateNext"
                     android:textColor="?attr/fontColor"
-                    android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-" />
+                    android:digits="@string/submit_subreddit_allowed_chars" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout

@@ -50,7 +50,7 @@
                         android:visibility="gone"
                         android:imeOptions="actionSearch|flagNoExtractUi"
                         android:singleLine="true"
-                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.+"
+                        android:digits="@string/subreddit_allowed_chars"
                         android:theme="@style/SearchEditTextTheme"
                         style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title" />
 

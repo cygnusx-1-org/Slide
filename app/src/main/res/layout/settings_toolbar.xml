@@ -16,7 +16,7 @@
             android:paddingLeft="15dp"
             android:visibility="gone"
             android:paddingRight="15dp"
-            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.+ "
+            android:digits="@string/settings_search_allowed_chars"
             android:inputType="textNoSuggestions"
             android:hint="Search settings..."
             android:imeOptions="actionSearch"

@@ -105,6 +105,18 @@
     <string name="drawer_add_account">Add an account</string>
     <string name="drawer_hello">Hello,</string>
     <string name="drawer_search">Go to subreddit</string>
+    <!-- Characters allowed when typing a subreddit/multireddit name. Includes "-" because the
+         r/u_username form maps usernames (which may contain dashes) to a subreddit. -->
+    <string name="subreddit_allowed_chars" translatable="false">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.+-</string>
+    <!-- Single subreddit name for widgets/shortcuts: like subreddit_allowed_chars but no "+"
+         (multireddit syntax), preserving the original single-subreddit-only behavior. -->
+    <string name="single_subreddit_allowed_chars" translatable="false">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-</string>
+    <!-- Subreddit name when submitting/crossposting: a single subreddit only (no multireddit, no dot). -->
+    <string name="submit_subreddit_allowed_chars" translatable="false">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-</string>
+    <!-- Message recipient: a username or an /r/ or /u/ path. -->
+    <string name="message_recipient_allowed_chars" translatable="false">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-/.</string>
+    <!-- Settings search field. The trailing space is intentional, so the value is quoted to preserve it. -->
+    <string name="settings_search_allowed_chars" translatable="false">"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.+ "</string>
     <string name="drawer_moderation">Moderation</string>
     <string name="drawer_offline">Slide is in offline mode</string>
     <string name="drawer_offline_retry">Try to enter online mode</string>

@@ -229,7 +229,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginTop="10dp"
             android:backgroundTint="?attr/tintColor"
-            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.+"
+            android:digits="@string/subreddit_allowed_chars"
             android:hint="@string/drawer_search"
             android:imeOptions="actionSearch"
             android:singleLine="true"
