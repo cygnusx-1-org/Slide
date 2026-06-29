@@ -20,12 +20,7 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 7.7.1 / 2026-6-24
 ============
-* Rendered legacy CSS spoiler links as spoilers in new-Reddit markdown
-* Restored comment-search term highlighting in new-Reddit markdown
-* Fixed blockquotes and spoilers showing as raw text in new-Reddit markdown
-* Made new-Reddit blockquotes one continuous bar in the theme color
-* Fixed new-Reddit spoilers breaking on backslashes and code blocks
-* Made new-Reddit spoilers to match the classic hidden/revealed look
+* Fixed App is unusable for some devices on Android 15+ due to get started button being underneath the nav bar #294
 
 7.7.0 / 2026-6-23
 ============
