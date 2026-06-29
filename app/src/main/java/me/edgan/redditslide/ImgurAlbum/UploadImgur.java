@@ -35,7 +35,7 @@ public class UploadImgur extends AsyncTask<Uri, Integer, JSONObject> {
                             .addFormDataPart(
                                     "image",
                                     bitmap.getName(),
-                                    RequestBody.create(MediaType.parse("image/*"), bitmap))
+                                    RequestBody.create(bitmap, MediaType.parse("image/*")))
                             .build();
 
             ProgressRequestBody body = new ProgressRequestBody(formBody, this::publishProgress);

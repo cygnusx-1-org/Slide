@@ -73,7 +73,7 @@ public class UploadImgurAlbum extends AsyncTask<Uri, Integer, String> {
                 formBodyBuilder.addFormDataPart(
                         "image",
                         bitmap.getName(),
-                        RequestBody.create(MediaType.parse("image/*"), bitmap));
+                        RequestBody.create(bitmap, MediaType.parse("image/*")));
                 formBodyBuilder.addFormDataPart("album", albumurl);
                 MultipartBody formBody = formBodyBuilder.build();
 

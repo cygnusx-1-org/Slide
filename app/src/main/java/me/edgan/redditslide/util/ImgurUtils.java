@@ -41,7 +41,7 @@ public class ImgurUtils {
                         .addFormDataPart(
                                 "image",
                                 file.getName(),
-                                RequestBody.create(MediaType.parse("image/*"), file))
+                                RequestBody.create(file, MediaType.parse("image/*")))
                         .build();
         Request request =
                 new Request.Builder()
