@@ -171,6 +171,7 @@ public class SettingValues {
     public static boolean middleImage;
     public static boolean bigPicEnabled;
     public static boolean bigPicCropped;
+    public static boolean bigPicLetterboxed;
     public static ColorMatchingMode colorMatchingMode;
     public static ColorIndicator colorIndicator;
     public static Palette.ThemeEnum theme;
@@ -337,6 +338,7 @@ public class SettingValues {
         middleImage = settings.getBoolean("middleCard", true);
 
         bigPicCropped = settings.getBoolean("bigPicCropped", false);
+        bigPicLetterboxed = settings.getBoolean("bigPicLetterboxed", false);
         bigPicEnabled = settings.getBoolean("bigPicEnabled", true);
 
         alwaysShowFAB = settings.getBoolean("alwaysShowFAB", false);

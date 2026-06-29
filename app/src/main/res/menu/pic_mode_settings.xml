@@ -9,6 +9,10 @@
         android:title="@string/mode_cropped"/>
 
     <item
+        android:id="@+id/letterbox"
+        android:title="@string/mode_letterbox"/>
+
+    <item
         android:id="@+id/thumbnail"
         android:title="@string/mode_thumbnail"/>
 
