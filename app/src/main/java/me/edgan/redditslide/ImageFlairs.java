@@ -732,7 +732,7 @@ public class ImageFlairs {
         DiskCache discCache;
         File dir = getCacheDirectory(context);
         discCacheSize *= 100;
-        int threadPoolSize = 7;
+        int threadPoolSize = Constants.IMAGE_LOADER_THREAD_POOL_SIZE;
         if (discCacheSize > 0) {
             try {
                 dir.mkdir();
@@ -756,7 +756,6 @@ public class ImageFlairs {
                         .threadPoolSize(threadPoolSize)
                         .denyCacheImageMultipleSizesInMemory()
                         .diskCache(discCache)
-                        .threadPoolSize(4)
                         .imageDownloader(new OkHttpImageDownloader(context))
                         .defaultDisplayImageOptions(options)
                         .build();

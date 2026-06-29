@@ -14,6 +14,12 @@ public class Constants {
     public static final int TRENDING_BATCH_SIZE = 10;
 
     /**
+     * Thread pool size for the shared Universal Image Loader instances (used by feed, gallery,
+     * album, and flair image loading). This is the maximum number of concurrent image loads.
+     */
+    public static final int IMAGE_LOADER_THREAD_POOL_SIZE = 8;
+
+    /**
      * This is the estimated height of the Tabs view mode in dp. Use this for calculating the
      * SwipeToRefresh (PTR) progresses indicator offset when using "Tabs" view mode.
      */

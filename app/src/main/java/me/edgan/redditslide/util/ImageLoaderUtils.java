@@ -14,6 +14,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import java.io.File;
 import java.io.IOException;
+import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Views.SubsamplingScaleImageView;
 
@@ -48,7 +49,7 @@ public class ImageLoaderUtils {
         DiskCache discCache;
         File dir = getCacheDirectory(context);
         discCacheSize *= 100;
-        int threadPoolSize = 7;
+        int threadPoolSize = Constants.IMAGE_LOADER_THREAD_POOL_SIZE;
         if (discCacheSize > 0) {
             try {
                 dir.mkdir();
@@ -84,7 +85,6 @@ public class ImageLoaderUtils {
                         .threadPoolSize(threadPoolSize)
                         .denyCacheImageMultipleSizesInMemory()
                         .diskCache(discCache)
-                        .threadPoolSize(4)
                         .imageDownloader(new OkHttpImageDownloader(context))
                         .defaultDisplayImageOptions(options)
                         .build();
