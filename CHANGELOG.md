@@ -4,6 +4,11 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.7.4 / 2026-6-29
+============
+* Added a "Wide color gamut" toggle in "Settings | General", on by default
+* Made the "High-Colorspace Images" now on by default
+
 7.7.3 / 2026-6-27
 ============
 * Fixed internal browser opening over reddit-link posts in Shadowbox
