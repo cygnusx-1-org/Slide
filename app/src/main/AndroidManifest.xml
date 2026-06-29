@@ -352,7 +352,6 @@
                         android:theme="@style/swipeable"/>
                 <activity
                         android:name=".Activities.Tumblr"
-                        android:colorMode="wideColorGamut"
                         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
                         android:theme="@style/swipeable"/>
                 <activity
@@ -390,17 +389,14 @@
                 <activity
                         android:name=".Activities.MediaView"
                         android:alwaysRetainTaskState="true"
-                        android:colorMode="wideColorGamut"
                         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
                         android:theme="@style/swipeable"/>
                 <activity
                         android:name=".Activities.AlbumPager"
-                        android:colorMode="wideColorGamut"
                         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
                         android:theme="@style/swipeable"/>
                 <activity
                         android:name=".Activities.TumblrPager"
-                        android:colorMode="wideColorGamut"
                         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
                         android:theme="@style/swipeable"/>
                 <activity

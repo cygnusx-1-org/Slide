@@ -128,6 +128,7 @@ public class Tumblr extends BaseSaveActivity {
                         new ColorPreferences(this)
                                 .getDarkThemeSubreddit(ColorPreferences.FONT_STYLE),
                         true);
+        MiscUtil.applyWideColorGamut(this);
         setContentView(R.layout.album);
 
         // Keep the screen on

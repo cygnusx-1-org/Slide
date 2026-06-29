@@ -140,6 +140,21 @@ public class MiscUtil {
     }
 
     /**
+     * Applies the wide color gamut window color mode to the given activity when the user has the
+     * preference enabled. Replaces the static android:colorMode="wideColorGamut" manifest attribute
+     * so it can be toggled at runtime (see issue #284: the wide gamut mode washes out colors on some
+     * OLED panels).
+     */
+    public static void applyWideColorGamut(Activity activity) {
+        if (activity == null) return;
+        activity.getWindow()
+                .setColorMode(
+                        SettingValues.wideColorGamut
+                                ? android.content.pm.ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT
+                                : android.content.pm.ActivityInfo.COLOR_MODE_DEFAULT);
+    }
+
+    /**
      * Adjusts button sizes for small screens (360dp or less)
      * @param rootView The root view containing the buttons (null for activity-level)
      * @param activity The activity context

@@ -166,6 +166,7 @@ public class TumblrPager extends BaseSaveActivity {
                         new ColorPreferences(this)
                                 .getDarkThemeSubreddit(ColorPreferences.FONT_STYLE),
                         true);
+        MiscUtil.applyWideColorGamut(this);
         setContentView(R.layout.album_pager);
 
         // Keep the screen on

@@ -146,6 +146,7 @@ public class SettingValues {
     public static final String PREF_MOD_TOOLBOX_MODMAIL = "toolboxModmail";
     public static final String PREF_ALWAYS_SHOW_FAB = "alwaysShowFAB";
     public static final String PREF_HIGH_COLORSPACE_IMAGES = "highMemoryImages";
+    public static final String PREF_WIDE_COLOR_GAMUT = "wideColorGamut";
     public static final String PREF_COMMENT_IMAGE_SIZE = "commentImageSize";
     public static final String PREF_ALWAYS_BLACK_STATUSBAR = "alwaysBlackStatusbar";
     public static final String PREF_SUBREDDIT_FILTERS_TILL_RESTART = "subredditFiltersTillRestart";
@@ -253,6 +254,7 @@ public class SettingValues {
     public static boolean ignoreSubSetting;
     public static boolean hideNSFWCollection;
     public static boolean highColorspaceImages;
+    public static boolean wideColorGamut;
 
     /** Comment image size: 0 = small, 1 = medium (default), 2 = large. */
     public static final int COMMENT_IMAGE_SIZE_SMALL = 0;
@@ -430,7 +432,8 @@ public class SettingValues {
         lqMid = prefs.getBoolean(PREF_LQ_MID, true);
         lqHigh = prefs.getBoolean(PREF_LQ_HIGH, false);
         lqVideos = prefs.getBoolean(PREF_LQ_VIDEOS, true);
-        highColorspaceImages = prefs.getBoolean(PREF_HIGH_COLORSPACE_IMAGES, false);
+        highColorspaceImages = prefs.getBoolean(PREF_HIGH_COLORSPACE_IMAGES, true);
+        wideColorGamut = prefs.getBoolean(PREF_WIDE_COLOR_GAMUT, true);
         commentImageSize = prefs.getInt(PREF_COMMENT_IMAGE_SIZE, COMMENT_IMAGE_SIZE_MEDIUM);
 
         noImages = prefs.getBoolean(PREF_NO_IMAGES, false);

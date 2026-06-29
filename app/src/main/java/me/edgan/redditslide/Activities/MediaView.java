@@ -450,6 +450,8 @@ public class MediaView extends BaseSaveActivity {
             stopPosition = savedInstanceState.getLong("position");
         }
 
+        MiscUtil.applyWideColorGamut(this);
+
         setContentView(R.layout.activity_media);
 
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());

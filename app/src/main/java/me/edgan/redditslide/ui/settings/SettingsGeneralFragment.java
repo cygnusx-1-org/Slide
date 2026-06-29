@@ -403,6 +403,23 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
         }
 
         {
+            SwitchCompat wideColorGamutSwitch =
+                    context.findViewById(R.id.settings_general_wide_color_gamut);
+            if (wideColorGamutSwitch != null) {
+                wideColorGamutSwitch.setChecked(SettingValues.wideColorGamut);
+                wideColorGamutSwitch.setOnCheckedChangeListener(
+                        (buttonView, isChecked) -> {
+                            SettingsThemeFragment.changed = true;
+                            SettingValues.wideColorGamut = isChecked;
+                            SettingValues.prefs
+                                    .edit()
+                                    .putBoolean(SettingValues.PREF_WIDE_COLOR_GAMUT, isChecked)
+                                    .apply();
+                        });
+            }
+        }
+
+        {
             final TextView commentImageSizeCurrent =
                     context.findViewById(R.id.settings_general_comment_image_size_current);
             final View commentImageSizeRow =

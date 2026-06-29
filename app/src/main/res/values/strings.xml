@@ -1289,6 +1289,8 @@
     <string name="markdown_preview_old_reddit">Old Reddit rendering</string>
     <string name="high_colorspace_images">High-Colorspace Images</string>
     <string name="description_high_colorspace">Loads full colorspace on images, potentially leading to higher memory usage</string>
+    <string name="wide_color_gamut">Wide color gamut</string>
+    <string name="description_wide_color_gamut">Render the media viewers in wide color gamut. May wash out colors on some OLED displays</string>
     <string name="comment_emote_animation">Comment emote animation</string>
     <string name="description_comment_emote_animation">Toggles if non-giphy emotes in comments are animated or not</string>
     <string name="comment_image_size">Comment image size</string>
