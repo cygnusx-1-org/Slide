@@ -54,6 +54,7 @@ import me.edgan.redditslide.Fragments.LocalSavedView;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.UserTags;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
@@ -101,6 +102,7 @@ public class Profile extends BaseActivityAnim {
     }
 
     private boolean friend;
+    private boolean following;
     private MenuItem sortItem;
     private MenuItem categoryItem;
     private MenuItem searchItem;
@@ -990,8 +992,86 @@ public class Profile extends BaseActivityAnim {
                                                 checkBlockStatusAndToggle(blockButton);
                                             }
                                         });
+
+                        // Follow/Unfollow: subscribe to the user's profile subreddit (u_username)
+                        // and add it to the subreddit list, like any other subreddit.
+                        final String userSub = "u_" + name.toLowerCase(Locale.ENGLISH);
+                        following = UserSubscriptions.getSubscriptions(Profile.this).contains(userSub);
+                        ((TextView) dialoglayout.findViewById(R.id.follow))
+                                .setText(
+                                        following
+                                                ? R.string.profile_unfollow_user
+                                                : R.string.profile_follow_user);
+                        dialoglayout
+                                .findViewById(R.id.follow_body)
+                                .setOnClickListener(
+                                        new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                new AsyncTask<Void, Void, Boolean>() {
+                                                    @Override
+                                                    protected Boolean doInBackground(Void... params) {
+                                                        try {
+                                                            AccountManager m =
+                                                                    new AccountManager(
+                                                                            Authentication.reddit);
+                                                            if (following) {
+                                                                m.unsubscribe(
+                                                                        Authentication.reddit
+                                                                                .getSubreddit(
+                                                                                        "u_" + name));
+                                                            } else {
+                                                                m.subscribe(
+                                                                        Authentication.reddit
+                                                                                .getSubreddit(
+                                                                                        "u_" + name));
+                                                            }
+                                                            return true;
+                                                        } catch (Exception e) {
+                                                            return false;
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onPostExecute(Boolean success) {
+                                                        if (!success) {
+                                                            return;
+                                                        }
+                                                        if (following) {
+                                                            UserSubscriptions.removeSubreddit(
+                                                                    userSub, Profile.this);
+                                                            following = false;
+                                                        } else {
+                                                            UserSubscriptions.addSubreddit(
+                                                                    userSub, Profile.this);
+                                                            following = true;
+                                                        }
+                                                        ((TextView)
+                                                                        dialoglayout.findViewById(
+                                                                                R.id.follow))
+                                                                .setText(
+                                                                        following
+                                                                                ? R.string
+                                                                                        .profile_unfollow_user
+                                                                                : R.string
+                                                                                        .profile_follow_user);
+                                                        Toast.makeText(
+                                                                        Profile.this,
+                                                                        following
+                                                                                ? R.string
+                                                                                        .misc_subscribed
+                                                                                : R.string
+                                                                                        .misc_unsubscribed,
+                                                                        Toast.LENGTH_SHORT)
+                                                                .show();
+                                                    }
+                                                }.executeOnExecutor(
+                                                        AsyncTask.THREAD_POOL_EXECUTOR);
+                                            }
+                                        });
                     } else {
                         dialoglayout.findViewById(R.id.pm).setVisibility(View.GONE);
+                        dialoglayout.findViewById(R.id.follow_body).setVisibility(View.GONE);
                     }
 
                     dialoglayout

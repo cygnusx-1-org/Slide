@@ -148,6 +148,8 @@
     <string name="profile_friend">Friend</string>
     <string name="profile_add_friend">Add friend</string>
     <string name="profile_remove_friend">Remove friend</string>
+    <string name="profile_follow_user">Follow</string>
+    <string name="profile_unfollow_user">Unfollow</string>
     <string name="profile_remove_account">Would you really like to remove this account?</string>
     <string name="profile_remove">Delete account</string>
     <string name="profile_history">History</string>
