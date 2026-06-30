@@ -427,7 +427,8 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
                         refreshLayout.setRefreshing(false);
 
                         if (startIndex != -1) {
-                            adapter.notifyItemRangeInserted(startIndex + 1, posts.posts.size());
+                            adapter.notifyItemRangeInserted(
+                                    startIndex + 1, posts.posts.size() - startIndex);
                         } else {
                             adapter.notifyDataSetChanged();
                         }

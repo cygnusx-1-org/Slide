@@ -203,6 +203,9 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
         rv = v.findViewById(R.id.vertical_content);
 
         rv.setHasFixedSize(true);
+        // Keep a few extra off-screen views bound so a short scroll-back reuses them
+        // (with their images already attached) instead of rebinding/reloading.
+        rv.setItemViewCacheSize(Constants.FEED_VIEW_CACHE_SIZE);
 
         final RecyclerView.LayoutManager mLayoutManager =
                 createLayoutManager(
@@ -640,7 +643,6 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                     // Let the loop reset itself
                 }
             }
-            adapter.notifyItemRangeChanged(0, adapter.dataSet.posts.size());
             o.writeToMemoryNoStorage();
             rv.setItemAnimator(
                     new SlideUpAlphaAnimator().withInterpolator(new LinearOutSlowInInterpolator()));
@@ -722,15 +724,22 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                                         (CatchStaggeredGridLayoutManager) rv.getLayoutManager();
                                 layoutManager.invalidateSpanAssignments();
 
-                                if (startIndex != -1 && !forced) {
+                                final int insertCount = posts.posts.size() - startIndex;
+                                if (startIndex != -1 && !forced && insertCount > 0) {
+                                    // Normal pagination: animate only the appended
+                                    // items, no full-list redraw.
                                     adapter.notifyItemRangeInserted(
-                                            startIndex + 1, posts.posts.size());
-                                } else {
+                                            startIndex + 1, insertCount);
+                                } else if (forced || startIndex == -1) {
+                                    // Pull-to-refresh / reset: full list replaced.
                                     forced = false;
                                     rv.scrollToPosition(0);
+                                    adapter.notifyDataSetChanged();
+                                } else {
+                                    // No new items (end of feed, or all duplicates):
+                                    // refresh the footer only, do not scroll to top.
+                                    adapter.notifyItemChanged(posts.posts.size() + 1);
                                 }
-
-                                adapter.notifyDataSetChanged();
                             });
 
             if (MainActivity.isRestart) {
@@ -738,7 +747,10 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                 posts.offline = false;
                 rv.getLayoutManager().scrollToPosition(MainActivity.restartPage + 1);
             }
-            if (startIndex < 10) resetScroll();
+            // startIndex is -1 on a reset/refresh (and 0 for a degenerate first append); reset the
+            // scroll/toolbar state on those, not on ordinary pagination. (Under the old start
+            // semantics this was `< 10`, which keyed off total post count.)
+            if (startIndex <= 0) resetScroll();
         }
     }
 

@@ -105,7 +105,10 @@ public class MultiredditPosts implements PostLoader {
                 // new submissions found
                 int start = 0;
                 if (posts != null) {
-                    start = posts.size() + 1;
+                    // Adapter offset of the first newly appended post (old size, before
+                    // the addAll below). updateSuccess adds the +1 for the spacer header
+                    // and derives the insert count, so this must be the real offset.
+                    start = posts.size();
                 }
 
                 if (reset || offline || posts == null) {

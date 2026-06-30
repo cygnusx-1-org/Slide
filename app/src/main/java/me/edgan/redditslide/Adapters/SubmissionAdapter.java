@@ -375,18 +375,13 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                             null);
         }
         if (holder2 instanceof SubmissionFooterViewHolder) {
-            Handler handler = new Handler();
-
-            final Runnable r =
-                    new Runnable() {
-                        public void run() {
-                            notifyItemChanged(
-                                    dataSet.posts.size() + 1); // the loading spinner to replaced by
-                            // nomoreposts.xml
-                        }
-                    };
-
-            handler.post(r);
+            // Only refresh when the footer actually needs to change type (e.g. the
+            // loading spinner replaced by nomoreposts.xml). Posting unconditionally made
+            // the footer re-bind itself on every bind, an endless redraw loop. Compute the
+            // position inside the post so it reflects the list size when it actually runs.
+            if (holder2.getItemViewType() != getItemViewType(dataSet.posts.size() + 1)) {
+                new Handler().post(() -> notifyItemChanged(dataSet.posts.size() + 1));
+            }
 
             if (holder2.itemView.findViewById(R.id.reload) != null) {
                 holder2.itemView

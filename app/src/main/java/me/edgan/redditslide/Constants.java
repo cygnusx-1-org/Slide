@@ -20,6 +20,12 @@ public class Constants {
     public static final int IMAGE_LOADER_THREAD_POOL_SIZE = 8;
 
     /**
+     * Number of off-screen feed RecyclerView items kept bound (with their images attached) so a
+     * short scroll-back reuses them instead of rebinding/reloading. Larger than the default of 2.
+     */
+    public static final int FEED_VIEW_CACHE_SIZE = 16;
+
+    /**
      * This is the estimated height of the Tabs view mode in dp. Use this for calculating the
      * SwipeToRefresh (PTR) progresses indicator offset when using "Tabs" view mode.
      */

@@ -16,7 +16,6 @@ import java.util.Map;
 import me.edgan.redditslide.Activities.Login;
 import me.edgan.redditslide.Activities.MainActivity;
 import me.edgan.redditslide.Activities.MultiredditOverview;
-import me.edgan.redditslide.Activities.NewsActivity;
 import me.edgan.redditslide.Toolbox.Toolbox;
 import me.edgan.redditslide.ui.settings.dragSort.ReorderSubreddits;
 import me.edgan.redditslide.util.LogUtil;
@@ -100,8 +99,6 @@ public class UserSubscriptions {
                     "popular");
     public static SharedPreferences subscriptions;
     public static SharedPreferences multiNameToSubs;
-    public static SharedPreferences newsNameToSubs;
-    public static SharedPreferences news;
     public static SharedPreferences pinned;
 
     public static void setSubNameToProperties(String name, String descrption) {
@@ -110,10 +107,6 @@ public class UserSubscriptions {
 
     public static Map<String, String> getMultiNameToSubs(boolean all) {
         return getNameToSubs(multiNameToSubs, all);
-    }
-
-    public static Map<String, String> getNewsNameToSubs(boolean all) {
-        return getNameToSubs(newsNameToSubs, all);
     }
 
     private static Map<String, String> getNameToSubs(SharedPreferences sP, boolean all) {
@@ -165,46 +158,6 @@ public class UserSubscriptions {
 
         } else {
             String s = subscriptions.getString(Authentication.name, "");
-            List<String> subredditsForHome = new CaseInsensitiveArrayList();
-            if (!s.isEmpty()) {
-                for (String s2 : s.split(",")) {
-                    subredditsForHome.add(s2.toLowerCase(Locale.ENGLISH));
-                }
-            }
-            CaseInsensitiveArrayList finals = new CaseInsensitiveArrayList();
-            List<String> offline = OfflineSubreddit.getAllFormatted();
-            for (String subs : subredditsForHome) {
-                if (offline.contains(subs)) {
-                    finals.add(subs);
-                }
-            }
-            for (String subs : offline) {
-                if (!finals.contains(subs)) {
-                    finals.add(subs);
-                }
-            }
-            c.updateSubs(finals);
-            c.updateMultiNameToSubs(getMultiNameToSubs(false));
-        }
-    }
-
-    public static void doNewsSubs(NewsActivity c) {
-        if (NetworkUtil.isConnected(c)) {
-            String s = news.getString("subs", "news,android");
-            if (s.isEmpty()) {
-                // get online subs
-                c.updateSubs(syncSubscriptionsOverwrite(c));
-            } else {
-                CaseInsensitiveArrayList subredditsForHome = new CaseInsensitiveArrayList();
-                for (String s2 : s.split(",")) {
-                    subredditsForHome.add(s2.toLowerCase(Locale.ENGLISH));
-                }
-                c.updateSubs(subredditsForHome);
-            }
-            c.updateMultiNameToSubs(getNewsNameToSubs(false));
-
-        } else {
-            String s = news.getString("subs", "news,android");
             List<String> subredditsForHome = new CaseInsensitiveArrayList();
             if (!s.isEmpty()) {
                 for (String s2 : s.split(",")) {

@@ -3,6 +3,7 @@ package me.edgan.redditslide.util;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
+import android.util.DisplayMetrics;
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiskCache;
@@ -11,7 +12,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import java.io.File;
 import java.io.IOException;
 import me.edgan.redditslide.Constants;
@@ -74,16 +75,28 @@ public class ImageLoaderUtils {
                                         : ImageScaleType.IN_SAMPLE_POWER_OF_2)
                         .cacheInMemory(false)
                         .resetViewBeforeLoading(false)
-                        .displayer(new FadeInBitmapDisplayer(250))
+                        // No fade — images appear instantly instead of animating in.
+                        .displayer(new SimpleBitmapDisplayer())
                         .build();
 
         if (SettingValues.highColorspaceImages) {
             SubsamplingScaleImageView.setPreferredBitmapConfig(Bitmap.Config.ARGB_8888);
         }
+
+        // Cap decoded bitmaps to the screen size. The feed's EXACTLY-scaled lead images were
+        // otherwise decoded at the (very tall) view height — up to ~15 MB each — which made the
+        // in-memory cache hold almost nothing. Full-screen zoom is unaffected: it uses
+        // SubsamplingScaleImageView decoding straight from the disk-cache file, not this path.
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        // Give the memory cache a real budget so nearby scroll-back hits memory instead of disk.
+        int memoryCacheSize = (int) (Runtime.getRuntime().maxMemory() / 4);
+
         ImageLoaderConfiguration config =
                 new ImageLoaderConfiguration.Builder(context)
                         .threadPoolSize(threadPoolSize)
                         .denyCacheImageMultipleSizesInMemory()
+                        .memoryCacheExtraOptions(metrics.widthPixels, metrics.heightPixels)
+                        .memoryCacheSize(memoryCacheSize)
                         .diskCache(discCache)
                         .imageDownloader(new OkHttpImageDownloader(context))
                         .defaultDisplayImageOptions(options)
