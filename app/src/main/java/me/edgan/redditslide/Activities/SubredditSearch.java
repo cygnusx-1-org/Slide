@@ -66,7 +66,12 @@ public class SubredditSearch extends BaseActivityAnim {
     @Override
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
-        term = getIntent().getExtras().getString("term");
+        Bundle extras = getIntent().getExtras();
+        if (extras == null) {
+            finish();
+            return;
+        }
+        term = extras.getString("term");
         applyColorTheme("");
         setContentView(R.layout.activity_fragmentinner);
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());

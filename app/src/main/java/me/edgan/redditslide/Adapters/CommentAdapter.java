@@ -908,6 +908,13 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             blocks = SubmissionParser.extractImageBlocks(blocks);
         }
 
+        if (blocks.isEmpty()) {
+            firstTextView.setText("");
+            firstTextView.setVisibility(View.GONE);
+            commentOverflow.removeAllViews();
+            return;
+        }
+
         int startIndex;
         String first = blocks.get(0);
         boolean firstIsImage = first.startsWith(SubmissionParser.IMAGE_BLOCK_PREFIX);
@@ -946,6 +953,13 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (!SettingValues.shouldSkipImages(mContext)) {
             // Split standalone images into their own blocks so they render as pre-sized ImageViews.
             blocks = SubmissionParser.extractImageBlocks(blocks);
+        }
+
+        if (blocks.isEmpty()) {
+            firstTextView.setText("");
+            firstTextView.setVisibility(View.GONE);
+            commentOverflow.removeAllViews();
+            return;
         }
 
         int startIndex;

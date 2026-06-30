@@ -238,7 +238,7 @@ public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             if (user.getCaption() != null) {
                 List<String> textBlocks = SubmissionParser.getBlocks(user.getCaption());
-                String captionText = textBlocks.get(0).trim();
+                String captionText = textBlocks.isEmpty() ? "" : textBlocks.get(0).trim();
                 if (albumHolder.body != null) {
                     LinkUtil.setTextWithLinks(captionText, albumHolder.body);
                 }

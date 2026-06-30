@@ -252,7 +252,15 @@ public class OfflineSubreddit {
                         reader.readTree(gotten), CommentSort.CONFIDENCE));
             } else if (gotten.startsWith("[")) {
                 JsonNode elem = reader.readTree(gotten);
-                return (new Submission(elem.get(0).get("data").get("children").get(0).get("data")));
+                JsonNode first = elem != null ? elem.get(0) : null;
+                JsonNode data = first != null ? first.get("data") : null;
+                JsonNode children = data != null ? data.get("children") : null;
+                JsonNode firstChild = children != null ? children.get(0) : null;
+                JsonNode submissionData = firstChild != null ? firstChild.get("data") : null;
+                if (submissionData != null) {
+                    return (new Submission(submissionData));
+                }
+                return null;
             } else {
                 return (new Submission(reader.readTree(gotten)));
             }

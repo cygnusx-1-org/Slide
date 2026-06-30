@@ -90,13 +90,18 @@ public class CommentsScreenSingle extends BaseActivityAnim {
         super.onCreate(savedInstance);
         applyColorTheme();
         setContentView(R.layout.activity_slide);
-        name = getIntent().getExtras().getString(EXTRA_SUBMISSION, "");
+        Bundle extras = getIntent().getExtras();
+        if (extras == null) {
+            finish();
+            return;
+        }
+        name = extras.getString(EXTRA_SUBMISSION, "");
 
-        subreddit = getIntent().getExtras().getString(EXTRA_SUBREDDIT, "");
-        np = getIntent().getExtras().getBoolean(EXTRA_NP, false);
-        context = getIntent().getExtras().getString(EXTRA_CONTEXT, "");
+        subreddit = extras.getString(EXTRA_SUBREDDIT, "");
+        np = extras.getBoolean(EXTRA_NP, false);
+        context = extras.getString(EXTRA_CONTEXT, "");
 
-        contextNumber = getIntent().getExtras().getInt(EXTRA_CONTEXT_NUMBER, 5);
+        contextNumber = extras.getInt(EXTRA_CONTEXT_NUMBER, 5);
 
         if (subreddit.equals(Reddit.EMPTY_STRING)) {
             new AsyncGetSubredditName().execute(name);

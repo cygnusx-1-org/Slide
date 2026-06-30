@@ -468,8 +468,13 @@ public class MediaView extends BaseSaveActivity {
             speedBtn.setVisibility(View.GONE);
         }
 
-        final String firstUrl = getIntent().getExtras().getString(EXTRA_DISPLAY_URL, "");
-        contentUrl = getIntent().getExtras().getString(EXTRA_URL);
+        Bundle mediaExtras = getIntent().getExtras();
+        if (mediaExtras == null) {
+            finish();
+            return;
+        }
+        final String firstUrl = mediaExtras.getString(EXTRA_DISPLAY_URL, "");
+        contentUrl = mediaExtras.getString(EXTRA_URL);
 
         if (contentUrl == null || contentUrl.isEmpty()) {
             finish();
@@ -671,7 +676,12 @@ public class MediaView extends BaseSaveActivity {
         // and they would wrongly fall through to the ExoPlayer branch, which has no GIF extractor
         // and spins forever. Stripping the query lets real gifs reach the direct-GIF decoder.
         final String gifPath = Uri.parse(gifUrl).getPath();
-        if (gifPath != null && gifPath.toLowerCase().endsWith(".gif")) {
+        // ...but reddit serves an MP4 transcode at preview.redd.it/<id>.gif?format=mp4 — the path
+        // still ends in .gif while the bytes are actually MP4. Decoding those with Movie returns
+        // null and the viewer closes instantly, so treat format=mp4 URLs as video and send them
+        // to the ExoPlayer branch (getVideoType() already classifies preview.redd.it as DIRECT).
+        final boolean isMp4Transcode = gifUrl.toLowerCase().contains("format=mp4");
+        if (gifPath != null && gifPath.toLowerCase().endsWith(".gif") && !isMp4Transcode) {
             // Handle direct .gif URLs with Movie/GifDrawable
             Log.v(TAG, "Loading direct GIF: " + gifUrl); // Changed to Log.v
             findViewById(R.id.gifarea).setVisibility(View.VISIBLE); // Ensure gifarea is visible for progress bar

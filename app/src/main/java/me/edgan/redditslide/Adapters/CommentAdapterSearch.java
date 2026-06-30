@@ -419,6 +419,13 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
 
         List<String> blocks = SubmissionParser.getBlocks(rawHTML);
 
+        if (blocks.isEmpty()) {
+            holder.firstTextView.setText("");
+            holder.firstTextView.setVisibility(View.GONE);
+            holder.commentOverflow.removeAllViews();
+            return;
+        }
+
         int startIndex = 0;
         // the <div class="md"> case is when the body contains a table or code block first
         if (!blocks.get(0).equals("<div class=\"md\">")) {

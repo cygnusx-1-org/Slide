@@ -201,8 +201,8 @@ public class ContentType {
                 return Type.IMGUR;
             }
             if (hostContains(host, "xkcd.com")
-                    && !hostContains("imgs.xkcd.com")
-                    && !hostContains("what-if.xkcd.com")) {
+                    && !hostContains(host, "imgs.xkcd.com")
+                    && !hostContains(host, "what-if.xkcd.com")) {
                 return Type.XKCD;
             }
             if (hostContains(host, "tumblr.com") && uri.getPath().contains("post")) {

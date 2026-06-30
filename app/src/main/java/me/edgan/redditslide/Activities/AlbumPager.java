@@ -180,7 +180,9 @@ public class AlbumPager extends BaseSaveActivity {
         mToolbar.setTitle(R.string.type_album);
         ToolbarColorizeHelper.colorizeToolbar(mToolbar, Color.WHITE, this);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         mToolbar.setPopupTheme(
                 new ColorPreferences(this).getDarkThemeSubreddit(ColorPreferences.FONT_STYLE));

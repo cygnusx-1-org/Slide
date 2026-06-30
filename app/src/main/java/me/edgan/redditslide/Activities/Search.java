@@ -228,7 +228,12 @@ public class Search extends BaseActivityAnim {
 
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
-        where = getIntent().getExtras().getString(EXTRA_TERM, "");
+        Bundle extras = getIntent().getExtras();
+        if (extras == null) {
+            finish();
+            return;
+        }
+        where = extras.getString(EXTRA_TERM, "");
 
         time = TimePeriod.ALL;
 
@@ -272,8 +277,10 @@ public class Search extends BaseActivityAnim {
 
         setupSubredditAppBar(R.id.toolbar, "Search", true, subreddit.toLowerCase(Locale.ENGLISH));
 
-        getSupportActionBar().setTitle(CompatUtil.fromHtml(where));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(CompatUtil.fromHtml(where));
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         assert mToolbar != null; // it won't be, trust me
         mToolbar.setNavigationOnClickListener(
                 new View.OnClickListener() {

@@ -106,6 +106,9 @@ public class Website extends BaseActivityAnim {
                 v.goBack();
                 return true;
             case R.id.comments:
+                if (getIntent().getExtras() == null) {
+                    return true;
+                }
                 final int commentUrl = getIntent().getExtras().getInt(LinkUtil.ADAPTER_POSITION);
                 String submissionPermalink =
                         getIntent().getStringExtra(MediaView.SUBMISSION_URL);
@@ -184,9 +187,13 @@ public class Website extends BaseActivityAnim {
         setContentView(R.layout.activity_web);
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
-        url = getIntent().getExtras().getString(LinkUtil.EXTRA_URL, "");
-        subredditColor =
-                getIntent().getExtras().getInt(LinkUtil.EXTRA_COLOR, Palette.getDefaultColor());
+        Bundle extras = getIntent().getExtras();
+        if (extras == null) {
+            finish();
+            return;
+        }
+        url = extras.getString(LinkUtil.EXTRA_URL, "");
+        subredditColor = extras.getInt(LinkUtil.EXTRA_COLOR, Palette.getDefaultColor());
 
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         setupAppBar(R.id.toolbar, "", true, subredditColor, R.id.appbar);

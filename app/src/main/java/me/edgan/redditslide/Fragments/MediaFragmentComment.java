@@ -116,12 +116,18 @@ public class MediaFragmentComment extends Fragment {
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = (ViewGroup) inflater.inflate(R.layout.submission_mediacard, container, false);
+        if (s == null) {
+            // Arguments were missing in onCreate; nothing to populate.
+            return rootView;
+        }
         if (savedInstanceState != null && savedInstanceState.containsKey("position")) {
             stopPosition = savedInstanceState.getLong("position");
         }
         final SlidingUpPanelLayout slideLayout = rootView.findViewById(R.id.sliding_layout);
 
-        PopulateShadowboxInfo.doActionbar(s.comment, rootView, getActivity(), true);
+        if (getActivity() != null) {
+            PopulateShadowboxInfo.doActionbar(s.comment, rootView, getActivity(), true);
+        }
         (rootView.findViewById(R.id.thumbimage2)).setVisibility(View.GONE);
 
         ContentType.Type type = ContentType.getContentType(contentUrl);
@@ -201,10 +207,19 @@ public class MediaFragmentComment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = this.getArguments();
-        i = bundle.getInt("page");
-        s = ShadowboxComments.comments.get(i);
-        sub = s.comment.getComment().getSubredditName();
-        contentUrl = bundle.getString("contentUrl");
+        if (bundle != null) {
+            i = bundle.getInt("page");
+            // ShadowboxComments.comments is a static list that can be cleared/replaced between
+            // launch and fragment creation, so guard the index rather than risk
+            // IndexOutOfBoundsException. A null s leaves onCreateView to bail out gracefully.
+            if (ShadowboxComments.comments != null
+                    && i >= 0
+                    && i < ShadowboxComments.comments.size()) {
+                s = ShadowboxComments.comments.get(i);
+                sub = s.comment.getComment().getSubredditName();
+                contentUrl = bundle.getString("contentUrl");
+            }
+        }
         client = Reddit.client;
         gson = new Gson();
         imgurKey = SecretConstants.getImgurApiKey(getContext());

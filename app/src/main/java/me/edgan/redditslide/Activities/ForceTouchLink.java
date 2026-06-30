@@ -45,7 +45,12 @@ public class ForceTouchLink extends BaseActivityAnim {
                             }
                         });
 
-        final String url = getIntent().getExtras().getString("url");
+        Bundle extras = getIntent().getExtras();
+        if (extras == null) {
+            finish();
+            return;
+        }
+        final String url = extras.getString("url");
 
         ContentType.Type t = ContentType.getContentType(url);
 

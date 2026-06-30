@@ -38,7 +38,12 @@ public class ReaderMode extends BaseActivityAnim {
         setContentView(R.layout.activity_reader);
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
-        mSubredditColor = getIntent().getExtras().getInt(LinkUtil.EXTRA_COLOR, Palette.getDefaultColor());
+        Bundle extras = getIntent().getExtras();
+        if (extras == null) {
+            finish();
+            return;
+        }
+        mSubredditColor = extras.getInt(LinkUtil.EXTRA_COLOR, Palette.getDefaultColor());
 
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         setupAppBar(R.id.toolbar, "", true, mSubredditColor, R.id.appbar);

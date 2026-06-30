@@ -187,7 +187,13 @@ public class AlbumView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             {
                 if (user.getTitle() != null) {
                     List<String> text = SubmissionParser.getBlocks(user.getTitle());
-                    LinkUtil.setTextWithLinks(text.get(0), holder.text);
+                    if (!text.isEmpty()) {
+                        LinkUtil.setTextWithLinks(text.get(0), holder.text);
+                    } else {
+                        // No blocks: clear any stale text left over from a recycled row so the
+                        // emptiness check below hides the view instead of showing the wrong caption.
+                        holder.text.setText("");
+                    }
                     if (holder.text.getText().toString().isEmpty()) {
                         holder.text.setVisibility(View.GONE);
                     }
@@ -199,7 +205,13 @@ public class AlbumView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             {
                 if (user.getDescription() != null) {
                     List<String> text = SubmissionParser.getBlocks(user.getDescription());
-                    LinkUtil.setTextWithLinks(text.get(0), holder.body);
+                    if (!text.isEmpty()) {
+                        LinkUtil.setTextWithLinks(text.get(0), holder.body);
+                    } else {
+                        // No blocks: clear any stale text left over from a recycled row so the
+                        // emptiness check below hides the view instead of showing the wrong caption.
+                        holder.body.setText("");
+                    }
                     if (holder.body.getText().toString().isEmpty()) {
                         holder.body.setVisibility(View.GONE);
                     }

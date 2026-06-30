@@ -34,18 +34,22 @@ public class Image extends Fragment {
         title.setVisibility(View.GONE);
         desc.setVisibility(View.GONE);
 
-        ((Reddit) getContext().getApplicationContext())
-                .getImageLoader()
-                .loadImage(
-                        url,
-                        new SimpleImageLoadingListener() {
+        // url is null when arguments were missing in onCreate; skip the load rather than asking
+        // the image loader to fetch a null URI.
+        if (url != null && !url.isEmpty() && getContext() != null) {
+            ((Reddit) getContext().getApplicationContext())
+                    .getImageLoader()
+                    .loadImage(
+                            url,
+                            new SimpleImageLoadingListener() {
 
-                            @Override
-                            public void onLoadingComplete(
-                                    String imageUri, View view, Bitmap loadedImage) {
-                                image.setImage(ImageSource.bitmap(loadedImage));
-                            }
-                        });
+                                @Override
+                                public void onLoadingComplete(
+                                        String imageUri, View view, Bitmap loadedImage) {
+                                    image.setImage(ImageSource.bitmap(loadedImage));
+                                }
+                            });
+        }
 
         return rootView;
     }
@@ -54,6 +58,8 @@ public class Image extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = this.getArguments();
-        url = bundle.getString("url");
+        if (bundle != null) {
+            url = bundle.getString("url");
+        }
     }
 }

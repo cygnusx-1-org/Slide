@@ -35,6 +35,12 @@ public class Gallery extends FullScreenActivity implements SubmissionDisplay {
     @Override
     public void onCreate(Bundle savedInstance) {
         overrideSwipeFromAnywhere();
+        Bundle extras = getIntent().getExtras();
+        if (extras == null) {
+            super.onCreate(savedInstance);
+            finish();
+            return;
+        }
         subreddit = getIntent().getExtras().getString(EXTRA_SUBREDDIT);
         String multireddit = getIntent().getExtras().getString(EXTRA_MULTIREDDIT);
         String profile = getIntent().getExtras().getString(EXTRA_PROFILE, "");

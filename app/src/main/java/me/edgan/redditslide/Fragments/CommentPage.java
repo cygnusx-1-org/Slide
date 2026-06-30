@@ -366,15 +366,17 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                 BlendModeUtil.tintDrawableAsSrcIn(e.getBackground(), TINT);
                             }
 
-                            DoEditorActions.doActions(
-                                    e,
-                                    replyView,
-                                    getActivity().getSupportFragmentManager(),
-                                    getActivity(),
-                                    adapter.submission.isSelfPost()
-                                            ? adapter.submission.getSelftext()
-                                            : null,
-                                    new String[] {adapter.submission.getAuthor()});
+                            if (getActivity() != null) {
+                                DoEditorActions.doActions(
+                                        e,
+                                        replyView,
+                                        getActivity().getSupportFragmentManager(),
+                                        getActivity(),
+                                        adapter.submission.isSelfPost()
+                                                ? adapter.submission.getSelftext()
+                                                : null,
+                                        new String[] {adapter.submission.getAuthor()});
+                            }
 
                             replyDialog
                                     .getWindow()
@@ -815,7 +817,9 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        getActivity().getOnBackPressedDispatcher().onBackPressed();
+                        if (getActivity() != null) {
+                            getActivity().getOnBackPressedDispatcher().onBackPressed();
+                        }
                     }
                 });
         toolbar.inflateMenu(R.menu.menu_comment_items);
@@ -1109,7 +1113,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                         Snackbar.LENGTH_SHORT);
                                         LayoutUtils.showSnackbar(s);
 
-                                    } else {
+                                    } else if (getActivity() != null) {
                                         LayoutInflater inflater = getActivity().getLayoutInflater();
                                         final View dialoglayout =
                                                 inflater.inflate(
@@ -1892,7 +1896,8 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                         } else {
                             sidebar.findViewById(R.id.sub_title).setVisibility(View.GONE);
                         }
-                        if (baseSub.getDataNode().has("icon_img")
+                        if (getContext() != null
+                                && baseSub.getDataNode().has("icon_img")
                                 && !baseSub.getDataNode().get("icon_img").asText().isEmpty()) {
                             ((Reddit) getContext().getApplicationContext())
                                     .getImageLoader()
