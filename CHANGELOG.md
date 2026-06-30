@@ -4,6 +4,14 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.7.5 / 2026-6-30
+============
+* Fixed reddit MP4-transcode GIFs opening as direct GIFs and closing instantly
+* Implemented Feature Request: Ability to follow/unfollow users #129
+* Allowed dashes in subreddit name for r/u_username subreddits
+* Added a Letterboxed big picture layout
+* Optimized main-feed redraws and image loading
+
 7.7.4 / 2026-6-29
 ============
 * Added a "Wide color gamut" toggle in "Settings | General", on by default
