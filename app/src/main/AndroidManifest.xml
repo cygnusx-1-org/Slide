@@ -30,6 +30,9 @@
                 <intent>
                 <action android:name="android.support.customtabs.action.CustomTabsService" />
                 </intent>
+                <!-- Lets the Translate feature launch the Google Translate app (PROCESS_TEXT)
+                     instead of silently falling back to the web on Android 11+. -->
+                <package android:name="com.google.android.apps.translate" />
         </queries>
 
         <application

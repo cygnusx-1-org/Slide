@@ -53,6 +53,7 @@ import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.SubmissionParser;
+import me.edgan.redditslide.util.TranslateUtil;
 import org.apache.commons.text.StringEscapeUtils;
 import org.commonmark.Extension;
 import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
@@ -392,6 +393,7 @@ public class DoEditorActions {
                                                     oldComment)); // text we get is escaped, we
                                     // don't want that
                                     showText.setTextIsSelectable(true);
+                                    TranslateUtil.addToSelectionMenu(showText);
                                     int sixteen = DisplayUtil.dpToPxVertical(24);
                                     showText.setPadding(sixteen, 0, sixteen, 0);
                                     MaterialAlertDialogBuilder builder =

@@ -25,6 +25,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
@@ -97,8 +98,10 @@ public class SubmissionBottomSheetActions {
         Drawable crosspost = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_forward, null);
         Drawable viewmode = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_visibility, null);
         Drawable history = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_history, null);
+        Drawable translate = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_translate, null);
+        Drawable readAloud = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_volume_on, null);
 
-        final List<Drawable> drawableSet = Arrays.asList(profile, sub, saved, hide, report, copy, open, link, reddit, readLater, filter, crosspost, viewmode, history);
+        final List<Drawable> drawableSet = Arrays.asList(profile, sub, saved, hide, report, copy, open, link, reddit, readLater, filter, crosspost, viewmode, history, translate, readAloud);
         BlendModeUtil.tintDrawablesAsSrcAtop(drawableSet, color);
 
         ta.recycle();
@@ -140,6 +143,9 @@ public class SubmissionBottomSheetActions {
         if (submission.getSelftext() != null && !submission.getSelftext().isEmpty()) {
             b.sheet(60, viewmode, mContext.getString(R.string.comment_render_other));
         }
+
+        b.sheet(62, translate, mContext.getString(R.string.translate_with_google));
+        b.sheet(63, readAloud, mContext.getString(R.string.read_aloud));
 
         if (full && PostRecovery.isRemovedOrDeleted(submission)) {
             b.sheet(61, history, mContext.getString(R.string.recover_post));
@@ -509,6 +515,7 @@ final AlertDialog reportDialog =
                         final TextView showText = new TextView(mContext);
                         showText.setText(StringEscapeUtils.unescapeHtml4(submission.getTitle() + "\n\n" + submission.getSelftext()));
                         showText.setTextIsSelectable(true);
+                        TranslateUtil.addToSelectionMenu(showText);
                         int sixteen = DisplayUtil.dpToPxVertical(24);
                         showText.setPadding(sixteen, 0, sixteen, 0);
                         final AlertDialog copyDialog =
@@ -539,6 +546,14 @@ final AlertDialog reportDialog =
                     case 60:
                         // Preview this self-text with the opposite markdown renderer.
                         showOppositeRender(mContext, submission);
+                        break;
+                    case 62:
+                        // Translate the title (and self-text, when present) via Google Translate.
+                        TranslateUtil.translate(mContext, submissionPlainText(submission));
+                        break;
+                    case 63:
+                        // Read the title (and self-text, when present) aloud via text-to-speech.
+                        ReadAloudUtil.readAloud(mContext, submissionPlainText(submission));
                         break;
                     case 61:
                         // Recover the original body of a removed/deleted post from the archive.
@@ -594,6 +609,31 @@ final AlertDialog reportDialog =
      * it stores no state and does not change the post or the setting. Mirrors the per-comment
      * "Show other rendering" action. See issue #179.
      */
+    /**
+     * Returns the post's title plus self-text (when present) as readable plain text for translation
+     * / text-to-speech, resolving markdown via Reddit's rendered {@code selftext_html} so raw syntax
+     * (asterisks, link URLs) isn't spoken or translated. Falls back to the unescaped raw self-text
+     * if no rendered HTML is available; link posts return just the title.
+     */
+    private static String submissionPlainText(final Submission submission) {
+        final String title = CompatUtil.fromHtml(submission.getTitle()).toString().trim();
+        final String selftext = submission.getSelftext();
+        if (selftext == null || selftext.isEmpty()) {
+            return title;
+        }
+        // Removed/deleted posts keep a non-empty self-text ("[removed]") but may have a null
+        // selftext_html, so only render HTML when it's actually present; otherwise use the raw text.
+        final JsonNode selfHtml = submission.getDataNode().path("selftext_html");
+        String body =
+                (selfHtml.isNull() || selfHtml.isMissingNode())
+                        ? StringEscapeUtils.unescapeHtml4(selftext)
+                        : CompatUtil.htmlToText(selfHtml.asText(""));
+        if (body.isEmpty()) {
+            body = StringEscapeUtils.unescapeHtml4(selftext);
+        }
+        return title + "\n\n" + body;
+    }
+
     private static void showOppositeRender(final Activity mContext, final Submission submission) {
         final boolean showNewReddit = !SettingValues.markdownNewReddit;
         final String subreddit =

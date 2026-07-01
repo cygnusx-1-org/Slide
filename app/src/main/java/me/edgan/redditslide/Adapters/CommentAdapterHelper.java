@@ -78,8 +78,10 @@ import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
+import me.edgan.redditslide.util.ReadAloudUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
+import me.edgan.redditslide.util.TranslateUtil;
 import net.dean.jraw.ApiException;
 import net.dean.jraw.http.oauth.InvalidScopeException;
 import net.dean.jraw.managers.AccountManager;
@@ -116,11 +118,13 @@ public class CommentAdapterHelper {
         Drawable permalink = mContext.getResources().getDrawable(R.drawable.ic_link);
         Drawable report = mContext.getResources().getDrawable(R.drawable.ic_report);
         Drawable viewmode = mContext.getResources().getDrawable(R.drawable.ic_visibility);
+        Drawable translate = mContext.getResources().getDrawable(R.drawable.ic_translate);
+        Drawable readAloud = mContext.getResources().getDrawable(R.drawable.ic_volume_on);
 
         final List<Drawable> drawableSet =
                 Arrays.asList(
                         profile, saved, gild, report, copy, share, parent, permalink, replies,
-                        viewmode);
+                        viewmode, translate, readAloud);
         BlendModeUtil.tintDrawablesAsSrcAtop(drawableSet, color);
 
         ta.recycle();
@@ -145,6 +149,8 @@ public class CommentAdapterHelper {
         }
         b.sheet(5, gild, mContext.getString(R.string.comment_gild))
                 .sheet(7, copy, mContext.getString(R.string.misc_copy_text))
+                .sheet(61, translate, mContext.getString(R.string.translate_with_google))
+                .sheet(62, readAloud, mContext.getString(R.string.read_aloud))
                 .sheet(23, permalink, mContext.getString(R.string.comment_permalink))
                 .sheet(4, share, mContext.getString(R.string.comment_share))
                 .sheet(60, viewmode, mContext.getString(R.string.comment_render_other));
@@ -353,6 +359,7 @@ final AlertDialog reportDialog =
                                 final TextView showText = new TextView(mContext);
                                 showText.setText(StringEscapeUtils.unescapeHtml4(n.getBody()));
                                 showText.setTextIsSelectable(true);
+                                TranslateUtil.addToSelectionMenu(showText);
                                 int sixteen = DisplayUtil.dpToPxVertical(24);
                                 showText.setPadding(sixteen, 0, sixteen, 0);
 
@@ -417,10 +424,31 @@ final AlertDialog reportDialog =
                                 // Preview this comment with the opposite markdown renderer.
                                 showOppositeRender(adapter, mContext, n);
                                 break;
+                            case 61:
+                                // Translate the comment body via Google Translate.
+                                TranslateUtil.translate(mContext, commentPlainText(n));
+                                break;
+                            case 62:
+                                // Read the comment body aloud via text-to-speech.
+                                ReadAloudUtil.readAloud(mContext, commentPlainText(n));
+                                break;
                         }
                     }
                 });
         b.show();
+    }
+
+    /**
+     * Returns the comment body as readable plain text for translation / text-to-speech, resolving
+     * markdown via Reddit's rendered {@code body_html} so raw syntax (asterisks, link URLs) isn't
+     * spoken or translated. Falls back to the unescaped raw body if no rendered HTML is available.
+     */
+    private static String commentPlainText(Comment n) {
+        String text = CompatUtil.htmlToText(n.getDataNode().path("body_html").asText(""));
+        if (text.isEmpty() && n.getBody() != null) {
+            text = StringEscapeUtils.unescapeHtml4(n.getBody());
+        }
+        return text == null ? "" : text;
     }
 
     /**

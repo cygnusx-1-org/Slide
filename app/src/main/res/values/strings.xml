@@ -39,6 +39,10 @@
     <string name="submission_text_copied">Submission text copied</string>
     <string name="submission_nocontent">Submission has no content</string>
     <string name="submission_link_copied">Link copied</string>
+    <string name="translate_with_google">Translate</string>
+    <string name="translate_no_app">No app available to translate</string>
+    <string name="read_aloud">Read aloud</string>
+    <string name="read_aloud_unavailable">Text-to-speech unavailable</string>
     <string name="submission_removed">Submission removed</string>
 
 
