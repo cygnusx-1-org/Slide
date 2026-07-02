@@ -293,9 +293,19 @@ public class SubmissionBottomSheetActions {
 
                                 if (filtered) {
                                     e.apply();
+
+                                    RecyclerView.Adapter<?> adapter = recyclerview.getAdapter();
+                                    if (adapter == null) {
+                                        return;
+                                    }
+
+                                    // Operate on the list the adapter is actually displaying;
+                                    // the captured reference can be stale after a refresh.
+                                    final List<T> livePosts = resolveLivePosts(recyclerview, posts);
+
                                     ArrayList<Contribution> toRemove = new ArrayList<>();
 
-                                    for (Contribution s : posts) {
+                                    for (Contribution s : livePosts) {
                                         if (s instanceof Submission && PostMatch.doesMatch((Submission) s)) {
                                             toRemove.add(s);
                                         }
@@ -304,15 +314,28 @@ public class SubmissionBottomSheetActions {
                                     OfflineSubreddit s = OfflineSubreddit.getSubreddit(baseSub, false, mContext);
 
                                     for (Contribution remove : toRemove) {
-                                        final int pos = posts.indexOf(remove);
-                                        posts.remove(pos);
-                                        if (baseSub != null) {
-                                            s.hideMulti(pos);
+                                        final int pos = livePosts.indexOf(remove);
+                                        if (pos < 0) {
+                                            continue;
                                         }
+                                        livePosts.remove(pos);
+                                        if (baseSub != null && s.submissions != null) {
+                                            // The offline cache is a separate list that may not
+                                            // be index-aligned with the live feed, so match by
+                                            // identity instead of reusing the display index.
+                                            final int offlinePos = s.submissions.indexOf(remove);
+                                            if (offlinePos >= 0) {
+                                                s.hideMulti(offlinePos);
+                                            }
+                                        }
+                                        // Header/spacer at position 0; the helper applies the
+                                        // offset and falls back to a full reset if this
+                                        // removal empties the list (no transient inconsistent
+                                        // state to reconcile afterwards).
+                                        notifyRemovedOrReset(adapter, livePosts, pos);
                                     }
 
                                     s.writeToMemoryNoStorage();
-                                    recyclerview.getAdapter().notifyDataSetChanged();
                                 }
                             }).setNegativeButton(R.string.btn_cancel, null));
 
@@ -371,25 +394,60 @@ public class SubmissionBottomSheetActions {
                         } else {
                             ReadLater.setReadLater(submission, false);
                             if (isReadLater || !Authentication.didOnline) {
-                                final int pos = posts.indexOf(submission);
-                                posts.remove(submission);
+                                final RecyclerView.Adapter<?> adapter = recyclerview.getAdapter();
 
-                                recyclerview.getAdapter().notifyItemRemoved(holder.getBindingAdapterPosition());
+                                // Operate on the list the adapter is actually displaying; the
+                                // captured reference can be stale after a refresh.
+                                final List<T> livePosts = resolveLivePosts(recyclerview, posts);
 
-                                Snackbar s2 = Snackbar.make(holder.itemView, "Removed from read later", Snackbar.LENGTH_SHORT);
-                                View view2 = s2.getView();
-                                TextView tv2 = view2.findViewById(com.google.android.material.R.id.snackbar_text);
-                                tv2.setTextColor(Color.WHITE);
-                                s2.setAction(
-                                    R.string.btn_undo,
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            posts.add(pos, (T) submission);
-                                            recyclerview.getAdapter().notifyDataSetChanged();
+                                final int pos = livePosts.indexOf(submission);
+                                if (adapter != null && pos != -1) {
+                                    livePosts.remove(pos);
+
+                                    if (adapter instanceof me.edgan.redditslide.Adapters.SubmissionAdapter) {
+                                        // Feed adapter: header/spacer at 0, so the removed
+                                        // row is pos + 1; also handles the list emptying.
+                                        notifyRemovedOrReset(adapter, livePosts, pos);
+                                    } else {
+                                        // Other adapters (e.g. Read Later): use the live
+                                        // binding position. getBindingAdapterPosition() returns
+                                        // NO_POSITION for a holder that is mid-recycle; fall
+                                        // back to a full reset (also covers the list emptying).
+                                        final int bindingPos = holder.getBindingAdapterPosition();
+                                        if (bindingPos != RecyclerView.NO_POSITION && !livePosts.isEmpty()) {
+                                            adapter.notifyItemRemoved(bindingPos);
+                                        } else {
+                                            adapter.notifyDataSetChanged();
                                         }
                                     }
-                                );
+
+                                    Snackbar s2 = Snackbar.make(holder.itemView, "Removed from read later", Snackbar.LENGTH_SHORT);
+                                    View view2 = s2.getView();
+                                    TextView tv2 = view2.findViewById(com.google.android.material.R.id.snackbar_text);
+                                    tv2.setTextColor(Color.WHITE);
+                                    s2.setAction(
+                                        R.string.btn_undo,
+                                        new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                // Re-resolve at click time in case a refresh
+                                                // swapped in a new adapter list.
+                                                final RecyclerView.Adapter<?> undoAdapter =
+                                                        recyclerview.getAdapter();
+                                                if (undoAdapter != null) {
+                                                    final List<T> undoList =
+                                                            resolveLivePosts(recyclerview, livePosts);
+                                                    if (!undoList.contains(submission)) {
+                                                        undoList.add(
+                                                                Math.min(pos, undoList.size()),
+                                                                (T) submission);
+                                                    }
+                                                    undoAdapter.notifyDataSetChanged();
+                                                }
+                                            }
+                                        }
+                                    );
+                                }
                             } else {
                                 Snackbar s2 = Snackbar.make(holder.itemView, "Removed from read later", Snackbar.LENGTH_SHORT);
                                 LayoutUtils.showSnackbar(s2);
@@ -866,34 +924,50 @@ final AlertDialog reportDialog =
     }
 
     public static <T extends Contribution> void hideSubmission(final Submission submission, final List<T> posts, final String baseSub, final RecyclerView recyclerview, Context c) {
-        final int pos = posts.indexOf(submission);
+        final RecyclerView.Adapter<?> adapter = recyclerview.getAdapter();
+        if (adapter == null) {
+            return;
+        }
+
+        // Operate on the list the adapter is actually displaying; the captured
+        // reference can be stale after a refresh, so the hidden row would
+        // otherwise never leave the screen.
+        final List<T> livePosts = resolveLivePosts(recyclerview, posts);
+
+        final int pos = livePosts.indexOf(submission);
         if (pos != -1) {
             if (submission.isHidden()) {
-                posts.remove(pos);
+                livePosts.remove(pos);
                 Hidden.undoHidden(submission);
-                recyclerview.getAdapter().notifyItemRemoved(pos + 1);
+                notifyRemovedOrReset(adapter, livePosts, pos);
                 Snackbar snack = Snackbar.make(recyclerview, R.string.submission_info_unhidden, Snackbar.LENGTH_LONG);
                 LayoutUtils.showSnackbar(snack);
             } else {
-                final T t = posts.get(pos);
-                posts.remove(pos);
+                final T t = livePosts.get(pos);
+                livePosts.remove(pos);
                 Hidden.setHidden(t);
                 final OfflineSubreddit s;
                 boolean success = false;
                 if (baseSub != null) {
                     s = OfflineSubreddit.getSubreddit(baseSub, false, c);
-                    try {
-                        s.hide(pos);
-                        success = true;
-                    } catch (Exception e) {
-                        LogUtil.e(e, "Failed to hide submission in offline subreddit");
+                    // The offline cache is a separate list that may not be
+                    // index-aligned with the live feed, so match by identity
+                    // instead of reusing the display index.
+                    final int offlinePos = s.submissions != null ? s.submissions.indexOf(t) : -1;
+                    if (offlinePos >= 0) {
+                        try {
+                            s.hide(offlinePos);
+                            success = true;
+                        } catch (Exception e) {
+                            LogUtil.e(e, "Failed to hide submission in offline subreddit");
+                        }
                     }
                 } else {
                     success = false;
                     s = null;
                 }
 
-                recyclerview.getAdapter().notifyItemRemoved(pos + 1);
+                notifyRemovedOrReset(adapter, livePosts, pos);
 
                 final boolean finalSuccess = success;
                 Snackbar snack = Snackbar.make(recyclerview, R.string.submission_info_hidden, Snackbar.LENGTH_LONG)
@@ -905,14 +979,68 @@ final AlertDialog reportDialog =
                                 if (baseSub != null && s != null && finalSuccess) {
                                     s.unhideLast();
                                 }
-                                posts.add(pos, t);
-                                recyclerview.getAdapter().notifyItemInserted(pos + 1);
+                                // Re-resolve the live list at click time: a refresh
+                                // during the snackbar window can swap in a new adapter
+                                // list, and the undo must restore into whatever is
+                                // currently displayed.
+                                final RecyclerView.Adapter<?> undoAdapter = recyclerview.getAdapter();
+                                if (undoAdapter != null) {
+                                    final List<T> undoList = resolveLivePosts(recyclerview, livePosts);
+                                    if (!undoList.contains(t)) {
+                                        undoList.add(Math.min(pos, undoList.size()), t);
+                                    }
+                                    undoAdapter.notifyDataSetChanged();
+                                }
                                 Hidden.undoHidden(t);
                             }
                         }
                     );
                 LayoutUtils.showSnackbar(snack);
             }
+        }
+    }
+
+    /**
+     * Resolves the list the adapter is actually displaying. A pull-to-refresh
+     * reassigns {@code SubredditPosts.posts} to a brand-new list object, so a
+     * reference captured by a menu/undo closure at bind time can point at a stale
+     * list the adapter no longer shows. Re-resolving from the live adapter avoids
+     * mutating that dead list. Falls back to {@code captured} when the adapter is
+     * not a feed adapter (e.g. the Read Later screen).
+     */
+    @SuppressWarnings("unchecked")
+    private static <T extends Contribution> List<T> resolveLivePosts(
+            final RecyclerView recyclerview, final List<T> captured) {
+        final RecyclerView.Adapter<?> adapter = recyclerview.getAdapter();
+        if (adapter instanceof me.edgan.redditslide.Adapters.SubmissionAdapter) {
+            final List<Submission> live =
+                    ((me.edgan.redditslide.Adapters.SubmissionAdapter) adapter).dataSet.posts;
+            // SubmissionAdapter guards against a null backing list, so mirror that
+            // here and fall back to the captured reference rather than returning
+            // null (which callers dereference immediately).
+            if (live != null) {
+                return (List<T>) live;
+            }
+        }
+        return captured;
+    }
+
+    /**
+     * Signals removal of the row at {@code pos} in the backing list. Only the feed
+     * adapter ({@link me.edgan.redditslide.Adapters.SubmissionAdapter}) is known to
+     * carry a spacer at position 0, so the removed row maps to {@code pos + 1}
+     * there. For any other adapter (offset unknown), or once the list empties (the
+     * feed adapter's getItemCount() collapses to 0, dropping the spacer and footer
+     * too), a targeted notifyItemRemoved would desync the count, so fall back to a
+     * full reset.
+     */
+    private static void notifyRemovedOrReset(
+            final RecyclerView.Adapter<?> adapter, final List<?> livePosts, final int pos) {
+        if (adapter instanceof me.edgan.redditslide.Adapters.SubmissionAdapter
+                && !livePosts.isEmpty()) {
+            adapter.notifyItemRemoved(pos + 1);
+        } else {
+            adapter.notifyDataSetChanged();
         }
     }
 
