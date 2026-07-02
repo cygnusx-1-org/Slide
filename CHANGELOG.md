@@ -4,6 +4,11 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.7.7 / 2026-7-2
+===========
+* Added Translate feature in the overflow menu for posts and comments via Google Translate
+* Added Read Aloud feature in the overflow menu for posts and comments
+
 7.7.6 / 2026-6-30
 ============
 * Added Translate feature in the overflow menu for posts and comments via Google Translate
