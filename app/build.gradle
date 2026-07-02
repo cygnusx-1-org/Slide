@@ -1,4 +1,16 @@
+import com.android.build.api.artifact.SingleArtifact
+import com.android.build.api.artifact.ArtifactTransformationRequest
+import com.android.build.api.variant.BuiltArtifact
 import com.android.build.gradle.internal.tasks.FinalizeBundleTask
+import org.gradle.api.file.Directory
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
+import org.gradle.workers.WorkAction
+import org.gradle.workers.WorkParameters
+import org.gradle.workers.WorkerExecutor
+import javax.inject.Inject
+import java.io.Serializable
 import java.util.Properties
 
 plugins {
@@ -10,38 +22,11 @@ plugins {
 }
 
 android {
-    compileSdk 36
+    compileSdk 37
     namespace "me.edgan.redditslide"
 
-
-    applicationVariants.all { variant ->
-        variant.outputs.all { output ->
-            def appName = "slide"
-            def buildType = variant.buildType
-            def flavors = variant.productFlavors.collect { it.name }.join("-") ?: "noFlavor"
-            def versionCode = variant.versionCode
-            def versionName = variant.versionName
-            def artifactName = "${appName}-${flavors}-${versionName}(${versionCode})"
-
-            if (flavors.contains("withGPlay")) {
-                artifactName = "${appName}-${versionName}"
-            } else if (flavors.contains("noGPlay")) {
-                artifactName = "${appName}-${flavors}-${versionName}"
-            } else if (buildType == "debug") {
-                artifactName = "${appName}-${buildType}-${versionName}"
-            }
-
-            // Assign the apk filename
-            output.outputFileName = "${artifactName}.apk"
-
-            // Rename bundle
-            tasks.named("sign${variant.name.capitalize()}Bundle", FinalizeBundleTask) {
-                File file = finalBundleFile.asFile.get()
-                File finalFile = new File(file.parentFile, "${artifactName}.aab")
-                finalBundleFile.set(finalFile)
-            }
-        }
-    }
+    // APK/AAB custom names are applied via the new Variant API (androidComponents block at the end
+    // of this file). AGP 9's new DSL removed applicationVariants.outputs.outputFileName.
 
     defaultConfig {
         applicationId "me.edgan.redditslide"
@@ -90,7 +75,7 @@ android {
                 println("Warning: keystore.properties file not found. Skipping signing configuration for release.")
             }
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             resValue "string", "app_name", "Slide"
         }
         debug {
@@ -107,8 +92,8 @@ android {
 
     compileOptions {
         encoding "UTF-8"
-        sourceCompatibility JavaVersion.VERSION_21
-        targetCompatibility JavaVersion.VERSION_21
+        sourceCompatibility JavaVersion.VERSION_24
+        targetCompatibility JavaVersion.VERSION_24
     }
 
     lint {
@@ -142,6 +127,9 @@ android {
     buildFeatures {
         dataBinding true
         viewBinding true
+        // Required because build types use resValue (release/debug app_name); the global
+        // android.defaults.buildfeatures.resvalues default is off in AGP 9.
+        resValues = true
     }
 }
 
@@ -228,7 +216,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.13.0'
     implementation "androidx.concurrent:concurrent-futures:1.3.0"
     implementation "androidx.lifecycle:lifecycle-runtime:2.10.0"
-    implementation "androidx.databinding:databinding-runtime:8.13.2"
+    implementation "androidx.databinding:databinding-runtime:9.2.1"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0"
 /** ExoPlayer **/
     // Application level media player
@@ -360,3 +348,94 @@ tasks.register('auditDialogBackgrounds', Exec) {
     commandLine 'bash', "${rootDir}/scripts/audit_dialog_backgrounds.sh"
 }
 tasks.named('check') { dependsOn 'auditDialogBackgrounds' }
+
+// Custom APK/AAB names, reimplemented on AGP 9's new Variant API (the legacy
+// applicationVariants.outputs.outputFileName / bundle rename was removed by the new DSL).
+// Naming rules preserved from before: withGPlay -> "slide-<versionName>", noGPlay ->
+// "slide-noGPlay-<versionName>". versionName is androidGitVersion.name(), constant across variants.
+def bundleBaseNames = [:]
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        def flavor = variant.flavorName
+        def baseName = (flavor != null && flavor.contains("withGPlay"))
+            ? "slide-${android.defaultConfig.versionName}".toString()
+            : "slide-${flavor}-${android.defaultConfig.versionName}".toString()
+        bundleBaseNames[variant.name] = baseName
+
+        // Rename the APK (Slide ships a single universal APK per variant; no ABI splits).
+        def renameProvider = tasks.register("rename${variant.name.capitalize()}Apks", RenameApksTask) {
+            it.baseName.set(baseName)
+        }
+        def request = variant.artifacts.use(renameProvider)
+            .wiredWithDirectories(
+                { it.getApkFolder() } as kotlin.jvm.functions.Function1,
+                { it.getOutFolder() } as kotlin.jvm.functions.Function1)
+            .toTransformMany(SingleArtifact.APK.INSTANCE)
+        renameProvider.configure { it.transformationRequest.set(request) }
+    }
+}
+
+// Rename the AAB bundle. Done in a late afterEvaluate (not inside androidComponents) so this set
+// runs after AGP's own configuration and wins; the target is built from AGP's stable bundle output
+// dir rather than reading finalBundleFile.get(), which has no value this early under AGP 9.
+project.afterEvaluate {
+    bundleBaseNames.each { variantName, baseName ->
+        def taskName = "sign${variantName.capitalize()}Bundle"
+        if (tasks.names.contains(taskName)) {
+            tasks.named(taskName, FinalizeBundleTask).configure { task ->
+                task.finalBundleFile.set(
+                    layout.buildDirectory.file("outputs/bundle/${variantName}/${baseName}.aab"))
+            }
+        }
+    }
+}
+
+interface CopyApkParameters extends WorkParameters, Serializable {
+    RegularFileProperty getInputApkFile()
+    RegularFileProperty getOutputApkFile()
+}
+
+abstract class CopyApkWorkAction implements WorkAction<CopyApkParameters> {
+    @Override
+    void execute() {
+        def output = parameters.outputApkFile.get().asFile
+        output.delete()
+        java.nio.file.Files.copy(parameters.inputApkFile.get().asFile.toPath(), output.toPath())
+    }
+}
+
+abstract class RenameApksTask extends DefaultTask {
+    @Input
+    abstract Property<String> getBaseName()
+
+    @InputFiles
+    abstract DirectoryProperty getApkFolder()
+
+    @OutputDirectory
+    abstract DirectoryProperty getOutFolder()
+
+    @Internal
+    abstract Property<ArtifactTransformationRequest<RenameApksTask>> getTransformationRequest()
+
+    private final WorkerExecutor workerExecutor
+
+    @Inject
+    RenameApksTask(WorkerExecutor workerExecutor) {
+        this.workerExecutor = workerExecutor
+    }
+
+    @TaskAction
+    void taskAction() {
+        transformationRequest.get().submit(
+            this,
+            workerExecutor.noIsolation(),
+            CopyApkWorkAction.class,
+            { BuiltArtifact builtArtifact, Directory outputLocation, CopyApkParameters params ->
+                def newName = "${baseName.get()}.apk"
+                params.inputApkFile.set(new File(builtArtifact.outputFile))
+                params.outputApkFile.set(new File(outputLocation.asFile, newName as String))
+                return params.outputApkFile.get().asFile
+            } as kotlin.jvm.functions.Function3
+        )
+    }
+}
