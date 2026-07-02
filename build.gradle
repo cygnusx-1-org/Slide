@@ -3,9 +3,9 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://jitpack.io" }
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-        maven { url "https://repository.liferay.com/nexus/content/repositories/public/" }
+        maven { url = "https://jitpack.io" }
+        maven { url = "https://oss.sonatype.org/content/repositories/snapshots" }
+        maven { url = "https://repository.liferay.com/nexus/content/repositories/public/" }
     }
 
     dependencies {
@@ -21,9 +21,9 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://jitpack.io" }
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-        maven { url "https://repository.liferay.com/nexus/content/repositories/public/" }
+        maven { url = "https://jitpack.io" }
+        maven { url = "https://oss.sonatype.org/content/repositories/snapshots" }
+        maven { url = "https://repository.liferay.com/nexus/content/repositories/public/" }
     }
 }
 
@@ -32,13 +32,13 @@ subprojects {
         if (project.hasProperty('android')) {
             project.android {
                 if (namespace == null) {
-                    namespace project.group
+                    namespace = project.group
                 }
                 // Avoid adding android.defaults.buildfeatures.buildconfig=true
                 // to your gradle.properties file because that property is deprecated in AGP 8.0 and is scheduled to be removed in AGP 9.0.
                 buildFeatures {
                     if (buildConfig == null) {
-                        buildConfig true
+                        buildConfig = true
                     }
                 }
             }

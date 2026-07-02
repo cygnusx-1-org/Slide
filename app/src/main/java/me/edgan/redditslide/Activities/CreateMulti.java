@@ -466,9 +466,9 @@ public class CreateMulti extends BaseActivityAnim {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.delete:
-                DialogUtil.showWithCardBackground(new AlertDialog.Builder(CreateMulti.this)
+        int itemId = item.getItemId();
+        if (itemId == R.id.delete) {
+            DialogUtil.showWithCardBackground(new AlertDialog.Builder(CreateMulti.this)
                         .setTitle(
                                 getString(
                                         R.string.delete_multireddit_title,
@@ -528,9 +528,9 @@ public class CreateMulti extends BaseActivityAnim {
                                     }.execute();
                                 })
                         .setNegativeButton(R.string.btn_cancel, null));
-                return true;
-            case R.id.save:
-                if (title.getText().toString().isEmpty()) {
+            return true;
+        } else if (itemId == R.id.save) {
+            if (title.getText().toString().isEmpty()) {
                     DialogUtil.showWithCardBackground(new AlertDialog.Builder(CreateMulti.this)
                             .setTitle(R.string.multireddit_title_empty)
                             .setMessage(R.string.multireddit_title_empty_msg)
@@ -547,15 +547,15 @@ public class CreateMulti extends BaseActivityAnim {
                             .setMessage(R.string.multireddit_no_subs_msg)
                             .setPositiveButton(R.string.btn_ok, (dialog, which) -> dialog.dismiss())
                             );
-                } else {
-                    new SaveMulti().execute();
-                }
-                return true;
-            case android.R.id.home:
-                getOnBackPressedDispatcher().onBackPressed();
-                return true;
-            default:
-                return false;
+            } else {
+                new SaveMulti().execute();
+            }
+            return true;
+        } else if (itemId == android.R.id.home) {
+            getOnBackPressedDispatcher().onBackPressed();
+            return true;
+        } else {
+            return false;
         }
     }
 }

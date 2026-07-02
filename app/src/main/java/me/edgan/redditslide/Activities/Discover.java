@@ -38,34 +38,30 @@ public class Discover extends BaseActivityAnim {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                getOnBackPressedDispatcher().onBackPressed();
-                return true;
-            case R.id.search:
-                {
-                    new MaterialInputDialog.Builder(Discover.this)
-                            .inputType(
-                                    InputType.TYPE_CLASS_TEXT
-                                            | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
-                            .inputRange(3, 100)
-                            .input(getString(R.string.discover_search), null, null)
-                            .positiveText(R.string.search_all)
-                            .onPositive(
-                                    dialog -> {
-                                        Intent inte =
-                                                new Intent(Discover.this, SubredditSearch.class);
-                                        inte.putExtra(
-                                                "term",
-                                                dialog.getInputEditText().getText().toString());
-                                        Discover.this.startActivity(inte);
-                                    })
-                            .negativeText(R.string.btn_cancel)
-                            .show();
-                }
-                return true;
-            default:
-                return false;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            getOnBackPressedDispatcher().onBackPressed();
+            return true;
+        } else if (itemId == R.id.search) {
+            new MaterialInputDialog.Builder(Discover.this)
+                    .inputType(
+                            InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
+                    .inputRange(3, 100)
+                    .input(getString(R.string.discover_search), null, null)
+                    .positiveText(R.string.search_all)
+                    .onPositive(
+                            dialog -> {
+                                Intent inte = new Intent(Discover.this, SubredditSearch.class);
+                                inte.putExtra(
+                                        "term",
+                                        dialog.getInputEditText().getText().toString());
+                                Discover.this.startActivity(inte);
+                            })
+                    .negativeText(R.string.btn_cancel)
+                    .show();
+            return true;
+        } else {
+            return false;
         }
     }
 

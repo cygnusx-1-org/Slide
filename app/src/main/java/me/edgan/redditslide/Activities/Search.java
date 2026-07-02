@@ -173,44 +173,43 @@ public class Search extends BaseActivityAnim {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                getOnBackPressedDispatcher().onBackPressed();
-                return true;
-            case R.id.time:
-                openTimeFramePopup();
-                return true;
-            case R.id.edit:
-                MaterialInputDialog.Builder builder =
-                        new MaterialInputDialog.Builder(this)
-                                .title(R.string.search_title)
-                                .input(
-                                        getString(R.string.search_msg),
-                                        where,
-                                        (dialog, charSequence) ->
-                                                where = charSequence.toString());
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            getOnBackPressedDispatcher().onBackPressed();
+            return true;
+        } else if (itemId == R.id.time) {
+            openTimeFramePopup();
+            return true;
+        } else if (itemId == R.id.edit) {
+            MaterialInputDialog.Builder builder =
+                    new MaterialInputDialog.Builder(this)
+                            .title(R.string.search_title)
+                            .input(
+                                    getString(R.string.search_msg),
+                                    where,
+                                    (dialog, charSequence) -> where = charSequence.toString());
 
-                // Add "search current sub" if it is not frontpage/all/random
-                builder.positiveText("Search")
-                        .onPositive(
-                                dialog -> {
-                                    Intent i = new Intent(Search.this, Search.class);
-                                    i.putExtra(Search.EXTRA_TERM, where);
-                                    if (multireddit) {
-                                        i.putExtra(Search.EXTRA_MULTIREDDIT, subreddit);
-                                    } else {
-                                        i.putExtra(Search.EXTRA_SUBREDDIT, subreddit);
-                                    }
-                                    startActivity(i);
-                                    overridePendingTransition(0, 0);
-                                    finish();
-                                    overridePendingTransition(0, 0);
-                                });
-                builder.show();
-                return true;
-            case R.id.sort:
-                openSearchTypePopup();
-                return true;
+            // Add "search current sub" if it is not frontpage/all/random
+            builder.positiveText("Search")
+                    .onPositive(
+                            dialog -> {
+                                Intent i = new Intent(Search.this, Search.class);
+                                i.putExtra(Search.EXTRA_TERM, where);
+                                if (multireddit) {
+                                    i.putExtra(Search.EXTRA_MULTIREDDIT, subreddit);
+                                } else {
+                                    i.putExtra(Search.EXTRA_SUBREDDIT, subreddit);
+                                }
+                                startActivity(i);
+                                overridePendingTransition(0, 0);
+                                finish();
+                                overridePendingTransition(0, 0);
+                            });
+            builder.show();
+            return true;
+        } else if (itemId == R.id.sort) {
+            openSearchTypePopup();
+            return true;
         }
         return false;
     }

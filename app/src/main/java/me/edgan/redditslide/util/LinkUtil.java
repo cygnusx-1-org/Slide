@@ -440,16 +440,12 @@ public class LinkUtil {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                switch (which) {
-                                    case R.id.open_link:
-                                        LinkUtil.openExternally(url);
-                                        break;
-                                    case R.id.share_link:
-                                        Reddit.defaultShareText("", url, activity);
-                                        break;
-                                    case R.id.copy_link:
-                                        LinkUtil.copyUrl(url, activity);
-                                        break;
+                                if (which == R.id.open_link) {
+                                    LinkUtil.openExternally(url);
+                                } else if (which == R.id.share_link) {
+                                    Reddit.defaultShareText("", url, activity);
+                                } else if (which == R.id.copy_link) {
+                                    LinkUtil.copyUrl(url, activity);
                                 }
                             }
                         })

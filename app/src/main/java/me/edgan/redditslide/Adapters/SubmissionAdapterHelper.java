@@ -171,40 +171,36 @@ public class SubmissionAdapterHelper {
                                                                 DialogInterface
                                                                         dialog,
                                                                 int which) {
-                                                            switch (which) {
-                                                                case R.id
-                                                                        .reddit_url:
-                                                                    if (SettingValues
-                                                                            .shareLongLink) {
-                                                                        Reddit
-                                                                                .defaultShareText(
-                                                                                        submission
-                                                                                                .getTitle(),
-                                                                                        "https://reddit.com"
-                                                                                                + submission
-                                                                                                        .getPermalink(),
-                                                                                        mContext);
-                                                                    } else {
-                                                                        Reddit
-                                                                                .defaultShareText(
-                                                                                        submission
-                                                                                                .getTitle(),
-                                                                                        "https://reddit.com/comments/"
-                                                                                                + submission
-                                                                                                        .getId(),
-                                                                                        mContext);
-                                                                    }
-                                                                    break;
-                                                                case R.id
-                                                                        .link_url:
+                                                            if (which == R.id.reddit_url) {
+                                                                if (SettingValues
+                                                                        .shareLongLink) {
                                                                     Reddit
                                                                             .defaultShareText(
                                                                                     submission
                                                                                             .getTitle(),
-                                                                                    submission
-                                                                                            .getUrl(),
+                                                                                    "https://reddit.com"
+                                                                                            + submission
+                                                                                                    .getPermalink(),
                                                                                     mContext);
-                                                                    break;
+                                                                } else {
+                                                                    Reddit
+                                                                            .defaultShareText(
+                                                                                    submission
+                                                                                            .getTitle(),
+                                                                                    "https://reddit.com/comments/"
+                                                                                            + submission
+                                                                                                    .getId(),
+                                                                                    mContext);
+                                                                }
+                                                            } else if (which
+                                                                    == R.id.link_url) {
+                                                                Reddit
+                                                                        .defaultShareText(
+                                                                                submission
+                                                                                        .getTitle(),
+                                                                                submission
+                                                                                        .getUrl(),
+                                                                                mContext);
                                                             }
                                                         }
                                                     })

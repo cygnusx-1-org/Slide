@@ -40,16 +40,13 @@ public class SettingsDataFragment {
                     popup.getMenuInflater().inflate(R.menu.imagequality_settings, popup.getMenu());
                     popup.setOnMenuItemClickListener(
                             item -> {
-                                switch (item.getItemId()) {
-                                    case R.id.never:
-                                        setImageQualitySettings(false, false);
-                                        break;
-                                    case R.id.mobile:
-                                        setImageQualitySettings(true, false);
-                                        break;
-                                    case R.id.always:
-                                        setImageQualitySettings(true, true);
-                                        break;
+                                int itemId = item.getItemId();
+                                if (itemId == R.id.never) {
+                                    setImageQualitySettings(false, false);
+                                } else if (itemId == R.id.mobile) {
+                                    setImageQualitySettings(true, false);
+                                } else if (itemId == R.id.always) {
+                                    setImageQualitySettings(true, true);
                                 }
                                 datasavingLowQualityView.setText(
                                         SettingValues.lowResMobile
@@ -109,19 +106,15 @@ public class SettingsDataFragment {
                         popup.getMenuInflater().inflate(R.menu.imagequality_mode, popup.getMenu());
                         popup.setOnMenuItemClickListener(
                                 item -> {
-                                    switch (item.getItemId()) {
-                                        case R.id.never:
-                                            setImageQualityMode(true, true, false, false, false);
-                                            break;
-                                        case R.id.low:
-                                            setImageQualityMode(false, true, true, false, false);
-                                            break;
-                                        case R.id.medium:
-                                            setImageQualityMode(false, true, false, true, false);
-                                            break;
-                                        case R.id.high:
-                                            setImageQualityMode(false, true, false, false, true);
-                                            break;
+                                    int itemId = item.getItemId();
+                                    if (itemId == R.id.never) {
+                                        setImageQualityMode(true, true, false, false, false);
+                                    } else if (itemId == R.id.low) {
+                                        setImageQualityMode(false, true, true, false, false);
+                                    } else if (itemId == R.id.medium) {
+                                        setImageQualityMode(false, true, false, true, false);
+                                    } else if (itemId == R.id.high) {
+                                        setImageQualityMode(false, true, false, false, true);
                                     }
                                     datasavingCurrentModeView.setText(
                                             SettingValues.noImages

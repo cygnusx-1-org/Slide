@@ -150,30 +150,28 @@ public class MultiredditOverview extends BaseActivityAnim {
             }
         }
 
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                try {
-                    getOnBackPressedDispatcher().onBackPressed();
-                } catch (Exception ignored) {
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            try {
+                getOnBackPressedDispatcher().onBackPressed();
+            } catch (Exception ignored) {
 
-                }
-                return true;
-            case R.id.action_edit:
-                {
-                    if (profile.isEmpty()
-                            && (UserSubscriptions.multireddits != null)
-                            && !UserSubscriptions.multireddits.isEmpty()) {
-                        Intent i = new Intent(MultiredditOverview.this, CreateMulti.class);
-                        i.putExtra(
-                                CreateMulti.EXTRA_MULTI,
-                                UserSubscriptions.multireddits
-                                        .get(pager.getCurrentItem())
-                                        .getDisplayName());
-                        startActivity(i);
-                    }
-                }
-                return true;
-            case R.id.search:
+            }
+            return true;
+        } else if (itemId == R.id.action_edit) {
+            if (profile.isEmpty()
+                    && (UserSubscriptions.multireddits != null)
+                    && !UserSubscriptions.multireddits.isEmpty()) {
+                Intent i = new Intent(MultiredditOverview.this, CreateMulti.class);
+                i.putExtra(
+                        CreateMulti.EXTRA_MULTI,
+                        UserSubscriptions.multireddits
+                                .get(pager.getCurrentItem())
+                                .getDisplayName());
+                startActivity(i);
+            }
+            return true;
+        } else if (itemId == R.id.search) {
                 {
                     UserSubscriptions.MultiCallback m =
                             new UserSubscriptions.MultiCallback() {
@@ -225,43 +223,42 @@ public class MultiredditOverview extends BaseActivityAnim {
                         UserSubscriptions.getPublicMultireddits(m, profile);
                     }
                 }
-                return true;
-            case R.id.create:
-                if (profile.isEmpty()) {
-                    Intent i2 = new Intent(MultiredditOverview.this, CreateMulti.class);
-                    startActivity(i2);
-                }
-                return true;
-            case R.id.action_sort:
-                openPopup();
-                return true;
-
-            case R.id.subs:
-                ((DrawerLayout) findViewById(R.id.drawer_layout)).openDrawer(Gravity.RIGHT);
-                return true;
-            case R.id.gallery:
-                if (currentFragment != null && posts != null && !posts.isEmpty()) {
-                    Intent i2 = new Intent(this, Gallery.class);
-                    i2.putExtra(Gallery.EXTRA_PROFILE, profile);
-                    i2.putExtra(
-                            Gallery.EXTRA_MULTIREDDIT,
-                            currentFragment.posts.multiReddit.getDisplayName());
-                    startActivity(i2);
-                }
-                return true;
-            case R.id.action_shadowbox:
-                if (currentFragment != null && posts != null && !posts.isEmpty()) {
-                    Intent i = new Intent(this, Shadowbox.class);
-                    i.putExtra(Shadowbox.EXTRA_PAGE, getCurrentPage());
-                    i.putExtra(Shadowbox.EXTRA_PROFILE, profile);
-                    i.putExtra(
-                            Shadowbox.EXTRA_MULTIREDDIT,
-                            currentFragment.posts.multiReddit.getDisplayName());
-                    startActivity(i);
-                }
-                return true;
-            default:
-                return false;
+            return true;
+        } else if (itemId == R.id.create) {
+            if (profile.isEmpty()) {
+                Intent i2 = new Intent(MultiredditOverview.this, CreateMulti.class);
+                startActivity(i2);
+            }
+            return true;
+        } else if (itemId == R.id.action_sort) {
+            openPopup();
+            return true;
+        } else if (itemId == R.id.subs) {
+            ((DrawerLayout) findViewById(R.id.drawer_layout)).openDrawer(Gravity.RIGHT);
+            return true;
+        } else if (itemId == R.id.gallery) {
+            if (currentFragment != null && posts != null && !posts.isEmpty()) {
+                Intent i2 = new Intent(this, Gallery.class);
+                i2.putExtra(Gallery.EXTRA_PROFILE, profile);
+                i2.putExtra(
+                        Gallery.EXTRA_MULTIREDDIT,
+                        currentFragment.posts.multiReddit.getDisplayName());
+                startActivity(i2);
+            }
+            return true;
+        } else if (itemId == R.id.action_shadowbox) {
+            if (currentFragment != null && posts != null && !posts.isEmpty()) {
+                Intent i = new Intent(this, Shadowbox.class);
+                i.putExtra(Shadowbox.EXTRA_PAGE, getCurrentPage());
+                i.putExtra(Shadowbox.EXTRA_PROFILE, profile);
+                i.putExtra(
+                        Shadowbox.EXTRA_MULTIREDDIT,
+                        currentFragment.posts.multiReddit.getDisplayName());
+                startActivity(i);
+            }
+            return true;
+        } else {
+            return false;
         }
     }
 

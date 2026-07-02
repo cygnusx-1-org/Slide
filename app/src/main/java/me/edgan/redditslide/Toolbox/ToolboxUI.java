@@ -658,51 +658,47 @@ public class ToolboxUI {
             }
 
             // Check what the desired action is and perform it
-            switch (action) {
-                case R.id.comment:
+            if (action == R.id.comment) {
+                success &=
+                        postRemovalComment(
+                                thing, removalString.replace("{loglink}", logResult), sticky);
+            } else if (action == R.id.pm) {
+                if (thing instanceof Comment) {
                     success &=
-                            postRemovalComment(
-                                    thing, removalString.replace("{loglink}", logResult), sticky);
-                    break;
-                case R.id.pm:
-                    if (thing instanceof Comment) {
-                        success &=
-                                sendRemovalPM(
-                                        modmail ? ((Comment) thing).getSubredditName() : "",
-                                        ((Comment) thing).getAuthor(),
-                                        pmSubject.replace("{loglink}", logResult),
-                                        removalString);
-                    } else {
-                        success &=
-                                sendRemovalPM(
-                                        modmail ? ((Submission) thing).getSubredditName() : "",
-                                        ((Submission) thing).getAuthor(),
-                                        pmSubject.replace("{loglink}", logResult),
-                                        removalString);
-                    }
-                    break;
-                case R.id.both:
+                            sendRemovalPM(
+                                    modmail ? ((Comment) thing).getSubredditName() : "",
+                                    ((Comment) thing).getAuthor(),
+                                    pmSubject.replace("{loglink}", logResult),
+                                    removalString);
+                } else {
                     success &=
-                            postRemovalComment(
-                                    thing, removalString.replace("{loglink}", logResult), sticky);
-                    if (thing instanceof Comment) {
-                        success &=
-                                sendRemovalPM(
-                                        modmail ? ((Comment) thing).getSubredditName() : "",
-                                        ((Comment) thing).getAuthor(),
-                                        pmSubject.replace("{loglink}", logResult),
-                                        removalString);
-                    } else {
-                        success &=
-                                sendRemovalPM(
-                                        modmail ? ((Submission) thing).getSubredditName() : "",
-                                        ((Submission) thing).getAuthor(),
-                                        pmSubject.replace("{loglink}", logResult),
-                                        removalString);
-                    }
-                    break;
-                    // case R.id.none is unnecessary as we don't do anything on none.
+                            sendRemovalPM(
+                                    modmail ? ((Submission) thing).getSubredditName() : "",
+                                    ((Submission) thing).getAuthor(),
+                                    pmSubject.replace("{loglink}", logResult),
+                                    removalString);
+                }
+            } else if (action == R.id.both) {
+                success &=
+                        postRemovalComment(
+                                thing, removalString.replace("{loglink}", logResult), sticky);
+                if (thing instanceof Comment) {
+                    success &=
+                            sendRemovalPM(
+                                    modmail ? ((Comment) thing).getSubredditName() : "",
+                                    ((Comment) thing).getAuthor(),
+                                    pmSubject.replace("{loglink}", logResult),
+                                    removalString);
+                } else {
+                    success &=
+                            sendRemovalPM(
+                                    modmail ? ((Submission) thing).getSubredditName() : "",
+                                    ((Submission) thing).getAuthor(),
+                                    pmSubject.replace("{loglink}", logResult),
+                                    removalString);
+                }
             }
+            // R.id.none needs no handling as we don't do anything on none.
 
             // Remove the item and lock/apply necessary flair
             try {

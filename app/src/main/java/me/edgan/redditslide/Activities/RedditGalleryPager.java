@@ -67,90 +67,80 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        switch (id) {
-            case android.R.id.home:
-                getOnBackPressedDispatcher().onBackPressed();
-                return true;
+        if (id == android.R.id.home) {
+            getOnBackPressedDispatcher().onBackPressed();
+            return true;
+        } else if (id == R.id.vertical) {
+            SettingValues.albumSwipe = false;
+            SettingValues.prefs.edit().putBoolean(SettingValues.PREF_ALBUM_SWIPE, false).apply();
 
-            case R.id.vertical:
-                SettingValues.albumSwipe = false;
-                SettingValues.prefs
-                        .edit()
-                        .putBoolean(SettingValues.PREF_ALBUM_SWIPE, false)
-                        .apply();
-
-                Intent i = new Intent(RedditGalleryPager.this, RedditGallery.class);
-                if (getIntent().hasExtra(MediaView.SUBMISSION_URL)) {
-                    i.putExtra(
-                            MediaView.SUBMISSION_URL,
-                            getIntent().getStringExtra(MediaView.SUBMISSION_URL));
-                }
-                if (getIntent().hasExtra(SUBREDDIT)) {
-                    i.putExtra(SUBREDDIT, getIntent().getStringExtra(SUBREDDIT));
-                }
-                if (submissionTitle != null) {
-                    i.putExtra(EXTRA_SUBMISSION_TITLE, submissionTitle);
-                }
-                i.putExtras(getIntent());
-
-                Bundle urlsBundle = new Bundle();
-                urlsBundle.putSerializable(RedditGallery.GALLERY_URLS, new ArrayList<>(images));
-                i.putExtras(urlsBundle);
-
-                startActivity(i);
-                finish();
-                return true;
-
-            case R.id.grid:
-                showGridView();
-                return true;
-
-            case R.id.external:
-                String url = getIntent().getStringExtra(MediaView.SUBMISSION_URL);
-                if (url != null && !url.isEmpty()) {
-                    LinkUtil.openExternally(url);
-                }
-                return true;
-
-            case R.id.comments: {
-                int adapterPosition = getIntent().getIntExtra(MediaView.ADAPTER_POSITION, -1);
-                String submissionPermalink =
-                        getIntent().getStringExtra(MediaView.SUBMISSION_URL);
-                boolean openCommentsDirect =
-                        getIntent()
-                                .getBooleanExtra(MediaView.EXTRA_OPEN_COMMENTS_DIRECT, false);
-                if (openCommentsDirect && submissionPermalink != null) {
-                    OpenRedditLink.openUrl(
-                            this, "https://reddit.com" + submissionPermalink, false);
-                    finish();
-                } else {
-                    finish();
-                    SubmissionsView.datachanged(adapterPosition);
-                }
-                return true;
+            Intent i = new Intent(RedditGalleryPager.this, RedditGallery.class);
+            if (getIntent().hasExtra(MediaView.SUBMISSION_URL)) {
+                i.putExtra(
+                        MediaView.SUBMISSION_URL,
+                        getIntent().getStringExtra(MediaView.SUBMISSION_URL));
             }
+            if (getIntent().hasExtra(SUBREDDIT)) {
+                i.putExtra(SUBREDDIT, getIntent().getStringExtra(SUBREDDIT));
+            }
+            if (submissionTitle != null) {
+                i.putExtra(EXTRA_SUBMISSION_TITLE, submissionTitle);
+            }
+            i.putExtras(getIntent());
 
-            case R.id.download:
-                if (images != null) {
-                    int index = 0;
-                    Log.d(TAG, "Download - submission title: " + (submissionTitle != null ? submissionTitle : "null"));
-                    for (final GalleryImage elem : images) {
-                        if (elem.isAnimated()) {
-                            // Handle videos/GIFs using GifUtils
-                            GifUtils.cacheSaveGif(
-                                    Uri.parse(elem.url),
-                                    this,
-                                    subreddit != null ? subreddit : "",
-                                    submissionTitle != null ? submissionTitle : "",
-                                    true);
-                        } else {
-                            // Handle static images using existing image download
-                            doImageSave(false, elem.url, index);
-                        }
-                        index++;
+            Bundle urlsBundle = new Bundle();
+            urlsBundle.putSerializable(RedditGallery.GALLERY_URLS, new ArrayList<>(images));
+            i.putExtras(urlsBundle);
+
+            startActivity(i);
+            finish();
+            return true;
+        } else if (id == R.id.grid) {
+            showGridView();
+            return true;
+        } else if (id == R.id.external) {
+            String url = getIntent().getStringExtra(MediaView.SUBMISSION_URL);
+            if (url != null && !url.isEmpty()) {
+                LinkUtil.openExternally(url);
+            }
+            return true;
+        } else if (id == R.id.comments) {
+            int adapterPosition = getIntent().getIntExtra(MediaView.ADAPTER_POSITION, -1);
+            String submissionPermalink = getIntent().getStringExtra(MediaView.SUBMISSION_URL);
+            boolean openCommentsDirect =
+                    getIntent().getBooleanExtra(MediaView.EXTRA_OPEN_COMMENTS_DIRECT, false);
+            if (openCommentsDirect && submissionPermalink != null) {
+                OpenRedditLink.openUrl(this, "https://reddit.com" + submissionPermalink, false);
+                finish();
+            } else {
+                finish();
+                SubmissionsView.datachanged(adapterPosition);
+            }
+            return true;
+        } else if (id == R.id.download) {
+            if (images != null) {
+                int index = 0;
+                Log.d(
+                        TAG,
+                        "Download - submission title: "
+                                + (submissionTitle != null ? submissionTitle : "null"));
+                for (final GalleryImage elem : images) {
+                    if (elem.isAnimated()) {
+                        // Handle videos/GIFs using GifUtils
+                        GifUtils.cacheSaveGif(
+                                Uri.parse(elem.url),
+                                this,
+                                subreddit != null ? subreddit : "",
+                                submissionTitle != null ? submissionTitle : "",
+                                true);
+                    } else {
+                        // Handle static images using existing image download
+                        doImageSave(false, elem.url, index);
                     }
+                    index++;
                 }
-                return true;
+            }
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

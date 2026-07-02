@@ -865,25 +865,23 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
     }
 
     public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.search:
-                {
-                    if (comments.comments != null && comments.submission != null) {
-                        DataShare.sharedComments = comments.comments;
-                        DataShare.subAuthor = comments.submission.getAuthor();
-                        Intent i = new Intent(getActivity(), CommentSearch.class);
-                        if (getActivity() instanceof MainActivity) {
-                            getActivity().startActivityForResult(i, 423);
-                        } else {
-                            startActivityForResult(i, 423);
-                        }
-                    }
+        int itemId = item.getItemId();
+        if (itemId == R.id.search) {
+            if (comments.comments != null && comments.submission != null) {
+                DataShare.sharedComments = comments.comments;
+                DataShare.subAuthor = comments.submission.getAuthor();
+                Intent i = new Intent(getActivity(), CommentSearch.class);
+                if (getActivity() instanceof MainActivity) {
+                    getActivity().startActivityForResult(i, 423);
+                } else {
+                    startActivityForResult(i, 423);
                 }
-                return true;
-            case R.id.sidebar:
-                doSidebarOpen();
-                return true;
-            case R.id.related:
+            }
+            return true;
+        } else if (itemId == R.id.sidebar) {
+            doSidebarOpen();
+            return true;
+        } else if (itemId == R.id.related) {
                 if (adapter.submission.isSelfPost()) {
                     DialogUtil.showWithCardBackground(new AlertDialog.Builder(getActivity())
                             .setTitle("Selftext posts have no related submissions")
@@ -895,7 +893,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                     startActivity(i);
                 }
                 return true;
-            case R.id.shadowbox:
+        } else if (itemId == R.id.shadowbox) {
                 if (comments.comments != null && comments.submission != null) {
                     ShadowboxComments.comments = new ArrayList<>();
                     for (CommentObject c : comments.comments) {
@@ -950,12 +948,10 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                     }
                 }
                 return true;
-            case R.id.sort:
-                {
-                    openPopup(toolbar);
-                    return true;
-                }
-            case R.id.content:
+        } else if (itemId == R.id.sort) {
+            openPopup(toolbar);
+            return true;
+        } else if (itemId == R.id.content) {
                 {
                     if (adapter != null && adapter.submission != null) {
                         if (!PostMatch.openExternal(adapter.submission.getUrl())) {
@@ -1204,22 +1200,20 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                     }
                 }
                 return true;
-            case R.id.reload:
-                if (comments != null) {
-                    mSwipeRefreshLayout.setRefreshing(true);
-                    comments.loadMore(adapter, subreddit);
-                }
-                return true;
-            case R.id.collapse:
-                {
-                    if (adapter != null) {
-                        adapter.collapseAll();
-                    }
-                }
-                return true;
-            case android.R.id.home:
-                getActivity().getOnBackPressedDispatcher().onBackPressed();
-                return true;
+        } else if (itemId == R.id.reload) {
+            if (comments != null) {
+                mSwipeRefreshLayout.setRefreshing(true);
+                comments.loadMore(adapter, subreddit);
+            }
+            return true;
+        } else if (itemId == R.id.collapse) {
+            if (adapter != null) {
+                adapter.collapseAll();
+            }
+            return true;
+        } else if (itemId == android.R.id.home) {
+            getActivity().getOnBackPressedDispatcher().onBackPressed();
+            return true;
         }
         return false;
     }

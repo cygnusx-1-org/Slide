@@ -160,21 +160,21 @@ public class ReaderMode extends BaseActivityAnim {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            case R.id.web:
-                LinkUtil.openUrl(url, mSubredditColor, this);
-                finish();
-                return true;
-            case R.id.share:
-                Reddit.defaultShareText(
-                        ((Toolbar) findViewById(R.id.toolbar)).getTitle().toString(),
-                        url,
-                        ReaderMode.this);
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            finish();
+            return true;
+        } else if (itemId == R.id.web) {
+            LinkUtil.openUrl(url, mSubredditColor, this);
+            finish();
+            return true;
+        } else if (itemId == R.id.share) {
+            Reddit.defaultShareText(
+                    ((Toolbar) findViewById(R.id.toolbar)).getTitle().toString(),
+                    url,
+                    ReaderMode.this);
 
-                return true;
+            return true;
         }
         return false;
     }

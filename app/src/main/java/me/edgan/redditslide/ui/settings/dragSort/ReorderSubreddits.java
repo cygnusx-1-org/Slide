@@ -87,12 +87,12 @@ public class ReorderSubreddits extends BaseActivityAnim {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            case R.id.refresh:
-                done = 0;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            finish();
+            return true;
+        } else if (itemId == R.id.refresh) {
+            done = 0;
                 // Inflate the custom progress layout
                 View progressView = getLayoutInflater().inflate(R.layout.dialog_progress, null);
                 TextView progressText = progressView.findViewById(R.id.progress_text);
@@ -157,32 +157,34 @@ public class ReorderSubreddits extends BaseActivityAnim {
                         dialog.show();
                     }
                 }.execute();
-                return true;
-            case R.id.alphabetize:
-                subs = UserSubscriptions.sortNoExtras(subs);
-                adapter = new CustomAdapter(subs);
-                //  adapter.setHasStableIds(true);
-                recyclerView.setAdapter(adapter);
-                return true;
-            case R.id.alphabetize_subscribe:
-                SettingValues.prefs
-                        .edit()
-                    .putBoolean(SettingValues.PREF_ALPHABETIZE_SUBSCRIBE, !SettingValues.alphabetizeOnSubscribe)
-                        .apply();
-                SettingValues.alphabetizeOnSubscribe = !SettingValues.alphabetizeOnSubscribe;
-                if (subscribe != null) subscribe.setChecked(SettingValues.alphabetizeOnSubscribe);
-                return true;
-            case R.id.info:
-                AlertDialog faqDialog = new MaterialAlertDialogBuilder(ReorderSubreddits.this)
-                        .setTitle(R.string.reorder_subs_FAQ)
-                        .setMessage(R.string.sorting_faq)
-                        .setPositiveButton(R.string.btn_ok, null)
-                        .create();
+            return true;
+        } else if (itemId == R.id.alphabetize) {
+            subs = UserSubscriptions.sortNoExtras(subs);
+            adapter = new CustomAdapter(subs);
+            //  adapter.setHasStableIds(true);
+            recyclerView.setAdapter(adapter);
+            return true;
+        } else if (itemId == R.id.alphabetize_subscribe) {
+            SettingValues.prefs
+                    .edit()
+                    .putBoolean(
+                            SettingValues.PREF_ALPHABETIZE_SUBSCRIBE,
+                            !SettingValues.alphabetizeOnSubscribe)
+                    .apply();
+            SettingValues.alphabetizeOnSubscribe = !SettingValues.alphabetizeOnSubscribe;
+            if (subscribe != null) subscribe.setChecked(SettingValues.alphabetizeOnSubscribe);
+            return true;
+        } else if (itemId == R.id.info) {
+            AlertDialog faqDialog = new MaterialAlertDialogBuilder(ReorderSubreddits.this)
+                    .setTitle(R.string.reorder_subs_FAQ)
+                    .setMessage(R.string.sorting_faq)
+                    .setPositiveButton(R.string.btn_ok, null)
+                    .create();
 
-                // Apply custom border
-                DialogUtil.applyCustomBorderToAlertDialog(ReorderSubreddits.this, faqDialog);
-                faqDialog.show();
-                return true;
+            // Apply custom border
+            DialogUtil.applyCustomBorderToAlertDialog(ReorderSubreddits.this, faqDialog);
+            faqDialog.show();
+            return true;
         }
         return false;
     }

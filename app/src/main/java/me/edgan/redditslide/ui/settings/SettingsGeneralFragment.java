@@ -824,52 +824,46 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
 
                         popup.setOnMenuItemClickListener(
                                 item -> {
-                                    switch (item.getItemId()) {
-                                        case R.id.disabled:
-                                            SettingValues.fab = false;
-                                            SettingValues.prefs
-                                                    .edit()
-                                                    .putBoolean(SettingValues.PREF_FAB, false)
-                                                    .apply();
-                                            break;
-                                        case R.id.hide:
-                                            SettingValues.fab = true;
-                                            SettingValues.fabType = FAB_DISMISS;
-                                            SettingValues.prefs
-                                                    .edit()
-                                                    .putInt(
-                                                            SettingValues.PREF_FAB_TYPE,
-                                                            FAB_DISMISS)
-                                                    .apply();
-                                            SettingValues.prefs
-                                                    .edit()
-                                                    .putBoolean(SettingValues.PREF_FAB, true)
-                                                    .apply();
-                                            break;
-                                        case R.id.create:
-                                            SettingValues.fab = true;
-                                            SettingValues.fabType = FAB_POST;
-                                            SettingValues.prefs
-                                                    .edit()
-                                                    .putInt(SettingValues.PREF_FAB_TYPE, FAB_POST)
-                                                    .apply();
-                                            SettingValues.prefs
-                                                    .edit()
-                                                    .putBoolean(SettingValues.PREF_FAB, true)
-                                                    .apply();
-                                            break;
-                                        case R.id.search:
-                                            SettingValues.fab = true;
-                                            SettingValues.fabType = FAB_SEARCH;
-                                            SettingValues.prefs
-                                                    .edit()
-                                                    .putInt(SettingValues.PREF_FAB_TYPE, FAB_SEARCH)
-                                                    .apply();
-                                            SettingValues.prefs
-                                                    .edit()
-                                                    .putBoolean(SettingValues.PREF_FAB, true)
-                                                    .apply();
-                                            break;
+                                    int itemId = item.getItemId();
+                                    if (itemId == R.id.disabled) {
+                                        SettingValues.fab = false;
+                                        SettingValues.prefs
+                                                .edit()
+                                                .putBoolean(SettingValues.PREF_FAB, false)
+                                                .apply();
+                                    } else if (itemId == R.id.hide) {
+                                        SettingValues.fab = true;
+                                        SettingValues.fabType = FAB_DISMISS;
+                                        SettingValues.prefs
+                                                .edit()
+                                                .putInt(SettingValues.PREF_FAB_TYPE, FAB_DISMISS)
+                                                .apply();
+                                        SettingValues.prefs
+                                                .edit()
+                                                .putBoolean(SettingValues.PREF_FAB, true)
+                                                .apply();
+                                    } else if (itemId == R.id.create) {
+                                        SettingValues.fab = true;
+                                        SettingValues.fabType = FAB_POST;
+                                        SettingValues.prefs
+                                                .edit()
+                                                .putInt(SettingValues.PREF_FAB_TYPE, FAB_POST)
+                                                .apply();
+                                        SettingValues.prefs
+                                                .edit()
+                                                .putBoolean(SettingValues.PREF_FAB, true)
+                                                .apply();
+                                    } else if (itemId == R.id.search) {
+                                        SettingValues.fab = true;
+                                        SettingValues.fabType = FAB_SEARCH;
+                                        SettingValues.prefs
+                                                .edit()
+                                                .putInt(SettingValues.PREF_FAB_TYPE, FAB_SEARCH)
+                                                .apply();
+                                        SettingValues.prefs
+                                                .edit()
+                                                .putBoolean(SettingValues.PREF_FAB, true)
+                                                .apply();
                                     }
                                     if (SettingValues.fab) {
                                         if (SettingValues.fabType == FAB_DISMISS) {
@@ -921,43 +915,37 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                                 .inflate(R.menu.subreddit_search_settings, popup.getMenu());
                         popup.setOnMenuItemClickListener(
                                 item -> {
-                                    switch (item.getItemId()) {
-                                        case R.id.subreddit_search_drawer:
-                                            SettingValues.subredditSearchMethod =
-                                                    SUBREDDIT_SEARCH_METHOD_DRAWER;
-                                            SettingValues.prefs
-                                                    .edit()
-                                                    .putInt(
-                                                            SettingValues
-                                                                    .PREF_SUBREDDIT_SEARCH_METHOD,
-                                                            SUBREDDIT_SEARCH_METHOD_DRAWER)
-                                                    .apply();
-                                            searchChanged = true;
-                                            break;
-                                        case R.id.subreddit_search_toolbar:
-                                            SettingValues.subredditSearchMethod =
-                                                    SUBREDDIT_SEARCH_METHOD_TOOLBAR;
-                                            SettingValues.prefs
-                                                    .edit()
-                                                    .putInt(
-                                                            SettingValues
-                                                                    .PREF_SUBREDDIT_SEARCH_METHOD,
-                                                            SUBREDDIT_SEARCH_METHOD_TOOLBAR)
-                                                    .apply();
-                                            searchChanged = true;
-                                            break;
-                                        case R.id.subreddit_search_both:
-                                            SettingValues.subredditSearchMethod =
-                                                    SUBREDDIT_SEARCH_METHOD_BOTH;
-                                            SettingValues.prefs
-                                                    .edit()
-                                                    .putInt(
-                                                            SettingValues
-                                                                    .PREF_SUBREDDIT_SEARCH_METHOD,
-                                                            SUBREDDIT_SEARCH_METHOD_BOTH)
-                                                    .apply();
-                                            searchChanged = true;
-                                            break;
+                                    int itemId = item.getItemId();
+                                    if (itemId == R.id.subreddit_search_drawer) {
+                                        SettingValues.subredditSearchMethod =
+                                                SUBREDDIT_SEARCH_METHOD_DRAWER;
+                                        SettingValues.prefs
+                                                .edit()
+                                                .putInt(
+                                                        SettingValues.PREF_SUBREDDIT_SEARCH_METHOD,
+                                                        SUBREDDIT_SEARCH_METHOD_DRAWER)
+                                                .apply();
+                                        searchChanged = true;
+                                    } else if (itemId == R.id.subreddit_search_toolbar) {
+                                        SettingValues.subredditSearchMethod =
+                                                SUBREDDIT_SEARCH_METHOD_TOOLBAR;
+                                        SettingValues.prefs
+                                                .edit()
+                                                .putInt(
+                                                        SettingValues.PREF_SUBREDDIT_SEARCH_METHOD,
+                                                        SUBREDDIT_SEARCH_METHOD_TOOLBAR)
+                                                .apply();
+                                        searchChanged = true;
+                                    } else if (itemId == R.id.subreddit_search_both) {
+                                        SettingValues.subredditSearchMethod =
+                                                SUBREDDIT_SEARCH_METHOD_BOTH;
+                                        SettingValues.prefs
+                                                .edit()
+                                                .putInt(
+                                                        SettingValues.PREF_SUBREDDIT_SEARCH_METHOD,
+                                                        SUBREDDIT_SEARCH_METHOD_BOTH)
+                                                .apply();
+                                        searchChanged = true;
                                     }
 
                                     switch (SettingValues.subredditSearchMethod) {
@@ -1012,51 +1000,43 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
 
                     popup.setOnMenuItemClickListener(
                             item -> {
-                                switch (item.getItemId()) {
-                                    case R.id.back_button_behavior_default:
-                                        SettingValues.backButtonBehavior =
-                                                BackButtonBehaviorOptions.Default.getValue();
-                                        SettingValues.prefs
-                                                .edit()
-                                                .putInt(
-                                                        SettingValues.PREF_BACK_BUTTON_BEHAVIOR,
-                                                        BackButtonBehaviorOptions.Default
-                                                                .getValue())
-                                                .apply();
-                                        break;
-                                    case R.id.back_button_behavior_confirm_exit:
-                                        SettingValues.backButtonBehavior =
-                                                BackButtonBehaviorOptions.ConfirmExit.getValue();
-                                        SettingValues.prefs
-                                                .edit()
-                                                .putInt(
-                                                        SettingValues.PREF_BACK_BUTTON_BEHAVIOR,
-                                                        BackButtonBehaviorOptions.ConfirmExit
-                                                                .getValue())
-                                                .apply();
-                                        break;
-                                    case R.id.back_button_behavior_open_drawer:
-                                        SettingValues.backButtonBehavior =
-                                                BackButtonBehaviorOptions.OpenDrawer.getValue();
-                                        SettingValues.prefs
-                                                .edit()
-                                                .putInt(
-                                                        SettingValues.PREF_BACK_BUTTON_BEHAVIOR,
-                                                        BackButtonBehaviorOptions.OpenDrawer
-                                                                .getValue())
-                                                .apply();
-                                        break;
-                                    case R.id.back_button_behavior_goto_first:
-                                        SettingValues.backButtonBehavior =
-                                                BackButtonBehaviorOptions.GotoFirst.getValue();
-                                        SettingValues.prefs
-                                                .edit()
-                                                .putInt(
-                                                        SettingValues.PREF_BACK_BUTTON_BEHAVIOR,
-                                                        BackButtonBehaviorOptions.GotoFirst
-                                                                .getValue())
-                                                .apply();
-                                        break;
+                                int itemId = item.getItemId();
+                                if (itemId == R.id.back_button_behavior_default) {
+                                    SettingValues.backButtonBehavior =
+                                            BackButtonBehaviorOptions.Default.getValue();
+                                    SettingValues.prefs
+                                            .edit()
+                                            .putInt(
+                                                    SettingValues.PREF_BACK_BUTTON_BEHAVIOR,
+                                                    BackButtonBehaviorOptions.Default.getValue())
+                                            .apply();
+                                } else if (itemId == R.id.back_button_behavior_confirm_exit) {
+                                    SettingValues.backButtonBehavior =
+                                            BackButtonBehaviorOptions.ConfirmExit.getValue();
+                                    SettingValues.prefs
+                                            .edit()
+                                            .putInt(
+                                                    SettingValues.PREF_BACK_BUTTON_BEHAVIOR,
+                                                    BackButtonBehaviorOptions.ConfirmExit.getValue())
+                                            .apply();
+                                } else if (itemId == R.id.back_button_behavior_open_drawer) {
+                                    SettingValues.backButtonBehavior =
+                                            BackButtonBehaviorOptions.OpenDrawer.getValue();
+                                    SettingValues.prefs
+                                            .edit()
+                                            .putInt(
+                                                    SettingValues.PREF_BACK_BUTTON_BEHAVIOR,
+                                                    BackButtonBehaviorOptions.OpenDrawer.getValue())
+                                            .apply();
+                                } else if (itemId == R.id.back_button_behavior_goto_first) {
+                                    SettingValues.backButtonBehavior =
+                                            BackButtonBehaviorOptions.GotoFirst.getValue();
+                                    SettingValues.prefs
+                                            .edit()
+                                            .putInt(
+                                                    SettingValues.PREF_BACK_BUTTON_BEHAVIOR,
+                                                    BackButtonBehaviorOptions.GotoFirst.getValue())
+                                            .apply();
                                 }
 
                                 if (SettingValues.backButtonBehavior

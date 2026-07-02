@@ -45,50 +45,42 @@ public class SettingsViewType extends BaseActivityAnim {
                                 popup.setOnMenuItemClickListener(
                                         new PopupMenu.OnMenuItemClickListener() {
                                             public boolean onMenuItemClick(MenuItem item) {
-                                                switch (item.getItemId()) {
-                                                    case R.id.tabs:
-                                                        SettingValues.single = false;
-                                                        SettingValues.prefs
-                                                                .edit()
-                                                                .putBoolean(
-                                                                        SettingValues.PREF_SINGLE,
-                                                                        false)
-                                                                .apply();
-                                                        break;
-                                                    case R.id.notabs:
-                                                        SettingValues.single = true;
-                                                        SettingValues.commentPager = false;
-                                                        SettingValues.prefs
-                                                                .edit()
-                                                                .putBoolean(
-                                                                        SettingValues.PREF_SINGLE,
-                                                                        true)
-                                                                .apply();
-                                                        SettingValues.prefs
-                                                                .edit()
-                                                                .putBoolean(
-                                                                        SettingValues
-                                                                                .PREF_COMMENT_PAGER,
-                                                                        false)
-                                                                .apply();
-                                                        break;
-                                                    case R.id.comments:
-                                                        SettingValues.single = true;
-                                                        SettingValues.commentPager = true;
-                                                        SettingValues.prefs
-                                                                .edit()
-                                                                .putBoolean(
-                                                                        SettingValues.PREF_SINGLE,
-                                                                        true)
-                                                                .apply();
-                                                        SettingValues.prefs
-                                                                .edit()
-                                                                .putBoolean(
-                                                                        SettingValues
-                                                                                .PREF_COMMENT_PAGER,
-                                                                        true)
-                                                                .apply();
-                                                        break;
+                                                int itemId = item.getItemId();
+                                                if (itemId == R.id.tabs) {
+                                                    SettingValues.single = false;
+                                                    SettingValues.prefs
+                                                            .edit()
+                                                            .putBoolean(
+                                                                    SettingValues.PREF_SINGLE, false)
+                                                            .apply();
+                                                } else if (itemId == R.id.notabs) {
+                                                    SettingValues.single = true;
+                                                    SettingValues.commentPager = false;
+                                                    SettingValues.prefs
+                                                            .edit()
+                                                            .putBoolean(
+                                                                    SettingValues.PREF_SINGLE, true)
+                                                            .apply();
+                                                    SettingValues.prefs
+                                                            .edit()
+                                                            .putBoolean(
+                                                                    SettingValues.PREF_COMMENT_PAGER,
+                                                                    false)
+                                                            .apply();
+                                                } else if (itemId == R.id.comments) {
+                                                    SettingValues.single = true;
+                                                    SettingValues.commentPager = true;
+                                                    SettingValues.prefs
+                                                            .edit()
+                                                            .putBoolean(
+                                                                    SettingValues.PREF_SINGLE, true)
+                                                            .apply();
+                                                    SettingValues.prefs
+                                                            .edit()
+                                                            .putBoolean(
+                                                                    SettingValues.PREF_COMMENT_PAGER,
+                                                                    true)
+                                                            .apply();
                                                 }
                                                 ((TextView) findViewById(R.id.currentViewType))
                                                         .setText(

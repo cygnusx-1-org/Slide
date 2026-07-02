@@ -99,23 +99,21 @@ public class SettingsActivity extends BaseActivity implements RestartActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                if (findViewById(R.id.settings_search).getVisibility() == View.VISIBLE) {
-                    findViewById(R.id.settings_search).setVisibility(View.GONE);
-                    findViewById(R.id.search).setVisibility(View.VISIBLE);
-                } else {
-                    getOnBackPressedDispatcher().onBackPressed();
-                }
-                return true;
-            case R.id.search:
-                {
-                    findViewById(R.id.settings_search).setVisibility(View.VISIBLE);
-                    findViewById(R.id.search).setVisibility(View.GONE);
-                }
-                return true;
-            default:
-                return false;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            if (findViewById(R.id.settings_search).getVisibility() == View.VISIBLE) {
+                findViewById(R.id.settings_search).setVisibility(View.GONE);
+                findViewById(R.id.search).setVisibility(View.VISIBLE);
+            } else {
+                getOnBackPressedDispatcher().onBackPressed();
+            }
+            return true;
+        } else if (itemId == R.id.search) {
+            findViewById(R.id.settings_search).setVisibility(View.VISIBLE);
+            findViewById(R.id.search).setVisibility(View.GONE);
+            return true;
+        } else {
+            return false;
         }
     }
 

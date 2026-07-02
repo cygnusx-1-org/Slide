@@ -24,7 +24,7 @@ plugins {
 
 android {
     compileSdk 37
-    namespace "me.edgan.redditslide"
+    namespace = "me.edgan.redditslide"
 
     // APK/AAB custom names are applied via the new Variant API (androidComponents block at the end
     // of this file). AGP 9's new DSL removed applicationVariants.outputs.outputFileName.
@@ -71,7 +71,7 @@ android {
     buildTypes {
         release {
             if (keystorePropertiesFile.exists()) {
-                signingConfig signingConfigs.withGPlay
+                signingConfig = signingConfigs.withGPlay
             } else {
                 println("Warning: keystore.properties file not found. Skipping signing configuration for release.")
             }
@@ -92,7 +92,7 @@ android {
     }
 
     compileOptions {
-        encoding "UTF-8"
+        encoding = "UTF-8"
         sourceCompatibility JavaVersion.VERSION_24
         targetCompatibility JavaVersion.VERSION_24
     }
@@ -100,7 +100,7 @@ android {
     lint {
         // Lint errors are kept at zero; fail the build if a new one is introduced.
         // Warnings do not abort (see the large existing warning backlog).
-        abortOnError true
+        abortOnError = true
         // Translations are crowd-sourced. ImpliedQuantity fires on the count-less
         // abbreviation plurals (points -> "pt"/"pts", comments -> "cmt"/"cmts")
         // whose quantity is rendered separately, so no %d belongs in the string;
@@ -111,7 +111,7 @@ android {
 
     testOptions {
         unitTests {
-            includeAndroidResources true
+            includeAndroidResources = true
             returnDefaultValues = true
             all {
                 jvmArgs = [
@@ -126,8 +126,8 @@ android {
     }
 
     buildFeatures {
-        dataBinding true
-        viewBinding true
+        dataBinding = true
+        viewBinding = true
         // Required because build types use resValue (release/debug app_name); the global
         // android.defaults.buildfeatures.resvalues default is off in AGP 9.
         resValues = true

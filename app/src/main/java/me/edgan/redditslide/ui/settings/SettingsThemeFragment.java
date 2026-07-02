@@ -91,16 +91,13 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
 
                     popup.setOnMenuItemClickListener(
                             item -> {
-                                switch (item.getItemId()) {
-                                    case R.id.none:
-                                        setTintingMode(false, false);
-                                        break;
-                                    case R.id.background:
-                                        setTintingMode(true, false);
-                                        break;
-                                    case R.id.name:
-                                        setTintingMode(true, true);
-                                        break;
+                                int itemId = item.getItemId();
+                                if (itemId == R.id.none) {
+                                    setTintingMode(false, false);
+                                } else if (itemId == R.id.background) {
+                                    setTintingMode(true, false);
+                                } else if (itemId == R.id.name) {
+                                    setTintingMode(true, true);
                                 }
                                 currentTintTextView.setText(
                                         SettingValues.colorBack

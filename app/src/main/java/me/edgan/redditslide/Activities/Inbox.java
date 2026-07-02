@@ -69,53 +69,49 @@ public class Inbox extends BaseActivityAnim {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case (android.R.id.home):
-                getOnBackPressedDispatcher().onBackPressed();
-                break;
-            case (R.id.notifs):
-                LayoutInflater inflater = getLayoutInflater();
-                final View dialoglayout = inflater.inflate(R.layout.inboxfrequency, null);
-                SettingsGeneralFragment.setupNotificationSettings(dialoglayout, Inbox.this);
-                break;
-            case (R.id.compose):
-                Intent i = new Intent(Inbox.this, SendMessage.class);
-                startActivity(i);
-                break;
-            case (R.id.read):
-                changed = false;
-                new AsyncTask<Void, Void, Void>() {
-                    @Override
-                    protected Void doInBackground(Void... params) {
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            getOnBackPressedDispatcher().onBackPressed();
+        } else if (itemId == R.id.notifs) {
+            LayoutInflater inflater = getLayoutInflater();
+            final View dialoglayout = inflater.inflate(R.layout.inboxfrequency, null);
+            SettingsGeneralFragment.setupNotificationSettings(dialoglayout, Inbox.this);
+        } else if (itemId == R.id.compose) {
+            Intent i = new Intent(Inbox.this, SendMessage.class);
+            startActivity(i);
+        } else if (itemId == R.id.read) {
+            changed = false;
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... params) {
+                    try {
+                        new InboxManager(Authentication.reddit).setAllRead();
+                        changed = true;
+                    } catch (Exception ignored) {
+                        LogUtil.e(ignored, "Inbox.doInBackground failed");
+                    }
+                    return null;
+                }
+
+                @Override
+                protected void onPostExecute(Void aVoid) {
+                    if (changed) { // restart the fragment
+                        adapter.notifyDataSetChanged();
+
                         try {
-                            new InboxManager(Authentication.reddit).setAllRead();
-                            changed = true;
-                        } catch (Exception ignored) {
-                            LogUtil.e(ignored, "Inbox.doInBackground failed");
-                        }
-                        return null;
-                    }
+                            final int CURRENT_TAB = tabs.getSelectedTabPosition();
+                            adapter = new InboxPagerAdapter(getSupportFragmentManager());
+                            pager.setAdapter(adapter);
+                            tabs.setupWithViewPager(pager);
 
-                    @Override
-                    protected void onPostExecute(Void aVoid) {
-                        if (changed) { // restart the fragment
-                            adapter.notifyDataSetChanged();
+                            LayoutUtils.scrollToTabAfterLayout(tabs, CURRENT_TAB);
+                            pager.setCurrentItem(CURRENT_TAB);
+                        } catch (Exception e) {
 
-                            try {
-                                final int CURRENT_TAB = tabs.getSelectedTabPosition();
-                                adapter = new InboxPagerAdapter(getSupportFragmentManager());
-                                pager.setAdapter(adapter);
-                                tabs.setupWithViewPager(pager);
-
-                                LayoutUtils.scrollToTabAfterLayout(tabs, CURRENT_TAB);
-                                pager.setCurrentItem(CURRENT_TAB);
-                            } catch (Exception e) {
-
-                            }
                         }
                     }
-                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                break;
+                }
+            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
         return super.onOptionsItemSelected(item);
     }

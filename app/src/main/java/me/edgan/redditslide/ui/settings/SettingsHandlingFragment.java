@@ -183,38 +183,32 @@ public class SettingsHandlingFragment implements CompoundButton.OnCheckedChangeL
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        switch (buttonView.getId()) {
-            case R.id.settings_handling_shortlink:
-                SettingValues.shareLongLink = !isChecked;
-                editSharedBooleanPreference(SettingValues.PREF_LONG_LINK, !isChecked);
-                break;
-            case R.id.settings_handling_gif:
-                SettingValues.gif = isChecked;
-                editSharedBooleanPreference(SettingValues.PREF_GIF, isChecked);
-                break;
-            case R.id.settings_handling_hqgif:
-                SettingValues.hqgif = isChecked;
-                editSharedBooleanPreference(SettingValues.PREF_HQGIF, isChecked);
-                break;
-            case R.id.settings_handling_image:
-                SettingValues.image = isChecked;
-                editSharedBooleanPreference(SettingValues.PREF_IMAGE, isChecked);
-                break;
-            case R.id.settings_handling_album:
-                SettingValues.album = isChecked;
-                editSharedBooleanPreference(SettingValues.PREF_ALBUM, isChecked);
-                break;
-            case R.id.settings_handling_peek:
-                SettingValues.peek = isChecked;
-                if (isChecked) {
-                    SettingValues.noPreviewImageLongClick = false;
-                    SettingValues.prefs
-                            .edit()
-                            .putBoolean(SettingValues.PREF_NO_PREVIEW_IMAGE_LONGCLICK, false)
-                            .apply();
-                }
-                editSharedBooleanPreference(SettingValues.PREF_PEEK, isChecked);
-                break;
+        int buttonId = buttonView.getId();
+        if (buttonId == R.id.settings_handling_shortlink) {
+            SettingValues.shareLongLink = !isChecked;
+            editSharedBooleanPreference(SettingValues.PREF_LONG_LINK, !isChecked);
+        } else if (buttonId == R.id.settings_handling_gif) {
+            SettingValues.gif = isChecked;
+            editSharedBooleanPreference(SettingValues.PREF_GIF, isChecked);
+        } else if (buttonId == R.id.settings_handling_hqgif) {
+            SettingValues.hqgif = isChecked;
+            editSharedBooleanPreference(SettingValues.PREF_HQGIF, isChecked);
+        } else if (buttonId == R.id.settings_handling_image) {
+            SettingValues.image = isChecked;
+            editSharedBooleanPreference(SettingValues.PREF_IMAGE, isChecked);
+        } else if (buttonId == R.id.settings_handling_album) {
+            SettingValues.album = isChecked;
+            editSharedBooleanPreference(SettingValues.PREF_ALBUM, isChecked);
+        } else if (buttonId == R.id.settings_handling_peek) {
+            SettingValues.peek = isChecked;
+            if (isChecked) {
+                SettingValues.noPreviewImageLongClick = false;
+                SettingValues.prefs
+                        .edit()
+                        .putBoolean(SettingValues.PREF_NO_PREVIEW_IMAGE_LONGCLICK, false)
+                        .apply();
+            }
+            editSharedBooleanPreference(SettingValues.PREF_PEEK, isChecked);
         }
     }
 

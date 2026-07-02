@@ -307,119 +307,118 @@ public class SubredditView extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                getOnBackPressedDispatcher().onBackPressed();
-                return true;
-            case R.id.filter:
-                FilterContentUtil.showFilterDialog(this, subreddit, this::reloadSubs);
-                return true;
-            case R.id.submit:
-                Intent i = new Intent(this, Submit.class);
-                if (canSubmit) i.putExtra(Submit.EXTRA_SUBREDDIT, subreddit);
-                startActivity(i);
-                return true;
-            case R.id.action_refresh:
-                if (adapter != null && adapter.getCurrentFragment() != null) {
-                    ((SubmissionsView) adapter.getCurrentFragment()).forceRefresh();
-                }
-                return true;
-            case R.id.action_sort:
-                if (subreddit.equalsIgnoreCase("friends")) {
-                    Snackbar s =
-                            Snackbar.make(
-                                    findViewById(R.id.anchor),
-                                    getString(R.string.friends_sort_error),
-                                    Snackbar.LENGTH_SHORT);
-                    LayoutUtils.showSnackbar(s);
-                } else {
-                    openPopup();
-                }
-                return true;
-            case R.id.gallery:
-                List<Submission> gPosts =
-                        ((SubmissionsView) adapter.getCurrentFragment()).posts.posts;
-                if (gPosts != null && !gPosts.isEmpty()) {
-                    Intent i2 = new Intent(this, Gallery.class);
-                    i2.putExtra(
-                            "offline",
-                            ((SubmissionsView) adapter.getCurrentFragment()).posts.cached != null
-                                    ? ((SubmissionsView) adapter.getCurrentFragment())
-                                            .posts
-                                            .cached
-                                            .time
-                                    : 0L);
-                    i2.putExtra(
-                            Gallery.EXTRA_SUBREDDIT,
-                            ((SubmissionsView) adapter.getCurrentFragment()).posts.subreddit);
-                    startActivity(i2);
-                }
-                return true;
-            case R.id.search:
-                MaterialInputDialog.Builder builder =
-                        new MaterialInputDialog.Builder(this)
-                                .title(R.string.search_title)
-                                .input(
-                                        getString(R.string.search_msg),
-                                        "",
-                                        (dialog, charSequence) -> term = charSequence.toString())
-                                .neutralText(R.string.search_all)
-                                .onNeutral(
-                                        dialog -> {
-                                            Intent searchIntent =
-                                                    new Intent(SubredditView.this, Search.class);
-                                            searchIntent.putExtra(Search.EXTRA_TERM, term);
-                                            startActivity(searchIntent);
-                                        });
-
-                // Add "search current sub" if it is not frontpage/all/random
-                if (!subreddit.equalsIgnoreCase("frontpage")
-                        && !subreddit.equalsIgnoreCase("all")
-                        && !subreddit.equalsIgnoreCase("random")
-                        && !subreddit.equalsIgnoreCase("popular")
-                        && !subreddit.equals("myrandom")
-                        && !subreddit.equals("randnsfw")
-                        && !subreddit.equalsIgnoreCase("friends")
-                        && !subreddit.equalsIgnoreCase("mod")) {
-                    builder.positiveText(getString(R.string.search_subreddit, subreddit))
-                            .onPositive(
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            getOnBackPressedDispatcher().onBackPressed();
+            return true;
+        } else if (itemId == R.id.filter) {
+            FilterContentUtil.showFilterDialog(this, subreddit, this::reloadSubs);
+            return true;
+        } else if (itemId == R.id.submit) {
+            Intent i = new Intent(this, Submit.class);
+            if (canSubmit) i.putExtra(Submit.EXTRA_SUBREDDIT, subreddit);
+            startActivity(i);
+            return true;
+        } else if (itemId == R.id.action_refresh) {
+            if (adapter != null && adapter.getCurrentFragment() != null) {
+                ((SubmissionsView) adapter.getCurrentFragment()).forceRefresh();
+            }
+            return true;
+        } else if (itemId == R.id.action_sort) {
+            if (subreddit.equalsIgnoreCase("friends")) {
+                Snackbar s =
+                        Snackbar.make(
+                                findViewById(R.id.anchor),
+                                getString(R.string.friends_sort_error),
+                                Snackbar.LENGTH_SHORT);
+                LayoutUtils.showSnackbar(s);
+            } else {
+                openPopup();
+            }
+            return true;
+        } else if (itemId == R.id.gallery) {
+            List<Submission> gPosts = ((SubmissionsView) adapter.getCurrentFragment()).posts.posts;
+            if (gPosts != null && !gPosts.isEmpty()) {
+                Intent i2 = new Intent(this, Gallery.class);
+                i2.putExtra(
+                        "offline",
+                        ((SubmissionsView) adapter.getCurrentFragment()).posts.cached != null
+                                ? ((SubmissionsView) adapter.getCurrentFragment())
+                                        .posts
+                                        .cached
+                                        .time
+                                : 0L);
+                i2.putExtra(
+                        Gallery.EXTRA_SUBREDDIT,
+                        ((SubmissionsView) adapter.getCurrentFragment()).posts.subreddit);
+                startActivity(i2);
+            }
+            return true;
+        } else if (itemId == R.id.search) {
+            MaterialInputDialog.Builder builder =
+                    new MaterialInputDialog.Builder(this)
+                            .title(R.string.search_title)
+                            .input(
+                                    getString(R.string.search_msg),
+                                    "",
+                                    (dialog, charSequence) -> term = charSequence.toString())
+                            .neutralText(R.string.search_all)
+                            .onNeutral(
                                     dialog -> {
                                         Intent searchIntent =
                                                 new Intent(SubredditView.this, Search.class);
                                         searchIntent.putExtra(Search.EXTRA_TERM, term);
-                                        searchIntent.putExtra(Search.EXTRA_SUBREDDIT, subreddit);
-                                        Log.v(
-                                                LogUtil.getTag(),
-                                                "INTENT SHOWS " + term + " AND " + subreddit);
                                         startActivity(searchIntent);
                                     });
-                }
-                builder.show();
-                return true;
-            case R.id.sidebar:
-                drawerLayout.openDrawer(Gravity.RIGHT);
-                return true;
-            case R.id.hide_posts:
-                ((SubmissionsView) adapter.getCurrentFragment()).clearSeenPosts(false);
-                return true;
-            case R.id.action_shadowbox:
-                List<Submission> sPosts =
-                        ((SubmissionsView)
-                                        ((SubredditPagerAdapter) pager.getAdapter())
-                                                .getCurrentFragment())
-                                .posts
-                                .posts;
-                if (sPosts != null && !sPosts.isEmpty()) {
-                    Intent i2 = new Intent(this, Shadowbox.class);
-                    i2.putExtra(Shadowbox.EXTRA_PAGE, getCurrentPage());
-                    i2.putExtra(
-                            Shadowbox.EXTRA_SUBREDDIT,
-                            ((SubmissionsView) adapter.getCurrentFragment()).posts.subreddit);
-                    startActivity(i2);
-                }
-                return true;
-            default:
-                return false;
+
+            // Add "search current sub" if it is not frontpage/all/random
+            if (!subreddit.equalsIgnoreCase("frontpage")
+                    && !subreddit.equalsIgnoreCase("all")
+                    && !subreddit.equalsIgnoreCase("random")
+                    && !subreddit.equalsIgnoreCase("popular")
+                    && !subreddit.equals("myrandom")
+                    && !subreddit.equals("randnsfw")
+                    && !subreddit.equalsIgnoreCase("friends")
+                    && !subreddit.equalsIgnoreCase("mod")) {
+                builder.positiveText(getString(R.string.search_subreddit, subreddit))
+                        .onPositive(
+                                dialog -> {
+                                    Intent searchIntent =
+                                            new Intent(SubredditView.this, Search.class);
+                                    searchIntent.putExtra(Search.EXTRA_TERM, term);
+                                    searchIntent.putExtra(Search.EXTRA_SUBREDDIT, subreddit);
+                                    Log.v(
+                                            LogUtil.getTag(),
+                                            "INTENT SHOWS " + term + " AND " + subreddit);
+                                    startActivity(searchIntent);
+                                });
+            }
+            builder.show();
+            return true;
+        } else if (itemId == R.id.sidebar) {
+            drawerLayout.openDrawer(Gravity.RIGHT);
+            return true;
+        } else if (itemId == R.id.hide_posts) {
+            ((SubmissionsView) adapter.getCurrentFragment()).clearSeenPosts(false);
+            return true;
+        } else if (itemId == R.id.action_shadowbox) {
+            List<Submission> sPosts =
+                    ((SubmissionsView)
+                                    ((SubredditPagerAdapter) pager.getAdapter())
+                                            .getCurrentFragment())
+                            .posts
+                            .posts;
+            if (sPosts != null && !sPosts.isEmpty()) {
+                Intent i2 = new Intent(this, Shadowbox.class);
+                i2.putExtra(Shadowbox.EXTRA_PAGE, getCurrentPage());
+                i2.putExtra(
+                        Shadowbox.EXTRA_SUBREDDIT,
+                        ((SubmissionsView) adapter.getCurrentFragment()).posts.subreddit);
+                startActivity(i2);
+            }
+            return true;
+        } else {
+            return false;
         }
     }
 

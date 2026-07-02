@@ -25,22 +25,20 @@ public class SettingsFontFragment {
     }
 
     private static String getFontName(int resource) {
-        switch (resource) {
-            case R.string.font_size_huge:
-                return "Huge";
-            case R.string.font_size_larger:
-                return "Larger";
-            case R.string.font_size_large:
-                return "Large";
-            case R.string.font_size_small:
-                return "Small";
-            case R.string.font_size_smaller:
-                return "Smaller";
-            case R.string.font_size_tiny:
-                return "Tiny";
-            case R.string.font_size_medium:
-            default:
-                return "Medium";
+        if (resource == R.string.font_size_huge) {
+            return "Huge";
+        } else if (resource == R.string.font_size_larger) {
+            return "Larger";
+        } else if (resource == R.string.font_size_large) {
+            return "Large";
+        } else if (resource == R.string.font_size_small) {
+            return "Small";
+        } else if (resource == R.string.font_size_smaller) {
+            return "Smaller";
+        } else if (resource == R.string.font_size_tiny) {
+            return "Tiny";
+        } else {
+            return "Medium";
         }
     }
 

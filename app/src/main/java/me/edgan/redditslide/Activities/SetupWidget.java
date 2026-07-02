@@ -101,24 +101,22 @@ public class SetupWidget extends BaseActivity {
 
                         SubredditWidgetProvider.setSubFromid(appWidgetId, name, SetupWidget.this);
                         int theme = 0;
-                        switch (((RadioGroup) header.findViewById(R.id.theme))
-                                .getCheckedRadioButtonId()) {
-                            case R.id.dark:
-                                theme = 1;
-                                break;
-                            case R.id.light:
-                                theme = 2;
-                                break;
+                        int themeId =
+                                ((RadioGroup) header.findViewById(R.id.theme))
+                                        .getCheckedRadioButtonId();
+                        if (themeId == R.id.dark) {
+                            theme = 1;
+                        } else if (themeId == R.id.light) {
+                            theme = 2;
                         }
                         int view = 0;
-                        switch (((RadioGroup) header.findViewById(R.id.type))
-                                .getCheckedRadioButtonId()) {
-                            case R.id.big:
-                                view = 1;
-                                break;
-                            case R.id.compact:
-                                view = 2;
-                                break;
+                        int typeId =
+                                ((RadioGroup) header.findViewById(R.id.type))
+                                        .getCheckedRadioButtonId();
+                        if (typeId == R.id.big) {
+                            view = 1;
+                        } else if (typeId == R.id.compact) {
+                            view = 2;
                         }
 
                         SubredditWidgetProvider.setThemeToId(appWidgetId, theme, SetupWidget.this);

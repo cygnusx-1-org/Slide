@@ -658,12 +658,11 @@ public class Profile extends BaseActivityAnim {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case (android.R.id.home):
-                getOnBackPressedDispatcher().onBackPressed();
-                break;
-            case (R.id.category):
-                new AsyncTask<Void, Void, List<String>>() {
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            getOnBackPressedDispatcher().onBackPressed();
+        } else if (itemId == R.id.category) {
+            new AsyncTask<Void, Void, List<String>>() {
                     Dialog d;
 
                     @Override
@@ -733,9 +732,8 @@ public class Profile extends BaseActivityAnim {
                         }
                     }
                 }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                break;
-            case (R.id.info):
-                if (account != null && trophyCase != null) {
+        } else if (itemId == R.id.info) {
+            if (account != null && trophyCase != null) {
                     LayoutInflater inflater = getLayoutInflater();
                     final View dialoglayout = inflater.inflate(R.layout.colorprofile, null);
                     final TextView title = dialoglayout.findViewById(R.id.title);
@@ -1268,16 +1266,14 @@ public class Profile extends BaseActivityAnim {
                                     })
                             .setView(dialoglayout)
                             .show();
-                }
-                return true;
-
-            case (R.id.search):
-                openSearchDialog();
-                return true;
-
-            case (R.id.sort):
-                openPopup();
-                return true;
+            }
+            return true;
+        } else if (itemId == R.id.search) {
+            openSearchDialog();
+            return true;
+        } else if (itemId == R.id.sort) {
+            openPopup();
+            return true;
         }
         return false;
     }

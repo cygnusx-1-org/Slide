@@ -556,22 +556,22 @@ public class MainActivity extends BaseActivity
             posts = ((SubmissionsView) adapter.getCurrentFragment()).posts.posts;
         }
 
-        switch (item.getItemId()) {
-            case R.id.filter:
-                FilterContentUtil.showFilterDialog(this, shouldLoad, this::reloadSubs);
-                return true;
-            case R.id.sidebar:
-                if (!subreddit.equals("all")
-                        && !subreddit.equals("frontpage")
-                        && !subreddit.contains(".")
-                        && !subreddit.contains("+")
-                        && !subreddit.contains("/m/")) {
-                    drawerLayout.openDrawer(GravityCompat.END);
-                } else {
-                    Toast.makeText(this, R.string.sidebar_notfound, Toast.LENGTH_SHORT).show();
-                }
-                return true;
-            case R.id.night:
+        int itemId = item.getItemId();
+        if (itemId == R.id.filter) {
+            FilterContentUtil.showFilterDialog(this, shouldLoad, this::reloadSubs);
+            return true;
+        } else if (itemId == R.id.sidebar) {
+            if (!subreddit.equals("all")
+                    && !subreddit.equals("frontpage")
+                    && !subreddit.contains(".")
+                    && !subreddit.contains("+")
+                    && !subreddit.contains("/m/")) {
+                drawerLayout.openDrawer(GravityCompat.END);
+            } else {
+                Toast.makeText(this, R.string.sidebar_notfound, Toast.LENGTH_SHORT).show();
+            }
+            return true;
+        } else if (itemId == R.id.night) {
                 {
                     LayoutInflater inflater = getLayoutInflater();
                     final View dialoglayout = inflater.inflate(R.layout.choosethemesmall, null);
@@ -617,26 +617,26 @@ public class MainActivity extends BaseActivity
                                         });
                     }
                 }
-                return true;
-            case R.id.action_refresh:
-                if (adapter != null && adapter.getCurrentFragment() != null) {
-                    ((SubmissionsView) adapter.getCurrentFragment()).forceRefresh();
-                }
-                return true;
-            case R.id.action_sort:
-                if (subreddit.equalsIgnoreCase("friends")) {
-                    Snackbar s =
-                            Snackbar.make(
-                                    findViewById(R.id.anchor),
-                                    getString(R.string.friends_sort_error),
-                                    Snackbar.LENGTH_SHORT);
-                    LayoutUtils.showSnackbar(s);
-                } else {
-                    subredditSortController.openPopup();
-                }
-                return true;
-            case R.id.search:
-                final Context contextThemeWrapper = new ContextThemeWrapper(this,
+            return true;
+        } else if (itemId == R.id.action_refresh) {
+            if (adapter != null && adapter.getCurrentFragment() != null) {
+                ((SubmissionsView) adapter.getCurrentFragment()).forceRefresh();
+            }
+            return true;
+        } else if (itemId == R.id.action_sort) {
+            if (subreddit.equalsIgnoreCase("friends")) {
+                Snackbar s =
+                        Snackbar.make(
+                                findViewById(R.id.anchor),
+                                getString(R.string.friends_sort_error),
+                                Snackbar.LENGTH_SHORT);
+                LayoutUtils.showSnackbar(s);
+            } else {
+                subredditSortController.openPopup();
+            }
+            return true;
+        } else if (itemId == R.id.search) {
+            final Context contextThemeWrapper = new ContextThemeWrapper(this,
                         new ColorPreferences(this).getFontStyle().getBaseId());
                 final String currentSubreddit = usedArray.get(Reddit.currentPosition);
 
@@ -739,79 +739,77 @@ public class MainActivity extends BaseActivity
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(accentColor);
                 dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setTextColor(accentColor);
 
-                return true;
-            case R.id.save:
-                if (adapter != null && adapter.getCurrentFragment() != null &&
-                    adapter.getCurrentFragment() instanceof SubmissionsView &&
-                    ((SubmissionsView) adapter.getCurrentFragment()).posts != null &&
-                    ((SubmissionsView) adapter.getCurrentFragment()).posts.posts != null) {
-                    saveOffline(
-                            ((SubmissionsView) adapter.getCurrentFragment()).posts.posts,
-                            ((SubmissionsView) adapter.getCurrentFragment()).posts.subreddit);
-                }
-                return true;
-            case R.id.hide_posts:
-                if (adapter != null && adapter.getCurrentFragment() != null &&
-                    adapter.getCurrentFragment() instanceof SubmissionsView) {
-                    ((SubmissionsView) adapter.getCurrentFragment()).clearSeenPosts(false);
-                }
-                return true;
-            case R.id.share:
-                Reddit.defaultShareText(
-                        "Slide for Reddit",
-                        "https://play.google.com/store/apps/details?id=me.edgan.redditslide",
-                        MainActivity.this);
-                return true;
-            case R.id.submit:
-                {
-                    Intent i = new Intent(MainActivity.this, Submit.class);
-                    i.putExtra(Submit.EXTRA_SUBREDDIT, subreddit);
-                    startActivity(i);
-                }
-                return true;
-            case R.id.gallery:
-                if (posts != null && !posts.isEmpty() && adapter != null &&
-                    adapter.getCurrentFragment() != null &&
-                    adapter.getCurrentFragment() instanceof SubmissionsView &&
-                    ((SubmissionsView) adapter.getCurrentFragment()).posts != null) {
-                    Intent i2 = new Intent(this, Gallery.class);
-                    i2.putExtra(
-                            "offline",
-                            ((SubmissionsView) adapter.getCurrentFragment()).posts.cached != null
-                                    ? ((SubmissionsView) adapter.getCurrentFragment())
-                                            .posts
-                                            .cached
-                                            .time
-                                    : 0L);
-                    i2.putExtra(
-                            Gallery.EXTRA_SUBREDDIT,
-                            ((SubmissionsView) adapter.getCurrentFragment()).posts.subreddit);
-                    startActivity(i2);
-                }
-                return true;
-            case R.id.action_shadowbox:
-                if (posts != null && !posts.isEmpty() && adapter != null &&
-                    adapter.getCurrentFragment() != null &&
-                    adapter.getCurrentFragment() instanceof SubmissionsView &&
-                    ((SubmissionsView) adapter.getCurrentFragment()).posts != null) {
-                    Intent i2 = new Intent(this, Shadowbox.class);
-                    i2.putExtra(Shadowbox.EXTRA_PAGE, getCurrentPage());
-                    i2.putExtra(
-                            "offline",
-                            ((SubmissionsView) adapter.getCurrentFragment()).posts.cached != null
-                                    ? ((SubmissionsView) adapter.getCurrentFragment())
-                                            .posts
-                                            .cached
-                                            .time
-                                    : 0L);
-                    i2.putExtra(
-                            Shadowbox.EXTRA_SUBREDDIT,
-                            ((SubmissionsView) adapter.getCurrentFragment()).posts.subreddit);
-                    startActivity(i2);
-                }
-                return true;
-            default:
-                return false;
+            return true;
+        } else if (itemId == R.id.save) {
+            if (adapter != null && adapter.getCurrentFragment() != null &&
+                adapter.getCurrentFragment() instanceof SubmissionsView &&
+                ((SubmissionsView) adapter.getCurrentFragment()).posts != null &&
+                ((SubmissionsView) adapter.getCurrentFragment()).posts.posts != null) {
+                saveOffline(
+                        ((SubmissionsView) adapter.getCurrentFragment()).posts.posts,
+                        ((SubmissionsView) adapter.getCurrentFragment()).posts.subreddit);
+            }
+            return true;
+        } else if (itemId == R.id.hide_posts) {
+            if (adapter != null && adapter.getCurrentFragment() != null &&
+                adapter.getCurrentFragment() instanceof SubmissionsView) {
+                ((SubmissionsView) adapter.getCurrentFragment()).clearSeenPosts(false);
+            }
+            return true;
+        } else if (itemId == R.id.share) {
+            Reddit.defaultShareText(
+                    "Slide for Reddit",
+                    "https://play.google.com/store/apps/details?id=me.edgan.redditslide",
+                    MainActivity.this);
+            return true;
+        } else if (itemId == R.id.submit) {
+            Intent i = new Intent(MainActivity.this, Submit.class);
+            i.putExtra(Submit.EXTRA_SUBREDDIT, subreddit);
+            startActivity(i);
+            return true;
+        } else if (itemId == R.id.gallery) {
+            if (posts != null && !posts.isEmpty() && adapter != null &&
+                adapter.getCurrentFragment() != null &&
+                adapter.getCurrentFragment() instanceof SubmissionsView &&
+                ((SubmissionsView) adapter.getCurrentFragment()).posts != null) {
+                Intent i2 = new Intent(this, Gallery.class);
+                i2.putExtra(
+                        "offline",
+                        ((SubmissionsView) adapter.getCurrentFragment()).posts.cached != null
+                                ? ((SubmissionsView) adapter.getCurrentFragment())
+                                        .posts
+                                        .cached
+                                        .time
+                                : 0L);
+                i2.putExtra(
+                        Gallery.EXTRA_SUBREDDIT,
+                        ((SubmissionsView) adapter.getCurrentFragment()).posts.subreddit);
+                startActivity(i2);
+            }
+            return true;
+        } else if (itemId == R.id.action_shadowbox) {
+            if (posts != null && !posts.isEmpty() && adapter != null &&
+                adapter.getCurrentFragment() != null &&
+                adapter.getCurrentFragment() instanceof SubmissionsView &&
+                ((SubmissionsView) adapter.getCurrentFragment()).posts != null) {
+                Intent i2 = new Intent(this, Shadowbox.class);
+                i2.putExtra(Shadowbox.EXTRA_PAGE, getCurrentPage());
+                i2.putExtra(
+                        "offline",
+                        ((SubmissionsView) adapter.getCurrentFragment()).posts.cached != null
+                                ? ((SubmissionsView) adapter.getCurrentFragment())
+                                        .posts
+                                        .cached
+                                        .time
+                                : 0L);
+                i2.putExtra(
+                        Shadowbox.EXTRA_SUBREDDIT,
+                        ((SubmissionsView) adapter.getCurrentFragment()).posts.subreddit);
+                startActivity(i2);
+            }
+            return true;
+        } else {
+            return false;
         }
     }
 

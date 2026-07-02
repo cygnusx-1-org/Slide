@@ -72,25 +72,23 @@ public class SettingsModerationFragment {
                             .setEnabled(SettingValues.toolboxEnabled);
                     popupMenu.setOnMenuItemClickListener(
                             item -> {
-                                switch (item.getItemId()) {
-                                    case R.id.slide:
-                                        setModRemovalReasonType(
-                                                removalReasonsCurrentView,
-                                                RemovalReasonType.SLIDE.ordinal(),
-                                                R.string.settings_mod_removal_slide);
-                                        break;
-                                    case R.id.toolbox:
-                                        setModRemovalReasonType(
-                                                removalReasonsCurrentView,
-                                                RemovalReasonType.TOOLBOX.ordinal(),
-                                                R.string.settings_mod_removal_toolbox);
-                                        break;
-                                        // For implementing reddit native removal reasons:
-                                        /*case R.id.reddit:
-                                        setModRemovalReasonType(removalReasonsCurrentView,
-                                                RemovalReasonType.REDDIT.ordinal(), R.string.settings_mod_removal_reddit);
-                                        break;*/
+                                int itemId = item.getItemId();
+                                if (itemId == R.id.slide) {
+                                    setModRemovalReasonType(
+                                            removalReasonsCurrentView,
+                                            RemovalReasonType.SLIDE.ordinal(),
+                                            R.string.settings_mod_removal_slide);
+                                } else if (itemId == R.id.toolbox) {
+                                    setModRemovalReasonType(
+                                            removalReasonsCurrentView,
+                                            RemovalReasonType.TOOLBOX.ordinal(),
+                                            R.string.settings_mod_removal_toolbox);
                                 }
+                                // For implementing reddit native removal reasons:
+                                /*else if (itemId == R.id.reddit) {
+                                    setModRemovalReasonType(removalReasonsCurrentView,
+                                            RemovalReasonType.REDDIT.ordinal(), R.string.settings_mod_removal_reddit);
+                                }*/
                                 return true;
                             });
                     popupMenu.show();
@@ -147,31 +145,27 @@ public class SettingsModerationFragment {
                             .inflate(R.menu.settings_toolbox_message, popupMenu.getMenu());
                     popupMenu.setOnMenuItemClickListener(
                             item -> {
-                                switch (item.getItemId()) {
-                                    case R.id.comment:
-                                        setToolboxRemovalMessageType(
-                                                removalMessageCurrentView,
-                                                ToolboxRemovalMessageType.COMMENT.ordinal(),
-                                                R.string.toolbox_removal_comment);
-                                        break;
-                                    case R.id.pm:
-                                        setToolboxRemovalMessageType(
-                                                removalMessageCurrentView,
-                                                ToolboxRemovalMessageType.PM.ordinal(),
-                                                R.string.toolbox_removal_pm);
-                                        break;
-                                    case R.id.both:
-                                        setToolboxRemovalMessageType(
-                                                removalMessageCurrentView,
-                                                ToolboxRemovalMessageType.BOTH.ordinal(),
-                                                R.string.toolbox_removal_both);
-                                        break;
-                                    case R.id.none:
-                                        setToolboxRemovalMessageType(
-                                                removalMessageCurrentView,
-                                                ToolboxRemovalMessageType.NONE.ordinal(),
-                                                R.string.toolbox_removal_none);
-                                        break;
+                                int itemId = item.getItemId();
+                                if (itemId == R.id.comment) {
+                                    setToolboxRemovalMessageType(
+                                            removalMessageCurrentView,
+                                            ToolboxRemovalMessageType.COMMENT.ordinal(),
+                                            R.string.toolbox_removal_comment);
+                                } else if (itemId == R.id.pm) {
+                                    setToolboxRemovalMessageType(
+                                            removalMessageCurrentView,
+                                            ToolboxRemovalMessageType.PM.ordinal(),
+                                            R.string.toolbox_removal_pm);
+                                } else if (itemId == R.id.both) {
+                                    setToolboxRemovalMessageType(
+                                            removalMessageCurrentView,
+                                            ToolboxRemovalMessageType.BOTH.ordinal(),
+                                            R.string.toolbox_removal_both);
+                                } else if (itemId == R.id.none) {
+                                    setToolboxRemovalMessageType(
+                                            removalMessageCurrentView,
+                                            ToolboxRemovalMessageType.NONE.ordinal(),
+                                            R.string.toolbox_removal_none);
                                 }
                                 return true;
                             });
