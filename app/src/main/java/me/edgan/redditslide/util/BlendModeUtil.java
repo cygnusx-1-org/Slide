@@ -1,18 +1,32 @@
 package me.edgan.redditslide.util;
 
+import android.content.Context;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.BlendModeColorFilterCompat;
 import androidx.core.graphics.BlendModeCompat;
 
 import java.util.List;
 
 public class BlendModeUtil {
+    /** Loads a drawable and tints it SRC_ATOP — the mod bottom-sheet icon pattern. */
+    public static Drawable getTintedDrawable(
+            @NonNull final Context context,
+            @DrawableRes final int drawableRes,
+            @ColorInt final int color) {
+        final Drawable drawable =
+                ResourcesCompat.getDrawable(context.getResources(), drawableRes, null);
+        tintDrawable(drawable, color, BlendModeCompat.SRC_ATOP);
+        return drawable;
+    }
+
     private static void tintDrawable(
             @NonNull final Drawable drawable,
             @ColorInt final int color,

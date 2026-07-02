@@ -4,13 +4,10 @@ import static me.edgan.redditslide.Notifications.ImageDownloadNotificationServic
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -41,7 +38,6 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import me.edgan.redditslide.Adapters.ImageGridAdapter;
 import me.edgan.redditslide.Fragments.BlankFragment;
@@ -59,8 +55,6 @@ import me.edgan.redditslide.Views.SubsamplingScaleImageView;
 import me.edgan.redditslide.Views.ToolbarColorizeHelper;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.FontPreferences;
-import me.edgan.redditslide.util.BlendModeUtil;
-import me.edgan.redditslide.util.BottomSheet;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.GifUtils;
 import me.edgan.redditslide.util.ImageSaveUtils;
@@ -68,7 +62,6 @@ import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
-import me.edgan.redditslide.util.ShareUtil;
 import me.edgan.redditslide.util.StorageUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 
@@ -651,60 +644,8 @@ public class AlbumPager extends BaseSaveActivity {
 
     public void showBottomSheetImage(
             final String contentUrl, final boolean isGif, final int index) {
-
-        int[] attrs = new int[] {R.attr.tintColor};
-        TypedArray ta = obtainStyledAttributes(attrs);
-
-        int color = ta.getColor(0, Color.WHITE);
-        Drawable external = getResources().getDrawable(R.drawable.ic_open_in_browser);
-        Drawable share = getResources().getDrawable(R.drawable.ic_share);
-        Drawable image = getResources().getDrawable(R.drawable.ic_image);
-        Drawable save = getResources().getDrawable(R.drawable.ic_download);
-
-        final List<Drawable> drawableSet = Arrays.asList(external, share, image, save);
-        BlendModeUtil.tintDrawablesAsSrcAtop(drawableSet, color);
-
-        ta.recycle();
-        BottomSheet.Builder b = new BottomSheet.Builder(this).title(contentUrl);
-
-        b.sheet(2, external, getString(R.string.open_externally));
-        b.sheet(5, share, getString(R.string.submission_link_share));
-        if (!isGif) b.sheet(3, image, getString(R.string.share_image));
-        String lcUrl = contentUrl == null ? "" : contentUrl.toLowerCase();
-        int q = lcUrl.indexOf('?');
-        String path = q < 0 ? lcUrl : lcUrl.substring(0, q);
-        boolean isVideo = path.endsWith(".mp4") || lcUrl.contains("format=mp4");
-        b.sheet(4, save, getString(isVideo ? R.string.submission_save_video : R.string.submission_save_image));
-        b.listener(
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case (2):
-                                {
-                                    LinkUtil.openExternally(contentUrl);
-                                }
-                                break;
-                            case (3):
-                                {
-                                    ShareUtil.shareImage(contentUrl, AlbumPager.this);
-                                }
-                                break;
-                            case (5):
-                                {
-                                    Reddit.defaultShareText("", contentUrl, AlbumPager.this);
-                                }
-                                break;
-                            case (4):
-                                {
-                                    doImageSave(isGif, contentUrl, index);
-                                }
-                                break;
-                        }
-                    }
-                });
-
-        b.show();
+        LinkUtil.showImageLinkBottomSheet(
+                this, contentUrl, isGif, () -> doImageSave(isGif, contentUrl, index));
     }
 
     public void doImageSave(boolean isGif, String contentUrl, int index) {

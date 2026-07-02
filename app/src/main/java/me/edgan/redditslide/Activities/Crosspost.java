@@ -46,7 +46,7 @@ import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.util.DialogUtil;
-import me.edgan.redditslide.util.HttpUtil;
+import me.edgan.redditslide.util.FlairUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
@@ -59,7 +59,6 @@ import net.dean.jraw.http.RestResponse;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Subreddit;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 
 /** Created by ccrama on 3/5/2015. */
 public class Crosspost extends BaseActivity {
@@ -505,24 +504,7 @@ public class Crosspost extends BaseActivity {
         new AsyncTask<Void, Void, JsonArray>() {
             @Override
             protected JsonArray doInBackground(Void... params) {
-                HttpRequest r =
-                        Authentication.reddit
-                                .request()
-                                .path("/r/" + subreddit + "/api/link_flair_v2.json")
-                                .get()
-                                .build();
-
-                Request request =
-                        new Request.Builder()
-                                .headers(
-                                        r.getHeaders()
-                                                .newBuilder()
-                                                .set("User-Agent", "Slide flair search")
-                                                .build())
-                                .url(r.getUrl())
-                                .build();
-
-                return HttpUtil.getJsonArray(client, gson, request);
+                return FlairUtil.fetchLinkFlairs(client, gson, subreddit);
             }
 
             @Override

@@ -89,6 +89,7 @@ import net.dean.jraw.managers.ModerationManager;
 import net.dean.jraw.models.Comment;
 import net.dean.jraw.models.CommentNode;
 import net.dean.jraw.models.DistinguishedStatus;
+import net.dean.jraw.models.PublicContribution;
 import net.dean.jraw.models.Ruleset;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.SubredditRule;
@@ -108,7 +109,7 @@ public class CommentAdapterHelper {
         TypedArray ta = mContext.obtainStyledAttributes(attrs);
 
         int color = ta.getColor(0, Color.WHITE);
-        Drawable profile = mContext.getResources().getDrawable(R.drawable.ic_account_circle);
+        final Drawable profile = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_account_circle, color);
         Drawable saved = mContext.getResources().getDrawable(R.drawable.ic_star);
         Drawable gild = mContext.getResources().getDrawable(R.drawable.ic_stars);
         Drawable copy = mContext.getResources().getDrawable(R.drawable.ic_content_copy);
@@ -116,7 +117,7 @@ public class CommentAdapterHelper {
         Drawable parent = mContext.getResources().getDrawable(R.drawable.ic_forum);
         Drawable replies = mContext.getResources().getDrawable(R.drawable.ic_notifications);
         Drawable permalink = mContext.getResources().getDrawable(R.drawable.ic_link);
-        Drawable report = mContext.getResources().getDrawable(R.drawable.ic_report);
+        final Drawable report = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_report, color);
         Drawable viewmode = mContext.getResources().getDrawable(R.drawable.ic_visibility);
         Drawable translate = mContext.getResources().getDrawable(R.drawable.ic_translate);
         Drawable readAloud = mContext.getResources().getDrawable(R.drawable.ic_volume_on);
@@ -855,34 +856,16 @@ final AlertDialog reportDialog =
         int color = ta.getColor(0, Color.WHITE);
         Drawable profile = mContext.getResources().getDrawable(R.drawable.ic_account_circle);
         final Drawable report = mContext.getResources().getDrawable(R.drawable.ic_report);
-        final Drawable approve = mContext.getResources().getDrawable(R.drawable.ic_thumb_up);
-        final Drawable nsfw = mContext.getResources().getDrawable(R.drawable.ic_visibility_off);
-        final Drawable pin = mContext.getResources().getDrawable(R.drawable.ic_bookmark_border);
-        final Drawable distinguish = mContext.getResources().getDrawable(R.drawable.ic_star);
-        final Drawable remove = mContext.getResources().getDrawable(R.drawable.ic_close);
-        final Drawable ban = mContext.getResources().getDrawable(R.drawable.ic_gavel);
-        final Drawable spam = mContext.getResources().getDrawable(R.drawable.ic_flag);
-        final Drawable note = mContext.getResources().getDrawable(R.drawable.ic_note);
-        final Drawable removeReason =
-                mContext.getResources().getDrawable(R.drawable.ic_announcement);
-        final Drawable lock = mContext.getResources().getDrawable(R.drawable.ic_lock);
-
-        // Tint drawables
-        final List<Drawable> drawableSet =
-                Arrays.asList(
-                        profile,
-                        report,
-                        approve,
-                        nsfw,
-                        distinguish,
-                        remove,
-                        pin,
-                        ban,
-                        spam,
-                        note,
-                        removeReason,
-                        lock);
-        BlendModeUtil.tintDrawablesAsSrcAtop(drawableSet, color);
+        final Drawable approve = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_thumb_up, color);
+        final Drawable nsfw = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_visibility_off, color);
+        final Drawable pin = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_bookmark_border, color);
+        final Drawable distinguish = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_star, color);
+        final Drawable remove = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_close, color);
+        final Drawable ban = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_gavel, color);
+        final Drawable spam = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_flag, color);
+        final Drawable note = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_note, color);
+        final Drawable removeReason = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_announcement, color);
+        final Drawable lock = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_lock, color);
 
         ta.recycle();
 
@@ -1042,10 +1025,31 @@ final AlertDialog reportDialog =
         b.show();
     }
 
+    /** getAuthor()/getSubredditName() are declared per subtype in JRAW, not on the base class. */
+    private static String authorOf(PublicContribution s) {
+        if (s instanceof Submission) {
+            return ((Submission) s).getAuthor();
+        } else if (s instanceof Comment) {
+            return ((Comment) s).getAuthor();
+        } else {
+            return "";
+        }
+    }
+
+    private static String subredditOf(PublicContribution s) {
+        if (s instanceof Submission) {
+            return ((Submission) s).getSubredditName();
+        } else if (s instanceof Comment) {
+            return ((Comment) s).getSubredditName();
+        } else {
+            return "";
+        }
+    }
+
     public static void showBan(
             final Context mContext,
             final View mToolbar,
-            final Comment submission,
+            final PublicContribution submission,
             String rs,
             String nt,
             String msg,
@@ -1081,7 +1085,7 @@ final AlertDialog reportDialog =
 
         DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                 .setView(l)
-                .setTitle(mContext.getString(R.string.mod_ban_title, submission.getAuthor()))
+                .setTitle(mContext.getString(R.string.mod_ban_title, authorOf(submission)))
                 .setCancelable(true)
                 .setPositiveButton(
                         R.string.mod_btn_ban,
@@ -1127,16 +1131,16 @@ final AlertDialog reportDialog =
                                             if (timeText.isEmpty()) {
                                                 new ModerationManager(Authentication.reddit)
                                                         .banUserPermanently(
-                                                                submission.getSubredditName(),
-                                                                submission.getAuthor(),
+                                                                subredditOf(submission),
+                                                                authorOf(submission),
                                                                 reasonText,
                                                                 n,
                                                                 m);
                                             } else {
                                                 new ModerationManager(Authentication.reddit)
                                                         .banUser(
-                                                                submission.getSubredditName(),
-                                                                submission.getAuthor(),
+                                                                subredditOf(submission),
+                                                                authorOf(submission),
                                                                 reasonText,
                                                                 n,
                                                                 m,
@@ -1215,7 +1219,7 @@ final AlertDialog reportDialog =
                                             LayoutUtils.showSnackbar(s);
                                         }
                                     }
-                                }.execute();
+                                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                             }
                         })
                 .setNegativeButton(R.string.btn_cancel, null)
@@ -1646,29 +1650,18 @@ final AlertDialog reportDialog =
         return removedString;
     }
 
-    public static Spannable getScoreString(
-            Comment comment,
-            Context mContext,
-            CommentViewHolder holder,
-            Submission submission,
-            CommentAdapter adapter) {
-        final String spacer =
-                " " + mContext.getString(R.string.submission_properties_seperator_comments) + " ";
-        SpannableStringBuilder titleString =
-                new SpannableStringBuilder("\u200B"); // zero width space to fix first span height
-        SpannableStringBuilder author = new SpannableStringBuilder(comment.getAuthor());
-        final int authorcolor = Palette.getFontColorUser(comment.getAuthor());
 
-        author.setSpan(
-                new TypefaceSpan("sans-serif-condensed"),
-                0,
-                author.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        author.setSpan(
-                new StyleSpan(Typeface.BOLD),
-                0,
-                author.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    /**
+     * Applies the author badge to a comment author span: distinguished status
+     * (admin/special/moderator), the logged-in user's own comments, the submission OP (when a
+     * submission is given), or the user's custom color as a fallback. Mutates {@code author}.
+     */
+    public static void styleAuthorBadge(
+            Context mContext,
+            SpannableStringBuilder author,
+            Comment comment,
+            Submission submission) {
+        final int authorcolor = Palette.getFontColorUser(comment.getAuthor());
         if (comment.getDistinguishedStatus() == DistinguishedStatus.ADMIN) {
             author.replace(0, author.length(), " " + comment.getAuthor() + " ");
             author.setSpan(
@@ -1723,6 +1716,31 @@ final AlertDialog reportDialog =
                     author.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
+    }
+
+    public static Spannable getScoreString(
+            Comment comment,
+            Context mContext,
+            CommentViewHolder holder,
+            Submission submission,
+            CommentAdapter adapter) {
+        final String spacer =
+                " " + mContext.getString(R.string.submission_properties_seperator_comments) + " ";
+        SpannableStringBuilder titleString =
+                new SpannableStringBuilder("\u200B"); // zero width space to fix first span height
+        SpannableStringBuilder author = new SpannableStringBuilder(comment.getAuthor());
+
+        author.setSpan(
+                new TypefaceSpan("sans-serif-condensed"),
+                0,
+                author.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        author.setSpan(
+                new StyleSpan(Typeface.BOLD),
+                0,
+                author.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        styleAuthorBadge(mContext, author, comment, submission);
 
         titleString.append(author);
         titleString.append(spacer);

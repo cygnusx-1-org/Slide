@@ -57,6 +57,7 @@ import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.models.Comment;
 import net.dean.jraw.models.CommentNode;
 import net.dean.jraw.models.DistinguishedStatus;
+import net.dean.jraw.models.PublicContribution;
 import net.dean.jraw.models.Ruleset;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.SubredditRule;
@@ -109,302 +110,7 @@ public class PopulateShadowboxInfo {
                     .setText(String.format(Locale.getDefault(), "%d", s.getScore()));
 
             if (extras) {
-                final ImageView downvotebutton = rootView.findViewById(R.id.downvote);
-                final ImageView upvotebutton = rootView.findViewById(R.id.upvote);
-
-                if (s.isArchived() || s.isLocked()) {
-                    downvotebutton.setVisibility(View.GONE);
-                    upvotebutton.setVisibility(View.GONE);
-                } else if (Authentication.isLoggedIn && Authentication.didOnline) {
-                    if (SettingValues.actionbarVisible
-                            && downvotebutton.getVisibility() != View.VISIBLE) {
-                        downvotebutton.setVisibility(View.VISIBLE);
-                        upvotebutton.setVisibility(View.VISIBLE);
-                    }
-                    switch (ActionStates.getVoteDirection(s)) {
-                        case UPVOTE:
-                            {
-                                ((TextView) rootView.findViewById(R.id.score))
-                                        .setTextColor(
-                                                ContextCompat.getColor(c, R.color.md_orange_500));
-                                BlendModeUtil.tintImageViewAsSrcAtop(
-                                        upvotebutton,
-                                        ContextCompat.getColor(c, R.color.md_orange_500));
-                                ((TextView) rootView.findViewById(R.id.score))
-                                        .setTypeface(null, Typeface.BOLD);
-                                ((TextView) rootView.findViewById(R.id.score))
-                                        .setText(
-                                                String.format(
-                                                        Locale.getDefault(),
-                                                        "%d",
-                                                        (s.getScore()
-                                                                + ((s.getAuthor()
-                                                                                .equals(
-                                                                                        Authentication
-                                                                                                .name))
-                                                                        ? 0
-                                                                        : 1))));
-                                BlendModeUtil.tintImageViewAsSrcAtop(downvotebutton, Color.WHITE);
-                                break;
-                            }
-                        case DOWNVOTE:
-                            {
-                                ((TextView) rootView.findViewById(R.id.score))
-                                        .setTextColor(
-                                                ContextCompat.getColor(c, R.color.md_blue_500));
-                                BlendModeUtil.tintImageViewAsSrcAtop(
-                                        downvotebutton,
-                                        ContextCompat.getColor(c, R.color.md_blue_500));
-                                ((TextView) rootView.findViewById(R.id.score))
-                                        .setTypeface(null, Typeface.BOLD);
-                                ((TextView) rootView.findViewById(R.id.score))
-                                        .setText(
-                                                String.format(
-                                                        Locale.getDefault(),
-                                                        "%d",
-                                                        (s.getScore()
-                                                                + ((s.getAuthor()
-                                                                                .equals(
-                                                                                        Authentication
-                                                                                                .name))
-                                                                        ? 0
-                                                                        : -1))));
-                                BlendModeUtil.tintImageViewAsSrcAtop(upvotebutton, Color.WHITE);
-                                break;
-                            }
-                        case NO_VOTE:
-                            {
-                                ((TextView) rootView.findViewById(R.id.score))
-                                        .setTextColor(
-                                                ((TextView) rootView.findViewById(R.id.comments))
-                                                        .getCurrentTextColor());
-                                ((TextView) rootView.findViewById(R.id.score))
-                                        .setText(
-                                                String.format(
-                                                        Locale.getDefault(), "%d", s.getScore()));
-                                ((TextView) rootView.findViewById(R.id.score))
-                                        .setTypeface(null, Typeface.NORMAL);
-                                final List<ImageView> imageViewSet =
-                                        Arrays.asList(downvotebutton, upvotebutton);
-                                BlendModeUtil.tintImageViewsAsSrcAtop(imageViewSet, Color.WHITE);
-                                break;
-                            }
-                    }
-                }
-                final ImageView save = (ImageView) rootView.findViewById(R.id.save);
-                if (Authentication.isLoggedIn && Authentication.didOnline) {
-                    if (ActionStates.isSaved(s)) {
-                        BlendModeUtil.tintImageViewAsSrcAtop(
-                                save, ContextCompat.getColor(c, R.color.md_amber_500));
-                    } else {
-                        BlendModeUtil.tintImageViewAsSrcAtop(save, Color.WHITE);
-                    }
-                    save.setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-
-                                    new AsyncTask<Void, Void, Void>() {
-                                        @Override
-                                        protected Void doInBackground(Void... params) {
-                                            try {
-                                                if (ActionStates.isSaved(s)) {
-                                                    new AccountManager(Authentication.reddit)
-                                                            .unsave(s);
-                                                    ActionStates.setSaved(s, false);
-                                                } else {
-                                                    new AccountManager(Authentication.reddit)
-                                                            .save(s);
-                                                    ActionStates.setSaved(s, true);
-                                                }
-                                            } catch (ApiException | RuntimeException e) {
-                                                LogUtil.e(e, "PopulateShadowboxInfo.doInBackground failed");
-                                            }
-
-                                            return null;
-                                        }
-
-                                        @Override
-                                        protected void onPostExecute(Void aVoid) {
-                                            ((SlidingUpPanelLayout)
-                                                            rootView.findViewById(
-                                                                    R.id.sliding_layout))
-                                                    .setPanelState(
-                                                            SlidingUpPanelLayout.PanelState
-                                                                    .COLLAPSED);
-
-                                            if (ActionStates.isSaved(s)) {
-                                                BlendModeUtil.tintImageViewAsSrcAtop(
-                                                        save,
-                                                        ContextCompat.getColor(
-                                                                c, R.color.md_amber_500));
-                                                AnimatorUtil.setFlashAnimation(
-                                                        rootView,
-                                                        save,
-                                                        ContextCompat.getColor(
-                                                                c, R.color.md_amber_500));
-                                            } else {
-                                                BlendModeUtil.tintImageViewAsSrcAtop(
-                                                        save, Color.WHITE);
-                                            }
-                                        }
-                                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                                }
-                            });
-                }
-
-                if (!Authentication.isLoggedIn || !Authentication.didOnline) {
-                    save.setVisibility(View.GONE);
-                }
-                try {
-                    final TextView points = rootView.findViewById(R.id.score);
-                    final TextView comments = rootView.findViewById(R.id.comments);
-                    if (Authentication.isLoggedIn && Authentication.didOnline) {
-                        {
-                            downvotebutton.setOnClickListener(
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            ((SlidingUpPanelLayout)
-                                                            rootView.findViewById(
-                                                                    R.id.sliding_layout))
-                                                    .setPanelState(
-                                                            SlidingUpPanelLayout.PanelState
-                                                                    .COLLAPSED);
-
-                                            if (SettingValues.storeHistory) {
-                                                if (!s.isNsfw() || SettingValues.storeNSFWHistory) {
-                                                    HasSeen.addSeen(s.getFullName());
-                                                }
-                                            }
-                                            if (ActionStates.getVoteDirection(s)
-                                                    != VoteDirection
-                                                            .DOWNVOTE) { // has not been downvoted
-                                                points.setTextColor(
-                                                        ContextCompat.getColor(
-                                                                c, R.color.md_blue_500));
-                                                BlendModeUtil.tintImageViewAsSrcAtop(
-                                                        downvotebutton,
-                                                        ContextCompat.getColor(
-                                                                c, R.color.md_blue_500));
-                                                BlendModeUtil.tintImageViewAsSrcAtop(
-                                                        upvotebutton, Color.WHITE);
-
-                                                AnimatorUtil.setFlashAnimation(
-                                                        rootView,
-                                                        downvotebutton,
-                                                        ContextCompat.getColor(
-                                                                c, R.color.md_blue_500));
-                                                ((TextView) rootView.findViewById(R.id.score))
-                                                        .setTypeface(null, Typeface.BOLD);
-                                                final int downvoteScore =
-                                                        (s.getScore() == 0)
-                                                                ? 0
-                                                                : s.getScore()
-                                                                        - 1; // if a post is at 0
-                                                // votes, keep it at 0
-                                                // when downvoting
-                                                ((TextView) rootView.findViewById(R.id.score))
-                                                        .setText(
-                                                                String.format(
-                                                                        Locale.getDefault(),
-                                                                        "%d",
-                                                                        downvoteScore));
-                                                new Vote(false, points, c).execute(s);
-                                                ActionStates.setVoteDirection(
-                                                        s, VoteDirection.DOWNVOTE);
-                                            } else {
-                                                points.setTextColor(comments.getCurrentTextColor());
-                                                new Vote(points, c).execute(s);
-                                                ((TextView) rootView.findViewById(R.id.score))
-                                                        .setTypeface(null, Typeface.NORMAL);
-                                                ((TextView) rootView.findViewById(R.id.score))
-                                                        .setText(
-                                                                String.format(
-                                                                        Locale.getDefault(),
-                                                                        "%d",
-                                                                        s.getScore()));
-                                                ActionStates.setVoteDirection(
-                                                        s, VoteDirection.NO_VOTE);
-                                                BlendModeUtil.tintImageViewAsSrcAtop(
-                                                        downvotebutton, Color.WHITE);
-                                            }
-                                        }
-                                    });
-                        }
-                        {
-                            upvotebutton.setOnClickListener(
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            ((SlidingUpPanelLayout)
-                                                            rootView.findViewById(
-                                                                    R.id.sliding_layout))
-                                                    .setPanelState(
-                                                            SlidingUpPanelLayout.PanelState
-                                                                    .COLLAPSED);
-
-                                            if (SettingValues.storeHistory) {
-                                                if (!s.isNsfw() || SettingValues.storeNSFWHistory) {
-                                                    HasSeen.addSeen(s.getFullName());
-                                                }
-                                            }
-
-                                            if (ActionStates.getVoteDirection(s)
-                                                    != VoteDirection
-                                                            .UPVOTE) { // has not been upvoted
-                                                points.setTextColor(
-                                                        ContextCompat.getColor(
-                                                                c, R.color.md_orange_500));
-                                                BlendModeUtil.tintImageViewAsSrcAtop(
-                                                        upvotebutton,
-                                                        ContextCompat.getColor(
-                                                                c, R.color.md_orange_500));
-                                                BlendModeUtil.tintImageViewAsSrcAtop(
-                                                        downvotebutton, Color.WHITE);
-
-                                                AnimatorUtil.setFlashAnimation(
-                                                        rootView,
-                                                        upvotebutton,
-                                                        ContextCompat.getColor(
-                                                                c, R.color.md_orange_500));
-                                                ((TextView) rootView.findViewById(R.id.score))
-                                                        .setTypeface(null, Typeface.BOLD);
-                                                ((TextView) rootView.findViewById(R.id.score))
-                                                        .setText(
-                                                                String.format(
-                                                                        Locale.getDefault(),
-                                                                        "%d",
-                                                                        s.getScore() + 1));
-                                                new Vote(true, points, c).execute(s);
-                                                ActionStates.setVoteDirection(
-                                                        s, VoteDirection.UPVOTE);
-                                            } else {
-                                                points.setTextColor(comments.getCurrentTextColor());
-                                                new Vote(points, c).execute(s);
-                                                ((TextView) rootView.findViewById(R.id.score))
-                                                        .setTypeface(null, Typeface.NORMAL);
-                                                ((TextView) rootView.findViewById(R.id.score))
-                                                        .setText(
-                                                                String.format(
-                                                                        Locale.getDefault(),
-                                                                        "%d",
-                                                                        s.getScore()));
-                                                ActionStates.setVoteDirection(
-                                                        s, VoteDirection.NO_VOTE);
-                                                BlendModeUtil.tintImageViewAsSrcAtop(
-                                                        upvotebutton, Color.WHITE);
-                                            }
-                                        }
-                                    });
-                        }
-                    } else {
-                        upvotebutton.setVisibility(View.GONE);
-                        downvotebutton.setVisibility(View.GONE);
-                    }
-                } catch (Exception ignored) {
-                    LogUtil.e(ignored, "PopulateShadowboxInfo.onClick failed");
-                }
+                bindVoteAndSaveActions(s, rootView, c);
                 rootView.findViewById(R.id.menu)
                         .setOnClickListener(
                                 new View.OnClickListener() {
@@ -487,291 +193,332 @@ public class PopulateShadowboxInfo {
                     .setText(String.format(Locale.getDefault(), "%d", s.getScore()));
 
             if (extras) {
-                final ImageView downvotebutton = rootView.findViewById(R.id.downvote);
-                final ImageView upvotebutton = rootView.findViewById(R.id.upvote);
+                bindVoteAndSaveActions(s, rootView, c);
+            }
+        }
+    }
 
-                if (s.isArchived()) {
-                    downvotebutton.setVisibility(View.GONE);
-                    upvotebutton.setVisibility(View.GONE);
-                } else if (Authentication.isLoggedIn && Authentication.didOnline) {
-                    if (SettingValues.actionbarVisible
-                            && downvotebutton.getVisibility() != View.VISIBLE) {
-                        downvotebutton.setVisibility(View.VISIBLE);
-                        upvotebutton.setVisibility(View.VISIBLE);
-                    }
-                    switch (ActionStates.getVoteDirection(s)) {
-                        case UPVOTE:
-                            {
-                                ((TextView) rootView.findViewById(R.id.score))
-                                        .setTextColor(
-                                                ContextCompat.getColor(c, R.color.md_orange_500));
-                                BlendModeUtil.tintImageViewAsSrcAtop(
-                                        upvotebutton,
+
+    /**
+     * Wires the shared actionbar widgets for either a submission or a comment shown in the
+     * shadowbox: vote buttons and score tint, the save button, and the collapse-on-action
+     * behaviour. Vote buttons are hidden only for archived content — locking a post stops new
+     * comments, not voting, matching PopulateSubmissionViewHolder.
+     */
+    /** getAuthor() is declared on Submission and Comment separately, not their base class. */
+    private static String authorOf(PublicContribution s) {
+        if (s instanceof Submission) {
+            return ((Submission) s).getAuthor();
+        } else if (s instanceof Comment) {
+            return ((Comment) s).getAuthor();
+        } else {
+            return "";
+        }
+    }
+
+    private static void bindVoteAndSaveActions(
+            final PublicContribution s, final View rootView, final Activity c) {
+        final ImageView downvotebutton = rootView.findViewById(R.id.downvote);
+        final ImageView upvotebutton = rootView.findViewById(R.id.upvote);
+
+        if (s.isArchived()) {
+            downvotebutton.setVisibility(View.GONE);
+            upvotebutton.setVisibility(View.GONE);
+        } else if (Authentication.isLoggedIn && Authentication.didOnline) {
+            if (SettingValues.actionbarVisible
+                    && downvotebutton.getVisibility() != View.VISIBLE) {
+                downvotebutton.setVisibility(View.VISIBLE);
+                upvotebutton.setVisibility(View.VISIBLE);
+            }
+            switch (ActionStates.getVoteDirection(s)) {
+                case UPVOTE:
+                    {
+                        ((TextView) rootView.findViewById(R.id.score))
+                                .setTextColor(
                                         ContextCompat.getColor(c, R.color.md_orange_500));
-                                ((TextView) rootView.findViewById(R.id.score))
-                                        .setTypeface(null, Typeface.BOLD);
-                                ((TextView) rootView.findViewById(R.id.score))
-                                        .setText(
-                                                String.format(
-                                                        Locale.getDefault(),
-                                                        "%d",
-                                                        (s.getScore()
-                                                                + ((s.getAuthor()
-                                                                                .equals(
-                                                                                        Authentication
-                                                                                                .name))
-                                                                        ? 0
-                                                                        : 1))));
-                                BlendModeUtil.tintImageViewAsSrcAtop(downvotebutton, Color.WHITE);
-                                break;
-                            }
-                        case DOWNVOTE:
-                            {
-                                ((TextView) rootView.findViewById(R.id.score))
-                                        .setTextColor(
-                                                ContextCompat.getColor(c, R.color.md_blue_500));
-                                BlendModeUtil.tintImageViewAsSrcAtop(
-                                        downvotebutton,
-                                        ContextCompat.getColor(c, R.color.md_blue_500));
-                                ((TextView) rootView.findViewById(R.id.score))
-                                        .setTypeface(null, Typeface.BOLD);
-                                ((TextView) rootView.findViewById(R.id.score))
-                                        .setText(
-                                                String.format(
-                                                        Locale.getDefault(),
-                                                        "%d",
-                                                        (s.getScore()
-                                                                + ((s.getAuthor()
-                                                                                .equals(
-                                                                                        Authentication
-                                                                                                .name))
-                                                                        ? 0
-                                                                        : -1))));
-                                BlendModeUtil.tintImageViewAsSrcAtop(upvotebutton, Color.WHITE);
-                                break;
-                            }
-                        case NO_VOTE:
-                            {
-                                ((TextView) rootView.findViewById(R.id.score))
-                                        .setTextColor(
-                                                ((TextView) rootView.findViewById(R.id.comments))
-                                                        .getCurrentTextColor());
-                                ((TextView) rootView.findViewById(R.id.score))
-                                        .setText(
-                                                String.format(
-                                                        Locale.getDefault(), "%d", s.getScore()));
-                                ((TextView) rootView.findViewById(R.id.score))
-                                        .setTypeface(null, Typeface.NORMAL);
-                                final List<ImageView> imageViewSet =
-                                        Arrays.asList(downvotebutton, upvotebutton);
-                                BlendModeUtil.tintImageViewsAsSrcAtop(imageViewSet, Color.WHITE);
-                                break;
-                            }
-                    }
-                }
-                final ImageView save = (ImageView) rootView.findViewById(R.id.save);
-                if (Authentication.isLoggedIn && Authentication.didOnline) {
-                    if (ActionStates.isSaved(s)) {
                         BlendModeUtil.tintImageViewAsSrcAtop(
-                                save, ContextCompat.getColor(c, R.color.md_amber_500));
-                    } else {
-                        BlendModeUtil.tintImageViewAsSrcAtop(save, Color.WHITE);
+                                upvotebutton,
+                                ContextCompat.getColor(c, R.color.md_orange_500));
+                        ((TextView) rootView.findViewById(R.id.score))
+                                .setTypeface(null, Typeface.BOLD);
+                        ((TextView) rootView.findViewById(R.id.score))
+                                .setText(
+                                        String.format(
+                                                Locale.getDefault(),
+                                                "%d",
+                                                (s.getScore()
+                                                        + ((authorOf(s)
+                                                                        .equals(
+                                                                                Authentication
+                                                                                        .name))
+                                                                ? 0
+                                                                : 1))));
+                        BlendModeUtil.tintImageViewAsSrcAtop(downvotebutton, Color.WHITE);
+                        break;
                     }
-                    save.setOnClickListener(
+                case DOWNVOTE:
+                    {
+                        ((TextView) rootView.findViewById(R.id.score))
+                                .setTextColor(
+                                        ContextCompat.getColor(c, R.color.md_blue_500));
+                        BlendModeUtil.tintImageViewAsSrcAtop(
+                                downvotebutton,
+                                ContextCompat.getColor(c, R.color.md_blue_500));
+                        ((TextView) rootView.findViewById(R.id.score))
+                                .setTypeface(null, Typeface.BOLD);
+                        ((TextView) rootView.findViewById(R.id.score))
+                                .setText(
+                                        String.format(
+                                                Locale.getDefault(),
+                                                "%d",
+                                                (s.getScore()
+                                                        + ((authorOf(s)
+                                                                        .equals(
+                                                                                Authentication
+                                                                                        .name))
+                                                                ? 0
+                                                                : -1))));
+                        BlendModeUtil.tintImageViewAsSrcAtop(upvotebutton, Color.WHITE);
+                        break;
+                    }
+                case NO_VOTE:
+                    {
+                        ((TextView) rootView.findViewById(R.id.score))
+                                .setTextColor(
+                                        ((TextView) rootView.findViewById(R.id.comments))
+                                                .getCurrentTextColor());
+                        ((TextView) rootView.findViewById(R.id.score))
+                                .setText(
+                                        String.format(
+                                                Locale.getDefault(), "%d", s.getScore()));
+                        ((TextView) rootView.findViewById(R.id.score))
+                                .setTypeface(null, Typeface.NORMAL);
+                        final List<ImageView> imageViewSet =
+                                Arrays.asList(downvotebutton, upvotebutton);
+                        BlendModeUtil.tintImageViewsAsSrcAtop(imageViewSet, Color.WHITE);
+                        break;
+                    }
+            }
+        }
+        final ImageView save = (ImageView) rootView.findViewById(R.id.save);
+        if (Authentication.isLoggedIn && Authentication.didOnline) {
+            if (ActionStates.isSaved(s)) {
+                BlendModeUtil.tintImageViewAsSrcAtop(
+                        save, ContextCompat.getColor(c, R.color.md_amber_500));
+            } else {
+                BlendModeUtil.tintImageViewAsSrcAtop(save, Color.WHITE);
+            }
+            save.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            new AsyncTask<Void, Void, Void>() {
+                                @Override
+                                protected Void doInBackground(Void... params) {
+                                    try {
+                                        if (ActionStates.isSaved(s)) {
+                                            new AccountManager(Authentication.reddit)
+                                                    .unsave(s);
+                                            ActionStates.setSaved(s, false);
+                                        } else {
+                                            new AccountManager(Authentication.reddit)
+                                                    .save(s);
+                                            ActionStates.setSaved(s, true);
+                                        }
+                                    } catch (ApiException | RuntimeException e) {
+                                        LogUtil.e(e, "PopulateShadowboxInfo.doInBackground failed");
+                                    }
+
+                                    return null;
+                                }
+
+                                @Override
+                                protected void onPostExecute(Void aVoid) {
+                                    ((SlidingUpPanelLayout)
+                                                    rootView.findViewById(
+                                                            R.id.sliding_layout))
+                                            .setPanelState(
+                                                    SlidingUpPanelLayout.PanelState
+                                                            .COLLAPSED);
+
+                                    if (ActionStates.isSaved(s)) {
+                                        BlendModeUtil.tintImageViewAsSrcAtop(
+                                                save,
+                                                ContextCompat.getColor(
+                                                        c, R.color.md_amber_500));
+                                        AnimatorUtil.setFlashAnimation(
+                                                rootView,
+                                                save,
+                                                ContextCompat.getColor(
+                                                        c, R.color.md_amber_500));
+                                    } else {
+                                        BlendModeUtil.tintImageViewAsSrcAtop(
+                                                save, Color.WHITE);
+                                    }
+                                }
+                            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        }
+                    });
+        }
+
+        if (!Authentication.isLoggedIn || !Authentication.didOnline) {
+            save.setVisibility(View.GONE);
+        }
+        try {
+            final TextView points = rootView.findViewById(R.id.score);
+            final TextView comments = rootView.findViewById(R.id.comments);
+            if (Authentication.isLoggedIn && Authentication.didOnline) {
+                {
+                    downvotebutton.setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
-                                public void onClick(View v) {
+                                public void onClick(View view) {
+                                    ((SlidingUpPanelLayout)
+                                                    rootView.findViewById(
+                                                            R.id.sliding_layout))
+                                            .setPanelState(
+                                                    SlidingUpPanelLayout.PanelState
+                                                            .COLLAPSED);
 
-                                    new AsyncTask<Void, Void, Void>() {
-                                        @Override
-                                        protected Void doInBackground(Void... params) {
-                                            try {
-                                                if (ActionStates.isSaved(s)) {
-                                                    new AccountManager(Authentication.reddit)
-                                                            .unsave(s);
-                                                    ActionStates.setSaved(s, false);
-                                                } else {
-                                                    new AccountManager(Authentication.reddit)
-                                                            .save(s);
-                                                    ActionStates.setSaved(s, true);
-                                                }
-                                            } catch (ApiException | RuntimeException e) {
-                                                LogUtil.e(e, "PopulateShadowboxInfo.doInBackground failed");
-                                            }
-
-                                            return null;
+                                    if (SettingValues.storeHistory
+                                            && s instanceof Submission) {
+                                        Submission sub = (Submission) s;
+                                        if (!sub.isNsfw()
+                                                || SettingValues.storeNSFWHistory) {
+                                            HasSeen.addSeen(sub.getFullName());
                                         }
+                                    }
+                                    if (ActionStates.getVoteDirection(s)
+                                            != VoteDirection
+                                                    .DOWNVOTE) { // has not been downvoted
+                                        points.setTextColor(
+                                                ContextCompat.getColor(
+                                                        c, R.color.md_blue_500));
+                                        BlendModeUtil.tintImageViewAsSrcAtop(
+                                                downvotebutton,
+                                                ContextCompat.getColor(
+                                                        c, R.color.md_blue_500));
+                                        BlendModeUtil.tintImageViewAsSrcAtop(
+                                                upvotebutton, Color.WHITE);
 
-                                        @Override
-                                        protected void onPostExecute(Void aVoid) {
-                                            ((SlidingUpPanelLayout)
-                                                            rootView.findViewById(
-                                                                    R.id.sliding_layout))
-                                                    .setPanelState(
-                                                            SlidingUpPanelLayout.PanelState
-                                                                    .COLLAPSED);
-
-                                            if (ActionStates.isSaved(s)) {
-                                                BlendModeUtil.tintImageViewAsSrcAtop(
-                                                        save,
-                                                        ContextCompat.getColor(
-                                                                c, R.color.md_amber_500));
-                                                AnimatorUtil.setFlashAnimation(
-                                                        rootView,
-                                                        save,
-                                                        ContextCompat.getColor(
-                                                                c, R.color.md_amber_500));
-                                            } else {
-                                                BlendModeUtil.tintImageViewAsSrcAtop(
-                                                        save, Color.WHITE);
-                                            }
-                                        }
-                                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                        AnimatorUtil.setFlashAnimation(
+                                                rootView,
+                                                downvotebutton,
+                                                ContextCompat.getColor(
+                                                        c, R.color.md_blue_500));
+                                        ((TextView) rootView.findViewById(R.id.score))
+                                                .setTypeface(null, Typeface.BOLD);
+                                        final int downvoteScore =
+                                                (s.getScore() == 0)
+                                                        ? 0
+                                                        : s.getScore()
+                                                                - 1; // if a post is at 0
+                                        // votes, keep it at 0
+                                        // when downvoting
+                                        ((TextView) rootView.findViewById(R.id.score))
+                                                .setText(
+                                                        String.format(
+                                                                Locale.getDefault(),
+                                                                "%d",
+                                                                downvoteScore));
+                                        new Vote(false, points, c).execute(s);
+                                        ActionStates.setVoteDirection(
+                                                s, VoteDirection.DOWNVOTE);
+                                    } else {
+                                        points.setTextColor(comments.getCurrentTextColor());
+                                        new Vote(points, c).execute(s);
+                                        ((TextView) rootView.findViewById(R.id.score))
+                                                .setTypeface(null, Typeface.NORMAL);
+                                        ((TextView) rootView.findViewById(R.id.score))
+                                                .setText(
+                                                        String.format(
+                                                                Locale.getDefault(),
+                                                                "%d",
+                                                                s.getScore()));
+                                        ActionStates.setVoteDirection(
+                                                s, VoteDirection.NO_VOTE);
+                                        BlendModeUtil.tintImageViewAsSrcAtop(
+                                                downvotebutton, Color.WHITE);
+                                    }
                                 }
                             });
                 }
+                {
+                    upvotebutton.setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    ((SlidingUpPanelLayout)
+                                                    rootView.findViewById(
+                                                            R.id.sliding_layout))
+                                            .setPanelState(
+                                                    SlidingUpPanelLayout.PanelState
+                                                            .COLLAPSED);
 
-                if (!Authentication.isLoggedIn || !Authentication.didOnline) {
-                    save.setVisibility(View.GONE);
-                }
-                try {
-                    final TextView points = rootView.findViewById(R.id.score);
-                    final TextView comments = rootView.findViewById(R.id.comments);
-                    if (Authentication.isLoggedIn && Authentication.didOnline) {
-                        {
-                            downvotebutton.setOnClickListener(
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            ((SlidingUpPanelLayout)
-                                                            rootView.findViewById(
-                                                                    R.id.sliding_layout))
-                                                    .setPanelState(
-                                                            SlidingUpPanelLayout.PanelState
-                                                                    .COLLAPSED);
-
-                                            if (ActionStates.getVoteDirection(s)
-                                                    != VoteDirection
-                                                            .DOWNVOTE) { // has not been downvoted
-                                                points.setTextColor(
-                                                        ContextCompat.getColor(
-                                                                c, R.color.md_blue_500));
-                                                BlendModeUtil.tintImageViewAsSrcAtop(
-                                                        downvotebutton,
-                                                        ContextCompat.getColor(
-                                                                c, R.color.md_blue_500));
-                                                BlendModeUtil.tintImageViewAsSrcAtop(
-                                                        upvotebutton, Color.WHITE);
-
-                                                AnimatorUtil.setFlashAnimation(
-                                                        rootView,
-                                                        downvotebutton,
-                                                        ContextCompat.getColor(
-                                                                c, R.color.md_blue_500));
-                                                ((TextView) rootView.findViewById(R.id.score))
-                                                        .setTypeface(null, Typeface.BOLD);
-                                                final int downvoteScore =
-                                                        (s.getScore() == 0)
-                                                                ? 0
-                                                                : s.getScore()
-                                                                        - 1; // if a post is at 0
-                                                // votes, keep it at 0
-                                                // when downvoting
-                                                ((TextView) rootView.findViewById(R.id.score))
-                                                        .setText(
-                                                                String.format(
-                                                                        Locale.getDefault(),
-                                                                        "%d",
-                                                                        downvoteScore));
-                                                new Vote(false, points, c).execute(s);
-                                                ActionStates.setVoteDirection(
-                                                        s, VoteDirection.DOWNVOTE);
-                                            } else {
-                                                points.setTextColor(comments.getCurrentTextColor());
-                                                new Vote(points, c).execute(s);
-                                                ((TextView) rootView.findViewById(R.id.score))
-                                                        .setTypeface(null, Typeface.NORMAL);
-                                                ((TextView) rootView.findViewById(R.id.score))
-                                                        .setText(
-                                                                String.format(
-                                                                        Locale.getDefault(),
-                                                                        "%d",
-                                                                        s.getScore()));
-                                                ActionStates.setVoteDirection(
-                                                        s, VoteDirection.NO_VOTE);
-                                                BlendModeUtil.tintImageViewAsSrcAtop(
-                                                        downvotebutton, Color.WHITE);
-                                            }
+                                    if (SettingValues.storeHistory
+                                            && s instanceof Submission) {
+                                        Submission sub = (Submission) s;
+                                        if (!sub.isNsfw()
+                                                || SettingValues.storeNSFWHistory) {
+                                            HasSeen.addSeen(sub.getFullName());
                                         }
-                                    });
-                        }
-                        {
-                            upvotebutton.setOnClickListener(
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            ((SlidingUpPanelLayout)
-                                                            rootView.findViewById(
-                                                                    R.id.sliding_layout))
-                                                    .setPanelState(
-                                                            SlidingUpPanelLayout.PanelState
-                                                                    .COLLAPSED);
-                                            if (ActionStates.getVoteDirection(s)
-                                                    != VoteDirection
-                                                            .UPVOTE) { // has not been upvoted
-                                                points.setTextColor(
-                                                        ContextCompat.getColor(
-                                                                c, R.color.md_orange_500));
-                                                BlendModeUtil.tintImageViewAsSrcAtop(
-                                                        upvotebutton,
-                                                        ContextCompat.getColor(
-                                                                c, R.color.md_orange_500));
-                                                BlendModeUtil.tintImageViewAsSrcAtop(
-                                                        downvotebutton, Color.WHITE);
+                                    }
 
-                                                AnimatorUtil.setFlashAnimation(
-                                                        rootView,
-                                                        upvotebutton,
-                                                        ContextCompat.getColor(
-                                                                c, R.color.md_orange_500));
-                                                ((TextView) rootView.findViewById(R.id.score))
-                                                        .setTypeface(null, Typeface.BOLD);
-                                                ((TextView) rootView.findViewById(R.id.score))
-                                                        .setText(
-                                                                String.format(
-                                                                        Locale.getDefault(),
-                                                                        "%d",
-                                                                        s.getScore() + 1));
-                                                new Vote(true, points, c).execute(s);
-                                                ActionStates.setVoteDirection(
-                                                        s, VoteDirection.UPVOTE);
-                                            } else {
-                                                points.setTextColor(comments.getCurrentTextColor());
-                                                new Vote(points, c).execute(s);
-                                                ((TextView) rootView.findViewById(R.id.score))
-                                                        .setTypeface(null, Typeface.NORMAL);
-                                                ((TextView) rootView.findViewById(R.id.score))
-                                                        .setText(
-                                                                String.format(
-                                                                        Locale.getDefault(),
-                                                                        "%d",
-                                                                        s.getScore()));
-                                                ActionStates.setVoteDirection(
-                                                        s, VoteDirection.NO_VOTE);
-                                                BlendModeUtil.tintImageViewAsSrcAtop(
-                                                        upvotebutton, Color.WHITE);
-                                            }
-                                        }
-                                    });
-                        }
-                    } else {
-                        upvotebutton.setVisibility(View.GONE);
-                        downvotebutton.setVisibility(View.GONE);
-                    }
-                } catch (Exception ignored) {
-                    LogUtil.e(ignored, "PopulateShadowboxInfo.onClick failed");
+                                    if (ActionStates.getVoteDirection(s)
+                                            != VoteDirection
+                                                    .UPVOTE) { // has not been upvoted
+                                        points.setTextColor(
+                                                ContextCompat.getColor(
+                                                        c, R.color.md_orange_500));
+                                        BlendModeUtil.tintImageViewAsSrcAtop(
+                                                upvotebutton,
+                                                ContextCompat.getColor(
+                                                        c, R.color.md_orange_500));
+                                        BlendModeUtil.tintImageViewAsSrcAtop(
+                                                downvotebutton, Color.WHITE);
+
+                                        AnimatorUtil.setFlashAnimation(
+                                                rootView,
+                                                upvotebutton,
+                                                ContextCompat.getColor(
+                                                        c, R.color.md_orange_500));
+                                        ((TextView) rootView.findViewById(R.id.score))
+                                                .setTypeface(null, Typeface.BOLD);
+                                        ((TextView) rootView.findViewById(R.id.score))
+                                                .setText(
+                                                        String.format(
+                                                                Locale.getDefault(),
+                                                                "%d",
+                                                                s.getScore() + 1));
+                                        new Vote(true, points, c).execute(s);
+                                        ActionStates.setVoteDirection(
+                                                s, VoteDirection.UPVOTE);
+                                    } else {
+                                        points.setTextColor(comments.getCurrentTextColor());
+                                        new Vote(points, c).execute(s);
+                                        ((TextView) rootView.findViewById(R.id.score))
+                                                .setTypeface(null, Typeface.NORMAL);
+                                        ((TextView) rootView.findViewById(R.id.score))
+                                                .setText(
+                                                        String.format(
+                                                                Locale.getDefault(),
+                                                                "%d",
+                                                                s.getScore()));
+                                        ActionStates.setVoteDirection(
+                                                s, VoteDirection.NO_VOTE);
+                                        BlendModeUtil.tintImageViewAsSrcAtop(
+                                                upvotebutton, Color.WHITE);
+                                    }
+                                }
+                            });
                 }
+            } else {
+                upvotebutton.setVisibility(View.GONE);
+                downvotebutton.setVisibility(View.GONE);
             }
+        } catch (Exception ignored) {
+            LogUtil.e(ignored, "PopulateShadowboxInfo.onClick failed");
         }
     }
 

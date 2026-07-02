@@ -10,9 +10,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.HashMap;
 import java.util.Map;
 
+/** One photo rendition (url + dimensions) — used for both original and alt sizes. */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"url", "width", "height"})
-public class AltSize {
+public class PhotoSize {
 
     @JsonProperty("url")
     private String url;

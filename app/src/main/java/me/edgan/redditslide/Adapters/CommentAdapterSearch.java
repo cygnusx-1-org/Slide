@@ -29,14 +29,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import me.edgan.redditslide.ActionStates;
-import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.UserTags;
 import me.edgan.redditslide.Views.RoundedBackgroundSpan;
 import me.edgan.redditslide.Visuals.FontPreferences;
-import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.MiscUtil;
@@ -44,7 +42,6 @@ import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
 import net.dean.jraw.models.Comment;
 import net.dean.jraw.models.CommentNode;
-import net.dean.jraw.models.DistinguishedStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -87,7 +84,6 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
         SpannableStringBuilder titleString = new SpannableStringBuilder();
 
         SpannableStringBuilder author = new SpannableStringBuilder(comment.getAuthor());
-        final int authorcolor = Palette.getFontColorUser(comment.getAuthor());
 
         author.setSpan(
                 new TypefaceSpan("sans-serif-condensed"),
@@ -99,55 +95,7 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
                 0,
                 author.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        if (comment.getDistinguishedStatus() == DistinguishedStatus.ADMIN) {
-            author.replace(0, author.length(), " " + comment.getAuthor() + " ");
-            author.setSpan(
-                    new RoundedBackgroundSpan(
-                            mContext, android.R.color.white, R.color.md_red_300, false),
-                    0,
-                    author.length(),
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        } else if (comment.getDistinguishedStatus() == DistinguishedStatus.SPECIAL) {
-            author.replace(0, author.length(), " " + comment.getAuthor() + " ");
-            author.setSpan(
-                    new RoundedBackgroundSpan(
-                            mContext, android.R.color.white, R.color.md_red_500, false),
-                    0,
-                    author.length(),
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        } else if (comment.getDistinguishedStatus() == DistinguishedStatus.MODERATOR) {
-            author.replace(0, author.length(), " " + comment.getAuthor() + " ");
-            author.setSpan(
-                    new RoundedBackgroundSpan(
-                            mContext, android.R.color.white, R.color.md_green_300, false),
-                    0,
-                    author.length(),
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        } else if (Authentication.name != null
-                && comment.getAuthor()
-                        .toLowerCase(Locale.ENGLISH)
-                        .equals(Authentication.name.toLowerCase(Locale.ENGLISH))) {
-            author.replace(0, author.length(), " " + comment.getAuthor() + " ");
-            author.setSpan(
-                    new RoundedBackgroundSpan(
-                            mContext, android.R.color.white, R.color.md_deep_orange_300, false),
-                    0,
-                    author.length(),
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        } /* todoelse if (submission != null && comment.getAuthor()
-                  .toLowerCase(Locale.ENGLISH)
-                  .equals(submission.getAuthor().toLowerCase(Locale.ENGLISH)) && !comment.getAuthor().equals("[deleted]")) {
-              author.replace(0, author.length(), " " + comment.getAuthor() + " ");
-              author.setSpan(
-                      new RoundedBackgroundSpan(mContext, android.R.color.white, R.color.md_blue_300, false),
-                      0, author.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-          } */ else if (authorcolor != 0) {
-            author.setSpan(
-                    new ForegroundColorSpan(authorcolor),
-                    0,
-                    author.length(),
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
+        CommentAdapterHelper.styleAuthorBadge(mContext, author, comment, null);
 
         titleString.append(author);
 

@@ -84,7 +84,7 @@ public class SubredditListView extends Fragment {
                 });
 
         posts = new SubredditNames(where, getContext(), SubredditListView.this);
-        adapter = new SubredditAdapter(getActivity(), posts, rv, where, this);
+        adapter = new SubredditAdapter(getActivity(), posts, rv, this);
         rv.setAdapter(adapter);
         posts.loadMore(mSwipeRefreshLayout.getContext(), true, where);
         mSwipeRefreshLayout.setOnRefreshListener(this::refresh);

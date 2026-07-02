@@ -23,84 +23,27 @@ import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.SubmissionParser;
 import net.dean.jraw.models.Subreddit;
 
-public class SubredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-        implements BaseAdapter {
+public class SubredditAdapter extends PaginatedListAdapter {
 
-    private final RecyclerView listView;
     public Activity context;
     public SubredditNames dataSet;
-    private final int LOADING_SPINNER = 5;
-    private final int NO_MORE = 3;
-    private final int SPACER = 6;
     SubredditListView displayer;
 
     public SubredditAdapter(
             Activity context,
             SubredditNames dataSet,
             RecyclerView listView,
-            String where,
             SubredditListView displayer) {
-        String where1 = where.toLowerCase(Locale.ENGLISH);
-        this.listView = listView;
+        super(listView);
         this.dataSet = dataSet;
         this.context = context;
         this.displayer = displayer;
     }
 
-    @Override
-    public void setError(Boolean b) {
-        listView.setAdapter(new ErrorAdapter());
-    }
 
-    @Override
-    public void undoSetError() {
-        listView.setAdapter(this);
-    }
 
-    @Override
-    public int getItemViewType(int position) {
-        if (position <= 0 && !dataSet.posts.isEmpty()) {
-            return SPACER;
-        } else if (!dataSet.posts.isEmpty()) {
-            position -= (1);
-        }
-        if (position == dataSet.posts.size() && !dataSet.posts.isEmpty() && !dataSet.nomore) {
-            return LOADING_SPINNER;
-        } else if (position == dataSet.posts.size() && dataSet.nomore) {
-            return NO_MORE;
-        }
-        return 1;
-    }
 
-    int tag = 1;
 
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        tag++;
-
-        if (i == SPACER) {
-            View v =
-                    LayoutInflater.from(viewGroup.getContext())
-                            .inflate(R.layout.spacer, viewGroup, false);
-            return new SpacerViewHolder(v);
-
-        } else if (i == LOADING_SPINNER) {
-            View v =
-                    LayoutInflater.from(viewGroup.getContext())
-                            .inflate(R.layout.loadingmore, viewGroup, false);
-            return new SubmissionFooterViewHolder(v);
-        } else if (i == NO_MORE) {
-            View v =
-                    LayoutInflater.from(viewGroup.getContext())
-                            .inflate(R.layout.nomoreposts, viewGroup, false);
-            return new SubmissionFooterViewHolder(v);
-        } else {
-            View v =
-                    LayoutInflater.from(viewGroup.getContext())
-                            .inflate(R.layout.subfordiscover, viewGroup, false);
-            return new SubredditViewHolder(v);
-        }
-    }
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder2, final int pos) {
@@ -205,17 +148,7 @@ public class SubredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    public static class SubmissionFooterViewHolder extends RecyclerView.ViewHolder {
-        public SubmissionFooterViewHolder(View itemView) {
-            super(itemView);
-        }
-    }
 
-    public static class SpacerViewHolder extends RecyclerView.ViewHolder {
-        public SpacerViewHolder(View itemView) {
-            super(itemView);
-        }
-    }
 
     @Override
     public int getItemCount() {
@@ -253,4 +186,27 @@ public class SubredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         commentOverflow.removeAllViews();
         commentOverflow.setVisibility(View.GONE);
     }
+    @Override
+    protected boolean isEmpty() {
+        return dataSet.posts.isEmpty();
+    }
+
+    @Override
+    protected int postCount() {
+        return dataSet.posts.size();
+    }
+
+    @Override
+    protected boolean noMore() {
+        return dataSet.nomore;
+    }
+
+    @Override
+    protected RecyclerView.ViewHolder createContentViewHolder(ViewGroup viewGroup) {
+        View v =
+                LayoutInflater.from(viewGroup.getContext())
+                        .inflate(R.layout.subfordiscover, viewGroup, false);
+        return new SubredditViewHolder(v);
+    }
+
 }

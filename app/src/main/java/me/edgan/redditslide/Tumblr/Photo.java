@@ -20,10 +20,10 @@ public class Photo {
     private String caption;
 
     @JsonProperty("alt_sizes")
-    private List<AltSize> altSizes = new ArrayList<AltSize>();
+    private List<PhotoSize> altSizes = new ArrayList<PhotoSize>();
 
     @JsonProperty("original_size")
-    private OriginalSize originalSize;
+    private PhotoSize originalSize;
 
     @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -47,7 +47,7 @@ public class Photo {
      * @return The altSizes
      */
     @JsonProperty("alt_sizes")
-    public List<AltSize> getAltSizes() {
+    public List<PhotoSize> getAltSizes() {
         return altSizes;
     }
 
@@ -55,7 +55,7 @@ public class Photo {
      * @param altSizes The alt_sizes
      */
     @JsonProperty("alt_sizes")
-    public void setAltSizes(List<AltSize> altSizes) {
+    public void setAltSizes(List<PhotoSize> altSizes) {
         this.altSizes = altSizes;
     }
 
@@ -63,7 +63,7 @@ public class Photo {
      * @return The originalSize
      */
     @JsonProperty("original_size")
-    public OriginalSize getOriginalSize() {
+    public PhotoSize getOriginalSize() {
         return originalSize;
     }
 
@@ -71,7 +71,7 @@ public class Photo {
      * @param originalSize The original_size
      */
     @JsonProperty("original_size")
-    public void setOriginalSize(OriginalSize originalSize) {
+    public void setOriginalSize(PhotoSize originalSize) {
         this.originalSize = originalSize;
     }
 

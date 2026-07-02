@@ -51,8 +51,8 @@ public class HistoryView extends Fragment {
         // So, we estimate the height of the header in dp
         mSwipeRefreshLayout.setProgressViewOffset(
                 false,
-                Constants.TAB_HEADER_VIEW_OFFSET - Constants.PTR_OFFSET_TOP,
-                Constants.TAB_HEADER_VIEW_OFFSET + Constants.PTR_OFFSET_BOTTOM);
+                getHeaderViewOffset() - Constants.PTR_OFFSET_TOP,
+                getHeaderViewOffset() + Constants.PTR_OFFSET_BOTTOM);
 
         mSwipeRefreshLayout.post(
                 new Runnable() {
@@ -62,7 +62,7 @@ public class HistoryView extends Fragment {
                     }
                 });
 
-        posts = new HistoryPosts();
+        posts = createPosts();
         adapter = new ContributionAdapter(getActivity(), posts, rv);
         rv.setAdapter(adapter);
 
@@ -111,6 +111,16 @@ public class HistoryView extends Fragment {
                     }
                 });
         return v;
+    }
+
+    /** The posts source; ReadLaterView overrides with the read-later store. */
+    protected HistoryPosts createPosts() {
+        return new HistoryPosts();
+    }
+
+    /** Pull-to-refresh offset base; differs when the host has tabs vs a single header. */
+    protected int getHeaderViewOffset() {
+        return Constants.TAB_HEADER_VIEW_OFFSET;
     }
 
     public RecyclerView getRecyclerView() {

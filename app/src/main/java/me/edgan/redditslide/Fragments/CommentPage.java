@@ -2346,6 +2346,70 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
         }
     }
 
+
+    /**
+     * Whether the comment matches the active navigation filter ({@code currentSort}). The
+     * CHILDREN case also selects the matching node on the adapter.
+     */
+    private boolean matchesCurrentSort(CommentObject o, int depth) {
+        if (o.comment.getComment() == null) {
+            return false;
+        }
+        boolean matches = false;
+            switch (currentSort) {
+                case PARENTS:
+                    matches = o.comment.isTopLevel();
+                    break;
+                case CHILDREN:
+                    if (depth == -1) {
+                        matches = o.comment.isTopLevel();
+                    } else {
+                        matches = o.comment.getDepth() == depth;
+                        if (matches) {
+                            adapter.currentNode = o.comment;
+                            adapter.currentSelectedItem =
+                                    o.comment.getComment().getFullName();
+                        }
+                    }
+                    break;
+                case TIME:
+                    matches = o.comment.getComment().getCreated().getTime() > sortTime;
+                    break;
+                case GILDED:
+                    matches =
+                            (o.comment.getComment().getTimesGilded() > 0
+                                    || o.comment.getComment().getTimesSilvered() > 0
+                                    || o.comment.getComment().getTimesPlatinized() > 0);
+                    break;
+                case OP:
+                    matches =
+                            adapter.submission != null
+                                    && o.comment
+                                            .getComment()
+                                            .getAuthor()
+                                            .equals(adapter.submission.getAuthor());
+                    break;
+                case YOU:
+                    matches =
+                            adapter.submission != null
+                                    && o.comment
+                                            .getComment()
+                                            .getAuthor()
+                                            .equals(Authentication.name);
+                    break;
+                case LINK:
+                    matches =
+                            o.comment
+                                    .getComment()
+                                    .getDataNode()
+                                    .get("body_html")
+                                    .asText()
+                                    .contains("&lt;/a");
+                    break;
+            }
+        return matches;
+    }
+
     public void doGoUp(int old) {
         int depth = -1;
         if (adapter.currentlySelected != null) {
@@ -2357,62 +2421,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
             try {
                 CommentObject o = adapter.currentComments.get(adapter.getRealPosition(i));
                 if (o instanceof CommentItem && pos - 1 != i) {
-                    boolean matches = false;
-                    switch (currentSort) {
-                        case PARENTS:
-                            matches = o.comment.isTopLevel();
-                            break;
-                        case CHILDREN:
-                            if (depth == -1) {
-                                matches = o.comment.isTopLevel();
-                            } else {
-                                matches = o.comment.getDepth() == depth;
-                                if (matches) {
-                                    adapter.currentNode = o.comment;
-                                    adapter.currentSelectedItem =
-                                            o.comment.getComment().getFullName();
-                                }
-                            }
-                            break;
-                        case TIME:
-                            matches =
-                                    (o.comment.getComment() != null
-                                            && o.comment.getComment().getCreated().getTime()
-                                                    > sortTime);
-
-                            break;
-                        case GILDED:
-                            matches =
-                                    (o.comment.getComment().getTimesGilded() > 0
-                                            || o.comment.getComment().getTimesSilvered() > 0
-                                            || o.comment.getComment().getTimesPlatinized() > 0);
-                            break;
-                        case OP:
-                            matches =
-                                    adapter.submission != null
-                                            && o.comment
-                                                    .getComment()
-                                                    .getAuthor()
-                                                    .equals(adapter.submission.getAuthor());
-                            break;
-                        case YOU:
-                            matches =
-                                    adapter.submission != null
-                                            && o.comment
-                                                    .getComment()
-                                                    .getAuthor()
-                                                    .equals(Authentication.name);
-                            break;
-                        case LINK:
-                            matches =
-                                    o.comment
-                                            .getComment()
-                                            .getDataNode()
-                                            .get("body_html")
-                                            .asText()
-                                            .contains("&lt;/a");
-                            break;
-                    }
+                    boolean matches = matchesCurrentSort(o, depth);
                     if (matches) {
                         if (i + 2 == old) {
                             doGoUp(old - 1);
@@ -2479,58 +2488,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                 try {
                     CommentObject o = adapter.currentComments.get(adapter.getRealPosition(i));
                     if (o instanceof CommentItem) {
-                        boolean matches = false;
-                        switch (currentSort) {
-                            case PARENTS:
-                                matches = o.comment.isTopLevel();
-                                break;
-                            case CHILDREN:
-                                if (depth == -1) {
-                                    matches = o.comment.isTopLevel();
-                                } else {
-                                    matches = o.comment.getDepth() == depth;
-                                    if (matches) {
-                                        adapter.currentNode = o.comment;
-                                        adapter.currentSelectedItem =
-                                                o.comment.getComment().getFullName();
-                                    }
-                                }
-                                break;
-                            case TIME:
-                                matches = o.comment.getComment().getCreated().getTime() > sortTime;
-                                break;
-                            case GILDED:
-                                matches =
-                                        (o.comment.getComment().getTimesGilded() > 0
-                                                || o.comment.getComment().getTimesSilvered() > 0
-                                                || o.comment.getComment().getTimesPlatinized() > 0);
-                                break;
-                            case OP:
-                                matches =
-                                        adapter.submission != null
-                                                && o.comment
-                                                        .getComment()
-                                                        .getAuthor()
-                                                        .equals(adapter.submission.getAuthor());
-                                break;
-                            case YOU:
-                                matches =
-                                        adapter.submission != null
-                                                && o.comment
-                                                        .getComment()
-                                                        .getAuthor()
-                                                        .equals(Authentication.name);
-                                break;
-                            case LINK:
-                                matches =
-                                        o.comment
-                                                .getComment()
-                                                .getDataNode()
-                                                .get("body_html")
-                                                .asText()
-                                                .contains("&lt;/a");
-                                break;
-                        }
+                        boolean matches = matchesCurrentSort(o, depth);
                         if (matches) {
                             if (o.getName().equals(original)) {
                                 doGoDown(i + 2);

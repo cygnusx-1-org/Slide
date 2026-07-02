@@ -452,6 +452,65 @@ public class SubredditView extends BaseActivity {
         }
     }
 
+
+    /**
+     * Sets the logged-in user's flair on the subreddit ({@code flairText} null keeps the
+     * template's default text) and refreshes the sidebar flair label with the result.
+     */
+    private void setSubFlair(
+            final String subOverride,
+            final FlairTemplate t,
+            final String flairText,
+            final AccountManager m,
+            final View dialoglayout) {
+        new AsyncTask<Void, Void, Boolean>() {
+            String current;
+
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                try {
+                    new ModerationManager(Authentication.reddit)
+                            .setFlair(subOverride, t, flairText, Authentication.name);
+                    FlairTemplate currentF = m.getCurrentFlair(subOverride);
+                    if (currentF.getText().isEmpty()) {
+                        current = ("[" + currentF.getCssClass() + "]");
+                    } else {
+                        current = (currentF.getText());
+                    }
+                    return true;
+                } catch (Exception e) {
+                    LogUtil.e(e, "SubredditView.doInBackground failed");
+                    return false;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Boolean done) {
+                Snackbar s;
+                if (done) {
+                    if (current != null) {
+                        ((TextView) dialoglayout.findViewById(R.id.flair_text))
+                                .setText(getString(R.string.sidebar_flair, current));
+                    }
+                    s =
+                            Snackbar.make(
+                                    mToolbar,
+                                    R.string.snackbar_flair_success,
+                                    Snackbar.LENGTH_SHORT);
+                } else {
+                    s =
+                            Snackbar.make(
+                                    mToolbar,
+                                    R.string.snackbar_flair_error,
+                                    Snackbar.LENGTH_SHORT);
+                }
+                if (s != null) {
+                    LayoutUtils.showSnackbar(s);
+                }
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
     public void doSubSidebar(final String subOverride) {
         findViewById(R.id.loader).setVisibility(View.VISIBLE);
 
@@ -852,107 +911,7 @@ public class SubredditView extends BaseActivity {
                                                                                                                 dialog.getInputEditText()
                                                                                                                         .getText()
                                                                                                                         .toString();
-                                                                                                new AsyncTask<
-                                                                                                        Void,
-                                                                                                        Void,
-                                                                                                        Boolean>() {
-                                                                                                    @Override
-                                                                                                    protected
-                                                                                                    Boolean
-                                                                                                            doInBackground(
-                                                                                                                    Void
-                                                                                                                                    ...
-                                                                                                                            params) {
-                                                                                                        try {
-                                                                                                            new ModerationManager(
-                                                                                                                            Authentication
-                                                                                                                                    .reddit)
-                                                                                                                    .setFlair(
-                                                                                                                            subOverride,
-                                                                                                                            t,
-                                                                                                                            flair,
-                                                                                                                            Authentication
-                                                                                                                                    .name);
-                                                                                                            FlairTemplate
-                                                                                                                    currentF =
-                                                                                                                            m
-                                                                                                                                    .getCurrentFlair(
-                                                                                                                                            subOverride);
-                                                                                                            if (currentF.getText()
-                                                                                                                    .isEmpty()) {
-                                                                                                                current =
-                                                                                                                        ("["
-                                                                                                                                + currentF
-                                                                                                                                        .getCssClass()
-                                                                                                                                + "]");
-                                                                                                            } else {
-                                                                                                                current =
-                                                                                                                        (currentF
-                                                                                                                                .getText());
-                                                                                                            }
-                                                                                                            return true;
-                                                                                                        } catch (
-                                                                                                                Exception
-                                                                                                                        e) {
-                                                                                                            LogUtil.e(e, "SubredditView.doInBackground failed");
-                                                                                                            return false;
-                                                                                                        }
-                                                                                                    }
-
-                                                                                                    @Override
-                                                                                                    protected
-                                                                                                    void
-                                                                                                            onPostExecute(
-                                                                                                                    Boolean
-                                                                                                                            done) {
-                                                                                                        Snackbar
-                                                                                                                s;
-                                                                                                        if (done) {
-                                                                                                            if (current
-                                                                                                                    != null) {
-                                                                                                                ((TextView)
-                                                                                                                                dialoglayout
-                                                                                                                                        .findViewById(
-                                                                                                                                                R
-                                                                                                                                                        .id
-                                                                                                                                                        .flair_text))
-                                                                                                                        .setText(
-                                                                                                                                getString(
-                                                                                                                                        R
-                                                                                                                                                .string
-                                                                                                                                                .sidebar_flair,
-                                                                                                                                        current));
-                                                                                                            }
-                                                                                                            s =
-                                                                                                                    Snackbar
-                                                                                                                            .make(
-                                                                                                                                    mToolbar,
-                                                                                                                                    R
-                                                                                                                                            .string
-                                                                                                                                            .snackbar_flair_success,
-                                                                                                                                    Snackbar
-                                                                                                                                    .LENGTH_SHORT);
-                                                                                                        } else {
-                                                                                                            s =
-                                                                                                                    Snackbar
-                                                                                                                            .make(
-                                                                                                                                    mToolbar,
-                                                                                                                                    R
-                                                                                                                                            .string
-                                                                                                                                            .snackbar_flair_error,
-                                                                                                                                    Snackbar
-                                                                                                                                    .LENGTH_SHORT);
-                                                                                                        }
-                                                                                                        if (s
-                                                                                                                != null) {
-                                                                                                            LayoutUtils
-                                                                                                                    .showSnackbar(
-                                                                                                                            s);
-                                                                                                        }
-                                                                                                    }
-                                                                                                }.executeOnExecutor(
-                                                                                                        AsyncTask
-                                                                                                                .THREAD_POOL_EXECUTOR);
+                                                                                                setSubFlair(subOverride, t, flair, m, dialoglayout);
                                                                                             }
                                                                                         })
                                                                                 .negativeText(
@@ -960,102 +919,7 @@ public class SubredditView extends BaseActivity {
                                                                                                 .btn_cancel)
                                                                                 .show();
                                                                     } else {
-                                                                        new AsyncTask<
-                                                                                Void,
-                                                                                Void,
-                                                                                Boolean>() {
-                                                                            @Override
-                                                                            protected Boolean
-                                                                                    doInBackground(
-                                                                                            Void...
-                                                                                                    params) {
-                                                                                try {
-                                                                                    new ModerationManager(
-                                                                                                    Authentication
-                                                                                                            .reddit)
-                                                                                            .setFlair(
-                                                                                                    subOverride,
-                                                                                                    t,
-                                                                                                    null,
-                                                                                                    Authentication
-                                                                                                            .name);
-                                                                                    FlairTemplate
-                                                                                            currentF =
-                                                                                                    m
-                                                                                                            .getCurrentFlair(
-                                                                                                                    subOverride);
-                                                                                    if (currentF.getText()
-                                                                                            .isEmpty()) {
-                                                                                        current =
-                                                                                                ("["
-                                                                                                        + currentF
-                                                                                                                .getCssClass()
-                                                                                                        + "]");
-                                                                                    } else {
-                                                                                        current =
-                                                                                                (currentF
-                                                                                                        .getText());
-                                                                                    }
-                                                                                    return true;
-                                                                                } catch (
-                                                                                        Exception
-                                                                                                e) {
-                                                                                    LogUtil.e(e, "SubredditView.doInBackground failed");
-                                                                                    return false;
-                                                                                }
-                                                                            }
-
-                                                                            @Override
-                                                                            protected void
-                                                                                    onPostExecute(
-                                                                                            Boolean
-                                                                                                    done) {
-                                                                                Snackbar s;
-                                                                                if (done) {
-                                                                                    if (current
-                                                                                            != null) {
-                                                                                        ((TextView)
-                                                                                                        dialoglayout
-                                                                                                                .findViewById(
-                                                                                                                        R
-                                                                                                                                .id
-                                                                                                                                .flair_text))
-                                                                                                .setText(
-                                                                                                        getString(
-                                                                                                                R
-                                                                                                                        .string
-                                                                                                                        .sidebar_flair,
-                                                                                                                current));
-                                                                                    }
-                                                                                    s =
-                                                                                            Snackbar
-                                                                                                    .make(
-                                                                                                            mToolbar,
-                                                                                                            R
-                                                                                                                    .string
-                                                                                                                    .snackbar_flair_success,
-                                                                                                            Snackbar
-                                                                                                                    .LENGTH_SHORT);
-                                                                                } else {
-                                                                                    s =
-                                                                                            Snackbar
-                                                                                                    .make(
-                                                                                                            mToolbar,
-                                                                                                            R
-                                                                                                                    .string
-                                                                                                                    .snackbar_flair_error,
-                                                                                                            Snackbar
-                                                                                                                    .LENGTH_SHORT);
-                                                                                }
-                                                                                if (s != null) {
-                                                                                    LayoutUtils
-                                                                                            .showSnackbar(
-                                                                                                    s);
-                                                                                }
-                                                                            }
-                                                                        }.executeOnExecutor(
-                                                                                AsyncTask
-                                                                                        .THREAD_POOL_EXECUTOR);
+                                                                        setSubFlair(subOverride, t, null, m, dialoglayout);
                                                                     }
                                                                 }
                                                             })

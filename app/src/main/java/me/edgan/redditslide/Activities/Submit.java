@@ -56,7 +56,7 @@ import me.edgan.redditslide.Views.DoEditorActions;
 import me.edgan.redditslide.Views.ImageInsertEditText;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.util.DialogUtil;
-import me.edgan.redditslide.util.HttpUtil;
+import me.edgan.redditslide.util.FlairUtil;
 import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialProgressDialog;
@@ -71,7 +71,6 @@ import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Subreddit;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 
 /** Created by ccrama on 3/5/2015. */
 public class Submit extends BaseActivity {
@@ -469,24 +468,7 @@ public class Submit extends BaseActivity {
             @Override
             protected JsonArray doInBackground(Void... params) {
                 flairs = new ArrayList<>();
-                HttpRequest r =
-                        Authentication.reddit
-                                .request()
-                                .path("/r/" + subreddit + "/api/link_flair_v2.json")
-                                .get()
-                                .build();
-
-                Request request =
-                        new Request.Builder()
-                                .headers(
-                                        r.getHeaders()
-                                                .newBuilder()
-                                                .set("User-Agent", "Slide flair search")
-                                                .build())
-                                .url(r.getUrl())
-                                .build();
-
-                return HttpUtil.getJsonArray(client, gson, request);
+                return FlairUtil.fetchLinkFlairs(client, gson, subreddit);
             }
 
             @Override

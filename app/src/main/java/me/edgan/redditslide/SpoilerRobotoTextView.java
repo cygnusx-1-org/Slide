@@ -3,16 +3,13 @@ package me.edgan.redditslide;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Movie;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -57,7 +54,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,8 +71,6 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.handler.TextViewLinkHandler;
 import me.edgan.redditslide.markdown.RedditSpoilerSpan;
 import me.edgan.redditslide.util.AnimatedImageSpan;
-import me.edgan.redditslide.util.BlendModeUtil;
-import me.edgan.redditslide.util.BottomSheet;
 import me.edgan.redditslide.util.CommentImageUtil;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.GifDrawable;
@@ -1124,45 +1118,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
         }
 
         if (activity != null && !activity.isFinishing()) {
-            BottomSheet.Builder b = new BottomSheet.Builder(activity).title(url).grid();
-            int[] attrs = new int[] {R.attr.tintColor};
-            TypedArray ta = getContext().obtainStyledAttributes(attrs);
-
-            int color = ta.getColor(0, Color.WHITE);
-            Drawable open = getResources().getDrawable(R.drawable.ic_open_in_new);
-            Drawable share = getResources().getDrawable(R.drawable.ic_share);
-            Drawable copy = getResources().getDrawable(R.drawable.ic_content_copy);
-            final List<Drawable> drawableSet = Arrays.asList(open, share, copy);
-            BlendModeUtil.tintDrawablesAsSrcAtop(drawableSet, color);
-
-            ta.recycle();
-
-            b.sheet(R.id.open_link, open, getResources().getString(R.string.open_externally));
-            b.sheet(R.id.share_link, share, getResources().getString(R.string.share_link));
-            b.sheet(
-                    R.id.copy_link,
-                    copy,
-                    getResources().getString(R.string.submission_link_copy));
-            final Activity finalActivity = activity;
-            b.listener(
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    switch (which) {
-                                        case R.id.open_link:
-                                            LinkUtil.openExternally(url);
-                                            break;
-                                        case R.id.share_link:
-                                            Reddit.defaultShareText("", url, finalActivity);
-                                            break;
-                                        case R.id.copy_link:
-                                            LinkUtil.copyUrl(url, finalActivity);
-                                            break;
-                                    }
-                                }
-                            })
-                    .show();
-//            }
+            LinkUtil.showLinkBottomSheet(activity, getContext(), url);
         }
     }
 

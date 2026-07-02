@@ -835,54 +835,13 @@ public class MediaView extends BaseSaveActivity {
                         (MediaView.this).finish();
                     } else {
                         try {
-                            if (result != null && !result.isJsonNull() && result.has("image")) {
-                                String type =
-                                        result.get("image")
-                                                .getAsJsonObject()
-                                                .get("image")
-                                                .getAsJsonObject()
-                                                .get("type")
-                                                .getAsString();
-                                String urls =
-                                        result.get("image")
-                                                .getAsJsonObject()
-                                                .get("links")
-                                                .getAsJsonObject()
-                                                .get("original")
-                                                .getAsString();
-
-                                if (type.contains("gif")) {
-                                    doLoadGif(urls);
-                                } else if (!imageShown) { // only load if there is no image
-                                    displayImage(urls);
-                                }
-                            } else if (result != null && result.has("data")) {
-                                String type =
-                                        result.get("data")
-                                                .getAsJsonObject()
-                                                .get("type")
-                                                .getAsString();
-                                String urls =
-                                        result.get("data")
-                                                .getAsJsonObject()
-                                                .get("link")
-                                                .getAsString();
-                                String mp4 = "";
-                                if (result.get("data").getAsJsonObject().has("mp4")) {
-                                    mp4 =
-                                            result.get("data")
-                                                    .getAsJsonObject()
-                                                    .get("mp4")
-                                                    .getAsString();
-                                }
-
-                                if (type.contains("gif")) {
-                                    doLoadGif(((mp4 == null || mp4.isEmpty()) ? urls : mp4));
-                                } else if (!imageShown) { // only load if there is no image
-                                    displayImage(urls);
-                                }
-                            } else {
+                            HttpUtil.ImgurMedia media = HttpUtil.parseImgurMedia(result);
+                            if (media == null) {
                                 if (!imageShown) doLoadImage(finalUrl);
+                            } else if (media.isGif()) {
+                                doLoadGif(media.getGifUrl());
+                            } else if (!imageShown) { // only load if there is no image
+                                displayImage(media.getImageUrl());
                             }
                         } catch (Exception e2) {
                             LogUtil.e(e2, "MediaView.onPostExecute failed");

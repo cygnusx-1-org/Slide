@@ -6,9 +6,13 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,6 +31,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.Locale;
 import me.edgan.redditslide.Activities.Crosspost;
 import me.edgan.redditslide.Activities.MakeExternal;
 import me.edgan.redditslide.Activities.ReaderMode;
@@ -356,4 +361,99 @@ public class LinkUtil {
         context.startActivity(
                 new Intent(Intent.ACTION_VIEW, Uri.parse(uriString + context.getString(resId))));
     }
+
+    /** Bottom sheet for a raw image/gif link: open externally, share, share image, save. */
+    public static void showImageLinkBottomSheet(
+            final Activity activity,
+            final String contentUrl,
+            final boolean isGif,
+            final Runnable saveAction) {
+        int[] attrs = new int[] {R.attr.tintColor};
+        TypedArray ta = activity.obtainStyledAttributes(attrs);
+        int color = ta.getColor(0, Color.WHITE);
+        Drawable external =
+                BlendModeUtil.getTintedDrawable(activity, R.drawable.ic_open_in_browser, color);
+        Drawable share = BlendModeUtil.getTintedDrawable(activity, R.drawable.ic_share, color);
+        Drawable image = BlendModeUtil.getTintedDrawable(activity, R.drawable.ic_image, color);
+        Drawable save = BlendModeUtil.getTintedDrawable(activity, R.drawable.ic_download, color);
+        ta.recycle();
+
+        BottomSheet.Builder b = new BottomSheet.Builder(activity).title(contentUrl);
+        b.sheet(2, external, activity.getString(R.string.open_externally));
+        b.sheet(5, share, activity.getString(R.string.submission_link_share));
+        if (!isGif) b.sheet(3, image, activity.getString(R.string.share_image));
+        String lcUrl = contentUrl == null ? "" : contentUrl.toLowerCase(Locale.ENGLISH);
+        int q = lcUrl.indexOf('?');
+        String path = q < 0 ? lcUrl : lcUrl.substring(0, q);
+        boolean isVideo = path.endsWith(".mp4") || lcUrl.contains("format=mp4");
+        b.sheet(
+                4,
+                save,
+                activity.getString(
+                        isVideo ? R.string.submission_save_video : R.string.submission_save_image));
+        b.listener(
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case (2):
+                                LinkUtil.openExternally(contentUrl);
+                                break;
+                            case (3):
+                                ShareUtil.shareImage(contentUrl, activity);
+                                break;
+                            case (5):
+                                Reddit.defaultShareText("", contentUrl, activity);
+                                break;
+                            case (4):
+                                saveAction.run();
+                                break;
+                        }
+                    }
+                });
+
+        b.show();
+    }
+
+
+    /**
+     * Bottom sheet for a plain link: open externally, share, copy. {@code themedContext} resolves
+     * the tint attr (a view's context may carry subreddit theming the activity lacks).
+     */
+    public static void showLinkBottomSheet(
+            final Activity activity, final Context themedContext, final String url) {
+        BottomSheet.Builder b = new BottomSheet.Builder(activity).title(url).grid();
+        int[] attrs = new int[] {R.attr.tintColor};
+        TypedArray ta = themedContext.obtainStyledAttributes(attrs);
+
+        int color = ta.getColor(0, Color.WHITE);
+        Drawable open = BlendModeUtil.getTintedDrawable(themedContext, R.drawable.ic_open_in_new, color);
+        Drawable share = BlendModeUtil.getTintedDrawable(themedContext, R.drawable.ic_share, color);
+        Drawable copy = BlendModeUtil.getTintedDrawable(themedContext, R.drawable.ic_content_copy, color);
+
+        ta.recycle();
+
+        b.sheet(R.id.open_link, open, activity.getString(R.string.open_externally));
+        b.sheet(R.id.share_link, share, activity.getString(R.string.share_link));
+        b.sheet(R.id.copy_link, copy, activity.getString(R.string.submission_link_copy));
+        b.listener(
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which) {
+                                    case R.id.open_link:
+                                        LinkUtil.openExternally(url);
+                                        break;
+                                    case R.id.share_link:
+                                        Reddit.defaultShareText("", url, activity);
+                                        break;
+                                    case R.id.copy_link:
+                                        LinkUtil.copyUrl(url, activity);
+                                        break;
+                                }
+                            }
+                        })
+                .show();
+    }
+
 }
