@@ -1,10 +1,14 @@
 package me.edgan.redditslide.test;
 
+import android.app.Application;
 import android.content.SharedPreferences;
 import androidx.annotation.Nullable;
+import androidx.test.core.app.ApplicationProvider;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Set;
+import me.edgan.redditslide.Reddit;
 import org.apache.commons.io.IOUtils;
 
 public class TestUtils {
@@ -12,6 +16,22 @@ public class TestUtils {
     public static String getResource(String path) throws IOException {
         return IOUtils.toString(
                 TestUtils.class.getClassLoader().getResourceAsStream(path), "utf-8");
+    }
+
+    /**
+     * Seeds the private static {@code Reddit.mApplication} with the Robolectric application context.
+     * Some classes (notably anything that class-loads {@code Toolbox}, whose static initializer calls
+     * {@code Reddit.getAppContext().getSharedPreferences(...)}) otherwise throw an {@code
+     * ExceptionInInitializerError} in tests. Robolectric-only — needs an Android runtime.
+     */
+    public static void seedRedditApplication() {
+        try {
+            Field f = Reddit.class.getDeclaredField("mApplication");
+            f.setAccessible(true);
+            f.set(null, (Application) ApplicationProvider.getApplicationContext());
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Failed to seed Reddit.mApplication for tests", e);
+        }
     }
 
     public static class MockPreferences implements SharedPreferences {

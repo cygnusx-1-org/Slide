@@ -1,0 +1,27 @@
+{
+  "gallery_data": {
+    "items": [
+      { "media_id": "img1", "caption": "First image" },
+      { "media_id": "gif1" },
+      { "media_id": "nosource" },
+      { "media_id": "notinmetadata" }
+    ]
+  },
+  "media_metadata": {
+    "img1": {
+      "e": "Image",
+      "m": "image/png",
+      "s": { "u": "https://preview.redd.it/img1.png?width=100&amp;s=abc", "x": 100, "y": 200 },
+      "p": [ { "u": "https://preview.redd.it/img1-prev.png", "x": 50, "y": 100 } ]
+    },
+    "gif1": {
+      "e": "AnimatedImage",
+      "m": "image/gif",
+      "s": { "gif": "https://i.redd.it/gif1.gif", "mp4": "https://i.redd.it/gif1.mp4", "x": 300, "y": 300 }
+    },
+    "nosource": {
+      "e": "Image",
+      "m": "image/png"
+    }
+  }
+}

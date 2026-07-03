@@ -20,6 +20,12 @@ plugins {
     id 'com.github.breadmoirai.github-release' version '2.5.2'
     id 'com.diffplug.spotless' version '8.5.1'
     id 'io.github.takahirom.roborazzi' version '1.64.0'
+    id 'jacoco'
+}
+
+jacoco {
+    // 0.8.13+ is required to read Java 24 (class-file major 68) bytecode.
+    toolVersion = '0.8.15'
 }
 
 android {
@@ -121,6 +127,10 @@ android {
                     '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED',
                     '--add-opens=java.base/java.util.regex=ALL-UNNAMED'
                 ]
+                jacoco {
+                    includeNoLocationClasses = true
+                    excludes = ['jdk.internal.*']
+                }
             }
         }
     }
@@ -131,6 +141,44 @@ android {
         // Required because build types use resValue (release/debug app_name); the global
         // android.defaults.buildfeatures.resvalues default is off in AGP 9.
         resValues = true
+    }
+}
+
+// JaCoCo line/branch coverage for the default (withGPlayDebug) unit-test variant.
+// Run: ./gradlew jacocoWithGPlayDebugUnitTestReport ; report at
+// app/build/reports/jacoco/jacocoWithGPlayDebugUnitTestReport/html/index.html
+tasks.register('jacocoWithGPlayDebugUnitTestReport', JacocoReport) {
+    dependsOn 'testWithGPlayDebugUnitTest'
+    group = 'verification'
+    description = 'Generates JaCoCo coverage from the withGPlayDebug unit tests.'
+
+    def coverageExcludes = [
+        '**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*',
+        '**/*Test*.*', '**/databinding/**', '**/*_ViewBinding*.*',
+        '**/*Binding.*', '**/*Binding$*.*', 'android/**/*.*'
+    ]
+
+    // JaCoCo resolves package names from the class bytes, so rooting at the variant's javac output
+    // and collecting every .class works regardless of the intermediate directory layout. Paths are
+    // wrapped lazily (providers) so nothing is resolved at configuration time.
+    classDirectories.setFrom(
+        layout.buildDirectory.dir('intermediates/javac/withGPlayDebug').map { dir ->
+            fileTree(dir: dir.asFile, excludes: coverageExcludes)
+        })
+    sourceDirectories.setFrom(files(['src/main/java']))
+    // AGP writes the unit-test coverage data under these two locations; scope to them rather than
+    // scanning the whole build directory.
+    executionData.setFrom(
+        layout.buildDirectory.map { buildDir ->
+            fileTree(dir: buildDir.asFile, includes: [
+                'outputs/unit_test_code_coverage/withGPlayDebugUnitTest/testWithGPlayDebugUnitTest.exec',
+                'jacoco/testWithGPlayDebugUnitTest.exec'
+            ])
+        })
+
+    reports {
+        xml.required = true
+        html.required = true
     }
 }
 
