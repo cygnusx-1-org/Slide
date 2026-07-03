@@ -1,7 +1,0 @@
----
-description: Include new imports, and use them
-globs: *.java
-alwaysApply: true
----
-
-Be sure to include new imports at the top of the file when making changes. DO NOT reference a library directly by it's long name in code, use imports.

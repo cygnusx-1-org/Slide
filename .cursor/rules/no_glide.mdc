@@ -1,7 +1,0 @@
----
-description: No Glide code
-globs: *.java
-alwaysApply: true
----
-
-Do not try to introduce Glide as a library.

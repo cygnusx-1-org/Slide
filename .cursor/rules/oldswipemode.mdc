@@ -1,7 +1,0 @@
----
-description: Do not remove code blocks that mention oldSwipeMode
-globs: *.java
-alwaysApply: true
----
-
-Do not remove code blocks that mention oldSwipeMode. It is an important feature.

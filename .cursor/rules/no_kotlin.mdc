@@ -1,7 +1,0 @@
----
-description: No Kotlin code
-globs: *.java
-alwaysApply: true
----
-
-Do not try to introduce Kotlin code.

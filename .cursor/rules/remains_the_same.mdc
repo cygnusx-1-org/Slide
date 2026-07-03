@@ -1,7 +1,0 @@
----
-description: NEVER give the "Rest of the code remains the same"
-globs: *
-alwaysApply: true
----
-
-NEVER give "Rest of the code remains the same" or anything like it in the an answer. It will lead code getting removed by accident, and hence it will head to bugs.

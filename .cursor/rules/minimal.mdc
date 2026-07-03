@@ -1,7 +1,0 @@
----
-description: Absolute minimal code change
-globs: *
-alwaysApply: true
----
-
-Change the absolute minimal amount of code

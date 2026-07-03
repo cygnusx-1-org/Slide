@@ -1,7 +1,0 @@
----
-description: A rule to not break Guest mode by removing certain lines in MainActivity.java
-globs: MainActivity.java
-alwaysApply: true
----
-
-DO NOT remove the lines containing "// Removing this will break Guest mode" or "Authentication.isLoggedIn = true;".

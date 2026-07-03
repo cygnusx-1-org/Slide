@@ -1,8 +1,0 @@
----
-description: This is the project description.
-globs: *
-alwaysApply: true
----
-
-1. Slide is a Android java app.
-2. It is a Reddit client that uses the JRAW library to access the Reddit API.

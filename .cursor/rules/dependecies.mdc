@@ -1,7 +1,0 @@
----
-description: Use existing dependecies
-globs: *.java
-alwaysApply: true
----
-
-Try to use existing dependecies as much as possible, and avoid introducing new dependecies unless necessary.

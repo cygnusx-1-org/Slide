@@ -101,7 +101,49 @@ Recent commits show work on media rotation functionality in `MediaView.java`. Th
 - Follow existing Java conventions in the codebase
 - Use 4-space indentation (enforced by Spotless)
 - Maintain consistency with existing patterns for Activities, Adapters, and Fragments
-- The `.cursor/rules/c_style_comments.mdc` rule preserves C-style comment formatting
+
+## Coding Rules
+
+These rules apply to all changes in this repository.
+
+### General Approach
+- Change the absolute minimal amount of code.
+- When in doubt, ask questions.
+- NEVER give "Rest of the code remains the same" or anything like it in an answer. It leads to code getting removed by accident, causing bugs.
+- Look for comments that might instruct you about what not to do, or how removing the code below them might break something.
+
+### Language and Dependencies
+- This is an Android Java app. Do not introduce Kotlin code.
+- Do not introduce Glide as a library.
+- Try to use existing dependencies as much as possible, and avoid introducing new dependencies unless necessary.
+- Be sure to include new imports at the top of the file when making changes. DO NOT reference a library directly by its long name in code — use imports.
+
+### Comments
+- Leave comments alone unless you are changing the code associated with them. Even then, don't make superfluous changes to comments.
+- Leave the beginning of C-style comment blocks alone, and don't change their indentation (e.g. `/**`).
+
+### Strings and XML
+- When working with `strings.xml` files, do not modify any string resources that contain single quotes (either as apostrophes or escaped with backslash like `\'`) unless specifically requested. If a string with single quotes needs modification, ask for confirmation first. When adding new strings, follow the established patterns for escaping single quotes with backslashes where appropriate.
+- Be sure to include new strings for `strings.xml` in the changes.
+
+### Do Not Remove
+- In `MainActivity.java`, DO NOT remove the lines containing `// Removing this will break Guest mode` or `Authentication.isLoggedIn = true;`.
+- Do not remove code blocks that mention `oldSwipeMode`. It is an important feature.
+
+### Formatting
+- Clean up trailing whitespace for all lines.
+
+### API Keys
+- Read any new API keys through `app/src/main/java/me/edgan/redditslide/SecretConstants.java`.
+
+### Performance
+1. Minimize recomposition using proper keys
+2. Use proper lazy loading with LazyColumn and LazyRow
+3. Implement efficient image loading
+4. Use proper state management to prevent unnecessary updates
+5. Follow proper lifecycle awareness
+6. Implement proper memory management
+7. Use proper background processing
 
 ### Known Issues and Setup
 - Reddit client ID required for API access - see setup documentation

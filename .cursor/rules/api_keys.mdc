@@ -1,7 +1,0 @@
----
-description: How to integrate api keys
-globs: *
-alwaysApply: true
----
-
-Read any new API keys through "app/src/main/java/me/edgan/redditslide/SecretConstants.java".

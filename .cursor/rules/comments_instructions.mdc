@@ -1,7 +1,0 @@
----
-description: Read comments for instructions
-globs: *
-alwaysApply: true
----
-
-Look for comments that might instruct you about what to not do, or how removing the code below it might break something.

@@ -1,7 +1,0 @@
----
-description: Leave comments alone
-globs: *
-alwaysApply: true
----
-
-Leave comments alone unless you are changing the code assoicated with them. Even then don't make superfluous changes to comments.

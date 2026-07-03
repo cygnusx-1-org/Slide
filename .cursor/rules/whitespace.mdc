@@ -1,7 +1,0 @@
----
-description: Trailing whitespace cleanup
-globs: *
-alwaysApply: true
----
-
-Clean up trailing whitespace for all lines
