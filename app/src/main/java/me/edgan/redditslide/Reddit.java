@@ -61,6 +61,7 @@ import me.edgan.redditslide.util.GifCache;
 import me.edgan.redditslide.util.ImageLoaderUtils;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
+import me.edgan.redditslide.util.ReauthNotifier;
 import me.edgan.redditslide.util.SortingUtil;
 import me.edgan.redditslide.util.UpgradeUtil;
 import net.dean.jraw.http.NetworkException;
@@ -193,6 +194,7 @@ public class Reddit extends Application implements Application.ActivityLifecycle
 
     @Override
     public void onActivityResumed(Activity activity) {
+        ReauthNotifier.attach(activity);
         doLanguages();
         if (client == null) {
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
@@ -210,7 +212,9 @@ public class Reddit extends Application implements Application.ActivityLifecycle
     }
 
     @Override
-    public void onActivityPaused(Activity activity) {}
+    public void onActivityPaused(Activity activity) {
+        ReauthNotifier.detach(activity);
+    }
 
     public static void setDefaultErrorHandler(Context base) {
         // START code adapted from https://github.com/QuantumBadger/RedReader/

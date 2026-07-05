@@ -359,6 +359,16 @@ public class SettingsActivity extends BaseActivity implements RestartActivity {
                             }
                         });
 
+        findViewById(R.id.settings_child_debug)
+                .setOnClickListener(
+                        new OnSingleClickListener() {
+                            @Override
+                            public void onSingleClick(View v) {
+                                Intent i = new Intent(SettingsActivity.this, SettingsDebug.class);
+                                startActivity(i);
+                            }
+                        });
+
         findViewById(R.id.settings_child_offline)
                 .setOnClickListener(
                         new View.OnClickListener() {

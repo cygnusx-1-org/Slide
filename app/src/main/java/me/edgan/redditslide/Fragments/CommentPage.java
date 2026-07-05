@@ -104,6 +104,7 @@ import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
+import me.edgan.redditslide.util.ReauthNotifier;
 import me.edgan.redditslide.util.StringUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.SubmissionThumbnailHelper;
@@ -140,6 +141,15 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
     private boolean single;
     public CommentAdapter adapter;
     private String fullname;
+
+    // Rebind when a late reauth flips Authentication.isLoggedIn true, so the reply/vote/save
+    // buttons (gated on that flag) reappear without the user having to reopen the page.
+    private final ReauthNotifier.Listener reauthListener =
+            () -> {
+                if (adapter != null) {
+                    adapter.notifyDataSetChanged();
+                }
+            };
     private String context;
     private int contextNumber;
     private ContextWrapper contextThemeWrapper;
@@ -861,6 +871,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
         doAdapter(
                 !(getActivity() instanceof CommentsScreen)
                         || ((CommentsScreen) getActivity()).currentPage == page);
+        ReauthNotifier.addListener(reauthListener);
         return v;
     }
 
@@ -2164,6 +2175,13 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
         int subredditStyle = new ColorPreferences(getActivity()).getThemeSubreddit(subreddit);
         contextThemeWrapper = new ContextThemeWrapper(getActivity(), subredditStyle);
         mLayoutManager = new PreCachingLayoutManagerComments(getActivity());
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Symmetric with the registration in onCreateView.
+        ReauthNotifier.removeListener(reauthListener);
     }
 
     @Override

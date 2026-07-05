@@ -12,7 +12,9 @@
             android:id="@+id/base"
             android:layout_marginTop="56dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="72dp">
 
             <LinearLayout
                 android:id="@+id/settings_home"

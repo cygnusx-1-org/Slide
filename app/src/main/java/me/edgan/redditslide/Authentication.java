@@ -10,9 +10,12 @@ import androidx.appcompat.app.AlertDialog;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.UUID;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
+import me.edgan.redditslide.util.ReauthNotifier;
 import net.dean.jraw.RedditClient;
 import net.dean.jraw.http.LoggingMode;
 import net.dean.jraw.http.NetworkException;
@@ -26,7 +29,14 @@ import okhttp3.Protocol;
 
 /** Created by ccrama on 3/30/2015. */
 public class Authentication {
-    public static boolean isLoggedIn;
+    // volatile: written from the reauth background thread (see maybeBreakReauth) and read on the
+    // main thread throughout the app.
+    public static volatile boolean isLoggedIn;
+
+    // Dedicated single-thread executor for reauth tasks: serializes them so two never race on the
+    // shared RedditClient/token state, while keeping them off the global AsyncTask serial executor
+    // (so a stalled reauth doesn't block the rest of the app's AsyncTasks).
+    private static final Executor REAUTH_EXECUTOR = Executors.newSingleThreadExecutor();
     public static RedditClient reddit;
     public static LoggedInAccount me;
     public static boolean mod;
@@ -64,7 +74,7 @@ public class Authentication {
             reddit.setRetryLimit(2);
             if (BuildConfig.DEBUG) reddit.setLoggingMode(LoggingMode.ALWAYS);
             didOnline = true;
-            new VerifyCredentials(context).execute();
+            new VerifyCredentials(context).executeOnExecutor(REAUTH_EXECUTOR);
         } else {
             isLoggedIn = Reddit.appRestart.getBoolean("loggedin", false);
             name = Reddit.appRestart.getString("name", "");
@@ -95,9 +105,9 @@ public class Authentication {
             reddit.setLoggingMode(LoggingMode.ALWAYS);
             didOnline = true;
 
-            new VerifyCredentials(c).execute();
+            new VerifyCredentials(c).executeOnExecutor(REAUTH_EXECUTOR);
         } else {
-            new UpdateToken(c).execute();
+            new UpdateToken(c).executeOnExecutor(REAUTH_EXECUTOR);
         }
     }
 
@@ -112,12 +122,37 @@ public class Authentication {
         }
 
         @Override
+        protected void onPreExecute() {
+            ReauthNotifier.onStarted();
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            ReauthNotifier.onFinished(isReauthed());
+        }
+
+        @Override
+        protected void onCancelled() {
+            // Keep the reauth "in progress" counter balanced if the task is cancelled.
+            ReauthNotifier.onFinished(isReauthed());
+        }
+
+        @Override
         protected Void doInBackground(Void... params) {
+            maybeBreakReauth();
             if (authedOnce && NetworkUtil.isConnected(context)) {
                 didOnline = true;
                 if (name != null && !name.isEmpty()) {
                     Log.v(LogUtil.getTag(), "REAUTH");
-                    if (isLoggedIn) {
+                    // Ensure refresh token is available from SharedPreferences if null
+                    if (refresh == null || refresh.isEmpty()) {
+                        refresh = authentication.getString("lasttoken", "");
+                    }
+                    // Branch on the presence of a user refresh token, NOT the transient isLoggedIn
+                    // flag: several paths clear isLoggedIn momentarily while the user is still
+                    // logged in (constructor, a concurrent Authentication build, the debug break),
+                    // and taking the userless branch then would poison backedCreds/name (sub:loid).
+                    if (refresh != null && !refresh.isEmpty()) {
                         try {
 
                             final Credentials credentials =
@@ -126,17 +161,6 @@ public class Authentication {
                             Log.v(LogUtil.getTag(), "REAUTH LOGGED IN");
 
                             OAuthHelper oAuthHelper = reddit.getOAuthHelper();
-
-                            // Ensure refresh token is available from SharedPreferences if null
-                            if (refresh == null || refresh.isEmpty()) {
-                                refresh = authentication.getString("lasttoken", "");
-                            }
-
-                            if (refresh == null || refresh.isEmpty()) {
-                                Log.e(LogUtil.getTag(), "No refresh token available, forcing re-authentication");
-                                Authentication.isLoggedIn = false;
-                                return null;
-                            }
 
                             oAuthHelper.setRefreshToken(refresh);
                             OAuthData finalData;
@@ -163,11 +187,16 @@ public class Authentication {
                                     .commit();
                             reddit.authenticate(finalData);
                             refresh = oAuthHelper.getRefreshToken();
-                            refresh = reddit.getOAuthHelper().getRefreshToken();
 
                             if (reddit.isAuthenticated()) {
                                 if (me == null) {
-                                    me = reddit.me();
+                                    // Don't let a me() blip skip isLoggedIn=true: the token is
+                                    // already authenticated at this point.
+                                    try {
+                                        me = reddit.me();
+                                    } catch (Exception meError) {
+                                        LogUtil.e(meError, "reddit.me() failed after auth");
+                                    }
                                 }
                                 Authentication.isLoggedIn = true;
                             }
@@ -220,8 +249,7 @@ public class Authentication {
                                                                                     new UpdateToken(
                                                                                                     context)
                                                                                             .executeOnExecutor(
-                                                                                                    AsyncTask
-                                                                                                            .THREAD_POOL_EXECUTOR))
+                                                                                                    REAUTH_EXECUTOR))
                                                                     .setNegativeButton(
                                                                             R.string.btn_no,
                                                                             (dialog, which) ->
@@ -264,10 +292,62 @@ public class Authentication {
         }
 
         @Override
+        protected void onPreExecute() {
+            ReauthNotifier.onStarted();
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            ReauthNotifier.onFinished(isReauthed());
+        }
+
+        @Override
+        protected void onCancelled() {
+            // Keep the reauth "in progress" counter balanced if the task is cancelled.
+            ReauthNotifier.onFinished(isReauthed());
+        }
+
+        @Override
         protected Void doInBackground(String... subs) {
+            maybeBreakReauth();
             doVerify(lastToken, reddit, single, mContext);
             return null;
         }
+    }
+
+    /** Whether the Reddit client currently holds a valid auth token (logged-in or userless). */
+    private static boolean isReauthed() {
+        try {
+            return reddit != null && reddit.isAuthenticated();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Debug aid (see the Debug settings screen): when {@link SettingValues#debugBreakReauth} is on,
+     * simulate a stalled re-authentication so the reauth snackbar (which appears after 4s and shows
+     * failure after 30s) can be tested. Runs on a background thread; it holds the reauth "in
+     * progress" and temporarily marks us logged-out (so the gated UI hides its buttons), and only
+     * returns once the toggle is switched off — the recovery reauth then sets isLoggedIn back true.
+     * The flag is read back through SharedPreferences each pass so this background thread reliably
+     * observes the toggle change and exits. (No save/restore of isLoggedIn is needed: {@link
+     * UpdateToken} picks the auth path from the refresh token, not isLoggedIn.)
+     */
+    private static void maybeBreakReauth() {
+        if (!isBreakReauthEnabled()) return;
+        isLoggedIn = false;
+        while (isBreakReauthEnabled()) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ignored) {
+            }
+        }
+    }
+
+    private static boolean isBreakReauthEnabled() {
+        return SettingValues.prefs != null
+                && SettingValues.prefs.getBoolean(SettingValues.PREF_DEBUG_BREAK_REAUTH, false);
     }
 
     public static void doVerify(
