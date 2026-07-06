@@ -1,5 +1,28 @@
 #!/bin/bash
 
+# changelog files
+CHANGELOG_FILENAME='CHANGELOG.md'
+CHANGELOG_OVERRIDE_FILENAME="changelog_override.txt"
+
+# Block the release first thing if changelog_override.txt was never updated for
+# this release, i.e. it still matches the body of the most recent CHANGELOG.md
+# entry (the previous release).
+if [ -f "${CHANGELOG_OVERRIDE_FILENAME}" ]; then
+  PREVIOUS_CHANGELOG_BODY=`awk '
+    /^---$/ { seen_sep = 1; next }
+    seen_sep && !started && /^[0-9]+(\.[0-9]+)+ \/ / { started = 1; next }
+    started && !body && /^=+$/ { body = 1; next }
+    body && /^[0-9]+(\.[0-9]+)+ \/ / { exit }
+    body { print }
+  ' "${CHANGELOG_FILENAME}"`
+
+  if [ "`cat ${CHANGELOG_OVERRIDE_FILENAME}`" = "${PREVIOUS_CHANGELOG_BODY}" ]; then
+    echo "Error: ${CHANGELOG_OVERRIDE_FILENAME} still matches the previous release in ${CHANGELOG_FILENAME}." >&2
+    echo "Update ${CHANGELOG_OVERRIDE_FILENAME} with this release's changes before releasing." >&2
+    exit 1
+  fi
+fi
+
 # versions
 VERSIONCODE=`grep '^        versionCode' app/build.gradle | awk '{ print $2 }'`
 let NEXT_VERSIONCODE=VERSIONCODE+1
@@ -14,13 +37,11 @@ BUILD_GRADLE_FILENAME="app/build.gradle"
 sed -i "s/ versionCode ${VERSIONCODE}/ versionCode ${NEXT_VERSIONCODE}/g" "${BUILD_GRADLE_FILENAME}"
 
 # changelog
-CHANGELOG_FILENAME='CHANGELOG.md'
 DATE="$(date +%Y-%-m-%-d)"
 
 COMMIT_MESSAGE_PREFIX='    '
 COMMIT_MESSAGE_SPECIAL_PREFIX='\* '
 
-CHANGELOG_OVERRIDE_FILENAME="changelog_override.txt"
 if [ ! -f ${CHANGELOG_OVERRIDE_FILENAME} ]; then
   # Grab commit messages since that tag, matching specific format
   RELEVANT_COMMIT_MESSAGES=`git log $(git describe --tags --abbrev=0)..HEAD | grep "^${COMMIT_MESSAGE_PREFIX}${COMMIT_MESSAGE_SPECIAL_PREFIX}" | sed "s/^${COMMIT_MESSAGE_PREFIX}//g"`
