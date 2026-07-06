@@ -6,8 +6,9 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 7.7.7 / 2026-7-2
 ===========
-* Added Translate feature in the overflow menu for posts and comments via Google Translate
-* Added Read Aloud feature in the overflow menu for posts and comments
+* Fixed Filter by subreddit not removing posts after a feed refresh
+* Fixed Hide post not removing the row after a feed refresh
+* Fixed Read Later removal not removing the row after a feed refresh
 
 7.7.6 / 2026-6-30
 ============
@@ -130,8 +131,8 @@ see new.
 
 7.5.8 / 2026-6-10
 ============
-* The new default is the RedReader client ID. 
-* New Enable Overrides toggle, off by default, to still allow overriding the client ID, user agent, and redirect URI 
+* The new default is the RedReader client ID.
+* New Enable Overrides toggle, off by default, to still allow overriding the client ID, user agent, and redirect URI
 * Tons of enhanced exception handling
 
 7.5.7 / 2026-6-7
@@ -176,7 +177,7 @@ in Albums and Galleries
 
 7.5.0 / 2026-5-12
 ============
-* Fixed issue with cookie dialog on the login page when using WebView 
+* Fixed issue with cookie dialog on the login page when using WebView
 
 7.4.9 / 2026-5-12
 ============
@@ -234,7 +235,7 @@ in Albums and Galleries
 
 7.3.9 / 2026-2-12
 ============
-* Fixed giphy gifs marked invalid by Reddit when they are valid 
+* Fixed giphy gifs marked invalid by Reddit when they are valid
 
 7.3.8 / 2025-12-31
 =============
