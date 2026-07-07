@@ -648,6 +648,12 @@ final AlertDialog reportDialog =
                                 PostRecovery.store(submission, result);
                                 // Re-render the cached title with the recovered one.
                                 SubmissionCache.updateTitle(submission, mContext);
+                                // A recovered link flips is_self/url on the node, so the cached
+                                // info line (domain) is now stale — refresh it to match.
+                                if (result.url != null) {
+                                    SubmissionCache.updateInfoSpannable(
+                                            submission, mContext, baseSub);
+                                }
                                 if (recyclerview != null && recyclerview.getAdapter() != null) {
                                     // Full post view: pos 0 = spacer, pos 1 = header.
                                     recyclerview.getAdapter().notifyItemChanged(1);

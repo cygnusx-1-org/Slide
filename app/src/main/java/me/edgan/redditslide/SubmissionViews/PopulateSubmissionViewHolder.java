@@ -135,6 +135,10 @@ public class PopulateSubmissionViewHolder {
             final boolean offline,
             final String baseSub,
             @Nullable final CommentAdapter adapter) {
+        // A link recovered earlier this session was rewritten onto a now-discarded Submission
+        // instance; re-apply it to this freshly bound instance so the recovered link persists
+        // across leaving and returning (the recovered title already survives via SubmissionCache).
+        PostRecovery.reapplyRecoveredLink(submission);
         holder.itemView.findViewById(R.id.vote).setVisibility(View.GONE);
 
         if (!offline
