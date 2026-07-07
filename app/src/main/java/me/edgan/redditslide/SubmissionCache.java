@@ -52,6 +52,9 @@ public class SubmissionCache {
         if (crosspost == null) crosspost = new WeakHashMap<>();
 
         for (Submission submission : submissions) {
+            // Re-apply any recovered link before building the spannables so the cached info line
+            // (domain, content-type) reflects the recovery rather than the removed-state node.
+            PostRecovery.reapplyRecoveredLink(submission);
             titles.put(submission.getFullName(), getTitleSpannable(submission, mContext));
             info.put(submission.getFullName(), getInfoSpannable(submission, mContext, baseSub));
             crosspost.put(submission.getFullName(), getCrosspostLine(submission, mContext));

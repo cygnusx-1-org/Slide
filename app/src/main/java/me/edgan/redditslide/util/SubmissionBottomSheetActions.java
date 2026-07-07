@@ -147,7 +147,9 @@ public class SubmissionBottomSheetActions {
         b.sheet(62, translate, mContext.getString(R.string.translate_with_google));
         b.sheet(63, readAloud, mContext.getString(R.string.read_aloud));
 
-        if (full && PostRecovery.isRemovedOrDeleted(submission)) {
+        if (full
+                && PostRecovery.isRemovedOrDeleted(submission)
+                && !PostRecovery.isRecovered(submission.getFullName())) {
             b.sheet(61, history, mContext.getString(R.string.recover_post));
         }
 

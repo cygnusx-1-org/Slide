@@ -128,6 +128,18 @@ public final class PostRecovery {
     }
 
     /**
+     * Whether a non-empty recovery has already been stored for this fullname. Lets the UI stop
+     * offering "Recover post" on a post that's already been recovered — {@link #isRemovedOrDeleted}
+     * can still report true afterwards (e.g. an admin takedown keeps {@code banned_by} set, and a
+     * text recovery leaves the placeholder {@code selftext} in place).
+     */
+    public static boolean isRecovered(String fullName) {
+        if (!hasRecoveries) return false;
+        Result r = recovered.get(fullName);
+        return r != null && !r.isEmpty();
+    }
+
+    /**
      * Fetches the original title and body from Arctic Shift. Runs on a background thread and does
      * <b>not</b> touch the caches; pass the result to {@link #store} on the main thread.
      */
@@ -200,9 +212,11 @@ public final class PostRecovery {
      * blank the takedown self-text so it isn't drawn under the recovered card). JRAW's getters read
      * this node live, so the change takes effect everywhere on the next bind.
      *
-     * <p>Main thread only. Only pre-existing keys are replaced — never added — so the node's map is
-     * not restructured and can't race a rehash with the background feed-title renderer that reads
-     * the same node.
+     * <p>Runs from both the UI thread ({@link #store}, and binding via {@link #reapplyRecoveredLink})
+     * and the background feed-caching thread (which also re-applies before building the cached
+     * spannables). Safe under that overlap: only pre-existing keys are replaced — never added — so
+     * the node's map is never restructured and can't race a rehash, and every writer applies the
+     * same deterministic recovered values for a given post, so concurrent writes converge.
      */
     private static void applyRecoveredUrl(Submission s, String url) {
         JsonNode node = s.getDataNode();
@@ -221,8 +235,9 @@ public final class PostRecovery {
      * recovered title still resolves (it is served from the {@link #recovered} map by fullname on
      * every render) yet the rewritten link would otherwise be lost. Calling this while binding
      * re-applies the link to whichever instance is being drawn, so a recovered link post survives
-     * leaving and returning without re-recovering. No-op until something is recovered; recovered
-     * text/body already persists via {@link #getRecovered}. Main thread only.
+     * leaving and returning without re-recovering. Also called from the background feed-caching pass
+     * so the cached info line (domain, content-type) is built from the recovered node too. No-op
+     * until something is recovered; recovered text/body already persists via {@link #getRecovered}.
      */
     public static void reapplyRecoveredLink(Submission s) {
         if (!hasRecoveries) return;
