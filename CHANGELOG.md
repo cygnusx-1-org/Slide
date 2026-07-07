@@ -4,6 +4,10 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.7.8 / 2026-7-7
+===========
+* Improved "Recover Post"
+
 7.7.7 / 2026-7-2
 ===========
 * Fixed Filter by subreddit not removing posts after a feed refresh
