@@ -1284,6 +1284,9 @@ public class Profile extends BaseActivityAnim {
     private void openSearchDialog() {
         int currentTab = pager.getCurrentItem();
         String tabName = usedArray[currentTab];
+        // usedArray holds display names (e.g. "Saved"), not the API "where"; match the same
+        // string resource that populates it so the check is locale-safe.
+        boolean savedTab = getString(R.string.profile_saved).equals(tabName);
 
         MaterialInputDialog.Builder builder = new MaterialInputDialog.Builder(this)
                 .title(String.format(getString(R.string.profile_search_title), tabName))
@@ -1293,9 +1296,14 @@ public class Profile extends BaseActivityAnim {
                 .onPositive(dialog -> {
                     CharSequence input = dialog.getInputEditText().getText();
                     if (input != null && input.toString().trim().length() > 0) {
-                        executeSearch(input.toString().trim());
+                        executeSearch(input.toString().trim(), dialog.isToggleOn());
                     }
                 });
+
+        // The Saved tab is cached (hard TTL); offer a toggle to bypass it and fetch fresh.
+        if (savedTab) {
+            builder.toggle(getString(R.string.profile_search_bypass_cache), false);
+        }
 
         // Only show clear button if search is already active
         if (isSearchActive) {
@@ -1309,7 +1317,7 @@ public class Profile extends BaseActivityAnim {
     /**
      * Executes search with the given query on the current tab.
      */
-    private void executeSearch(String query) {
+    private void executeSearch(String query, boolean bypassCache) {
         if (query == null || query.trim().isEmpty()) {
             return;
         }
@@ -1336,8 +1344,17 @@ public class Profile extends BaseActivityAnim {
         if (recyclerView != null && recyclerView.getAdapter() instanceof ContributionAdapter) {
             ContributionAdapter adapter = (ContributionAdapter) recyclerView.getAdapter();
 
-            // Apply the filter
-            adapter.applyFilter(query, where);
+            if (fragment instanceof ContributionsView) {
+                // Paginated tab (e.g. Saved): load the entire history, then filter, so
+                // posts deep in the list are found. Blocks the list until loading is done.
+                // On Saved, bypassCache forces a fresh network load instead of the TTL cache.
+                ((ContributionsView) fragment).startSearch(query, where, bypassCache);
+            } else {
+                // Non-paginated tabs already hold all their data; clear any previous
+                // filter first so a new term searches the full set, not prior results.
+                adapter.clearFilter();
+                adapter.applyFilter(query, where);
+            }
 
             // Update state
             currentSearchQuery = query;

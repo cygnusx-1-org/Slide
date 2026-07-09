@@ -332,7 +332,8 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         comment.getDataNode().path("body_html").asText(""),
                         comment.getDataNode(),
                         comment.getSubredditName(),
-                        holder);
+                        holder,
+                        hasActiveFilter() ? currentQuery : null);
             } else {
                 // Pass search query for highlighting comment body
                 setViews(
@@ -446,9 +447,20 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             String bodyHtml,
             JsonNode dataNode,
             String subredditName,
-            ProfileCommentViewHolder holder) {
+            ProfileCommentViewHolder holder,
+            String searchQuery) {
+        // Render the body without renderInto's own search highlight: that one uses the
+        // subreddit color and is reserved for the in-thread comment search. Apply the
+        // same highlight the post title uses instead, so title and body colors match.
         MarkdownImages.renderInto(
                 holder.content, holder.overflow, subredditName, rawMarkdown, bodyHtml, dataNode);
+
+        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+            CharSequence body = holder.content.getText();
+            if (body != null && body.length() > 0) {
+                holder.content.setText(highlightSearchTerms(body, searchQuery));
+            }
+        }
     }
 
     private void setViews(String rawHTML, String subredditName, ProfileCommentViewHolder holder, String searchQuery) {

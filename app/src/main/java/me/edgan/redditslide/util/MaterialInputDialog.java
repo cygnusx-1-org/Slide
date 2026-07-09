@@ -7,9 +7,10 @@ import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SwitchCompat;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
@@ -39,14 +40,21 @@ public class MaterialInputDialog {
 
     private final AlertDialog dialog;
     private final EditText editText;
+    private final SwitchCompat toggle;
 
-    private MaterialInputDialog(AlertDialog dialog, EditText editText) {
+    private MaterialInputDialog(AlertDialog dialog, EditText editText, SwitchCompat toggle) {
         this.dialog = dialog;
         this.editText = editText;
+        this.toggle = toggle;
     }
 
     public EditText getInputEditText() {
         return editText;
+    }
+
+    /** @return whether the optional toggle (added via {@link Builder#toggle}) is on. */
+    public boolean isToggleOn() {
+        return toggle != null && toggle.isChecked();
     }
 
     /** @param which one of {@link DialogInterface#BUTTON_POSITIVE} etc. */
@@ -80,6 +88,8 @@ public class MaterialInputDialog {
         private ButtonCallback onNeutral;
         private boolean cancelable = true;
         private boolean autoDismiss = true;
+        private CharSequence toggleLabel;
+        private boolean toggleDefaultOn;
 
         public Builder(Context base) {
             this.context =
@@ -175,6 +185,13 @@ public class MaterialInputDialog {
             return this;
         }
 
+        /** Add an optional toggle (a {@link SwitchCompat}) below the input. */
+        public Builder toggle(CharSequence label, boolean onByDefault) {
+            this.toggleLabel = label;
+            this.toggleDefaultOn = onByDefault;
+            return this;
+        }
+
         public Builder autoDismiss(boolean autoDismiss) {
             this.autoDismiss = autoDismiss;
             return this;
@@ -196,7 +213,8 @@ public class MaterialInputDialog {
             inputLayout.setErrorIconDrawable(null);
             inputLayout.addView(editText);
 
-            final FrameLayout container = new FrameLayout(context);
+            final LinearLayout container = new LinearLayout(context);
+            container.setOrientation(LinearLayout.VERTICAL);
             final int padding =
                     (int)
                             TypedValue.applyDimension(
@@ -206,9 +224,29 @@ public class MaterialInputDialog {
             container.setPadding(padding, 0, padding, 0);
             container.addView(
                     inputLayout,
-                    new FrameLayout.LayoutParams(
-                            FrameLayout.LayoutParams.MATCH_PARENT,
-                            FrameLayout.LayoutParams.WRAP_CONTENT));
+                    new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT));
+
+            final SwitchCompat toggle;
+            if (toggleLabel != null) {
+                toggle = new SwitchCompat(context);
+                toggle.setText(toggleLabel);
+                toggle.setChecked(toggleDefaultOn);
+                final LinearLayout.LayoutParams toggleParams =
+                        new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT);
+                toggleParams.topMargin =
+                        (int)
+                                TypedValue.applyDimension(
+                                        TypedValue.COMPLEX_UNIT_DIP,
+                                        8,
+                                        context.getResources().getDisplayMetrics());
+                container.addView(toggle, toggleParams);
+            } else {
+                toggle = null;
+            }
 
             final MaterialAlertDialogBuilder builder =
                     new MaterialAlertDialogBuilder(context)
@@ -231,7 +269,8 @@ public class MaterialInputDialog {
             }
 
             final AlertDialog alertDialog = builder.create();
-            final MaterialInputDialog inputDialog = new MaterialInputDialog(alertDialog, editText);
+            final MaterialInputDialog inputDialog =
+                    new MaterialInputDialog(alertDialog, editText, toggle);
 
             alertDialog.setOnShowListener(
                     d -> {

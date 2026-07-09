@@ -26,6 +26,16 @@ public class ContributionPosts extends GeneralPosts {
     private UserContributionPaginator paginator;
     protected SwipeRefreshLayout refreshLayout;
     protected ContributionAdapter adapter;
+    protected OnLoadCompleteListener loadCompleteListener;
+
+    /** Notified after each page finishes loading so callers can page to the end. */
+    public interface OnLoadCompleteListener {
+        void onLoadComplete();
+    }
+
+    public void setOnLoadCompleteListener(OnLoadCompleteListener listener) {
+        this.loadCompleteListener = listener;
+    }
 
     public ContributionPosts(String subreddit, String where) {
         this.subreddit = subreddit;
@@ -99,6 +109,10 @@ public class ContributionPosts extends GeneralPosts {
                 adapter.setError(true);
             }
             refreshLayout.setRefreshing(false);
+
+            if (loadCompleteListener != null) {
+                loadCompleteListener.onLoadComplete();
+            }
         }
 
         @Override

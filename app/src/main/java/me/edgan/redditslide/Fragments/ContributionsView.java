@@ -16,6 +16,7 @@ import me.edgan.redditslide.Adapters.ContributionPosts;
 import me.edgan.redditslide.Adapters.ContributionPostsSaved;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.R;
+import me.edgan.redditslide.SavedPostCache;
 import me.edgan.redditslide.Views.CatchStaggeredGridLayoutManager;
 import me.edgan.redditslide.Views.PreCachingLayoutManager;
 import me.edgan.redditslide.Visuals.Palette;
@@ -32,6 +33,7 @@ public class ContributionsView extends Fragment {
     private String where;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private View searchOverlay;
 
     @Override
     public View onCreateView(
@@ -40,6 +42,7 @@ public class ContributionsView extends Fragment {
         View v = inflater.inflate(R.layout.fragment_verticalcontent, container, false);
 
         recyclerView = v.findViewById(R.id.vertical_content);
+        searchOverlay = v.findViewById(R.id.search_loading_overlay);
         final RecyclerView rv = recyclerView;
 
         final PreCachingLayoutManager mLayoutManager = new PreCachingLayoutManager(getContext());
@@ -82,6 +85,13 @@ public class ContributionsView extends Fragment {
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
                     public void onRefresh() {
+                        // Pull-to-refresh means "get fresh": drop the Saved TTL cache (so a later
+                        // tab reopen won't serve the pre-refresh list) and force this reload to
+                        // hit the network.
+                        if (posts instanceof ContributionPostsSaved) {
+                            SavedPostCache.invalidate();
+                            ((ContributionPostsSaved) posts).bypassCache = true;
+                        }
                         posts.loadMore(adapter, id, true);
                         // TODO catch errors
                     }
@@ -140,9 +150,76 @@ public class ContributionsView extends Fragment {
     }
 
     /**
+     * Runs a search that first loads the entire (paginated) history so posts deep in
+     * the list are found, not just the pages already scrolled into view. The list is
+     * blocked behind a spinner overlay until loading finishes, then the filter is
+     * applied once over the complete set.
+     *
+     * @param query The search query string
+     * @param searchWhere The tab/section name (e.g., "saved")
+     * @param bypassCache On the Saved tab, force a fresh network reload instead of the TTL cache.
+     */
+    public void startSearch(String query, String searchWhere, boolean bypassCache) {
+        if (adapter == null || posts == null) {
+            return;
+        }
+
+        // Restore any previous filter so the new term searches the full set rather
+        // than the previous search's results.
+        adapter.clearFilter();
+
+        // Bypass toggle on Saved: reload the whole history from the network (ignoring the
+        // cache) with a reset load, then filter over the fresh, complete set.
+        boolean forceReload = bypassCache && posts instanceof ContributionPostsSaved;
+        if (forceReload) {
+            ((ContributionPostsSaved) posts).bypassCache = true;
+            posts.nomore = false;
+        } else if (posts.nomore) {
+            // Everything is already loaded (cache hit or prior full load) -- filter immediately.
+            adapter.applyFilter(query, searchWhere);
+            return;
+        }
+
+        // Block the list and page through the rest of the history before filtering.
+        showSearchOverlay(true);
+        posts.setOnLoadCompleteListener(
+                () -> {
+                    if (posts.nomore) {
+                        posts.setOnLoadCompleteListener(null);
+                        adapter.applyFilter(query, searchWhere);
+                        showSearchOverlay(false);
+                    } else if (!posts.loading) {
+                        posts.loading = true;
+                        posts.loadMore(adapter, id, false);
+                    }
+                });
+
+        if (forceReload) {
+            // Force a fresh reset load even if one is already in flight, so the bypass is
+            // always honored (the in-flight load can't leave us on stale/cached data).
+            posts.loading = true;
+            posts.loadMore(adapter, id, true);
+        } else if (!posts.loading) {
+            posts.loading = true;
+            posts.loadMore(adapter, id, false);
+        }
+    }
+
+    private void showSearchOverlay(boolean show) {
+        if (searchOverlay != null) {
+            searchOverlay.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    /**
      * Clears the active search filter and reloads data.
      */
     public void clearSearchAndReload() {
+        // Tear down any in-progress deep-search loading.
+        showSearchOverlay(false);
+        if (posts != null) {
+            posts.setOnLoadCompleteListener(null);
+        }
         if (adapter != null) {
             adapter.clearFilter();
         }

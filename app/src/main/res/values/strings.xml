@@ -175,6 +175,8 @@
     <string name="profile_search_results">%1$d results for \'%2$s\'</string>
     <string name="profile_search_clear">Clear search</string>
     <string name="profile_search_cleared">Search cleared</string>
+    <string name="profile_search_loading">Load all items to search…</string>
+    <string name="profile_search_bypass_cache">Bypass cache</string>
 
     <!-- Comment text options -->
     <string name="comment_gild">Award comment</string>

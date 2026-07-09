@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import me.edgan.redditslide.Authentication;
+import me.edgan.redditslide.SavedPostCache;
 import me.edgan.redditslide.util.LogUtil;
 
 import net.dean.jraw.models.Contribution;
@@ -54,6 +55,8 @@ public class LocalSaved {
     /** Record a successful save; held as pending until reconcile decides whether Reddit kept it. */
     public static void onSaved(Contribution thing) {
         if (thing == null || thing.getFullName() == null) return;
+        // The server-side Saved set just changed; drop its TTL cache so the next open refetches.
+        SavedPostCache.invalidate();
         KVStore.getInstance()
                 .insertOrUpdate(
                         PENDING_PREFIX + thing.getFullName(),
@@ -68,6 +71,8 @@ public class LocalSaved {
     /** Drop a thing from Local Saved entirely (the user unsaved it). */
     public static void onUnsaved(Contribution thing) {
         if (thing == null || thing.getFullName() == null) return;
+        // The server-side Saved set just changed; drop its TTL cache so the next open refetches.
+        SavedPostCache.invalidate();
         KVManger m = KVStore.getInstance();
         m.delete(PENDING_PREFIX + thing.getFullName());
         m.delete(PROMOTED_PREFIX + thing.getFullName());

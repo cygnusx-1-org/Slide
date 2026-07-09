@@ -375,6 +375,8 @@ public class UserSubscriptions {
     }
 
     public static void switchAccounts() {
+        // Different account -> different saved list; drop the previous account's Saved cache.
+        SavedPostCache.invalidate();
         SharedPreferences.Editor editor = Reddit.appRestart.edit();
         editor.putBoolean("back", true);
         editor.putString("subs", "");
