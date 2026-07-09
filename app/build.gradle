@@ -481,6 +481,13 @@ abstract class RenameApksTask extends DefaultTask {
 
     @TaskAction
     void taskAction() {
+        // Wipe stale APKs from previous builds so an old versionName file (e.g. slide-7.7.8.apk)
+        // doesn't linger beside the current one (slide-7.7.9.apk). versionName is git-derived, so
+        // the filename changes every release and the leftovers would otherwise accumulate here and
+        // get swept up by the GitHub release upload's "*.apk" glob.
+        outFolder.get().asFile.listFiles(
+            { File f -> f.name.endsWith(".apk") } as java.io.FileFilter)?.each { it.delete() }
+
         transformationRequest.get().submit(
             this,
             workerExecutor.noIsolation(),
