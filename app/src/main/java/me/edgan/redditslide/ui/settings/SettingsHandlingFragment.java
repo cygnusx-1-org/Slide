@@ -19,6 +19,7 @@ import com.google.common.collect.HashBiMap;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
@@ -213,6 +214,8 @@ public class SettingsHandlingFragment implements CompoundButton.OnCheckedChangeL
     }
 
     private void updateFilters() {
+        // The always-external domains decide whether a url resolves to Type.EXTERNAL.
+        ContentType.invalidateTypeCache();
         domainListLayout.removeAllViews();
         for (String s : SettingValues.alwaysExternal) {
             if (!s.isEmpty()

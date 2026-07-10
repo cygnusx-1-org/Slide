@@ -1,15 +1,12 @@
 package me.edgan.redditslide;
 
-import static com.lusfold.androidkeyvaluestore.core.KVManagerImpl.COLUMN_KEY;
-import static com.lusfold.androidkeyvaluestore.core.KVManagerImpl.TABLE_NAME;
 import static me.edgan.redditslide.OpenRedditLink.formatRedditUrl;
 import static me.edgan.redditslide.OpenRedditLink.getRedditLinkType;
 
-import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import com.lusfold.androidkeyvaluestore.KVStore;
 import com.lusfold.androidkeyvaluestore.core.KVManger;
-import com.lusfold.androidkeyvaluestore.utils.CursorUtils;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -54,23 +51,19 @@ public class HasSeen {
             fullname = fullname.substring(3);
         }
 
-        // Check if KVStore has a key containing the fullname
-        // This is necessary because the KVStore library is limited and Carlos didn't realize the
-        // performance impact
-        Cursor cur =
-                m.execQuery(
-                        "SELECT * FROM ? WHERE ? LIKE '%?%' LIMIT 1",
-                        new String[] {TABLE_NAME, COLUMN_KEY, fullname});
-        boolean contains = cur != null && cur.getCount() > 0;
-        CursorUtils.closeCursorQuietly(cur);
-
-        if (contains) {
+        // Key is the KVStore table's primary key, so these exact-match lookups use its index. A
+        // LIKE '%fullname%' scan cannot, and read the whole (unbounded) table for every submission.
+        String value = m.get(fullname);
+        if (value != null) {
             hasSeen.add(fullname);
-            String value = m.get(fullname);
             try {
-                if (value != null) seenTimes.put(fullname, Long.valueOf(value));
+                seenTimes.put(fullname, Long.valueOf(value));
             } catch (Exception ignored) {
             }
+        } else if (m.keyExists(LastComments.commentsKey(s.getFullName()))) {
+            // The post itself was never marked seen but its comments were visited (a NSFW post
+            // while storeNSFWHistory is off); the old LIKE scan matched that key too.
+            hasSeen.add(fullname);
         }
     }
 
@@ -194,10 +187,20 @@ public class HasSeen {
             fullname = fullname.substring(3);
         }
 
+        // Called from onScrolled, i.e. many times a second while flinging. Everything below only
+        // has to happen the first time a post is seen: insert() is a no-op once the key exists,
+        // and the Synccit lists are ArrayLists that would otherwise collect a duplicate per frame.
+        if (hasSeen.contains(fullname) && seenTimes.containsKey(fullname)) {
+            return;
+        }
+
         hasSeen.add(fullname);
         seenTimes.put(fullname, System.currentTimeMillis());
 
-        KVStore.getInstance().insert(fullname, String.valueOf(System.currentTimeMillis()));
+        final String key = fullname;
+        final String value = String.valueOf(System.currentTimeMillis());
+        // Off the UI thread: insert() runs a SELECT plus an INSERT against the seen database.
+        AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> KVStore.getInstance().insert(key, value));
 
         if (!fullname.contains("t1_")) {
             SynccitRead.newVisited.add(fullname);

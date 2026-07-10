@@ -32,6 +32,34 @@ public class SubmissionCache {
     private static WeakHashMap<String, SpannableStringBuilder> info;
     private static WeakHashMap<String, SpannableStringBuilder> crosspost;
 
+    /** fullname -> {source selftext_html, rendered first-line preview}. See getSelftextPreview. */
+    private static WeakHashMap<String, String[]> selftextPreviews;
+
+    /**
+     * The first line of a self post's body, unescaped for the card's preview TextView. Cached
+     * because building it runs a full Html.fromHtml parse, and the feed did that on every bind of
+     * every self post. Keyed on the source html too, so an edited post re-renders on its own.
+     */
+    public static String getSelftextPreview(Submission submission) {
+        if (selftextPreviews == null) selftextPreviews = new WeakHashMap<>();
+
+        final String source = submission.getDataNode().path("selftext_html").asText("");
+        final String[] cached = selftextPreviews.get(submission.getFullName());
+        if (cached != null && cached[0].equals(source)) {
+            return cached[1];
+        }
+
+        final String firstLine =
+                source.substring(0, source.contains("\n") ? source.indexOf("\n") : source.length());
+        final String preview =
+                CompatUtil.fromHtml(firstLine)
+                        .toString()
+                        .replace("<sup>", "<sup><small>")
+                        .replace("</sup>", "</small></sup>");
+        selftextPreviews.put(submission.getFullName(), new String[] {source, preview});
+        return preview;
+    }
+
     public static void cacheSubmissions(
             List<Submission> submissions, Context mContext, String baseSub) {
         cacheInfo(submissions, mContext, baseSub);

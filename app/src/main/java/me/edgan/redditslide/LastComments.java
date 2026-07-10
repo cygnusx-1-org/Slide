@@ -1,12 +1,7 @@
 package me.edgan.redditslide;
 
-import static com.lusfold.androidkeyvaluestore.core.KVManagerImpl.COLUMN_KEY;
-import static com.lusfold.androidkeyvaluestore.core.KVManagerImpl.TABLE_NAME;
-
-import android.database.Cursor;
 import com.lusfold.androidkeyvaluestore.KVStore;
 import com.lusfold.androidkeyvaluestore.core.KVManger;
-import com.lusfold.androidkeyvaluestore.utils.CursorUtils;
 import java.util.HashMap;
 import java.util.List;
 import net.dean.jraw.models.Submission;
@@ -15,6 +10,11 @@ import net.dean.jraw.models.Submission;
 public class LastComments {
 
     public static HashMap<String, Integer> commentsSince;
+
+    /** The KVStore key holding the comment count last seen for {@code fullname} (a t3_ fullname). */
+    public static String commentsKey(String fullname) {
+        return "comments" + fullname;
+    }
 
     public static void setCommentsSince(List<Submission> submissions) {
         if (commentsSince == null) {
@@ -25,18 +25,12 @@ public class LastComments {
             for (Submission s : submissions) {
                 String fullname = s.getFullName();
 
-                // Check if KVStore has a key containing comments + the fullname
-                // This is necessary because the KVStore library is limited and Carlos didn't
-                // realize the performance impact
-                Cursor cur =
-                        m.execQuery(
-                                "SELECT * FROM ? WHERE ? LIKE '%?%' LIMIT 1",
-                                new String[] {TABLE_NAME, COLUMN_KEY, "comments" + fullname});
-                boolean contains = cur != null && cur.getCount() > 0;
-                CursorUtils.closeCursorQuietly(cur);
-
-                if (contains) {
-                    commentsSince.put(fullname, Integer.valueOf(m.get("comments" + fullname)));
+                // Key is the KVStore table's primary key, so this exact-match lookup uses its
+                // index. A LIKE '%comments<fullname>%' scan cannot, and read the whole (unbounded)
+                // table for every submission.
+                String value = m.get(commentsKey(fullname));
+                if (value != null) {
+                    commentsSince.put(fullname, Integer.valueOf(value));
                 }
             }
         } catch (Exception ignored) {
@@ -55,7 +49,7 @@ public class LastComments {
             commentsSince = new HashMap<>();
         }
         KVStore.getInstance()
-                .insertOrUpdate("comments" + s.getFullName(), String.valueOf(s.getCommentCount()));
+                .insertOrUpdate(commentsKey(s.getFullName()), String.valueOf(s.getCommentCount()));
         commentsSince.put(s.getFullName(), s.getCommentCount());
     }
 }

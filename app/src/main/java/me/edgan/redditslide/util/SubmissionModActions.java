@@ -596,31 +596,37 @@ public class SubmissionModActions {
         int textSizeT = a.getDimensionPixelSize(0, 18);
         int textSizeI = a.getDimensionPixelSize(1, 14);
 
-        t.setSpan(new AbsoluteSizeSpan(textSizeT), 0, t.length(), 0);
-        l.setSpan(new AbsoluteSizeSpan(textSizeI), 0, l.length(), 0);
-
+        // t, l and c are the shared SpannableStringBuilders held by SubmissionCache. Size the
+        // appended copies inside s rather than the cached originals, which would otherwise collect
+        // an extra AbsoluteSizeSpan on every bind.
         SpannableStringBuilder s = new SpannableStringBuilder();
         if (SettingValues.titleTop) {
-            s.append(t);
+            appendSized(s, t, textSizeT);
             s.append("\n");
-            s.append(l);
+            appendSized(s, l, textSizeI);
         } else {
-            s.append(l);
+            appendSized(s, l, textSizeI);
             s.append("\n");
-            s.append(t);
+            appendSized(s, t, textSizeT);
         }
         if (!full && c != null) {
-            c.setSpan(new AbsoluteSizeSpan(textSizeI), 0, c.length(), 0);
             s.append("\n");
-            s.append(c);
+            appendSized(s, c, textSizeI);
         }
         a.recycle();
 
         holder.title.setText(s);
 
-        // Force this TextView to recalculate itself and request a new layout pass
+        // Fixed GitHub issue #11. Force this TextView to recalculate itself and request a new layout pass.
         holder.title.requestLayout();
-        holder.title.invalidate();
+    }
+
+    /** Append {@code toAppend} to {@code s} and apply {@code textSize} over just that range. */
+    private static void appendSized(
+            SpannableStringBuilder s, SpannableStringBuilder toAppend, int textSize) {
+        int start = s.length();
+        s.append(toAppend);
+        s.setSpan(new AbsoluteSizeSpan(textSize), start, s.length(), 0);
     }
 
     public static void stickySubmission(

@@ -458,10 +458,16 @@ public class SettingValues {
         alphabetizeOnSubscribe = prefs.getBoolean(PREF_ALPHABETIZE_SUBSCRIBE, false);
 
         commentPager = prefs.getBoolean(PREF_COMMENT_PAGER, false);
-        // Remove the old boolean preference for smallTag to prevent ClassCastException
-        // Remove the old boolean preference for smallTag to prevent ClassCastException
-        if (prefs.contains("smallTag") && (prefs.getAll().get("smallTag") instanceof Boolean)) {
-            prefs.edit().remove("smallTag").apply();
+        // Remove the old boolean preference for smallTag to prevent ClassCastException.
+        // Probe the key directly rather than via getAll(), which copies the whole SETTINGS map
+        // (one entry per visited subreddit) on the launch thread just to read one value.
+        if (prefs.contains("smallTag")) {
+            try {
+                prefs.getBoolean("smallTag", false);
+                prefs.edit().remove("smallTag").apply();
+            } catch (ClassCastException ignored) {
+                // Not a Boolean, so not the stale preference; leave it alone.
+            }
         }
         smallTag = prefs.getInt(PREF_SMALL_TAG_DROPDOWN, 0);
         swap = prefs.getBoolean(PREF_SWAP, false);

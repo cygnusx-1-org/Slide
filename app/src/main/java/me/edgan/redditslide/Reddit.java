@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -80,7 +81,9 @@ public class Reddit extends Application implements Application.ActivityLifecycle
     public static final long enter_animation_time_original = 600;
     public static final String PREF_LAYOUT = "PRESET";
     public static final String SHARED_PREF_IS_MOD = "is_mod";
-    public static Cache videoCache;
+
+    private static Cache videoCache;
+    private static final Object videoCacheLock = new Object();
 
     public static long enter_animation_time = enter_animation_time_original;
     public static final int enter_animation_time_multiplier = 1;
@@ -413,20 +416,40 @@ public class Reddit extends Application implements Application.ActivityLifecycle
             return;
         }
 
-        final File dir;
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)
-                && getExternalCacheDir() != null) {
-            dir = new File(getExternalCacheDir() + File.separator + "video-cache");
-        } else {
-            dir = new File(getCacheDir() + File.separator + "video-cache");
-        }
-        LeastRecentlyUsedCacheEvictor evictor =
-                new LeastRecentlyUsedCacheEvictor(256 * 1024 * 1024);
-        DatabaseProvider databaseProvider = new ExoDatabaseProvider(getAppContext());
-        videoCache = new SimpleCache(dir, evictor, databaseProvider); // 256MB
-
         UpgradeUtil.upgrade(getApplicationContext());
         doMainStuff();
+
+        // Build the video cache off the launch thread; SimpleCache's constructor locks and scans
+        // the cache folder, which cost hundreds of milliseconds of cold start for every user,
+        // whether or not they went on to play a video.
+        AsyncTask.THREAD_POOL_EXECUTOR.execute(Reddit::getVideoCache);
+    }
+
+    /**
+     * The shared 256MB media cache, built on first use. SimpleCache throws if a second instance is
+     * created for the same directory, so this must be the only construction site.
+     */
+    public static Cache getVideoCache() {
+        synchronized (videoCacheLock) {
+            if (videoCache == null) {
+                final File dir;
+                if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)
+                        && getAppContext().getExternalCacheDir() != null) {
+                    dir =
+                            new File(
+                                    getAppContext().getExternalCacheDir()
+                                            + File.separator
+                                            + "video-cache");
+                } else {
+                    dir = new File(getAppContext().getCacheDir() + File.separator + "video-cache");
+                }
+                LeastRecentlyUsedCacheEvictor evictor =
+                        new LeastRecentlyUsedCacheEvictor(256 * 1024 * 1024);
+                DatabaseProvider databaseProvider = new ExoDatabaseProvider(getAppContext());
+                videoCache = new SimpleCache(dir, evictor, databaseProvider); // 256MB
+            }
+            return videoCache;
+        }
     }
 
     public void doMainStuff() {
@@ -446,9 +469,15 @@ public class Reddit extends Application implements Application.ActivityLifecycle
 
         cachedData = getSharedPreferences("cache", 0);
 
-        if (!cachedData.contains("hasReset")) {
-            cachedData.edit().clear().putBoolean("hasReset", true).apply();
-        }
+        // Off the launch thread: "cache" holds one entry per cached subreddit page and is never
+        // pruned, and contains() blocks until the whole file is parsed. Nothing needed for the
+        // first frame reads it.
+        AsyncTask.THREAD_POOL_EXECUTOR.execute(
+                () -> {
+                    if (!cachedData.contains("hasReset")) {
+                        cachedData.edit().clear().putBoolean("hasReset", true).apply();
+                    }
+                });
 
         registerActivityLifecycleCallbacks(this);
         Authentication.authentication = getSharedPreferences("AUTH", 0);

@@ -154,7 +154,9 @@ public class GifUtils {
 
         @Override
         protected File doInBackground(Void... voids) {
-            OkHttpClient client = new OkHttpClient();
+            // Reuse the shared client: a new OkHttpClient brings its own dispatcher, thread pool
+            // and connection pool, so every GIF download started from scratch.
+            OkHttpClient client = Reddit.client;
             Request request = new Request.Builder().url(url).build();
             Response response = null;
             try {
@@ -394,7 +396,7 @@ public class GifUtils {
                                 DataSource.Factory downloader = new OkHttpDataSource.Factory(Reddit.client)
                                         .setUserAgent(activity.getString(R.string.app_name));
                                 DataSource.Factory cacheDataSourceFactory = new CacheDataSource.Factory()
-                                        .setCache(Reddit.videoCache)
+                                        .setCache(Reddit.getVideoCache())
                                         .setUpstreamDataSourceFactory(downloader);
 
                                 InputStream dashManifestStream = new DataSourceInputStream(
@@ -1201,7 +1203,7 @@ public class GifUtils {
                                 .setUserAgent(c.getString(R.string.app_name));
                 DataSource.Factory cacheDataSourceFactory =
                         new CacheDataSource.Factory()
-                                .setCache(Reddit.videoCache)
+                                .setCache(Reddit.getVideoCache())
                                 .setUpstreamDataSourceFactory(downloader);
                 InputStream dashManifestStream =
                         new DataSourceInputStream(

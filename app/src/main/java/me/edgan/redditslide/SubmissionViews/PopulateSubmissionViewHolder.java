@@ -488,7 +488,6 @@ public class PopulateSubmissionViewHolder {
                 && !submission.getDataNode().get("spoiler").asBoolean()
                 && !submission.getDataNode().path("selftext_html").asText("").trim().isEmpty()) {
             holder.body.setVisibility(View.VISIBLE);
-            String text = submission.getDataNode().path("selftext_html").asText("");
             int typef = new FontPreferences(mContext).getFontTypeComment().getTypeface();
             Typeface typeface;
             if (typef >= 0) {
@@ -498,17 +497,7 @@ public class PopulateSubmissionViewHolder {
             }
             holder.body.setTypeface(typeface);
 
-            holder.body.setTextHtml(
-                    CompatUtil.fromHtml(
-                                    text.substring(
-                                            0,
-                                            text.contains("\n")
-                                                    ? text.indexOf("\n")
-                                                    : text.length()))
-                            .toString()
-                            .replace("<sup>", "<sup><small>")
-                            .replace("</sup>", "</small></sup>"),
-                    "none ");
+            holder.body.setTextHtml(SubmissionCache.getSelftextPreview(submission), "none ");
             holder.body.setOnClickListener(
                     new View.OnClickListener() {
                         @Override

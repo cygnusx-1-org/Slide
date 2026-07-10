@@ -352,7 +352,7 @@ public class SubmissionParser {
      * comment image. The remainder of the block string is the image URL. Renderers detect this and
      * draw a real (pre-sized) ImageView instead of inline text.
      */
-    public static final String IMAGE_BLOCK_PREFIX = "img";
+    public static final String IMAGE_BLOCK_PREFIX = "\u0001img\u0001";
 
     private static final Pattern GIPHY_ANCHOR_WITH_IMG_PATTERN =
             Pattern.compile(

@@ -1,5 +1,7 @@
 package me.edgan.redditslide.markdown;
 
+import android.content.Context;
+import android.text.Spanned;
 import android.view.View;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
@@ -76,13 +78,55 @@ public final class MarkdownImages {
             String bodyHtml,
             JsonNode dataNode,
             String searchTerm) {
+        renderPrepared(
+                textView,
+                overflow,
+                subreddit,
+                prepare(textView.getContext(), rawMarkdown, dataNode),
+                bodyHtml,
+                dataNode,
+                searchTerm);
+    }
+
+    /**
+     * The view-independent half of {@link #renderInto}: the parsed text and the emote URLs to load
+     * over its placeholders. Both are a pure function of the raw markdown, so a caller rendering the
+     * same comment repeatedly can cache this rather than re-parsing on every bind.
+     */
+    public static final class Prepared {
+        /** The rendered markdown, or {@code null} when the body is entirely media/whitespace. */
+        public final Spanned text;
+
+        public final List<String> emoteUrls;
+
+        Prepared(Spanned text, List<String> emoteUrls) {
+            this.text = text;
+            this.emoteUrls = emoteUrls;
+        }
+    }
+
+    /** Resolve and parse {@code rawMarkdown}; see {@link Prepared}. */
+    public static Prepared prepare(Context context, String rawMarkdown, JsonNode dataNode) {
         rawMarkdown = unescapeTransportEntities(rawMarkdown);
         EmoteResolution emotes = resolveEmotes(rawMarkdown, dataNode);
         String text = stripMediaUrls(emotes.markdown);
+        Spanned rendered = text.trim().isEmpty() ? null : RedditMarkwon.toMarkdown(context, text);
+        return new Prepared(rendered, emotes.urls);
+    }
+
+    /** Draw an already-{@link #prepare}d comment into {@code textView} and {@code overflow}. */
+    public static void renderPrepared(
+            SpoilerRobotoTextView textView,
+            CommentOverflow overflow,
+            String subreddit,
+            Prepared prepared,
+            String bodyHtml,
+            JsonNode dataNode,
+            String searchTerm) {
         boolean rendered = false;
-        if (!text.trim().isEmpty()) {
-            RedditMarkwon.setMarkdown(textView, subreddit, text);
-            textView.loadFreeEmotes(emotes.urls);
+        if (prepared.text != null) {
+            RedditMarkwon.setParsedMarkdown(textView, subreddit, prepared.text);
+            textView.loadFreeEmotes(prepared.emoteUrls);
             if (searchTerm != null && !searchTerm.isEmpty()) {
                 textView.highlightOccurrences(searchTerm, subreddit);
             }

@@ -12,6 +12,7 @@ package me.edgan.redditslide.markdown;
 
 import android.content.Context;
 import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.SuperscriptSpan;
@@ -86,12 +87,33 @@ public final class RedditMarkwon {
      */
     public static void setMarkdown(
             SpoilerRobotoTextView textView, String subreddit, String markdown) {
-        Markwon markwon = get(textView.getContext());
+        setParsedMarkdown(textView, subreddit, toMarkdown(textView.getContext(), markdown));
+    }
+
+    /**
+     * Parse {@code markdown} into a themed {@link Spanned}. This is the expensive half of {@link
+     * #setMarkdown} (preprocessing plus the commonmark parse and span build) and depends on nothing
+     * view-specific, so callers that render the same source repeatedly \u2014 a RecyclerView rebinding a
+     * comment on every scroll \u2014 can hold onto the result. The colors baked in here are dropped by
+     * {@link #invalidate()}, so a cached result must not outlive a base-theme change.
+     */
+    public static Spanned toMarkdown(Context context, String markdown) {
+        Markwon markwon = get(context);
         String prepared = RedditSpoilerPreprocessor.sentinelize(markdown == null ? "" : markdown);
         prepared = BlockquoteNormalizer.mergeAdjacentBlockquotes(prepared);
         prepared = ZERO_WIDTH_SPACE_ENTITY.matcher(prepared).replaceAll("\u200B");
-        Spanned rendered = markwon.toMarkdown(prepared);
-        markwon.setParsedMarkdown(textView, rendered);
+        return markwon.toMarkdown(prepared);
+    }
+
+    /**
+     * Apply an already-parsed {@code rendered} to {@code textView}, wiring link taps to Slide's
+     * routing. {@code rendered} may be shared between calls, so the TextView is given its own copy
+     * to add emote/highlight spans to.
+     */
+    public static void setParsedMarkdown(
+            SpoilerRobotoTextView textView, String subreddit, Spanned rendered) {
+        Markwon markwon = get(textView.getContext());
+        markwon.setParsedMarkdown(textView, new SpannableStringBuilder(rendered));
         CharSequence text = textView.getText();
         if (text instanceof Spannable) {
             Spannable spannable = (Spannable) text;

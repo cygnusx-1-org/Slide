@@ -97,18 +97,65 @@ public class CreateCardView {
     public static void resetColorCard(View v) {
         v.setTag(v.getId(), "none");
 
+        TintViews tinted = getTintViews(v);
+
         TypedValue background = new TypedValue();
         v.getContext().getTheme().resolveAttribute(R.attr.card_background, background, true);
         ((CardView) v.findViewById(R.id.card)).setCardBackgroundColor(background.data);
         if (!SettingValues.actionbarVisible) {
-            for (View v2 : getViewsByTag((ViewGroup) v, "tintactionbar")) {
+            for (View v2 : tinted.tintactionbar) {
                 v2.setVisibility(View.GONE);
             }
         }
 
-        doColor(getViewsByTag((ViewGroup) v, "tint"));
-        doColorSecond(getViewsByTag((ViewGroup) v, "tintsecond"));
-        doColorSecond(getViewsByTag((ViewGroup) v, "tintactionbar"));
+        doColor(tinted.tint);
+        doColorSecond(tinted.tintsecond);
+        doColorSecond(tinted.tintactionbar);
+    }
+
+    /** The tag-lookup results for one card, cached on its root view. */
+    private static class TintViews {
+        final ArrayList<View> tint = new ArrayList<>();
+        final ArrayList<View> tintsecond = new ArrayList<>();
+        final ArrayList<View> tintactionbar = new ArrayList<>();
+    }
+
+    /**
+     * The card's tagged views, collected in a single traversal the first time and then reused. The
+     * tagged views are only ever shown/hidden, never added or removed, so the lists stay valid for
+     * the life of the (recycled) card. Without this, every bind walked the whole view tree once per
+     * tag.
+     */
+    private static TintViews getTintViews(View v) {
+        final Object cached = v.getTag(R.id.tint_views_tag);
+        if (cached instanceof TintViews) {
+            return (TintViews) cached;
+        }
+        TintViews tinted = new TintViews();
+        collectTintViews((ViewGroup) v, tinted);
+        v.setTag(R.id.tint_views_tag, tinted);
+        return tinted;
+    }
+
+    private static void collectTintViews(ViewGroup root, TintViews tinted) {
+        final int childCount = root.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            final View child = root.getChildAt(i);
+            if (child instanceof ViewGroup) {
+                collectTintViews((ViewGroup) child, tinted);
+            }
+
+            final Object tagObj = child.getTag();
+            if (tagObj != null) {
+                if (tagObj.equals("tint")) {
+                    tinted.tint.add(child);
+                } else if (tagObj.equals("tintsecond")) {
+                    tinted.tintsecond.add(child);
+                } else if (tagObj.equals("tintactionbar")) {
+                    tinted.tintactionbar.add(child);
+                }
+            }
+        }
     }
 
     public static void doColor(ArrayList<View> v) {
@@ -173,9 +220,10 @@ public class CreateCardView {
                 ((CardView) v.findViewById(R.id.card))
                         .setCardBackgroundColor(Palette.getColor(sec));
                 v.setTag(v.getId(), "color");
-                resetColor(getViewsByTag((ViewGroup) v, "tint"));
-                resetColor(getViewsByTag((ViewGroup) v, "tintsecond"));
-                resetColor(getViewsByTag((ViewGroup) v, "tintactionbar"));
+                TintViews tinted = getTintViews(v);
+                resetColor(tinted.tint);
+                resetColor(tinted.tintsecond);
+                resetColor(tinted.tintactionbar);
             }
         }
     }

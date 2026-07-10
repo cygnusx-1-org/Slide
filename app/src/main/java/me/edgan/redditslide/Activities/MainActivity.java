@@ -10,13 +10,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -1086,7 +1084,7 @@ public class MainActivity extends BaseActivity
             LogUtil.v("Starting main 2 " + Authentication.name);
             Authentication.isLoggedIn = Reddit.appRestart.getBoolean("loggedin", false);
             Authentication.name = Reddit.appRestart.getString("name", "LOGGEDOUT");
-            Reddit.appRestart.edit().putBoolean("isRestarting", false).commit();
+            Reddit.appRestart.edit().putBoolean("isRestarting", false).apply();
             Reddit.isRestarting = false;
             UserSubscriptions.doMainActivitySubs(this);
         }
@@ -1171,16 +1169,6 @@ public class MainActivity extends BaseActivity
 
         }
 
-        LogUtil.v("Installed browsers");
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse("http://ccrama.me/"));
-        List<ResolveInfo> allApps =
-                getPackageManager()
-                        .queryIntentActivities(intent, PackageManager.GET_DISABLED_COMPONENTS);
-        for (ResolveInfo i : allApps) {
-            if (i.activityInfo.isEnabled()) LogUtil.v(i.activityInfo.packageName);
-        }
     }
 
     @Override
@@ -1342,6 +1330,7 @@ public class MainActivity extends BaseActivity
                 .apply();
 
         SettingValues.alwaysExternal = domains;
+        ContentType.invalidateTypeCache();
     }
 
     public void doFriends(final List<String> friends) {

@@ -119,6 +119,7 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
                             if (itemsToAdd > 0) {
                                 listView.setItemAnimator(new SlideRightAlphaAnimator());
                             }
+                            adapter.invalidatePositionCache();
                             adapter.notifyDataSetChanged();
                         });
     }

@@ -40,6 +40,7 @@ import me.edgan.redditslide.Activities.SubredditView;
 import me.edgan.redditslide.Adapters.SubmissionViewHolder;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.CommentCacheAsync;
+import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.Hidden;
 import me.edgan.redditslide.OfflineSubreddit;
 import me.edgan.redditslide.PostMatch;
@@ -270,10 +271,12 @@ public class SubmissionBottomSheetActions {
 
                                 if (chosen[3] && chosen[3] != oldChosen[3]) {
                                     SettingValues.alwaysExternal.add(submission.getDomain().toLowerCase(Locale.ENGLISH).trim());
+                                    ContentType.invalidateTypeCache();
                                     e.putStringSet(SettingValues.PREF_ALWAYS_EXTERNAL, SettingValues.alwaysExternal);
                                     e.apply();
                                 } else if (!chosen[3] && chosen[3] != oldChosen[3]) {
                                     SettingValues.alwaysExternal.remove(submission.getDomain().toLowerCase(Locale.ENGLISH).trim());
+                                    ContentType.invalidateTypeCache();
                                     e.putStringSet(SettingValues.PREF_ALWAYS_EXTERNAL, SettingValues.alwaysExternal);
                                     e.apply();
                                 }

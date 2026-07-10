@@ -425,7 +425,7 @@ public class ExoVideoView extends RelativeLayout {
                             .setDefaultRequestProperties(GifUtils.AsyncLoadGif.makeHeaderMap(uri.getHost()));
             DataSource.Factory cacheDataSourceFactory =
                     new CacheDataSource.Factory()
-                            .setCache(Reddit.videoCache)
+                            .setCache(Reddit.getVideoCache())
                             .setUpstreamDataSourceFactory(downloader);
 
             MediaSource videoSource;

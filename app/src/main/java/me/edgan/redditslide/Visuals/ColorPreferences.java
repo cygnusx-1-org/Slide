@@ -14,7 +14,6 @@ import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
-import org.apache.commons.text.StringEscapeUtils;
 
 /** Created by ccrama on 7/9/2015. */
 public class ColorPreferences {
@@ -22,6 +21,9 @@ public class ColorPreferences {
     private static final String USER_THEME_DELIMITER = "$USER$";
     public static final String FONT_STYLE = "THEME";
     private final Context context;
+
+    /** Resolved once: getSharedPreferences is a synchronized lookup and open() is called a lot. */
+    private SharedPreferences prefs;
 
     public ColorPreferences(Context context) {
         this.context = context;
@@ -489,7 +491,10 @@ public class ColorPreferences {
     }
 
     protected SharedPreferences open() {
-        return context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+        if (prefs == null) {
+            prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+        }
+        return prefs;
     }
 
     protected SharedPreferences.Editor edit() {
@@ -500,7 +505,11 @@ public class ColorPreferences {
         String userTheme =
                 open().getString(themeName + USER_THEME_DELIMITER + Authentication.name, null);
         if (userTheme != null) {
-            return userTheme.split(StringEscapeUtils.escapeJava(USER_THEME_DELIMITER))[0];
+            // Was userTheme.split(escapeJava(USER_THEME_DELIMITER))[0]. escapeJava leaves "$USER$"
+            // unchanged, and split() takes a regex in which both '$' are end-of-input anchors, so
+            // the pattern can never match and [0] was always the whole string. Same result, without
+            // compiling a Pattern on every call.
+            return userTheme;
         } else {
             return open().getString(themeName, defaultValue);
         }

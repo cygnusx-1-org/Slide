@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.util.LruCache;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -247,11 +248,53 @@ public class ContentType {
      * @return Content type of the Submission
      * @see #getContentType(String)
      */
+    /** A submission's resolved type, together with the url it was resolved from. */
+    private static class CachedType {
+        final String url;
+        final Type type;
+
+        CachedType(String url, Type type) {
+            this.url = url;
+            this.type = type;
+        }
+    }
+
+    /**
+     * Resolved content types, keyed by fullname. Resolving one parses the url twice (a URI here and
+     * a URL inside {@link PostMatch#openExternal}) and scans the always-external domain set, which
+     * ran on every feed bind. LruCache is used because this is reached from both the UI thread and
+     * the pagination thread (via {@link PostMatch#doesMatch}); it synchronizes internally.
+     */
+    private static final LruCache<String, CachedType> typeCache = new LruCache<>(500);
+
+    /**
+     * Drop the resolved types. Must be called whenever {@link SettingValues#alwaysExternal} changes,
+     * since that decides whether a url resolves to {@link Type#EXTERNAL}.
+     */
+    public static void invalidateTypeCache() {
+        typeCache.evictAll();
+    }
+
     public static Type getContentType(Submission submission) {
         if (submission == null) {
             return Type.SELF; // hopefully shouldn't be null, but catch it in case
         }
 
+        // Validated against the url, so a post whose link is rewritten later (PostRecovery) is
+        // resolved again rather than served from the cache.
+        final String url = submission.getUrl();
+        final String key = submission.getFullName();
+        final CachedType cached = typeCache.get(key);
+        if (cached != null && (cached.url == null ? url == null : cached.url.equals(url))) {
+            return cached.type;
+        }
+
+        final Type type = computeContentType(submission);
+        typeCache.put(key, new CachedType(url, type));
+        return type;
+    }
+
+    private static Type computeContentType(Submission submission) {
         if (submission.isGallery()) {
             return Type.REDDIT_GALLERY;
         }

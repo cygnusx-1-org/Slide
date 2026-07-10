@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import java.net.MalformedURLException;
 import java.net.URL;
+import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.LogUtil;
 
@@ -18,6 +19,7 @@ public class MakeExternal extends Activity {
             try {
                 URL u = new URL(url);
                 SettingValues.alwaysExternal.add(u.getHost());
+                ContentType.invalidateTypeCache();
                 SharedPreferences.Editor e = SettingValues.prefs.edit();
                 e.putStringSet(SettingValues.PREF_ALWAYS_EXTERNAL, SettingValues.alwaysExternal);
                 e.apply();

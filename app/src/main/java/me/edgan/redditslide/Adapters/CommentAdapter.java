@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
+import android.util.LruCache;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -111,6 +112,27 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public ArrayList<String> approved = new ArrayList<>();
     public ArrayList<String> removed = new ArrayList<>();
 
+    /** Visible row index -> index in currentComments. See {@link #getRealPosition(int)}. */
+    private ArrayList<Integer> visiblePositions;
+
+    /** Volatile: AsyncForceLoadChild mutates currentComments off the UI thread. */
+    private volatile boolean positionMapDirty = true;
+
+    /** Subtree sizes for collapsed rows. See {@link #getChildNumber(CommentNode)}. */
+    private final HashMap<String, Integer> childCountCache = new HashMap<>();
+
+    private volatile boolean childCountsDirty = true;
+
+    /**
+     * Parsed comment bodies, keyed by fullname. Bounded: a long thread would otherwise hold a
+     * Spanned for every comment ever scrolled past. Dropped on reset() because the spans bake in
+     * theme colors (see {@link me.edgan.redditslide.markdown.RedditMarkwon#invalidate()}).
+     */
+    private final LruCache<String, CachedMarkdown> markdownCache = new LruCache<>(250);
+
+    /** Parsed snudown blocks, keyed by fullname. See {@link #getBlocksCached(Comment)}. */
+    private final LruCache<String, CachedBlocks> blockCache = new LruCache<>(250);
+
     public CommentAdapter(
             CommentPage mContext,
             SubmissionComments dataSet,
@@ -153,6 +175,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             boolean reset) {
 
         doTimes();
+        invalidatePositionCache();
+        markdownCache.evictAll();
+        blockCache.evictAll();
 
         this.mContext = mContext;
         this.listView = listView;
@@ -246,10 +271,13 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         for (CommentObject o : currentComments) {
             if (o.comment.isTopLevel()) {
                 hiddenPersons.remove(o.comment.getComment().getFullName());
-                unhideAll(o.comment);
+                // unhideNumber, not unhideAll: the latter fires a notifyDataSetChanged per
+                // top-level comment, rebinding (and re-rendering) every visible row each time.
+                unhideNumber(o.comment, 0);
             }
         }
-        notifyItemChanged(2);
+        setCollapseAnimator();
+        notifyDataSetChanged();
     }
 
     public void collapseAll() {
@@ -259,10 +287,23 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (!hiddenPersons.contains(o.comment.getComment().getFullName())) {
                     hiddenPersons.add(o.comment.getComment().getFullName());
                 }
-                hideAll(o.comment);
+                // hideNumber, not hideAll: see expandAll().
+                hideNumber(o.comment, 0);
             }
         }
-        notifyItemChanged(2);
+        setCollapseAnimator();
+        notifyDataSetChanged();
+    }
+
+    private void setCollapseAnimator() {
+        if (SettingValues.collapseComments) {
+            listView.setItemAnimator(null);
+        } else {
+            try {
+                listView.setItemAnimator(new AlphaInAnimator());
+            } catch (Exception ignored) {
+            }
+        }
     }
 
     public void doScoreText(CommentViewHolder holder, Comment comment, CommentAdapter adapter) {
@@ -283,7 +324,10 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 fullname = fullname.substring(3);
             }
             HasSeen.seenTimes.put(fullname, System.currentTimeMillis());
-            KVStore.getInstance().insert(fullname, String.valueOf(System.currentTimeMillis()));
+            final String key = fullname;
+            final String value = String.valueOf(System.currentTimeMillis());
+            // Off the UI thread: insert() runs a SELECT plus an INSERT against the seen database.
+            AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> KVStore.getInstance().insert(key, value));
         }
         if (submission != null) {
             if (SettingValues.storeHistory) {
@@ -380,17 +424,10 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             if (!toCollapse.contains(comment.getFullName()) || !SettingValues.collapseComments) {
                 if (SettingValues.markdownNewReddit) {
                     // New Reddit-style: render the raw markdown body via Markwon (issue #179).
-                    setViewsMarkdown(
-                            comment.getBody(),
-                            comment.getDataNode().path("body_html").asText(""),
-                            comment.getDataNode(),
-                            submission.getSubredditName(),
-                            holder);
+                    setViewsMarkdown(comment, submission.getSubredditName(), holder);
                 } else {
                     setViews(
-                            SubmissionParser.replaceProcessingImgPlaceholders(
-                                    comment.getDataNode().path("body_html").asText(""),
-                                    comment.getDataNode()),
+                            getBlocksCached(comment),
                             submission.getSubredditName(),
                             holder,
                             singleClick,
@@ -880,18 +917,120 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      * {@link CommentOverflow} block list is cleared). See issue #179.
      */
     public void setViewsMarkdown(
-            String rawMarkdown,
-            String bodyHtml,
-            JsonNode dataNode,
-            String subredditName,
-            CommentViewHolder holder) {
-        MarkdownImages.renderInto(
+            Comment comment, String subredditName, CommentViewHolder holder) {
+        MarkdownImages.renderPrepared(
                 holder.firstTextView,
                 holder.commentOverflow,
                 subredditName,
-                rawMarkdown,
-                bodyHtml,
-                dataNode);
+                getPreparedMarkdown(comment),
+                comment.getDataNode().path("body_html").asText(""),
+                comment.getDataNode(),
+                null);
+    }
+
+    /** A comment's parsed markdown, plus every input it was parsed from. */
+    private static class CachedMarkdown {
+        final JsonNode dataNode;
+        final String body;
+        final MarkdownImages.Prepared prepared;
+
+        CachedMarkdown(JsonNode dataNode, String body, MarkdownImages.Prepared prepared) {
+            this.dataNode = dataNode;
+            this.body = body;
+            this.prepared = prepared;
+        }
+    }
+
+    /**
+     * The parsed form of {@code comment}'s markdown, reused across binds. Parsing it is the single
+     * most expensive thing {@link #onBindViewHolder} does, and a RecyclerView re-binds a row every
+     * time it scrolls back into view.
+     *
+     * <p>Keyed by fullname, so two comments never share the (stateful) spoiler spans of an
+     * identical body, and validated against the body and the data node (which supplies the
+     * media_metadata that resolves emote urls), so an edited or re-fetched comment re-parses.
+     */
+    private MarkdownImages.Prepared getPreparedMarkdown(Comment comment) {
+        final JsonNode dataNode = comment.getDataNode();
+        final String body = comment.getBody();
+        final String key = comment.getFullName();
+
+        final CachedMarkdown cached = markdownCache.get(key);
+        if (cached != null
+                && cached.dataNode == dataNode
+                && (cached.body == null ? body == null : cached.body.equals(body))) {
+            return cached.prepared;
+        }
+
+        final MarkdownImages.Prepared prepared = MarkdownImages.prepare(mContext, body, dataNode);
+        markdownCache.put(key, new CachedMarkdown(dataNode, body, prepared));
+        return prepared;
+    }
+
+    /** Parse {@code rawHTML} (already placeholder-resolved) into the renderer's block list. */
+    private List<String> computeBlocks(String rawHTML) {
+        List<String> blocks = SubmissionParser.getBlocks(rawHTML);
+        if (!SettingValues.shouldSkipImages(mContext)) {
+            // Split standalone images into their own blocks so they render as pre-sized ImageViews.
+            blocks = SubmissionParser.extractImageBlocks(blocks);
+        }
+        return blocks;
+    }
+
+    /** A comment's parsed blocks, plus every input they were parsed from. */
+    private static class CachedBlocks {
+        final JsonNode dataNode;
+        final String bodyHtml;
+        final boolean skipImages;
+        final List<String> blocks;
+
+        CachedBlocks(JsonNode dataNode, String bodyHtml, boolean skipImages, List<String> blocks) {
+            this.dataNode = dataNode;
+            this.bodyHtml = bodyHtml;
+            this.skipImages = skipImages;
+            this.blocks = blocks;
+        }
+    }
+
+    /**
+     * The snudown renderer's blocks for {@code comment}, reused across binds. Producing them runs
+     * the placeholder regex, {@link SubmissionParser#getBlocks} (unescape plus a chain of replaces
+     * and spoiler/list/code/table passes) and image extraction, and a RecyclerView re-binds a row
+     * every time it scrolls back into view.
+     *
+     * <p>Returns null when the comment has no body_html, matching the early return in the String
+     * overloads of setViews (which leave the recycled views untouched).
+     *
+     * <p>Validated against every input the blocks depend on: the data node (a stable, final
+     * reference per Comment, and the source of the media_metadata that resolves image
+     * placeholders), the source html, and {@code skipImages}, which follows the live data-saving
+     * state and decides whether images become their own blocks.
+     */
+    private List<String> getBlocksCached(Comment comment) {
+        final JsonNode dataNode = comment.getDataNode();
+        final String bodyHtml = dataNode.path("body_html").asText("");
+        if (bodyHtml.isEmpty()) {
+            return null;
+        }
+        final boolean skipImages = SettingValues.shouldSkipImages(mContext);
+
+        final CachedBlocks cached = blockCache.get(comment.getFullName());
+        if (cached != null
+                && cached.dataNode == dataNode
+                && cached.skipImages == skipImages
+                && cached.bodyHtml.equals(bodyHtml)) {
+            return cached.blocks;
+        }
+
+        final String rawHTML =
+                SubmissionParser.replaceProcessingImgPlaceholders(bodyHtml, dataNode);
+        if (rawHTML.isEmpty()) {
+            return null;
+        }
+        final List<String> blocks = computeBlocks(rawHTML);
+        blockCache.put(
+                comment.getFullName(), new CachedBlocks(dataNode, bodyHtml, skipImages, blocks));
+        return blocks;
     }
 
     public void setViews(
@@ -903,10 +1042,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return;
         }
 
-        List<String> blocks = SubmissionParser.getBlocks(rawHTML);
-        if (!SettingValues.shouldSkipImages(mContext)) {
-            blocks = SubmissionParser.extractImageBlocks(blocks);
-        }
+        List<String> blocks = computeBlocks(rawHTML);
 
         if (blocks.isEmpty()) {
             firstTextView.setText("");
@@ -948,11 +1084,29 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (rawHTML.isEmpty()) {
             return;
         }
+        setViews(
+                computeBlocks(rawHTML),
+                subredditName,
+                firstTextView,
+                commentOverflow,
+                click,
+                onLongClickListener);
+    }
 
-        List<String> blocks = SubmissionParser.getBlocks(rawHTML);
-        if (!SettingValues.shouldSkipImages(mContext)) {
-            // Split standalone images into their own blocks so they render as pre-sized ImageViews.
-            blocks = SubmissionParser.extractImageBlocks(blocks);
+    /**
+     * As {@link #setViews(String, String, SpoilerRobotoTextView, CommentOverflow,
+     * View.OnClickListener, View.OnLongClickListener)}, but with the blocks already parsed. A null
+     * {@code blocks} means the source html was empty, which leaves the views untouched.
+     */
+    public void setViews(
+            List<String> blocks,
+            String subredditName,
+            final SpoilerRobotoTextView firstTextView,
+            CommentOverflow commentOverflow,
+            View.OnClickListener click,
+            View.OnLongClickListener onLongClickListener) {
+        if (blocks == null) {
+            return;
         }
 
         if (blocks.isEmpty()) {
@@ -988,6 +1142,21 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public void setViews(String rawHTML, String subredditName, CommentViewHolder holder) {
         setViews(rawHTML, subredditName, holder.firstTextView, holder.commentOverflow);
+    }
+
+    private void setViews(
+            List<String> blocks,
+            String subredditName,
+            CommentViewHolder holder,
+            View.OnClickListener click,
+            View.OnLongClickListener longClickListener) {
+        setViews(
+                blocks,
+                subredditName,
+                holder.firstTextView,
+                holder.commentOverflow,
+                click,
+                longClickListener);
     }
 
     private void setViews(
@@ -1415,12 +1584,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     if (toCollapse.contains(comment.getFullName())
                             && SettingValues.collapseComments) {
                         if (SettingValues.markdownNewReddit) {
-                            setViewsMarkdown(
-                                    comment.getBody(),
-                                    comment.getDataNode().path("body_html").asText(""),
-                                    comment.getDataNode(),
-                                    submission.getSubredditName(),
-                                    holder);
+                            setViewsMarkdown(comment, submission.getSubredditName(), holder);
                         } else {
                             setViews(
                                     SubmissionParser.replaceProcessingImgPlaceholders(
@@ -1477,7 +1641,23 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+    /**
+     * The number of comments under {@code user}, shown as the "+N" badge on a collapsed row.
+     * Cached: this walks the whole subtree, and it ran on every bind of every collapsed row. Only
+     * a change to the comment tree can change the answer, so it is dropped alongside the position
+     * map. Called from onBindViewHolder, i.e. always on the UI thread.
+     */
     private int getChildNumber(CommentNode user) {
+        if (childCountsDirty) {
+            childCountCache.clear();
+            childCountsDirty = false;
+        }
+        String key = user.getComment().getFullName();
+        Integer cached = childCountCache.get(key);
+        if (cached != null) {
+            return cached;
+        }
+
         int i = 0;
         for (CommentNode ignored : user.walkTree()) {
             i++;
@@ -1486,6 +1666,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
         }
 
+        childCountCache.put(key, i - 1);
         return i - 1;
     }
 
@@ -1578,6 +1759,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public int unhideNumber(CommentNode n, int i) {
+        invalidatePositionCache();
         for (CommentNode ignored : n.getChildren()) {
 
             if (!ignored.getComment().getFullName().equals(n.getComment().getFullName())) {
@@ -1622,6 +1804,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public int hideNumber(CommentNode n, int i) {
+        invalidatePositionCache();
         for (CommentNode ignored : n.getChildren()) {
             if (!ignored.getComment().getFullName().equals(n.getComment().getFullName())) {
                 String fullname = ignored.getComment().getFullName();
@@ -1680,7 +1863,29 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return bodies;
     }
 
+    /**
+     * Maps a visible row index to its index in {@link #currentComments}, skipping hidden comments.
+     * Rebuilt lazily after a hide/unhide or a dataset change rather than rescanning the list on
+     * every call, which made binding a thread cost O(n^2) in the number of comments.
+     */
     public int getRealPosition(int position) {
+        if (currentComments == null) {
+            return position;
+        }
+        if (positionMapDirty
+                || visiblePositions == null
+                || visiblePositions.size() != currentComments.size() - hidden.size()) {
+            rebuildVisiblePositions();
+        }
+        if (position >= 0 && position < visiblePositions.size()) {
+            return visiblePositions.get(position);
+        }
+        // Out of range: fall back to the original walk, which returns a specific past-the-end
+        // value that callers do arithmetic on before it throws. Rare, so the O(n) cost is fine.
+        return walkToRealPosition(position);
+    }
+
+    private int walkToRealPosition(int position) {
         int hElements = getHiddenCountUpTo(position);
         int diff = 0;
         for (int i = 0; i < hElements; i++) {
@@ -1703,10 +1908,30 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return count;
     }
 
+    /** Drop the cached visible-row map; the next {@link #getRealPosition} rebuilds it. */
+    public void invalidatePositionCache() {
+        positionMapDirty = true;
+        childCountsDirty = true;
+    }
+
+    private void rebuildVisiblePositions() {
+        ArrayList<Integer> map = new ArrayList<>(currentComments.size() - hidden.size());
+        for (int i = 0; i < currentComments.size(); i++) {
+            if (!hidden.contains(currentComments.get(i).getName())) {
+                map.add(i);
+            }
+        }
+        visiblePositions = map;
+        positionMapDirty = false;
+    }
+
     public class AsyncForceLoadChild extends AsyncTask<String, Void, Integer> {
         CommentNode node;
         public int holderPos;
         public int position;
+
+        /** Comments found in the background, spliced into currentComments on the UI thread. */
+        private final List<CommentItem> collected = new ArrayList<>();
 
         public AsyncForceLoadChild(int position, int holderPos, CommentNode baseNode) {
             this.holderPos = holderPos;
@@ -1715,11 +1940,49 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
         @Override
-        public void onPostExecute(Integer data) {
+        public void onPostExecute(Integer result) {
+            // Splice the fetched comments into the shared list here, on the UI thread, rather than
+            // in doInBackground: currentComments and keys are read by the UI thread (binding,
+            // getItemCount) and must never be mutated off it.
+            int data = result;
+            if (data != -1) {
+                // position was captured at construction; the list may have shrunk (collapse/reset)
+                // during the network call, so clamp into range rather than risk an out-of-bounds.
+                int insertAt = Math.max(0, Math.min(position, currentComments.size()));
+                int i = 0;
+                for (CommentItem item : collected) {
+                    currentComments.add(insertAt, item);
+                    i++;
+                }
+                shifted += i;
+                invalidatePositionCache();
+                if (currentComments != null) {
+                    for (int i2 = 0; i2 < currentComments.size(); i2++) {
+                        keys.put(currentComments.get(i2).getName(), i2);
+                    }
+                } else {
+                    i = -1;
+                }
+                data = i;
+            }
+
             if (data != -1) {
                 listView.setItemAnimator(new SlideRightAlphaAnimator());
 
-                notifyItemInserted(holderPos + 1);
+                // data is the number of rows actually spliced in; notify all of them, not just one
+                // (the walk can yield more than a single node). holderPos was captured at
+                // construction, so if the list shrank while loading, holderPos + 1 may no longer be
+                // a valid insert position; notify precisely only when it is (getItemCount() - data
+                // is the pre-insertion count), else fall back to a full refresh so RecyclerView's
+                // item count stays consistent.
+                if (data > 0) {
+                    int notifyStart = holderPos + 1;
+                    if (notifyStart >= 0 && notifyStart <= getItemCount() - data) {
+                        notifyItemRangeInserted(notifyStart, data);
+                    } else {
+                        notifyDataSetChanged();
+                    }
+                }
 
                 currentPos = holderPos + 1;
                 toShiftTo =
@@ -1753,56 +2016,61 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         @Override
         protected Integer doInBackground(String... params) {
-
-            int i = 0;
-
-            if (params.length > 0) {
-                try {
-                    node.insertComment(Authentication.reddit, "t1_" + params[0]);
-                    for (CommentNode n : node.walkTree()) {
-                        if (n.getComment().getFullName().contains(params[0])) {
-                            currentComments.add(position, new CommentItem(n));
-                            i++;
-                        }
-                    }
-
-                } catch (Exception e) {
-                    Log.w(LogUtil.getTag(), "Cannot load more comments " + e);
-                    i = -1;
-                }
-
-                shifted += i;
-
-                if (currentComments != null) {
-                    for (int i2 = 0; i2 < currentComments.size(); i2++) {
-                        keys.put(currentComments.get(i2).getName(), i2);
-                    }
-                } else {
-                    i = -1;
-                }
+            if (params.length == 0) {
+                return 0;
             }
-            return i;
+            try {
+                node.insertComment(Authentication.reddit, "t1_" + params[0]);
+                // Read-only tree walk on the background thread; the matches are collected into a
+                // local list and spliced into currentComments on the UI thread (see onPostExecute).
+                for (CommentNode n : node.walkTree()) {
+                    if (n.getComment().getFullName().contains(params[0])) {
+                        collected.add(new CommentItem(n));
+                    }
+                }
+            } catch (Exception e) {
+                Log.w(LogUtil.getTag(), "Cannot load more comments " + e);
+                return -1;
+            }
+            return 0;
         }
     }
 
-    public void editComment(CommentNode n, CommentViewHolder holder) {
-        if (n == null) {
-            dataSet.loadMoreReply(this);
-        } else {
-            int position = getRealPosition(holder.getBindingAdapterPosition() - 1);
-            final int holderpos = holder.getBindingAdapterPosition();
-            currentComments.remove(position - 1);
-            currentComments.add(position - 1, new CommentItem(n));
-            listView.setItemAnimator(new SlideRightAlphaAnimator());
-            ((Activity) mContext)
-                    .runOnUiThread(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    notifyItemChanged(holderpos);
+    public void editComment(final CommentNode n, final CommentViewHolder holder) {
+        // Called from AsyncEditTask.doInBackground; hop to the UI thread before touching the shared
+        // comment list, the RecyclerView, or the holder's position.
+        ((Activity) mContext)
+                .runOnUiThread(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                if (n == null) {
+                                    dataSet.loadMoreReply(CommentAdapter.this);
+                                    return;
                                 }
-                            });
-        }
+                                int adapterPos = holder.getBindingAdapterPosition();
+                                if (adapterPos == RecyclerView.NO_POSITION) {
+                                    // Holder was recycled while the edit was in flight; resolve the
+                                    // row by name instead of by its (now invalid) holder position.
+                                    Integer dataIndex =
+                                            keys.get(n.getComment().getFullName());
+                                    if (dataIndex != null
+                                            && dataIndex >= 0
+                                            && dataIndex < currentComments.size()) {
+                                        currentComments.set(dataIndex, new CommentItem(n));
+                                        invalidatePositionCache();
+                                        notifyDataSetChanged();
+                                    }
+                                    return;
+                                }
+                                int position = getRealPosition(adapterPos - 1);
+                                currentComments.remove(position - 1);
+                                currentComments.add(position - 1, new CommentItem(n));
+                                invalidatePositionCache();
+                                listView.setItemAnimator(new SlideRightAlphaAnimator());
+                                notifyItemChanged(adapterPos);
+                            }
+                        });
     }
 
     public class ReplyTaskComment extends AsyncTask<String, Void, String> {

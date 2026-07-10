@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -28,6 +29,22 @@ import net.dean.jraw.util.JrawUtils;
 
 /** Created by ccrama on 9/17/2015. */
 public class SubmissionComments {
+
+    /**
+     * Move every "load more" placeholder at or below {@code depth} out of {@code waiting} and onto
+     * {@code comments}. {@code waiting} is ordered deepest-first, so this drains it in place.
+     */
+    private static void drainDeeperThan(
+            TreeMap<Integer, MoreChildItem> waiting, int depth, List<CommentObject> comments) {
+        Iterator<Map.Entry<Integer, MoreChildItem>> it = waiting.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Integer, MoreChildItem> entry = it.next();
+            if (entry.getKey() >= depth) {
+                comments.add(entry.getValue());
+                it.remove();
+            }
+        }
+    }
 
     public boolean single;
     public final SwipeRefreshLayout refreshLayout;
@@ -55,22 +72,14 @@ public class SubmissionComments {
             submission = s;
             CommentNode baseComment = s.getComments();
             comments = new ArrayList<>();
-            Map<Integer, MoreChildItem> waiting = new HashMap<>();
+            // Sorted descending, so it can be drained in place instead of copying it into a fresh
+            // reverse-ordered TreeMap for every comment in the tree.
+            TreeMap<Integer, MoreChildItem> waiting = new TreeMap<>(Collections.reverseOrder());
 
             for (CommentNode n : baseComment.walkTree()) {
 
                 CommentObject obj = new CommentItem(n);
-                List<Integer> removed = new ArrayList<>();
-                Map<Integer, MoreChildItem> map = new TreeMap<>(Collections.reverseOrder());
-                map.putAll(waiting);
-
-                for (Integer i : map.keySet()) {
-                    if (i >= n.getDepth()) {
-                        comments.add(waiting.get(i));
-                        removed.add(i);
-                        waiting.remove(i);
-                    }
-                }
+                drainDeeperThan(waiting, n.getDepth(), comments);
 
                 comments.add(obj);
 
@@ -78,12 +87,8 @@ public class SubmissionComments {
                     waiting.put(n.getDepth(), new MoreChildItem(n, n.getMoreChildren()));
                 }
             }
-            Map<Integer, MoreChildItem> map = new TreeMap<>(Collections.reverseOrder());
-            map.putAll(waiting);
-            for (Integer i : map.keySet()) {
-                comments.add(waiting.get(i));
-                waiting.remove(i);
-            }
+            comments.addAll(waiting.values());
+            waiting.clear();
             if (baseComment.hasMoreComments() && online) {
                 comments.add(new MoreChildItem(baseComment, baseComment.getMoreChildren()));
             }
@@ -232,7 +237,10 @@ public class SubmissionComments {
                 page.o.setCommentAndWrite(submission.getFullName(), node, submission).writeToMemory();*/
 
                 comments = new ArrayList<>();
-                Map<Integer, MoreChildItem> waiting = new HashMap<>();
+                // Sorted descending, so it can be drained in place instead of copying it into a
+                // fresh reverse-ordered TreeMap for every comment in the tree.
+                TreeMap<Integer, MoreChildItem> waiting =
+                        new TreeMap<>(Collections.reverseOrder());
                 commentOPs = new HashMap<>();
                 String currentOP = "";
 
@@ -242,17 +250,7 @@ public class SubmissionComments {
                     }
                     commentOPs.put(n.getComment().getId(), currentOP);
                     CommentObject obj = new CommentItem(n);
-                    List<Integer> removed = new ArrayList<>();
-                    Map<Integer, MoreChildItem> map = new TreeMap<>(Collections.reverseOrder());
-                    map.putAll(waiting);
-
-                    for (Integer i : map.keySet()) {
-                        if (i >= n.getDepth()) {
-                            comments.add(waiting.get(i));
-                            removed.add(i);
-                            waiting.remove(i);
-                        }
-                    }
+                    drainDeeperThan(waiting, n.getDepth(), comments);
 
                     comments.add(obj);
 
@@ -260,12 +258,8 @@ public class SubmissionComments {
                         waiting.put(n.getDepth(), new MoreChildItem(n, n.getMoreChildren()));
                     }
                 }
-                Map<Integer, MoreChildItem> map = new TreeMap<>(Collections.reverseOrder());
-                map.putAll(waiting);
-                for (Integer i : map.keySet()) {
-                    comments.add(waiting.get(i));
-                    waiting.remove(i);
-                }
+                comments.addAll(waiting.values());
+                waiting.clear();
                 if (baseComment.hasMoreComments()) {
                     comments.add(new MoreChildItem(baseComment, baseComment.getMoreChildren()));
                 }
