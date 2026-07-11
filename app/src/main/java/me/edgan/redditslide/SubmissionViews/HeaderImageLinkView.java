@@ -737,7 +737,6 @@ public class HeaderImageLinkView extends RelativeLayout {
             // to match ImageLoaderUnescape, which unescapes the URI on every display/load.
             final String unescaped = StringEscapeUtils.unescapeHtml4(url);
             Bitmap cached = firstCachedBitmap(loader, unescaped);
-            String popinSource = cached != null ? "SYNC-MEM" : null;
 
             // Memory miss, but the preloader already downloaded the file (or it was decoded earlier
             // and then evicted from the memory LRU while scrolling): decode the small thumbnail from
@@ -747,7 +746,6 @@ public class HeaderImageLinkView extends RelativeLayout {
             // synchronous decode could jank the scroll.
             if (cached == null && isThumb) {
                 cached = syncDecodeThumbnailFromDisk(loader, unescaped);
-                if (cached != null) popinSource = "SYNC-DISK";
             }
 
             // Keep the thumbnail and full-image paths from crossing over: only bind a cached bitmap
@@ -758,8 +756,6 @@ public class HeaderImageLinkView extends RelativeLayout {
             if (cached != null
                     && !cached.isRecycled()
                     && (target.getWidth() <= 0 || cached.getWidth() * 3 >= target.getWidth() * 2)) {
-                // TEMP pop-in detection: a sync bind draws in the same frame as the row (no pop-in).
-                LogUtil.v("POPIN " + popinSource + " " + (isThumb ? "thumb" : "lead") + " " + url);
                 // The holder is recycled: cancel any load still in flight for this view from the
                 // previous post, or it could complete later and overwrite our bitmap.
                 loader.cancelDisplayTask(target);
@@ -770,8 +766,6 @@ public class HeaderImageLinkView extends RelativeLayout {
                 return;
             }
         }
-        // TEMP pop-in detection: an async load swaps the image in a later frame — this is a pop-in.
-        LogUtil.v("POPIN ASYNC-MISS " + (isThumb ? "thumb" : "lead") + " " + url);
         loader.displayImage(url, target, bigOptions, listener);
     }
 

@@ -38,6 +38,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.mikepenz.itemanimators.AlphaInAnimator;
 import com.mikepenz.itemanimators.SlideUpAlphaAnimator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import me.edgan.redditslide.Activities.BaseActivity;
@@ -63,6 +64,7 @@ import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.handler.ToolbarScrollHideHandler;
 import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.PhotoLoader;
 import net.dean.jraw.models.MultiReddit;
 import net.dean.jraw.models.Submission;
 
@@ -81,6 +83,10 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
     private int visibleItemCount;
     private int pastVisiblesItems;
     private int totalItemCount;
+    // Scroll-aware prefetch: highest posts.posts index whose image we've already warmed ahead of the
+    // viewport. Monotonic while scrolling down; reset to -1 in updateSuccess when a refresh/reset
+    // replaces the list.
+    private int highestWarmedAhead = -1;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private static Submission currentSubmission;
     private int lastRotationAnchor = RecyclerView.NO_POSITION;
@@ -733,6 +739,10 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                                 } else if (forced || startIndex == -1) {
                                     // Pull-to-refresh / reset: full list replaced.
                                     forced = false;
+                                    // The old list is gone; drop the prefetch anchor so warmAhead
+                                    // re-warms the fresh feed from the top instead of treating the
+                                    // stale index as already-warmed and skipping the new rows.
+                                    highestWarmedAhead = -1;
                                     rv.scrollToPosition(0);
                                     adapter.notifyDataSetChanged();
                                 } else {
@@ -818,31 +828,81 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                             super.onScrolled(recyclerView, dx, dy);
 
+                            visibleItemCount = rv.getLayoutManager().getChildCount();
+                            totalItemCount = rv.getLayoutManager().getItemCount();
+
+                            int[] firstVisibleItems =
+                                    ((CatchStaggeredGridLayoutManager) rv.getLayoutManager())
+                                            .findFirstVisibleItemPositions(null);
+                            if (firstVisibleItems != null && firstVisibleItems.length > 0) {
+                                pastVisiblesItems = firstVisibleItems[firstVisibleItems.length - 1];
+                            }
+
+                            // Scroll-aware prefetch: warm the images just below the viewport so they
+                            // render in place on arrival, instead of the page-order warm falling
+                            // behind a moving scroll. Runs even during a loadMore fetch, so the new
+                            // page's rows past the blocked screenful are warmed across the boundary
+                            // rather than popping in. Only scrolling down, only into new territory;
+                            // bounds are clamped so a refresh shrinking the list can't overrun.
+                            // Snapshot the list reference once: SubredditPosts.posts is reassigned
+                            // and mutated in place on the page-load background thread, so reading the
+                            // field twice (size here, subList below) could size a subList against a
+                            // different, smaller list and overrun. The try/catch also covers a
+                            // concurrent in-place addAll racing the copy.
+                            final List<Submission> snapshot = posts.posts;
+                            if (dy > 0 && snapshot != null) {
+                                final int size = snapshot.size();
+                                if (highestWarmedAhead >= size) {
+                                    highestWarmedAhead = pastVisiblesItems; // re-anchor after refresh
+                                }
+                                // ~2 screens of list rows past the last visible one.
+                                final int to =
+                                        Math.min(pastVisiblesItems + visibleItemCount + 20, size);
+                                final int from = Math.max(highestWarmedAhead + 1, 0);
+                                final Context context = getContext();
+                                if (from < to && context != null) {
+                                    try {
+                                        // App context, not the Activity: the warm is queued on a
+                                        // static executor and must not retain a destroyed Activity.
+                                        PhotoLoader.warmAhead(
+                                                context.getApplicationContext(),
+                                                new ArrayList<>(snapshot.subList(from, to)));
+                                        highestWarmedAhead = to - 1;
+                                    } catch (RuntimeException ignored) {
+                                        // A background reset/addAll raced this copy; skip this warm
+                                        // (best-effort prefetch) and retry on the next scroll event.
+                                    }
+                                }
+                            }
+
                             if (!posts.loading
                                     && !posts.nomore
                                     && !posts.offline
                                     && !adapter.isError) {
-                                visibleItemCount = rv.getLayoutManager().getChildCount();
-                                totalItemCount = rv.getLayoutManager().getItemCount();
-
-                                int[] firstVisibleItems =
-                                        ((CatchStaggeredGridLayoutManager) rv.getLayoutManager())
-                                                .findFirstVisibleItemPositions(null);
                                 if (firstVisibleItems != null && firstVisibleItems.length > 0) {
                                     for (int firstVisibleItem : firstVisibleItems) {
-                                        pastVisiblesItems = firstVisibleItem;
+                                        // Bound the index: on a short list the first visible row can
+                                        // be the trailing load-more spinner (an adapter position past
+                                        // the posts list). Read the same snapshot the prefetch pinned
+                                        // — posts.posts is reassigned on the load thread — so the
+                                        // size-check and get() can't straddle a swapped, smaller list.
                                         if (SettingValues.scrollSeen
-                                                && pastVisiblesItems > 0
-                                                && SettingValues.storeHistory) {
+                                                && firstVisibleItem > 0
+                                                && SettingValues.storeHistory
+                                                && snapshot != null
+                                                && firstVisibleItem - 1 < snapshot.size()) {
                                             HasSeen.addSeenScrolling(
-                                                    posts.posts
-                                                            .get(pastVisiblesItems - 1)
+                                                    snapshot
+                                                            .get(firstVisibleItem - 1)
                                                             .getFullName());
                                         }
                                     }
                                 }
 
-                                if ((visibleItemCount + pastVisiblesItems) + 5 >= totalItemCount) {
+                                // Fetch the next page ~20 rows from the end (was 5) so it downloads +
+                                // warms while the user is still approaching the boundary, instead of
+                                // right as they reach it — fewer page-boundary pop-ins.
+                                if ((visibleItemCount + pastVisiblesItems) + 20 >= totalItemCount) {
                                     posts.loading = true;
                                     posts.loadMore(
                                             mSwipeRefreshLayout.getContext(),

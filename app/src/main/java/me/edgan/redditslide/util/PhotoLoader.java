@@ -439,13 +439,15 @@ public class PhotoLoader {
 
     // How many of a freshly-loaded page's images to download+decode synchronously before the rows
     // are shown (covers the first screenful plus a little buffer), and how long to wait for them.
-    private static final int FIRST_SCREEN_WARM = 12;
-    // Measured first-screen warms complete in <400ms, so a short cap just bounds the worst-case
-    // blank feed on a slow network (a straggler pops in rather than holding the whole feed).
+    // Block on the first screenful plus a buffer of prefetch-ahead rows, so a moderate scroll that
+    // moves just past the visible screen still finds those rows warm.
+    private static final int FIRST_SCREEN_WARM = 16;
+    // Measured first-screen warms complete in <400ms (worst ~1s), so a short cap just bounds the
+    // worst-case blank feed on a slow network (a straggler pops in rather than holding the feed).
     private static final int WARM_TIMEOUT_SECONDS = 2;
-    // Parallel downloads for the warm. Higher than the default so the background warm keeps pace
-    // with fast scrolling instead of falling behind and letting later rows pop in.
-    private static final int WARM_THREADS = 8;
+    // Parallel downloads for the warm — high enough that the background warm keeps pace with a
+    // moderate scroll instead of falling behind and letting later rows pop in.
+    private static final int WARM_THREADS = 12;
 
     /**
      * Warm a freshly-loaded page into the memory cache. Called from the page-load background thread,
@@ -474,9 +476,6 @@ public class PhotoLoader {
         // Block only on the first screenful; the remaining downloads finish in the background.
         final int blockCount = Math.min(urls.size(), FIRST_SCREEN_WARM);
         final CountDownLatch firstScreen = new CountDownLatch(blockCount);
-        // TEMP pop-in diagnostics.
-        final long t0 = System.currentTimeMillis();
-        LogUtil.v("POPIN-PRELOAD start urls=" + urls.size() + " block=" + blockCount + " size=" + size.getWidth());
         for (int i = 0; i < urls.size(); i++) {
             final String url = urls.get(i);
             final boolean counted = i < blockCount;
@@ -496,12 +495,40 @@ public class PhotoLoader {
         pool.shutdown();
         try {
             firstScreen.await(WARM_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            // TEMP: remaining>0 means the timeout fired before the first screenful finished.
-            LogUtil.v("POPIN-PRELOAD done waited=" + (System.currentTimeMillis() - t0)
-                    + "ms remaining=" + firstScreen.getCount());
         } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    // Serializes the (JSON/gallery) URL resolution for scroll-ahead prefetch OFF the main thread —
+    // the actual downloads are async on UIL's pool. Single thread keeps nearest-first ordering.
+    private static final ExecutorService WARM_AHEAD_EXECUTOR = Executors.newSingleThreadExecutor();
+
+    /**
+     * Scroll-aware prefetch: async memory-warm a window of upcoming rows (the scroll landing zone)
+     * so they render in place when they enter the viewport, rather than the page-order background
+     * warm falling behind a moving scroll. Called from the feed's scroll listener with a COPY of the
+     * window. URL resolution runs on {@link #WARM_AHEAD_EXECUTOR}, never the main thread (it does
+     * JSON/gallery traversal — doing it per row on the main thread caused an ANR). Already-warmed
+     * URLs are a cheap no-op: loadImage hits the memory cache and returns without re-downloading, and
+     * UIL de-dupes concurrent same-URI loads against the page-order warm.
+     */
+    public static void warmAhead(final Context c, final List<Submission> window) {
+        if (c == null || window == null || window.isEmpty() || SettingValues.shouldSkipImages(c)) {
+            return;
+        }
+        WARM_AHEAD_EXECUTOR.execute(
+                () -> {
+                    for (final Submission s : window) {
+                        try {
+                            final String url = resolveFeedImageUrl(c, s, true);
+                            if (url != null && !PLACEHOLDER_URLS.contains(url)) {
+                                loadImage(c, url, true);
+                            }
+                        } catch (Throwable ignored) {
+                        }
+                    }
+                });
     }
 
     /** Display URL plus reserved dimensions of the first usable image in a Reddit gallery. */
