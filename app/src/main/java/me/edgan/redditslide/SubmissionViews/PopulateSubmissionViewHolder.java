@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -24,6 +25,8 @@ import com.devspark.robototextview.RobotoTypefaces;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -424,16 +427,38 @@ public class PopulateSubmissionViewHolder {
             holder.itemView.findViewById(R.id.crosspost).setVisibility(View.VISIBLE);
             ((TextView) holder.itemView.findViewById(R.id.crossinfo))
                     .setText(SubmissionCache.getCrosspostLine(submission, mContext));
+            final ImageView crossThumb =
+                    (ImageView) holder.itemView.findViewById(R.id.crossthumb);
+            // The crosspost parent may not carry a "thumbnail" field at all, so guard the node
+            // before reading it — .asText() on a null node would NPE.
+            final JsonNode crossThumbNode =
+                    submission
+                            .getDataNode()
+                            .get("crosspost_parent_list")
+                            .get(0)
+                            .get("thumbnail");
+            final String crossThumbUrl = crossThumbNode == null ? "" : crossThumbNode.asText();
+            // Crossposts often carry no real thumbnail (self/default/nsfw/spoiler or empty), so
+            // collapse the thumb on an empty/failed load instead of leaving the placeholder behind.
             ((Reddit) mContext.getApplicationContext())
                     .getImageLoader()
                     .displayImage(
-                            submission
-                                    .getDataNode()
-                                    .get("crosspost_parent_list")
-                                    .get(0)
-                                    .get("thumbnail")
-                                    .asText(),
-                            ((ImageView) holder.itemView.findViewById(R.id.crossthumb)));
+                            crossThumbUrl,
+                            crossThumb,
+                            new SimpleImageLoadingListener() {
+                                @Override
+                                public void onLoadingComplete(
+                                        String imageUri, View view, Bitmap loadedImage) {
+                                    view.setVisibility(
+                                            loadedImage == null ? View.GONE : View.VISIBLE);
+                                }
+
+                                @Override
+                                public void onLoadingFailed(
+                                        String imageUri, View view, FailReason failReason) {
+                                    view.setVisibility(View.GONE);
+                                }
+                            });
             holder.itemView
                     .findViewById(R.id.crosspost)
                     .setOnClickListener(
