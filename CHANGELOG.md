@@ -4,6 +4,10 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.8.0 / 2026-7-11
+============
+* Improved thumbnail feed layout to avoid pop-in and redraws
+
 7.7.9 / 2026-7-9
 ===========
 * Improved Saved-tab search with full-history loading, and a hard-TTL cache
