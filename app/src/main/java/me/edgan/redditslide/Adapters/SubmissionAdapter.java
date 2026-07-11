@@ -28,6 +28,7 @@ import me.edgan.redditslide.Views.CreateCardView;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.OnSingleClickListener;
+import me.edgan.redditslide.util.PhotoLoader;
 import net.dean.jraw.models.Submission;
 
 public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
@@ -222,6 +223,10 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         public void onSingleClick(View v) {
 
                             if (Authentication.didOnline || submission.getComments() != null) {
+                                // Warm the full-size header image now, during the open transition,
+                                // so the comments-screen header renders in place instead of popping
+                                // in (its own full-width path — never the thumbnail).
+                                PhotoLoader.warmFull(context, submission);
                                 holder.title.setAlpha(0.54f);
                                 holder.body.setAlpha(0.54f);
 

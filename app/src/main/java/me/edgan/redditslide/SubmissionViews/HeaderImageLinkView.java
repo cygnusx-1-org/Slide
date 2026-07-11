@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -18,11 +19,15 @@ import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.content.ContextCompat;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import me.edgan.redditslide.ContentType;
@@ -40,14 +45,15 @@ import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Views.MaxHeightImageView;
 import me.edgan.redditslide.Views.PeekMediaView;
+import me.edgan.redditslide.Views.RoundImageTriangleView;
 import me.edgan.redditslide.Views.TransparentTagTextView;
 import me.edgan.redditslide.util.CompatUtil;
-import me.edgan.redditslide.util.JsonUtil;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.PhotoLoader;
 import net.dean.jraw.models.Submission;
+import org.apache.commons.text.StringEscapeUtils;
 
 /** Created by carlo_000 on 2/7/2016. */
 public class HeaderImageLinkView extends RelativeLayout {
@@ -90,9 +96,11 @@ public class HeaderImageLinkView extends RelativeLayout {
     private PhotoLoader.GalleryPreview galleryPreviewCache;
 
     // Same idea for single-image posts. The chosen URL also depends on the low-quality decision
-    // (which varies with network state), so that's part of the key.
+    // (which varies with network state) and the display width (thumbnail vs card), so those are
+    // part of the key too.
     private JsonNode imagePreviewKey;
     private boolean imagePreviewLowQ;
+    private int imagePreviewWidth;
     private String imagePreviewUrlCache;
 
     private static final List<String> PLACEHOLDER_URLS =
@@ -287,9 +295,7 @@ public class HeaderImageLinkView extends RelativeLayout {
                 setThumbAndWrapVisibility(full, true);
                 loadedUrl = url;
 
-                ((Reddit) getContext().getApplicationContext())
-                        .getImageLoader()
-                        .displayImage(url, thumbImage2, bigOptions);
+                displayImageCachedFirst(url, thumbImage2, null);
                 setVisibility(View.GONE);
 
             } else {
@@ -570,8 +576,12 @@ public class HeaderImageLinkView extends RelativeLayout {
         JsonNode dataNode = submission.getDataNode();
 
         // Prefer a genuine preview image. For crossposts the preview lives on the
-        // parent submission, so getPreviewUrl() checks the crosspost parent first.
-        String redditPreviewUrl = getPreviewUrl(dataNode);
+        // parent submission, so getPreviewUrl() checks the crosspost parent first. Size it to the
+        // display target so a list thumbnail fetches a small preview, not the full-width one.
+        String redditPreviewUrl =
+                getPreviewUrl(
+                        dataNode,
+                        feedImageWidth(!full && !SettingValues.isPicsEnabled(baseSub)));
 
         if (redditPreviewUrl != null && !redditPreviewUrl.isEmpty()) {
             // A real, full-resolution preview is available; show it as a lead image.
@@ -601,9 +611,7 @@ public class HeaderImageLinkView extends RelativeLayout {
         if (thumbnailUrl != null) {
             loadedUrl = thumbnailUrl;
             setThumbAndWrapVisibility(full, true);
-            ((Reddit) getContext().getApplicationContext())
-                    .getImageLoader()
-                    .displayImage(thumbnailUrl, thumbImage2, bigOptions);
+            displayImageCachedFirst(thumbnailUrl, thumbImage2, null);
             setVisibility(View.GONE);
         } else {
             // No image at all.
@@ -614,21 +622,9 @@ public class HeaderImageLinkView extends RelativeLayout {
         }
     }
 
-    /**
-     * Returns the thumbnail URL from the given node if it is a usable image URL, or null if it is
-     * missing or one of Reddit's placeholder values ("self", "default", "nsfw").
-     */
+    // Delegated to PhotoLoader so the feed card and the preloader use identical thumbnail selection.
     private String getValidThumbnailUrl(JsonNode node) {
-        if (node != null && node.has("thumbnail") && !node.get("thumbnail").isNull()) {
-            String thumbnail = node.get("thumbnail").asText();
-            if (!thumbnail.equals("self")
-                    && !thumbnail.equals("default")
-                    && !thumbnail.equals("nsfw")
-                    && !thumbnail.isEmpty()) {
-                return thumbnail;
-            }
-        }
-        return null;
+        return PhotoLoader.getValidThumbnailUrl(node);
     }
 
     private void handleRedditGalleryType(Submission submission, String baseSub, boolean full, boolean forceThumb) {
@@ -654,7 +650,11 @@ public class HeaderImageLinkView extends RelativeLayout {
 
     private void handleVRedditType(Submission submission, String baseSub, boolean full, boolean forceThumb) {
         JsonNode dataNode = submission.getDataNode();
-        String previewUrl = getPreviewUrl(dataNode);
+        String previewUrl =
+                getPreviewUrl(
+                        dataNode,
+                        feedImageWidth(
+                                (!full && !SettingValues.isPicsEnabled(baseSub)) || forceThumb));
 
         if (dataNode.has("preview") &&
             dataNode.get("preview").has("images") &&
@@ -669,32 +669,20 @@ public class HeaderImageLinkView extends RelativeLayout {
         }
     }
 
+    // Delegated to PhotoLoader so the feed card and the preloader resolve the identical preview URL.
     private String getPreviewUrl(JsonNode dataNode) {
-        String previewUrl = null;
-
-        // Check crosspost parent first
-        if (dataNode.has("crosspost_parent_list") && dataNode.get("crosspost_parent_list").size() > 0) {
-            JsonNode parentNode = dataNode.get("crosspost_parent_list").get(0);
-            previewUrl = extractPreviewUrl(parentNode);
-        }
-        // Fallback to current submission preview
-        if (previewUrl == null) {
-            previewUrl = extractPreviewUrl(dataNode);
-        }
-        return JsonUtil.normalizeRedditPreviewHost(previewUrl, JsonUtil.linksToReddit(dataNode));
+        return PhotoLoader.getPreviewUrl(dataNode);
     }
 
-    private String extractPreviewUrl(JsonNode node) {
-        if (node.has("preview") &&
-            node.get("preview").has("images") &&
-            node.get("preview").get("images").size() > 0) {
+    private String getPreviewUrl(JsonNode dataNode, int maxWidth) {
+        return PhotoLoader.getPreviewUrl(dataNode, maxWidth);
+    }
 
-            JsonNode sourceNode = node.get("preview").get("images").get(0).get("source");
-            if (sourceNode != null && sourceNode.has("url")) {
-                return sourceNode.get("url").asText();
-            }
-        }
-        return null;
+    // The reddit preview width to request: the thumbnail cell for a list thumbnail, the full screen
+    // width for a big card. Kept in lock-step with PhotoLoader's preload so the warm and the display
+    // resolve the same sized URL (and hit the same memory-cache entry).
+    private int feedImageWidth(boolean showThumb) {
+        return PhotoLoader.feedImageWidth(getContext(), !showThumb);
     }
 
     private void handlePreviewImage(String previewUrl, Submission submission, String baseSub, boolean full, boolean forceThumb) {
@@ -729,9 +717,118 @@ public class HeaderImageLinkView extends RelativeLayout {
 
     private void displayImage(String url, ImageView target) {
         backdrop.setVisibility(View.VISIBLE);
-        ((Reddit) getContext().getApplicationContext())
-                .getImageLoader()
-                .displayImage(url, target, bigOptions, TRANSPARENCY_LISTENER);
+        displayImageCachedFirst(url, target, TRANSPARENCY_LISTENER);
+    }
+
+    /**
+     * Bind {@code url} into {@code target}, drawing it synchronously in this frame when the bitmap
+     * is already in the memory cache (warmed by PhotoLoader as the page was fetched). This is what
+     * stops feed images from popping in after the row is already on screen: on a cache hit the row
+     * scrolls in with the image already drawn instead of blank-then-async-swap. On a miss it falls
+     * back to the normal async load, so a rare miss simply behaves as before.
+     */
+    private void displayImageCachedFirst(
+            String url, ImageView target, ImageLoadingListener listener) {
+        final ImageLoader loader =
+                ((Reddit) getContext().getApplicationContext()).getImageLoader();
+        final boolean isThumb = target instanceof RoundImageTriangleView;
+        if (url != null && target != null) {
+            // UIL keys its memory cache by "uri_WxH", so look up by URI across all sizes. Unescape
+            // to match ImageLoaderUnescape, which unescapes the URI on every display/load.
+            final String unescaped = StringEscapeUtils.unescapeHtml4(url);
+            Bitmap cached = firstCachedBitmap(loader, unescaped);
+            String popinSource = cached != null ? "SYNC-MEM" : null;
+
+            // Memory miss, but the preloader already downloaded the file (or it was decoded earlier
+            // and then evicted from the memory LRU while scrolling): decode the small thumbnail from
+            // disk synchronously in this frame instead of swapping it in asynchronously, which reads
+            // as a redraw. Bounded to the thumbnail size and gated on the file already being cached,
+            // so it never touches the network. Skipped for the big lead image, where a full-width
+            // synchronous decode could jank the scroll.
+            if (cached == null && isThumb) {
+                cached = syncDecodeThumbnailFromDisk(loader, unescaped);
+                if (cached != null) popinSource = "SYNC-DISK";
+            }
+
+            // Keep the thumbnail and full-image paths from crossing over: only bind a cached bitmap
+            // that is actually large enough for this view. A thumbnail-sized bitmap must never be
+            // stretched into a full-width lead image (it would look blurry) — this covers the
+            // per-subreddit pics override and single-rung posts where the thumb and full share a URL.
+            // The small thumbnail view always passes; the big lead image only takes a full-sized one.
+            if (cached != null
+                    && !cached.isRecycled()
+                    && (target.getWidth() <= 0 || cached.getWidth() * 3 >= target.getWidth() * 2)) {
+                // TEMP pop-in detection: a sync bind draws in the same frame as the row (no pop-in).
+                LogUtil.v("POPIN " + popinSource + " " + (isThumb ? "thumb" : "lead") + " " + url);
+                // The holder is recycled: cancel any load still in flight for this view from the
+                // previous post, or it could complete later and overwrite our bitmap.
+                loader.cancelDisplayTask(target);
+                target.setImageBitmap(cached);
+                if (listener != null) {
+                    listener.onLoadingComplete(url, target, cached);
+                }
+                return;
+            }
+        }
+        // TEMP pop-in detection: an async load swaps the image in a later frame — this is a pop-in.
+        LogUtil.v("POPIN ASYNC-MISS " + (isThumb ? "thumb" : "lead") + " " + url);
+        loader.displayImage(url, target, bigOptions, listener);
+    }
+
+    private static Bitmap firstCachedBitmap(ImageLoader loader, String uri) {
+        for (Bitmap cached :
+                MemoryCacheUtils.findCachedBitmapsForImageUri(uri, loader.getMemoryCache())) {
+            if (cached != null && !cached.isRecycled()) {
+                return cached;
+            }
+        }
+        return null;
+    }
+
+    // Synchronously decode an already-downloaded thumbnail from the disk cache, or null if the file
+    // isn't cached yet (so the caller falls back to an async load). Decodes the file directly with
+    // BitmapFactory so it can never fall through to a main-thread network fetch — loadImageSync
+    // would, if the disk entry were evicted between the exists() check and the decode. Decoded at,
+    // and cached under, the preloader's target size/key so the result reuses the preloader's memory
+    // entry instead of adding a second differently sized one, and repeat binds hit memory instead
+    // of re-decoding.
+    private Bitmap syncDecodeThumbnailFromDisk(ImageLoader loader, String uri) {
+        try {
+            final File diskFile = loader.getDiskCache().get(uri);
+            if (diskFile == null || !diskFile.exists()) {
+                return null;
+            }
+            final ImageSize size = PhotoLoader.feedDecodeSize(getContext());
+
+            final BitmapFactory.Options bounds = new BitmapFactory.Options();
+            bounds.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(diskFile.getAbsolutePath(), bounds);
+            if (bounds.outWidth <= 0 || bounds.outHeight <= 0) {
+                return null;
+            }
+
+            final BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inPreferredConfig = Bitmap.Config.RGB_565;
+            // Cap the loop (sample <= 32) so it can't spin even if a target dimension is ever 0.
+            int sample = 1;
+            while (sample < 32
+                    && bounds.outWidth / (sample * 2) >= size.getWidth()
+                    && bounds.outHeight / (sample * 2) >= size.getHeight()) {
+                sample *= 2;
+            }
+            opts.inSampleSize = sample;
+
+            final Bitmap bmp = BitmapFactory.decodeFile(diskFile.getAbsolutePath(), opts);
+            if (bmp != null) {
+                loader.getMemoryCache().put(MemoryCacheUtils.generateKey(uri, size), bmp);
+            }
+            return bmp;
+            // Catch Throwable, not Exception: BitmapFactory.decodeFile throws OutOfMemoryError (an
+            // Error) on allocation failure, which must degrade to the async fallback, not crash the
+            // bind. UIL's own decoder guards against OOM the same way.
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     private void handleImageType(Submission submission, String baseSub, boolean full, boolean forceThumb, boolean loadLq) {
@@ -740,21 +837,30 @@ public class HeaderImageLinkView extends RelativeLayout {
                         && submission.getThumbnails() != null
                         && submission.getThumbnails().getVariations().length > 0;
 
+        // The card shows a small thumbnail unless this is the big-image (card / full) view; size the
+        // requested preview to match so a thumbnail never downloads the full-width image.
+        final boolean showThumb = (!full && !SettingValues.isPicsEnabled(baseSub)) || forceThumb;
+        final int maxW = feedImageWidth(showThumb);
+
         // Cache the resolved preview URL by data-node identity (+ the low-quality decision, which
-        // can change with network state) so a re-bind of the same card skips re-parsing the JSON —
-        // mirrors the gallery path. A refreshed submission (new node) recomputes.
+        // can change with network state, and the display width) so a re-bind of the same card skips
+        // re-parsing the JSON — mirrors the gallery path. A refreshed submission (new node) recomputes.
         final JsonNode dataNode = submission.getDataNode();
         final String url;
-        if (dataNode != null && dataNode == imagePreviewKey && lowQ == imagePreviewLowQ) {
+        if (dataNode != null
+                && dataNode == imagePreviewKey
+                && lowQ == imagePreviewLowQ
+                && maxW == imagePreviewWidth) {
             url = imagePreviewUrlCache;
         } else {
-            url = lowQ ? getLowQualityUrl(submission) : getHighQualityUrl(submission);
+            url = lowQ ? getLowQualityUrl(submission) : getHighQualityUrl(submission, maxW);
             imagePreviewKey = dataNode;
             imagePreviewLowQ = lowQ;
+            imagePreviewWidth = maxW;
             imagePreviewUrlCache = url;
         }
 
-        if (!full && !SettingValues.isPicsEnabled(baseSub) || forceThumb) {
+        if (showThumb) {
             if (!submission.isSelfPost() || full) {
                 if (!full) {
                     thumbImage2.setVisibility(View.VISIBLE);
@@ -794,6 +900,10 @@ public class HeaderImageLinkView extends RelativeLayout {
 
     private String getHighQualityUrl(Submission submission) {
         return PhotoLoader.getHighQualityUrl(submission);
+    }
+
+    private String getHighQualityUrl(Submission submission, int maxWidth) {
+        return PhotoLoader.getHighQualityUrl(submission, maxWidth);
     }
 
     private boolean setBackdropLayoutParams(int height, int width, boolean full, boolean fullImage, ContentType.Type type) {
@@ -856,9 +966,9 @@ public class HeaderImageLinkView extends RelativeLayout {
 
     private void handleThumbnailDisplay(Submission submission, boolean full, boolean forceThumb,
             boolean loadLq, String baseSub, boolean news) {
-        String url = getSubmissionUrl(submission, loadLq);
         boolean shouldShowThumb = !SettingValues.isPicsEnabled(baseSub) && !full
                 || forceThumb;
+        String url = getSubmissionUrl(submission, loadLq, feedImageWidth(shouldShowThumb));
 
         if (shouldShowThumb) {
             displayThumbnail(url, full);
@@ -867,7 +977,7 @@ public class HeaderImageLinkView extends RelativeLayout {
         }
     }
 
-    private String getSubmissionUrl(Submission submission, boolean loadLq) {
+    private String getSubmissionUrl(Submission submission, boolean loadLq, int maxWidth) {
         if (loadLq && submission.getThumbnails().getVariations().length != 0) {
             if (ContentType.isImgurImage(submission.getUrl())) {
                 return getImgurLowQualityUrl(submission.getUrl());
@@ -875,7 +985,7 @@ public class HeaderImageLinkView extends RelativeLayout {
                 return getLowQualityVariationUrl(submission);
             }
         } else {
-            return getHighQualityUrl(submission);
+            return getHighQualityUrl(submission, maxWidth);
         }
     }
 
@@ -960,10 +1070,7 @@ public class HeaderImageLinkView extends RelativeLayout {
             }
         };
 
-        ((Reddit) getContext().getApplicationContext())
-                .getImageLoader()
-                .displayImage(
-                        url, thumbImage2, bigOptions, detailedListener); // Use detailedListener
+        displayImageCachedFirst(url, thumbImage2, detailedListener); // Use detailedListener
         setVisibility(View.GONE); // This line was already here for thumbnails
     }
 
@@ -1034,9 +1141,7 @@ public class HeaderImageLinkView extends RelativeLayout {
             backdrop.setVisibility(View.VISIBLE);
         }
 
-        ((Reddit) getContext().getApplicationContext())
-                .getImageLoader()
-                .displayImage(url, backdrop, bigOptions, detailedListener);
+        displayImageCachedFirst(url, backdrop, detailedListener);
 
         setVisibility(View.VISIBLE);
 

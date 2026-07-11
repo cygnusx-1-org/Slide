@@ -170,7 +170,9 @@ public class SettingValues {
     public static TimePeriod timePeriod;
     public static CommentSort defaultCommentSorting;
     public static boolean middleImage;
-    public static boolean bigPicEnabled;
+    // volatile: read from the background feed-preload thread (PhotoLoader.feedDecodeSize) as well as
+    // the main thread, so both must observe the current value to pick a consistent decode size.
+    public static volatile boolean bigPicEnabled;
     public static boolean bigPicCropped;
     public static boolean bigPicLetterboxed;
     public static ColorMatchingMode colorMatchingMode;
@@ -196,9 +198,13 @@ public class SettingValues {
     public static boolean commentAutoHide;
     public static boolean showCollapseExpand;
     public static boolean fullCommentOverride;
-    public static boolean lowResAlways;
-    public static boolean noImages;
-    public static boolean lowResMobile;
+    // volatile: read from the background feed-preload thread (PhotoLoader.resolveFeedImageUrl picks
+    // the low-res image URL) as well as the main thread, so both must observe the current value.
+    public static volatile boolean lowResAlways;
+    // volatile: gates the feed image preload on background threads (SubredditPosts/MultiredditPosts
+    // data-saving check, CommentCacheAsync) as well as being read on the main thread.
+    public static volatile boolean noImages;
+    public static volatile boolean lowResMobile;
     public static boolean blurCheck;
     public static boolean readerNight;
     public static boolean swipeAnywhere;
@@ -280,7 +286,9 @@ public class SettingValues {
     public static boolean autoTime;
     public static boolean albumSwipe;
     public static boolean switchThumb;
-    public static boolean bigThumbnails;
+    // volatile: read from the background feed-preload thread (PhotoLoader.feedImageWidth) as well as
+    // the main thread, so both must observe the current value to pick a consistent thumbnail size.
+    public static volatile boolean bigThumbnails;
     public static boolean noThumbnails;
     public static boolean commentPager;
     public static boolean alphabetizeOnSubscribe;
@@ -292,8 +300,10 @@ public class SettingValues {
     public static boolean showDomain;
     public static boolean cardText;
     public static boolean alwaysZoom;
-    public static boolean lqLow = false;
-    public static boolean lqMid = true;
+    // volatile: read from the background feed-preload thread (PhotoLoader.getLowQualityUrl selects
+    // the low-res variation) as well as the main thread, so both must observe the current value.
+    public static volatile boolean lqLow = false;
+    public static volatile boolean lqMid = true;
     public static boolean lqHigh = false;
     public static boolean lqVideos;
     public static int currentTheme; // current base theme (Light, Dark, Dark blue, etc.)
