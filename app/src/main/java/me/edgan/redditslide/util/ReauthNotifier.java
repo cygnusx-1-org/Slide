@@ -18,6 +18,8 @@ import com.google.android.material.snackbar.Snackbar;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+import me.edgan.redditslide.Activities.Login;
+import me.edgan.redditslide.Activities.Reauthenticate;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
@@ -38,8 +40,12 @@ public class ReauthNotifier {
 
     private ReauthNotifier() {}
 
+    // Invariant: SHOW_DELAY_MS < FAILED_DELAY_MS. scheduleForCurrentActivity() relies on this — if
+    // the show delay were >= the fail delay, the failure runnable would be posted with a negative
+    // delay (firing immediately) and the "Reauthenticating…" state would be skipped entirely.
+
     /** Delay before the "Reauthenticating…" snackbar appears. */
-    private static final long SHOW_DELAY_MS = 4000;
+    private static final long SHOW_DELAY_MS = 10000;
 
     /** Delay before the snackbar switches to the "Could not reauthenticate" state. */
     private static final long FAILED_DELAY_MS = 30000;
@@ -121,10 +127,24 @@ public class ReauthNotifier {
 
     /** Track the foreground activity and (re)show the snackbar on it if one is pending. */
     public static void attach(final Activity activity) {
+        if (isLoginView(activity)) {
+            // The login/reauthenticate screens already handle authentication directly, so don't
+            // surface the reauth snackbar over them. Untarget this screen and drop any bar/timers;
+            // state (inProgress/reauthFailed) is preserved so the bar returns on the next normal
+            // activity if reauth is still outstanding.
+            currentActivity.clear();
+            cancelAndDismiss();
+            return;
+        }
         currentActivity = new WeakReference<>(activity);
         if (inProgress.get() > 0 || reauthFailed) {
             scheduleForCurrentActivity();
         }
+    }
+
+    /** The login/reauthenticate screens, over which the reauth snackbar should stay hidden. */
+    private static boolean isLoginView(final Activity activity) {
+        return activity instanceof Login || activity instanceof Reauthenticate;
     }
 
     /** Stop targeting a paused activity; its window is going away with any snackbar on it. */

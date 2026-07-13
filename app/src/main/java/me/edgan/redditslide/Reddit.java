@@ -53,6 +53,7 @@ import me.edgan.redditslide.Autocache.AutoCacheScheduler;
 import me.edgan.redditslide.ImgurAlbum.AlbumUtils;
 import me.edgan.redditslide.Notifications.NotificationJobScheduler;
 import me.edgan.redditslide.Notifications.NotificationPiggyback;
+import me.edgan.redditslide.Notifications.TokenRefreshReceiver;
 import me.edgan.redditslide.Tumblr.TumblrUtils;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.AdBlocker;
@@ -212,6 +213,9 @@ public class Reddit extends Application implements Application.ActivityLifecycle
         } else if (NetworkUtil.isConnected(activity) && authentication == null) {
             authentication = new Authentication(this);
         }
+        // Keep the background keep-warm token refresh aligned with the current token expiry so a
+        // later re-open usually finds a fresh token instead of relying on the resume-time refresh.
+        TokenRefreshReceiver.schedule(this);
     }
 
     @Override

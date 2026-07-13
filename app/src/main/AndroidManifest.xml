@@ -798,6 +798,7 @@
 
                 <receiver android:name=".Notifications.CheckForMail" android:exported="false"></receiver>
                 <receiver android:name=".Notifications.CheckForMailSingle" android:exported="false"></receiver>
+                <receiver android:name=".Notifications.TokenRefreshReceiver" android:exported="false"></receiver>
 
                 <receiver android:name=".Autocache.CacheAll" android:exported="false"></receiver>
 

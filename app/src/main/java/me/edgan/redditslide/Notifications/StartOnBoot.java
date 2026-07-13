@@ -37,6 +37,11 @@ public class StartOnBoot extends BroadcastReceiver {
             } else {
                 LogUtil.v("Failed to get AlarmManager");
             }
+
+            // Start the background token keep-warm refresh at boot too, independent of the
+            // notification checker above, so a logged-in user's token stays fresh even with
+            // notifications disabled. No-op when logged out (see TokenRefreshReceiver.schedule).
+            TokenRefreshReceiver.schedule(context);
         } else {
             LogUtil.v("Received non-boot intent");
         }

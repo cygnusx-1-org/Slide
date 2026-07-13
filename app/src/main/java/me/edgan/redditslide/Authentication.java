@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import me.edgan.redditslide.Notifications.TokenRefreshReceiver;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
@@ -95,6 +96,22 @@ public class Authentication {
     }
 
     public void updateToken(Context c) {
+        updateToken(c, true, null);
+    }
+
+    public void updateToken(Context c, boolean reportToSnackbar) {
+        updateToken(c, reportToSnackbar, null);
+    }
+
+    /**
+     * @param reportToSnackbar when {@code false} the refresh runs silently, without the {@link
+     *     ReauthNotifier} "reauthenticating"/failure snackbar. Used by the background {@link
+     *     TokenRefreshReceiver} keep-warm refresh, which has no foreground user waiting on it.
+     * @param onComplete run on the main thread once the refresh finishes (success, failure, or
+     *     cancellation); may be {@code null}. Lets {@link TokenRefreshReceiver} hold its {@code
+     *     goAsync()} broadcast lease open until the network refresh has actually completed.
+     */
+    public void updateToken(Context c, boolean reportToSnackbar, Runnable onComplete) {
         if (BuildConfig.DEBUG) LogUtil.v("Executing update token");
         if (reddit == null) {
             hasDone = true;
@@ -105,40 +122,71 @@ public class Authentication {
             reddit.setLoggingMode(LoggingMode.ALWAYS);
             didOnline = true;
 
-            new VerifyCredentials(c).executeOnExecutor(REAUTH_EXECUTOR);
+            new VerifyCredentials(c, reportToSnackbar, onComplete)
+                    .executeOnExecutor(REAUTH_EXECUTOR);
         } else {
-            new UpdateToken(c).executeOnExecutor(REAUTH_EXECUTOR);
+            new UpdateToken(c, reportToSnackbar, onComplete).executeOnExecutor(REAUTH_EXECUTOR);
         }
     }
 
     public static boolean authedOnce;
 
-    public static class UpdateToken extends AsyncTask<Void, Void, Void> {
+    public static class UpdateToken extends AsyncTask<Void, Void, Boolean> {
 
         Context context;
+        final boolean reportToSnackbar;
+        final Runnable onComplete;
 
         public UpdateToken(Context c) {
+            this(c, true, null);
+        }
+
+        public UpdateToken(Context c, boolean reportToSnackbar) {
+            this(c, reportToSnackbar, null);
+        }
+
+        public UpdateToken(Context c, boolean reportToSnackbar, Runnable onComplete) {
             this.context = c;
+            this.reportToSnackbar = reportToSnackbar;
+            this.onComplete = onComplete;
         }
 
         @Override
         protected void onPreExecute() {
-            ReauthNotifier.onStarted();
+            if (reportToSnackbar) ReauthNotifier.onStarted();
         }
 
         @Override
-        protected void onPostExecute(Void result) {
-            ReauthNotifier.onFinished(isReauthed());
+        protected void onPostExecute(Boolean success) {
+            // A null result means no refresh was attempted (e.g. not yet authed); fall back to the
+            // live auth state. A non-null result is the real outcome of the refresh, so a failed
+            // refresh reports false even while the old (not-yet-expired) token still reads as
+            // authenticated — that is what surfaces the reauth failure snackbar and its Retry.
+            if (reportToSnackbar) {
+                ReauthNotifier.onFinished(success != null ? success : isReauthed());
+            } else {
+                // Background keep-warm path: realign the next alarm now that the refresh has run
+                // and (on success) bumped the stored expiry, instead of off the pre-refresh value
+                // read synchronously in the receiver, which would fire a redundant early wake.
+                TokenRefreshReceiver.schedule(context);
+            }
+            runOnComplete();
         }
 
         @Override
         protected void onCancelled() {
             // Keep the reauth "in progress" counter balanced if the task is cancelled.
-            ReauthNotifier.onFinished(isReauthed());
+            if (reportToSnackbar) ReauthNotifier.onFinished(isReauthed());
+            runOnComplete();
+        }
+
+        private void runOnComplete() {
+            if (onComplete != null) onComplete.run();
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Boolean doInBackground(Void... params) {
+            Boolean result = null;
             maybeBreakReauth();
             if (authedOnce && NetworkUtil.isConnected(context)) {
                 didOnline = true;
@@ -201,8 +249,11 @@ public class Authentication {
                                 Authentication.isLoggedIn = true;
                             }
                             Log.v(LogUtil.getTag(), "AUTHENTICATED");
+                            result = reddit.isAuthenticated();
                         } catch (Exception e) {
                             LogUtil.e(e, "Authentication.doInBackground failed");
+                            // Refresh failed; report failure so the reauth snackbar Retry appears.
+                            result = false;
                         }
 
                     } else {
@@ -277,7 +328,7 @@ public class Authentication {
                 }
             }
             if (BuildConfig.DEBUG) LogUtil.v("Done loading token");
-            return null;
+            return result;
         }
     }
 
@@ -285,26 +336,36 @@ public class Authentication {
         Context mContext;
         String lastToken;
         boolean single;
+        final boolean reportToSnackbar;
+        final Runnable onComplete;
 
         public VerifyCredentials(Context context) {
+            this(context, true, null);
+        }
+
+        public VerifyCredentials(Context context, boolean reportToSnackbar, Runnable onComplete) {
             mContext = context;
             lastToken = authentication.getString("lasttoken", "");
+            this.reportToSnackbar = reportToSnackbar;
+            this.onComplete = onComplete;
         }
 
         @Override
         protected void onPreExecute() {
-            ReauthNotifier.onStarted();
+            if (reportToSnackbar) ReauthNotifier.onStarted();
         }
 
         @Override
         protected void onPostExecute(Void result) {
-            ReauthNotifier.onFinished(isReauthed());
+            if (reportToSnackbar) ReauthNotifier.onFinished(isReauthed());
+            if (onComplete != null) onComplete.run();
         }
 
         @Override
         protected void onCancelled() {
             // Keep the reauth "in progress" counter balanced if the task is cancelled.
-            ReauthNotifier.onFinished(isReauthed());
+            if (reportToSnackbar) ReauthNotifier.onFinished(isReauthed());
+            if (onComplete != null) onComplete.run();
         }
 
         @Override
@@ -326,7 +387,7 @@ public class Authentication {
 
     /**
      * Debug aid (see the Debug settings screen): when {@link SettingValues#debugBreakReauth} is on,
-     * simulate a stalled re-authentication so the reauth snackbar (which appears after 4s and shows
+     * simulate a stalled re-authentication so the reauth snackbar (which appears after 10s and shows
      * failure after 30s) can be tested. Runs on a background thread; it holds the reauth "in
      * progress" and temporarily marks us logged-out (so the gated UI hides its buttons), and only
      * returns once the toggle is switched off — the recovery reauth then sets isLoggedIn back true.
