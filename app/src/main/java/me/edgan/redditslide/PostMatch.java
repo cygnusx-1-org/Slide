@@ -96,7 +96,7 @@ public class PostMatch {
         if (Hidden.id.contains(s.getFullName()))
             return true; // if it's hidden we're not going to show it regardless
 
-        // Filter posts older than 30 days (except for Top and Controversial sorts)
+        // Filter posts older than the configured number of days (except for Top and Controversial sorts)
         // Only apply to frontpage/all/multi-reddits, not individual subreddits
         if (SettingValues.filterOldPosts) {
             // Handle null or empty subreddit (treat as frontpage)
@@ -125,8 +125,8 @@ public class PostMatch {
                     // Calculate age in days
                     long ageInDays = (currentTime - postTime) / (1000L * 60 * 60 * 24);
 
-                    // Filter if older than 30 days
-                    if (ageInDays > 30) {
+                    // Filter if older than the configured number of days
+                    if (ageInDays > SettingValues.filterOldPostsDays) {
                         return true;  // Filter out this post
                     }
                 }

@@ -2,6 +2,10 @@ package me.edgan.redditslide.ui.settings;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import java.util.HashSet;
@@ -15,6 +19,9 @@ import me.edgan.redditslide.util.MiscUtil;
 
 /** Created by l3d00m on 11/13/2015. */
 public class SettingsFilter extends BaseActivityAnim {
+
+    // Selectable "older than" thresholds, in days
+    private static final int[] FILTER_OLD_POSTS_DAY_OPTIONS = {7, 14, 21, 28, 30};
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,14 +66,70 @@ public class SettingsFilter extends BaseActivityAnim {
                 .apply();
         });
 
+        // Add dropdown for how old a post must be before it is filtered
+        Spinner filterOldPostsDays = (Spinner) findViewById(R.id.filter_old_posts_days);
+        String[] dayLabels = new String[FILTER_OLD_POSTS_DAY_OPTIONS.length];
+        int selectedIndex = -1;
+        for (int i = 0; i < FILTER_OLD_POSTS_DAY_OPTIONS.length; i++) {
+            dayLabels[i] =
+                    getString(
+                            R.string.settings_filter_old_posts_days,
+                            FILTER_OLD_POSTS_DAY_OPTIONS[i]);
+            if (FILTER_OLD_POSTS_DAY_OPTIONS[i] == SettingValues.filterOldPostsDays) {
+                selectedIndex = i;
+            }
+        }
+        // If the saved value isn't one of the options (e.g. restored from an older
+        // backup), snap to the last option (30 days, the pref default) and persist it
+        // so the spinner and the stored value stay in agreement.
+        if (selectedIndex < 0) {
+            selectedIndex = FILTER_OLD_POSTS_DAY_OPTIONS.length - 1;
+            SettingValues.filterOldPostsDays = FILTER_OLD_POSTS_DAY_OPTIONS[selectedIndex];
+            SettingValues.prefs.edit()
+                    .putInt(
+                            SettingValues.PREF_FILTER_OLD_POSTS_DAYS,
+                            SettingValues.filterOldPostsDays)
+                    .apply();
+        }
+        ArrayAdapter<String> daysAdapter =
+                new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, dayLabels);
+        daysAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        filterOldPostsDays.setAdapter(daysAdapter);
+        filterOldPostsDays.setSelection(selectedIndex);
+        // Skip the automatic callback that fires when the spinner restores its saved
+        // selection, so we only persist a value the user actually picks.
+        final boolean[] ignoreFirstDaysSelection = {true};
+        filterOldPostsDays.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(
+                            AdapterView<?> parent, View view, int position, long id) {
+                        if (ignoreFirstDaysSelection[0]) {
+                            ignoreFirstDaysSelection[0] = false;
+                            return;
+                        }
+                        int days = FILTER_OLD_POSTS_DAY_OPTIONS[position];
+                        SettingValues.filterOldPostsDays = days;
+                        SettingValues.prefs.edit()
+                                .putInt(SettingValues.PREF_FILTER_OLD_POSTS_DAYS, days)
+                                .apply();
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {}
+                });
+
         // Add switch for filtering old posts
         Switch filterOldPosts = (Switch) findViewById(R.id.filter_old_posts);
         filterOldPosts.setChecked(SettingValues.filterOldPosts);
+        // The day count only matters while filtering is enabled
+        filterOldPostsDays.setEnabled(SettingValues.filterOldPosts);
         filterOldPosts.setOnCheckedChangeListener((buttonView, isChecked) -> {
             SettingValues.filterOldPosts = isChecked;
             SettingValues.prefs.edit()
                 .putBoolean(SettingValues.PREF_FILTER_OLD_POSTS, isChecked)
                 .apply();
+            filterOldPostsDays.setEnabled(isChecked);
         });
     }
 
