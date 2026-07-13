@@ -4,6 +4,11 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.8.1 / 2026-7-13
+============
+* Fixed blurry images when image is click #297
+* Fixed Filter this content hidden #298
+
 7.8.0 / 2026-7-11
 ============
 * Improved thumbnail feed layout to avoid pop-in and redraws
