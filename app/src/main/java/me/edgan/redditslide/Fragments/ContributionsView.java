@@ -4,12 +4,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
+import java.util.HashSet;
+import java.util.Set;
 import me.edgan.redditslide.Activities.Profile;
 import me.edgan.redditslide.Adapters.ContributionAdapter;
 import me.edgan.redditslide.Adapters.ContributionPosts;
@@ -21,6 +21,7 @@ import me.edgan.redditslide.Views.CatchStaggeredGridLayoutManager;
 import me.edgan.redditslide.Views.PreCachingLayoutManager;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.handler.ToolbarScrollHideHandler;
+import me.edgan.redditslide.util.PhotoLoader;
 
 public class ContributionsView extends Fragment {
 
@@ -29,6 +30,9 @@ public class ContributionsView extends Fragment {
     private int pastVisiblesItems;
     private ContributionAdapter adapter;
     private ContributionPosts posts;
+    // Tap-target prefetch: full-names already warmed on a settle-sweep, so repeated micro-stops don't
+    // re-warm the same visible rows. See PhotoLoader.warmVisibleTapTargets.
+    private final Set<String> warmedTapTargets = new HashSet<>();
     private String id;
     private String where;
     private RecyclerView recyclerView;
@@ -101,6 +105,17 @@ public class ContributionsView extends Fragment {
                         getActivity().findViewById(R.id.toolbar),
                         getActivity().findViewById(R.id.header)) {
                     @Override
+                    public void onScrollStateChanged(
+                            @NonNull RecyclerView recyclerView, int newState) {
+                        super.onScrollStateChanged(recyclerView, newState);
+                        // On settle, warm the media-viewer image for each visible post. Skipped
+                        // mid-scroll so flicked-past rows aren't downloaded.
+                        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                            warmVisibleTapTargets();
+                        }
+                    }
+
+                    @Override
                     public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                         super.onScrolled(recyclerView, dx, dy);
                         visibleItemCount = rv.getLayoutManager().getChildCount();
@@ -128,7 +143,33 @@ public class ContributionsView extends Fragment {
                         }
                     }
                 });
+
+        // Initial-display + refresh sweep: warm the visible rows' tap targets once content is laid out
+        // (before any scroll), so a post already on screen — e.g. the album at the top of Saved — is
+        // prefetched without needing a scroll. Re-fires when a pull-to-refresh replaces the list; the
+        // settle-sweep covers scrolling in between.
+        PhotoLoader.warmVisibleTapTargetsOnContentChange(
+                rv, () -> posts != null ? posts.posts : null, this::sweepReplacedContent);
         return v;
+    }
+
+    // Content-change sweep: a refresh replaced the list, so forget the old warmed set (bounding it and
+    // letting an evicted-then-refreshed row re-warm) before warming the fresh visible rows.
+    private void sweepReplacedContent() {
+        warmedTapTargets.clear();
+        warmVisibleTapTargets();
+    }
+
+    // Warm the tap-target image of each currently-visible post. A header spacer sits at adapter
+    // position 0, so posts start at index 1 (headerOffset = 1). Shared helper handles range math,
+    // dedup, and off-main-thread warming.
+    private void warmVisibleTapTargets() {
+        PhotoLoader.warmVisibleTapTargets(
+                getContext(),
+                recyclerView,
+                posts != null ? posts.posts : null,
+                1,
+                warmedTapTargets);
     }
 
     @Override

@@ -2,6 +2,11 @@ package me.edgan.redditslide.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -10,15 +15,20 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 import me.edgan.redditslide.ContentType;
+import me.edgan.redditslide.ImgurAlbum.AlbumUtils;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Views.MaxHeightImageView;
 import net.dean.jraw.models.Submission;
+import org.apache.commons.text.StringEscapeUtils;
 
 /** Created by TacoTheDank on 12/11/2020. */
 public class PhotoLoader {
@@ -272,8 +282,9 @@ public class PhotoLoader {
      * Feed image URL for {@code submission}, sized to {@code maxWidth}: the smallest reddit
      * "resolutions" preview whose width covers maxWidth, so a list thumbnail downloads a
      * few-hundred-pixel image instead of the ≈1080px card preview (reddit already serves these
-     * sizes). Falls back to the largest resolution (cards), then the full source, then reddit's own
-     * thumbnail field.
+     * sizes). When no rung covers maxWidth, falls back to the source if it is under 1080px wide (a
+     * small original that would otherwise upscale a tiny rung), else the largest resolution, then the
+     * full source, then reddit's own thumbnail field.
      */
     public static String getHighQualityUrl(Submission submission, int maxWidth) {
         if (submission.getDataNode().has("preview")) {
@@ -286,6 +297,19 @@ public class PhotoLoader {
                 if (sized != null) {
                     return sized;
                 }
+                final JsonNode source = image.get("source");
+                // No "resolutions" rung is wide enough to cover the display. Reddit only generates a
+                // 1080-wide rung when the source is at least that wide, so a source under 1080px means
+                // every rung is small (e.g. a 547px meme tops out at a 320px rung) and would be
+                // upscaled ~3x across the card — obviously blurry. Use the source itself: under 1080px
+                // it is small to download and matches what the media viewer shows. Larger originals
+                // still have a 1080 rung (returned below), so the multi-MB source is never pulled here.
+                if (source != null
+                        && source.has("url")
+                        && source.has("width")
+                        && source.get("width").asInt() < 1080) {
+                    return source.get("url").asText();
+                }
                 final JsonNode resolutions = image.get("resolutions");
                 if (resolutions != null && resolutions.size() > 0) {
                     final JsonNode largest = resolutions.get(resolutions.size() - 1);
@@ -293,7 +317,6 @@ public class PhotoLoader {
                         return largest.get("url").asText();
                     }
                 }
-                final JsonNode source = image.get("source");
                 if (source != null && source.has("height")) {
                     return source.get("url").asText();
                 }
@@ -529,6 +552,316 @@ public class PhotoLoader {
                         }
                     }
                 });
+    }
+
+    /**
+     * Prefetch the full-resolution image the media viewer opens when this card is tapped, so the
+     * viewer shows a disk-cached original instead of downloading it on tap. The feed only warms the
+     * smaller preview/thumbnail (resolveFeedImageUrl); this warms the exact URL the tap target
+     * requests — {@code submission.getUrl()} for a single IMAGE (SubmissionThumbnailHelper.openImage)
+     * and the first still image's source for a reddit gallery (RedditGalleryView loads the same URL
+     * through this ImageLoader). Fire-and-forget, called from the feed once a row has settled;
+     * URL resolution (gallery JSON traversal) runs on {@link #WARM_AHEAD_EXECUTOR}, never the main
+     * thread, and the download is async on UIL's pool (a cache hit is a cheap no-op). Disk-only
+     * (PRELOAD_OPTIONS) so a multi-MB original doesn't thrash the feed's memory cache. The Wi-Fi /
+     * data-saver gate is applied once per sweep by the sole caller ({@link #warmVisibleTapTargets}),
+     * so it isn't repeated per row here. {@code app} must be the application context.
+     */
+    private static void warmTapTarget(final Context app, final Submission submission) {
+        if (app == null || submission == null) {
+            return;
+        }
+        TAP_TARGET_EXECUTOR.execute(
+                () -> {
+                    try {
+                        final String url = tapTargetUrl(app, submission);
+                        if (url != null && !PLACEHOLDER_URLS.contains(url)) {
+                            loadImage(app, url, false);
+                        }
+                    } catch (Throwable ignored) {
+                    }
+                });
+    }
+
+    // Tap-target warms run on their own thread, off the preview warm-ahead pipeline: resolving an
+    // imgur album's first image is a blocking imgur API call, which must not stall
+    // WARM_AHEAD_EXECUTOR's latency-sensitive preview prefetch. Single-threaded so those album API
+    // calls also stay serialized — one imgur request at a time on the shared key.
+    private static final ExecutorService TAP_TARGET_EXECUTOR = Executors.newSingleThreadExecutor();
+
+    /**
+     * Warm the tap-target (full-resolution media-viewer) image for every currently-visible submission
+     * in a settled feed. Call from a feed's scroll listener when it goes idle — never mid-fling — so
+     * the heavier full-original / imgur-album downloads only fire for rows the user lands on. Shared by
+     * every feed surface (the subreddit feed, the profile Saved/Submitted tabs, …) so they behave
+     * identically. Handles both the staggered-grid feed and the linear profile lists; maps adapter
+     * position to list index by {@code headerOffset} (the number of non-post rows before index 0, e.g.
+     * a header/spacer). {@code warmed} dedupes across repeated settles; items that aren't Submissions
+     * (e.g. comments in a profile list) are skipped.
+     */
+    public static void warmVisibleTapTargets(
+            final Context context,
+            final RecyclerView rv,
+            final List<?> posts,
+            final int headerOffset,
+            final Set<String> warmed) {
+        if (context == null || rv == null || posts == null || warmed == null) {
+            return;
+        }
+        // Gate the whole sweep once — the result is identical for every visible row, so this avoids a
+        // per-row ConnectivityManager query on the main thread. Skip only when Data saving is active
+        // (always, or on mobile data via isDataSavingActive): the tap-target warm pulls
+        // full-resolution originals (and fires imgur album API calls) for images the user may never
+        // open, so with Data saving on the viewer still downloads on tap as before. With Data saving
+        // off the user has opted into full-quality loading, so prefetch runs on any connection.
+        if (SettingValues.isDataSavingActive(context)) {
+            return;
+        }
+        final RecyclerView.LayoutManager lm = rv.getLayoutManager();
+        if (lm == null) {
+            return;
+        }
+        int firstAdapter;
+        int lastAdapter;
+        if (lm instanceof StaggeredGridLayoutManager) {
+            final int[] first = ((StaggeredGridLayoutManager) lm).findFirstVisibleItemPositions(null);
+            final int[] last = ((StaggeredGridLayoutManager) lm).findLastVisibleItemPositions(null);
+            if (first == null || first.length == 0 || last == null || last.length == 0) {
+                return;
+            }
+            // Take the min/max over the *valid* per-span positions only: a span with no visible item
+            // reports NO_POSITION (-1), which would otherwise drag firstAdapter to -1 and skip the
+            // whole sweep. If every span is empty, both stay NO_POSITION and the guard below returns.
+            firstAdapter = RecyclerView.NO_POSITION;
+            for (final int p : first) {
+                if (p != RecyclerView.NO_POSITION
+                        && (firstAdapter == RecyclerView.NO_POSITION || p < firstAdapter)) {
+                    firstAdapter = p;
+                }
+            }
+            lastAdapter = RecyclerView.NO_POSITION;
+            for (final int p : last) {
+                if (p != RecyclerView.NO_POSITION && p > lastAdapter) {
+                    lastAdapter = p;
+                }
+            }
+        } else if (lm instanceof LinearLayoutManager) {
+            firstAdapter = ((LinearLayoutManager) lm).findFirstVisibleItemPosition();
+            lastAdapter = ((LinearLayoutManager) lm).findLastVisibleItemPosition();
+        } else {
+            return;
+        }
+        if (firstAdapter == RecyclerView.NO_POSITION || lastAdapter == RecyclerView.NO_POSITION) {
+            return;
+        }
+        final Context app = context.getApplicationContext();
+        final int size = posts.size();
+        for (int adapterPos = firstAdapter; adapterPos <= lastAdapter; adapterPos++) {
+            final int index = adapterPos - headerOffset;
+            if (index < 0 || index >= size) {
+                continue;
+            }
+            try {
+                final Object item = posts.get(index);
+                if (item instanceof Submission) {
+                    final Submission s = (Submission) item;
+                    if (warmed.add(s.getFullName())) {
+                        warmTapTarget(app, s);
+                    }
+                }
+            } catch (RuntimeException ignored) {
+                // The list was swapped under us (background reset/addAll); stop and retry next settle.
+                return;
+            }
+        }
+    }
+
+    /**
+     * Run {@code sweep} once, on the first layout where the feed actually has content, then
+     * unregister. The settle-sweep only fires after a scroll, so this covers a post already visible on
+     * initial display (e.g. the top of a Saved/History tab, or the first feed card) that would
+     * otherwise never be prefetched until the user scrolls. {@code hasContent} gates the one shot so an
+     * early layout showing only a loading spinner doesn't consume it. If content never arrives (empty
+     * feed or error), the listener is still pulled off on detach so it can't hold the fragment for the
+     * activity's lifetime.
+     */
+    public static void warmVisibleTapTargetsOnFirstLayout(
+            final RecyclerView rv, final BooleanSupplier hasContent, final Runnable sweep) {
+        if (rv == null || hasContent == null || sweep == null) {
+            return;
+        }
+        final boolean[] done = {false};
+        final ViewTreeObserver.OnGlobalLayoutListener layoutListener =
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        if (done[0] || rv.getChildCount() == 0 || !hasContent.getAsBoolean()) {
+                            return;
+                        }
+                        done[0] = true;
+                        final ViewTreeObserver observer = rv.getViewTreeObserver();
+                        if (observer.isAlive()) {
+                            observer.removeOnGlobalLayoutListener(this);
+                        }
+                        sweep.run();
+                    }
+                };
+        // A global-layout listener lives on the window's observer, not the view's. The one shot only
+        // unregisters itself once content arrives; if it never does, remove it on detach too so it
+        // can't outlive the view. Re-add on a later re-attach in case content arrives then; once it has
+        // fired, `done` keeps it from running (or re-registering) again. The attach listener itself
+        // lives on the view and is released with it.
+        rv.addOnAttachStateChangeListener(
+                new View.OnAttachStateChangeListener() {
+                    @Override
+                    public void onViewAttachedToWindow(View v) {
+                        if (!done[0]) {
+                            rv.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
+                        }
+                    }
+
+                    @Override
+                    public void onViewDetachedFromWindow(View v) {
+                        final ViewTreeObserver observer = rv.getViewTreeObserver();
+                        if (observer.isAlive()) {
+                            observer.removeOnGlobalLayoutListener(layoutListener);
+                        }
+                    }
+                });
+        if (rv.isAttachedToWindow()) {
+            rv.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
+        }
+    }
+
+    /**
+     * Like {@link #warmVisibleTapTargetsOnFirstLayout} but re-arms across refreshes: runs {@code
+     * sweep} whenever the feed hands the view a different non-empty post list than the one last swept.
+     * The initial load and each pull-to-refresh/reset replace the list ({@code GeneralPosts} reassigns
+     * it on reset), so the visible top rows are warmed without a scroll every time the content is
+     * replaced; an append keeps the same list reference, so it doesn't re-fire (the settle-sweep
+     * covers appended rows). The listener persists for the RecyclerView's lifetime — the per-layout
+     * cost is a reference check. For a source that clears its list in place (same reference) on reset,
+     * use the one-shot plus an explicit refresh hook instead.
+     */
+    public static void warmVisibleTapTargetsOnContentChange(
+            final RecyclerView rv, final Supplier<List<?>> currentList, final Runnable sweep) {
+        if (rv == null || currentList == null || sweep == null) {
+            return;
+        }
+        // Sentinel distinct from any real list, so the first non-empty list already counts as a change.
+        final Object[] lastSwept = {new Object()};
+        final ViewTreeObserver.OnGlobalLayoutListener layoutListener =
+                () -> {
+                    final List<?> list = currentList.get();
+                    if (rv.getChildCount() > 0
+                            && list != null
+                            && !list.isEmpty()
+                            && list != lastSwept[0]) {
+                        lastSwept[0] = list;
+                        sweep.run();
+                    }
+                };
+        // A global-layout listener lives on the window's observer, not the view's, so it must be
+        // pulled off when the view leaves the window or it keeps firing and holds the fragment for the
+        // activity's lifetime. Add it on attach / remove it on detach (both while getViewTreeObserver()
+        // still returns the window observer), so it never outlives the view yet survives a
+        // detach/re-attach; the attach listener itself is released with the view.
+        rv.addOnAttachStateChangeListener(
+                new View.OnAttachStateChangeListener() {
+                    @Override
+                    public void onViewAttachedToWindow(View v) {
+                        rv.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
+                    }
+
+                    @Override
+                    public void onViewDetachedFromWindow(View v) {
+                        final ViewTreeObserver observer = rv.getViewTreeObserver();
+                        if (observer.isAlive()) {
+                            observer.removeOnGlobalLayoutListener(layoutListener);
+                        }
+                    }
+                });
+        if (rv.isAttachedToWindow()) {
+            rv.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
+        }
+    }
+
+    /**
+     * The full-resolution URL the media viewer opens on tap, or null for content whose tap target is
+     * not a still image warmed here (videos, links, self posts, animated gallery/album items). A
+     * single IMAGE opens on {@code submission.getUrl()} (SubmissionThumbnailHelper.openImage's IMAGE
+     * branch), with an imgur URL taking a {@code .png} suffix to mirror MediaView's own display path;
+     * a reddit gallery opens on its first still image's source URL; an imgur album opens on its first
+     * still image, resolved through the imgur API. Callers run this off the main thread (the album
+     * branch does blocking network I/O).
+     */
+    private static String tapTargetUrl(final Context context, final Submission submission) {
+        final ContentType.Type type = ContentType.getContentType(submission);
+        if (type == ContentType.Type.IMAGE) {
+            final String url = submission.getUrl();
+            // Mirror MediaView.onCreate's initial displayImage: it appends ".png" for an imgur URL, so
+            // warm that exact URL or the disk-cache entry won't match what the viewer requests.
+            return (url != null && ContentType.isImgurHash(url)) ? url + ".png" : url;
+        }
+        if (type == ContentType.Type.REDDIT_GALLERY) {
+            return firstGalleryStillSourceUrl(submission.getDataNode());
+        }
+        if (type == ContentType.Type.ALBUM) {
+            // Imgur album: unlike a reddit gallery, the member image URLs aren't in the reddit post,
+            // so resolve the first image through the imgur API (blocking — hence TAP_TARGET_EXECUTOR).
+            return AlbumUtils.getFirstAlbumImageUrlBlocking(context, submission.getUrl());
+        }
+        return null;
+    }
+
+    /**
+     * Source URL of the first still image in a reddit gallery — the URL the gallery viewer requests
+     * for image one (GalleryImage.getImageUrl returns the source "u", and RedditGalleryView displays
+     * it through this ImageLoader). Animated items are skipped: their tap target is a gif/mp4, not a
+     * still-image warm. Null if the gallery JSON is absent or unusable. Mirrors JsonUtil.getGalleryData
+     * so the warmed disk entry matches what the viewer later requests.
+     */
+    private static String firstGalleryStillSourceUrl(JsonNode dataNode) {
+        if (dataNode == null) {
+            return null;
+        }
+        // A crosspost keeps its gallery data on the parent (mirrors the display path).
+        if (dataNode.has("crosspost_parent_list")
+                && dataNode.get("crosspost_parent_list").size() > 0) {
+            dataNode = dataNode.get("crosspost_parent_list").get(0);
+        }
+        final JsonNode galleryData = dataNode.get("gallery_data");
+        final JsonNode mediaMetadata = dataNode.get("media_metadata");
+        if (galleryData == null
+                || mediaMetadata == null
+                || !galleryData.has("items")
+                || galleryData.get("items").size() == 0) {
+            return null;
+        }
+        for (final JsonNode item : galleryData.get("items")) {
+            if (item == null || !item.has("media_id")) {
+                continue;
+            }
+            final String mediaId = item.get("media_id").asText();
+            if (!mediaMetadata.has(mediaId)) {
+                continue;
+            }
+            final JsonNode media = mediaMetadata.get(mediaId);
+            if (media == null || !media.has("s")) {
+                continue;
+            }
+            // Skip animated items — the viewer opens those as gif/mp4, not a still-image warm.
+            final String e = media.has("e") ? media.get("e").asText() : "";
+            final String m = media.has("m") ? media.get("m").asText() : "";
+            if ("AnimatedImage".equals(e) || (m != null && m.contains("gif"))) {
+                continue;
+            }
+            final JsonNode s = media.get("s");
+            if (s != null && s.has("u")) {
+                return StringEscapeUtils.unescapeHtml4(s.get("u").asText());
+            }
+        }
+        return null;
     }
 
     /** Display URL plus reserved dimensions of the first usable image in a Reddit gallery. */

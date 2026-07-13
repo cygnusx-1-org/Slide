@@ -243,6 +243,13 @@ public class AlbumPager extends BaseSaveActivity {
                             images = new ArrayList<>(jsonElements);
 
                             p = (ViewPager) findViewById(R.id.images_horizontal);
+                            // Keep two pages loaded on each side (matches RedditGalleryPager) so that
+                            // at image X the viewer has already warmed X+1 and X+2 — each offscreen
+                            // page's fragment downloads its image eagerly in onCreateView. ViewPager
+                            // only instantiates pages in range [0, count), so near the end (X+2 or even
+                            // X+1 past the last image) it simply loads fewer pages; the "X+2 doesn't
+                            // exist" case needs no explicit guard.
+                            p.setOffscreenPageLimit(2);
 
                             if (getSupportActionBar() != null) {
                                 getSupportActionBar().setSubtitle(1 + "/" + images.size());

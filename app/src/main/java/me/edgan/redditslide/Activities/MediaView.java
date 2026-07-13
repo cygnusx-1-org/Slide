@@ -526,6 +526,9 @@ public class MediaView extends BaseSaveActivity {
         if (getIntent().hasExtra(EXTRA_LQ)) {
             String lqUrl = getIntent().getStringExtra(EXTRA_DISPLAY_URL);
             displayImage(lqUrl);
+            // Reveal the rotate buttons for the low-res image, same as doLoadImage does — otherwise
+            // rotation is unavailable until HQ is tapped.
+            showImageControls();
             findViewById(R.id.hq)
                     .setOnClickListener(
                             new View.OnClickListener() {
@@ -547,6 +550,7 @@ public class MediaView extends BaseSaveActivity {
                             + url.substring(url.lastIndexOf("."));
 
             displayImage(url);
+            showImageControls();
             findViewById(R.id.hq)
                     .setOnClickListener(
                             new View.OnClickListener() {
@@ -952,6 +956,21 @@ public class MediaView extends BaseSaveActivity {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    // Hide the gif loader bar and reveal the rotate buttons for a shown image. Shared by the direct
+    // image load (doLoadImage) and the low-res LQ paths so rotation works on any displayed image.
+    private void showImageControls() {
+        findViewById(R.id.gifprogress).setVisibility(View.GONE);
+        findViewById(R.id.rotate_right).setVisibility(View.VISIBLE);
+        findViewById(R.id.rotate_left).setVisibility(View.VISIBLE);
+    }
+
+    // True once the activity is going away. Async image callbacks (UIL listeners, delayed runnables,
+    // the HEAD task) can fire after the user leaves MediaView; they check this and bail so they never
+    // touch torn-down views or launch a stray activity.
+    private boolean isTornDown() {
+        return isFinishing() || isDestroyed();
+    }
+
     public void doLoadImage(String contentUrl) {
         if (contentUrl != null && contentUrl.contains("bildgur.de")) {
             contentUrl = contentUrl.replace("b.bildgur.de", "i.imgur.com");
@@ -959,11 +978,7 @@ public class MediaView extends BaseSaveActivity {
         if (contentUrl != null && ContentType.isImgurLink(contentUrl)) {
             contentUrl = contentUrl + ".png";
         }
-        findViewById(R.id.gifprogress).setVisibility(View.GONE);
-
-        // Show rotate buttons for images
-        findViewById(R.id.rotate_right).setVisibility(View.VISIBLE);
-        findViewById(R.id.rotate_left).setVisibility(View.VISIBLE);
+        showImageControls();
 
         if (contentUrl != null && contentUrl.contains("m.imgur.com")) {
             contentUrl = contentUrl.replace("m.imgur.com", "i.imgur.com");
@@ -978,8 +993,15 @@ public class MediaView extends BaseSaveActivity {
                 && !contentUrl.contains(
                         "imgur.com"))) { // we can assume redditmedia and imgur links are to direct
             // images and not websites
-            findViewById(R.id.progress).setVisibility(View.VISIBLE);
-            ((ProgressBar) findViewById(R.id.progress)).setIndeterminate(true);
+            // Only show the loading spinner when this HEAD-checked load isn't already on screen from
+            // displayImage() (a feed IMAGE handed to us as the display URL). For the HQ button and
+            // other fresh loads the URLs differ, so the spinner still appears while they download.
+            final boolean spinnerShown =
+                    !contentUrl.equals(getIntent().getStringExtra(EXTRA_DISPLAY_URL));
+            if (spinnerShown) {
+                findViewById(R.id.progress).setVisibility(View.VISIBLE);
+                ((ProgressBar) findViewById(R.id.progress)).setIndeterminate(true);
+            }
 
             final String finalUrl2 = contentUrl;
             new AsyncTask<Void, Void, Void>() {
@@ -993,6 +1015,12 @@ public class MediaView extends BaseSaveActivity {
                                 new Runnable() {
                                     @Override
                                     public void run() {
+                                        // The HEAD request can finish after the user has left this
+                                        // screen; don't touch views or launch Website on a
+                                        // finishing/destroyed activity.
+                                        if (isTornDown()) {
+                                            return;
+                                        }
                                         if (!imageShown
                                                 && type != null
                                                 && !type.isEmpty()
@@ -1024,7 +1052,16 @@ public class MediaView extends BaseSaveActivity {
 
                 @Override
                 protected void onPostExecute(Void aVoid) {
-                    findViewById(R.id.progress).setVisibility(View.GONE);
+                    if (isTornDown()) {
+                        return;
+                    }
+                    // Only hide the spinner this task showed. When the image was already on screen
+                    // from displayImage() (URLs equal, spinner suppressed above), R.id.progress
+                    // belongs to that download's own determinate bar — hiding it here would blank the
+                    // progress mid-download.
+                    if (spinnerShown) {
+                        findViewById(R.id.progress).setVisibility(View.GONE);
+                    }
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
@@ -1056,6 +1093,7 @@ public class MediaView extends BaseSaveActivity {
             final Runnable progressBarDelayRunner =
                     new Runnable() {
                         public void run() {
+                            if (isTornDown()) return;
                             bar.setVisibility(View.VISIBLE);
                         }
                     };
@@ -1091,6 +1129,7 @@ public class MediaView extends BaseSaveActivity {
                         new Runnable() {
                             @Override
                             public void run() {
+                                if (isTornDown()) return;
                                 i.setOnStateChangedListener(
                                     new SubsamplingScaleImageView.DefaultOnStateChangedListener() {
                                         @Override
@@ -1127,6 +1166,7 @@ public class MediaView extends BaseSaveActivity {
 
                                     @Override
                                     public void onLoadingStarted(String imageUri, View view) {
+                                        if (isTornDown()) return;
                                         imageShown = true;
                                         if (size != null) size.setVisibility(View.VISIBLE);
                                     }
@@ -1136,11 +1176,19 @@ public class MediaView extends BaseSaveActivity {
                                             String imageUri, View view, FailReason failReason) {
                                         Log.v(LogUtil.getTag(), "MediaView: LOADING FAILED");
                                         imageShown = false;
+                                        if (isTornDown()) return;
+                                        // Clear the download spinner so a failed load doesn't leave
+                                        // it stuck over a blank view — doLoadImage's onPostExecute no
+                                        // longer hides it when the image was handed to us as the
+                                        // display URL (spinnerShown == false).
+                                        handler.removeCallbacks(progressBarDelayRunner);
+                                        (findViewById(R.id.progress)).setVisibility(View.GONE);
                                     }
 
                                     @Override
                                     public void onLoadingComplete(
                                             String imageUri, View view, Bitmap loadedImage) {
+                                        if (isTornDown()) return;
                                         imageShown = true;
                                         if (size != null) size.setVisibility(View.GONE);
 
@@ -1188,6 +1236,7 @@ public class MediaView extends BaseSaveActivity {
                                     @Override
                                     public void onProgressUpdate(
                                             String imageUri, View view, int current, int total) {
+                                        if (isTornDown()) return;
                                         TextView size = (TextView) findViewById(R.id.size);
                                         if (size != null) {
                                             size.setText(String.format("%d%%", (int) (100.0 * current / total)));

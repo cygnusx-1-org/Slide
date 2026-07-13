@@ -831,6 +831,11 @@ public class HeaderImageLinkView extends RelativeLayout {
                         && submission.getThumbnails() != null
                         && submission.getThumbnails().getVariations().length > 0;
 
+        // Record that the feed loaded a low-quality image so a tap can hand MediaView the low-res
+        // copy plus an HQ button (SubmissionThumbnailHelper.openImage reads baseView.lq). Reset to
+        // false per bind in setSubmission/setSubmissionNews.
+        lq = lowQ;
+
         // The card shows a small thumbnail unless this is the big-image (card / full) view; size the
         // requested preview to match so a thumbnail never downloads the full-width image.
         final boolean showThumb = (!full && !SettingValues.isPicsEnabled(baseSub)) || forceThumb;
@@ -973,6 +978,9 @@ public class HeaderImageLinkView extends RelativeLayout {
 
     private String getSubmissionUrl(Submission submission, boolean loadLq, int maxWidth) {
         if (loadLq && submission.getThumbnails().getVariations().length != 0) {
+            // Loading a low-quality image: record it so a tap hands MediaView the low-res copy plus
+            // an HQ button (baseView.lq, read in SubmissionThumbnailHelper.openImage).
+            lq = true;
             if (ContentType.isImgurImage(submission.getUrl())) {
                 return getImgurLowQualityUrl(submission.getUrl());
             } else {

@@ -1,6 +1,7 @@
 package me.edgan.redditslide.ImgurAlbum;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import androidx.annotation.NonNull;
@@ -78,6 +79,112 @@ public class AlbumUtils {
         }
     }
 
+    // The imgur album hash for a share URL. Extracted from GetAlbumWithCallback's constructor so the
+    // feed's tap-target prefetch derives the identical hash the viewer uses.
+    static String deriveAlbumHash(String url) {
+        if (url == null) {
+            return null;
+        }
+        if (url.contains("/layout/")) {
+            url = url.substring(0, url.indexOf("/layout"));
+        }
+        String rawDat = cutEnds(url);
+        if (rawDat.endsWith("/")) {
+            rawDat = rawDat.substring(0, rawDat.length() - 1);
+        }
+        if (rawDat.substring(rawDat.lastIndexOf("/") + 1).length() < 4) {
+            rawDat = rawDat.replace(rawDat.substring(rawDat.lastIndexOf("/")), "");
+        }
+        if (rawDat.contains("?")) {
+            rawDat = rawDat.substring(0, rawDat.indexOf("?"));
+        }
+        return getHash(rawDat);
+    }
+
+    /**
+     * Resolve the display URL of an imgur album's first still image by calling the imgur API on the
+     * CURRENT thread — callers MUST be off the main thread. Returns the same URL the album viewer
+     * requests ({@code Image.getImageUrl()} = {@code i.imgur.com/{hash}{ext}}), or null if the album
+     * can't be resolved or its first item is animated/absent. Used by the feed's tap-target prefetch
+     * to warm an album's first image ahead of a tap, mirroring the reddit-gallery path. Reads the
+     * image {@code link} straight from the JSON (no SingleImage/Image round-trip) and reuses this
+     * class's {@code getHash} so the reconstructed URL matches the viewer's cache entry exactly.
+     */
+    public static String getFirstAlbumImageUrlBlocking(final Context context, final String url) {
+        try {
+            String hash = deriveAlbumHash(url);
+            if (hash == null) {
+                return null;
+            }
+            if (hash.startsWith("/")) {
+                hash = hash.substring(1);
+            }
+            // Albums are a single hash; if a comma list slipped through, the leading entry is the
+            // album whose first image we want.
+            final int comma = hash.indexOf(",");
+            if (comma != -1) {
+                hash = hash.substring(0, comma);
+            }
+            if (hash.trim().isEmpty()) {
+                return null;
+            }
+
+            final String apiUrl = "https://api.imgur.com/3/album/" + hash;
+            final JsonObject result =
+                    HttpUtil.getImgurJsonObject(
+                            Reddit.client,
+                            new Gson(),
+                            apiUrl,
+                            SecretConstants.getImgurApiKey(context));
+            if (result == null
+                    || !result.has("success")
+                    || !result.get("success").getAsBoolean()
+                    || !result.has("data")) {
+                return null;
+            }
+
+            final JsonObject data = result.getAsJsonObject("data");
+            final JsonObject firstImage;
+            if (data.has("is_album") && data.get("is_album").getAsBoolean()) {
+                if (!data.has("images")
+                        || !data.get("images").isJsonArray()
+                        || data.getAsJsonArray("images").size() == 0
+                        || !data.getAsJsonArray("images").get(0).isJsonObject()) {
+                    return null;
+                }
+                firstImage = data.getAsJsonArray("images").get(0).getAsJsonObject();
+            } else {
+                firstImage = data; // a bare imgur image, not an album
+            }
+
+            if (!firstImage.has("link")) {
+                return null;
+            }
+            final String link = firstImage.get("link").getAsString();
+            if (link == null || !link.contains(".")) {
+                return null;
+            }
+            // Skip an animated first item — the viewer opens those as gif/mp4, not a still-image warm
+            // (mirrors convertToSingle's detection: the "animated" flag or a gif/mp4 link).
+            final boolean animated =
+                    (firstImage.has("animated") && firstImage.get("animated").getAsBoolean())
+                            || link.contains(".gif")
+                            || link.endsWith(".mp4");
+            if (animated) {
+                return null;
+            }
+            final String imgHash = getHash(link);
+            if (imgHash == null || imgHash.isEmpty()) {
+                return null;
+            }
+            final String ext = link.substring(link.lastIndexOf("."));
+            return "https://i.imgur.com/" + imgHash + ext;
+        } catch (Exception e) {
+            LogUtil.e(e, "Album first-image prefetch resolve failed for " + url);
+            return null;
+        }
+    }
+
     public static class GetAlbumWithCallback
             extends AsyncTask<String, Void, ArrayList<JsonElement>> {
 
@@ -96,25 +203,7 @@ public class AlbumUtils {
 
             this.baseActivity = baseActivity;
 
-            if (url.contains("/layout/")) {
-                url = url.substring(0, url.indexOf("/layout"));
-            }
-
-            String rawDat = cutEnds(url);
-
-            if (rawDat.endsWith("/")) {
-                rawDat = rawDat.substring(0, rawDat.length() - 1);
-            }
-
-            if (rawDat.substring(rawDat.lastIndexOf("/") + 1).length() < 4) {
-                rawDat = rawDat.replace(rawDat.substring(rawDat.lastIndexOf("/")), "");
-            }
-
-            if (rawDat.contains("?")) {
-                rawDat = rawDat.substring(0, rawDat.indexOf("?"));
-            }
-
-            hash = getHash(rawDat);
+            hash = deriveAlbumHash(url);
             type = "album";
 
             client = Reddit.client;

@@ -522,10 +522,14 @@ public class ContentType {
             final String host = uri.getHost().toLowerCase(Locale.ENGLISH);
             final String path = uri.getPath().toLowerCase(Locale.ENGLISH);
 
-            return (host.contains("imgur.com"))
-                    && (!(path.endsWith(".png")
-                            && !path.endsWith(".jpg")
-                            && !path.endsWith(".jpeg")));
+            // A bare imgur hash/page URL (e.g. imgur.com/abc123) that isn't already a direct image, so
+            // callers append an image extension (.png) to turn it into one. The negation of
+            // isImgurImage's extension check: a URL that already ends in .png/.jpg/.jpeg is a direct
+            // link and is left alone — otherwise a suffix like ".jpg.png" would be produced.
+            return host.contains("imgur.com")
+                    && !(path.endsWith(".png")
+                            || path.endsWith(".jpg")
+                            || path.endsWith(".jpeg"));
 
         } catch (Exception e) {
             return false;

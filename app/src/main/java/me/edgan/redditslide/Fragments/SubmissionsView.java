@@ -39,8 +39,10 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.mikepenz.itemanimators.AlphaInAnimator;
 import com.mikepenz.itemanimators.SlideUpAlphaAnimator;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import me.edgan.redditslide.Activities.BaseActivity;
 import me.edgan.redditslide.Activities.MainActivity;
 import me.edgan.redditslide.Activities.MultiredditOverview;
@@ -87,6 +89,10 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
     // viewport. Monotonic while scrolling down; reset to -1 in updateSuccess when a refresh/reset
     // replaces the list.
     private int highestWarmedAhead = -1;
+    // Tap-target prefetch: full-names whose full-resolution image (the URL the media viewer opens on
+    // tap) we've already warmed, so a settle-sweep doesn't re-warm the same visible rows on every
+    // micro-stop. Cleared in updateSuccess when a refresh/reset replaces the list.
+    private final Set<String> warmedTapTargets = new HashSet<>();
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private static Submission currentSubmission;
     private int lastRotationAnchor = RecyclerView.NO_POSITION;
@@ -207,6 +213,14 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
             v.findViewById(R.id.back).setBackgroundResource(0);
         }
         rv = v.findViewById(R.id.vertical_content);
+
+        // Initial-display sweep: warm visible cards' tap targets once the first page is laid out,
+        // before any scroll, so a card already on screen is prefetched without needing a scroll. The
+        // settle-sweep takes over once the user scrolls.
+        PhotoLoader.warmVisibleTapTargetsOnFirstLayout(
+                rv,
+                () -> posts != null && posts.posts != null && !posts.posts.isEmpty(),
+                this::warmVisibleTapTargets);
 
         rv.setHasFixedSize(true);
         // Keep a few extra off-screen views bound so a short scroll-back reuses them
@@ -743,8 +757,13 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                                     // re-warms the fresh feed from the top instead of treating the
                                     // stale index as already-warmed and skipping the new rows.
                                     highestWarmedAhead = -1;
+                                    warmedTapTargets.clear();
                                     rv.scrollToPosition(0);
                                     adapter.notifyDataSetChanged();
+                                    // Re-arm the initial-display sweep: SubredditPosts clears its list
+                                    // in place (same reference) so the content-change watcher can't
+                                    // see a refresh; warm the fresh top rows once they've laid out.
+                                    rv.post(this::warmVisibleTapTargets);
                                 } else {
                                     // No new items (end of feed, or all duplicates):
                                     // refresh the footer only, do not scroll to top.
@@ -961,6 +980,18 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                             //                        break;
                             //                }
                             super.onScrollStateChanged(recyclerView, newState);
+
+                            // Tap-target prefetch, on settle only: once the feed comes to rest, warm
+                            // the full-resolution image the media viewer opens for each visible
+                            // single-image / gallery post, so a tap shows it from the disk cache
+                            // instead of downloading it then (the feed itself only warms the smaller
+                            // preview). Deliberately skipped while dragging or flinging — an image the
+                            // user flicks past isn't worth downloading the full original for — and
+                            // deduped per post so repeated micro-stops don't re-warm the same rows.
+                            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                                warmVisibleTapTargets();
+                            }
+
                             // If the toolbar search is open, and the user scrolls in the Main
                             // view--close the search UI
                             if (getActivity() instanceof MainActivity
@@ -982,6 +1013,19 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
         } else {
             toolbarScroll.reset = true;
         }
+    }
+
+    // Warm the tap-target (full-resolution media-viewer) image for every currently-visible feed post
+    // on settle. A header sits at adapter position 0, so posts start at adapter position 1
+    // (headerOffset = 1). The shared helper handles the visible-range math, dedup, and off-main-thread
+    // warming so every feed surface behaves identically.
+    private void warmVisibleTapTargets() {
+        PhotoLoader.warmVisibleTapTargets(
+                getContext(),
+                rv,
+                posts != null ? posts.posts : null,
+                1,
+                warmedTapTargets);
     }
 
     public static void currentPosition(int adapterPosition) {
