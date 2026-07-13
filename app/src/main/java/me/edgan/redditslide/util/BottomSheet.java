@@ -20,6 +20,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.NestedScrollView;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
@@ -160,6 +161,13 @@ public class BottomSheet {
 
             dialog.setContentView(root);
             dialog.show();
+
+            // Open fully so long menus don't hide their last items behind the collapsed
+            // peek height; short menus are unaffected (they wrap to content height). Skip
+            // the collapsed state so a downward drag dismisses instead of snapping to peek.
+            final BottomSheetBehavior<?> behavior = dialog.getBehavior();
+            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            behavior.setSkipCollapsed(true);
             return dialog;
         }
 
