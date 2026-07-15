@@ -25,12 +25,26 @@ public class TestUtils {
      * ExceptionInInitializerError} in tests. Robolectric-only — needs an Android runtime.
      */
     public static void seedRedditApplication() {
+        setMApplication((Application) ApplicationProvider.getApplicationContext());
+    }
+
+    /**
+     * Undoes {@link #seedRedditApplication()}, restoring {@code Reddit.mApplication} to its pristine
+     * null. Use in a test's teardown so it doesn't leave the static seeded for a later test sharing
+     * the same Robolectric sandbox.
+     */
+    public static void clearRedditApplication() {
+        setMApplication(null);
+    }
+
+    /** Reflectively set the private static {@code Reddit.mApplication} (there is no public setter). */
+    private static void setMApplication(Application value) {
         try {
             Field f = Reddit.class.getDeclaredField("mApplication");
             f.setAccessible(true);
-            f.set(null, (Application) ApplicationProvider.getApplicationContext());
+            f.set(null, value);
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException("Failed to seed Reddit.mApplication for tests", e);
+            throw new RuntimeException("Failed to set Reddit.mApplication for tests", e);
         }
     }
 

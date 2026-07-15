@@ -1169,19 +1169,22 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
     public void setOrRemoveSpoilerSpans(int endOfLink, URLSpan span) {
         if (span != null) {
             int offset = (span.getURL().contains("hidden")) ? -1 : 2;
+            // Clamp to a valid index: a link resolved from inside a Markwon table cell passes
+            // endOfLink = -1 (it has no outer-buffer offset), and even a real link at buffer start
+            // can go negative when offset is -1. getSpans must never see a negative index.
+            int spoilerPos = Math.max(0, endOfLink + offset);
             Spannable text = (Spannable) getText();
             // add 2 to end of link since there is a white space between the link text and the
             // spoiler
             ForegroundColorSpan[] foregroundColors =
-                    text.getSpans(
-                            endOfLink + offset, endOfLink + offset, ForegroundColorSpan.class);
+                    text.getSpans(spoilerPos, spoilerPos, ForegroundColorSpan.class);
 
             if (foregroundColors.length > 1) {
                 text.removeSpan(foregroundColors[1]);
             } else {
                 for (int i = 1; i < storedSpoilerStarts.size(); i++) {
-                    if (storedSpoilerStarts.get(i) < endOfLink + offset
-                            && storedSpoilerEnds.get(i) > endOfLink + offset) {
+                    if (storedSpoilerStarts.get(i) < spoilerPos
+                            && storedSpoilerEnds.get(i) > spoilerPos) {
                         try {
                             text.setSpan(
                                     storedSpoilerSpans.get(i),
