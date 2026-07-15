@@ -4,6 +4,11 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.8.2 / 2026-7-14
+============
+* Fixed cannot click links inside a table #299
+* Added a configurable days dropdown for the filter-old-posts setting
+
 7.8.1 / 2026-7-13
 ============
 * Fixed blurry images when image is click #297
