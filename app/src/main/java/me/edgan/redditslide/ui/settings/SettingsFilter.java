@@ -21,7 +21,7 @@ import me.edgan.redditslide.util.MiscUtil;
 public class SettingsFilter extends BaseActivityAnim {
 
     // Selectable "older than" thresholds, in days
-    private static final int[] FILTER_OLD_POSTS_DAY_OPTIONS = {7, 14, 21, 28, 30};
+    private static final int[] FILTER_OLD_POSTS_DAY_OPTIONS = {1, 2, 3, 4, 5, 6, 7, 14, 21, 28, 30};
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,9 +72,11 @@ public class SettingsFilter extends BaseActivityAnim {
         int selectedIndex = -1;
         for (int i = 0; i < FILTER_OLD_POSTS_DAY_OPTIONS.length; i++) {
             dayLabels[i] =
-                    getString(
-                            R.string.settings_filter_old_posts_days,
-                            FILTER_OLD_POSTS_DAY_OPTIONS[i]);
+                    getResources()
+                            .getQuantityString(
+                                    R.plurals.settings_filter_old_posts_days,
+                                    FILTER_OLD_POSTS_DAY_OPTIONS[i],
+                                    FILTER_OLD_POSTS_DAY_OPTIONS[i]);
             if (FILTER_OLD_POSTS_DAY_OPTIONS[i] == SettingValues.filterOldPostsDays) {
                 selectedIndex = i;
             }

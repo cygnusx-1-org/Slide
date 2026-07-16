@@ -126,7 +126,7 @@ public class PostMatch {
                     long ageInDays = (currentTime - postTime) / (1000L * 60 * 60 * 24);
 
                     // Filter if older than the configured number of days
-                    if (ageInDays > SettingValues.filterOldPostsDays) {
+                    if (ageInDays >= SettingValues.filterOldPostsDays) {
                         return true;  // Filter out this post
                     }
                 }

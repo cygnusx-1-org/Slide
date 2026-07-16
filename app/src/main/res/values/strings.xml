@@ -1389,7 +1389,10 @@
     <string name="settings_subreddit_filter_prefix_matching_description">The prefix is the whole subreddit name, and a minimum of six characters. Examples: The subreddit social will allow block socialanxiety. The subreddit pokemongo will block pokemongoraids.</string>
 
     <string name="settings_filter_old_posts">Filter posts older than</string>
-    <string name="settings_filter_old_posts_days">%1$d days</string>
+    <plurals name="settings_filter_old_posts_days">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
     <string name="settings_filter_old_posts_description">Not applied when viewing an individual subreddit, or when sorting by Top or Controversial</string>
 
     <!-- Pause on audio focus ducking setting -->
