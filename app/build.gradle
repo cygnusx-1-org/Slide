@@ -18,7 +18,7 @@ plugins {
     id 'com.gladed.androidgitversion' version '0.4.14'
     id 'com.github.ben-manes.versions' version '0.54.0'
     id 'com.github.breadmoirai.github-release' version '2.5.2'
-    id 'com.diffplug.spotless' version '8.5.1'
+    id 'com.diffplug.spotless' version '8.8.0'
     id 'io.github.takahirom.roborazzi' version '1.64.0'
     id 'jacoco'
 }
