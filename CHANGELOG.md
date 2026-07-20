@@ -4,6 +4,11 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.8.3 / 2026-7-19
+============
+* Fixed stale reauth failure snackbar after silent token refresh
+* Expanded day options and fixed the threshold for the filter-old-posts setting
+
 7.8.2 / 2026-7-14
 ============
 * Fixed cannot click links inside a table #299
