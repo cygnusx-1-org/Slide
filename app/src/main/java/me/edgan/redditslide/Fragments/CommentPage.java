@@ -146,7 +146,16 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
     // buttons (gated on that flag) reappear without the user having to reopen the page.
     private final ReauthNotifier.Listener reauthListener =
             () -> {
-                if (adapter != null) {
+                if (adapter == null) return;
+                // A reauth can complete at any moment (including from the background keep-warm
+                // refresh), so this can land mid-layout/scroll, where notifying throws
+                // "Cannot call this method while RecyclerView is computing a layout or scrolling".
+                if (rv != null && rv.isComputingLayout()) {
+                    rv.post(
+                            () -> {
+                                if (adapter != null) adapter.notifyDataSetChanged();
+                            });
+                } else {
                     adapter.notifyDataSetChanged();
                 }
             };

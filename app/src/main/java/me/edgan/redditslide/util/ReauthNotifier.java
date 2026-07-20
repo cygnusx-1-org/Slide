@@ -65,13 +65,17 @@ public class ReauthNotifier {
 
     // reauthFailed: a reauth finished/timed-out unsuccessfully, so the failure bar is the active
     // state (until Retry or a new reauth). failureDismissed: the user swiped that bar away for the
-    // current failure episode, so keep it hidden. Both main-thread only.
+    // current failure episode, so keep it hidden. satisfiedBySuccess: some other reauth succeeded
+    // while the reported ones were still outstanding, so their outcome no longer says anything about
+    // the session and must not raise the bar. All main-thread only.
     private static boolean reauthFailed;
     private static boolean failureDismissed;
+    private static boolean satisfiedBySuccess;
 
     private static final Runnable showRunnable = () -> showSnackbar(false);
     private static final Runnable failedRunnable =
             () -> {
+                if (satisfiedBySuccess) return;
                 reauthFailed = true;
                 showSnackbar(true);
             };
@@ -88,9 +92,13 @@ public class ReauthNotifier {
     public static void onStarted() {
         runOnMain(
                 () -> {
-                    if (inProgress.getAndIncrement() == 0) {
+                    // Begin a fresh episode on the first outstanding reauth, and also when the
+                    // previous one was satisfied by a success — this reauth is not moot, so its
+                    // outcome must be reported again (and timed from now, not from that episode).
+                    if (inProgress.getAndIncrement() == 0 || satisfiedBySuccess) {
                         reauthFailed = false;
                         failureDismissed = false;
+                        satisfiedBySuccess = false;
                         startTime = System.currentTimeMillis();
                         scheduleForCurrentActivity();
                     }
@@ -103,16 +111,8 @@ public class ReauthNotifier {
                 () -> {
                     if (inProgress.get() > 0 && inProgress.decrementAndGet() == 0) {
                         if (success) {
-                            reauthFailed = false;
-                            failureDismissed = false;
-                            cancelAndDismiss();
-                            for (Listener l : listeners) {
-                                try {
-                                    l.onReauthComplete();
-                                } catch (Exception ignored) {
-                                }
-                            }
-                        } else {
+                            markSucceeded();
+                        } else if (!satisfiedBySuccess) {
                             // Reauth finished but we are still not authed. Surface the failure now
                             // instead of waiting for the 30s timer — a fast failure never reaches
                             // it, which would leave the buttons silently hidden (issue #295).
@@ -123,6 +123,61 @@ public class ReauthNotifier {
                         }
                     }
                 });
+    }
+
+    /**
+     * Called when a reauth that ran <i>without</i> the snackbar (the background keep-warm refresh,
+     * which never calls {@link #onStarted()}/{@link #onFinished(boolean)}) succeeded. It does three
+     * things, and only the first is about something already on screen — the other two are why this
+     * must be called on <i>every</i> silent success, not just when a bar is showing:
+     *
+     * <ol>
+     *   <li>Clears an active failure state. That state is sticky until a reauth reports success, and
+     *       the resume-time refresh only runs once the stored token has expired — which this very
+     *       refresh keeps from happening — so without this a single earlier failure would keep the
+     *       bar reappearing on every activity resume indefinitely.
+     *   <li>Marks any reported reauths still outstanding as moot, since the token is fresh now
+     *       whatever they go on to report. Skipping this because no bar is currently showing leaves
+     *       their 30s timer free to raise a failure the session does not actually have.
+     *   <li>Notifies {@link Listener}s so UI gated on {@link Authentication#isLoggedIn} rebinds. A
+     *       silent refresh is one of the things that flips that flag true, and a page bound while it
+     *       was false keeps its reply/vote/save buttons hidden until told otherwise (issue #295).
+     * </ol>
+     *
+     * <p>Call this only for a refresh that reported real success. Be aware that the pre-expiry
+     * refresh path reports success straight off cached credentials without contacting Reddit, so
+     * "success" is not by itself proof that the stored refresh token is still valid.
+     */
+    public static void onSucceededSilently() {
+        runOnMain(
+                () -> {
+                    // Reported reauths may still be counted in inProgress: onStarted() runs when a
+                    // task is submitted, which can be well before it reaches the (single-threaded)
+                    // reauth executor. The token is fresh now, so whether those eventually stall or
+                    // fail says nothing about the session — mark them satisfied so neither their
+                    // timers nor a late onFinished(false) can raise the bar. This has to happen
+                    // whether or not the bar has tripped yet, otherwise a success landing inside the
+                    // in-progress window is forgotten and the 30s timer still reports failure.
+                    if (inProgress.get() > 0) satisfiedBySuccess = true;
+                    // Always take the success path, even with no failure state to clear: it is also
+                    // what notifies listeners, and a silent refresh is exactly what flips
+                    // isLoggedIn true for UI bound while it was false. markSucceeded() is a no-op
+                    // on already-clear state.
+                    markSucceeded();
+                });
+    }
+
+    /** Clear the failure state, drop any bar/timers, and let gated UI rebind. */
+    private static void markSucceeded() {
+        reauthFailed = false;
+        failureDismissed = false;
+        cancelAndDismiss();
+        for (Listener l : listeners) {
+            try {
+                l.onReauthComplete();
+            } catch (Exception ignored) {
+            }
+        }
     }
 
     /** Track the foreground activity and (re)show the snackbar on it if one is pending. */
@@ -147,15 +202,23 @@ public class ReauthNotifier {
         return activity instanceof Login || activity instanceof Reauthenticate;
     }
 
-    /** Stop targeting a paused activity; its window is going away with any snackbar on it. */
+    /** Stop targeting a paused activity and take its snackbar down with it. */
     public static void detach(final Activity activity) {
-        if (currentActivity.get() == activity) {
-            currentActivity.clear();
+        final Activity target = currentActivity.get();
+        if (target != null && target != activity) {
+            // Pausing an activity we are not targeting. Normally unreachable (onPause of the old
+            // activity precedes onResume of the new one), but two of our activities can be resumed
+            // at once in split-screen, and tearing the bar off the one still in front would leave
+            // nothing to re-show it until its next resume.
+            return;
         }
-        currentSnackbar = null;
-        // Drop pending timers while backgrounded; attach() reschedules them from elapsed time.
-        handler.removeCallbacks(showRunnable);
-        handler.removeCallbacks(failedRunnable);
+        currentActivity.clear();
+        // Dismiss, don't just forget: pausing does not tear down the view hierarchy, so the bar
+        // stays on that screen, and once the reference is dropped nothing can take it down — a
+        // success arriving while backgrounded would leave a stale failure bar waiting there. Also
+        // drops the pending timers; attach() re-shows and reschedules from elapsed time if the
+        // state still warrants it.
+        cancelAndDismiss();
     }
 
     private static void scheduleForCurrentActivity() {
@@ -165,8 +228,9 @@ public class ReauthNotifier {
             showSnackbar(true);
             return;
         }
-        if (inProgress.get() == 0) {
-            // Not in progress and not in the failed state → nothing to show.
+        if (inProgress.get() == 0 || satisfiedBySuccess) {
+            // Not in progress, or the outstanding reauths were already satisfied by a later success
+            // → nothing to show.
             return;
         }
         final long elapsed = System.currentTimeMillis() - startTime;
@@ -185,7 +249,7 @@ public class ReauthNotifier {
     private static void showSnackbar(final boolean failed) {
         if (failed) {
             if (!reauthFailed || failureDismissed) return;
-        } else if (inProgress.get() == 0 || reauthFailed) {
+        } else if (inProgress.get() == 0 || reauthFailed || satisfiedBySuccess) {
             return;
         }
         final Activity activity = currentActivity.get();
@@ -203,21 +267,26 @@ public class ReauthNotifier {
                 s.setAction(
                         R.string.btn_retry,
                         v -> {
-                            s.dismiss();
-                            currentSnackbar = null;
-                            // Re-fire reauth and reset the cycle; if it stalls again the normal
-                            // 4s/30s timers bring the snackbar back naturally.
-                            reauthFailed = false;
-                            failureDismissed = false;
-                            startTime = System.currentTimeMillis();
                             // Use the live foreground activity, not the one captured when the bar
                             // was created (which may be finishing by the time Retry is tapped).
                             final Activity current = currentActivity.get();
-                            if (Reddit.authentication != null
-                                    && current != null
-                                    && !current.isFinishing()) {
-                                Reddit.authentication.updateToken(current);
+                            if (Reddit.authentication == null
+                                    || current == null
+                                    || current.isFinishing()) {
+                                // Nothing to retry against. Material dismisses the bar on an action
+                                // click regardless, so leave the failure state set — that is what
+                                // brings the bar back on the next attach(), instead of clearing it
+                                // as though a retry had happened.
+                                return;
                             }
+                            s.dismiss();
+                            currentSnackbar = null;
+                            // Re-fire reauth and reset the cycle; if it stalls again the normal
+                            // 10s/30s timers bring the snackbar back naturally.
+                            reauthFailed = false;
+                            failureDismissed = false;
+                            startTime = System.currentTimeMillis();
+                            Reddit.authentication.updateToken(current);
                             scheduleForCurrentActivity();
                         });
             }
@@ -252,7 +321,7 @@ public class ReauthNotifier {
     /**
      * Fraction of the navigation-bar inset used as the bar's bottom margin. The full inset (1.0)
      * leaves a gap above the visible gesture handle, which sits lower than the inset's top edge;
-     * half (0.5) overlaps the handle. ~0.7 lands the bar's bottom just on top of the handle.
+     * half (0.5) overlaps the handle. 0.97 lands the bar's bottom just on top of the handle.
      */
     private static final float BOTTOM_CLEARANCE_FRACTION = 0.97f;
 

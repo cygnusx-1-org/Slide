@@ -165,6 +165,14 @@ public class Authentication {
             if (reportToSnackbar) {
                 ReauthNotifier.onFinished(success != null ? success : isReauthed());
             } else {
+                // A silent refresh still clears a stale failure state: it is the path that keeps
+                // the token fresh, which in turn stops the resume-time refresh (gated on the token
+                // having expired) from ever running to clear it. Note that success here does not
+                // always mean a request was made — if "expires" moved into the future while this
+                // task was queued, the branch above reports success straight off the cached
+                // backedCreds. That is still safe to clear on, because only a *successful* refresh
+                // ever writes "expires", and that success has already cleared the failure state.
+                if (success != null && success) ReauthNotifier.onSucceededSilently();
                 // Background keep-warm path: realign the next alarm now that the refresh has run
                 // and (on success) bumped the stored expiry, instead of off the pre-refresh value
                 // read synchronously in the receiver, which would fire a redundant early wake.
@@ -358,6 +366,17 @@ public class Authentication {
         @Override
         protected void onPostExecute(Void result) {
             if (reportToSnackbar) ReauthNotifier.onFinished(isReauthed());
+            // Symmetric with UpdateToken: a silent success still has to reach the notifier, both to
+            // clear a stale failure and to mark any outstanding reported reauth moot. This path runs
+            // instead of UpdateToken whenever the client had not been built yet (see updateToken).
+            //
+            // isReauthed() is only a valid success test *because* that client is brand new: on an
+            // already-authenticated client it stays true even after a failed refresh (it checks for
+            // any authData, not expiry, and doVerify swallows its exception rather than rethrowing),
+            // so it would report a failure as success. Nothing can have authenticated this one
+            // first — reddit == null means the constructor took the offline branch, which queues no
+            // tasks, and reddit is never reset to null. Revisit this if that ever changes.
+            else if (isReauthed()) ReauthNotifier.onSucceededSilently();
             if (onComplete != null) onComplete.run();
         }
 
