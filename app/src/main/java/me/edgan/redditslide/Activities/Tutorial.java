@@ -1,6 +1,7 @@
 package me.edgan.redditslide.Activities;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -107,15 +108,48 @@ public class Tutorial extends AppCompatActivity {
     }
 
     /**
-     * Pads {@code view} for the system bars (navigation bar / display cutout) so its content is
-     * not drawn underneath them. The view's backgrounds stay full-bleed; only the inner content is
-     * inset. The original padding is preserved and the insets are added on top of it.
+     * Insets {@code view} for the system bars (navigation bar / display cutout) on every edge so
+     * its content is not drawn underneath them. The view's backgrounds stay full-bleed; only the
+     * inner content is inset. See the overload below for how each edge is applied.
      */
-    private static void applySystemBarInsets(final View view) {
+    private static void applySystemBarInsets(final View view, final View container) {
+        applySystemBarInsets(view, container, true, true, true);
+    }
+
+    /**
+     * Insets {@code view} for the system bars (navigation bar / display cutout) on the requested
+     * edges. Horizontal insets are added to the existing padding; the bottom inset is added to the
+     * bottom margin instead, so that a view with a fixed {@code layout_height} still moves clear of
+     * the navigation bar rather than having its content clipped away inside an unchanged height
+     * (the regression issue #294's fix caused). This requires the view's parent to support margins;
+     * every caller's does. Whether the bottom inset can be carried is worked out once here, not on
+     * every inset dispatch.
+     *
+     * <p>Pass {@code false} for an edge the view is not exposed to — a view pinned to the right of
+     * its parent gains nothing from a left inset, and the extra padding would only widen its
+     * touch target over empty space.
+     *
+     * <p>{@code container} is the fragment's parent view, used only to seed the first inset pass.
+     */
+    private static void applySystemBarInsets(
+            final View view,
+            final View container,
+            final boolean applyLeft,
+            final boolean applyRight,
+            final boolean applyBottom) {
         final int baseLeft = view.getPaddingLeft();
         final int baseTop = view.getPaddingTop();
         final int baseRight = view.getPaddingRight();
         final int baseBottom = view.getPaddingBottom();
+        // Decide once how the bottom inset can be carried. Insets are re-delivered on rotation,
+        // IME and navigation-mode changes, so deciding inside the listener would repeat the work.
+        final ViewGroup.LayoutParams initialParams = view.getLayoutParams();
+        final boolean bottomAsMargin =
+                applyBottom && initialParams instanceof ViewGroup.MarginLayoutParams;
+
+        final int baseBottomMargin =
+                bottomAsMargin ? ((ViewGroup.MarginLayoutParams) initialParams).bottomMargin : 0;
+
         ViewCompat.setOnApplyWindowInsetsListener(
                 view,
                 (v, windowInsets) -> {
@@ -123,14 +157,61 @@ public class Tutorial extends AppCompatActivity {
                             windowInsets.getInsets(
                                     WindowInsetsCompat.Type.systemBars()
                                             | WindowInsetsCompat.Type.displayCutout());
+
                     v.setPadding(
-                            baseLeft + bars.left,
+                            applyLeft ? baseLeft + bars.left : baseLeft,
                             baseTop,
-                            baseRight + bars.right,
-                            baseBottom + bars.bottom);
+                            applyRight ? baseRight + bars.right : baseRight,
+                            baseBottom);
+
+                    final ViewGroup.LayoutParams params = v.getLayoutParams();
+                    if (bottomAsMargin && params instanceof ViewGroup.MarginLayoutParams) {
+                        final ViewGroup.MarginLayoutParams marginParams =
+                                (ViewGroup.MarginLayoutParams) params;
+                        final int bottomMargin = baseBottomMargin + bars.bottom;
+                        if (marginParams.bottomMargin != bottomMargin) {
+                            marginParams.bottomMargin = bottomMargin;
+                            v.setLayoutParams(marginParams);
+                        }
+                    }
                     return windowInsets;
                 });
-        ViewCompat.requestApplyInsets(view);
+        applyInsetsAsEarlyAsPossible(view, container);
+    }
+
+    /**
+     * Gets the insets onto {@code view} as early as possible. Calling {@link
+     * ViewCompat#requestApplyInsets} on a detached view does nothing, and fragment views are still
+     * detached while {@code onCreateView} builds them, so fall back to attach time.
+     *
+     * <p>{@code container} is the fragment's parent, which is already attached and laid out by
+     * then. Dispatching its insets straight to {@code view} lets the very first frame be laid out
+     * inset, rather than rendering once underneath the navigation bar and correcting a frame later.
+     */
+    private static void applyInsetsAsEarlyAsPossible(final View view, final View container) {
+        if (view.isAttachedToWindow()) {
+            ViewCompat.requestApplyInsets(view);
+            return;
+        }
+
+        if (container != null) {
+            final WindowInsetsCompat rootInsets = ViewCompat.getRootWindowInsets(container);
+            if (rootInsets != null) {
+                ViewCompat.dispatchApplyWindowInsets(view, rootInsets);
+            }
+        }
+
+        view.addOnAttachStateChangeListener(
+                new View.OnAttachStateChangeListener() {
+                    @Override
+                    public void onViewAttachedToWindow(@NonNull View v) {
+                        v.removeOnAttachStateChangeListener(this);
+                        ViewCompat.requestApplyInsets(v);
+                    }
+
+                    @Override
+                    public void onViewDetachedFromWindow(@NonNull View v) {}
+                });
     }
 
     // Intercepts Back to step the tutorial pager backwards rather than finishing
@@ -181,7 +262,7 @@ public class Tutorial extends AppCompatActivity {
             });
 
             // Keep the bottom buttons above the navigation bar under edge-to-edge (Android 15+).
-            applySystemBarInsets(welcomeBinding.bottomButtons);
+            applySystemBarInsets(welcomeBinding.bottomButtons, container);
 
             return welcomeBinding.getRoot();
         }
@@ -195,6 +276,10 @@ public class Tutorial extends AppCompatActivity {
 
     public static class Personalize extends Fragment {
         private FragmentPersonalizeBinding personalizeBinding;
+
+        // Held so the dialog can be dismissed before the activity finishes, which would otherwise
+        // leak its window, and so it cannot outlive the fragment's view.
+        private AlertDialog activeDialog;
 
         @Override
         public View onCreateView(
@@ -250,11 +335,18 @@ public class Tutorial extends AppCompatActivity {
                                 i -> {
                                     choosemainBinding.title.setBackgroundColor(
                                             choosemainBinding.picker2.getColor());
+
+                                    // The dialog has its own window and can still deliver a colour
+                                    // change after the fragment's view is gone.
+                                    final Activity activity = getActivity();
+                                    if (personalizeBinding == null || activity == null) {
+                                        return;
+                                    }
+
                                     personalizeBinding.header.setBackgroundColor(
                                             choosemainBinding.picker2.getColor());
 
-                                    getActivity()
-                                            .getWindow()
+                                    activity.getWindow()
                                             .setStatusBarColor(
                                                     Palette.getDarkerColor(
                                                             choosemainBinding.picker2.getColor()));
@@ -271,7 +363,7 @@ public class Tutorial extends AppCompatActivity {
                                     finishDialogLayout();
                                 });
 
-                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(getContext())
+                        showTrackedDialog(new AlertDialog.Builder(getContext())
                                 .setView(choosemainBinding.getRoot())
                                 );
                     });
@@ -303,23 +395,34 @@ public class Tutorial extends AppCompatActivity {
 
                         accentBinding.ok.setOnClickListener(
                                 v12 -> {
+                                    // The dialog has its own window and can outlive the fragment.
+                                    final Activity activity = getActivity();
+                                    if (activity == null) {
+                                        return;
+                                    }
+
                                     final int color = accentBinding.picker3.getColor();
                                     ColorPreferences.Theme theme = null;
                                     for (final ColorPreferences.Theme type :
                                             ColorPreferences.Theme.values()) {
-                                        if (ContextCompat.getColor(getActivity(), type.getColor())
+                                        if (ContextCompat.getColor(activity, type.getColor())
                                                         == color
-                                                && ((Tutorial) getActivity()).back
+                                                && ((Tutorial) activity).back
                                                         == type.getThemeType()) {
                                             theme = type;
                                             break;
                                         }
                                     }
-                                    new ColorPreferences(getActivity()).setFontStyle(theme);
+                                    // No theme carries this colour for the current base theme;
+                                    // setFontStyle(null) would throw, so keep the existing style.
+                                    if (theme != null) {
+                                        new ColorPreferences(activity).setFontStyle(theme);
+                                    }
+
                                     finishDialogLayout();
                                 });
 
-                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(getActivity())
+                        showTrackedDialog(new AlertDialog.Builder(getActivity())
                                 .setView(accentBinding.getRoot())
                                 );
                     });
@@ -337,22 +440,33 @@ public class Tutorial extends AppCompatActivity {
                                     .findViewById(pair.first)
                                     .setOnClickListener(
                                             v14 -> {
+                                                // The dialog has its own window and can outlive
+                                                // the fragment.
+                                                final Activity activity = getActivity();
+                                                if (activity == null) {
+                                                    return;
+                                                }
+
+                                                // Theme titles are <base>_<accent family>, so the
+                                                // last segment is the accent to carry over.
                                                 final String[] names =
-                                                        new ColorPreferences(getActivity())
+                                                        new ColorPreferences(activity)
                                                                 .getFontStyle()
                                                                 .getTitle()
                                                                 .split("_");
-                                                final String name = names[names.length - 1];
-                                                final String newName = name.replace("(", "");
+                                                final String accent = names[names.length - 1];
 
                                                 for (final ColorPreferences.Theme theme :
                                                         ColorPreferences.Theme.values()) {
-                                                    if (theme.toString().contains(newName)
+                                                    // Match the accent family as a whole name.
+                                                    // "contains" would let blue pick lightblue,
+                                                    // which is declared first.
+                                                    if (theme.toString().endsWith("_" + accent)
                                                             && theme.getThemeType()
                                                                     == pair.second) {
-                                                        ((Tutorial) getActivity()).back =
+                                                        ((Tutorial) activity).back =
                                                                 theme.getThemeType();
-                                                        new ColorPreferences(getActivity())
+                                                        new ColorPreferences(activity)
                                                                 .setFontStyle(theme);
                                                         finishDialogLayout();
                                                         break;
@@ -361,7 +475,7 @@ public class Tutorial extends AppCompatActivity {
                                             });
                         }
 
-                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(getActivity())
+                        showTrackedDialog(new AlertDialog.Builder(getActivity())
                                 .setView(themesmallBindingRoot)
                                 );
                     });
@@ -381,14 +495,14 @@ public class Tutorial extends AppCompatActivity {
                 // Complete tutorial and restart app. The app ships with a default Reddit client ID,
                 // so there is no need to prompt for one here.
                 Reddit.colors.edit().putString("Tutorial", "S").commit();
-                Reddit.appRestart.edit().apply();
                 Reddit.forceRestart(getActivity(), false);
             });
 
-            // Keep the Done button and scrolling content above the navigation bar under
-            // edge-to-edge (Android 15+).
-            applySystemBarInsets(personalizeBinding.done);
-            applySystemBarInsets(personalizeBinding.personalizeScroll);
+            // Keep the Done button above the navigation bar under edge-to-edge (Android 15+). It
+            // is pinned to the right, so the left inset would only widen its touch target over the
+            // list. The scroll view stops above the button, so it only needs the horizontal insets.
+            applySystemBarInsets(personalizeBinding.done, container, false, true, true);
+            applySystemBarInsets(personalizeBinding.personalizeScroll, container, true, true, false);
 
             return personalizeBinding.getRoot();
         }
@@ -396,18 +510,52 @@ public class Tutorial extends AppCompatActivity {
         @Override
         public void onDestroyView() {
             super.onDestroyView();
+            dismissActiveDialog();
             personalizeBinding = null;
         }
 
+        /**
+         * Shows {@code builder} and keeps hold of the dialog so it can be dismissed before the
+         * activity finishes. Back or an outside tap clears the reference, so a dismissed dialog
+         * never keeps the activity alive.
+         */
+        private void showTrackedDialog(final AlertDialog.Builder builder) {
+            dismissActiveDialog();
+            activeDialog = DialogUtil.showWithCardBackground(builder);
+            // Only clear if this is still the current dialog: dismiss messages are posted, so a
+            // stale one can arrive after the next dialog has already been shown.
+            activeDialog.setOnDismissListener(
+                    dialog -> {
+                        if (activeDialog == dialog) {
+                            activeDialog = null;
+                        }
+                    });
+        }
+
+        private void dismissActiveDialog() {
+            if (activeDialog != null) {
+                activeDialog.dismiss();
+                activeDialog = null;
+            }
+        }
+
         private void finishDialogLayout() {
-            final Intent intent = new Intent(getActivity(), Tutorial.class);
+            // Dismiss before finishing, otherwise the dialog's window leaks with the activity.
+            dismissActiveDialog();
+
+            final Activity activity = getActivity();
+            if (activity == null) {
+                return;
+            }
+
+            final Intent intent = new Intent(activity, Tutorial.class);
             intent.putExtra("page", 1);
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             startActivity(intent);
-            getActivity().overridePendingTransition(0, 0);
+            activity.overridePendingTransition(0, 0);
 
-            getActivity().finish();
-            getActivity().overridePendingTransition(0, 0);
+            activity.finish();
+            activity.overridePendingTransition(0, 0);
         }
     }
 
