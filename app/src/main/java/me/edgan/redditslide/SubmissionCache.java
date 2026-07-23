@@ -24,6 +24,7 @@ import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.PostRecovery;
 import me.edgan.redditslide.util.TimeUtils;
 import net.dean.jraw.models.DistinguishedStatus;
+import net.dean.jraw.models.Flair;
 import net.dean.jraw.models.Submission;
 
 /** Created by carlo_000 on 4/22/2016. */
@@ -275,14 +276,16 @@ public class SubmissionCache {
 
         titleString.append(spacer);
 
-        SpannableStringBuilder author =
-                new SpannableStringBuilder(" " + submission.getAuthor() + " ");
-        int authorcolor = Palette.getFontColorUser(submission.getAuthor());
+        // Prefer an author restored by "Recover post": Reddit reports "[deleted]" once the poster
+        // deletes their account, and everything below (badge, colour, tag, friend, Toolbox note)
+        // should key off the real name.
+        final String authorName = PostRecovery.getDisplayAuthor(submission);
+        SpannableStringBuilder author = new SpannableStringBuilder(" " + authorName + " ");
+        int authorcolor = Palette.getFontColorUser(authorName);
 
-        if (submission.getAuthor() != null) {
+        if (authorName != null) {
             if (Authentication.name != null
-                    && submission
-                            .getAuthor()
+                    && authorName
                             .toLowerCase(Locale.ENGLISH)
                             .equals(Authentication.name.toLowerCase(Locale.ENGLISH))) {
                 author.setSpan(
@@ -320,15 +323,50 @@ public class SubmissionCache {
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
             titleString.append(author);
+
+            // The poster's author flair, next to their name. Reddit clears it when the account is
+            // deleted, so "Recover post" restores it from the archive; this also surfaces it for any
+            // ordinary post whose author carries one. JRAW's getAuthorFlair() dereferences both
+            // author_flair_* fields, so guard on their presence — a node without them (e.g. a
+            // crosspost parent) would otherwise NPE on the feed's hot path.
+            JsonNode authorNode = submission.getDataNode();
+            Flair authorFlair =
+                    (authorNode != null
+                                    && authorNode.has("author_flair_text")
+                                    && authorNode.has("author_flair_css_class"))
+                            ? submission.getAuthorFlair()
+                            : null;
+            if (authorFlair != null
+                    && authorFlair.getText() != null
+                    && !authorFlair.getText().isEmpty()) {
+                TypedValue typedValue = new TypedValue();
+                Resources.Theme theme = mContext.getTheme();
+                theme.resolveAttribute(R.attr.activity_background, typedValue, false);
+                int flairBg = typedValue.data;
+                theme.resolveAttribute(R.attr.fontColor, typedValue, false);
+                int flairFont = typedValue.data;
+                SpannableStringBuilder authorFlairChip =
+                        new SpannableStringBuilder(
+                                " " + CompatUtil.fromHtml(authorFlair.getText()) + " ");
+                // Full size (half=false) to match the other byline chips (self/OP/mod, user tag,
+                // friend) and the comment author-flair chip; the title line uses half=true because it
+                // sits beside a large title, but the info line does not.
+                authorFlairChip.setSpan(
+                        new RoundedBackgroundSpan(flairFont, flairBg, false, mContext),
+                        0,
+                        authorFlairChip.length(),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                titleString.append(" ");
+                titleString.append(authorFlairChip);
+            }
         }
 
         /*todo maybe?  titleString.append(((comment.hasBeenEdited() && comment.getEditDate() != null) ? " *" + TimeUtils.getTimeAgo(comment.getEditDate().getTime(), mContext) : ""));
         titleString.append("  ");*/
 
-        if (UserTags.isUserTagged(submission.getAuthor())) {
+        if (UserTags.isUserTagged(authorName)) {
             SpannableStringBuilder pinned =
-                    new SpannableStringBuilder(
-                            " " + UserTags.getUserTag(submission.getAuthor()) + " ");
+                    new SpannableStringBuilder(" " + UserTags.getUserTag(authorName) + " ");
             pinned.setSpan(
                     new RoundedBackgroundSpan(
                             mContext, android.R.color.white, R.color.md_blue_500, false),
@@ -339,7 +377,7 @@ public class SubmissionCache {
             titleString.append(pinned);
         }
 
-        if (UserSubscriptions.friends.contains(submission.getAuthor())) {
+        if (UserSubscriptions.friends.contains(authorName)) {
             SpannableStringBuilder pinned =
                     new SpannableStringBuilder(
                             " " + mContext.getString(R.string.profile_friend) + " ");
@@ -354,7 +392,7 @@ public class SubmissionCache {
         }
 
         ToolboxUI.appendToolboxNote(
-                mContext, titleString, submission.getSubredditName(), submission.getAuthor());
+                mContext, titleString, submission.getSubredditName(), authorName);
 
         /* too big, might add later todo
         if (submission.getAuthorFlair() != null && submission.getAuthorFlair().getText() != null && !submission.getAuthorFlair().getText().isEmpty()) {

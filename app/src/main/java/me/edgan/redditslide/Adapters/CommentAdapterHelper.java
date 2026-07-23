@@ -38,6 +38,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
+import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
@@ -69,6 +70,7 @@ import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.BottomSheet;
 import me.edgan.redditslide.util.ClipboardUtil;
+import me.edgan.redditslide.util.CommentRecovery;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.DisplayUtil;
@@ -121,21 +123,29 @@ public class CommentAdapterHelper {
         Drawable viewmode = mContext.getResources().getDrawable(R.drawable.ic_visibility);
         Drawable translate = mContext.getResources().getDrawable(R.drawable.ic_translate);
         Drawable readAloud = mContext.getResources().getDrawable(R.drawable.ic_volume_on);
+        Drawable history = mContext.getResources().getDrawable(R.drawable.ic_history);
 
         final List<Drawable> drawableSet =
                 Arrays.asList(
                         profile, saved, gild, report, copy, share, parent, permalink, replies,
-                        viewmode, translate, readAloud);
+                        viewmode, translate, readAloud, history);
         BlendModeUtil.tintDrawablesAsSrcAtop(drawableSet, color);
 
         ta.recycle();
 
+        // Prefer anything "Recover comment" pulled from the archive, so a recovered comment's sheet
+        // isn't titled "[removed]" by a user called "[deleted]".
+        final String recoveredBody = CommentRecovery.getRecovered(n.getFullName());
+        final String author = getDisplayAuthor(n);
+
         BottomSheet.Builder b =
                 new BottomSheet.Builder((Activity) mContext)
-                        .title(CompatUtil.fromHtml(n.getBody()));
+                        .title(
+                                CompatUtil.fromHtml(
+                                        recoveredBody == null ? n.getBody() : recoveredBody));
 
         if (Authentication.didOnline) {
-            b.sheet(1, profile, "/u/" + n.getAuthor());
+            b.sheet(1, profile, "/u/" + author);
             String save = mContext.getString(R.string.btn_save);
             if (ActionStates.isSaved(n)) {
                 save = mContext.getString(R.string.comment_unsave);
@@ -155,6 +165,9 @@ public class CommentAdapterHelper {
                 .sheet(23, permalink, mContext.getString(R.string.comment_permalink))
                 .sheet(4, share, mContext.getString(R.string.comment_share))
                 .sheet(60, viewmode, mContext.getString(R.string.comment_render_other));
+        if (CommentRecovery.isRemovedOrDeleted(n) && !CommentRecovery.isRecovered(n.getFullName())) {
+            b.sheet(63, history, mContext.getString(R.string.recover_comment));
+        }
         if (!adapter.currentBaseNode.isTopLevel()) {
             b.sheet(10, parent, mContext.getString(R.string.comment_parent));
         }
@@ -167,7 +180,7 @@ public class CommentAdapterHelper {
                                 {
                                     // Go to author
                                     Intent i = new Intent(mContext, Profile.class);
-                                    i.putExtra(Profile.EXTRA_PROFILE, n.getAuthor());
+                                    i.putExtra(Profile.EXTRA_PROFILE, author);
                                     mContext.startActivity(i);
                                 }
                                 break;
@@ -432,6 +445,60 @@ final AlertDialog reportDialog =
                             case 62:
                                 // Read the comment body aloud via text-to-speech.
                                 ReadAloudUtil.readAloud(mContext, commentPlainText(n));
+                                break;
+                            case 63:
+                                // Recover the original body and author of a removed/deleted comment
+                                // from the archive.
+                                final MaterialProgressDialog recoverProgress =
+                                        new MaterialProgressDialog.Builder(mContext)
+                                                .title(R.string.recover_comment)
+                                                .content(R.string.recover_loading)
+                                                .progress(true, 0)
+                                                .cancelable(false)
+                                                .show();
+                                new AsyncTask<Void, Void, CommentRecovery.Result>() {
+                                    @Override
+                                    protected CommentRecovery.Result doInBackground(Void... voids) {
+                                        return CommentRecovery.fetch(n);
+                                    }
+
+                                    @Override
+                                    protected void onPostExecute(CommentRecovery.Result result) {
+                                        // The fetch can outlive the screen; don't touch a dead
+                                        // Activity.
+                                        final Activity activity = (Activity) mContext;
+                                        if (activity.isFinishing() || activity.isDestroyed()) {
+                                            return;
+                                        }
+                                        if (recoverProgress.isShowing()) {
+                                            recoverProgress.dismiss();
+                                        }
+                                        if (result.isEmpty()) {
+                                            Toast.makeText(
+                                                            mContext,
+                                                            R.string.recover_comment_failed,
+                                                            Toast.LENGTH_LONG)
+                                                    .show();
+                                            return;
+                                        }
+                                        CommentRecovery.store(n.getFullName(), result);
+                                        // Re-binding the row re-renders the body and re-runs
+                                        // getScoreString, so the byline picks up a recovered author.
+                                        // Target the row by identity: the holder may have been
+                                        // recycled onto another comment while the fetch was in
+                                        // flight. Prefer this holder when it still shows the
+                                        // comment; otherwise find the comment's current on-screen
+                                        // row. If it's off-screen, nothing to do — it binds from the
+                                        // recovery map when it next appears.
+                                        int pos = holder.getBindingAdapterPosition();
+                                        if (!adapter.isCommentAt(pos, n.getFullName())) {
+                                            pos = adapter.visibleAdapterPositionOf(n.getFullName());
+                                        }
+                                        if (pos != RecyclerView.NO_POSITION) {
+                                            adapter.notifyItemChanged(pos);
+                                        }
+                                    }
+                                }.execute();
                                 break;
                         }
                     }
@@ -1656,14 +1723,40 @@ final AlertDialog reportDialog =
      * (admin/special/moderator), the logged-in user's own comments, the submission OP (when a
      * submission is given), or the user's custom color as a fallback. Mutates {@code author}.
      */
+    /**
+     * The author to show for {@code comment}: the archive's copy when "Recover comment" restored
+     * one, otherwise Reddit's — which is {@code [deleted]} once the author has deleted the comment
+     * or their account.
+     */
+    public static String getDisplayAuthor(Comment comment) {
+        final String recovered = CommentRecovery.getRecoveredAuthor(comment.getFullName());
+        return recovered == null ? comment.getAuthor() : recovered;
+    }
+
     public static void styleAuthorBadge(
             Context mContext,
             SpannableStringBuilder author,
             Comment comment,
             Submission submission) {
-        final int authorcolor = Palette.getFontColorUser(comment.getAuthor());
+        styleAuthorBadge(mContext, author, comment, submission, comment.getAuthor());
+    }
+
+    /**
+     * As {@link #styleAuthorBadge(Context, SpannableStringBuilder, Comment, Submission)}, badging
+     * {@code authorName} instead of the comment's own author. Every branch below rewrites the
+     * spannable's text, so a recovered author has to be threaded through here or the badge would
+     * paint {@code [deleted]} back over it. It also lets a recovered author be recognized as the
+     * submission's OP, which the {@code [deleted]} guard below otherwise suppresses.
+     */
+    public static void styleAuthorBadge(
+            Context mContext,
+            SpannableStringBuilder author,
+            Comment comment,
+            Submission submission,
+            String authorName) {
+        final int authorcolor = Palette.getFontColorUser(authorName);
         if (comment.getDistinguishedStatus() == DistinguishedStatus.ADMIN) {
-            author.replace(0, author.length(), " " + comment.getAuthor() + " ");
+            author.replace(0, author.length(), " " + authorName + " ");
             author.setSpan(
                     new RoundedBackgroundSpan(
                             mContext, android.R.color.white, R.color.md_red_300, false),
@@ -1671,7 +1764,7 @@ final AlertDialog reportDialog =
                     author.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         } else if (comment.getDistinguishedStatus() == DistinguishedStatus.SPECIAL) {
-            author.replace(0, author.length(), " " + comment.getAuthor() + " ");
+            author.replace(0, author.length(), " " + authorName + " ");
             author.setSpan(
                     new RoundedBackgroundSpan(
                             mContext, android.R.color.white, R.color.md_red_500, false),
@@ -1679,7 +1772,7 @@ final AlertDialog reportDialog =
                     author.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         } else if (comment.getDistinguishedStatus() == DistinguishedStatus.MODERATOR) {
-            author.replace(0, author.length(), " " + comment.getAuthor() + " ");
+            author.replace(0, author.length(), " " + authorName + " ");
             author.setSpan(
                     new RoundedBackgroundSpan(
                             mContext, android.R.color.white, R.color.md_green_300, false),
@@ -1687,10 +1780,10 @@ final AlertDialog reportDialog =
                     author.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         } else if (Authentication.name != null
-                && comment.getAuthor()
+                && authorName
                         .toLowerCase(Locale.ENGLISH)
                         .equals(Authentication.name.toLowerCase(Locale.ENGLISH))) {
-            author.replace(0, author.length(), " " + comment.getAuthor() + " ");
+            author.replace(0, author.length(), " " + authorName + " ");
             author.setSpan(
                     new RoundedBackgroundSpan(
                             mContext, android.R.color.white, R.color.md_deep_orange_300, false),
@@ -1698,11 +1791,12 @@ final AlertDialog reportDialog =
                     author.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         } else if (submission != null
-                && comment.getAuthor()
+                && submission.getAuthor() != null
+                && authorName
                         .toLowerCase(Locale.ENGLISH)
                         .equals(submission.getAuthor().toLowerCase(Locale.ENGLISH))
-                && !comment.getAuthor().equals("[deleted]")) {
-            author.replace(0, author.length(), " " + comment.getAuthor() + " ");
+                && !authorName.equals("[deleted]")) {
+            author.replace(0, author.length(), " " + authorName + " ");
             author.setSpan(
                     new RoundedBackgroundSpan(
                             mContext, android.R.color.white, R.color.md_blue_300, false),
@@ -1728,7 +1822,8 @@ final AlertDialog reportDialog =
                 " " + mContext.getString(R.string.submission_properties_seperator_comments) + " ";
         SpannableStringBuilder titleString =
                 new SpannableStringBuilder("\u200B"); // zero width space to fix first span height
-        SpannableStringBuilder author = new SpannableStringBuilder(comment.getAuthor());
+        final String authorName = getDisplayAuthor(comment);
+        SpannableStringBuilder author = new SpannableStringBuilder(authorName);
 
         author.setSpan(
                 new TypefaceSpan("sans-serif-condensed"),
@@ -1740,7 +1835,7 @@ final AlertDialog reportDialog =
                 0,
                 author.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        styleAuthorBadge(mContext, author, comment, submission);
+        styleAuthorBadge(mContext, author, comment, submission, authorName);
 
         titleString.append(author);
         titleString.append(spacer);

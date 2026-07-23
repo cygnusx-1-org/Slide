@@ -107,12 +107,17 @@ public class SubmissionBottomSheetActions {
 
         ta.recycle();
 
-        final BottomSheet.Builder b = new BottomSheet.Builder(mContext).title(CompatUtil.fromHtml(submission.getTitle()));
+        // Prefer a title restored by "Recover post" so a recovered post's sheet isn't still headed
+        // "[deleted by user]".
+        final String recoveredTitle = PostRecovery.getRecoveredTitle(submission.getFullName());
+        final BottomSheet.Builder b = new BottomSheet.Builder(mContext).title(CompatUtil.fromHtml(recoveredTitle == null ? submission.getTitle() : recoveredTitle));
 
         final boolean isReadLater = mContext instanceof PostReadLater;
         final boolean isAddedToReadLaterList = ReadLater.isToBeReadLater(submission);
+        // Prefer an author restored by "Recover post" so this doesn't offer a dead /u/[deleted].
+        final String author = PostRecovery.getDisplayAuthor(submission);
         if (Authentication.didOnline) {
-            b.sheet(1, profile, "/u/" + submission.getAuthor()).sheet(2, sub, "/r/" + submission.getSubredditName());
+            b.sheet(1, profile, "/u/" + author).sheet(2, sub, "/r/" + submission.getSubredditName());
             String save = mContext.getString(R.string.btn_save);
             if (ActionStates.isSaved(submission)) {
                 save = mContext.getString(R.string.comment_unsave);
@@ -175,7 +180,7 @@ public class SubmissionBottomSheetActions {
                     case 1:
                         {
                             Intent i = new Intent(mContext, Profile.class);
-                            i.putExtra(Profile.EXTRA_PROFILE, submission.getAuthor());
+                            i.putExtra(Profile.EXTRA_PROFILE, author);
                             mContext.startActivity(i);
                         }
 
@@ -623,7 +628,7 @@ final AlertDialog reportDialog =
                         final MaterialProgressDialog recoverProgress =
                                 new MaterialProgressDialog.Builder(mContext)
                                         .title(R.string.recover_post)
-                                        .content(R.string.recover_post_loading)
+                                        .content(R.string.recover_loading)
                                         .progress(true, 0)
                                         .cancelable(false)
                                         .show();
@@ -653,9 +658,12 @@ final AlertDialog reportDialog =
                                 PostRecovery.store(submission, result);
                                 // Re-render the cached title with the recovered one.
                                 SubmissionCache.updateTitle(submission, mContext);
-                                // A recovered link flips is_self/url on the node, so the cached
-                                // info line (domain) is now stale — refresh it to match.
-                                if (result.url != null) {
+                                // A recovered link flips is_self/url on the node, a recovered author
+                                // replaces the "[deleted]" byline, and a recovered author flair adds
+                                // its badge — all on the info line — so refresh it to match.
+                                if (result.url != null
+                                        || result.author != null
+                                        || !result.authorFlair.isEmpty()) {
                                     SubmissionCache.updateInfoSpannable(
                                             submission, mContext, baseSub);
                                 }

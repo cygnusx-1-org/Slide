@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import me.edgan.redditslide.Reddit;
+import net.dean.jraw.models.Flair;
 import net.dean.jraw.models.Submission;
 
 /**
@@ -69,31 +70,88 @@ public final class PostRecovery {
 
     private PostRecovery() {}
 
+    /** A recovered flair's text and css class; either may be null. Groups the pair so the four
+     * flair strings can't be transposed across {@link Result}'s constructor. */
+    public static final class Flairs {
+        public final String text;
+        public final String css;
+
+        /** No flair recovered. */
+        public static final Flairs NONE = new Flairs(null, null);
+
+        Flairs(String text, String css) {
+            this.text = text;
+            this.css = css;
+        }
+
+        public boolean isEmpty() {
+            return text == null && css == null;
+        }
+    }
+
     /**
      * What {@link #fetch} pulled from the archive; any field may be null. {@code body} is the
      * recovered self-text (removed text posts); {@code url} is the recovered destination of a
      * removed link post, applied back onto the submission by {@link #store} so it renders as a real
-     * link post again.
+     * link post again; {@code author} is the original username of a post whose author Reddit now
+     * reports as {@code [deleted]}; {@code linkFlair} is the original link flair and {@code
+     * authorFlair} the poster's original author flair, each recovered only when the live post no
+     * longer carries one.
      */
     public static final class Result {
         public final String title;
         public final String body;
         public final String url;
+        public final String author;
+        public final Flairs linkFlair;
+        public final Flairs authorFlair;
 
-        Result(String title, String body, String url) {
+        Result(
+                String title,
+                String body,
+                String url,
+                String author,
+                Flairs linkFlair,
+                Flairs authorFlair) {
             this.title = title;
             this.body = body;
             this.url = url;
+            this.author = author;
+            this.linkFlair = linkFlair == null ? Flairs.NONE : linkFlair;
+            this.authorFlair = authorFlair == null ? Flairs.NONE : authorFlair;
         }
 
         public boolean isEmpty() {
-            return title == null && body == null && url == null;
+            return title == null
+                    && body == null
+                    && url == null
+                    && author == null
+                    && linkFlair.isEmpty()
+                    && authorFlair.isEmpty();
         }
     }
 
-    /** Whether the post was removed by a moderator, deleted by its author, or taken down by Reddit. */
+    /**
+     * The value to reinstate for a recovered field: the archive's {@code archiveValue}, but only
+     * where Reddit is actually hiding the live one ({@code liveValue} is a placeholder) and the
+     * archive isn't itself a post-takedown placeholder snapshot. Returns null when the live value is
+     * intact (nothing to recover, and reinstating it would gain nothing) or the archive has no real
+     * original. Pure and side-effect-free; shared with {@link CommentRecovery} and unit-tested.
+     */
+    public static String recoverField(String liveValue, String archiveValue) {
+        if (!isPlaceholder(liveValue)) return null;
+        return isPlaceholder(archiveValue) ? null : archiveValue;
+    }
+
+    /**
+     * Whether the post was removed by a moderator, deleted by its author, or taken down by Reddit —
+     * or had its author erased, which happens on its own when the poster deletes their account and
+     * leaves the text standing.
+     */
     public static boolean isRemovedOrDeleted(Submission s) {
-        return isPlaceholder(s.getSelftext()) || s.getBannedBy() != null;
+        return isPlaceholder(s.getSelftext())
+                || isPlaceholder(s.getAuthor())
+                || s.getBannedBy() != null;
     }
 
     /**
@@ -102,9 +160,10 @@ public final class PostRecovery {
      * the "[ Removed by Reddit … ]" / "[ Removed by moderator ]" sentences that Reddit's admins and
      * subreddit moderators leave (in both the title and the body) on a takedown. Used both to decide
      * a post is removed and to reject archive copies that are themselves post-takedown snapshots
-     * rather than the original.
+     * rather than the original. Shared with {@link CommentRecovery}, which applies the same taxonomy
+     * to a comment's body and author.
      */
-    private static boolean isPlaceholder(String s) {
+    static boolean isPlaceholder(String s) {
         if (s == null) return false;
         String lower = s.trim().toLowerCase(Locale.ENGLISH);
         return lower.equals("[removed]")
@@ -125,6 +184,22 @@ public final class PostRecovery {
         if (!hasRecoveries) return null;
         Result r = recovered.get(fullName);
         return r == null ? null : r.title;
+    }
+
+    /** Previously recovered author for this fullname, or null if none. */
+    public static String getRecoveredAuthor(String fullName) {
+        if (!hasRecoveries) return null;
+        Result r = recovered.get(fullName);
+        return r == null ? null : r.author;
+    }
+
+    /**
+     * The author to show for {@code s}: the archive's copy when "Recover post" restored one,
+     * otherwise Reddit's — which is {@code [deleted]} once the poster has deleted their account.
+     */
+    public static String getDisplayAuthor(Submission s) {
+        final String recoveredAuthor = getRecoveredAuthor(s.getFullName());
+        return recoveredAuthor == null ? s.getAuthor() : recoveredAuthor;
     }
 
     /**
@@ -150,48 +225,95 @@ public final class PostRecovery {
         // unexpected payload (error envelope, schema drift, null/non-object element) must not throw
         // out of the background AsyncTask and crash the app.
         if (obj == null || !obj.has("data") || !obj.get("data").isJsonArray()) {
-            return new Result(null, null, null);
+            return new Result(null, null, null, null, Flairs.NONE, Flairs.NONE);
         }
         JsonArray data = obj.getAsJsonArray("data");
         if (data.size() == 0 || !data.get(0).isJsonObject()) {
-            return new Result(null, null, null);
+            return new Result(null, null, null, null, Flairs.NONE, Flairs.NONE);
         }
         JsonObject post = data.get(0).getAsJsonObject();
-        // Reject values that are themselves the post-takedown placeholder: when the archive only
-        // ever saw the removed version (it never ingested the post while it was live) there is no
-        // original to recover, and returning the placeholder would masquerade as a recovery.
-        String title = readString(post, "title");
-        if (isPlaceholder(title)) {
-            title = null;
-        }
-        String body = readString(post, "selftext");
-        if (isPlaceholder(body)) {
-            body = null;
-        }
-        // Recover the original destination of a link post (is_self=false) so it renders as a real
-        // link post again — Reddit rewrites `url` to the self permalink once a post is removed, so
-        // the link is otherwise lost. Independent of `body`: an image/link post may also carry a
-        // self-text caption, which is recovered above and shown alongside the card. Skip self-posts
-        // and any url that merely points back at the comments permalink.
+        String title = null;
+        String body = null;
         String url = null;
-        if (!readBoolean(post, "is_self")) {
-            String u = readString(post, "url");
-            if (u != null && !u.contains("/comments/")) {
-                url = u;
+        // Recover the title/body/link only where Reddit is actually hiding the content — a genuine
+        // removal or takedown. A post left behind by a deleted account keeps its real, intact
+        // title and body; reinstating them from the archive would gain nothing and would re-render
+        // an intact self-text through the recovered path (Markwon with no selftext_html), dropping
+        // its inline images. Such a post recovers its author alone, below.
+        if (isPlaceholder(s.getSelftext()) || s.getBannedBy() != null) {
+            // Reject values that are themselves the post-takedown placeholder: when the archive only
+            // ever saw the removed version (it never ingested the post while it was live) there is
+            // no original to recover, and returning the placeholder would masquerade as a recovery.
+            title = readString(post, "title");
+            if (isPlaceholder(title)) {
+                title = null;
             }
-        }
-        // If the recovered self-text is nothing but a single link, make THAT link the post's
-        // destination (a real link post) rather than rendering it as body text. It wins over a
-        // reddit-media `url` so the recovered card opens the meaningful link — e.g. an image post
-        // whose only text is a link, where the image itself was purged on takedown.
-        if (body != null) {
-            String sole = soleLink(body);
-            if (sole != null) {
-                url = sole;
+            body = readString(post, "selftext");
+            if (isPlaceholder(body)) {
                 body = null;
             }
+            // Recover the original destination of a link post (is_self=false) so it renders as a
+            // real link post again — Reddit rewrites `url` to the self permalink once a post is
+            // removed, so the link is otherwise lost. Independent of `body`: an image/link post may
+            // also carry a self-text caption, which is recovered above and shown alongside the card.
+            // Skip self-posts and only a url that points back at THIS post's own comments permalink
+            // (that is Reddit's post-removal rewrite); a link post that legitimately linked to
+            // another Reddit thread must still be recovered.
+            if (!readBoolean(post, "is_self")) {
+                String u = readString(post, "url");
+                if (u != null && !u.contains("/comments/" + s.getId() + "/")) {
+                    url = u;
+                }
+            }
+            // If the recovered self-text is nothing but a single link, make THAT link the post's
+            // destination (a real link post) rather than rendering it as body text. It wins over a
+            // reddit-media `url` so the recovered card opens the meaningful link — e.g. an image
+            // post whose only text is a link, where the image itself was purged on takedown.
+            if (body != null) {
+                String sole = soleLink(body);
+                if (sole != null) {
+                    url = sole;
+                    body = null;
+                }
+            }
         }
-        return new Result(title, body, url);
+        // Recover the author only where Reddit is actually hiding it: a moderator removal leaves the
+        // real author in place, and the archive must never repaint a byline Reddit still serves.
+        String author = recoverField(s.getAuthor(), readString(post, "author"));
+        // Recover the link flair "if it isn't already": only when the live post carries no flair of
+        // its own (a takedown or self-deletion can strip it). Independent of the removal state above
+        // so it also fills in a deleted-account post whose text stayed intact.
+        Flairs linkFlair =
+                hasFlair(s.getSubmissionFlair())
+                        ? Flairs.NONE
+                        : new Flairs(
+                                readString(post, "link_flair_text"),
+                                readString(post, "link_flair_css_class"));
+        // Recover the poster's author flair the same way — Reddit clears it along with the username
+        // when the account is deleted, so restore the archived badge when the live post shows none.
+        // JRAW's getAuthorFlair() dereferences both author_flair_* fields, so guard on their
+        // presence — a node without them (unusual, but this runs in the background fetch) would
+        // otherwise NPE. getSubmissionFlair() above reads via the null-safe data() helper, so it
+        // needs no such guard.
+        JsonNode node = s.getDataNode();
+        boolean hasAuthorFlairKeys =
+                node != null
+                        && node.has("author_flair_text")
+                        && node.has("author_flair_css_class");
+        Flairs authorFlair =
+                hasAuthorFlairKeys && !hasFlair(s.getAuthorFlair())
+                        ? new Flairs(
+                                readString(post, "author_flair_text"),
+                                readString(post, "author_flair_css_class"))
+                        : Flairs.NONE;
+        return new Result(title, body, url, author, linkFlair, authorFlair);
+    }
+
+    /** Whether the given flair already carries text or a css class (null flair counts as none). */
+    private static boolean hasFlair(Flair flair) {
+        return flair != null
+                && ((flair.getText() != null && !flair.getText().isEmpty())
+                        || (flair.getCssClass() != null && !flair.getCssClass().isEmpty()));
     }
 
     /** Stores a non-empty {@link #fetch} result in the cache. Call on the main thread. */
@@ -200,6 +322,15 @@ public final class PostRecovery {
         // post again (ContentType, the lead image and the tap-to-open action all read from the node).
         if (r.url != null) {
             applyRecoveredUrl(s, r.url);
+        }
+        // Rewrite a recovered flair onto the node so getSubmissionFlair() (which reads it live) shows
+        // it on the title line.
+        if (!r.linkFlair.isEmpty()) {
+            applyRecoveredFlair(s, r.linkFlair.text, r.linkFlair.css);
+        }
+        // Likewise for the author flair, which getAuthorFlair() reads for the info line.
+        if (!r.authorFlair.isEmpty()) {
+            applyRecoveredAuthorFlair(s, r.authorFlair.text, r.authorFlair.css);
         }
         recovered.put(s.getFullName(), r);
         // Volatile publish: written after the put so a reader that sees the flag sees the entry.
@@ -229,6 +360,36 @@ public final class PostRecovery {
     }
 
     /**
+     * Restores a recovered link flair onto the backing JSON node so {@link
+     * Submission#getSubmissionFlair()} (which reads {@code link_flair_text}/{@code
+     * link_flair_css_class} live) surfaces it on the title line. Like {@link #applyRecoveredUrl},
+     * only replaces pre-existing keys — never adds one — so the node's map is never restructured and
+     * can't race a rehash when this runs on the background feed-caching thread; the standard post
+     * JSON always carries both keys (as null or a string).
+     */
+    private static void applyRecoveredFlair(Submission s, String text, String css) {
+        JsonNode node = s.getDataNode();
+        if (!(node instanceof ObjectNode)) return;
+        ObjectNode obj = (ObjectNode) node;
+        if (text != null && obj.has("link_flair_text")) obj.put("link_flair_text", text);
+        if (css != null && obj.has("link_flair_css_class")) obj.put("link_flair_css_class", css);
+    }
+
+    /**
+     * Restores a recovered author flair onto the backing JSON node so {@link
+     * Submission#getAuthorFlair()} surfaces the poster's badge on the info line. Same
+     * no-restructure discipline as {@link #applyRecoveredFlair}: only pre-existing keys are
+     * replaced, and the standard post JSON always carries both.
+     */
+    private static void applyRecoveredAuthorFlair(Submission s, String text, String css) {
+        JsonNode node = s.getDataNode();
+        if (!(node instanceof ObjectNode)) return;
+        ObjectNode obj = (ObjectNode) node;
+        if (text != null && obj.has("author_flair_text")) obj.put("author_flair_text", text);
+        if (css != null && obj.has("author_flair_css_class")) obj.put("author_flair_css_class", css);
+    }
+
+    /**
      * Re-applies an already-recovered link to {@code s} at bind time. {@link #store} rewrites the
      * link onto the submission's JSON node, but that mutation lives on a single {@link Submission}
      * instance; when the feed or comments screen re-parses the post into a fresh instance the
@@ -242,8 +403,15 @@ public final class PostRecovery {
     public static void reapplyRecoveredLink(Submission s) {
         if (!hasRecoveries) return;
         Result r = recovered.get(s.getFullName());
-        if (r != null && r.url != null) {
+        if (r == null) return;
+        if (r.url != null) {
             applyRecoveredUrl(s, r.url);
+        }
+        if (!r.linkFlair.isEmpty()) {
+            applyRecoveredFlair(s, r.linkFlair.text, r.linkFlair.css);
+        }
+        if (!r.authorFlair.isEmpty()) {
+            applyRecoveredAuthorFlair(s, r.authorFlair.text, r.authorFlair.css);
         }
     }
 

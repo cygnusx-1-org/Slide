@@ -61,6 +61,7 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.util.AnimatorUtil;
 import me.edgan.redditslide.util.AsyncLoadMoreTask;
+import me.edgan.redditslide.util.CommentRecovery;
 import me.edgan.redditslide.util.CommentStateUtil;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.DisplayUtil;
@@ -345,9 +346,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         int pos = old != 0 ? old - 1 : old;
         if (firstHolder instanceof CommentViewHolder) {
             final CommentViewHolder holder = (CommentViewHolder) firstHolder;
-            int datasetPosition = pos - 1;
-
-            datasetPosition = getRealPosition(datasetPosition);
+            int datasetPosition = datasetPositionForAdapterPosition(old);
 
             if (pos > toShiftTo) {
                 shifted = 0;
@@ -358,6 +357,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             final CommentNode baseNode = currentComments.get(datasetPosition).comment;
             final Comment comment = baseNode.getComment();
+            // Body pulled from the archive by "Recover comment", if any. Read once: it decides both
+            // how the body renders and whether the deleted-comment collapse still applies.
+            final String recoveredBody = CommentRecovery.getRecovered(comment.getFullName());
 
             if (pos == getItemCount() - 1) {
                 holder.itemView.setPadding(
@@ -422,7 +424,14 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             holder.itemView.setOnClickListener(singleClick);
             holder.commentOverflow.setOnClickListener(singleClick);
             if (!toCollapse.contains(comment.getFullName()) || !SettingValues.collapseComments) {
-                if (SettingValues.markdownNewReddit) {
+                if (recoveredBody != null) {
+                    // Body recovered from the archive. Arctic Shift returns markdown only (no
+                    // body_html), so render via Markwon regardless of the markdownNewReddit
+                    // setting; the empty bodyHtml means inline images in the recovered text aren't
+                    // drawn (text-only recovery).
+                    setViewsMarkdown(
+                            comment, recoveredBody, "", submission.getSubredditName(), holder);
+                } else if (SettingValues.markdownNewReddit) {
                     // New Reddit-style: render the raw markdown body via Markwon (issue #179).
                     setViewsMarkdown(comment, submission.getSubredditName(), holder);
                 } else {
@@ -614,7 +623,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 setCommentStateHighlighted(holder, comment, baseNode, true, false);
             }
 
-            if (SettingValues.collapseDeletedComments) {
+            // A recovered comment has real text to show, so the deleted-comment collapse no longer
+            // applies to it.
+            if (SettingValues.collapseDeletedComments && recoveredBody == null) {
                 if (comment.getBody().startsWith("[removed]")
                         || comment.getBody().startsWith("[deleted]")) {
                     holder.firstTextView.setVisibility(View.GONE);
@@ -918,12 +929,32 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      */
     public void setViewsMarkdown(
             Comment comment, String subredditName, CommentViewHolder holder) {
+        setViewsMarkdown(
+                comment,
+                comment.getBody(),
+                comment.getDataNode().path("body_html").asText(""),
+                subredditName,
+                holder);
+    }
+
+    /**
+     * As {@link #setViewsMarkdown(Comment, String, CommentViewHolder)}, rendering {@code body}
+     * instead of the comment's own. Used for a body recovered from the archive, which arrives as
+     * markdown with no {@code body_html} of its own — pass {@code ""} for {@code bodyHtml} so the
+     * overflow's image blocks are cleared rather than drawn from the removed comment's html.
+     */
+    public void setViewsMarkdown(
+            Comment comment,
+            String body,
+            String bodyHtml,
+            String subredditName,
+            CommentViewHolder holder) {
         MarkdownImages.renderPrepared(
                 holder.firstTextView,
                 holder.commentOverflow,
                 subredditName,
-                getPreparedMarkdown(comment),
-                comment.getDataNode().path("body_html").asText(""),
+                getPreparedMarkdown(comment, body),
+                bodyHtml,
                 comment.getDataNode(),
                 null);
     }
@@ -949,10 +980,13 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      * <p>Keyed by fullname, so two comments never share the (stateful) spoiler spans of an
      * identical body, and validated against the body and the data node (which supplies the
      * media_metadata that resolves emote urls), so an edited or re-fetched comment re-parses.
+     *
+     * <p>{@code body} is passed in rather than read from the comment so a body recovered from the
+     * archive caches the same way: it differs from the comment's own body, so storing it evicts the
+     * placeholder's entry once and then hits on every later bind.
      */
-    private MarkdownImages.Prepared getPreparedMarkdown(Comment comment) {
+    private MarkdownImages.Prepared getPreparedMarkdown(Comment comment, String body) {
         final JsonNode dataNode = comment.getDataNode();
-        final String body = comment.getBody();
         final String key = comment.getFullName();
 
         final CachedMarkdown cached = markdownCache.get(key);
@@ -1583,7 +1617,18 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                     if (toCollapse.contains(comment.getFullName())
                             && SettingValues.collapseComments) {
-                        if (SettingValues.markdownNewReddit) {
+                        // Expanding re-renders the body here, not through onBindViewHolder, so an
+                        // archive recovery has to win over the placeholder on this path too.
+                        final String recoveredBody =
+                                CommentRecovery.getRecovered(comment.getFullName());
+                        if (recoveredBody != null) {
+                            setViewsMarkdown(
+                                    comment,
+                                    recoveredBody,
+                                    "",
+                                    submission.getSubredditName(),
+                                    holder);
+                        } else if (SettingValues.markdownNewReddit) {
                             setViewsMarkdown(comment, submission.getSubredditName(), holder);
                         } else {
                             setViews(
@@ -1868,6 +1913,57 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      * Rebuilt lazily after a hide/unhide or a dataset change rather than rescanning the list on
      * every call, which made binding a thread cost O(n^2) in the number of comments.
      */
+    /**
+     * The {@link #currentComments} index bound at adapter position {@code adapterPos}. Single source
+     * of truth for the mapping used both here and at the top of {@link #onBindViewHolder}, so the
+     * two can't drift.
+     */
+    private int datasetPositionForAdapterPosition(int adapterPos) {
+        int pos = adapterPos != 0 ? adapterPos - 1 : adapterPos;
+        return getRealPosition(pos - 1);
+    }
+
+    /**
+     * Whether adapter position {@code adapterPos} currently binds the comment {@code fullName}. Lets
+     * an async callback confirm a holder still represents its comment before refreshing that exact
+     * row — a recovery fetch can outlive the bind, and the list may have scrolled the holder onto a
+     * different comment meanwhile.
+     */
+    public boolean isCommentAt(int adapterPos, String fullName) {
+        if (currentComments == null || adapterPos == RecyclerView.NO_POSITION) {
+            return false;
+        }
+        int datasetPosition = datasetPositionForAdapterPosition(adapterPos);
+        if (datasetPosition < 0 || datasetPosition >= currentComments.size()) {
+            return false;
+        }
+        CommentObject o = currentComments.get(datasetPosition);
+        return o instanceof CommentItem
+                && o.comment != null
+                && o.comment.getComment() != null
+                && fullName.equals(o.comment.getComment().getFullName());
+    }
+
+    /**
+     * The adapter position of the currently on-screen row for {@code fullName}, or {@link
+     * RecyclerView#NO_POSITION} if that comment isn't visible. Lets a callback refresh exactly the
+     * recovered row (rather than the whole list) even when its original holder was recycled onto a
+     * different comment; an off-screen comment needs no refresh — it binds from the recovery map on
+     * its next appearance.
+     */
+    public int visibleAdapterPositionOf(String fullName) {
+        if (listView == null) {
+            return RecyclerView.NO_POSITION;
+        }
+        for (int i = 0; i < listView.getChildCount(); i++) {
+            int p = listView.getChildAdapterPosition(listView.getChildAt(i));
+            if (isCommentAt(p, fullName)) {
+                return p;
+            }
+        }
+        return RecyclerView.NO_POSITION;
+    }
+
     public int getRealPosition(int position) {
         if (currentComments == null) {
             return position;
