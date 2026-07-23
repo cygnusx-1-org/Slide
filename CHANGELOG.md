@@ -4,6 +4,12 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.8.4 / 2026-7-23
+============
+* Fixed Search dialog does not default to the correct subreddit if app is closed via back button #303
+* Added support for comment recovery
+* Fixed issue with the DONE button in the tutorial
+
 7.8.3 / 2026-7-19
 ============
 * Fixed stale reauth failure snackbar after silent token refresh
