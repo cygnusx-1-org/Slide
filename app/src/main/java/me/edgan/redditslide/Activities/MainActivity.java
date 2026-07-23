@@ -1676,6 +1676,11 @@ public class MainActivity extends BaseActivity
             }
             shouldLoad = usedArray.get(toGoto);
             selectedSub = (usedArray.get(toGoto));
+            // Sync the static current-position to the page actually shown at startup.
+            // pager.setCurrentItem(toGoto) is a no-op when toGoto == 0, so onPageSelected
+            // never fires to update it, leaving a stale value from a prior session (the
+            // process survives a back-button exit). See issue #303.
+            Reddit.currentPosition = toGoto;
             themeSystemBars(usedArray.get(toGoto));
 
             final String USEDARRAY_0 = usedArray.get(0);
