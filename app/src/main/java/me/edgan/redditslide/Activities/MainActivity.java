@@ -1672,7 +1672,7 @@ public class MainActivity extends BaseActivity
                 toGoto = 0;
             }
             if (toGoto >= usedArray.size()) {
-                toGoto -= 1;
+                toGoto = usedArray.size() - 1;
             }
             shouldLoad = usedArray.get(toGoto);
             selectedSub = (usedArray.get(toGoto));
