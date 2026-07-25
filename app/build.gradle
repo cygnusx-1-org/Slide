@@ -197,7 +197,9 @@ if (githubPropertiesFile.exists()) {
     githubProperties.load(new FileInputStream(githubPropertiesFile))
 
     githubRelease {
-        def releaseNotes = System.getenv("RELEASE_NOTES") ?: "Automated release of version ${android.defaultConfig.versionName ?: "default-version"}"
+        def releaseNotesProvider = providers.gradleProperty("releaseNotes")
+            .orElse(providers.environmentVariable("RELEASE_NOTES"))
+        def releaseNotes = releaseNotesProvider.getOrElse("")
 
         token = githubProperties["githubToken"]
         owner = "edgan"
@@ -216,6 +218,19 @@ if (githubPropertiesFile.exists()) {
             println("Warning: No APK files found in the directory 'build/outputs/apk/withGPlay/release/'.")
         } else {
             releaseAssets = apkFiles
+        }
+    }
+
+    tasks.matching { it.name == "githubRelease" }.configureEach {
+        doFirst {
+            def releaseNotes = providers.gradleProperty("releaseNotes")
+                .orElse(providers.environmentVariable("RELEASE_NOTES"))
+                .getOrElse("")
+            if (releaseNotes.trim().isEmpty()) {
+                throw new GradleException(
+                    "Release notes are required. Pass -PreleaseNotes or set RELEASE_NOTES."
+                )
+            }
         }
     }
 } else {
