@@ -4,6 +4,11 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.8.5 / 2026-7-24
+============
+* Implemeneted Feature request: Show placeholder previews for Tumblr videos in post layout #171
+* Hardened startup subreddit index clamp against out-of-range positions
+
 7.8.4 / 2026-7-23
 ============
 * Fixed Search dialog does not default to the correct subreddit if app is closed via back button #303
