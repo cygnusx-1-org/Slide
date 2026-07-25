@@ -183,6 +183,7 @@ public class HeaderImageLinkView extends RelativeLayout {
         String url = "";
         boolean forceThumb = false;
         thumbImage2.setImageResource(android.R.color.transparent);
+        thumbImage2.setContentDescription(null);
         // View recycling: clear any transparency background from the previous bind.
         backdrop.setBackground(null);
         thumbImage2.setBackground(null);
@@ -203,9 +204,10 @@ public class HeaderImageLinkView extends RelativeLayout {
             if (wrapArea != null) wrapArea.setVisibility(View.GONE);
             thumbImage2.setVisibility(View.GONE);
         } else {
-            if (submission.getThumbnails() != null && submission.getThumbnails().getSource() != null) {
-                int height = submission.getThumbnails().getSource().getHeight();
-                int width = submission.getThumbnails().getSource().getWidth();
+            JsonNode previewSource = getPreviewSource(dataNode);
+            if (previewSource != null) {
+                int height = previewSource.path("height").asInt();
+                int width = previewSource.path("width").asInt();
                 setBackdropLayoutParams(height, width, full, fullImage, type);
             } else if (type == ContentType.Type.REDDIT_GALLERY) {
                 if (full) {
@@ -238,7 +240,14 @@ public class HeaderImageLinkView extends RelativeLayout {
                     if (full && !submission.isSelfPost()) wrapArea.setVisibility(View.VISIBLE);
                 }
                 thumbImage2.setImageDrawable(
-                        ContextCompat.getDrawable(getContext(), R.drawable.web));
+                        ContextCompat.getDrawable(
+                                getContext(),
+                                isPlayablePlaceholderType(type)
+                                        ? R.drawable.media_play_placeholder
+                                        : R.drawable.web));
+                if (isPlayablePlaceholderType(type)) {
+                    thumbImage2.setContentDescription(getContext().getString(R.string.btn_play));
+                }
                 thumbUsed = true;
             } else if (submission.isNsfw() && SettingValues.getIsNSFWEnabled()
                     || (baseSub != null
@@ -276,7 +285,14 @@ public class HeaderImageLinkView extends RelativeLayout {
                 }
 
                 thumbImage2.setImageDrawable(
-                        ContextCompat.getDrawable(getContext(), R.drawable.web));
+                        ContextCompat.getDrawable(
+                                getContext(),
+                                isPlayablePlaceholderType(type)
+                                        ? R.drawable.media_play_placeholder
+                                        : R.drawable.web));
+                if (isPlayablePlaceholderType(type)) {
+                    thumbImage2.setContentDescription(getContext().getString(R.string.btn_play));
+                }
                 thumbUsed = true;
                 loadedUrl = submission.getUrl();
             } else if (type == ContentType.Type.IMAGE
@@ -614,17 +630,21 @@ public class HeaderImageLinkView extends RelativeLayout {
             displayImageCachedFirst(thumbnailUrl, thumbImage2, null);
             setVisibility(View.GONE);
         } else {
-            // No image at all.
-            setVisibility(View.GONE);
-            if (thumbImage2 != null) thumbImage2.setVisibility(View.GONE);
-            if (backdrop != null) backdrop.setVisibility(View.GONE);
-            if (wrapArea != null) wrapArea.setVisibility(View.VISIBLE);
+            handleMissingPreview(submission, full);
         }
     }
 
     // Delegated to PhotoLoader so the feed card and the preloader use identical thumbnail selection.
     private String getValidThumbnailUrl(JsonNode node) {
         return PhotoLoader.getValidThumbnailUrl(node);
+    }
+
+    private JsonNode getPreviewSource(JsonNode dataNode) {
+        if (dataNode == null) return null;
+        JsonNode images = dataNode.path("preview").path("images");
+        if (!images.isArray() || images.isEmpty()) return null;
+        JsonNode source = images.get(0).path("source");
+        return source.isObject() ? source : null;
     }
 
     private void handleRedditGalleryType(Submission submission, String baseSub, boolean full, boolean forceThumb) {
@@ -656,16 +676,42 @@ public class HeaderImageLinkView extends RelativeLayout {
                         feedImageWidth(
                                 (!full && !SettingValues.isPicsEnabled(baseSub)) || forceThumb));
 
-        if (dataNode.has("preview") &&
-            dataNode.get("preview").has("images") &&
-            dataNode.get("preview").get("images").size() > 0) {
-                handlePreviewImage(previewUrl, submission, baseSub, full, forceThumb);
+        if (previewUrl != null && !previewUrl.isEmpty()) {
+            handlePreviewImage(previewUrl, submission, baseSub, full, forceThumb);
         } else {
-            // No valid preview available
-            setVisibility(View.GONE);
+            handleMissingPreview(submission, full);
+        }
+    }
+
+    private void handleMissingPreview(Submission submission, boolean full) {
+        setVisibility(View.GONE);
+        if (backdrop != null) backdrop.setVisibility(View.GONE);
+
+        if (isPlayablePlaceholderType(type)) {
+            thumbImage2.setVisibility(View.VISIBLE);
+            setThumbAndWrapVisibility(full, true);
+            thumbImage2.setImageDrawable(
+                    ContextCompat.getDrawable(getContext(), R.drawable.media_play_placeholder));
+            thumbImage2.setContentDescription(getContext().getString(R.string.btn_play));
+            thumbUsed = true;
+            loadedUrl = submission.getUrl();
+        } else {
             if (thumbImage2 != null) thumbImage2.setVisibility(View.GONE);
-            if (backdrop != null) backdrop.setVisibility(View.GONE);
             if (wrapArea != null) wrapArea.setVisibility(View.VISIBLE);
+        }
+    }
+
+    static boolean isPlayablePlaceholderType(ContentType.Type type) {
+        switch (type) {
+            case EMBEDDED:
+            case GIF:
+            case STREAMABLE:
+            case VIDEO:
+            case VREDDIT_DIRECT:
+            case VREDDIT_REDIRECT:
+                return true;
+            default:
+                return false;
         }
     }
 

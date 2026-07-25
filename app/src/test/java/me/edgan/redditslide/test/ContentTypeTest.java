@@ -71,6 +71,10 @@ public class ContentTypeTest {
         assertThat(ContentType.getContentType("https://i.imgur.com/33YIg0B.gifv"), is(Type.GIF));
         assertThat(ContentType.getContentType("https://i.imgur.com/33YIg0B.gif"), is(Type.GIF));
         assertThat(
+                ContentType.getContentType(
+                        "https://va.media.tumblr.com/tumblr_skj01afM1s1aq68vs.mp4"),
+                is(Type.GIF));
+        assertThat(
                 ContentType.getContentType("i.imgur.com/33YIg0B.gif?args=should&not=matter"),
                 is(Type.GIF));
         assertThat(
