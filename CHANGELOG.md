@@ -4,6 +4,10 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.8.6 / 2026-7-27
+============
+* Implemented Feature request: Improve video previews in vertical gallery mode #170
+
 7.8.5 / 2026-7-24
 ============
 * Implemeneted Feature request: Show placeholder previews for Tumblr videos in post layout #171

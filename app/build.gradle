@@ -41,7 +41,7 @@ android {
         applicationId "me.edgan.redditslide"
         minSdk 29
         targetSdk 36
-        versionCode 785
+        versionCode 786
         versionName androidGitVersion.name()
     }
 
