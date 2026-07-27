@@ -230,9 +230,12 @@ public class AlbumPager extends BaseSaveActivity {
         }
 
         @Override
-        public void doWithData(final List<Image> jsonElements) {
-            // Call the superclass implementation if needed
-            super.doWithData(jsonElements);
+        public boolean doWithData(final List<Image> jsonElements) {
+            // Nothing usable came back, so there are no pages to build; super has already told
+            // onError(), which offers the link in a web view instead.
+            if (!super.doWithData(jsonElements)) {
+                return false;
+            }
 
             // Use runOnUiThread to ensure the following UI code runs on the main thread
             runOnUiThread(
@@ -362,6 +365,7 @@ public class AlbumPager extends BaseSaveActivity {
                             adapter.notifyDataSetChanged();
                         }
                     });
+            return true;
         }
     }
 
@@ -392,7 +396,7 @@ public class AlbumPager extends BaseSaveActivity {
             }
             Image current = images.get(i);
             Fragment f;
-            if (current.isAnimated()) {
+            if (current.animated()) {
                 f = new Gif();
             } else {
                 f = new ImageFullNoSubmission();
@@ -498,7 +502,7 @@ public class AlbumPager extends BaseSaveActivity {
 
             ImageView speedButton = rootView.findViewById(R.id.speed);
             if (speedButton != null) {
-                if (((AlbumPager) getActivity()).images.get(i).isAnimated()) {
+                if (((AlbumPager) getActivity()).images.get(i).animated()) {
                     speedButton.setVisibility(View.VISIBLE);
                     v.attachSpeedButton(speedButton, getActivity());
                 } else {
@@ -725,12 +729,7 @@ public class AlbumPager extends BaseSaveActivity {
                         && (SettingValues.lowResAlways
                                 || (!NetworkUtil.isConnectedWifi(getActivity())
                                         && SettingValues.lowResMobile))) {
-                    String lqurl =
-                            url.substring(0, url.lastIndexOf("."))
-                                    + (SettingValues.lqLow
-                                            ? "m"
-                                            : (SettingValues.lqMid ? "l" : "h"))
-                                    + url.substring(url.lastIndexOf("."));
+                    String lqurl = lowQualityUrl(url);
                     loadImage(
                             rootView, this, lqurl, ((AlbumPager) getActivity()).images.size() == 1);
                     lq = true;
@@ -989,12 +988,7 @@ public class AlbumPager extends BaseSaveActivity {
                                 && (SettingValues.lowResAlways
                                         || (!NetworkUtil.isConnectedWifi(activity)
                                                 && SettingValues.lowResMobile))) {
-                            String lqurl =
-                                    url.substring(0, url.lastIndexOf("."))
-                                            + (SettingValues.lqLow
-                                                    ? "m"
-                                                    : (SettingValues.lqMid ? "l" : "h"))
-                                            + url.substring(url.lastIndexOf("."));
+                            String lqurl = lowQualityUrl(url);
                             loadImage(rootView, ImageFullNoSubmission.this, lqurl, activity.images.size() == 1);
                         } else {
                             loadImage(rootView, ImageFullNoSubmission.this, url, activity.images.size() == 1);
@@ -1046,4 +1040,22 @@ public class AlbumPager extends BaseSaveActivity {
     private void showFirstDialog() {
         runOnUiThread(() -> DialogUtil.showFirstDialog(AlbumPager.this));
     }
+
+    /**
+     * The low-quality variant of an Imgur url: Imgur serves {@code <hash>m|l|h.<ext>} beside the
+     * original. Returns {@code url} unchanged when there is no extension to insert the suffix before,
+     * since truncating at a missing dot would silently yield a prefix like "https://i".
+     */
+    static String lowQualityUrl(final String url) {
+        if (url == null) {
+            return null;
+        }
+        final int dot = url.lastIndexOf('.');
+        if (dot < 0) {
+            return url;
+        }
+        final String suffix = SettingValues.lqLow ? "m" : (SettingValues.lqMid ? "l" : "h");
+        return url.substring(0, dot) + suffix + url.substring(dot);
+    }
+
 }

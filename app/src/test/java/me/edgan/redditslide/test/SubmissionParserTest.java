@@ -140,6 +140,55 @@ public class SubmissionParserTest {
         assertThat(blocks, not(hasItem("<hr/>")));
     }
 
+    @Test
+    public void aBodyThatIsNothingButARuleIsARuleBlock() {
+        // A comment or Tumblr caption whose whole body is "---". split() drops both parts as
+        // trailing empties, so there is nothing to interleave the rule between; parseHR used to
+        // trim a tag it had never added and throw IndexOutOfBounds on the way out of getBlocks.
+        List<String> blocks = SubmissionParser.getBlocks("<hr/>");
+        assertThat(blocks, is(Collections.singletonList("<hr/>")));
+    }
+
+    @Test
+    public void consecutiveRulesWithNoTextCollapseToOneBlock() {
+        List<String> blocks = SubmissionParser.getBlocks("<hr/><hr/>");
+        assertThat(blocks, is(Collections.singletonList("<hr/>")));
+    }
+
+    @Test
+    public void aRuleOnlyBlockDoesNotEatTheBlockBeforeIt() {
+        // The trim reached backwards into blocks an earlier iteration had added, so the text before
+        // a code block silently lost its rule separator rather than throwing.
+        List<String> blocks = SubmissionParser.getBlocks("<div>a</div><pre><code>c</code></pre><hr/>");
+        assertThat(blocks.get(0), is("<div>a</div>"));
+        assertThat(blocks.get(1), containsString("c"));
+        assertThat(blocks.get(1), containsString("<pre><code>"));
+    }
+
+    // ---------------------------------------------------------------------
+    // getBlocks: never returns an empty list
+    // ---------------------------------------------------------------------
+
+    @Test
+    public void everyDegenerateInputStillYieldsAtLeastOneBlock() {
+        // Callers index block 0 straight away — TumblrPager, TumblrView and AlbumView all read the
+        // first block as a caption — so an empty list would be an IndexOutOfBounds at each of them.
+        // These are the inputs where a bare String.split() returns an empty array, which is the only
+        // way the helpers could have produced one.
+        for (String html :
+                Arrays.asList(
+                        "",
+                        "<hr/>",
+                        "<hr/><hr/>",
+                        "<pre><code>",
+                        "<pre><code><pre><code>",
+                        "<table>",
+                        "<table><table>")) {
+            List<String> blocks = SubmissionParser.getBlocks(html);
+            assertTrue("no blocks for [" + html + "]", !blocks.isEmpty());
+        }
+    }
+
     // ---------------------------------------------------------------------
     // getBlocks: spoilers
     // ---------------------------------------------------------------------

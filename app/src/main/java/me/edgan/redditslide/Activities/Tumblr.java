@@ -97,7 +97,14 @@ public class Tumblr extends BaseSaveActivity {
         if (id == R.id.download) {
             int index = 0;
             for (final Photo elem : images) {
-                doImageSave(false, elem.getOriginalSize().getUrl(), index);
+                // A photo whose JSON carried no original_size — or that Jackson left null for a null
+                // element in the photos array — has no url to save. index still advances so the
+                // saved files keep matching album positions: a gap in the numbering, rather than
+                // renumbering everything after the skip.
+                final String elemUrl = elem == null ? null : elem.getOriginalUrl();
+                if (elemUrl != null) {
+                    doImageSave(false, elemUrl, index);
+                }
                 index++;
             }
         }
@@ -251,15 +258,26 @@ public class Tumblr extends BaseSaveActivity {
 
             @Override
             public void onError() {
-                Intent i = new Intent(getActivity(), Website.class);
+                // Resolved once and null-checked: this is posted to the main looper from the
+                // loader's background thread, so the fragment can be detached by the time it runs.
+                // new Intent(null, …) is an NPE and startActivity on a detached fragment throws.
+                final Activity activity = getActivity();
+                if (activity == null || activity.isFinishing()) {
+                    return;
+                }
+                Intent i = new Intent(activity, Website.class);
                 i.putExtra(LinkUtil.EXTRA_URL, url);
-                startActivity(i);
-                getActivity().finish();
+                activity.startActivity(i);
+                activity.finish();
             }
 
             @Override
-            public void doWithData(final List<Photo> jsonElements) {
-                super.doWithData(jsonElements);
+            public boolean doWithData(final List<Photo> jsonElements) {
+                // A post with no photos has no album to build; super has already sent this to
+                // onError(), which opens the link in the web view instead.
+                if (!super.doWithData(jsonElements)) {
+                    return false;
+                }
                 if (getActivity() != null) {
                     getActivity().findViewById(R.id.progress).setVisibility(View.GONE);
                     ((Tumblr) getActivity()).images = new ArrayList<>(jsonElements);
@@ -267,10 +285,11 @@ public class Tumblr extends BaseSaveActivity {
                             new TumblrView(
                                     baseActivity,
                                     ((Tumblr) getActivity()).images,
-                                    getActivity().findViewById(R.id.toolbar).getHeight(),
-                                    ((Tumblr) getActivity()).subreddit);
+                                    ((Tumblr) getActivity()).subreddit,
+                                    ((Tumblr) getActivity()).submissionTitle);
                     recyclerView.setAdapter(adapter);
                 }
+                return true;
             }
         }
     }

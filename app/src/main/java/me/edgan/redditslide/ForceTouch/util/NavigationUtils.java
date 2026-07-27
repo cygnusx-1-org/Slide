@@ -29,7 +29,10 @@ public class NavigationUtils {
         if (resourceId > 0) {
             result = context.getResources().getDimensionPixelSize(resourceId);
         } else if (hasNavBar(context)) {
-            DensityUtils.toDp(context, 48);
+            // toPx, and assigned: this fallback used to call toDp — which converts with
+            // COMPLEX_UNIT_PX and so returns its own argument — and then dropped the result, leaving
+            // 0 for a device that does have a nav bar.
+            result = DensityUtils.toPx(context, 48);
         }
 
         return result;

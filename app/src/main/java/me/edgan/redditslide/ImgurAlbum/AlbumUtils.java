@@ -40,6 +40,9 @@ public class AlbumUtils {
     }
 
     private static String getHash(String s) {
+        if (s == null) {
+            return null;
+        }
         String last = substringAfterLastDash(s);
         LogUtil.v(s);
         LogUtil.v("1 " + last);
@@ -211,36 +214,77 @@ public class AlbumUtils {
             imgurKey = SecretConstants.getImgurApiKey(baseActivity);
         }
 
-        public void doWithData(List<Image> data) {
+        /**
+         * Hands the album's images to the caller.
+         *
+         * @return whether {@code data} holds anything to work with. False means nothing usable came
+         *     back and {@link #onError()} has already been told; an override must return without
+         *     touching the list, since indexing it would throw. The boolean is the contract rather
+         *     than a bare void — matching {@link
+         *     me.edgan.redditslide.Tumblr.TumblrUtils.GetTumblrPostWithCallback#doWithData} — because
+         *     every override calls {@code super} first and the earlier void version let them carry on
+         *     into an empty list.
+         */
+        public boolean doWithData(List<Image> data) {
             if (data == null || data.isEmpty()) {
                 onError();
+                return false;
             }
+            return true;
         }
 
         public void doWithDataSingle(final SingleImage data) {
-            doWithData(
-                new ArrayList<Image>() {
-                    {
-                        this.add(convertToSingle(data));
-                    }
-                });
+            // convertToSingle returns null when the response is unusable. Adding that null would
+            // hand the adapters a list containing null, which crashes them while the list measures;
+            // an empty list routes to the failure path doWithData already has.
+            final Image converted = convertToSingle(data);
+            final ArrayList<Image> images = new ArrayList<>();
+            if (converted != null) {
+                images.add(converted);
+            }
+            doWithData(images);
         }
 
+        /**
+         * One API entry as an {@link Image}, or null when it has nothing usable in it.
+         *
+         * <p>Reports nothing itself, deliberately: {@link #onError()} is one report per load, and this
+         * runs per entry — the album loop below calls it once for every image in the album. Reporting
+         * from here put a modal "album not found" dialog over an album that had loaded, because one
+         * of its entries was unusable, and reported twice for a single image (once here, once from
+         * {@link #doWithData} being handed the empty list). Every caller already handles the null:
+         * the album loop skips and logs it, {@code jsons.isEmpty()} reports an album where nothing
+         * parsed, and {@link #doWithDataSingle} routes it into {@code doWithData}'s own error path.
+         */
         public Image convertToSingle(SingleImage data) {
             try {
                 final Image toDo = new Image();
+                final String link = data.getLink();
                 boolean animated = data.getAnimated() != null ? data.getAnimated() : false;
-                toDo.setAnimated(animated || data.getLink().contains(".gif"));
+                toDo.setAnimated(animated || (link != null && link.contains(".gif")));
 
-                if (data.getAdditionalProperties().containsKey("mp4")
-                        && !data.getAdditionalProperties().get("mp4").equals("")) {
-                    toDo.setHash(getHash(data.getAdditionalProperties().get("mp4").toString()));
+                final Object mp4 = data.getAdditionalProperties().get("mp4");
+                // "".equals(mp4) rather than mp4.equals(""): the key can be present with a null
+                // value, which containsKey does not rule out.
+                if (mp4 != null && !"".equals(mp4)) {
+                    toDo.setHash(getHash(mp4.toString()));
                 } else {
-                    toDo.setHash(getHash(data.getLink()));
+                    toDo.setHash(getHash(link));
                 }
 
                 toDo.setTitle(data.getTitle());
-                toDo.setExt(data.getLink().substring(data.getLink().lastIndexOf(".")));
+                // Without an extension there is no url to build: Image.getImageUrl() concatenates
+                // hash and ext unconditionally, and its consumers (the grid, both pager pages, the
+                // save paths, the peek view) are not null-tolerant. Exclude the entry rather than
+                // letting a half-built one out, which doWithDataSingle turns into the error path.
+                final int dot = link == null ? -1 : link.lastIndexOf('.');
+                if (dot < 0) {
+                    LogUtil.e("convertToSingle: no extension in link [" + link + "]");
+                    return null;
+                }
+                toDo.setExt(link.substring(dot));
+                // SingleImage's width and height are nullable Integers and are copied through as
+                // such; AlbumView null-checks them before using them to reserve a row's height.
                 toDo.setHeight(data.getHeight());
                 toDo.setWidth(data.getWidth());
 
@@ -254,8 +298,6 @@ public class AlbumUtils {
                 } catch (JsonProcessingException ex) {
                     LogUtil.e(ex, "Error serializing data to JSON for logging");
                 }
-
-                onError();
 
                 return null;
             }
@@ -376,7 +418,9 @@ public class AlbumUtils {
             if (baseActivity != null) {
                 if (jsons.isEmpty()) {
                     LogUtil.w("No images successfully processed from hash(es): " + hash);
-                    onError();
+                    // Main thread, like the doWithData path below: the overrides show a dialog,
+                    // start an activity or rebuild the peek view.
+                    baseActivity.runOnUiThread(this::onError);
                 } else {
                     baseActivity.runOnUiThread(
                         new Runnable() {

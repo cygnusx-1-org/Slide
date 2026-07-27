@@ -4,8 +4,9 @@
 #
 # Every AppCompat `new AlertDialog.Builder(...)` must end up with the themed card_background, or it
 # renders with the gray AppCompat default. That happens one of three ways:
-#   1. wrapped:   DialogUtil.showWithCardBackground(new AlertDialog.Builder(...) ...)   (or the
-#                 withGPlay-local showThemedDialog(...) wrapper)
+#   1. wrapped:   DialogUtil.showWithCardBackground(new AlertDialog.Builder(...) ...)   (or a local
+#                 wrapper that forwards its builder straight to it: withGPlay's showThemedDialog(...),
+#                 Tutorial's showTrackedDialog(...), which delegates to showWithCardBackground)
 #   2. matched:   the builder is stored / configured-then-shown, and the resulting dialog variable
 #                 is passed to DialogUtil.matchDialogToCardBackground(...) before it is shown
 #   3. builder var passed to showWithCardBackground(builder) (the helper creates+matches+shows)
@@ -22,7 +23,11 @@ python3 - "$@" <<'PY'
 import os, re, sys
 
 SRC = ["app/src/main/java", "app/src/noGPlay/java", "app/src/withGPlay/java"]
-WRAP = ("showWithCardBackground", "showThemedDialog")
+# Local wrappers that forward a builder straight to showWithCardBackground count as wrapped:
+# showThemedDialog (withGPlay) and showTrackedDialog (Tutorial, which also tracks the dialog so it
+# can be dismissed on finish). Both create+match+show, so a trailing .show() after them is still a
+# double-show, exactly as for showWithCardBackground.
+WRAP = ("showWithCardBackground", "showThemedDialog", "showTrackedDialog")
 BUILDER = "new AlertDialog.Builder("
 
 def java_files():

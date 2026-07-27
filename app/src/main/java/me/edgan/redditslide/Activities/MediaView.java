@@ -761,6 +761,9 @@ public class MediaView extends BaseSaveActivity {
             if (directGifViewer != null) directGifViewer.setVisibility(View.GONE); // Hide our direct ImageViewer
             videoView = (ExoVideoView) findViewById(R.id.gif);
             videoView.setVisibility(View.VISIBLE); // Ensure ExoVideoView is visible
+            // The full-screen viewer is the one place a horizontal drag should seek; everywhere else
+            // it pages between items or scrolls a list.
+            videoView.setScrubEnabled(true);
 
             findViewById(R.id.black)
                     .setOnClickListener(

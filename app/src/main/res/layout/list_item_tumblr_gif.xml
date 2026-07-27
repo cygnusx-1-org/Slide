@@ -1,33 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Same outer gap as the photo rows in album_image.xml (16dp above, 16dp + the card's 20dp
+     margin below), so a Tumblr album spaces GIFs and photos identically. Full-bleed horizontally,
+     again matching those rows. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:orientation="vertical"
+    android:paddingTop="@dimen/album_row_margin_top"
+    android:paddingBottom="@dimen/album_row_margin_bottom">
 
-    <ImageView
-        android:id="@+id/gif_display"
+    <!-- MaxHeightImageView so the adapter can reserve the slot from the size Tumblr reported: the
+         GIF decodes asynchronously, and a plain wrap_content ImageView would grow the row when it
+         lands. The spinner sits over that reserved box until the GIF arrives. adjustViewBounds still
+         matters for the fallback: when Tumblr reports no size the adapter passes setAspectRatio(0),
+         and ImageView needs it to derive an aspect-correct height. -->
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scaleType="fitCenter"
-        android:adjustViewBounds="true"
-        android:visibility="gone" />
+        android:layout_height="wrap_content">
 
-    <ProgressBar
-        android:id="@+id/gif_loader"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="visible" />
+        <me.edgan.redditslide.Views.MaxHeightImageView
+            android:id="@+id/gif_display"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter" />
 
-    <!-- Optional: TextView for captions below the GIF -->
+        <ProgressBar
+            android:id="@+id/gif_loader"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="visible" />
+    </FrameLayout>
+
+    <!-- Optional: TextView for captions below the GIF. Padded like album_image.xml's imageCaption,
+         since the row itself is full-bleed and gives its children no horizontal inset. -->
     <me.edgan.redditslide.SpoilerRobotoTextView
         android:id="@+id/gif_caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/gif_display"
         android:layout_marginTop="4dp"
+        android:padding="16dp"
         android:visibility="gone"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
-</RelativeLayout>
+</LinearLayout>

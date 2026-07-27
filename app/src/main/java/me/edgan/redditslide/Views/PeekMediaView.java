@@ -157,7 +157,15 @@ public class PeekMediaView extends RelativeLayout {
     }
 
     private void doLoadAlbum(final String url) {
-        new AlbumUtils.GetAlbumWithCallback(url, (PeekViewActivity) getContext()) {
+        albumCallback(url).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    /**
+     * The loader {@link #doLoadAlbum} runs, separated from running it so the test can drive
+     * {@code doWithData} with a hand-built album and no fetch behind it.
+     */
+    AlbumUtils.GetAlbumWithCallback albumCallback(final String url) {
+        return new AlbumUtils.GetAlbumWithCallback(url, (PeekViewActivity) getContext()) {
 
             @Override
             public void onError() {
@@ -172,23 +180,45 @@ public class PeekMediaView extends RelativeLayout {
             }
 
             @Override
-            public void doWithData(final List<Image> jsonElements) {
-                super.doWithData(jsonElements);
+            public boolean doWithData(final List<Image> jsonElements) {
+                // Nothing usable came back, so there is nothing to index below; super has already
+                // sent this to onError(), which falls back to opening the link.
+                if (!super.doWithData(jsonElements)) {
+                    return false;
+                }
                 progress.setVisibility(View.GONE);
                 images = new ArrayList<>(jsonElements);
-                displayImage(images.get(0).getImageUrl());
+                // Screened like the album list's rows: getImageUrl() concatenates hash and
+                // extension blindly, so an entry missing either would peek at
+                // "https://i.imgur.com/null.jpg". Skipped rather than reported, as the Tumblr path
+                // below does: onError is for an album with nothing in it, and there is nothing to
+                // fall back to for one entry out of several.
+                final Image first = images.get(0);
+                if (first != null && first.hasImageUrl()) {
+                    displayImage(first.getImageUrl());
+                }
                 if (images.size() > 1) {
                     GridView grid = findViewById(R.id.grid_area);
                     grid.setNumColumns(5);
                     grid.setVisibility(VISIBLE);
                     grid.setAdapter(new ImageGridAdapter(getContext(), images));
                 }
+                return true;
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        };
     }
 
     private void doLoadTumblr(final String url) {
-        new TumblrUtils.GetTumblrPostWithCallback(url, (PeekViewActivity) getContext()) {
+        tumblrCallback(url).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    /**
+     * The loader {@link #doLoadTumblr} runs, separated from running it so the test can drive
+     * {@code doWithData} with a hand-built post and no fetch behind it — the same split as
+     * {@link #albumCallback}, which screens its first entry the same way.
+     */
+    TumblrUtils.GetTumblrPostWithCallback tumblrCallback(final String url) {
+        return new TumblrUtils.GetTumblrPostWithCallback(url, (PeekViewActivity) getContext()) {
 
             @Override
             public void onError() {
@@ -203,19 +233,32 @@ public class PeekMediaView extends RelativeLayout {
             }
 
             @Override
-            public void doWithData(final List<Photo> jsonElements) {
-                super.doWithData(jsonElements);
+            public boolean doWithData(final List<Photo> jsonElements) {
+                // A post with no photos leaves nothing to index below; super has already sent this
+                // to onError(), which falls back to opening the link.
+                if (!super.doWithData(jsonElements)) {
+                    return false;
+                }
                 progress.setVisibility(View.GONE);
                 tumblrImages = new ArrayList<>(jsonElements);
-                displayImage(tumblrImages.get(0).getOriginalSize().getUrl());
+                // A photo whose JSON carried no original_size — or that Jackson left null for a null
+                // element in the photos array — has nothing to show. Skipped rather than reported:
+                // onError above is for a post with no photos at all, and there is nothing to fall
+                // back to for one photo out of several.
+                final Photo first = tumblrImages.get(0);
+                final String firstUrl = first == null ? null : first.getOriginalUrl();
+                if (firstUrl != null) {
+                    displayImage(firstUrl);
+                }
                 if (tumblrImages.size() > 1) {
                     GridView grid = findViewById(R.id.grid_area);
                     grid.setNumColumns(5);
                     grid.setVisibility(VISIBLE);
                     grid.setAdapter(new ImageGridAdapter(getContext(), tumblrImages, true));
                 }
+                return true;
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        };
     }
 
     List<Image> images;

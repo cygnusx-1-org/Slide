@@ -47,12 +47,25 @@
                 android:indeterminate="false"
                 android:max="100"
                 android:progress="0" />
+
+            <!-- Inside the image area, not the whole row, so that a caption above the video does
+                 not push the button off the video's centre. -->
+            <ImageView
+                android:id="@+id/playbutton"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_centerInParent="true"
+                android:alpha="0.8"
+                android:background="@drawable/circle_background"
+                android:padding="16dp"
+                android:src="@drawable/ic_play"
+                android:visibility="visible" />
         </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/gifheader"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="@dimen/gif_header_height"
             android:layout_alignParentBottom="true">
 
             <ImageView
@@ -157,17 +170,6 @@
                 android:theme="@style/Ripple.List"
                 app:srcCompat="@drawable/ic_more_vert" />
         </RelativeLayout>
-
-        <ImageView
-            android:id="@+id/playbutton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_centerInParent="true"
-            android:alpha="0.8"
-            android:background="@drawable/circle_background"
-            android:padding="16dp"
-            android:src="@drawable/ic_play"
-            android:visibility="visible" />
     </RelativeLayout>
 
     <!-- Sliding panel (can be empty for videos, but must exist) -->

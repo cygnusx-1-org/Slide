@@ -71,17 +71,21 @@ public class AlbumFullComments extends BaseAlbumFull {
         }
 
         @Override
-        public void doWithData(final List<Image> jsonElements) {
-            super.doWithData(jsonElements);
+        public boolean doWithData(final List<Image> jsonElements) {
+            // Nothing usable came back, so there is no album to build; super has already told
+            // onError().
+            if (!super.doWithData(jsonElements)) {
+                return false;
+            }
             // May be a bug with downloading multiple comment albums off the same submission
             AlbumView adapter =
                     new AlbumView(
                             baseActivity,
                             jsonElements,
-                            0,
                             s.getSubredditName(),
                             FileUtil.buildDownloadName(s.comment.getComment()));
             ((RecyclerView) list).setAdapter(adapter);
+            return true;
         }
     }
 

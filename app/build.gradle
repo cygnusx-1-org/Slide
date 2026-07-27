@@ -122,6 +122,12 @@ android {
             includeAndroidResources = true
             returnDefaultValues = true
             all {
+                // Gradle defaults the test JVM to 512m, which the Roborazzi goldens outgrew: at the
+                // widest configuration a row is ~2800px across and MaxHeightImageView lets an image
+                // reach 3200px tall, so a single ARGB_8888 capture is ~36 MB before Roborazzi's own
+                // copy of it. Raising this rather than dropping the wide cases, since the widest
+                // layout is the one most worth a golden.
+                maxHeapSize = '2g'
                 jvmArgs = [
                     '-Xshare:off',
                     '--add-opens=java.base/java.lang=ALL-UNNAMED',
@@ -420,6 +426,26 @@ tasks.register('auditDialogBackgrounds', Exec) {
     commandLine 'bash', "${rootDir}/scripts/audit_dialog_backgrounds.sh"
 }
 tasks.named('check') { dependsOn 'auditDialogBackgrounds' }
+
+// `checks` — `check` with the Roborazzi screenshot goldens VERIFIED rather than merely
+// captured. Plain `check`/`test` run the screenshot tests in compare-only mode, so a golden
+// mismatch does not fail the build; this task hands the unit-test JVMs the same
+// `roborazzi.test.verify` system property that `-Proborazzi.test.verify=true` sets, so a
+// mismatch fails. Equivalent to `./gradlew :app:check -Proborazzi.test.verify=true`, but done
+// as check + a guarded property rather than a nested `./gradlew`: the Mirakle init script
+// offloads or pins a whole invocation from its task names (see the assemble…Remote block
+// below), and a nested wrapper call would run on the wrong host. The guard keys off the
+// requested task, so running `check` on its own keeps its non-gating behaviour.
+tasks.register('checks') {
+    group = 'verification'
+    description = 'Runs check with Roborazzi screenshot verification (fails on golden mismatch).'
+    dependsOn 'check'
+}
+if (gradle.startParameter.taskNames.any { it == 'checks' || it.endsWith(':checks') }) {
+    tasks.withType(Test).configureEach {
+        systemProperty 'roborazzi.test.verify', 'true'
+    }
+}
 
 // Custom APK/AAB names, reimplemented on AGP 9's new Variant API (the legacy
 // applicationVariants.outputs.outputFileName / bundle rename was removed by the new DSL).

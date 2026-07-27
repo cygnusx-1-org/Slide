@@ -17,10 +17,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-import com.github.takahirom.roborazzi.RoborazziOptions;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -77,7 +73,18 @@ public class RoborazziLayoutTest {
         {"light", R.style.Theme_LIGHT},
     };
 
-    /** Submission layouts under test — the big card variants plus the compact list row. */
+    /**
+     * Layouts under test — the big submission card variants, the compact list row, and the still and
+     * GIF rows of the vertical album/gallery lists.
+     *
+     * <p>submission_gifcard_album is deliberately not here. Its root is a SlidingUpPanelLayout, which
+     * rejects the UNSPECIFIED height spec below and needs a bounded one; give it that and it measures
+     * to a full screen, because that is what its {@code match_parent} height means to a static
+     * inflate. In the app it never has that height — VerticalMediaAdapter replaces it at bind time
+     * with one derived from the media's aspect ratio — so the golden would pin a size the row never
+     * has, at a cost of a ~50 MB bitmap per case. Covering it means rendering it through the adapter,
+     * not inflating it.
+     */
     private static Map<String, Integer> layouts() {
         Map<String, Integer> m = new LinkedHashMap<>();
         m.put("largecard", R.layout.submission_largecard);
@@ -85,6 +92,8 @@ public class RoborazziLayoutTest {
         m.put("textcard", R.layout.submission_textcard);
         m.put("titlecard", R.layout.submission_titlecard);
         m.put("list", R.layout.submission_list);
+        m.put("album_image", R.layout.album_image);
+        m.put("tumblr_gif", R.layout.list_item_tumblr_gif);
         return m;
     }
 
@@ -140,36 +149,9 @@ public class RoborazziLayoutTest {
                         Bitmap.Config.ARGB_8888);
         bitmap.eraseColor(pageBackground);
         view.draw(new Canvas(bitmap));
-        captureRoboImage(
+        RoborazziCapture.captureRoboImage(
                 bitmap,
                 "src/test/screenshots/" + name + "_" + themeLabel + "_sw" + swDp + "dp.png");
-    }
-
-    /**
-     * Calls {@code RoborazziKt.captureRoboImage(Bitmap, String, RoborazziOptions)} through a
-     * MethodHandle. A direct Java call cannot compile: javac must load every overload of
-     * {@code captureRoboImage} to pick one, and the sibling overloads reference Espresso/Compose
-     * types that are not on this Java-only test classpath. findStatic resolves just the one
-     * descriptor we need.
-     */
-    private static void captureRoboImage(Bitmap bitmap, String filePath) {
-        try {
-            MethodHandle handle =
-                    MethodHandles.lookup()
-                            .findStatic(
-                                    Class.forName("com.github.takahirom.roborazzi.RoborazziKt"),
-                                    "captureRoboImage",
-                                    MethodType.methodType(
-                                            void.class,
-                                            Bitmap.class,
-                                            String.class,
-                                            RoborazziOptions.class));
-            handle.invoke(bitmap, filePath, SCREENSHOT_OPTIONS);
-        } catch (RuntimeException | Error e) {
-            throw e;
-        } catch (Throwable t) {
-            throw new AssertionError("captureRoboImage failed for " + filePath, t);
-        }
     }
 
     private int pageBackground = Color.WHITE;
@@ -274,13 +256,4 @@ public class RoborazziLayoutTest {
         canvas.drawRect(0f, size * 0.72f, size, size, paint);
         return bmp;
     }
-
-    private static final RoborazziOptions SCREENSHOT_OPTIONS =
-            new RoborazziOptions(
-                    // The Bitmap capture path only supports Screenshot capture (the Dump type is
-                    // View-only), so pass it explicitly.
-                    new RoborazziOptions.CaptureType.Screenshot(),
-                    new RoborazziOptions.ReportOptions(),
-                    new RoborazziOptions.CompareOptions(),
-                    new RoborazziOptions.RecordOptions());
 }

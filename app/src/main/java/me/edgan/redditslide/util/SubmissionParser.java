@@ -31,7 +31,10 @@ public class SubmissionParser {
      * html received from reddit.
      *
      * @param html html to be formatted. Can be raw from the api
-     * @return list of text blocks
+     * @return list of text blocks, never empty — every helper below contributes at least one block
+     *     per block it is given, and the first of them seeds one from the whole input. Callers that
+     *     want only the first block may still guard with {@code isEmpty()}; that is belt-and-braces,
+     *     not a live case, and SubmissionParserTest is what keeps it that way.
      */
     public static List<String> getBlocks(String html) {
         html =
@@ -177,10 +180,20 @@ public class SubmissionParser {
         List<String> newBlocks = new ArrayList<>();
         for (String block : blocks) {
             if (block.contains(HR_TAG)) {
-                for (String s : block.split(HR_TAG)) {
+                final String[] parts = block.split(HR_TAG);
+                if (parts.length == 0) {
+                    // A block that is nothing but rules — a comment or caption whose whole body is
+                    // "---". split() drops every part as a trailing empty, so there is nothing to
+                    // interleave, and the trailing-tag trim below would instead delete a block an
+                    // earlier iteration had added, or throw outright when this is the first one.
+                    newBlocks.add(HR_TAG);
+                    continue;
+                }
+                for (String s : parts) {
                     newBlocks.add(s);
                     newBlocks.add(HR_TAG);
                 }
+                // Drop the tag the last part added: the rules go between the parts, not after them.
                 newBlocks.remove(newBlocks.size() - 1);
             } else {
                 newBlocks.add(block);
@@ -210,6 +223,14 @@ public class SubmissionParser {
         String text;
         String code;
         String[] split;
+
+        if (startSeperated.length == 0) {
+            // html is nothing but start tags, which split() drops as trailing empties: no text
+            // before the first and no code after the last. Seed the one empty text block the
+            // caller's contract promises rather than indexing an empty array.
+            preSeperated.add("");
+            return preSeperated;
+        }
 
         preSeperated.add(
                 startSeperated[0]
@@ -281,6 +302,13 @@ public class SubmissionParser {
         for (String block : blocks) {
             if (block.contains(TABLE_START_TAG)) {
                 String[] startSeperated = block.split(TABLE_START_TAG);
+                if (startSeperated.length == 0) {
+                    // Nothing but start tags, which split() drops as trailing empties. There is no
+                    // content to pull out of them, so keep the block as it stands rather than
+                    // indexing an empty array.
+                    newBlocks.add(block);
+                    continue;
+                }
                 newBlocks.add(startSeperated[0].trim());
                 for (int i = 1; i < startSeperated.length; i++) {
                     String[] split = startSeperated[i].split(TABLE_END_TAG);

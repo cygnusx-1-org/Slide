@@ -2,6 +2,7 @@ package me.edgan.redditslide.Activities;
 
 import static me.edgan.redditslide.Notifications.ImageDownloadNotificationService.EXTRA_SUBMISSION_TITLE;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -311,7 +313,6 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
                                         new RedditGalleryView(
                                                 galleryActivity,
                                                 galleryActivity.images,
-                                                rootView.findViewById(R.id.toolbar).getHeight(),
                                                 galleryActivity.subreddit,
                                                 galleryActivity.submissionTitle);
                                 recyclerView.setAdapter(adapter);
@@ -388,11 +389,51 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
         builder.show();
     }
 
+    /**
+     * Loads a gif page's video, or stands the page down when the entry has no url to load.
+     *
+     * <p>Package-private so its no-url case can be tested; the Gif fragment is the only caller.
+     *
+     * <p>A gallery entry really can have none: a removed or failed one comes through with
+     * media_metadata carrying no "s" node, which leaves every branch of
+     * {@link GalleryImage#getImageUrl()} returning null, and nothing routes such an entry away from
+     * this page. AsyncLoadGif dereferences the url before it does anything else — {@code formatUrl}'s
+     * first statement is {@code s.endsWith("v")} — on its worker thread, where the NPE is uncaught
+     * and takes the process down rather than reaching {@code onError()}.
+     */
+    static void loadVideo(
+            final View rootView,
+            final Activity host,
+            final String url,
+            final String subreddit,
+            final String submissionTitle) {
+        final ProgressBar loader = rootView.findViewById(R.id.gifprogress);
+        final TextView size = rootView.findViewById(R.id.size);
+        if (url == null) {
+            LogUtil.e("RedditGallery: no url for this gallery entry");
+            // Both are visible in submission_gifcard_album.xml and only ever hidden by a load
+            // completing, so a page that never starts one has to hide them itself.
+            loader.setVisibility(View.GONE);
+            size.setVisibility(View.GONE);
+            return;
+        }
+        new GifUtils.AsyncLoadGif(
+                        host,
+                        rootView.findViewById(R.id.gif),
+                        loader,
+                        null, // placeholder
+                        false, // closeIfNull
+                        true, // autostart
+                        size,
+                        subreddit,
+                        submissionTitle)
+                .execute(url);
+    }
+
     // Modify the Gif class to use the interface
     public static class Gif extends Fragment {
         private int position = 0;
         private View gifView;
-        private ProgressBar loader;
 
         // Helper method to get adapter position from activity
         private int getAdapterPositionFromActivity(android.app.Activity activity) {
@@ -438,7 +479,6 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.submission_gifcard_album, container, false);
 
-            loader = rootView.findViewById(R.id.gifprogress);
             gifView = rootView.findViewById(R.id.gif);
             gifView.setVisibility(View.VISIBLE);
 
@@ -463,31 +503,34 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
                     final String url = current.getImageUrl();
 
                     // Use GifUtils to handle MP4 or GIF
-                    new GifUtils.AsyncLoadGif(
+                    loadVideo(
+                            rootView,
                             getActivity(),
-                            exoVideoView,
-                            loader,
-                            null, // placeholder
-                            false, // closeIfNull
-                            true, // autostart
-                            rootView.findViewById(R.id.size),
+                            url,
                             galleryParent.getGallerySubreddit(),
-                            galleryParent.getGallerySubmissionTitle()
-                    ).execute(url);
+                            galleryParent.getGallerySubmissionTitle());
 
-                    // The "more" (overflow) button
-                    rootView.findViewById(R.id.more).setOnClickListener(
-                            v -> galleryParent.showGalleryBottomSheet(url, true, position)
-                    );
+                    // Both handlers are wired only when there is a url for them to act on: they
+                    // capture it, and the bottom sheet and the saver both dereference what they are
+                    // handed.
+                    if (url != null) {
+                        // The "more" (overflow) button
+                        rootView.findViewById(R.id.more).setOnClickListener(
+                                v -> galleryParent.showGalleryBottomSheet(url, true, position)
+                        );
 
-                    // The "save" button
-                    rootView.findViewById(R.id.save).setOnClickListener(
-                            v -> galleryParent.saveGalleryMedia(true, url, position)
-                    );
+                        // The "save" button
+                        rootView.findViewById(R.id.save).setOnClickListener(
+                                v -> galleryParent.saveGalleryMedia(true, url, position)
+                        );
 
-                    // Hide the save button if user preference is off
-                    if (!me.edgan.redditslide.SettingValues.imageDownloadButton) {
-                        rootView.findViewById(R.id.save).setVisibility(View.INVISIBLE);
+                        // Hide the save button if user preference is off
+                        if (!me.edgan.redditslide.SettingValues.imageDownloadButton) {
+                            rootView.findViewById(R.id.save).setVisibility(View.INVISIBLE);
+                        }
+                    } else {
+                        rootView.findViewById(R.id.more).setVisibility(View.GONE);
+                        rootView.findViewById(R.id.save).setVisibility(View.GONE);
                     }
                     rootView.findViewById(R.id.mute).setVisibility(View.GONE);
                     rootView.findViewById(R.id.hq).setVisibility(View.GONE);

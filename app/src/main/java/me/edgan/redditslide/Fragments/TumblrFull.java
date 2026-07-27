@@ -53,11 +53,18 @@ public class TumblrFull extends BaseAlbumFull {
         }
 
         @Override
-        public void doWithData(final List<Photo> jsonElements) {
-            super.doWithData(jsonElements);
+        public boolean doWithData(final List<Photo> jsonElements) {
+            // A post with no photos has no album to build; super has already told onError().
+            if (!super.doWithData(jsonElements)) {
+                return false;
+            }
+            // The submission's title, not the host activity's: this runs inside Shadowbox, which is
+            // not the Tumblr activity, and the adapter used to cast its host to Tumblr to find one.
             TumblrView adapter =
-                    new TumblrView(baseActivity, jsonElements, 0, s.getSubredditName());
+                    new TumblrView(
+                            baseActivity, jsonElements, s.getSubredditName(), s.getTitle());
             ((RecyclerView) list).setAdapter(adapter);
+            return true;
         }
     }
 

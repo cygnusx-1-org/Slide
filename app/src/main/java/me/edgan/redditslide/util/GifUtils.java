@@ -23,11 +23,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.media3.common.MimeTypes;
+import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.datasource.DataSource;
@@ -41,6 +43,7 @@ import androidx.media3.exoplayer.dash.manifest.DashManifestParser;
 import androidx.media3.exoplayer.dash.manifest.Representation;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.io.File;
 import java.io.FileInputStream;
@@ -614,11 +617,66 @@ public class GifUtils {
             this.submissionTitle = submissionTitle;
         }
 
+        /**
+         * Called on the main thread when this load did not end up with playable media, whatever the
+         * reason — including a playback error raised after the media was handed to the player.
+         * Callers that remember what a view already has loaded override this to forget it, so the
+         * next attempt is not skipped as a duplicate.
+         *
+         * <p>Once per load that fails while the task is still wanted. Every dispatch goes through
+         * {@link #nothingIsComing()} from onPostExecute or from the player's error callback, both on
+         * the main thread, and neither runs for a cancelled task — a row that has moved on is not
+         * told about the load it abandoned. Overrides should still be idempotent: a load can resolve
+         * media and then have playback fail on it, which reports again.
+         *
+         * <p>Not called when the url was handed off to another screen instead of failing (see
+         * {@link #handedOff}); there is nothing for the caller to retry in that case.
+         */
         public void onError() {}
+
+        /**
+         * Set when this load ended by sending the url somewhere else — a browser, or MediaView for a
+         * misidentified image — rather than failing. Those paths also return no uri, but retrying
+         * them would just open the other screen again.
+         *
+         * <p>Package-private rather than private only so the tests can set it: the paths that set it
+         * for real all run deep inside {@code doInBackground} and start another activity on the way.
+         */
+        @VisibleForTesting boolean handedOff;
 
         public void cancel() {
             LogUtil.v("cancelling");
-            video.stop();
+            // video is @NonNull in the constructors, but onPostExecute still tests it, so keep the
+            // guard rather than turning a failed load into an NPE.
+            if (video != null) {
+                video.stop();
+            }
+        }
+
+        /**
+         * Stops indicating progress and reports the failure. For every way a load can end with no
+         * playable media: it resolved nothing, it threw on the way to the player, or playback died
+         * after the player had taken it.
+         *
+         * <p>The indicators have to be hidden from here. Only STATE_READY hides them in the listener
+         * onPostExecute installs, and a failed load never reports it — one that never reaches the
+         * player reports nothing at all, and a playback error moves the player to STATE_IDLE — so
+         * whichever of them was showing would animate over a row or page for good.
+         *
+         * <p>Main thread only, like {@link #onError()} itself.
+         */
+        private void nothingIsComing() {
+            if (progressBar != null) {
+                progressBar.setVisibility(View.GONE);
+            }
+            if (size != null) {
+                size.setVisibility(View.GONE);
+            }
+            // A url handed off to another screen is not a failure: the bar still has to go, but
+            // there is nothing for the caller to retry.
+            if (!handedOff) {
+                onError();
+            }
         }
 
         @Override
@@ -797,15 +855,32 @@ public class GifUtils {
         /**
          * Get the correct mp4/mobile url from a given result JsonObject
          *
-         * @param result the result to check
-         * @return the video url
+         * @param result the result to check, as {@link #getApiResponse} returns it
+         * @return the video url, or null when the response has none. {@link #getApiResponse} returns
+         *     null for a non-2xx response, a network failure or unparsable JSON, and a response that
+         *     does parse need not carry a "gfyItem" — the callers reach this straight after the
+         *     gfycat lookup has already come back empty, which is when a second lookup failing is
+         *     most likely, and an unguarded dereference here escapes doInBackground as an
+         *     AsyncTask-rethrown RuntimeException rather than a load failure.
          */
         public static String getUrlFromApi(JsonObject result) {
-            if (!SettingValues.hqgif && result.getAsJsonObject("gfyItem").has("mobileUrl")) {
-                return result.getAsJsonObject("gfyItem").get("mobileUrl").getAsString();
-            } else {
-                return result.getAsJsonObject("gfyItem").get("mp4Url").getAsString();
+            // isJsonObject, not getAsJsonObject: Gson's getAsJsonObject(name) is an unchecked cast,
+            // so a member present but JSON-null ("gfyItem": null) hands back JsonNull and the cast
+            // throws ClassCastException rather than yielding the null this checks for.
+            final JsonElement member = result == null ? null : result.get("gfyItem");
+            if (member == null || !member.isJsonObject()) {
+                return null;
             }
+            final JsonObject item = member.getAsJsonObject();
+            // has("mobileUrl") is true for a member that is present but JSON-null, so testing the
+            // value rather than the key is what keeps a low-quality request from failing a response
+            // that has a perfectly good mp4Url sitting beside a null mobileUrl.
+            final JsonElement mobile = item.get("mobileUrl");
+            final JsonElement url =
+                    (!SettingValues.hqgif && mobile != null && !mobile.isJsonNull())
+                            ? mobile
+                            : item.get("mp4Url");
+            return (url == null || url.isJsonNull()) ? null : url.getAsString();
         }
 
         public static OkHttpClient client = Reddit.client;
@@ -854,7 +929,17 @@ public class GifUtils {
             return client.newCall(request).execute();
         }
 
-        public static Uri loadRedGifs(String name, String fullUrl, Activity c, ProgressBar progressBar, boolean closeIfNull, Runnable onErrorCallback) {
+        /**
+         * The RedGifs mp4 url for {@code name}, or null when there is none.
+         *
+         * <p>Null is the whole failure signal, deliberately. This used to take an error callback as
+         * well and run it inline — on whatever thread called in, which for the only caller that
+         * passed one was an AsyncTask worker — while also returning null for the same failure. That
+         * had the caller reporting twice, once off the main thread, and reporting at all for a load
+         * that had since been cancelled. The caller now reports once from onPostExecute, which does
+         * not run for a cancelled task.
+         */
+        public static Uri loadRedGifs(String name, String fullUrl, Activity c, ProgressBar progressBar, boolean closeIfNull) {
             showProgressBar(c, progressBar, true);
 
             // Remove leading slash if present
@@ -879,7 +964,6 @@ public class GifUtils {
                 // Process the response
                 JsonObject result = gson.fromJson(response.body().string(), JsonObject.class);
                 if (result == null || !result.has("gif")) {
-                    if (onErrorCallback != null) onErrorCallback.run();
                     if (closeIfNull && c != null) {
                         c.runOnUiThread(() -> {
                             // TODO: Consider showing a generic error dialog here
@@ -896,7 +980,6 @@ public class GifUtils {
                 return Uri.parse(url);
             } catch (Exception e) {
                 LogUtil.e(e, "Error loading RedGifs video url = [" + fullUrl + "]");
-                if (onErrorCallback != null) onErrorCallback.run();
                 if (closeIfNull && c != null) {
                     c.runOnUiThread(() -> openWebsite(c, fullUrl));
                 }
@@ -905,14 +988,36 @@ public class GifUtils {
         }
 
         /**
+         * Scheme of the uri {@link #loadGfycat} returns for a link that really is gifdeliverynetwork
+         * and that redgifs has no media for. Not a playable url and never equal to one: the caller
+         * tests the scheme and opens the original link in a browser instead of reporting a failure.
+         *
+         * <p>The caller used to make that decision by looking for "gifdeliverynetwork" in the
+         * returned uri, which no return of that method has ever contained — the recovery below
+         * returns a redgifs mp4 url and every other return is a gfycat one — so the browser hand-off
+         * was dead code.
+         */
+        public static final String HANDOFF_SCHEME = "slide-handoff";
+
+        private static Uri handoffUri() {
+            return Uri.parse(HANDOFF_SCHEME + "://gifdeliverynetwork");
+        }
+
+        /** Whether {@code uri} is the marker {@link #HANDOFF_SCHEME} describes. */
+        public static boolean isHandoff(Uri uri) {
+            return uri != null && HANDOFF_SCHEME.equals(uri.getScheme());
+        }
+
+        /**
          * Load the correct URL for a gfycat gif
          *
          * @param name Name of the gfycat gif
          * @param fullUrl full URL to the gfycat
-         * @param gson
-         * @return Correct URL
+         * @return Correct URL; null when there is none — see {@link #loadRedGifs} for why null is
+         *     the whole failure signal and there is no error callback beside it — or the marker
+         *     {@link #HANDOFF_SCHEME} describes, which {@link #isHandoff} recognises.
          */
-        public static Uri loadGfycat(String name, String fullUrl, Activity c, ProgressBar progressBar, boolean closeIfNull, Runnable onErrorCallback) {
+        public static Uri loadGfycat(String name, String fullUrl, Activity c, ProgressBar progressBar, boolean closeIfNull) {
             showProgressBar(c, progressBar, true);
             String host = "gfycat";
             if (fullUrl.contains("redgifs")) {
@@ -923,14 +1028,18 @@ public class GifUtils {
                 name = name.split("-")[0];
             }
             final JsonObject result = getApiResponse(host, name);
-            if (result == null
-                    || result.get("gfyItem") == null
-                    || result.getAsJsonObject("gfyItem").get("mp4Url").isJsonNull()) {
-                // If the result null, the gfycat link may be redirecting to gifdeliverynetwork
-                // which is powered by redgifs.
-                // Try getting the redirected url from gfycat and check if redirected url is
-                // gifdeliverynetwork and if it is,
-                // we fetch the actual .mp4/.webm url from the redgifs api
+            // One reader for the response, not a hand-walked guard beside it. The guard here used to
+            // repeat the traversal without getUrlFromApi's null checks, so it threw on the shapes
+            // that reader exists to survive: "gfyItem": null cast JsonNull to JsonObject, and a
+            // gfyItem carrying no mp4Url dereferenced a Java null. Neither is caught on the way out —
+            // the try below only catches IOException and doInBackground's GFYCAT case has no catch
+            // at all — so both escaped as an AsyncTask-rethrown RuntimeException.
+            final String directUrl = getUrlFromApi(result);
+            if (directUrl == null) {
+                // A null response — not merely one with no url in it — may mean the gfycat link
+                // redirects to gifdeliverynetwork, which is powered by redgifs. Follow the redirect
+                // ourselves, and if that is where it goes, fetch the actual .mp4/.webm url from the
+                // redgifs api.
                 if (result == null) {
                     try {
                         URL newUrl = new URL(fullUrl);
@@ -938,8 +1047,15 @@ public class GifUtils {
                         ucon.setInstanceFollowRedirects(false);
                         String secondURL = new URL(ucon.getHeaderField("location")).toString();
                         if (secondURL.contains("gifdeliverynetwork")) {
-                            return Uri.parse(
-                                    getUrlFromApi(getApiResponse("redgifs", name.toLowerCase())));
+                            final String redirected =
+                                    getUrlFromApi(getApiResponse("redgifs", name.toLowerCase()));
+                            if (redirected != null) {
+                                return Uri.parse(redirected);
+                            }
+                            // The link really is gifdeliverynetwork and redgifs has nothing for it.
+                            // This is where the browser hand-off belongs — the caller cannot see
+                            // secondURL, which is why its own attempt to spot this never fired.
+                            return handoffUri();
                         }
 
                     } catch (IOException e) {
@@ -947,7 +1063,6 @@ public class GifUtils {
                     }
                 }
 
-                if (onErrorCallback != null) onErrorCallback.run();
                 if (closeIfNull && c != null) {
                     c.runOnUiThread(
                             new Runnable() {
@@ -977,24 +1092,36 @@ public class GifUtils {
                 return null;
             }
 
-            return Uri.parse(getUrlFromApi(result));
+            return Uri.parse(directUrl);
         }
 
-        // Handles failures of loading a DASH mp4 or muxing a Reddit video
-        private void catchVRedditFailure(Exception e, String url) {
-            LogUtil.e(e, "Error loading URL " + url); // Most likely is an image, not a gif!
-            if (c instanceof MediaView && url.contains("imgur.com") && url.endsWith(".mp4")) {
-                c.runOnUiThread(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                (c).startActivity(new Intent(c, MediaView.class).putExtra(MediaView.EXTRA_URL, url.replace(".mp4", ".png"))); // Link is likely an image and not a gif
-                                (c).finish();
-                            }
-                        });
-            } else {
-                openWebsite(c, url); // Pass activity context
-            }
+        /**
+         * The gfycat lookup this task's own fields configure, as an instance method so a test can
+         * stand in for the network. Production behaviour is the static call and nothing else.
+         */
+        @VisibleForTesting
+        Uri resolveGfycat(final String name, final String url) {
+            return loadGfycat(name, url, c, progressBar, closeIfNull);
+        }
+
+        /**
+         * Whether this load's host exists to show this one piece of media, and may therefore be
+         * finished when the media does not resolve.
+         *
+         * <p>Only MediaView passes {@code closeIfNull = true}, and it is the only host for which that
+         * holds — everywhere else the load is one item among many (a Shadowbox page, an album row, a
+         * force-touch peek), often not even the one in front of the user. The hand-off paths below
+         * end in {@link #openWebsite(Activity, String, boolean)}, whose {@code finishHost} argument
+         * this answers: finishing from a background load would close the shadowbox, peek or album out
+         * from under the user because one item failed.
+         *
+         * <p>It gates the hand-off itself only where the url is known to be dead — the gfycat marker
+         * — since there a browser has nothing to show either. Those loads return null instead, which
+         * reaches onError, the signal those callers already handle: the peek falls back to a link
+         * preview, a row stops its spinner, a page stays put.
+         */
+        private boolean ownsTheScreen() {
+            return closeIfNull && c != null;
         }
 
         @Override
@@ -1010,14 +1137,24 @@ public class GifUtils {
                     String id = url.substring(url.lastIndexOf("/"));
                     String redgifsUrl = "https://api.redgifs.com/v2/gifs/" + id;
 
-                    return loadRedGifs(id, url, c, progressBar, closeIfNull, this::onError);
+                    // No error callback: a null return is the failure, and onPostExecute reports it
+                    // through nothingIsComing() on the main thread. onError() cannot be called from
+                    // here — the peek view rebuilds its whole view from it and the album rows write
+                    // their per-row load state, which is unsynchronized for exactly that reason.
+                    return loadRedGifs(id, url, c, progressBar, closeIfNull);
                 case VREDDIT:
                     return Uri.parse(url);
                 case GFYCAT:
                     String name = url.substring(url.lastIndexOf("/"));
-                    Uri uri = loadGfycat(name, url, c, progressBar, closeIfNull, this::onError);
-                    if (uri != null && uri.toString().contains("gifdeliverynetwork")) {
-                        openWebsite(c, url);
+                    Uri uri = resolveGfycat(name, url);
+                    if (isHandoff(uri)) {
+                        if (ownsTheScreen()) {
+                            handedOff = true;
+                            // Posted, like loadRedGifs's own hand-off: openWebsite calls
+                            // startActivity and finish(), and finish() is not documented as
+                            // thread-safe. doInBackground is a worker thread.
+                            c.runOnUiThread(() -> openWebsite(c, url));
+                        }
 
                         return null;
                     } else {
@@ -1029,28 +1166,9 @@ public class GifUtils {
                 case TUMBLR:
                     return Uri.parse(url);
                 case IMGUR:
-                    try {
-                        return Uri.parse(url);
-                    } catch (Exception e) {
-                        LogUtil.e(
-                                e,
-                                "Error loading URL " + url); // Most likely is an image, not a gif!
-                        if (c instanceof MediaView
-                                && url.contains("imgur.com")
-                                && url.endsWith(".mp4")) {
-                            c.runOnUiThread(
-                                    new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            (c).startActivity(new Intent(c, MediaView.class).putExtra(MediaView.EXTRA_URL, url.replace(".mp4", ".png"))); // Link is likely an image and not a gif
-                                            (c).finish();
-                                        }
-                                    });
-                        } else {
-                            openWebsite(c, url);
-                        }
-                    }
-                    break;
+                    // No try/catch: Uri.parse cannot throw for the non-null string formatUrl
+                    // returns, so the recovery that used to sit here could never run.
+                    return Uri.parse(url);
                 case STREAMABLE:
                     String hash = url.substring(url.lastIndexOf("/") + 1);
                     String streamableUrl = "https://api.streamable.com/videos/" + hash;
@@ -1060,7 +1178,9 @@ public class GifUtils {
                                 HttpUtil.getJsonObject(client, gson, streamableUrl);
                         String obj;
                         if (result == null || result.get("files") == null || !(result.getAsJsonObject("files").has("mp4") || result.getAsJsonObject("files").has("mp4-mobile"))) {
-                            onError();
+                            // No onError() from here: returning null is the failure, and
+                            // onPostExecute reports it once, on the main thread, and not at all for
+                            // a task the caller has cancelled.
                             if (closeIfNull && c != null) {
                                 c.runOnUiThread(
                                         new Runnable() {
@@ -1098,7 +1218,7 @@ public class GifUtils {
                                         + streamableUrl
                                         + "]");
 
-                        if (c != null) c.runOnUiThread(this::onError);
+                        // As above: the null return is the report.
                         if (closeIfNull && c != null) {
                             c.runOnUiThread(
                                     new Runnable() {
@@ -1120,7 +1240,25 @@ public class GifUtils {
                     break;
                 case OTHER:
                     LogUtil.e("We shouldn't be here!");
-                    openWebsite(c, url);
+                    // Hand off wherever there is a host to hand off to, but only finish one that
+                    // owns its screen. An unrecognised url is not a dead one — the browser is very
+                    // likely to render it — so dropping the hand-off would leave a Shadowbox or
+                    // CommentsScreen page blank with content the user could otherwise have read.
+                    // The GFYCAT marker above is the opposite case and stays gated: it means the
+                    // link is dead and redgifs has nothing for it, so a browser would only show
+                    // that.
+                    //
+                    // The null test guards the dereference inside openWebsite and keeps handedOff
+                    // honest: marking a load handed-off that went nowhere would suppress the
+                    // onError its caller needs to retry or fall back.
+                    if (c != null) {
+                        // Only a host we actually replaced counts as handed off. Setting it for a
+                        // host left standing suppressed the onError those callers answer — the peek
+                        // overlay's is doLoadLink, its fallback to a link preview, so an unrecognised
+                        // url left the peek showing a stopped spinner behind the browser it opened.
+                        handedOff = ownsTheScreen();
+                        c.runOnUiThread(() -> openWebsite(c, url, ownsTheScreen()));
+                    }
                     break;
             }
             return null;
@@ -1130,6 +1268,7 @@ public class GifUtils {
         protected void onPostExecute(Uri uri) {
             if (uri == null || video == null) {
                 cancel();
+                nothingIsComing();
                 return;
             }
 
@@ -1143,6 +1282,17 @@ public class GifUtils {
                     : ExoVideoView.VideoType.STANDARD;
 
                 video.setVideoURI(uri, type, new Player.Listener() {
+                    @Override
+                    public void onPlayerError(@NonNull PlaybackException error) {
+                        // The realistic failure: the uri resolved and the player took it, then
+                        // playback died (network, 403, unsupported codec). doInBackground never sees
+                        // this, so without forwarding it here a caller tracking what it asked to
+                        // load would never learn the media is not coming — and the bar it was
+                        // showing while buffering would never stop.
+                        LogUtil.e(error, "Playback failed for " + uri);
+                        nothingIsComing();
+                    }
+
                     @Override
                     public void onPlaybackStateChanged(int playbackState) {
                         if (progressBar == null) return;
@@ -1167,6 +1317,7 @@ public class GifUtils {
             } catch (Exception e) {
                 LogUtil.e(e, "Error setting video URI");
                 cancel();
+                nothingIsComing();
             }
         }
 
@@ -1263,11 +1414,26 @@ public class GifUtils {
         }
 
         public static void openWebsite(Activity c, String url) {
+            openWebsite(c, url, true);
+        }
+
+        /**
+         * Opens {@code url} in the in-app browser.
+         *
+         * <p>{@code finishHost} false leaves the caller's screen standing. Only a host dedicated to
+         * this one piece of media may be replaced by the browser — inside a load that is the
+         * {@code closeIfNull} constructor argument, which only MediaView passes as true. Finishing a
+         * Shadowbox page, an album row's activity or a force-touch peek closes far more than the
+         * item that failed, and does it from a background load.
+         */
+        public static void openWebsite(Activity c, String url, boolean finishHost) {
             Intent web = new Intent(c, Website.class);
             web.putExtra(LinkUtil.EXTRA_URL, url);
             web.putExtra(LinkUtil.EXTRA_COLOR, Color.BLACK);
             c.startActivity(web);
-            c.finish();
+            if (finishHost) {
+                c.finish();
+            }
         }
 
         public void onPause() {

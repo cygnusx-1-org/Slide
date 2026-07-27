@@ -282,8 +282,12 @@ public class Album extends BaseSaveActivity {
             }
 
             @Override
-            public void doWithData(final List<Image> jsonElements) {
-                super.doWithData(jsonElements);
+            public boolean doWithData(final List<Image> jsonElements) {
+                // Nothing usable came back, so there is no album to build; super has already told
+                // onError(), which offers the link in a web view instead.
+                if (!super.doWithData(jsonElements)) {
+                    return false;
+                }
                 if (getActivity() != null) {
                     getActivity().findViewById(R.id.progress).setVisibility(View.GONE);
                     Album albumActivity = (Album) getActivity();
@@ -291,12 +295,12 @@ public class Album extends BaseSaveActivity {
                     AlbumView adapter = new AlbumView(
                         baseActivity,
                         albumActivity.images,
-                        getActivity().findViewById(R.id.toolbar).getHeight(),
                         albumActivity.subreddit,
                         albumActivity.submissionTitle
                     );
                     recyclerView.setAdapter(adapter);
                 }
+                return true;
             }
         }
     }

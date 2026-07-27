@@ -1,41 +1,31 @@
 package me.edgan.redditslide.Fragments;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
+
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+
 import java.util.ArrayList;
 import java.util.List;
-import me.edgan.redditslide.Activities.CommentsScreen;
+
 import me.edgan.redditslide.Activities.GalleryImage;
-import me.edgan.redditslide.Activities.Shadowbox;
 import me.edgan.redditslide.Adapters.RedditGalleryView;
-import me.edgan.redditslide.R;
 import me.edgan.redditslide.SubmissionViews.PopulateShadowboxInfo;
 import me.edgan.redditslide.util.LogUtil;
+
 import net.dean.jraw.models.Submission;
 
-public class RedditGalleryFull extends Fragment {
+public class RedditGalleryFull extends BaseAlbumFull {
 
-    boolean gallery = false;
-    private View list;
     private int i;
-    private Submission s;
-    private View rootView;
-    private List<GalleryImage> images;
-    boolean hidden;
+    // Package-private so the fragment's own test can stand them up without a live Shadowbox host.
+    Submission s;
+    List<GalleryImage> images;
 
-    private List<GalleryImage> extractGalleryImages(Submission submission) {
+    List<GalleryImage> extractGalleryImages(Submission submission) {
         List<GalleryImage> galleryImages = new ArrayList<>();
         try {
             LogUtil.v("Extracting gallery images from submission");
@@ -103,80 +93,58 @@ public class RedditGalleryFull extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.submission_albumcard, container, false);
+    protected void bindActionbar() {
         PopulateShadowboxInfo.doActionbar(s, rootView, getActivity(), true);
+    }
 
-        list = rootView.findViewById(R.id.images);
+    /**
+     * The submission's own url. Nothing fetches it — a gallery has no album endpoint behind it — so
+     * it is only here to satisfy the base class; {@link #hasAlbumToShow()} is what decides whether
+     * this page renders.
+     */
+    @Override
+    protected String getAlbumUrl() {
+        return s == null ? null : s.getUrl();
+    }
 
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        ((RecyclerView) list).setLayoutManager(layoutManager);
+    /** The images, not a url: they came out of the submission in onCreate and are all that matters. */
+    @Override
+    protected boolean hasAlbumToShow() {
+        return images != null && !images.isEmpty();
+    }
 
-        final View.OnClickListener openClick = view -> {
-            if (rootView.findViewById(R.id.base).getAlpha() <= 0.8) {
-                rootView.findViewById(R.id.base).setAlpha(1f);
-            } else {
-                rootView.findViewById(R.id.base).setAlpha(0.2f);
-            }
-        };
+    @Override
+    protected void openComments() {
+        openShadowboxComments(i);
+    }
 
-        rootView.findViewById(R.id.base).setOnClickListener(openClick);
-
-        ((SlidingUpPanelLayout) rootView.findViewById(R.id.sliding_layout))
-                .addPanelSlideListener(new SlidingUpPanelLayout.SimplePanelSlideListener() {
-                    @Override
-                    public void onPanelStateChanged(View panel,
-                            SlidingUpPanelLayout.PanelState previousState,
-                            SlidingUpPanelLayout.PanelState newState) {
-                        if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
-                            rootView.findViewById(R.id.base).setOnClickListener(v -> {
-                                Intent i2 = new Intent(getActivity(), CommentsScreen.class);
-                                i2.putExtra(CommentsScreen.EXTRA_PAGE, i);
-                                i2.putExtra(CommentsScreen.EXTRA_SUBREDDIT,
-                                        ((Shadowbox) getActivity()).subreddit);
-                                getActivity().startActivity(i2);
-                            });
-                        } else {
-                            rootView.findViewById(R.id.base).setOnClickListener(openClick);
-                        }
-                    }
-                });
-
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        if (getActivity() != null) {
-                            Activity activity = getActivity();
-                            View toolbar = rootView.findViewById(R.id.toolbar);
-                            int toolbarHeight = toolbar != null ? toolbar.getHeight() : 0;
-
-                            ((RecyclerView) list).setAdapter(new RedditGalleryView(
-                                    activity,
-                                    images,
-                                    toolbarHeight,
-                                    s.getSubredditName(),
-                                    s.getTitle()));
-                            rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        }
-                    }
-                });
-
-        return rootView;
+    /**
+     * Binds the images extracted in onCreate. Unlike the other album fragments this does no loading,
+     * so it can set the adapter straight away rather than from a callback.
+     */
+    @Override
+    protected void loadAlbum(String url) {
+        ((RecyclerView) list)
+                .setAdapter(
+                        new RedditGalleryView(
+                                getActivity(), images, s.getSubredditName(), s.getTitle()));
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle bundle = this.getArguments();
-        i = bundle.getInt("page", 0);
-        if (((Shadowbox) getActivity()).subredditPosts == null
-                || ((Shadowbox) getActivity()).subredditPosts.getPosts().size() < bundle.getInt("page",
-                        0)) {
-            getActivity().finish();
-        } else {
-            s = ((Shadowbox) getActivity()).subredditPosts.getPosts().get(bundle.getInt("page", 0));
+        i = this.getArguments().getInt("page", 0);
+        s = resolveSubmission();
+        if (s != null) {
             images = extractGalleryImages(s);
         }
+    }
+
+    /**
+     * The submission this page shows. Separated from {@link #onCreate} only so a test can host this
+     * fragment without a live Shadowbox behind it — everything else here works off {@code s}.
+     */
+    Submission resolveSubmission() {
+        return submissionForShadowboxPage();
     }
 }

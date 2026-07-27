@@ -53,12 +53,17 @@ public class AlbumFull extends BaseAlbumFull {
         }
 
         @Override
-        public void doWithData(final List<Image> jsonElements) {
-            super.doWithData(jsonElements);
+        public boolean doWithData(final List<Image> jsonElements) {
+            // Nothing usable came back, so there is no album to build; super has already told
+            // onError().
+            if (!super.doWithData(jsonElements)) {
+                return false;
+            }
             AlbumView adapter =
                     new AlbumView(
-                            baseActivity, jsonElements, 0, s.getSubredditName(), s.getTitle());
+                            baseActivity, jsonElements, s.getSubredditName(), s.getTitle());
             ((RecyclerView) list).setAdapter(adapter);
+            return true;
         }
     }
 

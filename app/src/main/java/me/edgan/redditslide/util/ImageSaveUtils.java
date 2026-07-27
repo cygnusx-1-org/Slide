@@ -114,15 +114,18 @@ public class ImageSaveUtils {
                 switch (videoType) {
                     case REDGIFS:
                         String id = url.substring(url.lastIndexOf("/"));
-                        return GifUtils.AsyncLoadGif.loadRedGifs(id, url, null, null, false, null);
+                        return GifUtils.AsyncLoadGif.loadRedGifs(id, url, null, null, false);
                     case VREDDIT:
                         return Uri.parse(url);
                     case GFYCAT:
                         String name = url.substring(url.lastIndexOf("/"));
-                        Uri gfyUri = GifUtils.AsyncLoadGif.loadGfycat(name, url, null, null, false, null);
-                        if (gfyUri != null && gfyUri.toString().contains("gifdeliverynetwork")) {
-                            Log.w(TAG, "Gfycat resolved to gifdeliverynetwork, saving might fail or be incorrect: " + url);
-                            return gfyUri;
+                        Uri gfyUri = GifUtils.AsyncLoadGif.loadGfycat(name, url, null, null, false);
+                        if (GifUtils.AsyncLoadGif.isHandoff(gfyUri)) {
+                            // A marker, not a url — see HANDOFF_SCHEME. There is nothing to
+                            // download, and returning it would have the saver try to fetch it.
+                            Log.w(TAG, "Gfycat resolved to gifdeliverynetwork with no media: " + url);
+                            error = new IllegalArgumentException("No media behind this gfycat link.");
+                            return null;
                         }
                         return gfyUri;
                     case REDDIT_GALLERY: // Galleries aren't single videos, saving doesn't make sense here

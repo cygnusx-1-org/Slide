@@ -315,6 +315,8 @@
     <!-- Gif -->
     <string name="gif_err_title">GIF not found</string>
     <string name="gif_err_msg">An error occurred when loading this GIF. Please re-open the GIF and retry.</string>
+    <string name="gif_load_failed">Failed to load GIF</string>
+    <string name="gif_download_failed">Failed to download GIF</string>
 
 
     <!-- Multireddits -->

@@ -61,7 +61,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="@dimen/gif_header_height"
         android:layout_alignParentBottom="true"
         android:id="@+id/gifheader"
         android:gravity="right|bottom"
