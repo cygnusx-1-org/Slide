@@ -9,9 +9,8 @@ import org.gradle.api.provider.Property
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import org.gradle.workers.WorkerExecutor
-import org.gradle.process.ExecOperations
+import net.ltgt.gradle.errorprone.CheckSeverity
 import javax.inject.Inject
-import java.io.ByteArrayOutputStream
 import java.io.Serializable
 import java.util.Properties
 
@@ -22,6 +21,7 @@ plugins {
     id 'com.github.breadmoirai.github-release' version '2.5.2'
     id 'com.diffplug.spotless' version '8.8.0'
     id 'io.github.takahirom.roborazzi' version '1.64.0'
+    id 'net.ltgt.errorprone' version '5.1.0'
     id 'jacoco'
 }
 
@@ -194,6 +194,39 @@ configurations {
     all {
         exclude module: 'httpclient'
     }
+}
+
+// net.ltgt.errorprone has no Android Gradle Plugin support: it creates the errorprone
+// configuration but wires it to nothing, and leaves the options.errorprone extension disabled.
+// Every variant's <variant>AnnotationProcessor extends annotationProcessor, so this one line puts
+// Error Prone on the processor path for all four variants. Unit tests are wired separately when
+// NullAway is enabled for them (see NULLAWAY.md phase 7).
+configurations.named('annotationProcessor') { extendsFrom configurations.errorprone }
+
+// NullAway rollout, phase 0. Only code marked @NullMarked is analyzed, so this is a no-op until
+// the first package-info.java lands. See NULLAWAY.md.
+tasks.withType(JavaCompile).configureEach { task ->
+    // Error Prone is only on the annotationProcessor path, which the test components do not
+    // extend, so it must stay disabled for every test compile task or javac fails outright with
+    // "plug-in not found: ErrorProne". That covers unit tests, androidTest, and test fixtures —
+    // none of which are in scope until NULLAWAY.md phase 7 wires their processor paths.
+    boolean isTest = task.name.contains('Test')
+    options.errorprone {
+        enabled = !isTest
+        // NullAway only. Error Prone's ~500 other checks have never run against this codebase;
+        // adopting them is a separate decision with its own cleanup budget.
+        disableAllChecks = true
+        check('NullAway', CheckSeverity.ERROR)
+        // dataBinding and viewBinding are enabled, so generated *Binding classes, R, and
+        // BuildConfig compile in the same javac invocation.
+        excludedPaths = '.*/build/generated/.*'
+        option('NullAway:OnlyNullMarked', 'true')
+        // Honor @Nullable found on unannotated third-party code. This is what catches
+        // getIntent().getExtras(), getActivity(), and findViewById() returning null.
+        option('NullAway:AcknowledgeRestrictiveAnnotations', 'true')
+    }
+    // Error Prone forces a forked javac on JDK 16+; this box has no swap, so cap the child JVM.
+    options.forkOptions.memoryMaximumSize = '2g'
 }
 
 def githubPropertiesFile = rootProject.file("github.properties")
@@ -382,6 +415,16 @@ dependencies {
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.21.3'
 
+/** Null checking **/
+    // NullAway runs as an Error Prone plugin. See NULLAWAY.md for the rollout plan. Pin these
+    // literally: a dynamic version could enable a new check and break the build at any time.
+    errorprone 'com.google.errorprone:error_prone_core:2.50.0'
+    errorprone 'com.uber.nullaway:nullaway:0.13.8'
+    // Annotations only (~4 KB) and needed at compile time only. Used solely for @NullMarked;
+    // nullable annotations stay on androidx.annotation.Nullable, which NullAway recognizes by
+    // simple name.
+    compileOnly 'org.jspecify:jspecify:1.0.1'
+
 /** Testing **/
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.mockito:mockito-core:5.23.0'
@@ -432,10 +475,9 @@ tasks.named('check') { dependsOn 'auditDialogBackgrounds' }
 // mismatch does not fail the build; this task hands the unit-test JVMs the same
 // `roborazzi.test.verify` system property that `-Proborazzi.test.verify=true` sets, so a
 // mismatch fails. Equivalent to `./gradlew :app:check -Proborazzi.test.verify=true`, but done
-// as check + a guarded property rather than a nested `./gradlew`: the Mirakle init script
-// offloads or pins a whole invocation from its task names (see the assemble…Remote block
-// below), and a nested wrapper call would run on the wrong host. The guard keys off the
-// requested task, so running `check` on its own keeps its non-gating behaviour.
+// as check + a guarded property rather than a nested `./gradlew`, so the whole run stays a
+// single invocation. The guard keys off the requested task, so running `check` on its own
+// keeps its non-gating behaviour.
 tasks.register('checks') {
     group = 'verification'
     description = 'Runs check with Roborazzi screenshot verification (fails on golden mismatch).'
@@ -542,155 +584,5 @@ abstract class RenameApksTask extends DefaultTask {
                 return params.outputApkFile.get().asFile
             } as kotlin.jvm.functions.Function3
         )
-    }
-}
-
-// ---------------------------------------------------------------------------
-// assemble<Variant>Remote / install<Variant>Remote — compile on the Mirakle remote
-// host, then leave the APK in the local output dir (assemble) or additionally
-// install it via LOCAL adb (install)
-// ---------------------------------------------------------------------------
-// Mirakle offloads an ENTIRE gradlew invocation to the remote host (boson) or none of
-// it: the global init script (~/.gradle/init.d/mirakle.gradle) decides once from the
-// task names, and its force-local guard pins any task whose simple name starts with
-// "install" (also connected/spotless/lint/clean) or ENDS with "remote" to THIS machine,
-// so device/adb tasks reach the locally-connected device. A single invocation that
-// compiles remotely yet installs locally is therefore impossible.
-//
-// These tasks bridge it. Every task registered here is force-local by the guard — the
-// install ones by their "install" prefix, all of them by their "Remote" suffix — so the
-// guard keeps this OUTER invocation local. Its action shells out to a nested
-// `./gradlew :app:assemble<Variant>` — a fresh invocation whose "assemble…" task name is
-// NOT force-local, so Mirakle offloads that compile to boson and rsyncs the built APK
-// back into build/outputs/apk/<flavor>/<buildType>/. install<Variant>Remote then installs
-// that APK with the local SDK's adb. Slide ships one universal APK per variant (no ABI
-// splits), so there is no per-ABI selection to do.
-//
-// The guard's "Remote" suffix rule is what makes assemble<Variant>Remote work at all:
-// "assembleWithGPlayReleaseRemote" is not caught by any of the force-local PREFIXES, so
-// without that rule the outer invocation would itself be offloaded, the BUILD SUCCESSFUL
-// check below would run on boson, and the caller would be back to reading Mirakle's
-// unreliable local wrapper exit code — exactly what these tasks exist to avoid.
-//
-// Success is judged from the remote "BUILD SUCCESSFUL" line, not solely the wrapper exit
-// code: Mirakle's local wrapper has historically exited 1 on a successful remote build,
-// and the check also catches a genuine remote failure. Written config-cache-clean
-// (injected ExecOperations, config-time inputs) so it stays safe if the configuration
-// cache is enabled later.
-abstract class RemoteAssembleTask extends DefaultTask {
-    @Input abstract Property<String> getAssembleTaskName()
-    @Internal abstract DirectoryProperty getRepoRoot()   // holds gradlew; the nested build's CWD
-    @Internal abstract DirectoryProperty getApkDir()      // build/outputs/apk/<flavor>/<buildType>
-
-    protected final ExecOperations execOps
-
-    @Inject
-    RemoteAssembleTask(ExecOperations execOps) { this.execOps = execOps }
-
-    // The single @TaskAction for this hierarchy. Subclasses extend it by overriding
-    // onApkBuilt rather than adding a second action, so there is never any ambiguity
-    // about how many actions Gradle runs.
-    @TaskAction
-    void run() {
-        File rootDir = repoRoot.get().asFile
-        File gradlew = new File(rootDir, "gradlew")
-
-        // 1. Compile remotely. This nested invocation's "assemble…" name isn't force-local,
-        //    so Mirakle runs it on boson and rsyncs the APK back. Tee the log so it stays
-        //    visible AND checkable; ignore the exit code and judge success by BUILD SUCCESSFUL.
-        def captured = new ByteArrayOutputStream()
-        def tee = new OutputStream() {
-            @Override void write(int b) { System.out.write(b); captured.write(b) }
-            @Override void write(byte[] b, int off, int len) { System.out.write(b, off, len); captured.write(b, off, len) }
-            @Override void flush() { System.out.flush() }
-        }
-        execOps.exec {
-            it.workingDir = rootDir
-            it.commandLine gradlew.absolutePath, assembleTaskName.get()
-            it.standardOutput = tee
-            it.errorOutput = tee
-            it.ignoreExitValue = true
-        }
-        if (!captured.toString().contains("BUILD SUCCESSFUL")) {
-            throw new GradleException("Remote assemble (${assembleTaskName.get()}) did not report BUILD SUCCESSFUL — see the log above.")
-        }
-
-        // 2. Pick the built APK. RenameApksTask wipes stale APKs from the output dir, so
-        //    exactly one is expected; if several survive, take the newest.
-        File dir = apkDir.get().asFile
-        List<File> apks = (dir.listFiles()?.findAll { it.name.endsWith(".apk") } ?: []).toList()
-        if (apks.isEmpty()) {
-            throw new GradleException("No APKs in ${dir}; the remote assemble reported success but produced no APK.")
-        }
-        File chosen = apks.max { it.lastModified() }
-        if (apks.size() > 1) {
-            logger.lifecycle("${apks.size()} APKs in ${dir}; using the newest (${chosen.name}).")
-        }
-
-        onApkBuilt(chosen)
-    }
-
-    // What to do with the APK once it is back on this machine. Assembling alone just
-    // reports where it landed.
-    protected void onApkBuilt(File apk) {
-        logger.lifecycle("Built ${apk.name} in ${apk.parentFile}.")
-    }
-}
-
-abstract class RemoteInstallTask extends RemoteAssembleTask {
-    @Internal abstract Property<String> getAdbExecutable()
-
-    @Inject
-    RemoteInstallTask(ExecOperations execOps) { super(execOps) }
-
-    // 3. Install with the local SDK's adb.
-    @Override
-    protected void onApkBuilt(File apk) {
-        logger.lifecycle("Installing ${apk.name} on the connected device…")
-        execOps.exec {
-            it.commandLine adbExecutable.get(), "install", "-r", apk.absolutePath
-        }
-    }
-}
-
-// Variant task-name suffix -> the APK output subdirectory AGP writes for it.
-def remoteVariants = [
-    WithGPlayDebug  : "withGPlay/debug",
-    WithGPlayRelease: "withGPlay/release",
-    NoGPlayDebug    : "noGPlay/debug",
-    NoGPlayRelease  : "noGPlay/release",
-]
-// AGP 9's new DSL no longer exposes android.sdkDirectory, so resolve adb ourselves:
-// local.properties(sdk.dir) → ANDROID_HOME/ANDROID_SDK_ROOT → bare "adb" on PATH.
-def sdkAdbPath = {
-    def localProps = rootProject.file("local.properties")
-    def sdkDir = null
-    if (localProps.exists()) {
-        def p = new Properties()
-        localProps.withInputStream { p.load(it) }
-        sdkDir = p.getProperty("sdk.dir")
-    }
-    sdkDir = sdkDir ?: System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
-    if (sdkDir) {
-        def adb = new File(sdkDir, "platform-tools/adb")
-        if (adb.exists()) return adb.absolutePath
-    }
-    return "adb" // fall back to PATH
-}()
-remoteVariants.each { suffix, apkPath ->
-    tasks.register("assemble${suffix}Remote", RemoteAssembleTask) {
-        it.group = "build (remote build)"
-        it.description = "Compiles the ${suffix} APK on the Mirakle remote host and leaves it in build/outputs/apk/${apkPath}."
-        it.assembleTaskName.set(":app:assemble${suffix}".toString())
-        it.repoRoot.set(rootProject.layout.projectDirectory)
-        it.apkDir.set(layout.buildDirectory.dir("outputs/apk/${apkPath}"))
-    }
-    tasks.register("install${suffix}Remote", RemoteInstallTask) {
-        it.group = "install (remote build)"
-        it.description = "Compiles the ${suffix} APK on the Mirakle remote host, then installs it on the connected device via local adb."
-        it.assembleTaskName.set(":app:assemble${suffix}".toString())
-        it.adbExecutable.set(sdkAdbPath)
-        it.repoRoot.set(rootProject.layout.projectDirectory)
-        it.apkDir.set(layout.buildDirectory.dir("outputs/apk/${apkPath}"))
     }
 }

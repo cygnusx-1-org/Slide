@@ -62,6 +62,7 @@ import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.OAuthLoginHelper;
+import me.edgan.redditslide.util.PrefUtil;
 import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.http.RestResponse;
 import net.dean.jraw.http.oauth.Credentials;
@@ -890,8 +891,10 @@ public class Login extends BaseActivityAnim {
                                     + (refreshToken != null ? "yes" : "null"));
                     SharedPreferences.Editor editor = Authentication.authentication.edit();
                     Set<String> accounts =
-                            Authentication.authentication.getStringSet(
-                                    "accounts", new HashSet<String>());
+                            PrefUtil.getMutableStringSet(
+                                    Authentication.authentication,
+                                    "accounts",
+                                    new HashSet<String>());
                     Log.v(LOGIN_TAG, "Fetching logged-in account info...");
                     LoggedInAccount me = Authentication.reddit.me();
                     Log.v(LOGIN_TAG, "Logged in as: " + me.getFullName());
@@ -899,8 +902,8 @@ public class Login extends BaseActivityAnim {
                     Authentication.name = me.getFullName();
                     editor.putStringSet("accounts", accounts);
                     Set<String> tokens =
-                            Authentication.authentication.getStringSet(
-                                    "tokens", new HashSet<String>());
+                            PrefUtil.getMutableStringSet(
+                                    Authentication.authentication, "tokens", new HashSet<String>());
                     tokens.add(refreshToken);
                     editor.putStringSet("tokens", tokens);
                     editor.putString("lasttoken", refreshToken);

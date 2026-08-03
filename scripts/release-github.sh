@@ -26,10 +26,8 @@ check_rc() {
   fi
 }
 
-./gradlew assembleWithGPlayReleaseRemote
+./gradlew assembleWithGPlayRelease
 check_rc "${?}"
 
-# Mirakle does not reliably forward arbitrary environment variables to the remote Gradle
-# invocation. Project properties are part of the Gradle command line and survive that handoff.
 ./gradlew githubRelease "-PreleaseNotes=${RELEASE_NOTES}"
 check_rc "${?}"

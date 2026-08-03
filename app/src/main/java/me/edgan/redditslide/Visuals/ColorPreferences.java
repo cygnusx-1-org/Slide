@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.util.Pair;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +15,7 @@ import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.util.PrefUtil;
 
 /** Created by ccrama on 7/9/2015. */
 public class ColorPreferences {
@@ -23,7 +25,7 @@ public class ColorPreferences {
     private final Context context;
 
     /** Resolved once: getSharedPreferences is a synchronized lookup and open() is called a lot. */
-    private SharedPreferences prefs;
+    private @Nullable SharedPreferences prefs;
 
     public ColorPreferences(Context context) {
         this.context = context;
@@ -501,6 +503,10 @@ public class ColorPreferences {
         return open().edit();
     }
 
+    private String getString(String key, String defValue) {
+        return PrefUtil.getString(open(), key, defValue);
+    }
+
     private String getUserThemeName(String themeName, String defaultValue) {
         String userTheme =
                 open().getString(themeName + USER_THEME_DELIMITER + Authentication.name, null);
@@ -511,7 +517,7 @@ public class ColorPreferences {
             // compiling a Pattern on every call.
             return userTheme;
         } else {
-            return open().getString(themeName, defaultValue);
+            return getString(themeName, defaultValue);
         }
     }
 
@@ -527,9 +533,9 @@ public class ColorPreferences {
                         SettingValues.nightTheme,
                         getUserThemeName(FONT_STYLE, Theme.valueOf(Constants.DEFAULT_THEME).name()),
                         Theme.valueOf(
-                                open().getString(
-                                                FONT_STYLE,
-                                                Theme.valueOf(Constants.DEFAULT_THEME).name())));
+                                getString(
+                                        FONT_STYLE,
+                                        Theme.valueOf(Constants.DEFAULT_THEME).name())));
             }
             return Theme.valueOf(
                     getUserThemeName(FONT_STYLE, Theme.valueOf(Constants.DEFAULT_THEME).name()));

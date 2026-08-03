@@ -3,6 +3,9 @@ package me.edgan.redditslide.Synccit.http;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Pair;
+
+import androidx.annotation.Nullable;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +39,7 @@ public abstract class HttpPostTask<Result> extends AsyncTask<String, Long, Resul
 
     /** params come in pairs: key/value */
     @Override
-    protected Result doInBackground(String... params) {
+    protected @Nullable Result doInBackground(String... params) {
 
         List<Pair<String, String>> nvps = getPostArgs(params);
         MultipartBody.Builder formBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
@@ -79,7 +82,7 @@ public abstract class HttpPostTask<Result> extends AsyncTask<String, Long, Resul
         return nvps;
     }
 
-    protected Result onInput(String in) throws Exception {
+    protected @Nullable Result onInput(String in) throws Exception {
         return null;
     }
 

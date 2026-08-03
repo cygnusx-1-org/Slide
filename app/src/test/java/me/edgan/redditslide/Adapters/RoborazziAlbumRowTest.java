@@ -56,8 +56,8 @@ import org.robolectric.annotation.GraphicsMode;
  * — spinner up, play button over black — with nothing going near the network.
  *
  * <pre>
- *   ./gradlew recordRoborazziWithGPlayDebug -x mirakle    # goldens are written into the source tree
- *   ./gradlew verifyRoborazziWithGPlayDebug -x mirakle
+ *   ./gradlew recordRoborazziWithGPlayDebug    # goldens are written into the source tree
+ *   ./gradlew verifyRoborazziWithGPlayDebug
  * </pre>
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)

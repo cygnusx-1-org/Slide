@@ -4,6 +4,7 @@ import android.view.View;
 import android.view.animation.LinearInterpolator;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,8 +18,10 @@ public class ToolbarScrollHideHandler extends RecyclerView.OnScrollListener {
     public boolean reset = false;
     Toolbar tToolbar;
     View mAppBar;
-    View extra;
-    View opposite;
+    /** Both stay null when built with the two-arg constructor; use sites already guard. */
+    @Nullable View extra;
+
+    @Nullable View opposite;
     boolean scrollingUp;
 
     public ToolbarScrollHideHandler(Toolbar t, View appBar) {
@@ -131,11 +134,11 @@ public class ToolbarScrollHideHandler extends RecyclerView.OnScrollListener {
     }
 
     private void oppositeAnimateHide() {
-        oppositeAnimate(opposite.getHeight());
+        if (opposite != null) oppositeAnimate(opposite.getHeight());
     }
 
     private void oppositeAnimate(final int i) {
-        animate(opposite, i);
+        if (opposite != null) animate(opposite, i);
     }
 
     private void animate(final View v, final int i) {

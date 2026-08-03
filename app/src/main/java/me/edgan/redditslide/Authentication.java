@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -16,6 +17,7 @@ import me.edgan.redditslide.Notifications.TokenRefreshReceiver;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
+import me.edgan.redditslide.util.PrefUtil;
 import me.edgan.redditslide.util.ReauthNotifier;
 import net.dean.jraw.RedditClient;
 import net.dean.jraw.http.LoggingMode;
@@ -48,6 +50,25 @@ public class Authentication {
     public boolean hasDone;
     public static boolean didOnline;
     private static OkHttpAdapter httpAdapter;
+
+    /**
+     * Rewrites a bare account name in the stored "accounts" set to the newer "name:token" form.
+     *
+     * <p>No-op unless the bare name is actually present, so it is safe to call on every
+     * authentication. This block was previously copy-pasted verbatim into five call sites, where it
+     * had drifted: four used {@code apply()} and one {@code commit()}, while all five carried a
+     * "force commit" comment. It uses {@code apply()} — the write still lands, and it never blocks
+     * on disk, which matters because some callers run on the main thread.
+     */
+    public static void migrateAccountToTokenForm(String accountName) {
+        final Set<String> accounts =
+                PrefUtil.getMutableStringSet(authentication, "accounts", new HashSet<String>());
+        if (accounts.contains(accountName)) {
+            accounts.remove(accountName);
+            accounts.add(accountName + ":" + refresh);
+            authentication.edit().putStringSet("accounts", accounts).apply();
+        }
+    }
 
     public static void resetAdapter() {
         new AsyncTask<Void, Void, Void>() {

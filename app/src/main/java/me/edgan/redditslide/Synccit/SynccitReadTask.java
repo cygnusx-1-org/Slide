@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Synccit;
 
+import androidx.annotation.Nullable;
+
 import java.util.HashSet;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,7 +22,7 @@ abstract class SynccitReadTask extends SynccitTask {
     }
 
     @Override
-    protected SynccitResponse onInput(String in) throws Exception {
+    protected @Nullable SynccitResponse onInput(String in) throws Exception {
         HashSet<String> visitedLinkIds = new HashSet<>();
 
         try {

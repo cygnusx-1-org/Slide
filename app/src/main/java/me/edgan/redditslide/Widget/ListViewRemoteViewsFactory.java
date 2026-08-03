@@ -9,9 +9,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
+
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 import me.edgan.redditslide.Activities.OpenContent;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Autocache.AutoCacheScheduler;
@@ -36,7 +37,7 @@ public class ListViewRemoteViewsFactory implements RemoteViewsService.RemoteView
     String subreddit;
     int id;
     private Context mContext;
-    private ArrayList<Submission> records;
+    private ArrayList<Submission> records = new ArrayList<>();
 
     public ListViewRemoteViewsFactory(Context context, Intent intent, String subreddit, int id) {
         mContext = context;
@@ -79,17 +80,7 @@ public class ListViewRemoteViewsFactory implements RemoteViewsService.RemoteView
                         LogUtil.v("AUTHENTICATED");
 
                         if (Authentication.reddit.isAuthenticated()) {
-                            final Set<String> accounts =
-                                    Authentication.authentication.getStringSet(
-                                            "accounts", new HashSet<String>());
-                            if (accounts.contains(name)) { // convert to new system
-                                accounts.remove(name);
-                                accounts.add(name + ":" + Authentication.refresh);
-                                Authentication.authentication
-                                        .edit()
-                                        .putStringSet("accounts", accounts)
-                                        .apply(); // force commit
-                            }
+                            Authentication.migrateAccountToTokenForm(name);
                             Authentication.isLoggedIn = true;
                             Reddit.notFirst = true;
                         }
@@ -302,7 +293,8 @@ public class ListViewRemoteViewsFactory implements RemoteViewsService.RemoteView
         return true;
     }
 
-    public RemoteViews getLoadingView() {
+    public @Nullable RemoteViews getLoadingView() {
+        // Null tells the framework to use the default loading view.
         return null;
     }
 }

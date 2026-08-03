@@ -15,8 +15,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
-import java.util.HashSet;
-import java.util.Set;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Autocache.AutoCacheScheduler;
 import me.edgan.redditslide.ContentGrabber;
@@ -156,17 +154,7 @@ public class Inbox extends BaseActivityAnim {
                         UserSubscriptions.doCachedModSubs();
 
                         if (Authentication.reddit.isAuthenticated()) {
-                            final Set<String> accounts =
-                                    Authentication.authentication.getStringSet(
-                                            "accounts", new HashSet<String>());
-                            if (accounts.contains(name)) { // convert to new system
-                                accounts.remove(name);
-                                accounts.add(name + ":" + Authentication.refresh);
-                                Authentication.authentication
-                                        .edit()
-                                        .putStringSet("accounts", accounts)
-                                        .apply(); // force commit
-                            }
+                            Authentication.migrateAccountToTokenForm(name);
                             Authentication.isLoggedIn = true;
                             Reddit.notFirst = true;
                         }

@@ -10,11 +10,14 @@ import android.net.Uri;
 import android.view.View;
 import android.widget.RemoteViews;
 
+import androidx.annotation.Nullable;
+
 import me.edgan.redditslide.Activities.OpenContent;
 import me.edgan.redditslide.Activities.SetupWidget;
 import me.edgan.redditslide.Activities.SubredditView;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.PrefUtil;
 
 public class SubredditWidgetProvider extends AppWidgetProvider {
     public static final String UPDATE_MEETING_ACTION = "android.appwidget.action.APPWIDGET_UPDATE";
@@ -24,7 +27,11 @@ public class SubredditWidgetProvider extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         AppWidgetManager mgr = AppWidgetManager.getInstance(context);
-        if (intent.getAction().equals(UPDATE_MEETING_ACTION)) {
+        // getAction() is null for a broadcast sent without an action. Treat that as "matches
+        // nothing" and fall through to super, rather than crashing.
+        final String rawAction = intent.getAction();
+        final String action = rawAction == null ? "" : rawAction;
+        if (UPDATE_MEETING_ACTION.equals(action)) {
             int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 0);
             mgr.notifyAppWidgetViewDataChanged(appWidgetId, R.id.list_view);
             int view = R.layout.widget;
@@ -41,10 +48,10 @@ public class SubredditWidgetProvider extends AppWidgetProvider {
             rv.setViewVisibility(R.id.refresh, View.VISIBLE);
 
             mgr.partiallyUpdateAppWidget(appWidgetId, rv);
-        } else if (intent.getAction().contains(REFRESH)) {
+        } else if (action.contains(REFRESH)) {
             int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 0);
             updateFromIdPartially(appWidgetId, context, mgr);
-        } else if (intent.getAction().contains(SUBMISSION)) {
+        } else if (action.contains(SUBMISSION)) {
             int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 0);
             Intent i = new Intent(context, SubredditView.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -54,10 +61,12 @@ public class SubredditWidgetProvider extends AppWidgetProvider {
         super.onReceive(context, intent);
     }
 
-    public static String lastDone;
+    public static @Nullable String lastDone;
 
     public static String getSubFromId(int id, Context mContext) {
-        String sub = mContext.getSharedPreferences("widget", 0).getString(id + "_sub", "");
+        String sub =
+                PrefUtil.getString(
+                        mContext.getSharedPreferences("widget", 0), id + "_sub", "");
         if (sub.isEmpty() && lastDone != null) {
             return lastDone;
         } else {

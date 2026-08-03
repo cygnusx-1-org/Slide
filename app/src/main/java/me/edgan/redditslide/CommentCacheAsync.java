@@ -10,11 +10,9 @@ import androidx.core.content.ContextCompat;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.PhotoLoader;
 import net.dean.jraw.http.NetworkException;
@@ -84,17 +82,7 @@ public class CommentCacheAsync extends AsyncTask<Void, Void, Void> {
                     LogUtil.v("AUTHENTICATED");
 
                     if (Authentication.reddit.isAuthenticated()) {
-                        final Set<String> accounts =
-                                Authentication.authentication.getStringSet(
-                                        "accounts", new HashSet<String>());
-                        if (accounts.contains(name)) { // convert to new system
-                            accounts.remove(name);
-                            accounts.add(name + ":" + Authentication.refresh);
-                            Authentication.authentication
-                                    .edit()
-                                    .putStringSet("accounts", accounts)
-                                    .apply(); // force commit
-                        }
+                        Authentication.migrateAccountToTokenForm(name);
                         Authentication.isLoggedIn = true;
                         Reddit.notFirst = true;
                     }

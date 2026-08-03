@@ -11,9 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import com.google.android.material.snackbar.Snackbar;
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Autocache.AutoCacheScheduler;
 import me.edgan.redditslide.Notifications.NotificationJobScheduler;
@@ -74,17 +72,7 @@ public class AsyncNotificationBadge extends AsyncTask<Void, Void, Void> {
                 Authentication.name = name;
                 LogUtil.v("AUTHENTICATED");
                 if (Authentication.reddit.isAuthenticated()) {
-                    final Set<String> accounts =
-                            Authentication.authentication.getStringSet(
-                                    "accounts", new HashSet<String>());
-                    if (accounts.contains(name)) {
-                        accounts.remove(name);
-                        accounts.add(name + ":" + Authentication.refresh);
-                        Authentication.authentication
-                                .edit()
-                                .putStringSet("accounts", accounts)
-                                .commit(); // force commit
-                    }
+                    Authentication.migrateAccountToTokenForm(name);
                     Authentication.isLoggedIn = true;
                     Reddit.notFirst = true;
                 }

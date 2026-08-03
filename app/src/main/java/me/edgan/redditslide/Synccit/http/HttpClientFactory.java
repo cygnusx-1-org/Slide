@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Synccit.http;
 
+import androidx.annotation.Nullable;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -11,7 +13,8 @@ class HttpClientFactory {
     @SuppressWarnings("unused")
     private static final String TAG = HttpClientFactory.class.getSimpleName();
 
-    private static OkHttpClient client;
+    /** Lazily built by {@link #getOkHttpClient()}; null until the first call. */
+    private static @Nullable OkHttpClient client;
     private static final int SOCKET_OPERATION_TIMEOUT = 60 * 1000;
     private static final List<Protocol> PROTOCOLS = Collections.singletonList(Protocol.HTTP_1_1);
 

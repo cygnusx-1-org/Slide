@@ -10,6 +10,9 @@ import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.view.MotionEvent;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+
 import io.noties.markwon.ext.tables.TableRowSpan;
 import me.edgan.redditslide.ClickableText;
 import me.edgan.redditslide.SettingValues;
@@ -18,19 +21,25 @@ import me.edgan.redditslide.SpoilerRobotoTextView;
 public class TextViewLinkHandler extends BaseMovementMethod {
     private final ClickableText clickableText;
     String subreddit;
-    SpoilerRobotoTextView comm;
+
+    /** Assigned on the first touch event, so null until the view is first touched. */
+    @Nullable SpoilerRobotoTextView comm;
+
     Spannable sequence;
     float position;
     boolean clickHandled;
     Handler handler;
     Runnable longClicked;
-    URLSpan[] link;
-    MotionEvent event;
+
+    /** Both resolved per touch event; null before the first one. */
+    @Nullable URLSpan[] link;
+
+    @Nullable MotionEvent event;
 
     // The Markwon table-cell link resolved on ACTION_DOWN, reused by that gesture's high-frequency
     // ACTION_MOVE events so they don't re-run the (comparatively expensive) cell hit-test. Null when
     // the gesture didn't start on a cell link. Only touched from the touch thread, so no sync needed.
-    private URLSpan[] gestureTableCellSpans;
+    private @Nullable URLSpan[] gestureTableCellSpans;
 
     public TextViewLinkHandler(ClickableText clickableText, String subreddit, Spannable sequence) {
         this.clickableText = clickableText;
@@ -72,6 +81,15 @@ public class TextViewLinkHandler extends BaseMovementMethod {
         y += widget.getScrollY();
 
         Layout layout = widget.getLayout();
+        if (layout == null) {
+            // getLayout() is nullable, so there is nothing to hit-test against. Note the getTotal-
+            // Padding* calls above already force a layout into existence in the default lines-based
+            // max mode, so this is only reachable for a pixel max height (setMaxHeight) — no view
+            // here sets one today. Cancel the pending long-press anyway: every other path out of
+            // this method does, and leaving it posted would fire it against a stale `link`.
+            handler.removeCallbacksAndMessages(null);
+            return false;
+        }
         int line = layout.getLineForVertical(y);
         int off = layout.getOffsetForHorizontal(line, x);
 
@@ -234,7 +252,7 @@ public class TextViewLinkHandler extends BaseMovementMethod {
      * @param x horizontal touch position in the outer layout's content coordinates
      * @param y vertical touch position in the outer layout's content coordinates
      */
-    private static URLSpan[] resolveTableCellLink(
+    private static @Nullable URLSpan[] resolveTableCellLink(
             Spannable buffer, Layout layout, int line, int off, int x, int y) {
         TableRowSpan[] rows = buffer.getSpans(off, off, TableRowSpan.class);
         if (rows.length == 0 || rows[0].cellWidth() <= 0) {

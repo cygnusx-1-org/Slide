@@ -21,6 +21,7 @@ import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
+import me.edgan.redditslide.util.PrefUtil;
 import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.http.oauth.Credentials;
 import net.dean.jraw.http.oauth.OAuthData;
@@ -138,8 +139,10 @@ public class Reauthenticate extends BaseActivityAnim {
                     String refreshToken = Authentication.reddit.getOAuthData().getRefreshToken();
                     SharedPreferences.Editor editor = Authentication.authentication.edit();
                     Set<String> accounts =
-                            Authentication.authentication.getStringSet(
-                                    "accounts", new HashSet<String>());
+                            PrefUtil.getMutableStringSet(
+                                    Authentication.authentication,
+                                    "accounts",
+                                    new HashSet<String>());
                     LoggedInAccount me = Authentication.reddit.me();
                     String toRemove = "";
                     for (String s : accounts) {
@@ -154,8 +157,8 @@ public class Reauthenticate extends BaseActivityAnim {
                     Authentication.name = me.getFullName();
                     editor.putStringSet("accounts", accounts);
                     Set<String> tokens =
-                            Authentication.authentication.getStringSet(
-                                    "tokens", new HashSet<String>());
+                            PrefUtil.getMutableStringSet(
+                                    Authentication.authentication, "tokens", new HashSet<String>());
                     tokens.add(refreshToken);
                     editor.putStringSet("tokens", tokens);
                     editor.putString("lasttoken", refreshToken);

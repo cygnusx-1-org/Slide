@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import com.devspark.robototextview.RobotoTypefaces;
 
 import me.edgan.redditslide.R;
+import me.edgan.redditslide.util.PrefUtil;
 
 /** Created by ccrama on 7/9/2015. */
 public class FontPreferences {
@@ -28,22 +29,25 @@ public class FontPreferences {
         return open().edit();
     }
 
+    private String getString(String key, String defValue) {
+        return PrefUtil.getString(open(), key, defValue);
+    }
+
     public FontStyle getPostFontStyle() {
-        return FontStyle.valueOf(open().getString(FONT_STYLE_POST, FontStyle.Medium.name()));
+        return FontStyle.valueOf(getString(FONT_STYLE_POST, FontStyle.Medium.name()));
     }
 
     public FontStyleComment getCommentFontStyle() {
         return FontStyleComment.valueOf(
-                open().getString(FONT_STYLE_COMMENT, FontStyleComment.Medium.name()));
+                getString(FONT_STYLE_COMMENT, FontStyleComment.Medium.name()));
     }
 
     public FontTypeComment getFontTypeComment() {
-        return FontTypeComment.valueOf(
-                open().getString(FONT_COMMENT, FontTypeComment.Regular.name()));
+        return FontTypeComment.valueOf(getString(FONT_COMMENT, FontTypeComment.Regular.name()));
     }
 
     public FontTypeTitle getFontTypeTitle() {
-        return FontTypeTitle.valueOf(open().getString(FONT_TITLE, FontTypeTitle.Regular.name()));
+        return FontTypeTitle.valueOf(getString(FONT_TITLE, FontTypeTitle.Regular.name()));
     }
 
     public void setPostFontStyle(FontStyle style) {

@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import java.util.Calendar;
 import me.edgan.redditslide.Reddit;
@@ -11,7 +12,9 @@ import me.edgan.redditslide.Reddit;
 /** Created by carlo_000 on 10/13/2015. */
 public class AutoCacheScheduler {
     private final PendingIntent pendingIntent;
-    private final AlarmManager manager;
+
+    /** Null when the platform has no AlarmManager; both use sites already guard for it. */
+    private final @Nullable AlarmManager manager;
 
     public AutoCacheScheduler(Context context) {
         final Intent alarmIntent = new Intent(context, CacheAll.class);
