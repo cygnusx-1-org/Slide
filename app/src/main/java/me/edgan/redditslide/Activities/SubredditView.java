@@ -1270,14 +1270,33 @@ public class SubredditView extends BaseActivity {
                                         if (UserSubscriptions.multireddits == null) {
                                             UserSubscriptions.syncMultiReddits(SubredditView.this);
                                         }
-                                        for (MultiReddit r : UserSubscriptions.multireddits) {
-                                            multis.put(r.getDisplayName(), r);
+                                        // Read the field once. syncMultiReddits swallows its own
+                                        // failure, so the call above can leave this null, and
+                                        // other background syncs can null it between the two
+                                        // reads. Multis without a name are skipped: a null key
+                                        // here becomes a null dialog item below, which crashes
+                                        // the list adapter.
+                                        List<MultiReddit> loadedMultis = UserSubscriptions.multireddits;
+                                        if (loadedMultis != null) {
+                                            for (MultiReddit r : loadedMultis) {
+                                                if (r.getDisplayName() != null) {
+                                                    multis.put(r.getDisplayName(), r);
+                                                }
+                                            }
                                         }
                                         return null;
                                     }
 
                                     @Override
                                     protected void onPostExecute(Void aVoid) {
+                                        // The sync above can sit on the network for seconds. If
+                                        // the user left, or the activity was recreated under us,
+                                        // this instance's window token is gone and showing a
+                                        // dialog on it throws BadTokenException.
+                                        if (SubredditView.this.isFinishing()
+                                                || SubredditView.this.isDestroyed()) {
+                                            return;
+                                        }
                                         new MaterialAlertDialogBuilder(
                                                         new ContextThemeWrapper(
                                                                 SubredditView.this,

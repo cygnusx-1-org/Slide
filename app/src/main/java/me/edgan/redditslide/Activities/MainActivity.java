@@ -705,14 +705,29 @@ public class MainActivity extends BaseActivity
                             (dialog, which) -> {
                                 Intent i = new Intent(MainActivity.this, Search.class);
                                 i.putExtra(Search.EXTRA_TERM, term);
-                                // Set the searchMulti before starting the search
-                                for (MultiReddit r : UserSubscriptions.multireddits) {
-                                    if (r.getDisplayName().equalsIgnoreCase(currentSubreddit.substring(3))) {
-                                        MultiredditOverview.searchMulti = r;
-                                        break;
+                                // Set the searchMulti before starting the search. searchMulti is
+                                // what actually scopes the search, so it must be overwritten every
+                                // time: leaving a previous search's multireddit in place here would
+                                // silently search that one instead. When the multireddit cannot be
+                                // resolved, fall back to an all-of-Reddit search rather than
+                                // labelling one as a search of this multireddit.
+                                String multiName = currentSubreddit.substring(3); // Remove "/m/"
+                                MultiReddit found = null;
+                                // Read the field once: background syncs null it out on failure, so
+                                // re-reading it for the loop can hand us a null after the check.
+                                List<MultiReddit> multis = UserSubscriptions.multireddits;
+                                if (multis != null) {
+                                    for (MultiReddit r : multis) {
+                                        if (multiName.equalsIgnoreCase(r.getDisplayName())) {
+                                            found = r;
+                                            break;
+                                        }
                                     }
                                 }
-                                i.putExtra(Search.EXTRA_MULTIREDDIT, currentSubreddit.substring(3)); // Remove "/m/"
+                                MultiredditOverview.searchMulti = found;
+                                if (found != null) {
+                                    i.putExtra(Search.EXTRA_MULTIREDDIT, multiName);
+                                }
                                 startActivity(i);
                             })
                             .setNeutralButton(R.string.search_all,

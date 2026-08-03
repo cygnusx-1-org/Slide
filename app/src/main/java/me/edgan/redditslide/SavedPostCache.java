@@ -87,8 +87,10 @@ public class SavedPostCache {
         return sb.toString();
     }
 
+    /** Blob for {@code key}, or {@code null} when there is no cache directory to use. */
     private static File blobFile(String key) {
-        return new File(OfflineSubreddit.getCacheDirectory(Reddit.getAppContext()), blobName(key));
+        File dir = OfflineSubreddit.getCacheDirectory(Reddit.getAppContext());
+        return dir == null ? null : new File(dir, blobName(key));
     }
 
     /** Result of a successful {@link #load}. */
@@ -126,7 +128,7 @@ public class SavedPostCache {
         boolean complete = prefs.getBoolean(k + SUFFIX_COMPLETE, false);
 
         File blob = blobFile(k);
-        if (!blob.exists()) {
+        if (blob == null || !blob.exists()) {
             return null;
         }
         try {
@@ -180,6 +182,10 @@ public class SavedPostCache {
         // Write to a temp file then atomically rename onto the blob, so a concurrent reader never
         // sees a half-written file. (Writes themselves are already serialized by WRITER.)
         File blob = blobFile(k);
+        if (blob == null) {
+            LogUtil.e("SavedPostCache.writeNow skipped, no cache directory");
+            return;
+        }
         File tmp = new File(blob.getParentFile(), blob.getName() + ".tmp");
         try (FileWriter writer = new FileWriter(tmp)) {
             writer.write(arr.toString());

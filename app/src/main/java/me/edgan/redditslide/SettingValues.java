@@ -188,7 +188,6 @@ public class SettingValues {
     public static boolean expandedSettings;
     public static boolean fabComments;
     public static boolean largeDepth;
-    public static boolean cacheDefault;
     public static boolean image;
     public static boolean video;
     public static boolean upvotePercentage;
@@ -486,7 +485,6 @@ public class SettingValues {
         hideSelftextLeadImage = prefs.getBoolean(PREF_SELFTEXT_IMAGE_COMMENT, false);
         image = prefs.getBoolean(PREF_IMAGE, true);
         cache = true;
-        cacheDefault = false;
         storeHistory = prefs.getBoolean(PREF_STORE_HISTORY, true);
         upvotePercentage = prefs.getBoolean(PREF_UPVOTE_PERCENTAGE, false);
         storeNSFWHistory = prefs.getBoolean(PREF_STORE_NSFW_HISTORY, false);

@@ -671,8 +671,19 @@ public class SidebarController {
                                         UserSubscriptions.syncMultiReddits(mainActivity);
                                     }
 
-                                    for (MultiReddit r : UserSubscriptions.multireddits) {
-                                        multis.put(r.getDisplayName(), r);
+                                    // Read the field once. syncMultiReddits swallows its own
+                                    // failure, so the call above can leave this null, and other
+                                    // background syncs can null it between the two reads. Multis
+                                    // without a name are skipped: a null key here becomes a null
+                                    // dialog item below, which crashes the list adapter.
+                                    List<MultiReddit> loaded = UserSubscriptions.multireddits;
+
+                                    if (loaded != null) {
+                                        for (MultiReddit r : loaded) {
+                                            if (r.getDisplayName() != null) {
+                                                multis.put(r.getDisplayName(), r);
+                                            }
+                                        }
                                     }
 
                                     return null;
@@ -680,6 +691,13 @@ public class SidebarController {
 
                                 @Override
                                 protected void onPostExecute(Void aVoid) {
+                                    // The sync above can sit on the network for seconds. If the
+                                    // user left, or the activity was recreated under us, this
+                                    // instance's window token is gone and showing a dialog on it
+                                    // throws BadTokenException.
+                                    if (!isActivityValid() || mainActivity.isFinishing()) {
+                                        return;
+                                    }
                                     new MaterialAlertDialogBuilder(
                                             new ContextThemeWrapper(
                                                     mainActivity,

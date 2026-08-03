@@ -1,7 +1,6 @@
 package me.edgan.redditslide;
 
 import android.content.Context;
-import android.os.Environment;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -38,16 +37,38 @@ public class OfflineSubreddit {
 
     static File cacheDirectory;
 
+    /**
+     * Directory holding the cached submission blobs, or {@code null} if no Context is available.
+     * Callers must null-check the result instead of concatenating it into a path — a null here
+     * used to stringify into paths like "null/t3_abc" that resolve against the process working
+     * directory, silently reading and writing the wrong place.
+     */
     public static File getCacheDirectory(Context context) {
-        if (cacheDirectory == null && context != null) {
-            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)
-                    && context.getExternalCacheDir() != null) {
-                cacheDirectory = context.getExternalCacheDir();
+        if (cacheDirectory == null) {
+            // Callers thread a Context down from activities and adapters, so it can arrive null;
+            // the application context is an equivalent source for the cache dir.
+            Context resolved = context != null ? context : Reddit.getAppContext();
+            if (resolved != null) {
+                // Internal cache only. An external-cache branch used to sit here, but it was
+                // dead code (the internal assignment overwrote it unconditionally), so external
+                // storage has never actually held this data. Keep it that way: these files are
+                // cached post bodies, and internal cache keeps them out of other apps' reach and
+                // lets the system reclaim them.
+                cacheDirectory = resolved.getCacheDir();
             }
-
-            cacheDirectory = context.getCacheDir();
         }
         return cacheDirectory;
+    }
+
+    /**
+     * Cache blob for {@code name}, or {@code null} when there is no cache directory to use or no
+     * name to use. A null name has to be rejected here: {@code new File(dir, null)} throws, where
+     * the string concatenation this replaced quietly cached every such submission on top of one
+     * shared file literally called "null".
+     */
+    private static File cacheFile(String name, Context c) {
+        File dir = getCacheDirectory(c);
+        return (dir == null || name == null) ? null : new File(dir, name);
     }
 
     public OfflineSubreddit overwriteSubmissions(List<Submission> data) {
@@ -56,7 +77,11 @@ public class OfflineSubreddit {
     }
 
     public static void writeSubmissionToStorage(Submission s, JsonNode node, Context c) {
-        File toStore = new File(getCacheDirectory(c) + File.separator + s.getFullName());
+        File toStore = cacheFile(s.getFullName(), c);
+        if (toStore == null) {
+            LogUtil.e("OfflineSubreddit.writeSubmissionToStorage skipped, no cache file");
+            return;
+        }
         try {
             FileWriter writer = new FileWriter(toStore);
             writer.append(node.toString());
@@ -68,7 +93,8 @@ public class OfflineSubreddit {
     }
 
     public boolean isStored(String name, Context c) {
-        return new File(getCacheDirectory(c) + File.separator + name).exists();
+        File f = cacheFile(name, c);
+        return f != null && f.exists();
     }
 
     public void writeToMemory(Context c) {
@@ -269,8 +295,8 @@ public class OfflineSubreddit {
     }
 
     public static String getStringFromFile(String name, Context c) {
-        File f = new File(getCacheDirectory(c) + File.separator + name);
-        if (f.exists()) {
+        File f = cacheFile(name, c);
+        if (f != null && f.exists()) {
             try {
                 BufferedReader reader = new BufferedReader(new FileReader(f));
                 char[] chars = new char[(int) f.length()];
