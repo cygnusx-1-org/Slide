@@ -1,6 +1,7 @@
 package me.edgan.redditslide;
 
 import me.edgan.redditslide.util.DisplayUtil;
+import me.edgan.redditslide.util.PrefUtil;
 
 /** Constants used throughout the app */
 public class Constants {
@@ -86,7 +87,8 @@ public class Constants {
         }
 
         String override =
-                SettingValues.prefs.getString(SettingValues.PREF_REDDIT_CLIENT_ID_OVERRIDE, "");
+                PrefUtil.getString(
+                        SettingValues.prefs, SettingValues.PREF_REDDIT_CLIENT_ID_OVERRIDE, "");
         return !override.isEmpty() ? override : REDDIT_CLIENT_ID_DEFAULT;
     }
 
@@ -102,8 +104,8 @@ public class Constants {
         }
 
         String override =
-                SettingValues.prefs.getString(
-                        SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE, "");
+                PrefUtil.getString(
+                        SettingValues.prefs, SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE, "");
         return !override.isEmpty() ? override : REDDIT_REDIRECT_URL;
     }
 
@@ -114,8 +116,10 @@ public class Constants {
     public static String getUserAgent() {
         if (SettingValues.prefs != null && overridesEnabled()) {
             String override =
-                    SettingValues.prefs.getString(
-                            SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE, "");
+                    PrefUtil.getString(
+                            SettingValues.prefs,
+                            SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE,
+                            "");
             if (!override.isEmpty()) {
                 return override;
             }

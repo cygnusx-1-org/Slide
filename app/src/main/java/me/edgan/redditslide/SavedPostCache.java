@@ -2,6 +2,7 @@ package me.edgan.redditslide;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import androidx.annotation.Nullable;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,7 +74,7 @@ public class SavedPostCache {
         return Reddit.getAppContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     }
 
-    private static String key(String username, String category) {
+    private static String key(@Nullable String username, @Nullable String category) {
         return (username == null ? "" : username) + "|" + (category == null ? "" : category);
     }
 
@@ -88,6 +89,7 @@ public class SavedPostCache {
     }
 
     /** Blob for {@code key}, or {@code null} when there is no cache directory to use. */
+    @Nullable
     private static File blobFile(String key) {
         File dir = OfflineSubreddit.getCacheDirectory(Reddit.getAppContext());
         return dir == null ? null : new File(dir, blobName(key));
@@ -118,6 +120,7 @@ public class SavedPostCache {
      * failure), so a partial or corrupt list is never served. Parses straight from the file (UTF-8)
      * rather than slurping it into a String first.
      */
+    @Nullable
     public static Cached load(String username, String category) {
         String k = key(username, category);
         SharedPreferences prefs = prefs();

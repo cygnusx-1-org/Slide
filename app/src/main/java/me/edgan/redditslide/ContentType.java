@@ -3,9 +3,11 @@ package me.edgan.redditslide;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.util.LruCache;
+import androidx.annotation.Nullable;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,7 +28,7 @@ public class ContentType {
      * @param bases Any number of hostnames to compare against {@code host}
      * @return If {@code host} contains any of {@code bases}
      */
-    public static boolean hostContains(String host, String... bases) {
+    public static boolean hostContains(@Nullable String host, String... bases) {
         if (host == null || host.isEmpty()) return false;
 
         for (String base : bases) {
@@ -250,10 +252,11 @@ public class ContentType {
      */
     /** A submission's resolved type, together with the url it was resolved from. */
     private static class CachedType {
-        final String url;
+        /** Null when the submission carried no url — Submission.getUrl() is JRAW's, unannotated. */
+        @Nullable final String url;
         final Type type;
 
-        CachedType(String url, Type type) {
+        CachedType(@Nullable String url, Type type) {
             this.url = url;
             this.type = type;
         }
@@ -275,7 +278,7 @@ public class ContentType {
         typeCache.evictAll();
     }
 
-    public static Type getContentType(Submission submission) {
+    public static Type getContentType(@Nullable Submission submission) {
         if (submission == null) {
             return Type.SELF; // hopefully shouldn't be null, but catch it in case
         }
@@ -480,7 +483,12 @@ public class ContentType {
         try {
             final PackageManager pm = context.getPackageManager();
             final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(submission.getUrl()));
-            final String packageName = pm.resolveActivity(intent, 0).activityInfo.packageName;
+            // Null when no installed activity handles the url. That used to arrive here as the
+            // NullPointerException the catch below swallows, which produced the generic
+            // description — so does falling through to the else.
+            final ResolveInfo resolveInfo = pm.resolveActivity(intent, 0);
+            final String packageName =
+                    resolveInfo == null ? "android" : resolveInfo.activityInfo.packageName;
             String description;
 
             if (!packageName.equals("android")) {

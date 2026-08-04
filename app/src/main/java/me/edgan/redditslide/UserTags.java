@@ -1,6 +1,7 @@
 package me.edgan.redditslide;
 
 import java.util.Locale;
+import me.edgan.redditslide.util.PrefUtil;
 
 public class UserTags {
 
@@ -11,7 +12,8 @@ public class UserTags {
      * @return String for the tag
      */
     public static String getUserTag(String username) {
-        return Reddit.tags.getString("user-tag" + username.toLowerCase(Locale.ENGLISH), "");
+        return PrefUtil.getString(
+                Reddit.tags, "user-tag" + username.toLowerCase(Locale.ENGLISH), "");
     }
 
     /**

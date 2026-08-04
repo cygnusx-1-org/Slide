@@ -2,13 +2,15 @@ package me.edgan.redditslide;
 
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import androidx.annotation.Nullable;
+
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import me.edgan.redditslide.Views.CreateCardView;
-import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.ui.settings.SettingsHandlingFragment;
+import me.edgan.redditslide.util.PrefUtil;
 import me.edgan.redditslide.util.SortingUtil;
 import net.dean.jraw.models.CommentSort;
 import net.dean.jraw.paginators.Sorting;
@@ -160,15 +162,28 @@ public class SettingValues {
     public static final String PREF_REDDIT_ENABLE_OVERRIDES = "redditEnableOverrides";
     public static final String PREF_DIALOG_COLORED_BORDER = "dialogColoredBorder";
 
-    public static String imageSaveLocation;
+    public static String imageSaveLocation = "";
     public static String redditClientIdOverride = "";
     public static String redditRedirectUriOverride = "";
     public static String redditUserAgentOverride = "";
     public static boolean redditEnableOverrides = false;
+    // NullAway.Init on this group and the two below: setAllValues assigns each of them
+    // unconditionally, and Reddit.doMainStuff calls it from Application.onCreate before any
+    // activity, service or receiver in the app can run. Their defaults live there, as the string
+    // passed to getString, rather than being duplicated as an initializer that could drift.
+    @SuppressWarnings("NullAway.Init")
     public static CreateCardView.CardEnum defaultCardView;
+
+    @SuppressWarnings("NullAway.Init")
     public static Sorting defaultSorting;
+
+    @SuppressWarnings("NullAway.Init")
     public static Sorting frontpageSorting;
+
+    @SuppressWarnings("NullAway.Init")
     public static TimePeriod timePeriod;
+
+    @SuppressWarnings("NullAway.Init")
     public static CommentSort defaultCommentSorting;
     public static boolean middleImage;
     // volatile: read from the background feed-preload thread (PhotoLoader.feedDecodeSize) as well as
@@ -176,9 +191,13 @@ public class SettingValues {
     public static volatile boolean bigPicEnabled;
     public static boolean bigPicCropped;
     public static boolean bigPicLetterboxed;
+    @SuppressWarnings("NullAway.Init")
     public static ColorMatchingMode colorMatchingMode;
+
+    @SuppressWarnings("NullAway.Init")
     public static ColorIndicator colorIndicator;
-    public static Palette.ThemeEnum theme;
+
+    @SuppressWarnings("NullAway.Init")
     public static SharedPreferences prefs;
     public static boolean expandedToolbar;
     public static boolean single;
@@ -248,16 +267,16 @@ public class SettingValues {
 
     public static int previews;
 
-    public static String synccitName;
-    public static String synccitAuth;
+    public static String synccitName = "";
+    public static String synccitAuth = "";
 
-    public static Set<String> titleFilters;
-    public static Set<String> textFilters;
-    public static Set<String> domainFilters;
-    public static Set<String> subredditFilters;
-    public static Set<String> flairFilters;
-    public static Set<String> alwaysExternal;
-    public static Set<String> userFilters;
+    public static Set<String> titleFilters = new HashSet<>();
+    public static Set<String> textFilters = new HashSet<>();
+    public static Set<String> domainFilters = new HashSet<>();
+    public static Set<String> subredditFilters = new HashSet<>();
+    public static Set<String> flairFilters = new HashSet<>();
+    public static Set<String> alwaysExternal = new HashSet<>();
+    public static Set<String> userFilters = new HashSet<>();
 
     public static boolean loadImageLq;
     public static boolean ignoreSubSetting;
@@ -319,7 +338,7 @@ public class SettingValues {
     public static boolean commentEmoteAnimation;
     public static boolean highlightCommentOP;
     public static boolean highlightTime;
-    public static String selectedBrowser;
+    public static String selectedBrowser = "";
     public static long selectedDrawerItems;
     public static ForcedState forcedNightModeState = ForcedState.NOT_FORCED;
     public static boolean toolboxEnabled;
@@ -340,14 +359,18 @@ public class SettingValues {
     public static void setAllValues(SharedPreferences settings) {
         prefs = settings;
 
-        imageSaveLocation = prefs.getString(PREF_IMAGE_SAVE_LOCATION, "");
-        redditClientIdOverride = settings.getString(PREF_REDDIT_CLIENT_ID_OVERRIDE, "");
-        redditRedirectUriOverride = settings.getString(PREF_REDDIT_REDIRECT_URI_OVERRIDE, "");
-        redditUserAgentOverride = settings.getString(PREF_REDDIT_USER_AGENT_OVERRIDE, "");
+        imageSaveLocation = PrefUtil.getString(prefs, PREF_IMAGE_SAVE_LOCATION, "");
+        redditClientIdOverride =
+                PrefUtil.getString(settings, PREF_REDDIT_CLIENT_ID_OVERRIDE, "");
+        redditRedirectUriOverride =
+                PrefUtil.getString(settings, PREF_REDDIT_REDIRECT_URI_OVERRIDE, "");
+        redditUserAgentOverride =
+                PrefUtil.getString(settings, PREF_REDDIT_USER_AGENT_OVERRIDE, "");
         redditEnableOverrides = settings.getBoolean(PREF_REDDIT_ENABLE_OVERRIDES, false);
         defaultCardView =
                 CreateCardView.CardEnum.valueOf(
-                        settings.getString("defaultCardViewNew", "LARGE").toUpperCase());
+                        PrefUtil.getString(settings, "defaultCardViewNew", "LARGE")
+                                .toUpperCase());
         middleImage = settings.getBoolean("middleCard", true);
 
         bigPicCropped = settings.getBoolean("bigPicCropped", false);
@@ -360,14 +383,18 @@ public class SettingValues {
 
         colorMatchingMode =
                 ColorMatchingMode.valueOf(
-                        settings.getString("ccolorMatchingModeNew", "MATCH_EXTERNALLY"));
+                        PrefUtil.getString(
+                                settings, "ccolorMatchingModeNew", "MATCH_EXTERNALLY"));
         colorIndicator =
-                ColorIndicator.valueOf(settings.getString("colorIndicatorNew", "CARD_BACKGROUND"));
-        defaultSorting = Sorting.valueOf(settings.getString("defaultSorting", "HOT"));
-        frontpageSorting = Sorting.valueOf(settings.getString("frontpageSorting", "BEST"));
-        timePeriod = TimePeriod.valueOf(settings.getString("timePeriod", "DAY"));
+                ColorIndicator.valueOf(
+                        PrefUtil.getString(settings, "colorIndicatorNew", "CARD_BACKGROUND"));
+        defaultSorting = Sorting.valueOf(PrefUtil.getString(settings, "defaultSorting", "HOT"));
+        frontpageSorting =
+                Sorting.valueOf(PrefUtil.getString(settings, "frontpageSorting", "BEST"));
+        timePeriod = TimePeriod.valueOf(PrefUtil.getString(settings, "timePeriod", "DAY"));
         defaultCommentSorting =
-                CommentSort.valueOf(settings.getString("defaultCommentSortingNew", "CONFIDENCE"));
+                CommentSort.valueOf(
+                        PrefUtil.getString(settings, "defaultCommentSortingNew", "CONFIDENCE"));
         showNSFWContent = prefs.getBoolean(PREF_SHOW_NSFW_CONTENT, false);
         hideNSFWCollection = prefs.getBoolean(PREF_HIDE_NSFW_COLLECTION, true);
         ignoreSubSetting = prefs.getBoolean(PREF_IGNORE_SUB_SETTINGS, true);
@@ -490,8 +517,8 @@ public class SettingValues {
         storeNSFWHistory = prefs.getBoolean(PREF_STORE_NSFW_HISTORY, false);
         scrollSeen = prefs.getBoolean(PREF_SCROLL_SEEN, false);
         debugBreakReauth = prefs.getBoolean(PREF_DEBUG_BREAK_REAUTH, false);
-        synccitName = prefs.getString(SYNCCIT_NAME, "");
-        synccitAuth = prefs.getString(SYNCCIT_AUTH, "");
+        synccitName = PrefUtil.getString(prefs, SYNCCIT_NAME, "");
+        synccitAuth = PrefUtil.getString(prefs, SYNCCIT_AUTH, "");
         notifSound = prefs.getBoolean(PREF_SOUND_NOTIFS, false);
         pauseOnAudioFocus = prefs.getBoolean(PREF_PAUSE_ON_AUDIO_FOCUS, false);
         cookies = prefs.getBoolean(PREF_COOKIES, true);
@@ -511,14 +538,15 @@ public class SettingValues {
 
         // SharedPreferences' StringSets should never be modified, so we duplicate them into a new
         // HashSet
-        titleFilters = new HashSet<>(prefs.getStringSet(PREF_TITLE_FILTERS, new HashSet<>()));
-        textFilters = new HashSet<>(prefs.getStringSet(PREF_TEXT_FILTERS, new HashSet<>()));
-        domainFilters = new HashSet<>(prefs.getStringSet(PREF_DOMAIN_FILTERS, new HashSet<>()));
+        titleFilters = PrefUtil.getMutableStringSet(prefs, PREF_TITLE_FILTERS, new HashSet<>());
+        textFilters = PrefUtil.getMutableStringSet(prefs, PREF_TEXT_FILTERS, new HashSet<>());
+        domainFilters = PrefUtil.getMutableStringSet(prefs, PREF_DOMAIN_FILTERS, new HashSet<>());
         subredditFilters =
-                new HashSet<>(prefs.getStringSet(PREF_SUBREDDIT_FILTERS, new HashSet<>()));
-        alwaysExternal = new HashSet<>(prefs.getStringSet(PREF_ALWAYS_EXTERNAL, new HashSet<>()));
-        flairFilters = new HashSet<>(prefs.getStringSet(PREF_FLAIR_FILTERS, new HashSet<>()));
-        userFilters = new HashSet<>(prefs.getStringSet(PREF_USER_FILTERS, new HashSet<>()));
+                PrefUtil.getMutableStringSet(prefs, PREF_SUBREDDIT_FILTERS, new HashSet<>());
+        alwaysExternal =
+                PrefUtil.getMutableStringSet(prefs, PREF_ALWAYS_EXTERNAL, new HashSet<>());
+        flairFilters = PrefUtil.getMutableStringSet(prefs, PREF_FLAIR_FILTERS, new HashSet<>());
+        userFilters = PrefUtil.getMutableStringSet(prefs, PREF_USER_FILTERS, new HashSet<>());
 
         portraitColumns = prefs.getInt(PREF_PORTRAIT_COLUMNS, 1);
         singleColumnMultiWindow = prefs.getBoolean(PREF_SINGLE_COLUMN_MULTI, false);
@@ -548,7 +576,7 @@ public class SettingValues {
         colorIcon = prefs.getBoolean(PREF_COLOR_ICON, false);
         peek = prefs.getBoolean(PREF_PEEK, false);
         noPreviewImageLongClick = prefs.getBoolean(PREF_NO_PREVIEW_IMAGE_LONGCLICK, true);
-        selectedBrowser = prefs.getString(PREF_SELECTED_BROWSER, "");
+        selectedBrowser = PrefUtil.getString(prefs, PREF_SELECTED_BROWSER, "");
         selectedDrawerItems = prefs.getLong(PREF_SELECTED_DRAWER_ITEMS, -1);
 
         toolboxEnabled = prefs.getBoolean(PREF_MOD_TOOLBOX_ENABLED, false);
@@ -575,13 +603,13 @@ public class SettingValues {
         prefs.edit().remove("picsenabled" + sub.toLowerCase(Locale.ENGLISH)).apply();
     }
 
-    public static boolean isPicsEnabled(String subreddit) {
+    public static boolean isPicsEnabled(@Nullable String subreddit) {
         if (subreddit == null) return bigPicEnabled;
         return prefs.getBoolean(
                 "picsenabled" + subreddit.toLowerCase(Locale.ENGLISH), bigPicEnabled);
     }
 
-    public static boolean isSelftextEnabled(String subreddit) {
+    public static boolean isSelftextEnabled(@Nullable String subreddit) {
         if (subreddit == null) return cardText;
         return prefs.getBoolean(
                 "cardtextenabled" + subreddit.toLowerCase(Locale.ENGLISH), cardText);
@@ -637,7 +665,8 @@ public class SettingValues {
 
     public static CommentSort getCommentSorting(String sub) {
         return CommentSort.valueOf(
-                prefs.getString(
+                PrefUtil.getString(
+                        prefs,
                         "defaultComment" + sub.toLowerCase(Locale.ENGLISH),
                         defaultCommentSorting.name()));
     }
@@ -656,14 +685,16 @@ public class SettingValues {
         String subreddit = sub.toLowerCase(Locale.ENGLISH);
         if (sub.equals("frontpage")) {
             return Sorting.valueOf(
-                    prefs.getString(
+                    PrefUtil.getString(
+                            prefs,
                             "frontpageSort" + sub.toLowerCase(Locale.ENGLISH),
                             SortingUtil.frontpageSorting.name()));
         } else if (SortingUtil.sorting.containsKey(subreddit)) {
             return SortingUtil.sorting.get(subreddit);
         } else {
             return Sorting.valueOf(
-                    prefs.getString(
+                    PrefUtil.getString(
+                            prefs,
                             "defaultSort" + sub.toLowerCase(Locale.ENGLISH),
                             SortingUtil.defaultSorting.name()));
         }
@@ -675,7 +706,8 @@ public class SettingValues {
             return SortingUtil.times.get(subreddit);
         } else {
             return TimePeriod.valueOf(
-                    prefs.getString(
+                    PrefUtil.getString(
+                            prefs,
                             "defaultTime" + sub.toLowerCase(Locale.ENGLISH),
                             SortingUtil.timePeriod.name()));
         }
@@ -728,14 +760,16 @@ public class SettingValues {
 
     public static Sorting getBaseSubmissionSort(String sub) {
         return Sorting.valueOf(
-                prefs.getString(
+                PrefUtil.getString(
+                        prefs,
                         "defaultSort" + sub.toLowerCase(Locale.ENGLISH),
                         SortingUtil.defaultSorting.name()));
     }
 
     public static TimePeriod getBaseTimePeriod(String sub) {
         return TimePeriod.valueOf(
-                prefs.getString(
+                PrefUtil.getString(
+                        prefs,
                         "defaultTime" + sub.toLowerCase(Locale.ENGLISH),
                         SortingUtil.timePeriod.name()));
     }

@@ -540,6 +540,9 @@
     <string name="vote_err_login">You must be logged in to vote!</string>
     <string name="vote_removed">Vote removed</string>
 
+    <!-- Subscribing -->
+    <string name="subscribe_err_login">You must be logged in to subscribe!</string>
+
 
     <!-- Moderation tools -->
     <string name="mod_mail">Mod mail</string>

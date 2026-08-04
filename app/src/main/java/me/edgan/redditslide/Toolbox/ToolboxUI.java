@@ -48,6 +48,7 @@ import me.edgan.redditslide.Views.RoundedBackgroundSpan;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.util.DialogUtil;
 import net.dean.jraw.ApiException;
+import net.dean.jraw.RedditClient;
 import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.http.oauth.InvalidScopeException;
 import net.dean.jraw.managers.AccountManager;
@@ -270,7 +271,7 @@ public class ToolboxUI {
             return reason.replace("{subreddit}", thing.getSubredditName())
                     .replace("{author}", thing.getAuthor())
                     .replace("{kind}", "comment")
-                    .replace("{mod}", Authentication.name)
+                    .replace("{mod}", Authentication.nameOrEmpty())
                     .replace("{title}", "")
                     .replace(
                             "{url}",
@@ -283,7 +284,7 @@ public class ToolboxUI {
             return reason.replace("{subreddit}", thing.getSubredditName())
                     .replace("{author}", thing.getAuthor())
                     .replace("{kind}", "submission")
-                    .replace("{mod}", Authentication.name)
+                    .replace("{mod}", Authentication.nameOrEmpty())
                     .replace("{title}", thing.getTitle())
                     .replace(
                             "{url}",
@@ -776,20 +777,22 @@ public class ToolboxUI {
          */
         private boolean postRemovalComment(
                 PublicContribution thing, String comment, boolean sticky) {
+            final RedditClient client = Authentication.reddit;
+            if (client == null) {
+                return false;
+            }
             try {
                 // Reply with a comment and get that comment's ID
-                String id = new AccountManager(Authentication.reddit).reply(thing, comment);
+                String id = new AccountManager(client).reply(thing, comment);
 
                 // Sticky or distinguish the posted comment
                 if (sticky) {
-                    new ModerationManager(Authentication.reddit)
-                            .setSticky(
-                                    (Comment) Authentication.reddit.get("t1_" + id).get(0), true);
+                    new ModerationManager(client)
+                            .setSticky((Comment) client.get("t1_" + id).get(0), true);
                 } else {
-                    new ModerationManager(Authentication.reddit)
+                    new ModerationManager(client)
                             .setDistinguishedStatus(
-                                    Authentication.reddit.get("t1_" + id).get(0),
-                                    DistinguishedStatus.MODERATOR);
+                                    client.get("t1_" + id).get(0), DistinguishedStatus.MODERATOR);
                 }
                 return true;
             } catch (ApiException | RuntimeException e) {
@@ -895,7 +898,7 @@ public class ToolboxUI {
                             strings[2], // note text
                             strings[3], // link
                             System.currentTimeMillis(), // time
-                            Authentication.name, // mod
+                            Authentication.nameOrEmpty(), // mod
                             strings[4] // type
                             );
             try {

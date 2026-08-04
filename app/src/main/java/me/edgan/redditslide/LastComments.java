@@ -1,5 +1,7 @@
 package me.edgan.redditslide;
 
+import androidx.annotation.Nullable;
+
 import com.lusfold.androidkeyvaluestore.KVStore;
 import com.lusfold.androidkeyvaluestore.core.KVManger;
 import java.util.HashMap;
@@ -9,7 +11,9 @@ import net.dean.jraw.models.Submission;
 /** Created by ccrama on 7/19/2015. */
 public class LastComments {
 
-    public static HashMap<String, Integer> commentsSince;
+    // Null until the first setCommentsSince/setComments call builds it, which every reader here
+    // already checks for.
+    @Nullable public static HashMap<String, Integer> commentsSince;
 
     /** The KVStore key holding the comment count last seen for {@code fullname} (a t3_ fullname). */
     public static String commentsKey(String fullname) {

@@ -1,6 +1,8 @@
 package me.edgan.redditslide;
 
 import android.content.Context;
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.PrefUtil;
 import net.dean.jraw.models.CommentSort;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.meta.SubmissionSerializer;
@@ -27,15 +30,21 @@ public class OfflineSubreddit {
     public static Long currentid = 0L;
     private static String savedSubmissionsSubreddit = "";
     public long time;
-    public ArrayList<Submission> submissions;
-    public String subreddit;
+    // Built by every factory method here, but the bare constructor those factories call leaves it
+    // unset for a moment, and the callers below have always guarded it.
+    public ArrayList<Submission> submissions = new ArrayList<>();
+
+    /** Null on a bare OfflineSubreddit, before one of the factory methods has named it. */
+    @Nullable public String subreddit;
+
     public boolean base;
 
-    public static void writeSubmission(JsonNode node, Submission s, Context c) {
+    public static void writeSubmission(JsonNode node, Submission s, @Nullable Context c) {
         writeSubmissionToStorage(s, node, c);
     }
 
-    static File cacheDirectory;
+    /** Resolved on first use, so null until then. */
+    @Nullable static File cacheDirectory;
 
     /**
      * Directory holding the cached submission blobs, or {@code null} if no Context is available.
@@ -43,7 +52,8 @@ public class OfflineSubreddit {
      * used to stringify into paths like "null/t3_abc" that resolve against the process working
      * directory, silently reading and writing the wrong place.
      */
-    public static File getCacheDirectory(Context context) {
+    @Nullable
+    public static File getCacheDirectory(@Nullable Context context) {
         if (cacheDirectory == null) {
             // Callers thread a Context down from activities and adapters, so it can arrive null;
             // the application context is an equivalent source for the cache dir.
@@ -66,7 +76,8 @@ public class OfflineSubreddit {
      * the string concatenation this replaced quietly cached every such submission on top of one
      * shared file literally called "null".
      */
-    private static File cacheFile(String name, Context c) {
+    @Nullable
+    private static File cacheFile(@Nullable String name, @Nullable Context c) {
         File dir = getCacheDirectory(c);
         return (dir == null || name == null) ? null : new File(dir, name);
     }
@@ -76,7 +87,7 @@ public class OfflineSubreddit {
         return this;
     }
 
-    public static void writeSubmissionToStorage(Submission s, JsonNode node, Context c) {
+    public static void writeSubmissionToStorage(Submission s, JsonNode node, @Nullable Context c) {
         File toStore = cacheFile(s.getFullName(), c);
         if (toStore == null) {
             LogUtil.e("OfflineSubreddit.writeSubmissionToStorage skipped, no cache file");
@@ -92,13 +103,12 @@ public class OfflineSubreddit {
         }
     }
 
-    public boolean isStored(String name, Context c) {
+    public boolean isStored(String name, @Nullable Context c) {
         File f = cacheFile(name, c);
         return f != null && f.exists();
     }
 
-    public void writeToMemory(Context c) {
-        if (cache == null) cache = new HashMap<>();
+    public void writeToMemory(@Nullable Context c) {
         if (subreddit != null) {
             String title = subreddit.toLowerCase(Locale.ENGLISH) + "," + (base ? 0 : time);
             StringBuilder fullNames = new StringBuilder();
@@ -122,7 +132,6 @@ public class OfflineSubreddit {
     }
 
     public void writeToMemoryNoStorage() {
-        if (cache == null) cache = new HashMap<>();
         if (subreddit != null) {
             String title = subreddit.toLowerCase(Locale.ENGLISH) + "," + (base ? 0 : time);
             StringBuilder fullNames = new StringBuilder();
@@ -156,8 +165,10 @@ public class OfflineSubreddit {
                     }
                 }
                 String savedSubmissions =
-                        Reddit.cachedData.getString(
-                                OfflineSubreddit.savedSubmissionsSubreddit, fullNames);
+                        PrefUtil.getString(
+                                Reddit.cachedData,
+                                OfflineSubreddit.savedSubmissionsSubreddit,
+                                fullNames);
                 Reddit.cachedData.edit().remove(savedSubmissionsSubreddit).apply();
                 if (!savedSubmissions.equals(fullNames)) {
                     savedSubmissions = fullNames + savedSubmissions;
@@ -181,8 +192,8 @@ public class OfflineSubreddit {
                     }
                 }
                 String savedSubmissions =
-                        Reddit.cachedData.getString(
-                                OfflineSubreddit.savedSubmissionsSubreddit, name);
+                        PrefUtil.getString(
+                                Reddit.cachedData, OfflineSubreddit.savedSubmissionsSubreddit, name);
                 if (!savedSubmissions.equals(name)) {
                     Reddit.cachedData.edit().remove(savedSubmissionsSubreddit).apply();
                     String modifiedSavedSubmissions = savedSubmissions.replace(name + ",", "");
@@ -196,7 +207,8 @@ public class OfflineSubreddit {
         Reddit.cachedData.edit().putString(title, submissions).apply();
     }
 
-    public static OfflineSubreddit getSubreddit(String subreddit, boolean offline, Context c) {
+    public static OfflineSubreddit getSubreddit(
+            @Nullable String subreddit, boolean offline, @Nullable Context c) {
         return getSubreddit(subreddit, 0L, offline, c);
     }
 
@@ -211,11 +223,10 @@ public class OfflineSubreddit {
         return o;
     }
 
-    private static HashMap<String, OfflineSubreddit> cache;
+    private static final HashMap<String, OfflineSubreddit> cache = new HashMap<>();
 
     public static OfflineSubreddit getSubreddit(
-            String subreddit, Long time, boolean offline, Context c) {
-        if (cache == null) cache = new HashMap<>();
+            @Nullable String subreddit, Long time, boolean offline, @Nullable Context c) {
         String title;
         if (subreddit != null) {
             title = subreddit.toLowerCase(Locale.ENGLISH) + "," + time;
@@ -238,8 +249,10 @@ public class OfflineSubreddit {
             o.time = time;
 
             String[] split =
-                    Reddit.cachedData
-                            .getString(subreddit.toLowerCase(Locale.ENGLISH) + "," + time, "")
+                    PrefUtil.getString(
+                                    Reddit.cachedData,
+                                    subreddit.toLowerCase(Locale.ENGLISH) + "," + time,
+                                    "")
                             .split(",");
             if (split.length > 0) {
                 o.time = time;
@@ -269,8 +282,11 @@ public class OfflineSubreddit {
         }
     }
 
+    /** Null when the blob is missing or holds no submission data. */
+    @Nullable
     public static Submission getSubmissionFromStorage(
-            String fullName, Context c, boolean offline, ObjectReader reader) throws IOException {
+            String fullName, @Nullable Context c, boolean offline, ObjectReader reader)
+            throws IOException {
         String gotten = getStringFromFile(fullName, c);
         if (!gotten.isEmpty()) {
             if (gotten.startsWith("[") && offline) {
@@ -294,7 +310,7 @@ public class OfflineSubreddit {
         return null;
     }
 
-    public static String getStringFromFile(String name, Context c) {
+    public static String getStringFromFile(String name, @Nullable Context c) {
         File f = cacheFile(name, c);
         if (f != null && f.exists()) {
             try {
@@ -325,43 +341,41 @@ public class OfflineSubreddit {
     }
 
     public void clearPost(Submission s) {
-        if (submissions != null) {
-            Submission toRemove = null;
-            for (Submission s2 : submissions) {
-                if (s.getFullName().equals(s2.getFullName())) {
-                    toRemove = s2;
-                }
+        Submission toRemove = null;
+        for (Submission s2 : submissions) {
+            if (s.getFullName().equals(s2.getFullName())) {
+                toRemove = s2;
             }
-            if (toRemove != null) {
-                submissions.remove(toRemove);
-            }
+        }
+        if (toRemove != null) {
+            submissions.remove(toRemove);
         }
     }
 
     int savedIndex;
-    Submission savedSubmission;
+
+    /** The post hide() last removed, so unhideLast() can put it back. Null until one is hidden. */
+    @Nullable Submission savedSubmission;
 
     public void hide(int index) {
         hide(index, true);
     }
 
     public void hideMulti(int index) {
-        if (submissions != null && index >= 0 && index < submissions.size()) {
+        if (index >= 0 && index < submissions.size()) {
             submissions.remove(index);
         }
     }
 
     public void hide(int index, boolean save) {
-        if (submissions != null) {
-            savedSubmission = submissions.get(index);
-            submissions.remove(index);
-            savedIndex = index;
-            writeToMemoryNoStorage();
-        }
+        savedSubmission = submissions.get(index);
+        submissions.remove(index);
+        savedIndex = index;
+        writeToMemoryNoStorage();
     }
 
     public void unhideLast() {
-        if (submissions != null && savedSubmission != null) {
+        if (savedSubmission != null) {
             submissions.add(savedIndex, savedSubmission);
             writeToMemoryNoStorage();
         }

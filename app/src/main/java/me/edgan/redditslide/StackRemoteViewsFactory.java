@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import me.edgan.redditslide.Adapters.SubredditPosts;
@@ -18,7 +20,10 @@ import net.dean.jraw.models.Submission;
 public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     private final Context mContext;
     private List<Submission> submissions = new ArrayList<>();
-    private SubredditPosts posts;
+    // Never assigned. StackWidgetService, the only thing that builds this factory, is not declared
+    // in the manifest, so nothing can bind to it and onDataSetChanged never runs — it would NPE
+    // here on the first call if it did. The live widget is Widget/ListViewRemoteViewsFactory.
+    @Nullable private SubredditPosts posts;
 
     public StackRemoteViewsFactory(Context context, Intent intent) {
         mContext = context;
@@ -111,7 +116,8 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         return rv;
     }
 
-    public RemoteViews getLoadingView() {
+    /** Null tells the framework to use the widget's default loading view. */
+    @Nullable public RemoteViews getLoadingView() {
         return null;
     }
 
@@ -129,6 +135,9 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     public void onDataSetChanged() {
         Log.v(LogUtil.getTag(), "MAKING POSTS");
+        if (posts == null) {
+            return;
+        }
         submissions = posts.posts;
         Log.v(LogUtil.getTag(), "POSTS IS SIZE " + submissions.size());
     }

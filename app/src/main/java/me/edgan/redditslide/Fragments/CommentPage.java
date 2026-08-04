@@ -889,7 +889,6 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
         if (itemId == R.id.search) {
             if (comments.comments != null && comments.submission != null) {
                 DataShare.sharedComments = comments.comments;
-                DataShare.subAuthor = comments.submission.getAuthor();
                 Intent i = new Intent(getActivity(), CommentSearch.class);
                 if (getActivity() instanceof MainActivity) {
                     getActivity().startActivityForResult(i, 423);

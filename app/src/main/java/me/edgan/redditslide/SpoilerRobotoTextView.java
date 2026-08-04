@@ -39,6 +39,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.content.ContextCompat;
 import com.devspark.robototextview.widget.RobotoTextView;
@@ -57,6 +58,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
@@ -92,9 +94,9 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
      * view. Set by the comment adapter so comment media is named after its source. Null for
      * non-comment text, in which case no title is attached and the save falls back to a timestamp.
      */
-    private String downloadName;
+    @Nullable private String downloadName;
 
-    public void setDownloadName(String downloadName) {
+    public void setDownloadName(@Nullable String downloadName) {
         this.downloadName = downloadName;
     }
 
@@ -283,7 +285,6 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
     // List to keep track of active GifDrawables to manage their lifecycle
     private List<GifDrawable> activeGifDrawables = new ArrayList<>();
 
-    private SpannableStringBuilder currentBuilder;
     private final Object spanLock = new Object();
 
     private static class PendingEmoteSpan {
@@ -323,7 +324,8 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
         return false;
     }
 
-    private void setEmoteSpan(DynamicDrawableSpan span, String emoteName, int position) {
+    private void setEmoteSpan(
+            @Nullable DynamicDrawableSpan span, @Nullable String emoteName, int position) {
         if (span == null || emoteName == null) {
             Log.e("EmoteDebug", "Null span or emote name in setEmoteSpan");
             return;
@@ -464,7 +466,7 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
     }
 
 // In setEmoteText(...), after processing the raw HTML:
-public void setEmoteText(String text, TextView textView) {
+public void setEmoteText(@Nullable String text, @Nullable TextView textView) {
     if (text == null || textView == null) {
         Log.e("EmoteDebug", "Null text or textview in setEmoteText");
         return;
@@ -531,7 +533,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
     Log.d("EmoteDebug", "Starting image download for giphy emote: " + request.gifUrl);
     loadThumbnailFromUrl(request.gifUrl, new ImageCallback() {
         @Override
-        public void onImageLoaded(Bitmap bitmap) {
+        public void onImageLoaded(@Nullable Bitmap bitmap) {
             post(() -> {
                 if (bitmap != null) {
                     try {
@@ -728,7 +730,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
      * Fill the ￼ placeholders left by the new Reddit-style renderer with animated free emotes,
      * in order. Reuses the same loader as the snudown emote path. See issue #179.
      */
-    public void loadFreeEmotes(List<String> emoteUrls) {
+    public void loadFreeEmotes(@Nullable List<String> emoteUrls) {
         if (emoteUrls == null || emoteUrls.isEmpty()) {
             return;
         }
@@ -781,7 +783,10 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                 // Make sure bitmap loaded works well with screen density.
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 DisplayMetrics metrics = new DisplayMetrics();
-                ContextCompat.getSystemService(getContext(), WindowManager.class)
+                // WindowManager is present on every UI context; a null here would fail on the
+                // very next line regardless.
+                Objects.requireNonNull(
+                                ContextCompat.getSystemService(getContext(), WindowManager.class))
                         .getDefaultDisplay()
                         .getMetrics(metrics);
                 options.inDensity = 240;
@@ -929,7 +934,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
      * the text is rendered from raw markdown rather than the marked-up {@code body_html}. No-op if
      * {@code search} is empty or the view text isn't spannable.
      */
-    public void highlightOccurrences(String search, String subreddit) {
+    public void highlightOccurrences(@Nullable String search, String subreddit) {
         if (search == null || search.isEmpty()) {
             return;
         }
@@ -956,7 +961,8 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
     }
 
     @Override
-    public void onLinkClick(String url, int xOffset, String subreddit, URLSpan span) {
+    public void onLinkClick(
+            @Nullable String url, int xOffset, String subreddit, URLSpan span) {
         if (span instanceof RedditSpoilerSpan) {
             // New Reddit-style spoiler: toggle reveal in place, don't navigate. Issue #179.
             ((RedditSpoilerSpan) span).toggle(this);
@@ -992,11 +998,16 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
         }
 
         if (!PostMatch.openExternal(url) || type == ContentType.Type.VIDEO) {
+            // activity is null when this view was inflated against a Context that wraps
+            // something other than an Activity — the unwrap chain above has no branch for that.
+            // Each case that needs one falls back to opening the link externally, which is what
+            // these branches already do when they cannot handle it in-app; the cases that never
+            // needed an Activity are untouched.
             switch (type) {
                 case DEVIANTART:
                 case IMGUR:
                 case XKCD:
-                    if (SettingValues.image) {
+                    if (SettingValues.image && activity != null) {
                         Intent intent2 = new Intent(activity, MediaView.class);
                         intent2.putExtra(MediaView.EXTRA_URL, url);
                         intent2.putExtra(MediaView.SUBREDDIT, subreddit);
@@ -1007,14 +1018,20 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                     }
                     break;
                 case REDDIT:
-                    OpenRedditLink.openUrl(activity, url, true);
+                    if (activity != null) {
+                        OpenRedditLink.openUrl(activity, url, true);
+                    } else {
+                        LinkUtil.openExternally(url);
+                    }
                     break;
                 case LINK:
                     if (url.startsWith("https://giphy.com/")) {
                         openGif(url, subreddit, activity);
-                    } else {
+                    } else if (activity != null) {
                         LogUtil.v("Opening link");
                         LinkUtil.openUrl(url, Palette.getColor(subreddit), activity);
+                    } else {
+                        LinkUtil.openExternally(url);
                     }
                     break;
                 case SELF:
@@ -1024,7 +1041,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                     openStreamable(url, subreddit);
                     break;
                 case ALBUM:
-                    if (SettingValues.album) {
+                    if (SettingValues.album && activity != null) {
                         Intent i;
                         if (SettingValues.albumSwipe) {
                             i = new Intent(activity, AlbumPager.class);
@@ -1042,7 +1059,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                     }
                     break;
                 case TUMBLR:
-                    if (SettingValues.image) {
+                    if (SettingValues.image && activity != null) {
                         Intent i = new Intent(activity, TumblrPager.class);
                         i.putExtra(Album.EXTRA_URL, url);
                         addDownloadName(i);
@@ -1057,8 +1074,10 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                 case VREDDIT_REDIRECT:
                     if (url.contains("reddit.com/link/") && url.contains("/video/")) {
                         openGif(url, subreddit, activity);
-                    } else {
+                    } else if (activity != null) {
                         openVReddit(url, subreddit, activity);
+                    } else {
+                        LinkUtil.openExternally(url);
                     }
                     break;
                 case GIF:
@@ -1067,7 +1086,11 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                     break;
                 case VIDEO:
                     if (!LinkUtil.tryOpenWithVideoPlugin(url)) {
-                        LinkUtil.openUrl(url, Palette.getStatusBarColor(), activity);
+                        if (activity != null) {
+                            LinkUtil.openUrl(url, Palette.getStatusBarColor(), activity);
+                        } else {
+                            LinkUtil.openExternally(url);
+                        }
                     }
                 case SPOILER:
                     spoilerClicked = true;
@@ -1083,7 +1106,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
     }
 
     @Override
-    public void onLinkLongClick(final String baseUrl, MotionEvent event) {
+    public void onLinkLongClick(@Nullable final String baseUrl, @Nullable MotionEvent event) {
         if (baseUrl == null || SettingValues.noPreviewImageLongClick) {
             return;
         }
@@ -1127,7 +1150,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, url);
     }
 
-    private void openGif(String url, String subreddit, Activity activity) {
+    private void openGif(String url, String subreddit, @Nullable Activity activity) {
         if (SettingValues.gif) {
             Intent myIntent = new Intent(getContext(), MediaView.class);
             myIntent.putExtra(MediaView.EXTRA_URL, url);
@@ -1166,7 +1189,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
         }
     }
 
-    public void setOrRemoveSpoilerSpans(int endOfLink, URLSpan span) {
+    public void setOrRemoveSpoilerSpans(int endOfLink, @Nullable URLSpan span) {
         if (span != null) {
             int offset = (span.getURL().contains("hidden")) ? -1 : 2;
             // Clamp to a valid index: a link resolved from inside a Markwon table cell passes
@@ -1408,11 +1431,12 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
         return new ImageSize(box, box);
     }
 
-    private static DisplayImageOptions inlineImageOptions;
+    @Nullable private static DisplayImageOptions inlineImageOptions;
 
     private static DisplayImageOptions getInlineImageOptions() {
-        if (inlineImageOptions == null) {
-            inlineImageOptions =
+        DisplayImageOptions options = inlineImageOptions;
+        if (options == null) {
+            options =
                     new DisplayImageOptions.Builder()
                             .cacheOnDisk(true)
                             .cacheInMemory(true)
@@ -1423,10 +1447,13 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                                             : Bitmap.Config.RGB_565)
                             .resetViewBeforeLoading(false)
                             .build();
+            inlineImageOptions = options;
         }
-        return inlineImageOptions;
+        return options;
     }
 
+    /** Null when the image is in neither the memory nor the disk cache. */
+    @Nullable
     private static Bitmap getCachedInlineBitmap(ImageLoader loader, String url) {
         List<Bitmap> cached =
                 MemoryCacheUtils.findCachedBitmapsForImageUri(url, loader.getMemoryCache());
@@ -1454,7 +1481,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
      * form the renderer requests them, so prefetch and render share identical ImageLoader cache
      * keys. Safe to call off the main thread.
      */
-    public static List<String> extractInlineImageUrls(String bodyHtml) {
+    public static List<String> extractInlineImageUrls(@Nullable String bodyHtml) {
         List<String> urls = new ArrayList<>();
         if (bodyHtml == null || bodyHtml.isEmpty()) {
             return urls;
@@ -1544,7 +1571,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                             finishOne(null);
                         }
 
-                        private void finishOne(Bitmap bitmap) {
+                        private void finishOne(@Nullable Bitmap bitmap) {
                             // View was rebound to a different comment; drop this stale result.
                             if (loadId != pendingImageLoadId) {
                                 return;
@@ -1690,7 +1717,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
 
     // Simple callback interface
     private interface ImageCallback {
-        void onImageLoaded(Bitmap bitmap);
+        void onImageLoaded(@Nullable Bitmap bitmap);
     }
 
     private interface GiphyUrlMapper {
@@ -1721,9 +1748,6 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
      * same string the existing preview.redd.it links produce, keeping image-cache keys consistent.
      */
     private static String convertGiphyToImageUrls(String html) {
-        if (html == null) {
-            return null;
-        }
         html = replaceGiphyMatches(html, GIPHY_ANCHOR_WITH_IMG_PATTERN, m -> m.group(1));
         html =
                 replaceGiphyMatches(

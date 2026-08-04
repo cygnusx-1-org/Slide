@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -40,16 +41,40 @@ public class Authentication {
     // shared RedditClient/token state, while keeping them off the global AsyncTask serial executor
     // (so a stalled reauth doesn't block the rest of the app's AsyncTasks).
     private static final Executor REAUTH_EXECUTOR = Executors.newSingleThreadExecutor();
-    public static RedditClient reddit;
-    public static LoggedInAccount me;
+    // The client, the account behind it and the refresh token all come from the network, and
+    // every path that builds them can fail — the constructor's offline branch never builds a client
+    // at all. The code here already branches on each of them being null.
+    @Nullable public static RedditClient reddit;
+
+    @Nullable public static LoggedInAccount me;
+
     public static boolean mod;
-    public static String name;
+
+    // Assigned unconditionally by Reddit.doMainStuff, i.e. Application.onCreate — but several
+    // sites then overwrite it with LoggedInAccount.getFullName(), which is JRAW's data("name") and
+    // returns null when the account JSON carries no "name". SubmissionCache, LocalSaved and
+    // DoEditorActions have always tested it for null.
+    @Nullable public static String name;
+
+    @SuppressWarnings("NullAway.Init")
     public static SharedPreferences authentication;
-    public static String refresh;
+
+    @Nullable public static String refresh;
 
     public boolean hasDone;
     public static boolean didOnline;
-    private static OkHttpAdapter httpAdapter;
+
+    @Nullable private static OkHttpAdapter httpAdapter;
+
+    /**
+     * {@link #name} for use as a preferences key or a message substitution, falling back to the
+     * empty string. Reads and writes must both go through this, or a null name would read one key
+     * and write another.
+     */
+    public static String nameOrEmpty() {
+        final String current = name;
+        return current == null ? "" : current;
+    }
 
     /**
      * Rewrites a bare account name in the stored "accounts" set to the newer "name:token" form.
@@ -99,14 +124,16 @@ public class Authentication {
             new VerifyCredentials(context).executeOnExecutor(REAUTH_EXECUTOR);
         } else {
             isLoggedIn = Reddit.appRestart.getBoolean("loggedin", false);
-            name = Reddit.appRestart.getString("name", "");
-            refresh = authentication.getString("lasttoken", "");
-            if ((name.isEmpty() || !isLoggedIn)
-                    && !authentication.getString("lasttoken", "").isEmpty()) {
+            name = PrefUtil.getString(Reddit.appRestart, "name", "");
+            final String lastToken = PrefUtil.getString(authentication, "lasttoken", "");
+            refresh = lastToken;
+            if ((name.isEmpty() || !isLoggedIn) && !lastToken.isEmpty()) {
                 for (String s :
-                        Authentication.authentication.getStringSet(
-                                "accounts", new HashSet<String>())) {
-                    if (s.contains(authentication.getString("lasttoken", ""))) {
+                        PrefUtil.getStringSet(
+                                Authentication.authentication,
+                                "accounts",
+                                new HashSet<String>())) {
+                    if (s.contains(lastToken)) {
                         name = (s.split(":")[0]);
                         break;
                     }
@@ -132,7 +159,7 @@ public class Authentication {
      *     cancellation); may be {@code null}. Lets {@link TokenRefreshReceiver} hold its {@code
      *     goAsync()} broadcast lease open until the network refresh has actually completed.
      */
-    public void updateToken(Context c, boolean reportToSnackbar, Runnable onComplete) {
+    public void updateToken(Context c, boolean reportToSnackbar, @Nullable Runnable onComplete) {
         if (BuildConfig.DEBUG) LogUtil.v("Executing update token");
         if (reddit == null) {
             hasDone = true;
@@ -156,7 +183,7 @@ public class Authentication {
 
         Context context;
         final boolean reportToSnackbar;
-        final Runnable onComplete;
+        @Nullable final Runnable onComplete;
 
         public UpdateToken(Context c) {
             this(c, true, null);
@@ -166,7 +193,7 @@ public class Authentication {
             this(c, reportToSnackbar, null);
         }
 
-        public UpdateToken(Context c, boolean reportToSnackbar, Runnable onComplete) {
+        public UpdateToken(Context c, boolean reportToSnackbar, @Nullable Runnable onComplete) {
             this.context = c;
             this.reportToSnackbar = reportToSnackbar;
             this.onComplete = onComplete;
@@ -178,7 +205,7 @@ public class Authentication {
         }
 
         @Override
-        protected void onPostExecute(Boolean success) {
+        protected void onPostExecute(@Nullable Boolean success) {
             // A null result means no refresh was attempted (e.g. not yet authed); fall back to the
             // live auth state. A non-null result is the real outcome of the refresh, so a failed
             // refresh reports false even while the old (not-yet-expired) token still reads as
@@ -214,16 +241,24 @@ public class Authentication {
         }
 
         @Override
+        @Nullable
         protected Boolean doInBackground(Void... params) {
             Boolean result = null;
             maybeBreakReauth();
+            // updateToken only builds an UpdateToken on the branch where the client already
+            // exists, and nothing ever sets it back to null, so this is defensive. Returning null
+            // is the documented "no refresh was attempted" result onPostExecute already handles.
+            final RedditClient client = reddit;
+            if (client == null) {
+                return result;
+            }
             if (authedOnce && NetworkUtil.isConnected(context)) {
                 didOnline = true;
                 if (name != null && !name.isEmpty()) {
                     Log.v(LogUtil.getTag(), "REAUTH");
                     // Ensure refresh token is available from SharedPreferences if null
                     if (refresh == null || refresh.isEmpty()) {
-                        refresh = authentication.getString("lasttoken", "");
+                        refresh = PrefUtil.getString(authentication, "lasttoken", "");
                     }
                     // Branch on the presence of a user refresh token, NOT the transient isLoggedIn
                     // flag: several paths clear isLoggedIn momentarily while the user is still
@@ -237,7 +272,7 @@ public class Authentication {
                                             Constants.getClientId(), Constants.getRedirectUrl());
                             Log.v(LogUtil.getTag(), "REAUTH LOGGED IN");
 
-                            OAuthHelper oAuthHelper = reddit.getOAuthHelper();
+                            OAuthHelper oAuthHelper = client.getOAuthHelper();
 
                             oAuthHelper.setRefreshToken(refresh);
                             OAuthData finalData;
@@ -247,8 +282,10 @@ public class Authentication {
                                 finalData =
                                         oAuthHelper.refreshToken(
                                                 credentials,
-                                                authentication.getString(
-                                                        "backedCreds", "")); // does a request
+                                                PrefUtil.getString(
+                                                        authentication,
+                                                        "backedCreds",
+                                                        "")); // does a request
                             } else {
                                 finalData = oAuthHelper.refreshToken(credentials); // does a request
                                 authentication
@@ -262,15 +299,15 @@ public class Authentication {
                                     .edit()
                                     .putString("backedCreds", finalData.getDataNode().toString())
                                     .commit();
-                            reddit.authenticate(finalData);
+                            client.authenticate(finalData);
                             refresh = oAuthHelper.getRefreshToken();
 
-                            if (reddit.isAuthenticated()) {
+                            if (client.isAuthenticated()) {
                                 if (me == null) {
                                     // Don't let a me() blip skip isLoggedIn=true: the token is
                                     // already authenticated at this point.
                                     try {
-                                        me = reddit.me();
+                                        me = client.me();
                                     } catch (Exception meError) {
                                         LogUtil.e(meError, "reddit.me() failed after auth");
                                     }
@@ -278,7 +315,7 @@ public class Authentication {
                                 Authentication.isLoggedIn = true;
                             }
                             Log.v(LogUtil.getTag(), "AUTHENTICATED");
-                            result = reddit.isAuthenticated();
+                            result = client.isAuthenticated();
                         } catch (Exception e) {
                             LogUtil.e(e, "Authentication.doInBackground failed");
                             // Refresh failed; report failure so the reauth snackbar Retry appears.
@@ -292,7 +329,7 @@ public class Authentication {
                         if (BuildConfig.DEBUG) LogUtil.v("Not logged in");
                         try {
 
-                            authData = reddit.getOAuthHelper().easyAuth(fcreds);
+                            authData = client.getOAuthHelper().easyAuth(fcreds);
                             authentication
                                     .edit()
                                     .putLong(
@@ -306,7 +343,7 @@ public class Authentication {
                             Authentication.name = "LOGGEDOUT";
                             mod = false;
 
-                            reddit.authenticate(authData);
+                            client.authenticate(authData);
                             Log.v(LogUtil.getTag(), "REAUTH LOGGED IN");
 
                         } catch (Exception e) {
@@ -366,15 +403,16 @@ public class Authentication {
         String lastToken;
         boolean single;
         final boolean reportToSnackbar;
-        final Runnable onComplete;
+        @Nullable final Runnable onComplete;
 
         public VerifyCredentials(Context context) {
             this(context, true, null);
         }
 
-        public VerifyCredentials(Context context, boolean reportToSnackbar, Runnable onComplete) {
+        public VerifyCredentials(
+                Context context, boolean reportToSnackbar, @Nullable Runnable onComplete) {
             mContext = context;
-            lastToken = authentication.getString("lasttoken", "");
+            lastToken = PrefUtil.getString(authentication, "lasttoken", "");
             this.reportToSnackbar = reportToSnackbar;
             this.onComplete = onComplete;
         }
@@ -452,10 +490,16 @@ public class Authentication {
     }
 
     public static void doVerify(
-            String lastToken, RedditClient baseReddit, boolean single, Context mContext) {
+            String lastToken,
+            @Nullable RedditClient baseReddit,
+            boolean single,
+            Context mContext) {
         try {
 
             if (BuildConfig.DEBUG) LogUtil.v("TOKEN IS " + lastToken);
+            if (baseReddit == null) {
+                return;
+            }
             if (!lastToken.isEmpty()) {
 
                 final Credentials credentials =
@@ -473,7 +517,8 @@ public class Authentication {
                                     > Calendar.getInstance().getTimeInMillis()) {
                         finalData =
                                 oAuthHelper.refreshToken(
-                                        credentials, authentication.getString("backedCreds", ""));
+                                        credentials,
+                                        PrefUtil.getString(authentication, "backedCreds", ""));
                     } else {
                         finalData = oAuthHelper.refreshToken(credentials); // does a request
                         if (!single) {
@@ -527,7 +572,7 @@ public class Authentication {
                 OAuthData authData;
                 try {
 
-                    authData = reddit.getOAuthHelper().easyAuth(fcreds);
+                    authData = baseReddit.getOAuthHelper().easyAuth(fcreds);
                     authentication
                             .edit()
                             .putLong("expires", Calendar.getInstance().getTimeInMillis() + Constants.EXPIRES_VALUE)
@@ -536,7 +581,7 @@ public class Authentication {
                             .edit()
                             .putString("backedCreds", authData.getDataNode().toString())
                             .apply();
-                    reddit.authenticate(authData);
+                    baseReddit.authenticate(authData);
 
                     Authentication.name = "LOGGEDOUT";
                     Reddit.notFirst = true;

@@ -9,6 +9,8 @@ import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.TypedValue;
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +31,12 @@ import net.dean.jraw.models.Submission;
 
 /** Created by carlo_000 on 4/22/2016. */
 public class SubmissionCache {
-    private static WeakHashMap<String, SpannableStringBuilder> titles;
-    private static WeakHashMap<String, SpannableStringBuilder> info;
-    private static WeakHashMap<String, SpannableStringBuilder> crosspost;
+    private static WeakHashMap<String, SpannableStringBuilder> titles = new WeakHashMap<>();
+    private static WeakHashMap<String, SpannableStringBuilder> info = new WeakHashMap<>();
+    private static WeakHashMap<String, SpannableStringBuilder> crosspost = new WeakHashMap<>();
 
     /** fullname -> {source selftext_html, rendered first-line preview}. See getSelftextPreview. */
-    private static WeakHashMap<String, String[]> selftextPreviews;
+    private static WeakHashMap<String, String[]> selftextPreviews = new WeakHashMap<>();
 
     /**
      * The first line of a self post's body, unescaped for the card's preview TextView. Cached
@@ -42,8 +44,6 @@ public class SubmissionCache {
      * every self post. Keyed on the source html too, so an edited post re-renders on its own.
      */
     public static String getSelftextPreview(Submission submission) {
-        if (selftextPreviews == null) selftextPreviews = new WeakHashMap<>();
-
         final String source = submission.getDataNode().path("selftext_html").asText("");
         final String[] cached = selftextPreviews.get(submission.getFullName());
         if (cached != null && cached[0].equals(source)) {
@@ -66,8 +66,8 @@ public class SubmissionCache {
         cacheInfo(submissions, mContext, baseSub);
     }
 
-    public static SpannableStringBuilder getCrosspostLine(Submission s, Context mContext) {
-        if (crosspost == null) crosspost = new WeakHashMap<>();
+    /** Null when the submission is not a crosspost. */
+    @Nullable public static SpannableStringBuilder getCrosspostLine(Submission s, Context mContext) {
         if (crosspost.containsKey(s.getFullName())) {
             return crosspost.get(s.getFullName());
         } else {
@@ -76,9 +76,6 @@ public class SubmissionCache {
     }
 
     private static void cacheInfo(List<Submission> submissions, Context mContext, String baseSub) {
-        if (titles == null) titles = new WeakHashMap<>();
-        if (info == null) info = new WeakHashMap<>();
-        if (crosspost == null) crosspost = new WeakHashMap<>();
 
         for (Submission submission : submissions) {
             // Re-apply any recovered link before building the spannables so the cached info line
@@ -91,23 +88,19 @@ public class SubmissionCache {
     }
 
     public static void updateInfoSpannable(Submission changed, Context mContext, String baseSub) {
-        if (info == null) info = new WeakHashMap<>();
         info.put(changed.getFullName(), getInfoSpannable(changed, mContext, baseSub));
     }
 
     public static void updateTitleFlair(Submission s, String flair, Context c) {
-        if (titles == null) titles = new WeakHashMap<>();
         titles.put(s.getFullName(), getTitleSpannable(s, flair, c));
     }
 
     /** Re-render the cached title (e.g. after recovering the original from the archive). */
     public static void updateTitle(Submission s, Context c) {
-        if (titles == null) titles = new WeakHashMap<>();
         titles.put(s.getFullName(), getTitleSpannable(s, c));
     }
 
     public static SpannableStringBuilder getTitleLine(Submission s, Context mContext) {
-        if (titles == null) titles = new WeakHashMap<>();
         if (titles.containsKey(s.getFullName())) {
             SpannableStringBuilder title = titles.get(s.getFullName());
             if (title != null) {
@@ -123,7 +116,6 @@ public class SubmissionCache {
 
     public static SpannableStringBuilder getInfoLine(
             Submission s, Context mContext, String baseSub) {
-        if (info == null) info = new WeakHashMap<>();
         if (info.containsKey(s.getFullName())) {
             SpannableStringBuilder infoLine = info.get(s.getFullName());
             if (infoLine != null) {
@@ -137,6 +129,7 @@ public class SubmissionCache {
         return infoLine;
     }
 
+    @Nullable
     private static SpannableStringBuilder getCrosspostSpannable(Submission s, Context mContext) {
         String spacer = mContext.getString(R.string.submission_properties_seperator);
         SpannableStringBuilder titleString = new SpannableStringBuilder("Crosspost" + spacer);
@@ -540,7 +533,7 @@ public class SubmissionCache {
             titleString.append(
                     CommentAdapterHelper.createRemovedLine(
                             (submission.getBannedBy() == null)
-                                    ? Authentication.name
+                                    ? Authentication.nameOrEmpty()
                                     : submission.getBannedBy(),
                             mContext));
         } else if (approved.contains(submission.getFullName())
@@ -549,7 +542,7 @@ public class SubmissionCache {
             titleString.append(
                     CommentAdapterHelper.createApprovedLine(
                             (submission.getApprovedBy() == null)
-                                    ? Authentication.name
+                                    ? Authentication.nameOrEmpty()
                                     : submission.getApprovedBy(),
                             mContext));
         }
@@ -558,7 +551,7 @@ public class SubmissionCache {
     }
 
     private static SpannableStringBuilder getTitleSpannable(
-            Submission submission, String flairOverride, Context mContext) {
+            Submission submission, @Nullable String flairOverride, Context mContext) {
         SpannableStringBuilder titleString = new SpannableStringBuilder();
         String recoveredTitle = PostRecovery.getRecoveredTitle(submission.getFullName());
         titleString.append(

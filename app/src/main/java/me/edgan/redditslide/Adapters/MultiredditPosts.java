@@ -58,6 +58,14 @@ public class MultiredditPosts implements PostLoader {
     @Override
     public void loadMore(Context context, SubmissionDisplay displayer, boolean reset) {
         this.c = context;
+        if (multiReddit == null) {
+            // The constructor could not resolve the name: UserSubscriptions.multireddits is null
+            // after a failed sync, and loadPublicMultireddits stores a null for any profile whose
+            // fetch threw. Both LoadData.doInBackground and its onPostExecute dereference this
+            // without a guard, so stop here rather than there.
+            displayer.updateError();
+            return;
+        }
         new LoadData(context, displayer, reset).execute(multiReddit);
     }
 

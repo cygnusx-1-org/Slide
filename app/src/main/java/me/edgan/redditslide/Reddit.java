@@ -20,6 +20,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NotificationChannelCompat;
@@ -63,6 +64,7 @@ import me.edgan.redditslide.util.GifCache;
 import me.edgan.redditslide.util.ImageLoaderUtils;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
+import me.edgan.redditslide.util.PrefUtil;
 import me.edgan.redditslide.util.ReauthNotifier;
 import me.edgan.redditslide.util.SortingUtil;
 import me.edgan.redditslide.util.UpgradeUtil;
@@ -75,6 +77,10 @@ import org.apache.commons.text.StringEscapeUtils;
 /** Created by ccrama on 9/17/2015. */
 @OptIn(markerClass = UnstableApi.class)
 public class Reddit extends Application implements Application.ActivityLifecycleCallbacks {
+    // NullAway.Init here and on the SharedPreferences group below: onCreate assigns mApplication
+    // as its first statement and doMainStuff assigns the rest, so all of them are set before any
+    // activity, service or receiver in the app can run.
+    @SuppressWarnings("NullAway.Init")
     private static Application mApplication;
 
     public static final String EMPTY_STRING = "NOTHING";
@@ -83,35 +89,48 @@ public class Reddit extends Application implements Application.ActivityLifecycle
     public static final String PREF_LAYOUT = "PRESET";
     public static final String SHARED_PREF_IS_MOD = "is_mod";
 
-    private static Cache videoCache;
+    /** Built on first use by getVideoCache, so null until something plays a video. */
+    @Nullable private static Cache videoCache;
     private static final Object videoCacheLock = new Object();
 
     public static long enter_animation_time = enter_animation_time_original;
     public static final int enter_animation_time_multiplier = 1;
 
+    @SuppressWarnings("NullAway.Init")
     public static Authentication authentication;
 
+    @SuppressWarnings("NullAway.Init")
     public static SharedPreferences colors;
+
+    @SuppressWarnings("NullAway.Init")
     public static SharedPreferences appRestart;
+
+    @SuppressWarnings("NullAway.Init")
     public static SharedPreferences tags;
 
     public static int dpWidth;
     public static int notificationTime;
     public static boolean videoPlugin;
-    public static NotificationJobScheduler notifications;
+    // Started on demand by whichever screen first needs them, and SettingsGeneralFragment
+    // already tests both for null before using them.
+    @Nullable public static NotificationJobScheduler notifications;
     public static boolean isLoading = false;
     public static final long time = System.currentTimeMillis();
     public static boolean fabClear;
-    public static ArrayList<Integer> lastPosition;
     public static int currentPosition;
+
+    @SuppressWarnings("NullAway.Init")
     public static SharedPreferences cachedData;
     public static final boolean noGapps = true; // for testing
     public static boolean overrideLanguage;
     public static boolean isRestarting;
-    public static AutoCacheScheduler autoCache;
+    @Nullable public static AutoCacheScheduler autoCache;
     public static boolean peek;
     public boolean active;
-    public ImageLoader defaultImageLoader;
+    /** Built on first use by getImageLoader, and rebuilt whenever it has been de-initialised. */
+    @Nullable public ImageLoader defaultImageLoader;
+
+    @SuppressWarnings("NullAway.Init")
     public static OkHttpClient client;
 
     public static boolean canUseNightModeAuto = false;
@@ -238,6 +257,9 @@ public class Reddit extends Application implements Application.ActivityLifecycle
                             PrintWriter printWriter = new PrintWriter(writer);
                             t.printStackTrace(printWriter);
                             String stacktrace = writer.toString().replace(";", ",");
+                            // Null for anything thrown without one, which includes the very
+                            // NullPointerException the branch below is trying to recognise.
+                            final String message = t.getMessage();
                             if (stacktrace.contains("UnknownHostException")
                                     || stacktrace.contains("SocketTimeoutException")
                                     || stacktrace.contains("ConnectException")) {
@@ -355,17 +377,18 @@ public class Reddit extends Application implements Application.ActivityLifecycle
                                                 Toast.LENGTH_LONG)
                                         .show();
                             } else if (t instanceof NullPointerException
-                                    && t.getMessage()
-                                            .contains(
-                                                    "Attempt to invoke virtual method"
-                                                        + " 'android.content.Context"
-                                                        + " android.view.ViewGroup.getContext()' on"
-                                                        + " a null object reference")) {
+                                    && message != null
+                                    && message.contains(
+                                            "Attempt to invoke virtual method"
+                                                    + " 'android.content.Context"
+                                                    + " android.view.ViewGroup.getContext()' on a"
+                                                    + " null object reference")) {
                                 LogUtil.e(t, "Reddit.run failed");
                             } else if (t instanceof WindowManager.BadTokenException) {
                                 LogUtil.e(t, "Reddit.run failed");
                             } else if (t instanceof IllegalArgumentException
-                                    && t.getMessage().contains("pointerIndex out of range")) {
+                                    && message != null
+                                    && message.contains("pointerIndex out of range")) {
                                 LogUtil.e(t, "Reddit.run failed");
                             } else {
                                 appRestart
@@ -398,7 +421,7 @@ public class Reddit extends Application implements Application.ActivityLifecycle
     public void onActivityStopped(Activity activity) {}
 
     @Override
-    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+    public void onActivityCreated(Activity activity, @Nullable Bundle savedInstanceState) {
         doLanguages();
     }
 
@@ -502,10 +525,9 @@ public class Reddit extends Application implements Application.ActivityLifecycle
         tags = getSharedPreferences("TAGS", 0);
         KVStore.init(this, "SEEN");
         doLanguages();
-        lastPosition = new ArrayList<>();
 
         Authentication.isLoggedIn = appRestart.getBoolean("loggedin", false);
-        Authentication.name = appRestart.getString("name", "LOGGEDOUT");
+        Authentication.name = PrefUtil.getString(appRestart, "name", "LOGGEDOUT");
         active = true;
 
         authentication = new Authentication(this);

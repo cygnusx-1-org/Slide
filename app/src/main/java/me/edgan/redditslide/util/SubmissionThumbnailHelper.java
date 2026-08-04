@@ -8,7 +8,6 @@ import android.content.Intent;
 import com.fasterxml.jackson.databind.JsonNode;
 import me.edgan.redditslide.Activities.MediaView;
 import me.edgan.redditslide.ContentType;
-import me.edgan.redditslide.DataShare;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionViews.HeaderImageLinkView;
@@ -113,8 +112,6 @@ public class SubmissionThumbnailHelper {
     public static void openGif(
             Activity contextActivity, Submission submission, int adapterPosition) {
         if (SettingValues.gif) {
-            DataShare.sharedSubmission = submission;
-
             Intent myIntent = new Intent(contextActivity, MediaView.class);
             myIntent.putExtra(MediaView.SUBREDDIT, submission.getSubredditName());
             myIntent.putExtra(

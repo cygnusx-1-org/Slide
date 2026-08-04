@@ -2,6 +2,7 @@ package me.edgan.redditslide;
 
 import android.content.SharedPreferences;
 import java.util.ArrayList;
+import me.edgan.redditslide.util.PrefUtil;
 import me.edgan.redditslide.util.StringUtil;
 
 /** Created by l3d00m on 11/13/2015. */
@@ -10,8 +11,7 @@ public class Drafts {
     public static ArrayList<String> getDrafts() {
         ArrayList<String> drafts = new ArrayList<>();
         for (String s :
-                Authentication.authentication
-                        .getString(SettingValues.PREF_DRAFTS, "")
+                PrefUtil.getString(Authentication.authentication, SettingValues.PREF_DRAFTS, "")
                         .split("</newdraft>")) {
             if (!s.trim().isEmpty()) {
                 drafts.add(s);

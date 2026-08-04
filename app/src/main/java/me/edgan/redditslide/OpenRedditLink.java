@@ -95,7 +95,8 @@ public class OpenRedditLink {
             return false;
         }
 
-        if (uri.getHost().startsWith("np")) {
+        // formatRedditUrl only returns a Uri it could read a host from, so this cannot be null.
+        if (Objects.requireNonNull(uri.getHost()).startsWith("np")) {
             np = true;
             uri = uri.buildUpon().authority("reddit.com").build();
         }
@@ -387,36 +388,47 @@ public class OpenRedditLink {
      * @return Formatted Uri without subdomains, language tags & other unused prefixes
      */
     @Nullable
-    public static Uri formatRedditUrl(String url) {
+    public static Uri formatRedditUrl(@Nullable String url) {
         if (url == null) {
             return null;
         }
 
         Uri uri = LinkUtil.formatURL(url);
 
-        if (uri.getHost().equals("www.google.com")) {
+        // An opaque Uri — "mailto:someone@example.com", which formatURL deliberately leaves alone
+        // — has no host and no path. It is not a reddit link, so report it as one this class does
+        // not handle and let the caller open it externally. Tracked in a local from here on so it
+        // stays in step with uri, which the branches below rebuild.
+        String host = uri.getHost();
+        if (host == null || uri.getPath() == null) {
+            return null;
+        }
+
+        if (host.equals("www.google.com")) {
             String ampURL = uri.getQueryParameter("url");
             if (ampURL != null) {
                 Uri ampURI = Uri.parse(ampURL);
-                String host = ampURI.getHost();
-                if (host != null && host.equals("amp.reddit.com")) {
+                String ampHost = ampURI.getHost();
+                if (ampHost != null && ampHost.equals("amp.reddit.com")) {
                     uri = ampURI;
+                    host = ampHost;
                 }
             }
 
-            if (uri.getPath().startsWith("/amp/s/amp.reddit.com")) {
+            final String path = uri.getPath();
+            if (path != null && path.startsWith("/amp/s/amp.reddit.com")) {
                 List<String> segments = uri.getPathSegments();
                 Uri.Builder builder = uri.buildUpon().authority("reddit.com").path(null);
 
                 appendPathSegments(builder, segments.subList(3, segments.size()));
 
                 uri = builder.build();
+                host = "reddit.com";
             }
         }
 
-        if (uri.getHost().matches("(?i).+\\.reddit\\.com")) { // tests for subdomain
+        if (host.matches("(?i).+\\.reddit\\.com")) { // tests for subdomain
             Uri.Builder builder = uri.buildUpon();
-            String host = uri.getHost();
 
             String subdomain = host.split("\\.", 2)[0];
 

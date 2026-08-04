@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,8 +22,10 @@ import me.edgan.redditslide.Toolbox.Toolbox;
 import me.edgan.redditslide.ui.settings.dragSort.ReorderSubreddits;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
+import me.edgan.redditslide.util.PrefUtil;
 import me.edgan.redditslide.util.StringUtil;
 import net.dean.jraw.ApiException;
+import net.dean.jraw.RedditClient;
 import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.managers.MultiRedditManager;
 import net.dean.jraw.models.MultiReddit;
@@ -97,8 +101,15 @@ public class UserSubscriptions {
                     "friends",
                     "mod",
                     "popular");
+    // All three are assigned by Reddit.doMainStuff, i.e. Application.onCreate, before anything
+    // can read them.
+    @SuppressWarnings("NullAway.Init")
     public static SharedPreferences subscriptions;
+
+    @SuppressWarnings("NullAway.Init")
     public static SharedPreferences multiNameToSubs;
+
+    @SuppressWarnings("NullAway.Init")
     public static SharedPreferences pinned;
 
     public static void setSubNameToProperties(String name, String descrption) {
@@ -143,7 +154,7 @@ public class UserSubscriptions {
 
     public static void doMainActivitySubs(MainActivity c) {
         if (NetworkUtil.isConnected(c)) {
-            String s = subscriptions.getString(Authentication.name, "");
+            String s = PrefUtil.getString(subscriptions, Authentication.nameOrEmpty(), "");
             if (s.isEmpty()) {
                 // get online subs
                 c.updateSubs(syncSubscriptionsOverwrite(c));
@@ -157,7 +168,7 @@ public class UserSubscriptions {
             c.updateMultiNameToSubs(getMultiNameToSubs(false));
 
         } else {
-            String s = subscriptions.getString(Authentication.name, "");
+            String s = PrefUtil.getString(subscriptions, Authentication.nameOrEmpty(), "");
             List<String> subredditsForHome = new CaseInsensitiveArrayList();
             if (!s.isEmpty()) {
                 for (String s2 : s.split(",")) {
@@ -183,7 +194,7 @@ public class UserSubscriptions {
 
     public static void doCachedModSubs() {
         if (modOf == null || modOf.isEmpty()) {
-            String s = subscriptions.getString(Authentication.name + "mod", "");
+            String s = PrefUtil.getString(subscriptions, Authentication.nameOrEmpty() + "mod", "");
             if (!s.isEmpty()) {
                 modOf = new CaseInsensitiveArrayList();
                 for (String s2 : s.split(",")) {
@@ -196,7 +207,7 @@ public class UserSubscriptions {
     public static void cacheModOf() {
         subscriptions
                 .edit()
-                .putString(Authentication.name + "mod", StringUtil.arrayToString(modOf))
+                .putString(Authentication.nameOrEmpty() + "mod", StringUtil.arrayToString(modOf))
                 .apply();
     }
 
@@ -216,6 +227,7 @@ public class UserSubscriptions {
         }
 
         @Override
+        @Nullable
         public Boolean doInBackground(Void... params) {
             syncMultiReddits(c);
             return null;
@@ -223,7 +235,7 @@ public class UserSubscriptions {
     }
 
     public static CaseInsensitiveArrayList getSubscriptions(Context c) {
-        String s = subscriptions.getString(Authentication.name, "");
+        String s = PrefUtil.getString(subscriptions, Authentication.nameOrEmpty(), "");
         if (s.isEmpty()) {
             // get online subs
             return syncSubscriptionsOverwrite(c);
@@ -236,10 +248,11 @@ public class UserSubscriptions {
         }
     }
 
-    public static CaseInsensitiveArrayList pins;
+    /** Built on the first getPinned() and dropped again by setPinned(). */
+    @Nullable public static CaseInsensitiveArrayList pins;
 
     public static CaseInsensitiveArrayList getPinned() {
-        String s = pinned.getString(Authentication.name, "");
+        String s = PrefUtil.getString(pinned, Authentication.nameOrEmpty(), "");
         if (s.isEmpty()) {
             // get online subs
             return new CaseInsensitiveArrayList();
@@ -255,7 +268,7 @@ public class UserSubscriptions {
     }
 
     public static CaseInsensitiveArrayList getSubscriptionsForShortcut(Context c) {
-        String s = subscriptions.getString(Authentication.name, "");
+        String s = PrefUtil.getString(subscriptions, Authentication.nameOrEmpty(), "");
         if (s.isEmpty()) {
             // get online subs
             return syncSubscriptionsOverwrite(c);
@@ -269,12 +282,15 @@ public class UserSubscriptions {
     }
 
     public static boolean hasSubs() {
-        String s = subscriptions.getString(Authentication.name, "");
+        String s = PrefUtil.getString(subscriptions, Authentication.nameOrEmpty(), "");
         return s.isEmpty();
     }
 
-    public static CaseInsensitiveArrayList modOf;
-    public static ArrayList<MultiReddit> multireddits;
+    // Both are filled in by a network sync that can fail, and loadMultireddits clears
+    // multireddits back to null on error. Callers here already test for it.
+    @Nullable public static CaseInsensitiveArrayList modOf;
+
+    @Nullable public static ArrayList<MultiReddit> multireddits;
     public static HashMap<String, List<MultiReddit>> public_multireddits =
             new HashMap<String, List<MultiReddit>>();
 
@@ -292,7 +308,7 @@ public class UserSubscriptions {
         loadMultireddits();
     }
 
-    public static CaseInsensitiveArrayList toreturn;
+    @Nullable public static CaseInsensitiveArrayList toreturn;
     public static CaseInsensitiveArrayList friends = new CaseInsensitiveArrayList();
 
     public static CaseInsensitiveArrayList syncSubscriptionsOverwrite(final Context c) {
@@ -328,7 +344,8 @@ public class UserSubscriptions {
                     }
                 }
                 if (toReturn.isEmpty()
-                        && subscriptions.getString(Authentication.name, "").isEmpty()) {
+                        && PrefUtil.getString(subscriptions, Authentication.nameOrEmpty(), "").isEmpty()
+                        && toreturn != null) {
                     toreturn.addAll(defaultSubs);
                 }
             } catch (Exception e) {
@@ -350,7 +367,7 @@ public class UserSubscriptions {
                         ReorderSubreddits.MULTI_REDDIT + multiReddit.getDisplayName())) {
                     // Use the full path that the Reddit API expects for a multi-reddit
                     // The correct format is "api/user/USERNAME/m/MULTINAME"
-                    String multiPath = "api/user/" + Authentication.name + "/m/" + multiReddit.getDisplayName();
+                    String multiPath = "api/user/" + Authentication.nameOrEmpty() + "/m/" + multiReddit.getDisplayName();
 
                     MainActivity.multiNameToSubsMap.put(
                             ReorderSubreddits.MULTI_REDDIT + multiReddit.getDisplayName(),
@@ -366,11 +383,11 @@ public class UserSubscriptions {
     }
 
     public static void setSubscriptions(CaseInsensitiveArrayList subs) {
-        subscriptions.edit().putString(Authentication.name, StringUtil.arrayToString(subs)).apply();
+        subscriptions.edit().putString(Authentication.nameOrEmpty(), StringUtil.arrayToString(subs)).apply();
     }
 
     public static void setPinned(CaseInsensitiveArrayList subs) {
-        pinned.edit().putString(Authentication.name, StringUtil.arrayToString(subs)).apply();
+        pinned.edit().putString(Authentication.nameOrEmpty(), StringUtil.arrayToString(subs)).apply();
         pins = null;
     }
 
@@ -393,6 +410,7 @@ public class UserSubscriptions {
         new AsyncTask<Void, Void, List<MultiReddit>>() {
 
             @Override
+            @Nullable
             protected List<MultiReddit> doInBackground(Void... params) {
                 loadMultireddits();
                 return multireddits;
@@ -445,6 +463,7 @@ public class UserSubscriptions {
         new AsyncTask<Void, Void, List<MultiReddit>>() {
 
             @Override
+            @Nullable
             protected List<MultiReddit> doInBackground(Void... params) {
                 try {
                     public_multireddits.put(
@@ -522,6 +541,8 @@ public class UserSubscriptions {
         return friends;
     }
 
+    /** Null when no loaded multireddit carries that display name. */
+    @Nullable
     public static MultiReddit getMultiredditByDisplayName(String displayName) {
         if (multireddits != null) {
             for (MultiReddit multiReddit : multireddits) {
@@ -533,6 +554,8 @@ public class UserSubscriptions {
         return null;
     }
 
+    /** Null when no loaded public multireddit carries that display name. */
+    @Nullable
     public static MultiReddit getPublicMultiredditByDisplayName(
             String profile, String displayName) {
         if (profile.isEmpty()) {
@@ -586,7 +609,9 @@ public class UserSubscriptions {
 
     public static CaseInsensitiveArrayList getHistory() {
         String[] hist =
-                subscriptions.getString("subhistory", "").toLowerCase(Locale.ENGLISH).split(",");
+                PrefUtil.getString(subscriptions, "subhistory", "")
+                        .toLowerCase(Locale.ENGLISH)
+                        .split(",");
         CaseInsensitiveArrayList history = new CaseInsensitiveArrayList();
         Collections.addAll(history, hist);
         return history;
@@ -628,7 +653,7 @@ public class UserSubscriptions {
 
     // Sets sub as "searched for", will apply to all accounts
     public static void addSubToHistory(String s) {
-        String history = subscriptions.getString("subhistory", "");
+        String history = PrefUtil.getString(subscriptions, "subhistory", "");
         if (!history.contains(s.toLowerCase(Locale.ENGLISH))) {
             history += "," + s.toLowerCase(Locale.ENGLISH);
             subscriptions.edit().putString("subhistory", history).apply();
@@ -639,7 +664,8 @@ public class UserSubscriptions {
     public static void addSubsToHistory(ArrayList<Subreddit> s2) {
         StringBuilder history =
                 new StringBuilder(
-                        subscriptions.getString("subhistory", "").toLowerCase(Locale.ENGLISH));
+                        PrefUtil.getString(subscriptions, "subhistory", "")
+                                .toLowerCase(Locale.ENGLISH));
         for (Subreddit s : s2) {
             if (!history.toString().contains(s.getDisplayName().toLowerCase(Locale.ENGLISH))) {
                 history.append(",").append(s.getDisplayName().toLowerCase(Locale.ENGLISH));
@@ -651,7 +677,8 @@ public class UserSubscriptions {
     public static void addSubsToHistory(CaseInsensitiveArrayList s2) {
         StringBuilder history =
                 new StringBuilder(
-                        subscriptions.getString("subhistory", "").toLowerCase(Locale.ENGLISH));
+                        PrefUtil.getString(subscriptions, "subhistory", "")
+                                .toLowerCase(Locale.ENGLISH));
         for (String s : s2) {
             if (!history.toString().contains(s.toLowerCase(Locale.ENGLISH))) {
                 history.append(",").append(s.toLowerCase(Locale.ENGLISH));
@@ -768,7 +795,9 @@ public class UserSubscriptions {
 
     public static class SubscribeTask extends AsyncTask<String, Void, Boolean> {
         private Context context;
-        private String errorMessage;
+
+        /** Set only on the failure path, which is the only path that reads it. */
+        @Nullable private String errorMessage;
 
         public SubscribeTask(Context context) {
             this.context = context;
@@ -776,10 +805,15 @@ public class UserSubscriptions {
 
         @Override
         protected Boolean doInBackground(String... subreddits) {
-            final AccountManager m = new AccountManager(Authentication.reddit);
+            final RedditClient client = Authentication.reddit;
+            if (client == null) {
+                errorMessage = context.getString(R.string.subscribe_err_login);
+                return false;
+            }
+            final AccountManager m = new AccountManager(client);
             try {
                 for (String subreddit : subreddits) {
-                    m.subscribe(Authentication.reddit.getSubreddit(subreddit));
+                    m.subscribe(client.getSubreddit(subreddit));
                 }
                 return true;
             } catch (Exception e) {
@@ -799,10 +833,14 @@ public class UserSubscriptions {
     public static class UnsubscribeTask extends AsyncTask<String, Void, Void> {
         @Override
         protected Void doInBackground(String... subreddits) {
-            final AccountManager m = new AccountManager(Authentication.reddit);
+            final RedditClient client = Authentication.reddit;
+            if (client == null) {
+                return null;
+            }
+            final AccountManager m = new AccountManager(client);
             try {
                 for (String subreddit : subreddits) {
-                    m.unsubscribe(Authentication.reddit.getSubreddit(subreddit));
+                    m.unsubscribe(client.getSubreddit(subreddit));
                 }
             } catch (Exception e) {
 

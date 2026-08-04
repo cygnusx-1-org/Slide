@@ -10,6 +10,7 @@ import com.lusfold.androidkeyvaluestore.core.KVManger;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import me.edgan.redditslide.Synccit.SynccitRead;
 import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.Submission;
@@ -18,14 +19,13 @@ import net.dean.jraw.models.VoteDirection;
 /** Created by ccrama on 7/19/2015. */
 public class HasSeen {
 
-    public static HashSet<String> hasSeen;
-    public static HashMap<String, Long> seenTimes;
+    // Built here rather than lazily in each entry point: every public method used to open with the
+    // same "if (hasSeen == null)" block, and CommentAdapter reaches straight for seenTimes on the
+    // strength of having called getSeenTime() first.
+    public static final HashSet<String> hasSeen = new HashSet<>();
+    public static final HashMap<String, Long> seenTimes = new HashMap<>();
 
     public static void setHasSeenContrib(List<Contribution> submissions) {
-        if (hasSeen == null) {
-            hasSeen = new HashSet<>();
-            seenTimes = new HashMap<>();
-        }
         KVManger m = KVStore.getInstance();
         for (Contribution s : submissions) {
             if (s instanceof Submission) {
@@ -35,10 +35,6 @@ public class HasSeen {
     }
 
     public static void setHasSeenSubmission(List<Submission> submissions) {
-        if (hasSeen == null) {
-            hasSeen = new HashSet<>();
-            seenTimes = new HashMap<>();
-        }
         KVManger m = KVStore.getInstance();
         for (Contribution s : submissions) {
             historyContains(s, m);
@@ -68,11 +64,6 @@ public class HasSeen {
     }
 
     public static boolean getSeen(Submission s) {
-        if (hasSeen == null) {
-            hasSeen = new HashSet<>();
-            seenTimes = new HashMap<>();
-        }
-
         String fullname = s.getFullName();
         if (fullname.contains("t3_")) {
             fullname = fullname.substring(3);
@@ -84,15 +75,11 @@ public class HasSeen {
     }
 
     public static boolean getSeen(String s) {
-        if (hasSeen == null) {
-            hasSeen = new HashSet<>();
-            seenTimes = new HashMap<>();
-        }
-
         Uri uri = formatRedditUrl(s);
         String fullname = s;
         if (uri != null) {
-            String host = uri.getHost();
+            // formatRedditUrl only returns a Uri it could read a host from.
+            String host = Objects.requireNonNull(uri.getHost());
 
             if (host.startsWith("np")) {
                 uri = uri.buildUpon().authority(host.substring(2)).build();
@@ -129,10 +116,6 @@ public class HasSeen {
     }
 
     public static long getSeenTime(Submission s) {
-        if (hasSeen == null) {
-            hasSeen = new HashSet<>();
-            seenTimes = new HashMap<>();
-        }
         String fullname = s.getFullName();
         if (fullname.contains("t3_")) {
             fullname = fullname.substring(3);
@@ -149,13 +132,6 @@ public class HasSeen {
     }
 
     public static void addSeen(String fullname) {
-        if (hasSeen == null) {
-            hasSeen = new HashSet<>();
-        }
-        if (seenTimes == null) {
-            seenTimes = new HashMap<>();
-        }
-
         if (fullname.contains("t3_")) {
             fullname = fullname.substring(3);
         }
@@ -176,13 +152,6 @@ public class HasSeen {
     }
 
     public static void addSeenScrolling(String fullname) {
-        if (hasSeen == null) {
-            hasSeen = new HashSet<>();
-        }
-        if (seenTimes == null) {
-            seenTimes = new HashMap<>();
-        }
-
         if (fullname.contains("t3_")) {
             fullname = fullname.substring(3);
         }

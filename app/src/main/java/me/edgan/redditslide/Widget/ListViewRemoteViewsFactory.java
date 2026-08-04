@@ -25,6 +25,8 @@ import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.TimeUtils;
+import net.dean.jraw.RedditClient;
+import net.dean.jraw.models.LoggedInAccount;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Thumbnails;
 import net.dean.jraw.paginators.DomainPaginator;
@@ -57,8 +59,15 @@ public class ListViewRemoteViewsFactory implements RemoteViewsService.RemoteView
                 protected Void doInBackground(Void... params) {
                     if (Authentication.reddit == null) {
                         new Authentication(mContext.getApplicationContext());
-                        Authentication.me = Authentication.reddit.me();
-                        Authentication.mod = Authentication.me.isMod();
+                        // The constructor only builds a client on its online branch, so it can
+                        // leave this null even here — it re-tests connectivity itself.
+                        final RedditClient client = Authentication.reddit;
+                        if (client == null) {
+                            return null;
+                        }
+                        final LoggedInAccount account = client.me();
+                        Authentication.me = account;
+                        Authentication.mod = account.isMod();
 
                         Authentication.authentication
                                 .edit()
@@ -75,11 +84,11 @@ public class ListViewRemoteViewsFactory implements RemoteViewsService.RemoteView
                             Reddit.autoCache.start();
                         }
 
-                        final String name = Authentication.me.getFullName();
+                        final String name = account.getFullName();
                         Authentication.name = name;
                         LogUtil.v("AUTHENTICATED");
 
-                        if (Authentication.reddit.isAuthenticated()) {
+                        if (client.isAuthenticated()) {
                             Authentication.migrateAccountToTokenForm(name);
                             Authentication.isLoggedIn = true;
                             Reddit.notFirst = true;

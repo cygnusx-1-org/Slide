@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
@@ -31,6 +32,7 @@ import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.OkHttpImageDownloader;
+import net.dean.jraw.RedditClient;
 import net.dean.jraw.http.HttpRequest;
 import net.dean.jraw.http.MediaTypes;
 import net.dean.jraw.http.RestResponse;
@@ -40,9 +42,11 @@ public class ImageFlairs {
     public static void syncFlairs(final Context context, final String subreddit) {
         new StylesheetFetchTask(subreddit, context) {
             @Override
-            protected void onPostExecute(FlairStylesheet flairStylesheet) {
+            protected void onPostExecute(@Nullable FlairStylesheet flairStylesheet) {
                 super.onPostExecute(flairStylesheet);
-                d.dismiss();
+                if (d != null) {
+                    d.dismiss();
+                }
                 if (flairStylesheet != null) {
                     flairs.edit().putBoolean(subreddit.toLowerCase(Locale.ENGLISH), true).commit();
                     d =
@@ -103,7 +107,9 @@ public class ImageFlairs {
     static class StylesheetFetchTask extends AsyncTask<Void, Void, FlairStylesheet> {
         String subreddit;
         Context context;
-        Dialog d;
+
+        /** Shown from onPostExecute, so null until the fetch finishes. */
+        @Nullable Dialog d;
 
         StylesheetFetchTask(String subreddit, Context context) {
             super();
@@ -111,7 +117,9 @@ public class ImageFlairs {
             this.subreddit = subreddit;
         }
 
+        /** Null when the stylesheet could not be fetched or parsed. */
         @Override
+        @Nullable
         protected FlairStylesheet doInBackground(Void... params) {
             try {
                 HttpRequest r =
@@ -121,7 +129,11 @@ public class ImageFlairs {
                                 .expected(MediaTypes.CSS.type())
                                 .build();
 
-                RestResponse response = Authentication.reddit.execute(r);
+                final RedditClient client = Authentication.reddit;
+                if (client == null) {
+                    return null;
+                }
+                RestResponse response = client.execute(r);
 
                 String stylesheet = response.getRaw();
                 ArrayList<String> allImages = new ArrayList<>();
@@ -130,10 +142,13 @@ public class ImageFlairs {
                     String classDef =
                             flairStylesheet.getClass(
                                     flairStylesheet.stylesheetString, "flair-" + s);
+                    if (classDef == null) continue;
                     try {
                         String backgroundURL = flairStylesheet.getBackgroundURL(classDef);
                         if (backgroundURL == null) backgroundURL = flairStylesheet.defaultURL;
-                        if (!allImages.contains(backgroundURL)) allImages.add(backgroundURL);
+                        if (backgroundURL != null && !allImages.contains(backgroundURL)) {
+                            allImages.add(backgroundURL);
+                        }
                     } catch (Exception e) {
                         //  LogUtil.e(e, "ImageFlairs.doInBackground failed");
                     }
@@ -153,6 +168,8 @@ public class ImageFlairs {
         }
     }
 
+    // Assigned by Reddit.doMainStuff, i.e. Application.onCreate, before anything can read it.
+    @SuppressWarnings("NullAway.Init")
     public static SharedPreferences flairs;
 
     public static boolean isSynced(String subreddit) {
@@ -210,10 +227,12 @@ public class ImageFlairs {
         String stylesheetString;
         Dimensions defaultDimension = new Dimensions();
         Location defaultLocation = new Location();
-        String defaultURL = "";
+        /** Null when the base .flair rule carries no background url. */
+        @Nullable String defaultURL = "";
+
         int count;
 
-        Dimensions prevDimension = null;
+        @Nullable Dimensions prevDimension = null;
 
         static class Dimensions {
             int width, height;
@@ -279,6 +298,7 @@ public class ImageFlairs {
          * @param className
          * @return
          */
+        @Nullable
         String getClass(String cssDefinitionString, String className) {
             Pattern propertyDefinition =
                     Pattern.compile(
@@ -307,6 +327,7 @@ public class ImageFlairs {
          * @param property
          * @return
          */
+        @Nullable
         String getProperty(String classDefinitionsString, String property) {
             Pattern propertyDefinition =
                     Pattern.compile("(?<!-)" + property + "\\s*:\\s*(.+?)(;|$)");
@@ -320,6 +341,7 @@ public class ImageFlairs {
         }
 
         // Attempts to get a real integer value instead of "auto", if possible
+        @Nullable
         String getPropertyTryNoAuto(String classDefinitionsString, String property) {
             Pattern propertyDefinition =
                     Pattern.compile("(?<!-)" + property + "\\s*:\\s*(.+?)(;|$)");
@@ -341,6 +363,7 @@ public class ImageFlairs {
             return defaultString;
         }
 
+        @Nullable
         String getPropertyBackgroundUrl(String classDefinitionsString) {
             Pattern propertyDefinition = Pattern.compile("background:url\\([\"'](.+?)[\"']\\)");
             Matcher matches = propertyDefinition.matcher(classDefinitionsString);
@@ -358,6 +381,7 @@ public class ImageFlairs {
          * @param classDefinitionString
          * @return
          */
+        @Nullable
         String getBackgroundURL(String classDefinitionString) {
             Pattern urlDefinition = Pattern.compile("url\\([\"\'](.+?)[\"\']\\)");
             String backgroundProperty = getPropertyBackgroundUrl(classDefinitionString);
@@ -454,13 +478,8 @@ public class ImageFlairs {
                     Pattern.compile("([+-]?\\d+|0)(px\\s|\\s)+(|([+-]?\\d+|0)(px|))");
             String backgroundPositionProperty =
                     getProperty(classDefinitionString, "background-size");
-            String backgroundPositionPropertySecondary =
-                    getProperty(classDefinitionString, "background-size");
 
-            if (backgroundPositionProperty == null && backgroundPositionPropertySecondary == null
-                    || backgroundPositionProperty == null
-                            && !backgroundPositionPropertySecondary.contains("px ")
-                            && !backgroundPositionPropertySecondary.contains("px;")) {
+            if (backgroundPositionProperty == null) {
                 return new Dimensions();
             }
 
@@ -694,30 +713,31 @@ public class ImageFlairs {
 
     public static class FlairImageLoader extends ImageLoader {
 
-        private static volatile FlairImageLoader instance;
+        @Nullable private static volatile FlairImageLoader instance;
 
         /** Returns singleton class instance */
         public static FlairImageLoader getInstance() {
-            if (instance == null) {
+            FlairImageLoader result = instance;
+            if (result == null) {
                 synchronized (ImageLoader.class) {
-                    if (instance == null) {
-                        instance = new FlairImageLoader();
+                    result = instance;
+                    if (result == null) {
+                        result = new FlairImageLoader();
+                        instance = result;
                     }
                 }
             }
-            return instance;
+            return result;
         }
     }
 
     public static FlairImageLoader getFlairImageLoader(Context context) {
-        if (imageLoader == null) {
-            return initFlairImageLoader(context);
-        } else {
-            return imageLoader;
-        }
+        final FlairImageLoader loader = imageLoader;
+        return loader == null ? initFlairImageLoader(context) : loader;
     }
 
-    public static FlairImageLoader imageLoader;
+    /** Built by initFlairImageLoader on first use. */
+    @Nullable public static FlairImageLoader imageLoader;
 
     public static File getCacheDirectory(Context context) {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)
@@ -764,10 +784,12 @@ public class ImageFlairs {
             FlairImageLoader.getInstance().destroy();
         }
 
-        imageLoader = FlairImageLoader.getInstance();
-        imageLoader.init(config);
-        return imageLoader;
+        final FlairImageLoader loader = FlairImageLoader.getInstance();
+        loader.init(config);
+        imageLoader = loader;
+        return loader;
     }
 
-    public static DisplayImageOptions options;
+    /** Built alongside the loader in initFlairImageLoader, and null until then. */
+    @Nullable public static DisplayImageOptions options;
 }

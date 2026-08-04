@@ -1,6 +1,8 @@
 package me.edgan.redditslide;
 
 import android.content.SharedPreferences;
+import androidx.annotation.Nullable;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -90,9 +92,12 @@ public class PostMatch {
         }
     }
 
+    // Assigned by Reddit.doMainStuff, i.e. Application.onCreate, before anything can read it.
+    @SuppressWarnings("NullAway.Init")
     public static SharedPreferences filters;
 
-    public static boolean doesMatch(Submission s, String baseSubreddit, boolean ignore18) {
+    public static boolean doesMatch(
+            Submission s, @Nullable String baseSubreddit, boolean ignore18) {
         if (Hidden.id.contains(s.getFullName()))
             return true; // if it's hidden we're not going to show it regardless
 
