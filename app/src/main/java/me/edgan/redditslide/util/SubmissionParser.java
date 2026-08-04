@@ -1,11 +1,14 @@
 package me.edgan.redditslide.util;
 
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.text.StringEscapeUtils;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Utility methods to transform html received from Reddit into a more parsable format.
@@ -13,6 +16,7 @@ import org.apache.commons.text.StringEscapeUtils;
  * <p>The output will unescape all html, except for table tags and some special delimiter token such
  * as for code blocks.
  */
+@NullMarked
 public class SubmissionParser {
     private static final Pattern SPOILER_PATTERN =
             Pattern.compile("<a[^>]*title=\"([^\"]*)\"[^>]*>([^<]*)</a>");
@@ -338,7 +342,8 @@ public class SubmissionParser {
      * @return the body HTML with placeholders replaced by image URLs, or the original if no
      *     media_metadata is available
      */
-    public static String replaceProcessingImgPlaceholders(String bodyHtml, JsonNode dataNode) {
+    public static String replaceProcessingImgPlaceholders(
+            String bodyHtml, @Nullable JsonNode dataNode) {
         if (dataNode == null || !dataNode.has("media_metadata")) {
             return bodyHtml;
         }
@@ -407,7 +412,7 @@ public class SubmissionParser {
      * the exact same string form, so a preloader warms the cache under the identical keys the
      * renderer later requests.
      */
-    public static List<String> imageUrlsFor(String rawHtml) {
+    public static List<String> imageUrlsFor(@Nullable String rawHtml) {
         List<String> urls = new ArrayList<>();
         if (rawHtml == null || rawHtml.isEmpty()) {
             return urls;
@@ -511,7 +516,7 @@ public class SubmissionParser {
     }
 
     private static String convertGiphyToImageUrls(String html) {
-        if (html == null || html.indexOf("giphy") < 0 && !html.contains("external-preview.redd.it")) {
+        if (html.indexOf("giphy") < 0 && !html.contains("external-preview.redd.it")) {
             return html;
         }
         html = replaceGiphyMatches(html, GIPHY_ANCHOR_WITH_IMG_PATTERN, false);

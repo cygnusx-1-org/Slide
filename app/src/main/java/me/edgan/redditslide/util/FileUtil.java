@@ -21,7 +21,9 @@ import java.util.Locale;
 import java.util.UUID;
 import net.dean.jraw.models.Comment;
 import net.dean.jraw.models.Submission;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class FileUtil {
     private FileUtil() {}
 
@@ -114,7 +116,7 @@ public class FileUtil {
                     tries == 0 ? fileIndex + extension : fileIndex + "_" + tries + extension;
             String sanitizedTitle = sanitizeFileName(title, extras);
 
-            if (sanitizedTitle == null || sanitizedTitle.trim().isEmpty()) {
+            if (sanitizedTitle.trim().isEmpty()) {
                 sanitizedTitle = UUID.randomUUID().toString();
             }
 
@@ -148,10 +150,7 @@ public class FileUtil {
      * @return Sanitized file name (without the extras) that will be within the byte limit with the
      *     extras added later.
      */
-    @Nullable
     private static String sanitizeFileName(String fileName, String extras) {
-        if (fileName == null) return null;
-
         String sanitizedFileName = fileName.replaceAll("[/?<>\\\\:*|\"]", "_");
 
         Charset charset = Charset.defaultCharset();
@@ -202,9 +201,6 @@ public class FileUtil {
     }
 
     public static String getValidFileName(String title, String prefix, String extension) {
-        if (title == null) {
-            title = "";
-        }
         // Remove invalid characters
         String cleanTitle = title.replaceAll("[^a-zA-Z0-9.-]", "_");
 
@@ -241,7 +237,8 @@ public class FileUtil {
      * @param commentId Reddit comment id when saving comment media, otherwise null/empty
      * @return Underscore-joined base name without extension
      */
-    public static String buildDownloadName(String title, String postId, String commentId) {
+    public static String buildDownloadName(
+            @Nullable String title, @Nullable String postId, @Nullable String commentId) {
         StringBuilder sb = new StringBuilder();
 
         if (title != null && !title.trim().isEmpty()) {

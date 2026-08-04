@@ -13,12 +13,14 @@ import java.util.HashSet;
 import java.util.Set;
 import okio.BufferedSource;
 import okio.Okio;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Created by Carlos on 8/12/2016.
  *
  * <p>Code adapted from http://www.hidroh.com/2016/05/19/hacking-up-ad-blocker-android/
  */
+@NullMarked
 public class AdBlocker {
     private static final String DOMAINS_FILE = "adblocksources.txt";
     private static final Set<String> DOMAINS = new HashSet<>(); // Use hash set for performance

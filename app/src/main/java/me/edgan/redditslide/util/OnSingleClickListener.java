@@ -3,6 +3,7 @@ package me.edgan.redditslide.util;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Implementation of {@link View.OnClickListener} that ignores subsequent clicks that happen too
@@ -10,6 +11,7 @@ import android.view.View;
  * To use this class, implement {@link #onSingleClick(View)} instead of {@link
  * View.OnClickListener#onClick(View)}.
  */
+@NullMarked
 public abstract class OnSingleClickListener implements View.OnClickListener {
 
     private static final long MIN_DELAY_MS = 300;

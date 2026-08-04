@@ -1,20 +1,27 @@
 package me.edgan.redditslide.util;
 
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by TacoTheDank on 03/15/2021. */
+@NullMarked
 public class StringUtil {
-    public static String arrayToString(final ArrayList<String> array) {
+    public static String arrayToString(@Nullable final ArrayList<String> array) {
         return arrayToStringInternal(array, ",", 1);
     }
 
-    public static String arrayToString(final ArrayList<String> array, final String separator) {
+    public static String arrayToString(
+            @Nullable final ArrayList<String> array, final String separator) {
         return arrayToStringInternal(array, separator, separator.length());
     }
 
     private static String arrayToStringInternal(
-            final ArrayList<String> array, final String separator, final int separatorLength) {
+            @Nullable final ArrayList<String> array,
+            final String separator,
+            final int separatorLength) {
         if (array != null) {
             final StringBuilder b = new StringBuilder();
             for (String s : array) {
@@ -44,14 +51,14 @@ public class StringUtil {
         return str.substring(0, maxWidth - 3) + abrevMarker;
     }
 
-    public static String stripAllWhitespace(final String input) {
+    public static String stripAllWhitespace(@Nullable final String input) {
         if (input == null) {
             return "";
         }
         return input.replaceAll("\\s", "");
     }
 
-    public static String stripLeadingTrailingWhitespace(final String input) {
+    public static String stripLeadingTrailingWhitespace(@Nullable final String input) {
         if (input == null) {
             return "";
         }

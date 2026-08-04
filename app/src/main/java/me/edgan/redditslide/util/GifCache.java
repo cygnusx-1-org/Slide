@@ -1,22 +1,26 @@
 package me.edgan.redditslide.util;
 
 import android.content.Context;
-
+import androidx.annotation.Nullable;
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.utils.IoUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by carlo_000 on 5/5/2016. */
+@NullMarked
 public class GifCache {
 
     public static long discCacheSize = 100000000L; // 100mb
+
+    // Populated by init() from Reddit.onCreate, before anything can reach the cache.
+    @SuppressWarnings("NullAway.Init")
     public static DiskCache discCache;
 
     public static void init(Context c) {
@@ -32,6 +36,8 @@ public class GifCache {
         }
     }
 
+    /** @return the cached file, or null on a cache miss — see {@link #fileExists(URL)}. */
+    @Nullable
     public static File getGif(URL url) {
         return discCache.get(url.toString());
     }

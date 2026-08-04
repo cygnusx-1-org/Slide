@@ -1,5 +1,6 @@
 package me.edgan.redditslide.util;
 
+import androidx.annotation.Nullable;
 import java.io.IOException;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -8,13 +9,16 @@ import okio.BufferedSink;
 import okio.ForwardingSink;
 import okio.Okio;
 import okio.Sink;
+import org.jspecify.annotations.NullMarked;
 
 // Used in DoEditorActions and Submit
+@NullMarked
 public class ProgressRequestBody extends RequestBody {
 
     protected RequestBody mDelegate;
     protected Listener mListener;
-    protected CountingSink mCountingSink;
+    /** Set on each {@link #writeTo}; null until the body has been written at least once. */
+    @Nullable protected CountingSink mCountingSink;
 
     public ProgressRequestBody(RequestBody delegate, Listener listener) {
         mDelegate = delegate;
@@ -22,6 +26,7 @@ public class ProgressRequestBody extends RequestBody {
     }
 
     @Override
+    @Nullable
     public MediaType contentType() {
         return mDelegate.contentType();
     }

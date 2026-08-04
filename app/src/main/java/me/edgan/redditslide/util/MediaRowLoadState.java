@@ -1,5 +1,9 @@
 package me.edgan.redditslide.util;
 
+import androidx.annotation.Nullable;
+
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Tracks which media url a reusable row has asked to load, for the vertical album and gallery
  * adapters. A row's video is loaded asynchronously into an ExoVideoView that releases its player on
@@ -18,10 +22,14 @@ package me.edgan.redditslide.util;
  * {@link GifUtils.AsyncLoadGif#onError()}, which is documented to run there, so the fields need no
  * synchronization. Urls must be non-null; a row with no media should not be asking to load one.
  */
+@NullMarked
 public class MediaRowLoadState {
 
-    private String loadedUrl;
-    private String retriedUrl;
+    /** The url a load has been started for, or null when the row holds nothing. */
+    @Nullable private String loadedUrl;
+
+    /** The url whose one retry has been spent, or null when the budget is unused. */
+    @Nullable private String retriedUrl;
 
     /**
      * Whether a load has to be started for {@code url}. False once one has been, so a download still

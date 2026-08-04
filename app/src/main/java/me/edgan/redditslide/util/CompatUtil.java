@@ -2,14 +2,21 @@ package me.edgan.redditslide.util;
 
 import android.text.Spanned;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.text.HtmlCompat;
 
 import org.apache.commons.text.StringEscapeUtils;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by TacoTheDank on 04/22/2021. */
+@NullMarked
 public class CompatUtil {
-    public static Spanned fromHtml(@NonNull String source) {
+    /**
+     * @param source may be null: most callers pass a JRAW getter ({@code getBody()},
+     *     {@code getAuthorFlair().getText()}, {@code getSubject()}), and JRAW carries no
+     *     nullability annotations, so NullAway cannot rule a null out here.
+     */
+    public static Spanned fromHtml(@Nullable String source) {
         if (source == null) {
             return HtmlCompat.fromHtml("", HtmlCompat.FROM_HTML_MODE_LEGACY);
         }
@@ -21,7 +28,7 @@ public class CompatUtil {
      * readable plain text, resolving markdown formatting (bold, links, lists) to spoken/translatable
      * text instead of leaving raw markdown syntax. Returns an empty string for null/blank input.
      */
-    public static String htmlToText(String escapedHtml) {
+    public static String htmlToText(@Nullable String escapedHtml) {
         if (escapedHtml == null || escapedHtml.isEmpty()) {
             return "";
         }

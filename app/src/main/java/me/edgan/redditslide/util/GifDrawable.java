@@ -7,17 +7,20 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
+import androidx.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class GifDrawable extends Drawable {
     private final Movie movie;
     private long startTime = 0;
     private int alpha = 255; // Default alpha
-    private ColorFilter colorFilter;
+    @Nullable private ColorFilter colorFilter;
     private final Paint paint;
     private boolean isPlaying = false;
     private int currentFrame = 0;
 
-    public GifDrawable(Movie movie, Drawable.Callback callback) {
+    public GifDrawable(Movie movie, @Nullable Drawable.Callback callback) {
         this.movie = movie;
         setCallback(callback);
         this.paint = new Paint();
@@ -54,7 +57,7 @@ public class GifDrawable extends Drawable {
     }
 
     @Override
-    public void setColorFilter(ColorFilter colorFilter) {
+    public void setColorFilter(@Nullable ColorFilter colorFilter) {
         this.colorFilter = colorFilter;
         invalidateSelf();
     }

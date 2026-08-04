@@ -1,6 +1,8 @@
 package me.edgan.redditslide.util;
 
 /** Created by Carlos on 7/15/2016. */
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -10,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.jspecify.annotations.NullMarked;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -25,40 +28,41 @@ import java.util.Map;
     "provider_url",
     "version"
 })
+@NullMarked
 public class TwitterObject {
 
     @JsonProperty("url")
-    private String url;
+    @Nullable private String url;
 
     @JsonProperty("author_name")
-    private String authorName;
+    @Nullable private String authorName;
 
     @JsonProperty("author_url")
-    private String authorUrl;
+    @Nullable private String authorUrl;
 
     @JsonProperty("html")
-    private String html;
+    @Nullable private String html;
 
     @JsonProperty("width")
-    private Integer width;
+    @Nullable private Integer width;
 
     @JsonProperty("height")
-    private Integer height;
+    @Nullable private Integer height;
 
     @JsonProperty("type")
-    private String type;
+    @Nullable private String type;
 
     @JsonProperty("cache_age")
-    private String cacheAge;
+    @Nullable private String cacheAge;
 
     @JsonProperty("provider_name")
-    private String providerName;
+    @Nullable private String providerName;
 
     @JsonProperty("provider_url")
-    private String providerUrl;
+    @Nullable private String providerUrl;
 
     @JsonProperty("version")
-    private String version;
+    @Nullable private String version;
 
     @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -66,6 +70,7 @@ public class TwitterObject {
      * @return The url
      */
     @JsonProperty("url")
+    @Nullable
     public String getUrl() {
         return url;
     }
@@ -74,7 +79,7 @@ public class TwitterObject {
      * @param url The url
      */
     @JsonProperty("url")
-    public void setUrl(String url) {
+    public void setUrl(@Nullable String url) {
         this.url = url;
     }
 
@@ -82,6 +87,7 @@ public class TwitterObject {
      * @return The authorName
      */
     @JsonProperty("author_name")
+    @Nullable
     public String getAuthorName() {
         return authorName;
     }
@@ -90,7 +96,7 @@ public class TwitterObject {
      * @param authorName The author_name
      */
     @JsonProperty("author_name")
-    public void setAuthorName(String authorName) {
+    public void setAuthorName(@Nullable String authorName) {
         this.authorName = authorName;
     }
 
@@ -98,6 +104,7 @@ public class TwitterObject {
      * @return The authorUrl
      */
     @JsonProperty("author_url")
+    @Nullable
     public String getAuthorUrl() {
         return authorUrl;
     }
@@ -106,7 +113,7 @@ public class TwitterObject {
      * @param authorUrl The author_url
      */
     @JsonProperty("author_url")
-    public void setAuthorUrl(String authorUrl) {
+    public void setAuthorUrl(@Nullable String authorUrl) {
         this.authorUrl = authorUrl;
     }
 
@@ -114,6 +121,7 @@ public class TwitterObject {
      * @return The html
      */
     @JsonProperty("html")
+    @Nullable
     public String getHtml() {
         return html;
     }
@@ -122,7 +130,7 @@ public class TwitterObject {
      * @param html The html
      */
     @JsonProperty("html")
-    public void setHtml(String html) {
+    public void setHtml(@Nullable String html) {
         this.html = html;
     }
 
@@ -130,6 +138,7 @@ public class TwitterObject {
      * @return The width
      */
     @JsonProperty("width")
+    @Nullable
     public Integer getWidth() {
         return width;
     }
@@ -138,7 +147,7 @@ public class TwitterObject {
      * @param width The width
      */
     @JsonProperty("width")
-    public void setWidth(Integer width) {
+    public void setWidth(@Nullable Integer width) {
         this.width = width;
     }
 
@@ -146,6 +155,7 @@ public class TwitterObject {
      * @return The height
      */
     @JsonProperty("height")
+    @Nullable
     public Integer getHeight() {
         return height;
     }
@@ -154,7 +164,7 @@ public class TwitterObject {
      * @param height The height
      */
     @JsonProperty("height")
-    public void setHeight(Integer height) {
+    public void setHeight(@Nullable Integer height) {
         this.height = height;
     }
 
@@ -162,6 +172,7 @@ public class TwitterObject {
      * @return The type
      */
     @JsonProperty("type")
+    @Nullable
     public String getType() {
         return type;
     }
@@ -170,7 +181,7 @@ public class TwitterObject {
      * @param type The type
      */
     @JsonProperty("type")
-    public void setType(String type) {
+    public void setType(@Nullable String type) {
         this.type = type;
     }
 
@@ -178,6 +189,7 @@ public class TwitterObject {
      * @return The cacheAge
      */
     @JsonProperty("cache_age")
+    @Nullable
     public String getCacheAge() {
         return cacheAge;
     }
@@ -186,7 +198,7 @@ public class TwitterObject {
      * @param cacheAge The cache_age
      */
     @JsonProperty("cache_age")
-    public void setCacheAge(String cacheAge) {
+    public void setCacheAge(@Nullable String cacheAge) {
         this.cacheAge = cacheAge;
     }
 
@@ -194,6 +206,7 @@ public class TwitterObject {
      * @return The providerName
      */
     @JsonProperty("provider_name")
+    @Nullable
     public String getProviderName() {
         return providerName;
     }
@@ -202,7 +215,7 @@ public class TwitterObject {
      * @param providerName The provider_name
      */
     @JsonProperty("provider_name")
-    public void setProviderName(String providerName) {
+    public void setProviderName(@Nullable String providerName) {
         this.providerName = providerName;
     }
 
@@ -210,6 +223,7 @@ public class TwitterObject {
      * @return The providerUrl
      */
     @JsonProperty("provider_url")
+    @Nullable
     public String getProviderUrl() {
         return providerUrl;
     }
@@ -218,7 +232,7 @@ public class TwitterObject {
      * @param providerUrl The provider_url
      */
     @JsonProperty("provider_url")
-    public void setProviderUrl(String providerUrl) {
+    public void setProviderUrl(@Nullable String providerUrl) {
         this.providerUrl = providerUrl;
     }
 
@@ -226,6 +240,7 @@ public class TwitterObject {
      * @return The version
      */
     @JsonProperty("version")
+    @Nullable
     public String getVersion() {
         return version;
     }
@@ -234,7 +249,7 @@ public class TwitterObject {
      * @param version The version
      */
     @JsonProperty("version")
-    public void setVersion(String version) {
+    public void setVersion(@Nullable String version) {
         this.version = version;
     }
 

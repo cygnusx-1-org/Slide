@@ -5,8 +5,10 @@ import android.content.ClipboardManager;
 import android.content.Context;
 
 import androidx.core.content.ContextCompat;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by TacoTheDank on 01/29/2021. */
+@NullMarked
 public class ClipboardUtil {
 
     /**

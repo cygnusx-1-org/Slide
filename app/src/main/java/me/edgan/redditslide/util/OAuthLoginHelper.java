@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import java.io.IOException;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Context-free classification helpers for the Reddit OAuth login flow. Pulling these pure decisions
@@ -13,6 +14,7 @@ import org.json.JSONObject;
  * theming, and app singletons) lets them be unit-tested directly — including the
  * production-parity org.json edge cases that only show up on a real Android parser.
  */
+@NullMarked
 public final class OAuthLoginHelper {
 
     public static final String TAG = "OAuthLogin";
@@ -49,16 +51,18 @@ public final class OAuthLoginHelper {
 
     /** Outcome of {@link #classifyTokenResponse}: either both tokens, or a {@link FailureType}. */
     public static final class TokenResult {
-        public final String accessToken;
-        public final String refreshToken;
-        public final FailureType failureType;
+        @Nullable public final String accessToken;
+        @Nullable public final String refreshToken;
+        /** The failure, or null on success — see {@link #isSuccess()}. */
+        @Nullable public final FailureType failureType;
         /** The HTTP status for an HTTP-class failure, otherwise -1. */
         public final int httpCode;
         /** The raw Reddit error value for {@link FailureType#REDDIT_ERROR}, otherwise null. */
-        public final String redditError;
+        @Nullable public final String redditError;
 
-        private TokenResult(String accessToken, String refreshToken, FailureType failureType,
-                            int httpCode, String redditError) {
+        private TokenResult(@Nullable String accessToken, @Nullable String refreshToken,
+                            @Nullable FailureType failureType, int httpCode,
+                            @Nullable String redditError) {
             this.accessToken = accessToken;
             this.refreshToken = refreshToken;
             this.failureType = failureType;
@@ -173,11 +177,12 @@ public final class OAuthLoginHelper {
     public static final class RedirectResult {
         public final RedirectAction action;
         /** The auth code for {@link RedirectAction#EXCHANGE_CODE}, otherwise null. */
-        public final String authCode;
+        @Nullable public final String authCode;
         /** The raw error value for {@link RedirectAction#OAUTH_ERROR}, otherwise null. */
-        public final String errorValue;
+        @Nullable public final String errorValue;
 
-        private RedirectResult(RedirectAction action, String authCode, String errorValue) {
+        private RedirectResult(RedirectAction action, @Nullable String authCode,
+                               @Nullable String errorValue) {
             this.action = action;
             this.authCode = authCode;
             this.errorValue = errorValue;

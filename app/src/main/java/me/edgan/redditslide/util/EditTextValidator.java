@@ -3,6 +3,8 @@ package me.edgan.redditslide.util;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.widget.EditText;
+import androidx.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Created by Fernando Barillas on 5/2/16.
@@ -10,6 +12,7 @@ import android.widget.EditText;
  * <p>Allows easier validation of EditText input via the use of an InputFilter. This way invalid
  * text is not allowed to be input.
  */
+@NullMarked
 public class EditTextValidator {
 
     private EditTextValidator() {}
@@ -21,10 +24,10 @@ public class EditTextValidator {
      * @param editText The EditText to validate a username for
      */
     public static void validateUsername(final EditText editText) {
-        if (editText == null) return;
         InputFilter filter =
                 new InputFilter() {
                     @Override
+                    @Nullable
                     public CharSequence filter(
                             CharSequence source,
                             int start,

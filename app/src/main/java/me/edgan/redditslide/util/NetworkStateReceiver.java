@@ -4,14 +4,19 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by Carlos on 9/10/2016. */
+@NullMarked
 public class NetworkStateReceiver extends BroadcastReceiver {
 
     protected List<NetworkStateReceiverListener> listeners;
-    protected Boolean connected;
+    /** Null until the first broadcast arrives, so listeners added before it are not notified. */
+    @Nullable protected Boolean connected;
 
     public NetworkStateReceiver() {
         listeners = new ArrayList<NetworkStateReceiverListener>();
@@ -19,7 +24,7 @@ public class NetworkStateReceiver extends BroadcastReceiver {
     }
 
     public void onReceive(Context context, Intent intent) {
-        if (intent == null || intent.getExtras() == null) return;
+        if (intent.getExtras() == null) return;
         connected = NetworkUtil.isConnected(context);
         notifyStateToAll();
     }
@@ -29,7 +34,7 @@ public class NetworkStateReceiver extends BroadcastReceiver {
     }
 
     private void notifyState(NetworkStateReceiverListener listener) {
-        if (connected == null || listener == null) return;
+        if (connected == null) return;
 
         if (connected) listener.networkAvailable();
         else listener.networkUnavailable();

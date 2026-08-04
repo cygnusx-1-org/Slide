@@ -1,7 +1,9 @@
 package me.edgan.redditslide.util;
 
 import android.util.Log;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class LogUtil {
     private static final int CALLING_METHOD_INDEX;
 
