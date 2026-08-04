@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import me.edgan.redditslide.Activities.Reauthenticate;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.OpenRedditLink;
@@ -70,7 +71,23 @@ public class ToolboxUI {
             final Context context,
             final PublicContribution thing,
             final CompletedRemovalCallback callback) {
-        final RemovalReasons removalReasons;
+        final String removalSubreddit;
+        if (thing instanceof Comment) {
+            removalSubreddit = ((Comment) thing).getSubredditName();
+        } else if (thing instanceof Submission) {
+            removalSubreddit = ((Submission) thing).getSubredditName();
+        } else {
+            return;
+        }
+        // canShowRemoval() is the gate every caller goes through, but re-check here rather than
+        // trusting it: the config is loaded asynchronously and can be evicted between the two.
+        final ToolboxConfig removalConfig = Toolbox.getConfig(removalSubreddit);
+        final RemovalReasons removalReasons =
+                removalConfig == null ? null : removalConfig.getRemovalReasons();
+        if (removalReasons == null) {
+            return;
+        }
+
         final MaterialAlertDialogBuilder builder =
                 new MaterialAlertDialogBuilder(
                         new ContextThemeWrapper(
@@ -78,25 +95,9 @@ public class ToolboxUI {
                                 new ColorPreferences(context).getFontStyle().getBaseId()));
 
         // Set the dialog title
-        if (thing instanceof Comment) {
-            builder.setTitle(
-                    context.getResources()
-                            .getString(
-                                    R.string.toolbox_removal_title,
-                                    ((Comment) thing).getSubredditName()));
-            removalReasons =
-                    Toolbox.getConfig(((Comment) thing).getSubredditName()).getRemovalReasons();
-        } else if (thing instanceof Submission) {
-            builder.setTitle(
-                    context.getResources()
-                            .getString(
-                                    R.string.toolbox_removal_title,
-                                    ((Submission) thing).getSubredditName()));
-            removalReasons =
-                    Toolbox.getConfig(((Submission) thing).getSubredditName()).getRemovalReasons();
-        } else {
-            return;
-        }
+        builder.setTitle(
+                context.getResources()
+                        .getString(R.string.toolbox_removal_title, removalSubreddit));
 
         final View dialogContent =
                 LayoutInflater.from(context).inflate(R.layout.toolbox_removal_dialog, null);
@@ -128,17 +129,25 @@ public class ToolboxUI {
         }
 
         // Set up the header and footer options
-        headerText.setText(replaceTokens(removalReasons.getHeader(), thing));
-        if (removalReasons.getHeader().isEmpty()) {
+        // A null decode means this device has no UTF-8 charset; treat it as no header/footer
+        // rather than passing it on to replaceTokens.
+        final String header = removalReasons.getHeader();
+        headerText.setText(header == null ? "" : replaceTokens(header, thing));
+        if (header == null || header.isEmpty()) {
             ((View) headerToggle.getParent()).setVisibility(View.GONE);
         }
-        footerText.setText(replaceTokens(removalReasons.getFooter(), thing));
-        if (removalReasons.getFooter().isEmpty()) {
+        final String footer = removalReasons.getFooter();
+        footerText.setText(footer == null ? "" : replaceTokens(footer, thing));
+        if (footer == null || footer.isEmpty()) {
             ((View) footerToggle.getParent()).setVisibility(View.GONE);
         }
 
         // Set up the removal reason list
-        for (RemovalReasons.RemovalReason reason : removalReasons.getReasons()) {
+        final List<RemovalReasons.RemovalReason> reasons =
+                removalReasons.getReasons() == null
+                        ? new ArrayList<RemovalReasons.RemovalReason>()
+                        : removalReasons.getReasons();
+        for (RemovalReasons.RemovalReason reason : reasons) {
             CheckBox checkBox = new CheckBox(context);
             checkBox.setMaxLines(2);
             checkBox.setEllipsize(TextUtils.TruncateAt.END);
@@ -186,14 +195,14 @@ public class ToolboxUI {
                         // Add the removal reasons
                         for (int i = 0; i < reasonsList.getChildCount(); i++) {
                             if (((CheckBox) reasonsList.getChildAt(i)).isChecked()) {
-                                removalString.append(removalReasons.getReasons().get(i).getText());
+                                removalString.append(reasons.get(i).getText());
                                 removalString.append("\n\n");
 
                                 flairText.append(flairText.length() > 0 ? " " : "");
-                                flairText.append(removalReasons.getReasons().get(i).getFlairText());
+                                flairText.append(reasons.get(i).getFlairText());
 
                                 flairCSS.append(flairCSS.length() > 0 ? " " : "");
-                                flairCSS.append(removalReasons.getReasons().get(i).getFlairCSS());
+                                flairCSS.append(reasons.get(i).getFlairCSS());
                             }
                         }
                         // Add the footer
@@ -241,9 +250,10 @@ public class ToolboxUI {
      * @return whether a toolbox removal dialog can be shown
      */
     public static boolean canShowRemoval(String subreddit) {
+        final ToolboxConfig config = Toolbox.getConfig(subreddit);
         return SettingValues.toolboxEnabled
-                && Toolbox.getConfig(subreddit) != null
-                && Toolbox.getConfig(subreddit).getRemovalReasons() != null;
+                && config != null
+                && config.getRemovalReasons() != null;
     }
 
     /**
@@ -344,14 +354,12 @@ public class ToolboxUI {
                             // add additional types
                             ToolboxConfig config = Toolbox.getConfig(subreddit);
 
-                            final Map<String, Map<String, String>> typeMap;
-                            if (config != null
-                                    && config.getUsernoteTypes() != null
-                                    && config.getUsernoteTypes().size() > 0) {
-                                typeMap = Toolbox.getConfig(subreddit).getUsernoteTypes();
-                            } else {
-                                typeMap = Toolbox.DEFAULT_USERNOTE_TYPES;
-                            }
+                            final Map<String, Map<String, String>> configured =
+                                    config == null ? null : config.getUsernoteTypes();
+                            final Map<String, Map<String, String>> typeMap =
+                                    configured != null && !configured.isEmpty()
+                                            ? configured
+                                            : Toolbox.DEFAULT_USERNOTE_TYPES;
 
                             for (Map<String, String> stringStringMap : typeMap.values()) {
                                 SpannableStringBuilder typeString =
@@ -478,8 +486,10 @@ public class ToolboxUI {
 
             final Usernotes usernotes = Toolbox.getUsernotes(subreddit);
 
-            if (usernotes != null && usernotes.getNotesForUser(user) != null) {
-                for (Usernote note : usernotes.getNotesForUser(user)) {
+            final List<Usernote> notesForUser =
+                    usernotes == null ? null : usernotes.getNotesForUser(user);
+            if (usernotes != null && notesForUser != null) {
+                for (Usernote note : notesForUser) {
                     String dateString =
                             SimpleDateFormat.getDateTimeInstance(
                                             SimpleDateFormat.SHORT, SimpleDateFormat.SHORT)
@@ -524,7 +534,9 @@ public class ToolboxUI {
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             final View view = super.getView(position, convertView, parent);
-            final UsernoteListItem item = getItem(position);
+            // getItem is @Nullable only because ArrayAdapter is generic; position comes from the
+            // adapter's own getCount, so the backing list always has an entry here.
+            final UsernoteListItem item = Objects.requireNonNull(getItem(position));
 
             TextView authorDatetime = view.findViewById(R.id.usernote_author_datetime);
             authorDatetime.setText(item.getAuthorDatetime());
@@ -560,7 +572,8 @@ public class ToolboxUI {
     public static class UsernoteListItem {
         private CharSequence authorDatetime;
         private CharSequence noteText;
-        private String link;
+        // Null for a note that points at nothing; getView() checks before opening it.
+        @Nullable private String link;
         private Usernote note;
         private String subreddit;
         private String user;
@@ -568,7 +581,7 @@ public class ToolboxUI {
         public UsernoteListItem(
                 CharSequence authorDatetime,
                 CharSequence noteText,
-                String link,
+                @Nullable String link,
                 Usernote note,
                 String subreddit,
                 String user) {
@@ -588,6 +601,7 @@ public class ToolboxUI {
             return noteText;
         }
 
+        @Nullable
         public String getLink() {
             return link;
         }
@@ -788,8 +802,9 @@ public class ToolboxUI {
          *
          * @param logSub name of log sub
          * @param title title of post
-         * @return resulting submission
+         * @return resulting submission, or null if the log post could not be made
          */
+        @Nullable
         private Submission logRemoval(String logSub, String title, String link) {
             try {
                 return new AccountManager(Authentication.reddit)
@@ -860,13 +875,22 @@ public class ToolboxUI {
                 return false;
             }
             if (Toolbox.getUsernotes(strings[0]) == null) {
+                if (Toolbox.usernotesUnreadable(strings[0])) {
+                    // The sub has a usernotes page, we just could not read it. Creating a fresh
+                    // config here and uploading it would replace that page with an empty one;
+                    // report the failure instead.
+                    return false;
+                }
                 Toolbox.createUsernotes(strings[0]);
                 reason = "create usernotes config";
             } else {
                 reason = "create new note on user " + strings[1];
             }
-            Toolbox.getUsernotes(strings[0])
-                    .createNote(
+            final Usernotes usernotes = Toolbox.getUsernotes(strings[0]);
+            if (usernotes == null) {
+                return false;
+            }
+            usernotes.createNote(
                             strings[1], // user
                             strings[2], // note text
                             strings[3], // link
@@ -926,7 +950,11 @@ public class ToolboxUI {
                 // Connection failures surface as a bare RuntimeException (not NetworkException)
                 return false;
             }
-            Toolbox.getUsernotes(strings[0]).removeNote(strings[1], note);
+            final Usernotes usernotes = Toolbox.getUsernotes(strings[0]);
+            if (usernotes == null) {
+                return false;
+            }
+            usernotes.removeNote(strings[1], note);
             try {
                 Toolbox.uploadUsernotes(
                         strings[0], "delete note " + note.getTime() + " on user " + strings[1]);

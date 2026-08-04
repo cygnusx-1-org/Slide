@@ -1,5 +1,7 @@
 package me.edgan.redditslide.markdown;
 
+import androidx.annotation.Nullable;
+
 /**
  * Replaces Reddit spoiler delimiters {@code >!} and {@code !<} with private-use sentinel chars
  * <em>before</em> commonmark parsing, so a leading {@code >!} is not mistaken for a blockquote.
@@ -15,7 +17,11 @@ public final class RedditSpoilerPreprocessor {
 
     private RedditSpoilerPreprocessor() {}
 
-    public static String sentinelize(String markdown) {
+    /**
+     * @return the sentinelized markdown, or null when {@code markdown} is null.
+     */
+    @Nullable
+    public static String sentinelize(@Nullable String markdown) {
         if (markdown == null || markdown.indexOf('>') < 0) {
             return markdown; // spoilers require ">!"; nothing to do
         }

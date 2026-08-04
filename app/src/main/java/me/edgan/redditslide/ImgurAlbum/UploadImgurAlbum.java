@@ -3,6 +3,7 @@ package me.edgan.redditslide.ImgurAlbum;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
+import androidx.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import me.edgan.redditslide.Reddit;
@@ -20,13 +21,25 @@ import okio.BufferedSink;
 import org.json.JSONObject;
 
 public class UploadImgurAlbum extends AsyncTask<Uri, Integer, String> {
-    public String finalUrl;
+    // Only assigned once the album has been created; null means the upload never got that far.
+    @Nullable public String finalUrl;
+
+    // Both are set by the subclass constructor (Views/DoEditorActions.UploadImgurAlbumDEA), before
+    // execute() can start the task.
+    @SuppressWarnings("NullAway.Init")
     public Context c;
+
     public int totalCount;
     public int uploadCount;
+
+    @SuppressWarnings("NullAway.Init")
     public MaterialProgressDialog dialog;
 
+    /**
+     * @return always null — the album URL is handed back through {@link #finalUrl} instead.
+     */
     @Override
+    @Nullable
     protected String doInBackground(Uri... sub) {
         totalCount = sub.length;
         final OkHttpClient client = Reddit.client;
@@ -40,6 +53,7 @@ public class UploadImgurAlbum extends AsyncTask<Uri, Integer, String> {
                             .post(
                                     new RequestBody() {
                                         @Override
+                                        @Nullable
                                         public MediaType contentType() {
                                             return null;
                                         }

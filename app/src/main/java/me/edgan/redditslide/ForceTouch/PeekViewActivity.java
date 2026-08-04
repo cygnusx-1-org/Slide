@@ -5,15 +5,20 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.util.DisplayUtil;
 
+import org.jspecify.annotations.NullMarked;
+
+@NullMarked
 public class PeekViewActivity extends AppCompatActivity {
 
-    private PeekView peekView;
+    // Only set while a peek is on screen; removePeek() clears it again.
+    @Nullable private PeekView peekView;
 
     @Override
     public void onPause() {
@@ -89,7 +94,7 @@ public class PeekViewActivity extends AppCompatActivity {
         this.origY = origY;
     }
 
-    public void removePeek(MotionEvent event) {
+    public void removePeek(@Nullable MotionEvent event) {
         isPeeking = false;
         if (peekView != null) {
             if (event != null) peekView.checkButtons(event);

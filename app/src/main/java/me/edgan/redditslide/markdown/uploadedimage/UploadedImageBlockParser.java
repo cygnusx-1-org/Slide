@@ -34,8 +34,9 @@ public class UploadedImageBlockParser extends AbstractBlockParser {
     }
 
     @Override
+    @Nullable
     public BlockContinue tryContinue(ParserState parserState) {
-        return null;
+        return null; // a one-line block: never continues onto the next line
     }
 
     public static class Factory extends AbstractBlockParserFactory {

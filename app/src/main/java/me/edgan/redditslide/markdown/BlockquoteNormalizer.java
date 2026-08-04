@@ -1,5 +1,7 @@
 package me.edgan.redditslide.markdown;
 
+import androidx.annotation.Nullable;
+
 /**
  * Merges blockquote paragraphs that are separated only by blank lines into a single CommonMark
  * blockquote, so the Markwon renderer draws one continuous stripe — matching Reddit's snudown
@@ -29,7 +31,12 @@ public final class BlockquoteNormalizer {
 
     private BlockquoteNormalizer() {}
 
-    public static String mergeAdjacentBlockquotes(String markdown) {
+    /**
+     * @return the merged markdown, or null when {@code markdown} is null — null in, null out, as
+     *     {@code BlockquoteNormalizerTest.nullIsPassedThrough} pins.
+     */
+    @Nullable
+    public static String mergeAdjacentBlockquotes(@Nullable String markdown) {
         if (markdown == null || markdown.indexOf('>') < 0) {
             return markdown; // no blockquote marker, nothing to merge
         }

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -22,13 +23,15 @@ import okhttp3.OkHttpClient;
 /** Created by carlo_000 on 2/1/2016. */
 public class AlbumUtils {
 
+    // Populated by Reddit.onCreate (Reddit.java:471), before anything can request an album.
+    @SuppressWarnings("NullAway.Init")
     public static SharedPreferences albumRequests;
 
+    /**
+     * @return the text after the last dash, or null when the string holds no dash.
+     */
+    @Nullable
     public static String substringAfterLastDash(String s) {
-        if (s == null) {
-            return null;
-        }
-
         int lastDashIndex = s.lastIndexOf('-');
 
         // Only return the substring if a dash is found.
@@ -39,7 +42,8 @@ public class AlbumUtils {
         }
     }
 
-    private static String getHash(String s) {
+    @Nullable
+    private static String getHash(@Nullable String s) {
         if (s == null) {
             return null;
         }
@@ -84,7 +88,8 @@ public class AlbumUtils {
 
     // The imgur album hash for a share URL. Extracted from GetAlbumWithCallback's constructor so the
     // feed's tap-target prefetch derives the identical hash the viewer uses.
-    static String deriveAlbumHash(String url) {
+    @Nullable
+    static String deriveAlbumHash(@Nullable String url) {
         if (url == null) {
             return null;
         }
@@ -113,7 +118,9 @@ public class AlbumUtils {
      * image {@code link} straight from the JSON (no SingleImage/Image round-trip) and reuses this
      * class's {@code getHash} so the reconstructed URL matches the viewer's cache entry exactly.
      */
-    public static String getFirstAlbumImageUrlBlocking(final Context context, final String url) {
+    @Nullable
+    public static String getFirstAlbumImageUrlBlocking(
+            final Context context, @Nullable final String url) {
         try {
             String hash = deriveAlbumHash(url);
             if (hash == null) {
@@ -191,7 +198,10 @@ public class AlbumUtils {
     public static class GetAlbumWithCallback
             extends AsyncTask<String, Void, ArrayList<JsonElement>> {
 
-        public String hash;
+        // Null when the share URL held nothing hash-shaped; doInBackground reports that as an
+        // unresolvable album rather than dereferencing it.
+        @Nullable public String hash;
+
         public String type;
 
         public Activity baseActivity;
@@ -225,7 +235,7 @@ public class AlbumUtils {
          *     every override calls {@code super} first and the earlier void version let them carry on
          *     into an empty list.
          */
-        public boolean doWithData(List<Image> data) {
+        public boolean doWithData(@Nullable List<Image> data) {
             if (data == null || data.isEmpty()) {
                 onError();
                 return false;
@@ -256,6 +266,7 @@ public class AlbumUtils {
          * the album loop skips and logs it, {@code jsons.isEmpty()} reports an album where nothing
          * parsed, and {@link #doWithDataSingle} routes it into {@code doWithData}'s own error path.
          */
+        @Nullable
         public Image convertToSingle(SingleImage data) {
             try {
                 final Image toDo = new Image();
@@ -278,7 +289,7 @@ public class AlbumUtils {
                 // save paths, the peek view) are not null-tolerant. Exclude the entry rather than
                 // letting a half-built one out, which doWithDataSingle turns into the error path.
                 final int dot = link == null ? -1 : link.lastIndexOf('.');
-                if (dot < 0) {
+                if (link == null || dot < 0) {
                     LogUtil.e("convertToSingle: no extension in link [" + link + "]");
                     return null;
                 }
@@ -293,7 +304,7 @@ public class AlbumUtils {
                 ObjectMapper objectMapper = new ObjectMapper();
 
                 try {
-                    String dataJson = data != null ? objectMapper.writeValueAsString(data) : "null";
+                    String dataJson = objectMapper.writeValueAsString(data);
                     LogUtil.e(e, "convertToSingle error, data [" + dataJson + "]");
                 } catch (JsonProcessingException ex) {
                     LogUtil.e(ex, "Error serializing data to JSON for logging");
@@ -303,16 +314,20 @@ public class AlbumUtils {
             }
         }
 
-        JsonElement[] target;
-        int count;
-        int done;
-
-        AlbumImage album;
-
         @Override
+        @Nullable
         protected ArrayList<JsonElement> doInBackground(final String... sub) {
+            String hash = this.hash;
+            if (hash == null) {
+                LogUtil.w("No imgur hash could be derived; nothing to fetch");
+                if (baseActivity != null) {
+                    baseActivity.runOnUiThread(this::onError);
+                }
+                return null;
+            }
             if (hash.startsWith("/")) {
                 hash = hash.substring(1);
+                this.hash = hash;
             }
 
             final JsonElement[] target;

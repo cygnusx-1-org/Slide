@@ -37,6 +37,9 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.Views.PeekMediaView;
 import me.edgan.redditslide.util.DisplayUtil;
 
+import org.jspecify.annotations.NullMarked;
+
+@NullMarked
 public class PeekView extends FrameLayout {
 
     private static final int ANIMATION_TIME = 300;
@@ -53,9 +56,10 @@ public class PeekView extends FrameLayout {
     private int distanceFromLeft;
     private int screenWidth;
     private int screenHeight;
-    private ViewGroup androidContentView = null;
-    private OnPeek callbacks;
-    private OnRemove remove;
+    private ViewGroup androidContentView;
+    // All three are optional: only set when the caller registers one.
+    @Nullable private OnPeek callbacks;
+    @Nullable private OnRemove remove;
 
     public PeekView(
             Activity context,
@@ -74,7 +78,7 @@ public class PeekView extends FrameLayout {
         buttons.put(i, onButtonUp);
     }
 
-    private OnPop mOnPop;
+    @Nullable private OnPop mOnPop;
 
     int currentHighlight;
     static int eight = DisplayUtil.dpToPxVertical(8);

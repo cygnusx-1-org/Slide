@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
@@ -23,6 +24,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
+import java.util.Objects;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
@@ -37,8 +39,9 @@ public class ImageDownloadNotificationService extends Service {
     private static final Object DIRECTORY_LOCK = new Object();
 
     @Override
+    @Nullable
     public IBinder onBind(Intent intent) {
-        return null;
+        return null; // not a bound service
     }
 
     private void handleIntent(Intent intent) {
@@ -55,9 +58,9 @@ public class ImageDownloadNotificationService extends Service {
             actuallyLoaded = actuallyLoaded + ".png";
         }
 
-        String subreddit = "";
-        if (intent.hasExtra("subreddit")) {
-            subreddit = intent.getStringExtra("subreddit");
+        String subreddit = intent.getStringExtra("subreddit");
+        if (subreddit == null) {
+            subreddit = "";
         }
 
         new PollTask(
@@ -70,13 +73,19 @@ public class ImageDownloadNotificationService extends Service {
     }
 
     private class PollTask extends AsyncTask<Void, Void, Void> {
+        // Both are built by startNotification(), which runs from onPreExecute before any other
+        // method on this task can touch them.
+        @SuppressWarnings("NullAway.Init")
         private NotificationManager mNotifyManager;
+
+        @SuppressWarnings("NullAway.Init")
         private NotificationCompat.Builder mBuilder;
         private final String actuallyLoaded;
         private final Uri baseUri;
         private final int index;
         private final String subreddit;
-        private final String submissionTitle;
+        // The post title is absent for media saved outside a post context.
+        @Nullable private final String submissionTitle;
         private int id;
         private int percentDone, latestPercentDone;
 
@@ -85,7 +94,7 @@ public class ImageDownloadNotificationService extends Service {
                 Uri baseUri,
                 int index,
                 String subreddit,
-                String submissionTitle) {
+                @Nullable String submissionTitle) {
             this.actuallyLoaded = actuallyLoaded;
             this.baseUri = baseUri;
             this.index = index;
@@ -95,9 +104,13 @@ public class ImageDownloadNotificationService extends Service {
 
         private void startNotification() {
             id = (int) (System.currentTimeMillis() / 1000);
+            // getSystemService is @Nullable for services a device can lack; NotificationManager is
+            // not one of those, and the very next use below would NPE regardless.
             mNotifyManager =
-                    ContextCompat.getSystemService(
-                            ImageDownloadNotificationService.this, NotificationManager.class);
+                    Objects.requireNonNull(
+                            ContextCompat.getSystemService(
+                                    ImageDownloadNotificationService.this,
+                                    NotificationManager.class));
             mBuilder =
                     new NotificationCompat.Builder(getApplicationContext(), Reddit.CHANNEL_IMG)
                             .setContentTitle(getString(R.string.mediaview_notif_title))
@@ -230,9 +243,10 @@ public class ImageDownloadNotificationService extends Service {
             return null;
         }
 
+        @Nullable
         private Uri createDocument(Uri baseUri, String fileName) {
             try {
-                if (baseUri == null || baseUri.getAuthority() == null) {
+                if (baseUri.getAuthority() == null) {
                     throw new IllegalArgumentException("Invalid base URI provided.");
                 }
 
@@ -331,10 +345,8 @@ public class ImageDownloadNotificationService extends Service {
                             .setAutoCancel(true)
                             .build();
 
-            if (mNotifyManager != null) {
-                mNotifyManager.cancel(id);
-                mNotifyManager.notify(id, notif);
-            }
+            mNotifyManager.cancel(id);
+            mNotifyManager.notify(id, notif);
 
             stopSelf();
         }
@@ -361,7 +373,12 @@ public class ImageDownloadNotificationService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
+        // A restarted service is redelivered a null intent; there is nothing to download then.
+        if (intent == null) {
+            stopSelf();
+            return START_NOT_STICKY;
+        }
         handleIntent(intent);
         return START_NOT_STICKY;
     }

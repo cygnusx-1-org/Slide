@@ -5,6 +5,7 @@ import android.text.TextPaint;
 import android.text.style.URLSpan;
 import android.view.View;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 
 /**
  * Self-contained clickable spoiler span for the new Reddit-style renderer. Subclasses
@@ -39,7 +40,7 @@ public class RedditSpoilerSpan extends URLSpan {
     }
 
     /** Toggle hidden/revealed and force the view to re-lay-out so the change is drawn. */
-    public void toggle(View widget) {
+    public void toggle(@Nullable View widget) {
         revealed = !revealed;
         if (widget instanceof TextView) {
             TextView tv = (TextView) widget;

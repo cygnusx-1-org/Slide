@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Tumblr;
 
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -29,43 +31,43 @@ import java.util.Map;
 public class Blog {
 
     @JsonProperty("title")
-    private String title;
+    @Nullable private String title;
 
     @JsonProperty("name")
-    private String name;
+    @Nullable private String name;
 
     @JsonProperty("total_posts")
-    private Integer totalPosts;
+    @Nullable private Integer totalPosts;
 
     @JsonProperty("posts")
-    private Integer posts;
+    @Nullable private Integer posts;
 
     @JsonProperty("url")
-    private String url;
+    @Nullable private String url;
 
     @JsonProperty("updated")
-    private Double updated;
+    @Nullable private Double updated;
 
     @JsonProperty("description")
-    private String description;
+    @Nullable private String description;
 
     @JsonProperty("is_nsfw")
-    private Boolean isNsfw;
+    @Nullable private Boolean isNsfw;
 
     @JsonProperty("ask")
-    private Boolean ask;
+    @Nullable private Boolean ask;
 
     @JsonProperty("ask_page_title")
-    private String askPageTitle;
+    @Nullable private String askPageTitle;
 
     @JsonProperty("ask_anon")
-    private Boolean askAnon;
+    @Nullable private Boolean askAnon;
 
     @JsonProperty("share_likes")
-    private Boolean shareLikes;
+    @Nullable private Boolean shareLikes;
 
     @JsonProperty("likes")
-    private Integer likes;
+    @Nullable private Integer likes;
 
     @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -73,6 +75,7 @@ public class Blog {
      * @return The title
      */
     @JsonProperty("title")
+    @Nullable
     public String getTitle() {
         return title;
     }
@@ -81,7 +84,7 @@ public class Blog {
      * @param title The title
      */
     @JsonProperty("title")
-    public void setTitle(String title) {
+    public void setTitle(@Nullable String title) {
         this.title = title;
     }
 
@@ -89,6 +92,7 @@ public class Blog {
      * @return The name
      */
     @JsonProperty("name")
+    @Nullable
     public String getName() {
         return name;
     }
@@ -97,7 +101,7 @@ public class Blog {
      * @param name The name
      */
     @JsonProperty("name")
-    public void setName(String name) {
+    public void setName(@Nullable String name) {
         this.name = name;
     }
 
@@ -105,6 +109,7 @@ public class Blog {
      * @return The totalPosts
      */
     @JsonProperty("total_posts")
+    @Nullable
     public Integer getTotalPosts() {
         return totalPosts;
     }
@@ -113,7 +118,7 @@ public class Blog {
      * @param totalPosts The total_posts
      */
     @JsonProperty("total_posts")
-    public void setTotalPosts(Integer totalPosts) {
+    public void setTotalPosts(@Nullable Integer totalPosts) {
         this.totalPosts = totalPosts;
     }
 
@@ -121,6 +126,7 @@ public class Blog {
      * @return The posts
      */
     @JsonProperty("posts")
+    @Nullable
     public Integer getPosts() {
         return posts;
     }
@@ -129,7 +135,7 @@ public class Blog {
      * @param posts The posts
      */
     @JsonProperty("posts")
-    public void setPosts(Integer posts) {
+    public void setPosts(@Nullable Integer posts) {
         this.posts = posts;
     }
 
@@ -137,6 +143,7 @@ public class Blog {
      * @return The url
      */
     @JsonProperty("url")
+    @Nullable
     public String getUrl() {
         return url;
     }
@@ -145,7 +152,7 @@ public class Blog {
      * @param url The url
      */
     @JsonProperty("url")
-    public void setUrl(String url) {
+    public void setUrl(@Nullable String url) {
         this.url = url;
     }
 
@@ -153,6 +160,7 @@ public class Blog {
      * @return The updated
      */
     @JsonProperty("updated")
+    @Nullable
     public Double getUpdated() {
         return updated;
     }
@@ -161,7 +169,7 @@ public class Blog {
      * @param updated The updated
      */
     @JsonProperty("updated")
-    public void setUpdated(Double updated) {
+    public void setUpdated(@Nullable Double updated) {
         this.updated = updated;
     }
 
@@ -169,6 +177,7 @@ public class Blog {
      * @return The description
      */
     @JsonProperty("description")
+    @Nullable
     public String getDescription() {
         return description;
     }
@@ -177,7 +186,7 @@ public class Blog {
      * @param description The description
      */
     @JsonProperty("description")
-    public void setDescription(String description) {
+    public void setDescription(@Nullable String description) {
         this.description = description;
     }
 
@@ -185,6 +194,7 @@ public class Blog {
      * @return The isNsfw
      */
     @JsonProperty("is_nsfw")
+    @Nullable
     public Boolean getIsNsfw() {
         return isNsfw;
     }
@@ -193,7 +203,7 @@ public class Blog {
      * @param isNsfw The is_nsfw
      */
     @JsonProperty("is_nsfw")
-    public void setIsNsfw(Boolean isNsfw) {
+    public void setIsNsfw(@Nullable Boolean isNsfw) {
         this.isNsfw = isNsfw;
     }
 
@@ -201,6 +211,7 @@ public class Blog {
      * @return The ask
      */
     @JsonProperty("ask")
+    @Nullable
     public Boolean getAsk() {
         return ask;
     }
@@ -209,7 +220,7 @@ public class Blog {
      * @param ask The ask
      */
     @JsonProperty("ask")
-    public void setAsk(Boolean ask) {
+    public void setAsk(@Nullable Boolean ask) {
         this.ask = ask;
     }
 
@@ -217,6 +228,7 @@ public class Blog {
      * @return The askPageTitle
      */
     @JsonProperty("ask_page_title")
+    @Nullable
     public String getAskPageTitle() {
         return askPageTitle;
     }
@@ -225,7 +237,7 @@ public class Blog {
      * @param askPageTitle The ask_page_title
      */
     @JsonProperty("ask_page_title")
-    public void setAskPageTitle(String askPageTitle) {
+    public void setAskPageTitle(@Nullable String askPageTitle) {
         this.askPageTitle = askPageTitle;
     }
 
@@ -233,6 +245,7 @@ public class Blog {
      * @return The askAnon
      */
     @JsonProperty("ask_anon")
+    @Nullable
     public Boolean getAskAnon() {
         return askAnon;
     }
@@ -241,7 +254,7 @@ public class Blog {
      * @param askAnon The ask_anon
      */
     @JsonProperty("ask_anon")
-    public void setAskAnon(Boolean askAnon) {
+    public void setAskAnon(@Nullable Boolean askAnon) {
         this.askAnon = askAnon;
     }
 
@@ -249,6 +262,7 @@ public class Blog {
      * @return The shareLikes
      */
     @JsonProperty("share_likes")
+    @Nullable
     public Boolean getShareLikes() {
         return shareLikes;
     }
@@ -257,7 +271,7 @@ public class Blog {
      * @param shareLikes The share_likes
      */
     @JsonProperty("share_likes")
-    public void setShareLikes(Boolean shareLikes) {
+    public void setShareLikes(@Nullable Boolean shareLikes) {
         this.shareLikes = shareLikes;
     }
 
@@ -265,6 +279,7 @@ public class Blog {
      * @return The likes
      */
     @JsonProperty("likes")
+    @Nullable
     public Integer getLikes() {
         return likes;
     }
@@ -273,7 +288,7 @@ public class Blog {
      * @param likes The likes
      */
     @JsonProperty("likes")
-    public void setLikes(Integer likes) {
+    public void setLikes(@Nullable Integer likes) {
         this.likes = likes;
     }
 

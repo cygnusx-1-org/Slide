@@ -12,6 +12,7 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.Html;
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
@@ -32,6 +33,7 @@ import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.PrefUtil;
 import me.edgan.redditslide.util.StringUtil;
 import net.dean.jraw.models.Message;
 import net.dean.jraw.models.Submission;
@@ -44,6 +46,8 @@ public class CheckForMail extends BroadcastReceiver {
 
     public static final String MESSAGE_EXTRA = "MESSAGE_FULLNAMES";
     public static final String SUBS_TO_GET = "SUBREDDIT_NOTIFS";
+    // Set by onReceive, which is the only entry point into this receiver.
+    @SuppressWarnings("NullAway.Init")
     private Context c;
 
     @Override
@@ -59,7 +63,7 @@ public class CheckForMail extends BroadcastReceiver {
         if (Authentication.mod) {
             new AsyncGetModmail().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
-        if (!Reddit.appRestart.getString(SUBS_TO_GET, "").isEmpty()) {
+        if (!PrefUtil.getString(Reddit.appRestart, SUBS_TO_GET, "").isEmpty()) {
             new AsyncGetSubs(c).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
@@ -248,6 +252,7 @@ public class CheckForMail extends BroadcastReceiver {
         }
 
         @Override
+        @Nullable
         protected List<Message> doInBackground(Void... params) {
             try {
                 if (Authentication.isLoggedIn && Authentication.didOnline) {
@@ -376,6 +381,7 @@ public class CheckForMail extends BroadcastReceiver {
         }
 
         @Override
+        @Nullable
         protected List<Message> doInBackground(Void... params) {
             try {
                 if (Authentication.isLoggedIn && Authentication.didOnline) {
@@ -492,15 +498,17 @@ public class CheckForMail extends BroadcastReceiver {
             if (Reddit.notificationTime != -1) new NotificationJobScheduler(c).start();
         }
 
-        HashMap<String, Integer> subThresholds;
+        HashMap<String, Integer> subThresholds = new HashMap<>();
 
         @Override
+        @Nullable
         protected List<Submission> doInBackground(Void... params) {
             try {
                 long lastTime = (System.currentTimeMillis() - (60000L * Reddit.notificationTime));
                 ArrayList<Submission> toReturn = new ArrayList<>();
                 ArrayList<String> rawSubs =
-                        StringUtil.stringToArray(Reddit.appRestart.getString(SUBS_TO_GET, ""));
+                        StringUtil.stringToArray(
+                                PrefUtil.getString(Reddit.appRestart, SUBS_TO_GET, ""));
                 subThresholds = new HashMap<>();
                 for (String s : rawSubs) {
                     try {
@@ -533,9 +541,16 @@ public class CheckForMail extends BroadcastReceiver {
                 unread.setLimit(30);
                 if (unread.hasNext()) {
                     for (Submission subm : unread.next()) {
+                        // A sub Reddit hands back that is not in the map has no threshold to
+                        // compare against; skip it rather than unboxing a null. Lowercased the
+                        // same way the keys were put in above — a default-locale toLowerCase()
+                        // maps "I" to "ı" in Turkish and never matches.
+                        final Integer threshold =
+                                subThresholds.get(
+                                        subm.getSubredditName().toLowerCase(Locale.ENGLISH));
                         if (subm.getCreated().getTime() > lastTime
-                                && subm.getScore()
-                                        >= subThresholds.get(subm.getSubredditName().toLowerCase())
+                                && threshold != null
+                                && subm.getScore() >= threshold
                                 && !HasSeen.getSeen(subm)) {
                             toReturn.add(subm);
                         }

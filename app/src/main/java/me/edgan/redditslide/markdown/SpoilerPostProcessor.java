@@ -1,5 +1,6 @@
 package me.edgan.redditslide.markdown;
 
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import org.commonmark.node.AbstractVisitor;
@@ -103,7 +104,8 @@ public final class SpoilerPostProcessor implements PostProcessor {
     }
 
     /** Restore any stray sentinels (e.g. an inner unmatched open from non-nesting) to literals. */
-    private static String restore(String s) {
+    @Nullable
+    private static String restore(@Nullable String s) {
         if (s == null || (s.indexOf(OPEN) < 0 && s.indexOf(CLOSE) < 0)) {
             return s;
         }

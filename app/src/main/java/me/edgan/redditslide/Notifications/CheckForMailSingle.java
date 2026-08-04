@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.Html;
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import java.util.ArrayList;
@@ -30,6 +31,8 @@ import org.apache.commons.text.StringEscapeUtils;
 public class CheckForMailSingle extends BroadcastReceiver {
 
     public static final String SUBS_TO_GET = "SUBREDDIT_NOTIFS";
+    // Set by onReceive, which is the only entry point into this receiver.
+    @SuppressWarnings("NullAway.Init")
     private Context c;
 
     @Override
@@ -214,6 +217,7 @@ public class CheckForMailSingle extends BroadcastReceiver {
         }
 
         @Override
+        @Nullable
         protected List<Message> doInBackground(Void... params) {
             try {
                 if (Authentication.isLoggedIn && Authentication.didOnline) {

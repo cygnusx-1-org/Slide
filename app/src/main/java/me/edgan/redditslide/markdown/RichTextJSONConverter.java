@@ -1,5 +1,6 @@
 package me.edgan.redditslide.markdown;
 
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -142,6 +143,11 @@ public class RichTextJSONConverter implements Visitor {
         return richText.toString();
     }
 
+    /**
+     * @return the [format, start, length] triple for a styled text node, or null when the node
+     *     carries no formatting.
+     */
+    @Nullable
     private JSONArray getFormatArray(Node node) {
         int formatNum = 0;
         while (node != null && node.getFirstChild() != null) {

@@ -2,6 +2,7 @@ package me.edgan.redditslide.Toolbox;
 
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import androidx.annotation.Nullable;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
@@ -9,7 +10,9 @@ import com.google.gson.reflect.TypeToken;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Reddit;
 import net.dean.jraw.ApiException;
@@ -24,6 +27,13 @@ public class Toolbox {
     private static final long CACHE_TIME_USERNOTES = 3600000; // 1 hour
 
     private static Map<String, Usernotes> notes = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+
+    // Subs whose usernotes wiki page was there at the last download but could not be read. Both
+    // that and "the sub has no usernotes page" leave notes without an entry, and only the second
+    // makes creating a fresh config safe — uploading one replaces whatever the page holds.
+    private static final Set<String> unreadableUsernotes =
+            new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+
     private static Map<String, ToolboxConfig> toolboxConfigs =
             new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private static SharedPreferences cache =
@@ -71,18 +81,36 @@ public class Toolbox {
      * Gets a subreddit's usernotes if we have loaded them
      *
      * @param subreddit Sub to get notes for
-     * @return Usernotes
+     * @return Usernotes, or null if none are loaded for the sub
      */
+    @Nullable
     public static Usernotes getUsernotes(String subreddit) {
         return notes.get(subreddit);
+    }
+
+    /**
+     * Whether the sub's usernotes wiki page was there at the last {@link #downloadUsernotes} but
+     * could not be read — a schema this app does not handle, a blob that would not inflate, or
+     * content that is not JSON at all.
+     *
+     * <p>{@link #getUsernotes} returns null for that sub either way, but it also returns null for
+     * a sub that simply has no usernotes page. Only the second is safe to answer with {@link
+     * #createUsernotes}: uploading a fresh config replaces whatever the page holds.
+     *
+     * @param subreddit Sub to ask about
+     * @return whether the page exists but is unusable
+     */
+    public static boolean usernotesUnreadable(String subreddit) {
+        return unreadableUsernotes.contains(subreddit);
     }
 
     /**
      * Gets a subreddit's toolbox config if we have loaded it
      *
      * @param subreddit Sub to get config fore
-     * @return Toolbox config
+     * @return Toolbox config, or null if none is loaded for the sub
      */
+    @Nullable
     public static ToolboxConfig getConfig(String subreddit) {
         return toolboxConfigs.get(subreddit);
     }
@@ -184,11 +212,15 @@ public class Toolbox {
                         gson.fromJson(
                                 cache.getString(subreddit + "_usernotes_data", null),
                                 Usernotes.class);
-                if (result != null && result.getSchema() == 6) {
+                if (result != null && result.isUsable()) {
                     result.setSubreddit(subreddit);
                     notes.put(subreddit, result);
+                    unreadableUsernotes.remove(subreddit);
                 } else {
+                    // Only a usable page is ever cached, so this is data an older version of the
+                    // app wrote: the sub has a page, we just cannot read it.
                     notes.remove(subreddit);
+                    unreadableUsernotes.add(subreddit);
                 }
             } catch (JsonParseException e) { // cached usernotes were invalid
                 new AsyncLoadUsernotes()
@@ -216,22 +248,29 @@ public class Toolbox {
             cache.edit()
                     .putLong(subreddit + "_usernotes_timestamp", System.currentTimeMillis())
                     .apply();
-            if (result != null && result.getSchema() == 6) {
+            if (result != null && result.isUsable()) {
                 result.setSubreddit(subreddit);
                 notes.put(subreddit, result);
+                unreadableUsernotes.remove(subreddit);
                 cache.edit()
                         .putBoolean(subreddit + "_usernotes_exists", true)
                         .putString(subreddit + "_usernotes_data", data)
                         .apply();
             } else {
+                // The wiki page fetched, so it is there; we just cannot use what it holds.
+                unreadableUsernotes.add(subreddit);
                 cache.edit().putBoolean(subreddit + "_usernotes_exists", false).apply();
             }
         } catch (NetworkException | JsonParseException e) {
             if (e instanceof JsonParseException) {
                 notes.remove(subreddit);
+                unreadableUsernotes.add(subreddit);
             } else if (e instanceof NetworkException
                     && ((NetworkException) e).getResponse().getStatusCode() != 404) {
                 throw e;
+            } else {
+                // A 404: the sub has no usernotes page at all, so there is nothing to overwrite.
+                unreadableUsernotes.remove(subreddit);
             }
             cache.edit()
                     .putLong(subreddit + "_usernotes_timestamp", System.currentTimeMillis())

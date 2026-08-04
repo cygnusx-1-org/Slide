@@ -1,6 +1,8 @@
 package me.edgan.redditslide.ImgurAlbum;
 
 /** Created by carlo_000 on 5/3/2016. */
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -16,13 +18,13 @@ import java.util.Map;
 public class SingleAlbumImage {
 
     @JsonProperty("data")
-    private SingleImage data;
+    @Nullable private SingleImage data;
 
     @JsonProperty("success")
-    private Boolean success;
+    @Nullable private Boolean success;
 
     @JsonProperty("status")
-    private Integer status;
+    @Nullable private Integer status;
 
     @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -30,6 +32,7 @@ public class SingleAlbumImage {
      * @return The data
      */
     @JsonProperty("data")
+    @Nullable
     public SingleImage getData() {
         return data;
     }
@@ -38,7 +41,7 @@ public class SingleAlbumImage {
      * @param data The data
      */
     @JsonProperty("data")
-    public void setData(SingleImage data) {
+    public void setData(@Nullable SingleImage data) {
         this.data = data;
     }
 
@@ -46,6 +49,7 @@ public class SingleAlbumImage {
      * @return The success
      */
     @JsonProperty("success")
+    @Nullable
     public Boolean getSuccess() {
         return success;
     }
@@ -54,7 +58,7 @@ public class SingleAlbumImage {
      * @param success The success
      */
     @JsonProperty("success")
-    public void setSuccess(Boolean success) {
+    public void setSuccess(@Nullable Boolean success) {
         this.success = success;
     }
 
@@ -62,6 +66,7 @@ public class SingleAlbumImage {
      * @return The status
      */
     @JsonProperty("status")
+    @Nullable
     public Integer getStatus() {
         return status;
     }
@@ -70,7 +75,7 @@ public class SingleAlbumImage {
      * @param status The status
      */
     @JsonProperty("status")
-    public void setStatus(Integer status) {
+    public void setStatus(@Nullable Integer status) {
         this.status = status;
     }
 

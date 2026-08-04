@@ -18,6 +18,7 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.SuperscriptSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import io.noties.markwon.AbstractMarkwonPlugin;
 import io.noties.markwon.Markwon;
@@ -63,7 +64,8 @@ public final class RedditMarkwon {
 
     private RedditMarkwon() {}
 
-    private static volatile Markwon instance;
+    // Cleared by invalidate() on a theme change; get() rebuilds it lazily.
+    @Nullable private static volatile Markwon instance;
 
     /**
      * Matches a zero-width-space html entity in the raw markdown: hex ({@code &#x200B;},
@@ -97,11 +99,15 @@ public final class RedditMarkwon {
      * comment on every scroll \u2014 can hold onto the result. The colors baked in here are dropped by
      * {@link #invalidate()}, so a cached result must not outlive a base-theme change.
      */
-    public static Spanned toMarkdown(Context context, String markdown) {
+    public static Spanned toMarkdown(Context context, @Nullable String markdown) {
         Markwon markwon = get(context);
         String prepared = RedditSpoilerPreprocessor.sentinelize(markdown == null ? "" : markdown);
         prepared = BlockquoteNormalizer.mergeAdjacentBlockquotes(prepared);
-        prepared = ZERO_WIDTH_SPACE_ENTITY.matcher(prepared).replaceAll("\u200B");
+        // Both preprocessors are null-in/null-out and the input above is never null.
+        prepared =
+                ZERO_WIDTH_SPACE_ENTITY
+                        .matcher(prepared == null ? "" : prepared)
+                        .replaceAll("\u200B");
         return markwon.toMarkdown(prepared);
     }
 

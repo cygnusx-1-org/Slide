@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Tumblr;
 
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,10 +17,10 @@ import java.util.Map;
 public class Reblog {
 
     @JsonProperty("tree_html")
-    private String treeHtml;
+    @Nullable private String treeHtml;
 
     @JsonProperty("comment")
-    private String comment;
+    @Nullable private String comment;
 
     @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -26,6 +28,7 @@ public class Reblog {
      * @return The treeHtml
      */
     @JsonProperty("tree_html")
+    @Nullable
     public String getTreeHtml() {
         return treeHtml;
     }
@@ -34,7 +37,7 @@ public class Reblog {
      * @param treeHtml The tree_html
      */
     @JsonProperty("tree_html")
-    public void setTreeHtml(String treeHtml) {
+    public void setTreeHtml(@Nullable String treeHtml) {
         this.treeHtml = treeHtml;
     }
 
@@ -42,6 +45,7 @@ public class Reblog {
      * @return The comment
      */
     @JsonProperty("comment")
+    @Nullable
     public String getComment() {
         return comment;
     }
@@ -50,7 +54,7 @@ public class Reblog {
      * @param comment The comment
      */
     @JsonProperty("comment")
-    public void setComment(String comment) {
+    public void setComment(@Nullable String comment) {
         this.comment = comment;
     }
 

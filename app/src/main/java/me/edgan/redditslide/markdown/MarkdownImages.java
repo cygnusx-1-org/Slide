@@ -3,6 +3,7 @@ package me.edgan.redditslide.markdown;
 import android.content.Context;
 import android.text.Spanned;
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,11 +57,11 @@ public final class MarkdownImages {
      */
     public static void renderInto(
             SpoilerRobotoTextView textView,
-            CommentOverflow overflow,
+            @Nullable CommentOverflow overflow,
             String subreddit,
-            String rawMarkdown,
-            String bodyHtml,
-            JsonNode dataNode) {
+            @Nullable String rawMarkdown,
+            @Nullable String bodyHtml,
+            @Nullable JsonNode dataNode) {
         renderInto(textView, overflow, subreddit, rawMarkdown, bodyHtml, dataNode, null);
     }
 
@@ -72,12 +73,12 @@ public final class MarkdownImages {
      */
     public static void renderInto(
             SpoilerRobotoTextView textView,
-            CommentOverflow overflow,
+            @Nullable CommentOverflow overflow,
             String subreddit,
-            String rawMarkdown,
-            String bodyHtml,
-            JsonNode dataNode,
-            String searchTerm) {
+            @Nullable String rawMarkdown,
+            @Nullable String bodyHtml,
+            @Nullable JsonNode dataNode,
+            @Nullable String searchTerm) {
         renderPrepared(
                 textView,
                 overflow,
@@ -95,18 +96,19 @@ public final class MarkdownImages {
      */
     public static final class Prepared {
         /** The rendered markdown, or {@code null} when the body is entirely media/whitespace. */
-        public final Spanned text;
+        @Nullable public final Spanned text;
 
         public final List<String> emoteUrls;
 
-        Prepared(Spanned text, List<String> emoteUrls) {
+        Prepared(@Nullable Spanned text, List<String> emoteUrls) {
             this.text = text;
             this.emoteUrls = emoteUrls;
         }
     }
 
     /** Resolve and parse {@code rawMarkdown}; see {@link Prepared}. */
-    public static Prepared prepare(Context context, String rawMarkdown, JsonNode dataNode) {
+    public static Prepared prepare(
+            Context context, @Nullable String rawMarkdown, @Nullable JsonNode dataNode) {
         rawMarkdown = unescapeTransportEntities(rawMarkdown);
         EmoteResolution emotes = resolveEmotes(rawMarkdown, dataNode);
         String text = stripMediaUrls(emotes.markdown);
@@ -117,12 +119,12 @@ public final class MarkdownImages {
     /** Draw an already-{@link #prepare}d comment into {@code textView} and {@code overflow}. */
     public static void renderPrepared(
             SpoilerRobotoTextView textView,
-            CommentOverflow overflow,
+            @Nullable CommentOverflow overflow,
             String subreddit,
             Prepared prepared,
-            String bodyHtml,
-            JsonNode dataNode,
-            String searchTerm) {
+            @Nullable String bodyHtml,
+            @Nullable JsonNode dataNode,
+            @Nullable String searchTerm) {
         boolean rendered = false;
         if (prepared.text != null) {
             RedditMarkwon.setParsedMarkdown(textView, subreddit, prepared.text);
@@ -150,7 +152,8 @@ public final class MarkdownImages {
      * {@code emote|free_emotes_pack|upvote} whose real gif filename differs, so the URL must come
      * from {@code media_metadata} — never constructed from the name.
      */
-    public static EmoteResolution resolveEmotes(String rawMarkdown, JsonNode dataNode) {
+    public static EmoteResolution resolveEmotes(
+            @Nullable String rawMarkdown, @Nullable JsonNode dataNode) {
         List<String> urls = new ArrayList<>();
         if (rawMarkdown == null || rawMarkdown.isEmpty() || rawMarkdown.indexOf("emote|") < 0) {
             return new EmoteResolution(rawMarkdown == null ? "" : rawMarkdown, urls);
@@ -174,7 +177,8 @@ public final class MarkdownImages {
         return new EmoteResolution(sb.toString(), urls);
     }
 
-    private static String emoteUrl(JsonNode entry) {
+    @Nullable
+    private static String emoteUrl(@Nullable JsonNode entry) {
         if (entry == null) {
             return null;
         }
@@ -207,7 +211,8 @@ public final class MarkdownImages {
      * are still handled afterwards by commonmark's own inline entity decoding, so the result matches
      * the snudown {@code body_html} pipeline. See issue #179.
      */
-    public static String unescapeTransportEntities(String rawMarkdown) {
+    @Nullable
+    public static String unescapeTransportEntities(@Nullable String rawMarkdown) {
         if (rawMarkdown == null || rawMarkdown.indexOf('&') < 0) {
             return rawMarkdown; // no entity to decode
         }
@@ -215,7 +220,7 @@ public final class MarkdownImages {
     }
 
     /** Remove standalone Reddit media URLs (they are rendered as image blocks instead). */
-    public static String stripMediaUrls(String markdown) {
+    public static String stripMediaUrls(@Nullable String markdown) {
         if (markdown == null) {
             return "";
         }
@@ -230,7 +235,10 @@ public final class MarkdownImages {
      * there are none.
      */
     public static void render(
-            CommentOverflow overflow, String bodyHtml, JsonNode dataNode, String subreddit) {
+            @Nullable CommentOverflow overflow,
+            @Nullable String bodyHtml,
+            @Nullable JsonNode dataNode,
+            String subreddit) {
         if (overflow == null) {
             return;
         }

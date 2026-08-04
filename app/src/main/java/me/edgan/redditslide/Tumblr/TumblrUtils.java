@@ -27,6 +27,8 @@ import okhttp3.OkHttpClient;
 /** Created by carlo_000 on 2/1/2016. */
 public class TumblrUtils {
 
+    // Populated by Reddit.onCreate (Reddit.java:472), before anything can request a post.
+    @SuppressWarnings("NullAway.Init")
     public static SharedPreferences tumblrRequests;
     private static final String TAG = "TumblrUtils";
 
@@ -47,7 +49,11 @@ public class TumblrUtils {
             Uri i = Uri.parse(url);
 
             id = i.getPathSegments().get(1);
-            blog = i.getHost().split("\\.")[0];
+            // A URI with no host is not a Tumblr post URL. Leaving the blog empty builds an API URL
+            // that fails into onError(), which is where the rest of this class sends a response it
+            // cannot use; the previous chain dereferenced the null and crashed the caller instead.
+            final String host = i.getHost();
+            blog = host == null ? "" : host.split("\\.")[0];
 
             client = Reddit.client;
             gson = new Gson();
@@ -62,7 +68,7 @@ public class TumblrUtils {
          *     rather than a bare void, because every override calls {@code super} first and the
          *     earlier void version let them carry on into an empty list.
          */
-        public boolean doWithData(List<Photo> data) {
+        public boolean doWithData(@Nullable List<Photo> data) {
             if (data == null || data.isEmpty()) {
                 onError();
                 return false;
@@ -84,7 +90,7 @@ public class TumblrUtils {
          * <p>Package-private and a method rather than the chain it replaced because the only way to
          * reach it from a test is to call it: the caller sits behind a live HTTP request.
          */
-        static boolean hasPhotos(final JsonObject result) {
+        static boolean hasPhotos(@Nullable final JsonObject result) {
             if (result == null) {
                 return false;
             }
@@ -110,7 +116,8 @@ public class TumblrUtils {
          * of those, since it only ever stores a JsonObject it has already screened, so the guard the
          * chain relied on was "the prefs file contains only what we put there".
          */
-        static JsonObject asObject(final String cached) {
+        @Nullable
+        static JsonObject asObject(@Nullable final String cached) {
             if (cached == null) {
                 return null;
             }
@@ -123,7 +130,8 @@ public class TumblrUtils {
             }
         }
 
-        TumblrPost post;
+        // Null until parseJson has read a response, and after one that would not deserialize.
+        @Nullable TumblrPost post;
 
         public void parseJson(JsonElement baseData) {
             try {
@@ -177,7 +185,7 @@ public class TumblrUtils {
          * Extract a suitable title from the post
          */
         @Nullable
-        private String extractPostTitle(TumblrPost post) {
+        private String extractPostTitle(@Nullable TumblrPost post) {
             try {
                 if (post != null && post.getResponse() != null &&
                     post.getResponse().getPosts() != null &&
@@ -204,7 +212,7 @@ public class TumblrUtils {
                     }
 
                     // If no good title found, use blog name and post ID
-                    if (firstPost.getBlogName() != null) {
+                    if (firstPost.getBlogName() != null && firstPost.getId() != null) {
                         return firstPost.getBlogName() + "_" + firstPost.getId().intValue();
                     }
                 }
@@ -217,6 +225,7 @@ public class TumblrUtils {
         }
 
         @Override
+        @Nullable
         protected ArrayList<JsonElement> doInBackground(final String... sub) {
             if (baseActivity != null) {
                 String apiUrl =
@@ -234,7 +243,7 @@ public class TumblrUtils {
                         tumblrRequests.contains(apiUrl)
                                 ? asObject(tumblrRequests.getString(apiUrl, ""))
                                 : null;
-                if (hasPhotos(cached)) {
+                if (cached != null && hasPhotos(cached)) {
                     // Guarded, not merely quiet: Log.d survives into release builds, and the
                     // argument is a whole API response serialised on every album open.
                     if (BuildConfig.DEBUG) {

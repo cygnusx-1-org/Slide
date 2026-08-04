@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Tumblr;
 
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,10 +17,10 @@ import java.util.Map;
 public class Meta {
 
     @JsonProperty("status")
-    private Integer status;
+    @Nullable private Integer status;
 
     @JsonProperty("msg")
-    private String msg;
+    @Nullable private String msg;
 
     @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -26,6 +28,7 @@ public class Meta {
      * @return The status
      */
     @JsonProperty("status")
+    @Nullable
     public Integer getStatus() {
         return status;
     }
@@ -34,7 +37,7 @@ public class Meta {
      * @param status The status
      */
     @JsonProperty("status")
-    public void setStatus(Integer status) {
+    public void setStatus(@Nullable Integer status) {
         this.status = status;
     }
 
@@ -42,6 +45,7 @@ public class Meta {
      * @return The msg
      */
     @JsonProperty("msg")
+    @Nullable
     public String getMsg() {
         return msg;
     }
@@ -50,7 +54,7 @@ public class Meta {
      * @param msg The msg
      */
     @JsonProperty("msg")
-    public void setMsg(String msg) {
+    public void setMsg(@Nullable String msg) {
         this.msg = msg;
     }
 

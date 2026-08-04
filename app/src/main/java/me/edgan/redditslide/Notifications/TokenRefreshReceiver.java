@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.util.PrefUtil;
 
 /**
  * Keeps the logged-in OAuth token warm in the background. An {@link AlarmManager} alarm fires around
@@ -86,7 +87,8 @@ public class TokenRefreshReceiver extends BroadcastReceiver {
         final AlarmManager manager = ContextCompat.getSystemService(context, AlarmManager.class);
         if (manager == null
                 || Authentication.authentication == null
-                || Authentication.authentication.getString("lasttoken", "").isEmpty()) {
+                || PrefUtil.getString(Authentication.authentication, "lasttoken", "")
+                        .isEmpty()) {
             return;
         }
 

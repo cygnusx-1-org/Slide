@@ -1,6 +1,8 @@
 package me.edgan.redditslide.ImgurAlbum;
 
 /** Created by carlo_000 on 5/3/2016. */
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -36,61 +38,61 @@ import java.util.Map;
 public class SingleImage {
 
     @JsonProperty("id")
-    private String id;
+    @Nullable private String id;
 
     @JsonProperty("title")
-    private String title;
+    @Nullable private String title;
 
     @JsonProperty("description")
-    private String description;
+    @Nullable private String description;
 
     @JsonProperty("datetime")
-    private Double datetime;
+    @Nullable private Double datetime;
 
     @JsonProperty("type")
-    private String type;
+    @Nullable private String type;
 
     @JsonProperty("animated")
-    private Boolean animated;
+    @Nullable private Boolean animated;
 
     @JsonProperty("width")
-    private Integer width;
+    @Nullable private Integer width;
 
     @JsonProperty("height")
-    private Integer height;
+    @Nullable private Integer height;
 
     @JsonProperty("size")
-    private Double size;
+    @Nullable private Double size;
 
     @JsonProperty("views")
-    private Double views;
+    @Nullable private Double views;
 
     @JsonProperty("bandwidth")
-    private Double bandwidth;
+    @Nullable private Double bandwidth;
 
     @JsonProperty("vote")
-    private Object vote;
+    @Nullable private Object vote;
 
     @JsonProperty("favorite")
-    private Boolean favorite;
+    @Nullable private Boolean favorite;
 
     @JsonProperty("nsfw")
-    private Boolean nsfw;
+    @Nullable private Boolean nsfw;
 
     @JsonProperty("section")
-    private String section;
+    @Nullable private String section;
 
     @JsonProperty("account_url")
-    private Object accountUrl;
+    @Nullable private Object accountUrl;
 
     @JsonProperty("account_id")
-    private Object accountId;
+    @Nullable private Object accountId;
 
     @JsonProperty("in_gallery")
-    private Boolean inGallery;
+    @Nullable private Boolean inGallery;
 
     @JsonProperty("link")
-    private String link;
+    @Nullable private String link;
 
     @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -98,6 +100,7 @@ public class SingleImage {
      * @return The id
      */
     @JsonProperty("id")
+    @Nullable
     public String getId() {
         return id;
     }
@@ -106,7 +109,7 @@ public class SingleImage {
      * @param id The id
      */
     @JsonProperty("id")
-    public void setId(String id) {
+    public void setId(@Nullable String id) {
         this.id = id;
     }
 
@@ -114,6 +117,7 @@ public class SingleImage {
      * @return The title
      */
     @JsonProperty("title")
+    @Nullable
     public String getTitle() {
         return title;
     }
@@ -122,7 +126,7 @@ public class SingleImage {
      * @param title The title
      */
     @JsonProperty("title")
-    public void setTitle(String title) {
+    public void setTitle(@Nullable String title) {
         this.title = title;
     }
 
@@ -130,7 +134,7 @@ public class SingleImage {
      * @param description The description
      */
     @JsonProperty("description")
-    public void setDescription(String description) {
+    public void setDescription(@Nullable String description) {
         this.description = description;
     }
 
@@ -138,6 +142,7 @@ public class SingleImage {
      * @return The datetime
      */
     @JsonProperty("datetime")
+    @Nullable
     public Double getDatetime() {
         return datetime;
     }
@@ -146,7 +151,7 @@ public class SingleImage {
      * @param datetime The datetime
      */
     @JsonProperty("datetime")
-    public void setDatetime(Double datetime) {
+    public void setDatetime(@Nullable Double datetime) {
         this.datetime = datetime;
     }
 
@@ -154,6 +159,7 @@ public class SingleImage {
      * @return The type
      */
     @JsonProperty("type")
+    @Nullable
     public String getType() {
         return type;
     }
@@ -162,7 +168,7 @@ public class SingleImage {
      * @param type The type
      */
     @JsonProperty("type")
-    public void setType(String type) {
+    public void setType(@Nullable String type) {
         this.type = type;
     }
 
@@ -170,6 +176,7 @@ public class SingleImage {
      * @return The animated
      */
     @JsonProperty("animated")
+    @Nullable
     public Boolean getAnimated() {
         return animated;
     }
@@ -178,7 +185,7 @@ public class SingleImage {
      * @param animated The animated
      */
     @JsonProperty("animated")
-    public void setAnimated(Boolean animated) {
+    public void setAnimated(@Nullable Boolean animated) {
         this.animated = animated;
     }
 
@@ -186,6 +193,7 @@ public class SingleImage {
      * @return The width
      */
     @JsonProperty("width")
+    @Nullable
     public Integer getWidth() {
         return width;
     }
@@ -194,7 +202,7 @@ public class SingleImage {
      * @param width The width
      */
     @JsonProperty("width")
-    public void setWidth(Integer width) {
+    public void setWidth(@Nullable Integer width) {
         this.width = width;
     }
 
@@ -202,6 +210,7 @@ public class SingleImage {
      * @return The height
      */
     @JsonProperty("height")
+    @Nullable
     public Integer getHeight() {
         return height;
     }
@@ -210,7 +219,7 @@ public class SingleImage {
      * @param height The height
      */
     @JsonProperty("height")
-    public void setHeight(Integer height) {
+    public void setHeight(@Nullable Integer height) {
         this.height = height;
     }
 
@@ -218,6 +227,7 @@ public class SingleImage {
      * @return The size
      */
     @JsonProperty("size")
+    @Nullable
     public Double getSize() {
         return size;
     }
@@ -226,7 +236,7 @@ public class SingleImage {
      * @param size The size
      */
     @JsonProperty("size")
-    public void setSize(Double size) {
+    public void setSize(@Nullable Double size) {
         this.size = size;
     }
 
@@ -234,6 +244,7 @@ public class SingleImage {
      * @return The views
      */
     @JsonProperty("views")
+    @Nullable
     public Double getViews() {
         return views;
     }
@@ -242,7 +253,7 @@ public class SingleImage {
      * @param views The views
      */
     @JsonProperty("views")
-    public void setViews(Double views) {
+    public void setViews(@Nullable Double views) {
         this.views = views;
     }
 
@@ -250,6 +261,7 @@ public class SingleImage {
      * @return The bandwidth
      */
     @JsonProperty("bandwidth")
+    @Nullable
     public Double getBandwidth() {
         return bandwidth;
     }
@@ -258,7 +270,7 @@ public class SingleImage {
      * @param bandwidth The bandwidth
      */
     @JsonProperty("bandwidth")
-    public void setBandwidth(Double bandwidth) {
+    public void setBandwidth(@Nullable Double bandwidth) {
         this.bandwidth = bandwidth;
     }
 
@@ -266,6 +278,7 @@ public class SingleImage {
      * @return The vote
      */
     @JsonProperty("vote")
+    @Nullable
     public Object getVote() {
         return vote;
     }
@@ -274,7 +287,7 @@ public class SingleImage {
      * @param vote The vote
      */
     @JsonProperty("vote")
-    public void setVote(Object vote) {
+    public void setVote(@Nullable Object vote) {
         this.vote = vote;
     }
 
@@ -282,6 +295,7 @@ public class SingleImage {
      * @return The favorite
      */
     @JsonProperty("favorite")
+    @Nullable
     public Boolean getFavorite() {
         return favorite;
     }
@@ -290,7 +304,7 @@ public class SingleImage {
      * @param favorite The favorite
      */
     @JsonProperty("favorite")
-    public void setFavorite(Boolean favorite) {
+    public void setFavorite(@Nullable Boolean favorite) {
         this.favorite = favorite;
     }
 
@@ -298,6 +312,7 @@ public class SingleImage {
      * @return The nsfw
      */
     @JsonProperty("nsfw")
+    @Nullable
     public Boolean getNsfw() {
         return nsfw;
     }
@@ -306,7 +321,7 @@ public class SingleImage {
      * @param nsfw The nsfw
      */
     @JsonProperty("nsfw")
-    public void setNsfw(Boolean nsfw) {
+    public void setNsfw(@Nullable Boolean nsfw) {
         this.nsfw = nsfw;
     }
 
@@ -314,6 +329,7 @@ public class SingleImage {
      * @return The section
      */
     @JsonProperty("section")
+    @Nullable
     public String getSection() {
         return section;
     }
@@ -322,7 +338,7 @@ public class SingleImage {
      * @param section The section
      */
     @JsonProperty("section")
-    public void setSection(String section) {
+    public void setSection(@Nullable String section) {
         this.section = section;
     }
 
@@ -330,6 +346,7 @@ public class SingleImage {
      * @return The accountUrl
      */
     @JsonProperty("account_url")
+    @Nullable
     public Object getAccountUrl() {
         return accountUrl;
     }
@@ -338,7 +355,7 @@ public class SingleImage {
      * @param accountUrl The account_url
      */
     @JsonProperty("account_url")
-    public void setAccountUrl(Object accountUrl) {
+    public void setAccountUrl(@Nullable Object accountUrl) {
         this.accountUrl = accountUrl;
     }
 
@@ -346,6 +363,7 @@ public class SingleImage {
      * @return The accountId
      */
     @JsonProperty("account_id")
+    @Nullable
     public Object getAccountId() {
         return accountId;
     }
@@ -354,7 +372,7 @@ public class SingleImage {
      * @param accountId The account_id
      */
     @JsonProperty("account_id")
-    public void setAccountId(Object accountId) {
+    public void setAccountId(@Nullable Object accountId) {
         this.accountId = accountId;
     }
 
@@ -362,6 +380,7 @@ public class SingleImage {
      * @return The inGallery
      */
     @JsonProperty("in_gallery")
+    @Nullable
     public Boolean getInGallery() {
         return inGallery;
     }
@@ -370,7 +389,7 @@ public class SingleImage {
      * @param inGallery The in_gallery
      */
     @JsonProperty("in_gallery")
-    public void setInGallery(Boolean inGallery) {
+    public void setInGallery(@Nullable Boolean inGallery) {
         this.inGallery = inGallery;
     }
 
@@ -378,6 +397,7 @@ public class SingleImage {
      * @return The link
      */
     @JsonProperty("link")
+    @Nullable
     public String getLink() {
         return link;
     }
@@ -386,7 +406,7 @@ public class SingleImage {
      * @param link The link
      */
     @JsonProperty("link")
-    public void setLink(String link) {
+    public void setLink(@Nullable String link) {
         this.link = link;
     }
 

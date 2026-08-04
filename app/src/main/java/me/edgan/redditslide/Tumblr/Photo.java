@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Tumblr;
 
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,13 +19,13 @@ import java.util.Map;
 public class Photo {
 
     @JsonProperty("caption")
-    private String caption;
+    @Nullable private String caption;
 
     @JsonProperty("alt_sizes")
-    private List<PhotoSize> altSizes = new ArrayList<PhotoSize>();
+    @Nullable private List<PhotoSize> altSizes = new ArrayList<PhotoSize>();
 
     @JsonProperty("original_size")
-    private PhotoSize originalSize;
+    @Nullable private PhotoSize originalSize;
 
     @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -31,6 +33,7 @@ public class Photo {
      * @return The caption
      */
     @JsonProperty("caption")
+    @Nullable
     public String getCaption() {
         return caption;
     }
@@ -39,7 +42,7 @@ public class Photo {
      * @param caption The caption
      */
     @JsonProperty("caption")
-    public void setCaption(String caption) {
+    public void setCaption(@Nullable String caption) {
         this.caption = caption;
     }
 
@@ -47,6 +50,7 @@ public class Photo {
      * @return The altSizes
      */
     @JsonProperty("alt_sizes")
+    @Nullable
     public List<PhotoSize> getAltSizes() {
         return altSizes;
     }
@@ -55,7 +59,7 @@ public class Photo {
      * @param altSizes The alt_sizes
      */
     @JsonProperty("alt_sizes")
-    public void setAltSizes(List<PhotoSize> altSizes) {
+    public void setAltSizes(@Nullable List<PhotoSize> altSizes) {
         this.altSizes = altSizes;
     }
 
@@ -63,6 +67,7 @@ public class Photo {
      * @return The originalSize
      */
     @JsonProperty("original_size")
+    @Nullable
     public PhotoSize getOriginalSize() {
         return originalSize;
     }
@@ -71,7 +76,7 @@ public class Photo {
      * @param originalSize The original_size
      */
     @JsonProperty("original_size")
-    public void setOriginalSize(PhotoSize originalSize) {
+    public void setOriginalSize(@Nullable PhotoSize originalSize) {
         this.originalSize = originalSize;
     }
 
@@ -99,6 +104,7 @@ public class Photo {
      * publish as an extra "originalUrl" property when a Photo is serialized.
      */
     @JsonIgnore
+    @Nullable
     public String getOriginalUrl() {
         return originalSize == null ? null : originalSize.getUrl();
     }

@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.AlarmManagerCompat;
 import androidx.core.content.ContextCompat;
 
@@ -13,7 +14,8 @@ import me.edgan.redditslide.Reddit;
 /** Created by carlo_000 on 10/13/2015. */
 public class NotificationJobScheduler {
     private final PendingIntent pendingIntent;
-    private final AlarmManager manager;
+    // Null on a device with no AlarmManager; every use below is guarded.
+    @Nullable private final AlarmManager manager;
 
     public NotificationJobScheduler(Context context) {
         final Intent alarmIntent = new Intent(context, CheckForMail.class);

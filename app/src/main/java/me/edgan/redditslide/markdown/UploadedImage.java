@@ -1,5 +1,7 @@
 package me.edgan.redditslide.markdown;
 
+import androidx.annotation.Nullable;
+
 /**
  * Represents an image that has been uploaded to Reddit's media bucket and is ready to be referenced
  * inline in a comment or self-post body.
@@ -19,10 +21,11 @@ public class UploadedImage {
     }
 
     public String getCaption() {
-        return caption == null ? "" : caption;
+        return caption;
     }
 
-    public void setCaption(String caption) {
+    /** A null caption is stored as the empty string, so {@link #getCaption} never returns null. */
+    public void setCaption(@Nullable String caption) {
         this.caption = caption == null ? "" : caption;
     }
 }

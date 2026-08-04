@@ -1,5 +1,7 @@
 package me.edgan.redditslide.ImgurAlbum;
 
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -27,37 +29,37 @@ import java.util.Map;
 public class Image {
 
     @JsonProperty("hash")
-    private String hash;
+    @Nullable private String hash;
 
     @JsonProperty("title")
-    private String title;
+    @Nullable private String title;
 
     @JsonProperty("description")
-    private String description;
+    @Nullable private String description;
 
     @JsonProperty("width")
-    private Integer width;
+    @Nullable private Integer width;
 
     @JsonProperty("height")
-    private Integer height;
+    @Nullable private Integer height;
 
     @JsonProperty("size")
-    private Integer size;
+    @Nullable private Integer size;
 
     @JsonProperty("ext")
-    private String ext;
+    @Nullable private String ext;
 
     @JsonProperty("animated")
-    private Boolean animated;
+    @Nullable private Boolean animated;
 
     @JsonProperty("prefer_video")
-    private Boolean preferVideo;
+    @Nullable private Boolean preferVideo;
 
     @JsonProperty("looping")
-    private Boolean looping;
+    @Nullable private Boolean looping;
 
     @JsonProperty("datetime")
-    private String datetime;
+    @Nullable private String datetime;
 
     @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -65,6 +67,7 @@ public class Image {
      * @return The hash
      */
     @JsonProperty("hash")
+    @Nullable
     public String getHash() {
         return hash;
     }
@@ -73,7 +76,7 @@ public class Image {
      * @param hash The hash
      */
     @JsonProperty("hash")
-    public void setHash(String hash) {
+    public void setHash(@Nullable String hash) {
         this.hash = hash;
     }
 
@@ -81,6 +84,7 @@ public class Image {
      * @return The title
      */
     @JsonProperty("title")
+    @Nullable
     public String getTitle() {
         return title;
     }
@@ -89,7 +93,7 @@ public class Image {
      * @param title The title
      */
     @JsonProperty("title")
-    public void setTitle(String title) {
+    public void setTitle(@Nullable String title) {
         this.title = title;
     }
 
@@ -97,6 +101,7 @@ public class Image {
      * @return The description
      */
     @JsonProperty("description")
+    @Nullable
     public String getDescription() {
         return description;
     }
@@ -105,7 +110,7 @@ public class Image {
      * @param description The description
      */
     @JsonProperty("description")
-    public void setDescription(String description) {
+    public void setDescription(@Nullable String description) {
         this.description = description;
     }
 
@@ -113,6 +118,7 @@ public class Image {
      * @return The width
      */
     @JsonProperty("width")
+    @Nullable
     public Integer getWidth() {
         return width;
     }
@@ -121,7 +127,7 @@ public class Image {
      * @param width The width
      */
     @JsonProperty("width")
-    public void setWidth(Integer width) {
+    public void setWidth(@Nullable Integer width) {
         this.width = width;
     }
 
@@ -129,6 +135,7 @@ public class Image {
      * @return The height
      */
     @JsonProperty("height")
+    @Nullable
     public Integer getHeight() {
         return height;
     }
@@ -137,7 +144,7 @@ public class Image {
      * @param height The height
      */
     @JsonProperty("height")
-    public void setHeight(Integer height) {
+    public void setHeight(@Nullable Integer height) {
         this.height = height;
     }
 
@@ -145,6 +152,7 @@ public class Image {
      * @return The size
      */
     @JsonProperty("size")
+    @Nullable
     public Integer getSize() {
         return size;
     }
@@ -153,7 +161,7 @@ public class Image {
      * @param size The size
      */
     @JsonProperty("size")
-    public void setSize(Integer size) {
+    public void setSize(@Nullable Integer size) {
         this.size = size;
     }
 
@@ -161,6 +169,7 @@ public class Image {
      * @return The ext
      */
     @JsonProperty("ext")
+    @Nullable
     public String getExt() {
         return ext;
     }
@@ -169,7 +178,7 @@ public class Image {
      * @param ext The ext
      */
     @JsonProperty("ext")
-    public void setExt(String ext) {
+    public void setExt(@Nullable String ext) {
         this.ext = ext;
     }
 
@@ -177,7 +186,7 @@ public class Image {
      * @param animated The animated
      */
     @JsonProperty("animated")
-    public void setAnimated(Boolean animated) {
+    public void setAnimated(@Nullable Boolean animated) {
         this.animated = animated;
     }
 
@@ -196,6 +205,7 @@ public class Image {
      * @return The preferVideo
      */
     @JsonProperty("prefer_video")
+    @Nullable
     public Boolean getPreferVideo() {
         return preferVideo;
     }
@@ -204,7 +214,7 @@ public class Image {
      * @param preferVideo The prefer_video
      */
     @JsonProperty("prefer_video")
-    public void setPreferVideo(Boolean preferVideo) {
+    public void setPreferVideo(@Nullable Boolean preferVideo) {
         this.preferVideo = preferVideo;
     }
 
@@ -212,6 +222,7 @@ public class Image {
      * @return The looping
      */
     @JsonProperty("looping")
+    @Nullable
     public Boolean getLooping() {
         return looping;
     }
@@ -220,7 +231,7 @@ public class Image {
      * @param looping The looping
      */
     @JsonProperty("looping")
-    public void setLooping(Boolean looping) {
+    public void setLooping(@Nullable Boolean looping) {
         this.looping = looping;
     }
 
@@ -228,6 +239,7 @@ public class Image {
      * @return The datetime
      */
     @JsonProperty("datetime")
+    @Nullable
     public String getDatetime() {
         return datetime;
     }
@@ -236,7 +248,7 @@ public class Image {
      * @param datetime The datetime
      */
     @JsonProperty("datetime")
-    public void setDatetime(String datetime) {
+    public void setDatetime(@Nullable String datetime) {
         this.datetime = datetime;
     }
 

@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Tumblr;
 
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -16,13 +18,13 @@ import java.util.Map;
 public class PhotoSize {
 
     @JsonProperty("url")
-    private String url;
+    @Nullable private String url;
 
     @JsonProperty("width")
-    private Integer width;
+    @Nullable private Integer width;
 
     @JsonProperty("height")
-    private Integer height;
+    @Nullable private Integer height;
 
     @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -30,6 +32,7 @@ public class PhotoSize {
      * @return The url
      */
     @JsonProperty("url")
+    @Nullable
     public String getUrl() {
         return url;
     }
@@ -38,7 +41,7 @@ public class PhotoSize {
      * @param url The url
      */
     @JsonProperty("url")
-    public void setUrl(String url) {
+    public void setUrl(@Nullable String url) {
         this.url = url;
     }
 
@@ -46,6 +49,7 @@ public class PhotoSize {
      * @return The width
      */
     @JsonProperty("width")
+    @Nullable
     public Integer getWidth() {
         return width;
     }
@@ -54,7 +58,7 @@ public class PhotoSize {
      * @param width The width
      */
     @JsonProperty("width")
-    public void setWidth(Integer width) {
+    public void setWidth(@Nullable Integer width) {
         this.width = width;
     }
 
@@ -62,6 +66,7 @@ public class PhotoSize {
      * @return The height
      */
     @JsonProperty("height")
+    @Nullable
     public Integer getHeight() {
         return height;
     }
@@ -70,7 +75,7 @@ public class PhotoSize {
      * @param height The height
      */
     @JsonProperty("height")
-    public void setHeight(Integer height) {
+    public void setHeight(@Nullable Integer height) {
         this.height = height;
     }
 
