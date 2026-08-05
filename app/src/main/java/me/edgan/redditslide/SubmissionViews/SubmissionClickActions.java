@@ -101,8 +101,10 @@ public class SubmissionClickActions {
                                             SubmissionThumbnailHelper.openImage(type, contextActivity, submission, holder.leadImage, holder.getBindingAdapterPosition());
                                             break;
                                         case EMBEDDED:
-                                            if (SettingValues.video) {
-                                                String data = CompatUtil.fromHtml(submission.getDataNode().get("media_embed").get("content").asText()).toString();
+                                            String data = CompatUtil.fromHtml(submission.getDataNode().path("media_embed").path("content").asText()).toString();
+                                            // No media_embed content to play: FullscreenVideo would
+                                            // show a blank WebView, so treat it as an ordinary link.
+                                            if (SettingValues.video && !data.isEmpty()) {
                                                 {
                                                     Intent i = new Intent(contextActivity, FullscreenVideo.class);
                                                     i.putExtra(FullscreenVideo.EXTRA_HTML, data);
@@ -138,7 +140,7 @@ public class SubmissionClickActions {
                                                 if (dataNode.has("gallery_data")) {
                                                     JsonUtil.getGalleryData(dataNode, urls);
                                                 } else if (dataNode.has("crosspost_parent_list")) { // Else, try getting crosspost gallery data
-                                                    JsonNode crosspost_parent = dataNode.get("crosspost_parent_list").get(0);
+                                                    JsonNode crosspost_parent = dataNode.path("crosspost_parent_list").path(0);
                                                     if (crosspost_parent.has("gallery_data")) {
                                                         JsonUtil.getGalleryData(crosspost_parent, urls);
                                                     }

@@ -70,7 +70,7 @@ public class HasSeen {
         }
         return (hasSeen.contains(fullname)
                 || SynccitRead.visitedIds.contains(fullname)
-                || s.getDataNode().has("visited") && s.getDataNode().get("visited").asBoolean()
+                || s.getDataNode().has("visited") && s.getDataNode().path("visited").asBoolean()
                 || s.getVote() != VoteDirection.NO_VOTE);
     }
 

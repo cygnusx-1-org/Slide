@@ -25,6 +25,7 @@ import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.gson.Gson;
@@ -204,9 +205,17 @@ public class LiveThread extends BaseActivityAnim {
                             LogUtil.v("Recieved" + s);
                             if (s.contains("\"type\": \"update\"")) {
                                 try {
-                                    LiveUpdate u =
-                                            new LiveUpdate(
-                                                    o.readTree(s).get("payload").get("data"));
+                                    final JsonNode data =
+                                            o.readTree(s).path("payload").path("data");
+                                    // A malformed update carries no payload.data. JsonModel keeps
+                                    // whatever node it is handed, so such an update would be added
+                                    // to the list and then dereferenced by the adapter on the UI
+                                    // thread, out of reach of this catch.
+                                    if (!data.isObject()) {
+                                        LogUtil.v("Ignoring live update with no payload data");
+                                        return;
+                                    }
+                                    LiveUpdate u = new LiveUpdate(data);
                                     updates.add(0, u);
                                     runOnUiThread(
                                             new Runnable() {
@@ -228,8 +237,8 @@ public class LiveThread extends BaseActivityAnim {
                                                     "\"embeds\":[]",
                                                     "\"embeds\":"
                                                             + o.readTree(s)
-                                                                    .get("payload")
-                                                                    .get("media_embeds")
+                                                                    .path("payload")
+                                                                    .path("media_embeds")
                                                                     .toString());
                                     LiveUpdate u = new LiveUpdate(o.readTree(node));
                                     updates.set(0, u);
@@ -430,14 +439,14 @@ public class LiveThread extends BaseActivityAnim {
                 .setText(thread.getLocalizedViewerCount());
 
         {
-            final String text = thread.getDataNode().get("resources_html").asText();
+            final String text = thread.getDataNode().path("resources_html").asText();
             final SpoilerRobotoTextView body =
                     (SpoilerRobotoTextView) findViewById(R.id.sidebar_text);
             CommentOverflow overflow = (CommentOverflow) findViewById(R.id.commentOverflow);
             setViews(text, "none", body, overflow);
         }
         {
-            final String text = thread.getDataNode().get("description_html").asText();
+            final String text = thread.getDataNode().path("description_html").asText();
             final SpoilerRobotoTextView body = (SpoilerRobotoTextView) findViewById(R.id.sub_title);
             CommentOverflow overflow = (CommentOverflow) findViewById(R.id.sub_title_overflow);
             setViews(text, "none", body, overflow);

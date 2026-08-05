@@ -577,7 +577,7 @@ public class Submit extends BaseActivity {
                     @Override
                     protected void onPostExecute(Subreddit s) {
                         if (s != null) {
-                            String text = s.getDataNode().get("submit_text_html").asText();
+                            String text = s.getDataNode().path("submit_text_html").asText();
                             if (text != null && !text.isEmpty() && !text.equals("null")) {
                                 findViewById(R.id.submittext).setVisibility(View.VISIBLE);
                                 setViews(
@@ -636,7 +636,7 @@ public class Submit extends BaseActivity {
                                             + " response: "
                                             + (root == null ? "null" : root.toString()));
                             if (root != null && root.has("is_flair_required")) {
-                                return root.get("is_flair_required").asBoolean(false);
+                                return root.path("is_flair_required").asBoolean(false);
                             }
                         } catch (Exception e) {
                             LogUtil.v(

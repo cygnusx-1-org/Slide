@@ -57,29 +57,29 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
             } else if (submission.getDataNode().has("preview")
                     && submission
                             .getDataNode()
-                            .get("preview")
-                            .get("images")
-                            .get(0)
-                            .get("source")
+                            .path("preview")
+                            .path("images")
+                            .path(0)
+                            .path("source")
                             .has("height")
                     && submission
                                     .getDataNode()
-                                    .get("preview")
-                                    .get("images")
-                                    .get(0)
-                                    .get("source")
-                                    .get("height")
+                                    .path("preview")
+                                    .path("images")
+                                    .path(0)
+                                    .path("source")
+                                    .path("height")
                                     .asInt()
                             > 200) {
 
                 url =
                         submission
                                 .getDataNode()
-                                .get("preview")
-                                .get("images")
-                                .get(0)
-                                .get("source")
-                                .get("url")
+                                .path("preview")
+                                .path("images")
+                                .path(0)
+                                .path("source")
+                                .path("url")
                                 .asText();
 
             } else if (submission.getThumbnail() != null

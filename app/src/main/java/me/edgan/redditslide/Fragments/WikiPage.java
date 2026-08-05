@@ -153,7 +153,7 @@ public class WikiPage extends Fragment {
                     ((WikiManager) params[0])
                             .get((String) params[1], (String) params[2])
                             .getDataNode()
-                            .get("content_html")
+                            .path("content_html")
                             .asText());
         }
 

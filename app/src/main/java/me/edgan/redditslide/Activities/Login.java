@@ -842,7 +842,7 @@ public class Login extends BaseActivityAnim {
                         (dialog, which) -> {
                             for (Subreddit s : subs) {
                                 if (s.getDataNode().has("key_color")
-                                        && !s.getDataNode().get("key_color").asText().isEmpty()
+                                        && !s.getDataNode().path("key_color").asText().isEmpty()
                                         && Palette.getColor(
                                                         s.getDisplayName()
                                                                 .toLowerCase(Locale.ENGLISH))
@@ -850,7 +850,7 @@ public class Login extends BaseActivityAnim {
                                     Palette.setColor(
                                             s.getDisplayName().toLowerCase(Locale.ENGLISH),
                                             GetClosestColor.getClosestColor(
-                                                    s.getDataNode().get("key_color").asText(),
+                                                    s.getDataNode().path("key_color").asText(),
                                                     Login.this));
                                 }
                             }

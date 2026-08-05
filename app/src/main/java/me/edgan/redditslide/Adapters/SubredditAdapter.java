@@ -94,14 +94,18 @@ public class SubredditAdapter extends PaginatedListAdapter {
                             context.startActivityForResult(inte, 4);
                         }
                     });
-            if (sub.getDataNode().get("public_description_html").asText().equals("null")) {
+            final String description =
+                    sub.getDataNode().path("public_description_html").asText();
+            // An absent key reads as empty here rather than throwing, and an empty description
+            // hides the body for the same reason reddit's literal "null" does.
+            if (description.isEmpty() || description.equals("null")) {
                 holder.body.setVisibility(View.GONE);
                 holder.overflow.setVisibility(View.GONE);
             } else {
                 holder.body.setVisibility(View.VISIBLE);
                 holder.overflow.setVisibility(View.VISIBLE);
                 setViews(
-                        sub.getDataNode().get("public_description_html").asText().trim(),
+                        description.trim(),
                         sub.getDisplayName().toLowerCase(Locale.ENGLISH),
                         holder.body,
                         holder.overflow);

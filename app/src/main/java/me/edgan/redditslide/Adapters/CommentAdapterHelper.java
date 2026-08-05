@@ -208,7 +208,7 @@ public class CommentAdapterHelper {
                                             holder,
                                             !baseNode.getComment()
                                                     .getDataNode()
-                                                    .get("send_replies")
+                                                    .path("send_replies")
                                                     .asBoolean());
                                 }
                                 break;
@@ -971,7 +971,7 @@ final AlertDialog reportDialog =
 
         final boolean locked =
                 comment.getDataNode().has("locked")
-                        && comment.getDataNode().get("locked").asBoolean();
+                        && comment.getDataNode().path("locked").asBoolean();
         if (locked) {
             b.sheet(25, lock, mContext.getString(R.string.mod_btn_unlock_comment));
         } else {
@@ -980,7 +980,7 @@ final AlertDialog reportDialog =
 
         final boolean stickied =
                 comment.getDataNode().has("stickied")
-                        && comment.getDataNode().get("stickied").asBoolean();
+                        && comment.getDataNode().path("stickied").asBoolean();
         if (baseNode.isTopLevel() && comment.getAuthor().equalsIgnoreCase(Authentication.name)) {
             if (!stickied) {
                 b.sheet(4, pin, mContext.getString(R.string.mod_sticky));
@@ -989,7 +989,7 @@ final AlertDialog reportDialog =
             }
         }
 
-        final boolean distinguished = !comment.getDataNode().get("distinguished").isNull();
+        final boolean distinguished = comment.getDataNode().hasNonNull("distinguished");
         if (comment.getAuthor().equalsIgnoreCase(Authentication.name)) {
             if (!distinguished) {
                 b.sheet(9, distinguish, mContext.getString(R.string.mod_distinguish));
@@ -1926,7 +1926,7 @@ final AlertDialog reportDialog =
                         : ""));
         titleString.append("  ");
 
-        if (comment.getDataNode().get("stickied").asBoolean()) {
+        if (comment.getDataNode().path("stickied").asBoolean()) {
             SpannableStringBuilder pinned =
                     new SpannableStringBuilder(
                             "\u00A0"

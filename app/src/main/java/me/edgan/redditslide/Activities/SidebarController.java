@@ -645,7 +645,7 @@ public class SidebarController {
         if (subreddit.getSidebar() != null && !subreddit.getSidebar().isEmpty()) {
             mainActivity.findViewById(R.id.sidebar_text).setVisibility(View.VISIBLE);
 
-            final String text = subreddit.getDataNode().get("description_html").asText().trim();
+            final String text = subreddit.getDataNode().path("description_html").asText().trim();
             setViews(text, subreddit.getDisplayName(), this.sidebarBody, this.sidebarOverflow);
 
             // get all subs that have Notifications enabled
@@ -1008,7 +1008,7 @@ public class SidebarController {
         if (!subreddit.getPublicDescription().isEmpty()) {
             mainActivity.findViewById(R.id.sub_title).setVisibility(View.VISIBLE);
             setViews(
-                subreddit.getDataNode().get("public_description_html").asText(),
+                subreddit.getDataNode().path("public_description_html").asText(),
                 subreddit.getDisplayName().toLowerCase(Locale.ENGLISH),
                 ((SpoilerRobotoTextView) mainActivity.findViewById(R.id.sub_title)), // Keep using findViewById for views not moved
                 (CommentOverflow) mainActivity.findViewById(R.id.sub_title_overflow) // Keep using findViewById for views not moved
@@ -1017,12 +1017,12 @@ public class SidebarController {
             mainActivity.findViewById(R.id.sub_title).setVisibility(View.GONE);
         }
         ((ImageView) mainActivity.findViewById(R.id.subimage)).setImageResource(0);
-        if (subreddit.getDataNode().has("icon_img") && !subreddit.getDataNode().get("icon_img").asText().isEmpty()) {
+        if (subreddit.getDataNode().has("icon_img") && !subreddit.getDataNode().path("icon_img").asText().isEmpty()) {
             mainActivity.findViewById(R.id.subimage).setVisibility(View.VISIBLE);
             ((Reddit) mainActivity.getApplication())
                 .getImageLoader()
                 .displayImage(
-                    subreddit.getDataNode().get("icon_img").asText(),
+                    subreddit.getDataNode().path("icon_img").asText(),
                     (ImageView) mainActivity.findViewById(R.id.subimage)
                 );
         } else {

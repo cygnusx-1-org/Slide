@@ -250,7 +250,7 @@ public class Profile extends BaseActivityAnim {
             return;
         }
         if (account.getDataNode().has("is_suspended")
-                && account.getDataNode().get("is_suspended").asBoolean()
+                && account.getDataNode().path("is_suspended").asBoolean()
                 && !name.equalsIgnoreCase(Authentication.name)) {
             try {
                 DialogUtil.showWithCardBackground(new AlertDialog.Builder(Profile.this)
@@ -787,7 +787,7 @@ public class Profile extends BaseActivityAnim {
                     title.setText(name);
 
                     if (account.getDataNode().has("is_employee")
-                            && account.getDataNode().get("is_employee").asBoolean()) {
+                            && account.getDataNode().path("is_employee").asBoolean()) {
                         SpannableStringBuilder admin = new SpannableStringBuilder("[A]");
                         admin.setSpan(
                                 new RelativeSizeSpan(.67f),

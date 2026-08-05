@@ -140,7 +140,7 @@ public class SubmissionModActions {
             b.sheet(3, nsfw, res.getString(R.string.mod_btn_mark_nsfw));
         }
 
-        final boolean isSpoiler = submission.getDataNode().get("spoiler").asBoolean();
+        final boolean isSpoiler = submission.getDataNode().path("spoiler").asBoolean();
         if (isSpoiler) {
             b.sheet(12, nsfw, res.getString(R.string.mod_btn_unmark_spoiler));
         } else {

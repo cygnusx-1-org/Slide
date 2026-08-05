@@ -237,7 +237,7 @@ public class HeaderImageLinkView extends RelativeLayout {
             }
 
             Submission.ThumbnailType thumbnailType;
-            if (!submission.getDataNode().get("thumbnail").isNull()) {
+            if (submission.getDataNode().hasNonNull("thumbnail")) {
                 thumbnailType = submission.getThumbnailType();
             } else {
                 thumbnailType = Submission.ThumbnailType.NONE;
@@ -246,8 +246,8 @@ public class HeaderImageLinkView extends RelativeLayout {
             if (!SettingValues.ignoreSubSetting
                     && dataNode != null
                     && dataNode.has("sr_detail")
-                    && dataNode.get("sr_detail").has("show_media")
-                    && !dataNode.get("sr_detail").get("show_media").asBoolean()) {
+                    && dataNode.path("sr_detail").has("show_media")
+                    && !dataNode.path("sr_detail").path("show_media").asBoolean()) {
                 thumbnailType = Submission.ThumbnailType.NONE;
             }
 
@@ -281,7 +281,7 @@ public class HeaderImageLinkView extends RelativeLayout {
                                     || baseSub.contains("+")
                                     || baseSub.equals("popular")))) {
                 handleSpecialSubmissionType(submission, full, forceThumb, R.drawable.nsfw);
-            } else if (submission.getDataNode().get("spoiler").asBoolean()) {
+            } else if (submission.getDataNode().path("spoiler").asBoolean()) {
                 handleSpecialSubmissionType(submission, full, forceThumb, R.drawable.spoiler);
             } else if (type == ContentType.Type.ALBUM
                     || type == ContentType.Type.GIF
@@ -646,8 +646,8 @@ public class HeaderImageLinkView extends RelativeLayout {
         String thumbnailUrl = getValidThumbnailUrl(dataNode);
         if (thumbnailUrl == null
                 && dataNode.has("crosspost_parent_list")
-                && dataNode.get("crosspost_parent_list").size() > 0) {
-            thumbnailUrl = getValidThumbnailUrl(dataNode.get("crosspost_parent_list").get(0));
+                && dataNode.path("crosspost_parent_list").size() > 0) {
+            thumbnailUrl = getValidThumbnailUrl(dataNode.path("crosspost_parent_list").path(0));
         }
 
         if (thumbnailUrl != null) {
@@ -669,7 +669,7 @@ public class HeaderImageLinkView extends RelativeLayout {
         if (dataNode == null) return null;
         JsonNode images = dataNode.path("preview").path("images");
         if (!images.isArray() || images.isEmpty()) return null;
-        JsonNode source = images.get(0).path("source");
+        JsonNode source = images.path(0).path("source");
         return source.isObject() ? source : null;
     }
 
@@ -677,14 +677,14 @@ public class HeaderImageLinkView extends RelativeLayout {
         JsonNode dataNode = submission.getDataNode();
 
         // If this is a crosspost, we need to load the gallery data from the parent submission
-        if (dataNode.has("crosspost_parent_list") && dataNode.get("crosspost_parent_list").size() > 0) {
-            dataNode = dataNode.get("crosspost_parent_list").get(0);
+        if (dataNode.has("crosspost_parent_list") && dataNode.path("crosspost_parent_list").size() > 0) {
+            dataNode = dataNode.path("crosspost_parent_list").path(0);
         }
 
         // Check if gallery_data exists AND contains items before proceeding
         if (dataNode.has("gallery_data") &&
-            dataNode.get("gallery_data").has("items") &&
-            dataNode.get("gallery_data").get("items").size() > 0) {
+            dataNode.path("gallery_data").has("items") &&
+            dataNode.path("gallery_data").path("items").size() > 0) {
             handleGalleryData(dataNode, submission, baseSub, full, forceThumb);
         } else {
             // Hide all preview elements when there are no gallery items
@@ -1259,7 +1259,7 @@ public class HeaderImageLinkView extends RelativeLayout {
                         && submission.getThumbnailType() == Submission.ThumbnailType.NSFW
                         || type != ContentType.Type.IMAGE
                         && type != ContentType.Type.SELF
-                        && !submission.getDataNode().get("thumbnail").isNull()
+                        && submission.getDataNode().hasNonNull("thumbnail")
                         && (submission.getThumbnailType() != Submission.ThumbnailType.URL));
 
         return useThumb ? thumbImage2 : this;

@@ -156,13 +156,18 @@ public class CheckForMailSingle extends BroadcastReceiver {
                                     message.getSubreddit());
                 }
                 Intent openPIBase;
-                if (message.isComment()) {
+                // lastIndexOf is -1 for an absent context, and substring(0, -1) throws — out of a
+                // BroadcastReceiver, while the notification is being built. A comment with no
+                // context has no permalink to open, so it falls back to the inbox like any other
+                // message.
+                final String context =
+                        message.isComment() ? message.getDataNode().path("context").asText() : "";
+                final int lastSlash = context.lastIndexOf("/");
+                if (lastSlash > 0) {
                     openPIBase = new Intent(c, OpenContent.class);
-                    String context = message.getDataNode().get("context").asText();
                     openPIBase.putExtra(
                             OpenContent.EXTRA_URL,
-                            "https://reddit.com"
-                                    + context.substring(0, context.lastIndexOf("/")));
+                            "https://reddit.com" + context.substring(0, lastSlash));
                     openPIBase.setAction(message.getSubject());
                 } else {
                     openPIBase = new Intent(c, Inbox.class);

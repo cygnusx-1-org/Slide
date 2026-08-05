@@ -135,7 +135,7 @@ public class MediaFragment extends BaseMediaFragment {
         ContentType.Type type = ContentType.getContentType(submission);
 
         if (type == ContentType.Type.VREDDIT_REDIRECT || type == ContentType.Type.VREDDIT_DIRECT) {
-            if ((!submission.getDataNode().has("media") || !submission.getDataNode().get("media").has("reddit_video"))
+            if ((!submission.getDataNode().has("media") || !submission.getDataNode().path("media").has("reddit_video"))
                     && !submission.getDataNode().has("crosspost_parent_list")) {
                 type = ContentType.Type.LINK;
             }
@@ -345,14 +345,16 @@ public class MediaFragment extends BaseMediaFragment {
                                     }
 
                                 case EMBEDDED:
-                                    if (SettingValues.video) {
+                                    String data =
+                                            submission
+                                                    .getDataNode()
+                                                    .path("media_embed")
+                                                    .path("content")
+                                                    .asText();
+                                    // No media_embed content to play: FullscreenVideo would show a
+                                    // blank WebView, so leave it to openExternally below.
+                                    if (SettingValues.video && !data.isEmpty()) {
                                         LinkUtil.openExternally(submission.getUrl());
-                                        String data =
-                                                submission
-                                                        .getDataNode()
-                                                        .get("media_embed")
-                                                        .get("content")
-                                                        .asText();
                                         {
                                             Intent i =
                                                     new Intent(
@@ -514,55 +516,55 @@ public class MediaFragment extends BaseMediaFragment {
 
         } else if ((t.shouldLoadPreview()
                 && s.getDataNode().has("preview")
-                && s.getDataNode().get("preview").get("images").get(0).has("variants")
+                && s.getDataNode().path("preview").path("images").path(0).has("variants")
                 && s.getDataNode()
-                        .get("preview")
-                        .get("images")
-                        .get(0)
-                        .get("variants")
+                        .path("preview")
+                        .path("images")
+                        .path(0)
+                        .path("variants")
                         .has("mp4"))) {
             toLoadURL =
                     StringEscapeUtils.unescapeJson(
                                     s.getDataNode()
-                                            .get("preview")
-                                            .get("images")
-                                            .get(0)
-                                            .get("variants")
-                                            .get("mp4")
-                                            .get("source")
-                                            .get("url")
+                                            .path("preview")
+                                            .path("images")
+                                            .path(0)
+                                            .path("variants")
+                                            .path("mp4")
+                                            .path("source")
+                                            .path("url")
                                             .asText())
                             .replace("&amp;", "&");
         } else if (t.shouldLoadPreview()
                 && s.getDataNode().has("preview")
-                && s.getDataNode().get("preview").has("reddit_video_preview")
+                && s.getDataNode().path("preview").has("reddit_video_preview")
                 && (t != GifUtils.AsyncLoadGif.VideoType.REDGIFS
                         || (s.getDataNode()
-                                        .get("preview")
-                                        .get("reddit_video_preview")
+                                        .path("preview")
+                                        .path("reddit_video_preview")
                                         .has("has_audio")
                                 && s.getDataNode()
-                                        .get("preview")
-                                        .get("reddit_video_preview")
-                                        .get("has_audio")
+                                        .path("preview")
+                                        .path("reddit_video_preview")
+                                        .path("has_audio")
                                         .asBoolean()))) {
             toLoadURL =
                     StringEscapeUtils.unescapeJson(
                             s.getDataNode()
-                                    .get("preview")
-                                    .get("reddit_video_preview")
-                                    .get("dash_url")
+                                    .path("preview")
+                                    .path("reddit_video_preview")
+                                    .path("dash_url")
                                     .asText());
         } else if (t == GifUtils.AsyncLoadGif.VideoType.DIRECT
                 && s.getDataNode().has("media")
-                && s.getDataNode().get("media").has("reddit_video")
-                && s.getDataNode().get("media").get("reddit_video").has("fallback_url")) {
+                && s.getDataNode().path("media").has("reddit_video")
+                && s.getDataNode().path("media").path("reddit_video").has("fallback_url")) {
             toLoadURL =
                     StringEscapeUtils.unescapeJson(
                                     s.getDataNode()
-                                            .get("media")
-                                            .get("reddit_video")
-                                            .get("fallback_url")
+                                            .path("media")
+                                            .path("reddit_video")
+                                            .path("fallback_url")
                                             .asText())
                             .replace("&amp;", "&");
 

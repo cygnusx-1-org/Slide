@@ -219,7 +219,7 @@ public class SubmissionComments {
                 page.doRefresh(false);
                 if ((submission.isArchived() && !page.archived)
                         || (submission.isLocked() && !page.locked)
-                        || (submission.getDataNode().get("contest_mode").asBoolean()
+                        || (submission.getDataNode().path("contest_mode").asBoolean()
                                 && !page.contest)) page.doTopBarNotify(submission, adapter);
 
                 page.doData(reset);

@@ -360,14 +360,14 @@ public class SubmissionParser {
             if (mediaMetadata.has(imgId)) {
                 JsonNode mediaNode = mediaMetadata.get(imgId);
                 if (mediaNode != null && mediaNode.has("s")) {
-                    JsonNode s = mediaNode.get("s");
+                    JsonNode s = mediaNode.path("s");
                     String url = null;
                     if (s.has("gif")) {
-                        url = s.get("gif").asText();
+                        url = s.path("gif").asText();
                     } else if (s.has("mp4")) {
-                        url = s.get("mp4").asText();
+                        url = s.path("mp4").asText();
                     } else if (s.has("u")) {
-                        url = s.get("u").asText();
+                        url = s.path("u").asText();
                     }
                     if (url != null) {
                         url = StringEscapeUtils.unescapeHtml4(url);

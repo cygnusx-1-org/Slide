@@ -140,19 +140,20 @@ public class ImageSaveUtils {
                         String hash = url.substring(url.lastIndexOf("/") + 1);
                         String streamableUrl = "https://api.streamable.com/videos/" + hash;
                         JsonObject result = HttpUtil.getJsonObject(GifUtils.AsyncLoadGif.client, GifUtils.AsyncLoadGif.gson, streamableUrl);
+                        final JsonObject files = GsonUtil.obj(result, "files");
                         if (result == null
-                                || result.get("files") == null
-                                || !(result.getAsJsonObject("files").has("mp4")
-                                || result.getAsJsonObject("files").has("mp4-mobile"))) {
+                                || !(files.has("mp4") || files.has("mp4-mobile"))) {
                             error = new Exception("Streamable API response invalid for: " + url);
                             return null;
                         } else {
                             String obj;
-                            if (result.getAsJsonObject("files").getAsJsonObject().has("mp4-mobile")
-                                    && !result.getAsJsonObject("files").getAsJsonObject().get("mp4-mobile").getAsJsonObject().get("url").getAsString().isEmpty()) {
-                                obj = result.getAsJsonObject("files").getAsJsonObject().get("mp4-mobile").getAsJsonObject().get("url").getAsString();
-                            } else {
-                                obj = result.getAsJsonObject("files").getAsJsonObject().get("mp4").getAsJsonObject().get("url").getAsString();
+                            obj = GsonUtil.string(GsonUtil.obj(files, "mp4-mobile"), "url", "");
+                            if (obj.isEmpty()) {
+                                obj = GsonUtil.string(GsonUtil.obj(files, "mp4"), "url", "");
+                            }
+                            if (obj.isEmpty()) {
+                                error = new Exception("Streamable API response invalid for: " + url);
+                                return null;
                             }
                             return Uri.parse(obj);
                         }

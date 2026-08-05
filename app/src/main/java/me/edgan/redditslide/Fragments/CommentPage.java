@@ -223,7 +223,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
     public void doTopBar(Submission s) {
         archived = s.isArchived();
         locked = s.isLocked();
-        contest = s.getDataNode().get("contest_mode").asBoolean();
+        contest = s.getDataNode().path("contest_mode").asBoolean();
         doTopBar();
     }
 
@@ -583,7 +583,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                         && o.comment
                                                                 .getComment()
                                                                 .getDataNode()
-                                                                .get("body_html")
+                                                                .path("body_html")
                                                                 .asText()
                                                                 .contains("&lt;/a")) {
                                                     linkCount++;
@@ -943,14 +943,14 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                             if (c.comment
                                     .getComment()
                                     .getDataNode()
-                                    .get("body_html")
+                                    .path("body_html")
                                     .asText()
                                     .contains("&lt;/a")) {
                                 String body =
                                         c.comment
                                                 .getComment()
                                                 .getDataNode()
-                                                .get("body_html")
+                                                .path("body_html")
                                                 .asText();
                                 String url;
                                 String[] split = body.split("&lt;a href=\"");
@@ -1025,10 +1025,10 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                     if (adapter.submission.getDataNode().has("preview")
                                             && adapter.submission
                                                     .getDataNode()
-                                                    .get("preview")
-                                                    .get("images")
-                                                    .get(0)
-                                                    .get("source")
+                                                    .path("preview")
+                                                    .path("images")
+                                                    .path(0)
+                                                    .path("source")
                                                     .has("height")
                                             && type
                                                     != ContentType.Type
@@ -1039,11 +1039,11 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                         String previewUrl =
                                                 adapter.submission
                                                         .getDataNode()
-                                                        .get("preview")
-                                                        .get("images")
-                                                        .get(0)
-                                                        .get("source")
-                                                        .get("url")
+                                                        .path("preview")
+                                                        .path("images")
+                                                        .path(0)
+                                                        .path("source")
+                                                        .path("url")
                                                         .asText();
                                         i2.putExtra(MediaView.EXTRA_DISPLAY_URL, previewUrl);
                                     }
@@ -1051,13 +1051,15 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                     getActivity().startActivity(i2);
                                     break;
                                 case EMBEDDED:
-                                    if (SettingValues.video) {
-                                        String data =
-                                                adapter.submission
-                                                        .getDataNode()
-                                                        .get("media_embed")
-                                                        .get("content")
-                                                        .asText();
+                                    String data =
+                                            adapter.submission
+                                                    .getDataNode()
+                                                    .path("media_embed")
+                                                    .path("content")
+                                                    .asText();
+                                    // No media_embed content to play: FullscreenVideo would show a
+                                    // blank WebView, so treat it as an ordinary link.
+                                    if (SettingValues.video && !data.isEmpty()) {
                                         {
                                             Intent i =
                                                     new Intent(
@@ -1081,12 +1083,12 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
 
                                     try {
                                         ArrayList<GalleryImage> images = new ArrayList<>();
-                                        JsonNode galleryItems = adapter.submission.getDataNode().get("gallery_data").get("items");
-                                        JsonNode mediaMetadata = adapter.submission.getDataNode().get("media_metadata");
+                                        JsonNode galleryItems = adapter.submission.getDataNode().path("gallery_data").path("items");
+                                        JsonNode mediaMetadata = adapter.submission.getDataNode().path("media_metadata");
 
                                         // Build up our list of GalleryImage objects
                                         for (JsonNode galleryItem : galleryItems) {
-                                            String mediaId = galleryItem.get("media_id").asText();
+                                            String mediaId = galleryItem.path("media_id").asText();
                                             JsonNode metaNode = mediaMetadata.get(mediaId);
                                             if (metaNode != null) {
                                                 images.add(new GalleryImage(metaNode));
@@ -1159,7 +1161,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                         adapter.setViews(
                                                 adapter.submission
                                                         .getDataNode()
-                                                        .get("selftext_html")
+                                                        .path("selftext_html")
                                                         .asText(),
                                                 adapter.submission.getSubredditName(),
                                                 dialoglayout.findViewById(R.id.firstTextView),
@@ -1480,7 +1482,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                             sidebar.findViewById(R.id.sidebar_text).setVisibility(View.VISIBLE);
 
                             final String text =
-                                    baseSub.getDataNode().get("description_html").asText();
+                                    baseSub.getDataNode().path("description_html").asText();
                             final SpoilerRobotoTextView body =
                                     sidebar.findViewById(R.id.sidebar_text);
                             CommentOverflow overflow = sidebar.findViewById(R.id.commentOverflow);
@@ -1934,7 +1936,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                         if (!baseSub.getPublicDescription().isEmpty()) {
                             sidebar.findViewById(R.id.sub_title).setVisibility(View.VISIBLE);
                             setViews(
-                                    baseSub.getDataNode().get("public_description_html").asText(),
+                                    baseSub.getDataNode().path("public_description_html").asText(),
                                     baseSub.getDisplayName().toLowerCase(Locale.ENGLISH),
                                     sidebar.findViewById(R.id.sub_title),
                                     sidebar.findViewById(R.id.sub_title_overflow));
@@ -1943,11 +1945,11 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                         }
                         if (getContext() != null
                                 && baseSub.getDataNode().has("icon_img")
-                                && !baseSub.getDataNode().get("icon_img").asText().isEmpty()) {
+                                && !baseSub.getDataNode().path("icon_img").asText().isEmpty()) {
                             ((Reddit) getContext().getApplicationContext())
                                     .getImageLoader()
                                     .displayImage(
-                                            baseSub.getDataNode().get("icon_img").asText(),
+                                            baseSub.getDataNode().path("icon_img").asText(),
                                             (ImageView) sidebar.findViewById(R.id.subimage));
                         } else {
                             sidebar.findViewById(R.id.subimage).setVisibility(View.GONE);
@@ -2066,10 +2068,10 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
             Submission s = ((CommentsScreen) getActivity()).currentPosts.get(page);
             if (s != null
                     && s.getDataNode().has("suggested_sort")
-                    && !s.getDataNode().get("suggested_sort").asText().equalsIgnoreCase("null")
+                    && !s.getDataNode().path("suggested_sort").asText().equalsIgnoreCase("null")
                     && !SettingValues.hasCommentSort(s.getSubredditName())) {
                 // Only use suggested sort if user hasn't set a custom preference
-                String sorting = s.getDataNode().get("suggested_sort").asText().toUpperCase();
+                String sorting = s.getDataNode().path("suggested_sort").asText().toUpperCase();
                 sorting = sorting.replace("İ", "I");
                 commentSorting = CommentSort.valueOf(sorting);
                 Log.d("CommentPage", "Using suggested sort: " + commentSorting.name() + " because no custom preference exists");
@@ -2089,12 +2091,12 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                 if (s != null
                         && s.getDataNode().has("suggested_sort")
                         && !s.getDataNode()
-                                .get("suggested_sort")
+                                .path("suggested_sort")
                                 .asText()
                                 .equalsIgnoreCase("null")
                         && !SettingValues.hasCommentSort(s.getSubredditName())) {
                     // Only use suggested sort if user hasn't set a custom preference
-                    String sorting = s.getDataNode().get("suggested_sort").asText().toUpperCase();
+                    String sorting = s.getDataNode().path("suggested_sort").asText().toUpperCase();
                     sorting = sorting.replace("İ", "I");
                     commentSorting = CommentSort.valueOf(sorting);
                     Log.d("CommentPage", "Using suggested sort: " + commentSorting.name() + " because no custom preference exists");
@@ -2463,7 +2465,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                             o.comment
                                     .getComment()
                                     .getDataNode()
-                                    .get("body_html")
+                                    .path("body_html")
                                     .asText()
                                     .contains("&lt;/a");
                     break;

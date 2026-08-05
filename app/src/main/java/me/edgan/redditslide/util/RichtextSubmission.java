@@ -70,7 +70,7 @@ public final class RichtextSubmission {
         // Fast path: the standard /api/comment shape.
         JsonNode things = root.path("json").path("data").path("things");
         if (things.isArray() && things.size() > 0) {
-            String id = things.get(0).path("data").path("id").asText(null);
+            String id = things.path(0).path("data").path("id").asText(null);
             if (id != null && !id.isEmpty()) {
                 return id;
             }
@@ -284,9 +284,9 @@ public final class RichtextSubmission {
         }
         JsonNode errors = root.path("json").path("errors");
         if (errors.isArray() && errors.size() > 0) {
-            JsonNode first = errors.get(0);
+            JsonNode first = errors.path(0);
             // errors entries look like ["ERROR_CODE", "human readable", "field"]
-            String message = first.size() > 1 ? first.get(1).asText() : first.toString();
+            String message = first.size() > 1 ? first.path(1).asText() : first.toString();
             throw new RedditApiError(message);
         }
     }

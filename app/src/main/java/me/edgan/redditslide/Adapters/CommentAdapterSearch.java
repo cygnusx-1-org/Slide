@@ -152,7 +152,7 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
                         : ""));
         titleString.append("  ");
 
-        if (comment.getDataNode().get("stickied").asBoolean()) {
+        if (comment.getDataNode().path("stickied").asBoolean()) {
             SpannableStringBuilder pinned =
                     new SpannableStringBuilder(
                             "\u00A0"
@@ -273,7 +273,7 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
 
         if (SettingValues.markdownNewReddit) {
             setViewsMarkdown(
-                    comment.getDataNode().get("body").asText(),
+                    comment.getDataNode().path("body").asText(),
                     comment.getDataNode().path("body_html").asText(""),
                     comment.getDataNode(),
                     comment.getSubredditName(),

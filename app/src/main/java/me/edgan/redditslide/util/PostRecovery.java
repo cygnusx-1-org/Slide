@@ -226,10 +226,10 @@ public final class PostRecovery {
         // Guard every shape assumption: HttpUtil only catches malformed JSON, so a valid-but-
         // unexpected payload (error envelope, schema drift, null/non-object element) must not throw
         // out of the background AsyncTask and crash the app.
-        if (obj == null || !obj.has("data") || !obj.get("data").isJsonArray()) {
+        if (obj == null) {
             return new Result(null, null, null, null, Flairs.NONE, Flairs.NONE);
         }
-        JsonArray data = obj.getAsJsonArray("data");
+        JsonArray data = GsonUtil.array(obj, "data");
         if (data.size() == 0 || !data.get(0).isJsonObject()) {
             return new Result(null, null, null, null, Flairs.NONE, Flairs.NONE);
         }
@@ -421,14 +421,13 @@ public final class PostRecovery {
 
     /** Reads a non-blank string-valued field, or null (also rejects null/object/array values). */
     private static @Nullable String readString(JsonObject obj, String key) {
-        if (!obj.has(key) || !obj.get(key).isJsonPrimitive()) return null;
-        String value = obj.get(key).getAsString();
+        String value = GsonUtil.string(obj, key, "");
         return value.trim().isEmpty() ? null : value;
     }
 
     /** Reads a boolean-valued field, defaulting to false for missing/non-primitive values. */
     private static boolean readBoolean(JsonObject obj, String key) {
-        return obj.has(key) && obj.get(key).isJsonPrimitive() && obj.get(key).getAsBoolean();
+        return GsonUtil.bool(obj, key, false);
     }
 
     /**

@@ -20,26 +20,61 @@ import com.uber.nullaway.LibraryModels;
  * {@code Fragment.getActivity()} and {@code View.findViewById()} passed. Those call sites cannot be
  * reached from here, nor by {@code AcknowledgeRestrictiveAnnotations}.
  *
- * <p>What belongs here long-term is {@code JsonNode.get(String)} and {@code JsonObject.get(String)},
- * which return null for an absent key. Those are what phase 8 measured, not a complete survey:
- * Apache Commons is unannotated too and has already bitten this codebase once ({@code
- * StringUtils.abbreviate} passes null through — NULLAWAY.md phase 4), and nothing has measured it.
+ * <p>What this carries is Jackson and GSON, which return null for an absent key and which nobody
+ * here can change. Apache Commons was measured alongside them in phase 8 and is modelled through
+ * {@link #nullImpliesNullParameters()} rather than here, because its nulls are propagated arguments
+ * rather than absent data.
  *
- * <p><b>The JRAW entries below are interim.</b> {@code com.github.edgan:JRAW} is our own fork, so
- * NULLAWAY.md phase 10 moves these 143 contracts into JRAW proper; empty this set when that lands.
- * They are not hand-picked and must not be edited by hand — {@code
- * scripts/derive_jraw_nullable.py} generates them, reporting every zero-argument getter in {@code
- * net.dean.jraw} whose bytecode either returns {@code JsonModel.data(String)} straight
- * through — {@code data(String)} being {@code node.has(key) ? ... : null} — or contains an explicit
- * {@code return null}. That same list is the worklist for phase 10; re-run the script when JRAW is
- * bumped.
+ * <p><b>The JRAW entries below are staged, not live.</b> {@code com.github.edgan:JRAW} is our own
+ * fork, so NULLAWAY.md phase 10 moves those 143 contracts into JRAW proper rather than modelling
+ * them from outside; delete the set when that lands. Switching them on is that phase's 410-finding
+ * burn-down and not a side effect of this one, so {@link #nullableReturns()} does not include them
+ * — adding {@code .addAll(JRAW_NULLABLE_RETURNS)} there reproduces the measurement. They are not
+ * hand-picked and must not be edited by hand — {@code scripts/derive_jraw_nullable.py} generates
+ * them, reporting every zero-argument getter in {@code net.dean.jraw} whose bytecode either returns
+ * {@code JsonModel.data(String)} straight through — {@code data(String)} being {@code node.has(key)
+ * ? ... : null} — or contains an explicit {@code return null}. That same list is the worklist for
+ * phase 10; re-run the script when JRAW is bumped.
  *
  * <p>Discovered by {@link java.util.ServiceLoader}; see {@code
  * src/main/resources/META-INF/services/com.uber.nullaway.LibraryModels}.
  */
 public final class SlideLibraryModels implements LibraryModels {
 
+    private static final String COMMONS_ESCAPE = "org.apache.commons.text.StringEscapeUtils";
+    private static final String COMMONS_STRINGS = "org.apache.commons.lang3.StringUtils";
+
+    /**
+     * Absent-key reads. Both are documented to return null when the key is not present, and both
+     * are third-party code we cannot annotate at the source — the case a library model is for.
+     *
+     * <p>The overriding declarations are listed alongside the interface ones deliberately: NullAway
+     * matches the symbol javac resolved at the call site, so a receiver declared {@code ObjectNode}
+     * does not match a model on {@code JsonNode}.
+     */
     private static final ImmutableSet<MethodRef> NULLABLE_RETURNS =
+            ImmutableSet.<MethodRef>builder()
+                    // Jackson: JsonNode.get returns null for an absent field or an out-of-range
+                    // index, as distinct from path(), which returns a MissingNode.
+                    .add(methodRef("com.fasterxml.jackson.databind.JsonNode", "get(java.lang.String)"))
+                    .add(methodRef("com.fasterxml.jackson.databind.JsonNode", "get(int)"))
+                    .add(methodRef("com.fasterxml.jackson.databind.node.ObjectNode", "get(java.lang.String)"))
+                    .add(methodRef("com.fasterxml.jackson.databind.node.ObjectNode", "get(int)"))
+                    .add(methodRef("com.fasterxml.jackson.databind.node.ArrayNode", "get(java.lang.String)"))
+                    .add(methodRef("com.fasterxml.jackson.databind.node.ArrayNode", "get(int)"))
+                    // GSON: JsonObject.get returns null for an absent member. A member that is
+                    // present and JSON null comes back as JsonNull, not as Java null.
+                    .add(methodRef("com.google.gson.JsonObject", "get(java.lang.String)"))
+                    .add(methodRef("com.google.gson.JsonObject", "getAsJsonObject(java.lang.String)"))
+                    .add(methodRef("com.google.gson.JsonObject", "getAsJsonArray(java.lang.String)"))
+                    .add(methodRef("com.google.gson.JsonObject", "getAsJsonPrimitive(java.lang.String)"))
+                    .build();
+
+    /**
+     * Staged for NULLAWAY.md phase 10, and deliberately not returned by {@link #nullableReturns()}.
+     * See the class javadoc.
+     */
+    private static final ImmutableSet<MethodRef> JRAW_NULLABLE_RETURNS =
             ImmutableSet.<MethodRef>builder()
                     // AuthenticationManager
                     .add(methodRef("net.dean.jraw.auth.AuthenticationManager", "getUsername()"))
@@ -248,9 +283,44 @@ public final class SlideLibraryModels implements LibraryModels {
         return ImmutableSetMultimap.of();
     }
 
+    /**
+     * Apache Commons, which is unannotated and whose string helpers pass a null argument straight
+     * through to the return. NULLAWAY.md phase 4 was bitten by exactly this: {@code
+     * StringUtils.abbreviate} took a GSON-nulled note text and handed it back, so {@code
+     * Usernotes.getDisplayNoteForUser} returned null out of a non-null declaration and the usernote
+     * chip rendered the literal text "null".
+     *
+     * <p>These are null-in/null-out rather than absent-key reads, so they belong here and not in
+     * {@code nullableReturns()} — modelling them as unconditionally nullable would push a dead
+     * guard onto every call site that passes a non-null argument, which is most of them.
+     */
+    private static final ImmutableSetMultimap<MethodRef, Integer> NULL_IMPLIES_NULL_PARAMETERS =
+            ImmutableSetMultimap.<MethodRef, Integer>builder()
+                    // commons-text: every one of these is CharSequenceTranslator.translate, which
+                    // opens with `if (input == null) return null;`.
+                    .put(methodRef(COMMONS_ESCAPE, "escapeHtml4(java.lang.String)"), 0)
+                    .put(methodRef(COMMONS_ESCAPE, "unescapeHtml4(java.lang.String)"), 0)
+                    .put(methodRef(COMMONS_ESCAPE, "unescapeJava(java.lang.String)"), 0)
+                    .put(methodRef(COMMONS_ESCAPE, "unescapeJson(java.lang.String)"), 0)
+                    // commons-lang3
+                    .put(methodRef(COMMONS_STRINGS, "capitalize(java.lang.String)"), 0)
+                    .put(methodRef(COMMONS_STRINGS, "uncapitalize(java.lang.String)"), 0)
+                    .put(methodRef(COMMONS_STRINGS, "abbreviate(java.lang.String,int)"), 0)
+                    .put(methodRef(COMMONS_STRINGS, "abbreviate(java.lang.String,int,int)"), 0)
+                    .put(
+                            methodRef(
+                                    COMMONS_STRINGS,
+                                    "abbreviate(java.lang.String,java.lang.String,int)"),
+                            0)
+                    .put(methodRef(COMMONS_STRINGS, "trim(java.lang.String)"), 0)
+                    .put(methodRef(COMMONS_STRINGS, "strip(java.lang.String)"), 0)
+                    .put(methodRef(COMMONS_STRINGS, "lowerCase(java.lang.String)"), 0)
+                    .put(methodRef(COMMONS_STRINGS, "upperCase(java.lang.String)"), 0)
+                    .build();
+
     @Override
     public ImmutableSetMultimap<MethodRef, Integer> nullImpliesNullParameters() {
-        return ImmutableSetMultimap.of();
+        return NULL_IMPLIES_NULL_PARAMETERS;
     }
 
     @Override

@@ -823,7 +823,7 @@ public class GifUtils {
             // Crosspost
             JsonNode cpl = data.path("crosspost_parent_list");
             if (cpl.isArray() && cpl.size() > 0) {
-                JsonNode crv = cpl.get(0).path("media").path("reddit_video");
+                JsonNode crv = cpl.path(0).path("media").path("reddit_video");
                 for (String field : new String[]{"dash_url"}) {
                     String url = crv.path(field).asText("");
                     if (!url.isEmpty())
@@ -923,7 +923,10 @@ public class GifUtils {
                 .build();
             Response tokenResponse = client.newCall(tokenRequest).execute();
             JsonObject tokenResult = gson.fromJson(tokenResponse.body().string(), JsonObject.class);
-            String accessToken = tokenResult.get("token").getAsString();
+            String accessToken = GsonUtil.string(tokenResult, "token", "");
+            if (accessToken.isEmpty()) {
+                throw new IOException("redgifs temporary-auth response carried no token");
+            }
             AuthToken newToken = AuthToken.expireIn1day(accessToken);
             TOKEN.set(newToken);
             return newToken;
@@ -986,11 +989,13 @@ public class GifUtils {
                     return null;
                 }
 
-                JsonObject gif = result.getAsJsonObject("gif");
-                String url = !SettingValues.hqgif && gif.getAsJsonObject("urls").has("sd") ?
-                    gif.getAsJsonObject("urls").get("sd").getAsString() :
-                    gif.getAsJsonObject("urls").get("hd").getAsString();
-                return Uri.parse(url);
+                JsonObject urls = GsonUtil.obj(GsonUtil.obj(result, "gif"), "urls");
+                String url = !SettingValues.hqgif && urls.has("sd") ?
+                    GsonUtil.string(urls, "sd", "") :
+                    GsonUtil.string(urls, "hd", "");
+                // A reply with no urls node is a failure like any other here: null is what this
+                // method returns for one, and an empty Uri would be loaded as if it were real.
+                return url.isEmpty() ? null : Uri.parse(url);
             } catch (Exception e) {
                 LogUtil.e(e, "Error loading RedGifs video url = [" + fullUrl + "]");
                 if (closeIfNull && c != null) {
@@ -1195,7 +1200,8 @@ public class GifUtils {
                         final JsonObject result =
                                 HttpUtil.getJsonObject(client, gson, streamableUrl);
                         String obj;
-                        if (result == null || result.get("files") == null || !(result.getAsJsonObject("files").has("mp4") || result.getAsJsonObject("files").has("mp4-mobile"))) {
+                        final JsonObject files = GsonUtil.obj(result, "files");
+                        if (result == null || !(files.has("mp4") || files.has("mp4-mobile"))) {
                             // No onError() from here: returning null is the failure, and
                             // onPostExecute reports it once, on the main thread, and not at all for
                             // a task the caller has cancelled.
@@ -1220,12 +1226,11 @@ public class GifUtils {
                             // Return null if streamable fails
                             return null;
                         } else {
-                            if (result.getAsJsonObject().get("files").getAsJsonObject().has("mp4-mobile") && !result.getAsJsonObject().get("files").getAsJsonObject().get("mp4-mobile").getAsJsonObject().get("url").getAsString().isEmpty()) {
-                                obj = result.getAsJsonObject().get("files").getAsJsonObject().get("mp4-mobile").getAsJsonObject().get("url").getAsString();
-                            } else {
-                                obj = result.getAsJsonObject().get("files").getAsJsonObject().get("mp4").getAsJsonObject().get("url").getAsString();
+                            obj = GsonUtil.string(GsonUtil.obj(files, "mp4-mobile"), "url", "");
+                            if (obj.isEmpty()) {
+                                obj = GsonUtil.string(GsonUtil.obj(files, "mp4"), "url", "");
                             }
-                            return Uri.parse(obj);
+                            return obj.isEmpty() ? null : Uri.parse(obj);
                         }
                     } catch (Exception e) {
                         LogUtil.e(

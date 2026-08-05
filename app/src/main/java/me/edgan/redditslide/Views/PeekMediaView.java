@@ -50,6 +50,7 @@ import me.edgan.redditslide.Tumblr.Photo;
 import me.edgan.redditslide.Tumblr.TumblrUtils;
 import me.edgan.redditslide.util.AdBlocker;
 import me.edgan.redditslide.util.GifUtils;
+import me.edgan.redditslide.util.GsonUtil;
 import me.edgan.redditslide.util.HttpUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
@@ -313,8 +314,13 @@ public class PeekMediaView extends RelativeLayout {
                         doLoadLink(url);
                     } else {
                         try {
-                            if (result != null && !result.isJsonNull() && result.has("img")) {
-                                doLoadImage(result.get("img").getAsString());
+                            // Absent, JSON null, or a non-string "img" all mean there is no comic to
+                            // show, and an empty uri reads to the image loader as a completed load
+                            // with a null bitmap. Fall through to the web view instead.
+                            if (result != null
+                                    && !result.isJsonNull()
+                                    && !GsonUtil.string(result, "img", "").isEmpty()) {
+                                doLoadImage(GsonUtil.string(result, "img", ""));
                             } else {
                                 doLoadLink(url);
                             }
@@ -400,14 +406,8 @@ public class PeekMediaView extends RelativeLayout {
                 LogUtil.v("doLoad onPostExecute() called with: " + "result = [" + result + "]");
                 if (result != null
                         && !result.isJsonNull()
-                        && (result.has("fullsize_url") || result.has("url"))) {
-                    String url;
-                    if (result.has("fullsize_url")) {
-                        url = result.get("fullsize_url").getAsString();
-                    } else {
-                        url = result.get("url").getAsString();
-                    }
-                    doLoadImage(url);
+                        && !deviantArtImageUrl(result).isEmpty()) {
+                    doLoadImage(deviantArtImageUrl(result));
                 } else {
                     // todo error out
                 }
@@ -692,23 +692,27 @@ public class PeekMediaView extends RelativeLayout {
         if (contentType == ContentType.Type.GIF && url.contains("i.redd.it")) {
             JsonNode dataNode = submission.getDataNode();
             if (dataNode.has("preview") &&
-                dataNode.get("preview").has("images") &&
-                dataNode.get("preview").get("images").size() > 0) {
+                dataNode.path("preview").has("images") &&
+                dataNode.path("preview").path("images").size() > 0) {
 
-                JsonNode variants = dataNode.get("preview")
-                    .get("images")
-                    .get(0)
-                    .get("variants");
+                JsonNode variants = dataNode.path("preview")
+                    .path("images")
+                    .path(0)
+                    .path("variants");
 
                 if (variants.has("mp4")) {
-                    String mp4Url = variants.get("mp4")
-                        .get("source")
-                        .get("url")
+                    String mp4Url = variants.path("mp4")
+                        .path("source")
+                        .path("url")
                         .asText()
                         .replace("&amp;", "&");
 
-                    url = mp4Url;
-                    contentType = ContentType.Type.GIF;
+                    // An mp4 variant with no source url leaves this empty, which would replace the
+                    // working i.redd.it url with nothing.
+                    if (!mp4Url.isEmpty()) {
+                        url = mp4Url;
+                        contentType = ContentType.Type.GIF;
+                    }
                 }
             }
         }
@@ -721,30 +725,35 @@ public class PeekMediaView extends RelativeLayout {
             JsonNode dataNode = submission.getDataNode();
 
             // Handle crosspost if needed
-            if (dataNode.has("crosspost_parent_list") && dataNode.get("crosspost_parent_list").size() > 0) {
-                dataNode = dataNode.get("crosspost_parent_list").get(0);
+            if (dataNode.has("crosspost_parent_list") && dataNode.path("crosspost_parent_list").size() > 0) {
+                dataNode = dataNode.path("crosspost_parent_list").path(0);
             }
 
             if (dataNode.has("gallery_data") && dataNode.has("media_metadata")) {
-                JsonNode galleryData = dataNode.get("gallery_data");
-                JsonNode mediaMetadata = dataNode.get("media_metadata");
+                JsonNode galleryData = dataNode.path("gallery_data");
+                JsonNode mediaMetadata = dataNode.path("media_metadata");
 
-                if (galleryData.has("items") && !galleryData.get("items").isNull()
-                        && galleryData.get("items").size() > 0) {
+                if (galleryData.has("items") && !galleryData.path("items").isNull()
+                        && galleryData.path("items").size() > 0) {
 
-                    JsonNode firstItem = galleryData.get("items").get(0);
+                    JsonNode firstItem = galleryData.path("items").path(0);
                     if (firstItem != null && firstItem.has("media_id")) {
-                        String mediaId = firstItem.get("media_id").asText();
+                        String mediaId = firstItem.path("media_id").asText();
 
                         if (mediaMetadata.has(mediaId)) {
-                            JsonNode mediaInfo = mediaMetadata.get(mediaId);
-                            if (mediaInfo != null && mediaInfo.has("s")) {
-                                String url = mediaInfo.get("s").get("u").asText();
-                                url = url.replace("&amp;", "&");
+                            JsonNode mediaInfo = mediaMetadata.path(mediaId);
+                            if (mediaInfo.has("s")) {
+                                String url = mediaInfo.path("s").path("u").asText();
+                                // An "s" node with no "u" leaves this empty, and the image loader
+                                // reads an empty uri as a completed load with a null bitmap. Fall
+                                // through to the hide-the-view fallback instead.
+                                if (!url.isEmpty()) {
+                                    url = url.replace("&amp;", "&");
 
-                                // Display the first image from the gallery
-                                displayImage(url);
-                                return;
+                                    // Display the first image from the gallery
+                                    displayImage(url);
+                                    return;
+                                }
                             }
                         }
                     }
@@ -756,4 +765,15 @@ public class PeekMediaView extends RelativeLayout {
         // Fallback if gallery loading fails
         setVisibility(View.GONE);
     }
+
+    /**
+     * The oEmbed image url, preferring the full-size one. Empty when the response carries neither as
+     * a string — callers treat that as "not an image" rather than handing the loader an empty uri,
+     * which it reads as a completed load with a null bitmap.
+     */
+    private static String deviantArtImageUrl(JsonObject result) {
+        final String fullsize = GsonUtil.string(result, "fullsize_url", "");
+        return fullsize.isEmpty() ? GsonUtil.string(result, "url", "") : fullsize;
+    }
+
 }

@@ -29,48 +29,48 @@ public class RedditGalleryFull extends BaseAlbumFull {
             JsonNode mediaMetadata = submission.getDataNode().get("media_metadata");
 
             if (galleryData != null && mediaMetadata != null && galleryData.has("items")) {
-                JsonNode items = galleryData.get("items");
+                JsonNode items = galleryData.path("items");
                 LogUtil.v("Gallery items: " + items.toString());
 
                 for (JsonNode item : items) {
-                    String mediaId = item.get("media_id").asText();
+                    String mediaId = item.path("media_id").asText();
                     if (mediaMetadata.has(mediaId)) {
-                        JsonNode mediaItem = mediaMetadata.get(mediaId);
+                        JsonNode mediaItem = mediaMetadata.path(mediaId);
                         LogUtil.v("Media item for " + mediaId + ": " + mediaItem.toString());
 
                         if (mediaItem != null && mediaItem.has("s")) {
-                            JsonNode s = mediaItem.get("s");
+                            JsonNode s = mediaItem.path("s");
                             // Create a new object matching GalleryImage's expected structure
                             ObjectNode imageNode = JsonNodeFactory.instance.objectNode();
 
                             // Add the URL field as "u" instead of "url"
                             if (s.has("u")) {
-                                imageNode.put("u", s.get("u").asText());
+                                imageNode.put("u", s.path("u").asText());
                             } else if (s.has("mp4")) {
-                                imageNode.put("mp4", s.get("mp4").asText());
+                                imageNode.put("mp4", s.path("mp4").asText());
                             }
 
                             // Add width and height as x and y
-                            imageNode.put("x", s.has("x") ? s.get("x").asInt() : 0);
-                            imageNode.put("y", s.has("y") ? s.get("y").asInt() : 0);
+                            imageNode.put("x", s.has("x") ? s.path("x").asInt() : 0);
+                            imageNode.put("y", s.has("y") ? s.path("y").asInt() : 0);
 
                             // Add metadata fields
-                            if (mediaItem.has("e")) imageNode.put("e", mediaItem.get("e").asText());
-                            if (mediaItem.has("m")) imageNode.put("m", mediaItem.get("m").asText());
+                            if (mediaItem.has("e")) imageNode.put("e", mediaItem.path("e").asText());
+                            if (mediaItem.has("m")) imageNode.put("m", mediaItem.path("m").asText());
 
                             // Add source information
                             ObjectNode sourceNode = JsonNodeFactory.instance.objectNode();
-                            if (s.has("mp4")) sourceNode.put("mp4", s.get("mp4").asText());
-                            if (s.has("gif")) sourceNode.put("gif", s.get("gif").asText());
-                            if (s.has("x")) sourceNode.put("x", s.get("x").asInt());
-                            if (s.has("y")) sourceNode.put("y", s.get("y").asInt());
-                            if (s.has("u")) sourceNode.put("u", s.get("u").asText());
+                            if (s.has("mp4")) sourceNode.put("mp4", s.path("mp4").asText());
+                            if (s.has("gif")) sourceNode.put("gif", s.path("gif").asText());
+                            if (s.has("x")) sourceNode.put("x", s.path("x").asInt());
+                            if (s.has("y")) sourceNode.put("y", s.path("y").asInt());
+                            if (s.has("u")) sourceNode.put("u", s.path("u").asText());
                             imageNode.set("s", sourceNode);
 
                             LogUtil.v("Created image node: " + imageNode.toString());
                             GalleryImage galleryImage = new GalleryImage(imageNode);
-                            if (item.has("caption") && !item.get("caption").isNull()) {
-                                galleryImage.caption = item.get("caption").asText();
+                            if (item.has("caption") && !item.path("caption").isNull()) {
+                                galleryImage.caption = item.path("caption").asText();
                             }
                             galleryImages.add(galleryImage);
                         }

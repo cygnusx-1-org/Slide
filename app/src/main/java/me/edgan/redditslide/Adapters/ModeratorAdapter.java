@@ -307,7 +307,7 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             holder.time.setText(titleString);
             if (SettingValues.markdownNewReddit) {
                 setViewsMarkdown(
-                        comment.getDataNode().get("body").asText(),
+                        comment.getDataNode().path("body").asText(),
                         comment.getDataNode().path("body_html").asText(""),
                         comment.getDataNode(),
                         comment.getSubredditName(),
@@ -493,14 +493,14 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         final boolean locked =
                 comment.getDataNode().has("locked")
-                        && comment.getDataNode().get("locked").asBoolean();
+                        && comment.getDataNode().path("locked").asBoolean();
         if (locked) {
             b.sheet(25, lock, mContext.getString(R.string.mod_btn_unlock_comment));
         } else {
             b.sheet(25, lock, mContext.getString(R.string.mod_btn_lock_comment));
         }
 
-        final boolean distinguished = !comment.getDataNode().get("distinguished").isNull();
+        final boolean distinguished = comment.getDataNode().hasNonNull("distinguished");
         if (comment.getAuthor().equalsIgnoreCase(Authentication.name)) {
             if (!distinguished) {
                 b.sheet(9, distinguish, mContext.getString(R.string.mod_distinguish));

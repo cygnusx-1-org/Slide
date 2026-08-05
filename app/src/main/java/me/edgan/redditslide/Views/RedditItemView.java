@@ -183,7 +183,7 @@ public class RedditItemView extends RelativeLayout {
         protected void onPostExecute(@Nullable Account account) {
             if (account != null
                     && (account.getDataNode().has("is_suspended")
-                            && !account.getDataNode().get("is_suspended").asBoolean())) {
+                            && !account.getDataNode().path("is_suspended").asBoolean())) {
                 View content =
                         LayoutInflater.from(getContext())
                                 .inflate(R.layout.account_pop, RedditItemView.this, false);
@@ -271,7 +271,7 @@ public class RedditItemView extends RelativeLayout {
         if (!subreddit.getPublicDescription().isEmpty()) {
             content.findViewById(R.id.sub_title).setVisibility(View.VISIBLE);
             setViews(
-                    subreddit.getDataNode().get("public_description_html").asText(),
+                    subreddit.getDataNode().path("public_description_html").asText(),
                     subreddit.getDisplayName().toLowerCase(Locale.ENGLISH),
                     content.findViewById(R.id.sub_title),
                     content.findViewById(R.id.sub_title_overflow));
@@ -279,11 +279,11 @@ public class RedditItemView extends RelativeLayout {
             content.findViewById(R.id.sub_title).setVisibility(View.GONE);
         }
         if (subreddit.getDataNode().has("icon_img")
-                && !subreddit.getDataNode().get("icon_img").asText().isEmpty()) {
+                && !subreddit.getDataNode().path("icon_img").asText().isEmpty()) {
             ((Reddit) ((PeekViewActivity) getContext()).getApplication())
                     .getImageLoader()
                     .displayImage(
-                            subreddit.getDataNode().get("icon_img").asText(),
+                            subreddit.getDataNode().path("icon_img").asText(),
                             (ImageView) content.findViewById(R.id.subimage));
         } else {
             content.findViewById(R.id.subimage).setVisibility(View.GONE);

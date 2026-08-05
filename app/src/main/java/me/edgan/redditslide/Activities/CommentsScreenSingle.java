@@ -244,7 +244,7 @@ public class CommentsScreenSingle extends BaseActivityAnim {
                         });
                 locked = s.isLocked();
                 archived = s.isArchived();
-                contest = s.getDataNode().get("contest_mode").asBoolean();
+                contest = s.getDataNode().path("contest_mode").asBoolean();
                 if (s.getSubredditName() == null) {
                     subreddit = "Promoted";
                 } else {

@@ -1240,18 +1240,18 @@ public class SubredditView extends BaseActivity {
         if (!isFinishing()) {
             findViewById(R.id.loader).setVisibility(View.GONE);
             if (subreddit.getDataNode().has("subreddit_type")
-                    && !subreddit.getDataNode().get("subreddit_type").isNull()) {
+                    && !subreddit.getDataNode().path("subreddit_type").isNull()) {
                 canSubmit =
                         !subreddit
                                 .getDataNode()
-                                .get("subreddit_type")
+                                .path("subreddit_type")
                                 .asText()
                                 .equalsIgnoreCase("RESTRICTED");
             }
             if (subreddit.getSidebar() != null && !subreddit.getSidebar().isEmpty()) {
                 findViewById(R.id.sidebar_text).setVisibility(View.VISIBLE);
 
-                final String text = subreddit.getDataNode().get("description_html").asText().trim();
+                final String text = subreddit.getDataNode().path("description_html").asText().trim();
                 final SpoilerRobotoTextView body =
                         (SpoilerRobotoTextView) findViewById(R.id.sidebar_text);
                 CommentOverflow overflow = (CommentOverflow) findViewById(R.id.commentOverflow);
@@ -1693,7 +1693,7 @@ public class SubredditView extends BaseActivity {
             if (!subreddit.getPublicDescription().isEmpty()) {
                 findViewById(R.id.sub_title).setVisibility(View.VISIBLE);
                 setViews(
-                        subreddit.getDataNode().get("public_description_html").asText(),
+                        subreddit.getDataNode().path("public_description_html").asText(),
                         subreddit.getDisplayName().toLowerCase(Locale.ENGLISH),
                         ((SpoilerRobotoTextView) findViewById(R.id.sub_title)),
                         (CommentOverflow) findViewById(R.id.sub_title_overflow));
@@ -1701,11 +1701,11 @@ public class SubredditView extends BaseActivity {
                 findViewById(R.id.sub_title).setVisibility(View.GONE);
             }
             if (subreddit.getDataNode().has("icon_img")
-                    && !subreddit.getDataNode().get("icon_img").asText().isEmpty()) {
+                    && !subreddit.getDataNode().path("icon_img").asText().isEmpty()) {
                 ((Reddit) getApplication())
                         .getImageLoader()
                         .displayImage(
-                                subreddit.getDataNode().get("icon_img").asText(),
+                                subreddit.getDataNode().path("icon_img").asText(),
                                 (ImageView) findViewById(R.id.subimage));
             } else {
                 findViewById(R.id.subimage).setVisibility(View.GONE);
@@ -2010,7 +2010,7 @@ public class SubredditView extends BaseActivity {
                 args.putString("id", name.substring(3));
                 args.putBoolean("archived", openingComments.isArchived());
                 args.putBoolean(
-                        "contest", openingComments.getDataNode().get("contest_mode").asBoolean());
+                        "contest", openingComments.getDataNode().path("contest_mode").asBoolean());
                 args.putBoolean("locked", openingComments.isLocked());
                 args.putInt("page", currentComment);
                 args.putString("subreddit", openingComments.getSubredditName());

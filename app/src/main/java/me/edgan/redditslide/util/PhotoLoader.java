@@ -119,8 +119,8 @@ public class PhotoLoader {
                 if (thumb == null
                         && dataNode != null
                         && dataNode.has("crosspost_parent_list")
-                        && dataNode.get("crosspost_parent_list").size() > 0) {
-                    thumb = getValidThumbnailUrl(dataNode.get("crosspost_parent_list").get(0));
+                        && dataNode.path("crosspost_parent_list").size() > 0) {
+                    thumb = getValidThumbnailUrl(dataNode.path("crosspost_parent_list").path(0));
                 }
                 return thumb;
             }
@@ -180,9 +180,9 @@ public class PhotoLoader {
         }
         String previewUrl = null;
         if (dataNode.has("crosspost_parent_list")
-                && dataNode.get("crosspost_parent_list").size() > 0) {
+                && dataNode.path("crosspost_parent_list").size() > 0) {
             previewUrl =
-                    extractPreviewUrl(dataNode.get("crosspost_parent_list").get(0), maxWidth);
+                    extractPreviewUrl(dataNode.path("crosspost_parent_list").path(0), maxWidth);
         }
         if (previewUrl == null) {
             previewUrl = extractPreviewUrl(dataNode, maxWidth);
@@ -194,9 +194,9 @@ public class PhotoLoader {
             final @Nullable JsonNode node, final int maxWidth) {
         if (node != null
                 && node.has("preview")
-                && node.get("preview").has("images")
-                && node.get("preview").get("images").size() > 0) {
-            final JsonNode image = node.get("preview").get("images").get(0);
+                && node.path("preview").has("images")
+                && node.path("preview").path("images").size() > 0) {
+            final JsonNode image = node.path("preview").path("images").path(0);
             // Smallest sized preview covering the display width (thumbnails). Cards pass
             // Integer.MAX_VALUE, so no resolution matches and we fall through to the full source.
             final String sized = sizedResolutionUrl(image, maxWidth);
@@ -205,7 +205,7 @@ public class PhotoLoader {
             }
             final JsonNode sourceNode = image.get("source");
             if (sourceNode != null && sourceNode.has("url")) {
-                return sourceNode.get("url").asText();
+                return sourceNode.path("url").asText();
             }
         }
         return null;
@@ -216,8 +216,8 @@ public class PhotoLoader {
      * ("self", "default", "nsfw") or a missing/empty value. Shared with HeaderImageLinkView.
      */
     public static @Nullable String getValidThumbnailUrl(final @Nullable JsonNode node) {
-        if (node != null && node.has("thumbnail") && !node.get("thumbnail").isNull()) {
-            final String thumbnail = node.get("thumbnail").asText();
+        if (node != null && node.has("thumbnail") && !node.path("thumbnail").isNull()) {
+            final String thumbnail = node.path("thumbnail").asText();
             if (!thumbnail.equals("self")
                     && !thumbnail.equals("default")
                     && !thumbnail.equals("nsfw")
@@ -257,7 +257,7 @@ public class PhotoLoader {
             if (r == null || !r.has("width") || !r.has("url")) {
                 continue;
             }
-            final int w = r.get("width").asInt();
+            final int w = r.path("width").asInt();
             if (w >= maxWidth) {
                 if (covering == null) {
                     covering = r;
@@ -273,10 +273,10 @@ public class PhotoLoader {
         if (covering == null) {
             return null;
         }
-        if (largestBelow == null || covering.get("width").asInt() <= 2L * maxWidth) {
-            return covering.get("url").asText();
+        if (largestBelow == null || covering.path("width").asInt() <= 2L * maxWidth) {
+            return covering.path("url").asText();
         }
-        return largestBelow.get("url").asText();
+        return largestBelow.path("url").asText();
     }
 
     public static String getHighQualityUrl(Submission submission) {
@@ -294,7 +294,7 @@ public class PhotoLoader {
      */
     public static String getHighQualityUrl(Submission submission, int maxWidth) {
         if (submission.getDataNode().has("preview")) {
-            final JsonNode images = submission.getDataNode().get("preview").get("images");
+            final JsonNode images = submission.getDataNode().path("preview").path("images");
             final JsonNode image = (images != null && images.size() > 0) ? images.get(0) : null;
             if (image != null) {
                 // Smallest sized preview that covers the display width so a thumbnail never pulls the
@@ -313,18 +313,22 @@ public class PhotoLoader {
                 if (source != null
                         && source.has("url")
                         && source.has("width")
-                        && source.get("width").asInt() < 1080) {
-                    return source.get("url").asText();
+                        && source.path("width").asInt() < 1080) {
+                    return source.path("url").asText();
                 }
                 final JsonNode resolutions = image.get("resolutions");
                 if (resolutions != null && resolutions.size() > 0) {
                     final JsonNode largest = resolutions.get(resolutions.size() - 1);
                     if (largest != null && largest.has("url")) {
-                        return largest.get("url").asText();
+                        return largest.path("url").asText();
                     }
                 }
-                if (source != null && source.has("height")) {
-                    return source.get("url").asText();
+                // has("url") as well as has("height"): a source node carrying dimensions but no
+                // url would otherwise return "" from a method whose callers feed it straight to the
+                // image loader, which reads an empty uri as a completed load with a null bitmap.
+                // Falling through reaches the thumbnail fallback below instead.
+                if (source != null && source.has("height") && source.has("url")) {
+                    return source.path("url").asText();
                 }
             }
         }
@@ -834,38 +838,38 @@ public class PhotoLoader {
         }
         // A crosspost keeps its gallery data on the parent (mirrors the display path).
         if (dataNode.has("crosspost_parent_list")
-                && dataNode.get("crosspost_parent_list").size() > 0) {
-            dataNode = dataNode.get("crosspost_parent_list").get(0);
+                && dataNode.path("crosspost_parent_list").size() > 0) {
+            dataNode = dataNode.path("crosspost_parent_list").path(0);
         }
-        final JsonNode galleryData = dataNode.get("gallery_data");
-        final JsonNode mediaMetadata = dataNode.get("media_metadata");
+        final JsonNode galleryData = dataNode.path("gallery_data");
+        final JsonNode mediaMetadata = dataNode.path("media_metadata");
         if (galleryData == null
                 || mediaMetadata == null
                 || !galleryData.has("items")
-                || galleryData.get("items").size() == 0) {
+                || galleryData.path("items").size() == 0) {
             return null;
         }
-        for (final JsonNode item : galleryData.get("items")) {
+        for (final JsonNode item : galleryData.path("items")) {
             if (item == null || !item.has("media_id")) {
                 continue;
             }
-            final String mediaId = item.get("media_id").asText();
+            final String mediaId = item.path("media_id").asText();
             if (!mediaMetadata.has(mediaId)) {
                 continue;
             }
-            final JsonNode media = mediaMetadata.get(mediaId);
+            final JsonNode media = mediaMetadata.path(mediaId);
             if (media == null || !media.has("s")) {
                 continue;
             }
             // Skip animated items — the viewer opens those as gif/mp4, not a still-image warm.
-            final String e = media.has("e") ? media.get("e").asText() : "";
-            final String m = media.has("m") ? media.get("m").asText() : "";
+            final String e = media.has("e") ? media.path("e").asText() : "";
+            final String m = media.has("m") ? media.path("m").asText() : "";
             if ("AnimatedImage".equals(e) || (m != null && m.contains("gif"))) {
                 continue;
             }
-            final JsonNode s = media.get("s");
+            final JsonNode s = media.path("s");
             if (s != null && s.has("u")) {
-                return StringEscapeUtils.unescapeHtml4(s.get("u").asText());
+                return StringEscapeUtils.unescapeHtml4(s.path("u").asText());
             }
         }
         return null;
@@ -894,41 +898,41 @@ public class PhotoLoader {
         // A crosspost keeps its gallery data in the parent submission. Mirror the display path,
         // which always prefers the parent when a crosspost parent is present.
         if (dataNode.has("crosspost_parent_list")
-                && dataNode.get("crosspost_parent_list").size() > 0) {
-            dataNode = dataNode.get("crosspost_parent_list").get(0);
+                && dataNode.path("crosspost_parent_list").size() > 0) {
+            dataNode = dataNode.path("crosspost_parent_list").path(0);
         }
-        final JsonNode galleryData = dataNode.get("gallery_data");
-        final JsonNode mediaMetadata = dataNode.get("media_metadata");
+        final JsonNode galleryData = dataNode.path("gallery_data");
+        final JsonNode mediaMetadata = dataNode.path("media_metadata");
         if (galleryData == null
                 || mediaMetadata == null
                 || !galleryData.has("items")
-                || galleryData.get("items").size() == 0) {
+                || galleryData.path("items").size() == 0) {
             return null;
         }
 
-        for (final JsonNode item : galleryData.get("items")) {
+        for (final JsonNode item : galleryData.path("items")) {
             if (!item.has("media_id")) continue;
-            final String mediaId = item.get("media_id").asText();
+            final String mediaId = item.path("media_id").asText();
             if (!mediaMetadata.has(mediaId)) continue;
-            final JsonNode mediaInfo = mediaMetadata.get(mediaId);
-            if (mediaInfo.has("status") && "failed".equals(mediaInfo.get("status").asText())) {
+            final JsonNode mediaInfo = mediaMetadata.path(mediaId);
+            if (mediaInfo.has("status") && "failed".equals(mediaInfo.path("status").asText())) {
                 continue;
             }
 
             // Prefer the largest reddit-sized preview ("p" is ordered smallest-to-largest).
-            if (mediaInfo.has("p") && mediaInfo.get("p").size() > 0) {
-                final JsonNode largest = mediaInfo.get("p").get(mediaInfo.get("p").size() - 1);
+            if (mediaInfo.has("p") && mediaInfo.path("p").size() > 0) {
+                final JsonNode largest = mediaInfo.path("p").path(mediaInfo.path("p").size() - 1);
                 if (largest.has("u")) {
                     return new GalleryPreview(
-                            largest.get("u").asText(), dimOf(largest, "x"), dimOf(largest, "y"));
+                            largest.path("u").asText(), dimOf(largest, "x"), dimOf(largest, "y"));
                 }
             }
             // Fall back to the full-resolution source, normalized to the unsigned i.redd.it host
             // (its signed preview query can't be reused).
-            if (mediaInfo.has("s") && mediaInfo.get("s").has("u")) {
-                final JsonNode s = mediaInfo.get("s");
+            if (mediaInfo.has("s") && mediaInfo.path("s").has("u")) {
+                final JsonNode s = mediaInfo.path("s");
                 final String url =
-                        s.get("u").asText().replace("preview.redd.it", "i.redd.it").replaceAll("\\?.*", "");
+                        s.path("u").asText().replace("preview.redd.it", "i.redd.it").replaceAll("\\?.*", "");
                 return new GalleryPreview(url, dimOf(s, "x"), dimOf(s, "y"));
             }
         }
@@ -936,6 +940,6 @@ public class PhotoLoader {
     }
 
     private static int dimOf(JsonNode node, String field) {
-        return node.has(field) ? node.get(field).asInt() : -1;
+        return node.has(field) ? node.path(field).asInt() : -1;
     }
 }

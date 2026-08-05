@@ -73,6 +73,7 @@ import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.GifDrawable;
 import me.edgan.redditslide.util.GifUtils;
+import me.edgan.redditslide.util.GsonUtil;
 import me.edgan.redditslide.util.HttpUtil;
 import me.edgan.redditslide.util.ImageSaveUtils;
 import me.edgan.redditslide.util.LinkUtil;
@@ -898,8 +899,13 @@ public class MediaView extends BaseSaveActivity {
                         (MediaView.this).finish();
                     } else {
                         try {
-                            if (result != null && !result.isJsonNull() && result.has("img")) {
-                                doLoadImage(result.get("img").getAsString());
+                            // Absent, JSON null, or a non-string "img" all mean there is no comic to
+                            // show, and an empty uri reads to the image loader as a completed load
+                            // with a null bitmap. Fall through to the web view instead.
+                            if (result != null
+                                    && !result.isJsonNull()
+                                    && !GsonUtil.string(result, "img", "").isEmpty()) {
+                                doLoadImage(GsonUtil.string(result, "img", ""));
                                 findViewById(R.id.submission_image)
                                         .setOnLongClickListener(
                                                 new View.OnLongClickListener() {
@@ -908,11 +914,9 @@ public class MediaView extends BaseSaveActivity {
                                                         try {
                                                             DialogUtil.showWithCardBackground(new AlertDialog.Builder(MediaView.this)
                                                                     .setTitle(
-                                                                            result.get("safe_title")
-                                                                                    .getAsString())
+                                                                            GsonUtil.string(result, "safe_title", ""))
                                                                     .setMessage(
-                                                                            result.get("alt")
-                                                                                    .getAsString())
+                                                                            GsonUtil.string(result, "alt", ""))
                                                                     );
                                                         } catch (Exception ignored) {
 
@@ -953,14 +957,8 @@ public class MediaView extends BaseSaveActivity {
                 LogUtil.v("doLoad onPostExecute() called with: " + "result = [" + result + "]");
                 if (result != null
                         && !result.isJsonNull()
-                        && (result.has("fullsize_url") || result.has("url"))) {
-                    String url;
-                    if (result.has("fullsize_url")) {
-                        url = result.get("fullsize_url").getAsString();
-                    } else {
-                        url = result.get("url").getAsString();
-                    }
-                    doLoadImage(url);
+                        && !deviantArtImageUrl(result).isEmpty()) {
+                    doLoadImage(deviantArtImageUrl(result));
                 } else {
                     Intent i = new Intent(MediaView.this, Website.class);
                     i.putExtra(LinkUtil.EXTRA_URL, contentUrl);
@@ -1388,4 +1386,15 @@ public class MediaView extends BaseSaveActivity {
             lastContentUrl = null;
         }
     }
+
+    /**
+     * The oEmbed image url, preferring the full-size one. Empty when the response carries neither as
+     * a string — callers treat that as "not an image" rather than handing the loader an empty uri,
+     * which it reads as a completed load with a null bitmap.
+     */
+    private static String deviantArtImageUrl(JsonObject result) {
+        final String fullsize = GsonUtil.string(result, "fullsize_url", "");
+        return fullsize.isEmpty() ? GsonUtil.string(result, "url", "") : fullsize;
+    }
+
 }

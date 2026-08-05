@@ -167,12 +167,12 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             if (!dataSet.where.contains("mod")
                     && comment.getDataNode().has("dest")
                     && !Authentication.nameOrEmpty().equalsIgnoreCase(
-                            comment.getDataNode().get("dest").asText())
-                    && !comment.getDataNode().get("dest").asText().equals("reddit")) {
-                author = comment.getDataNode().get("dest").asText().replace("#", "/r/");
+                            comment.getDataNode().path("dest").asText())
+                    && !comment.getDataNode().path("dest").asText().equals("reddit")) {
+                author = comment.getDataNode().path("dest").asText().replace("#", "/r/");
                 direction = "to ";
             }
-            if (comment.getDataNode().has("subreddit") && author == null || author.isEmpty()) {
+            if (comment.getDataNode().has("subreddit") && (author == null || author.isEmpty())) {
                 direction = "via /r/" + comment.getSubreddit();
             }
             titleString.append(direction);
@@ -211,9 +211,9 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             }
             String spacer = mContext.getString(R.string.submission_properties_seperator);
             if (comment.getDataNode().has("subreddit")
-                    && !comment.getDataNode().get("subreddit").isNull()) {
+                    && !comment.getDataNode().path("subreddit").isNull()) {
                 titleString.append(spacer);
-                String subname = comment.getDataNode().get("subreddit").asText();
+                String subname = comment.getDataNode().path("subreddit").asText();
                 SpannableStringBuilder subreddit = new SpannableStringBuilder("/r/" + subname);
                 if ((SettingValues.colorSubName
                         && Palette.getColor(subname) != Palette.getDefaultColor())) {
@@ -258,7 +258,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         new SpannableStringBuilder(
                                 " "
                                         + CompatUtil.fromHtml(
-                                                comment.getDataNode().get("link_title").asText())
+                                                comment.getDataNode().path("link_title").asText())
                                         + " ");
                 link.setSpan(
                         new StyleSpan(Typeface.BOLD_ITALIC),
@@ -320,14 +320,14 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                             if (!dataSet.where.contains("mod")
                                     && comment.getDataNode().has("dest")
                                     && !Authentication.nameOrEmpty().equalsIgnoreCase(
-                                            comment.getDataNode().get("dest").asText())
+                                            comment.getDataNode().path("dest").asText())
                                     && !comment.getDataNode()
-                                            .get("dest")
+                                            .path("dest")
                                             .asText()
                                             .equals("reddit")) {
                                 author =
                                         comment.getDataNode()
-                                                .get("dest")
+                                                .path("dest")
                                                 .asText()
                                                 .replace("#", "/r/");
                             }
@@ -404,17 +404,24 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                                             {
                                                                 String context =
                                                                         comment.getDataNode()
-                                                                                .get("context")
+                                                                                .path("context")
                                                                                 .asText();
-                                                                OpenRedditLink.openUrl(
-                                                                        mContext,
-                                                                        "https://reddit.com"
-                                                                                + context.substring(
-                                                                                        0,
-                                                                                        context
-                                                                                                .lastIndexOf(
-                                                                                                        "/")),
-                                                                        true);
+                                                                // lastIndexOf is -1 for an absent
+                                                                // context, and substring(0, -1)
+                                                                // throws. There is no parent
+                                                                // permalink to open without one.
+                                                                final int lastSlash =
+                                                                        context.lastIndexOf("/");
+                                                                if (lastSlash > 0) {
+                                                                    OpenRedditLink.openUrl(
+                                                                            mContext,
+                                                                            "https://reddit.com"
+                                                                                    + context
+                                                                                            .substring(
+                                                                                                    0,
+                                                                                                    lastSlash),
+                                                                            true);
+                                                                }
                                                             }
                                                             break;
                                                     }
@@ -439,7 +446,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                 } else {
                                     OpenRedditLink.openUrl(
                                             mContext,
-                                            comment.getDataNode().get("context").asText(),
+                                            comment.getDataNode().path("context").asText(),
                                             true);
                                 }
                             } else {
@@ -459,7 +466,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             if (SettingValues.markdownNewReddit) {
                 setViewsMarkdown(
-                        comment.getDataNode().get("body").asText(),
+                        comment.getDataNode().path("body").asText(),
                         comment.getDataNode().path("body_html").asText(""),
                         comment.getDataNode(),
                         "FORCE_LINK_CLICK",

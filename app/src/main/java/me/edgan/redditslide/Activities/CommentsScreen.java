@@ -324,7 +324,7 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
             args.putBoolean("archived", currentPosts.get(i).isArchived());
             args.putBoolean(
                     "contest",
-                    currentPosts.get(i).getDataNode().get("contest_mode").asBoolean());
+                    currentPosts.get(i).getDataNode().path("contest_mode").asBoolean());
             args.putBoolean("locked", currentPosts.get(i).isLocked());
             args.putInt("page", i);
             args.putString("subreddit", currentPosts.get(i).getSubredditName());

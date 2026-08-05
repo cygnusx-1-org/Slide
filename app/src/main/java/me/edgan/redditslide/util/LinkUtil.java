@@ -229,8 +229,11 @@ public class LinkUtil {
      * @param url URL to open
      */
     public static void openExternally(String url) {
-        if (url == null) {
-            LogUtil.e("Attempted to open null URL externally");
+        if (url == null || url.trim().isEmpty()) {
+            // formatURL turns an empty string into the bare scheme "http://", which no browser
+            // registers for, so ACTION_VIEW throws ActivityNotFoundException rather than opening
+            // anything. Callers reading a url out of JSON can hand one over for an absent key.
+            LogUtil.e("Attempted to open a null or empty URL externally");
             return;
         }
 

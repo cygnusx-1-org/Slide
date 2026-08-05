@@ -651,7 +651,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             if (SettingValues.collapseStickyComment) {
                 if (comment.getDataNode().has("stickied")
-                        && comment.getDataNode().get("stickied").asBoolean()) {
+                        && comment.getDataNode().path("stickied").asBoolean()) {
                     holder.firstTextView.setVisibility(View.GONE);
                     holder.commentOverflow.setVisibility(View.GONE);
                 }

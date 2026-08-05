@@ -98,13 +98,20 @@ public class InboxMessages extends GeneralPosts {
                     for (Message m : paginator.next()) {
                         done.add(m);
                         if (m.getDataNode().has("replies")
-                                && !m.getDataNode().get("replies").toString().isEmpty()
-                                && m.getDataNode().get("replies").has("data")
-                                && m.getDataNode().get("replies").get("data").has("children")) {
-                            JsonNode n = m.getDataNode().get("replies").get("data").get("children");
+                                && !m.getDataNode().path("replies").toString().isEmpty()
+                                && m.getDataNode().path("replies").has("data")
+                                && m.getDataNode().path("replies").path("data").has("children")) {
+                            JsonNode n = m.getDataNode().path("replies").path("data").path("children");
 
                             for (JsonNode o : n) {
-                                done.add(new PrivateMessage(o.get("data")));
+                                // A child with no "data" object builds a Message whose data node
+                                // carries nothing, and the first JRAW accessor the inbox row
+                                // reaches — getCreated(), which is created_utc.longValue() with no
+                                // null test — throws while the row is being bound.
+                                final JsonNode messageData = o.get("data");
+                                if (messageData != null && messageData.isObject()) {
+                                    done.add(new PrivateMessage(messageData));
+                                }
                             }
                         }
                     }

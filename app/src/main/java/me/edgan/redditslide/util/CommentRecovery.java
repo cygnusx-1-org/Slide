@@ -146,10 +146,10 @@ public final class CommentRecovery {
      * throw out of the background task and crash the app.
      */
     public static Result parse(@Nullable JsonObject obj) {
-        if (obj == null || !obj.has("data") || !obj.get("data").isJsonArray()) {
+        if (obj == null) {
             return new Result(null, null);
         }
-        JsonArray data = obj.getAsJsonArray("data");
+        JsonArray data = GsonUtil.array(obj, "data");
         if (data.size() == 0 || !data.get(0).isJsonObject()) {
             return new Result(null, null);
         }
@@ -177,8 +177,7 @@ public final class CommentRecovery {
 
     /** Reads a non-blank string-valued field, or null (also rejects null/object/array values). */
     private static @Nullable String readString(JsonObject obj, String key) {
-        if (!obj.has(key) || !obj.get(key).isJsonPrimitive()) return null;
-        String value = obj.get(key).getAsString();
+        String value = GsonUtil.string(obj, key, "");
         return value.trim().isEmpty() ? null : value;
     }
 }

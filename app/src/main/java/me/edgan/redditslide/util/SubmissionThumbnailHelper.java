@@ -55,7 +55,7 @@ public class SubmissionThumbnailHelper {
                 // step of the preview JSON so a malformed/partial node can't NPE the tap.
                 final JsonNode source = previewSourceNode(submission.getDataNode());
                 if (source != null && source.has("height") && source.has("url")) {
-                    myIntent.putExtra(MediaView.EXTRA_DISPLAY_URL, source.get("url").asText());
+                    myIntent.putExtra(MediaView.EXTRA_DISPLAY_URL, source.path("url").asText());
                 }
             }
             myIntent.putExtra(MediaView.EXTRA_URL, url);
@@ -109,7 +109,7 @@ public class SubmissionThumbnailHelper {
         if (source == null || !source.has("url")) {
             return null;
         }
-        return source.get("url").asText();
+        return source.path("url").asText();
     }
 
     public static void openGif(
@@ -135,23 +135,23 @@ public class SubmissionThumbnailHelper {
                         StringEscapeUtils.unescapeJson(mp4PreviewUrl).replace("&amp;", "&"));
             } else if (t.shouldLoadPreview()
                     && submission.getDataNode().has("preview")
-                    && submission.getDataNode().get("preview").has("reddit_video_preview") // Check if reddit_video_preview exists
-                    && submission.getDataNode().get("preview").get("reddit_video_preview").has("fallback_url")
+                    && submission.getDataNode().path("preview").has("reddit_video_preview") // Check if reddit_video_preview exists
+                    && submission.getDataNode().path("preview").path("reddit_video_preview").has("fallback_url")
                     && (t != GifUtils.AsyncLoadGif.VideoType.REDGIFS
-                            || (submission.getDataNode().get("preview").get("reddit_video_preview").has("has_audio")
-                                    && submission.getDataNode().get("preview").get("reddit_video_preview").get("has_audio").asBoolean()))) {
+                            || (submission.getDataNode().path("preview").path("reddit_video_preview").has("has_audio")
+                                    && submission.getDataNode().path("preview").path("reddit_video_preview").path("has_audio").asBoolean()))) {
                 myIntent.putExtra(
                         MediaView.EXTRA_URL,
                         StringEscapeUtils.unescapeJson(
-                            submission.getDataNode().get("preview").get("reddit_video_preview").get("fallback_url").asText()).replace("&amp;", "&"));
+                            submission.getDataNode().path("preview").path("reddit_video_preview").path("fallback_url").asText()).replace("&amp;", "&"));
             } else if (t == GifUtils.AsyncLoadGif.VideoType.DIRECT
                     && submission.getDataNode().has("media")
-                    && submission.getDataNode().get("media").has("reddit_video")
-                    && submission.getDataNode().get("media").get("reddit_video").has("fallback_url")) {
+                    && submission.getDataNode().path("media").has("reddit_video")
+                    && submission.getDataNode().path("media").path("reddit_video").has("fallback_url")) {
                 myIntent.putExtra(
                         MediaView.EXTRA_URL,
                         StringEscapeUtils.unescapeJson(
-                            submission.getDataNode().get("media").get("reddit_video").get("fallback_url").asText()).replace("&amp;", "&"));
+                            submission.getDataNode().path("media").path("reddit_video").path("fallback_url").asText()).replace("&amp;", "&"));
             } else if (t != GifUtils.AsyncLoadGif.VideoType.OTHER) {
                 myIntent.putExtra(MediaView.EXTRA_URL, submission.getUrl());
             } else {
@@ -168,7 +168,7 @@ public class SubmissionThumbnailHelper {
             // direct link. Null-guard each step of the preview JSON so a malformed node can't NPE.
             final JsonNode gifSource = previewSourceNode(submission.getDataNode());
             if (gifSource != null && gifSource.has("height") && gifSource.has("url")) {
-                myIntent.putExtra(MediaView.EXTRA_DISPLAY_URL, gifSource.get("url").asText());
+                myIntent.putExtra(MediaView.EXTRA_DISPLAY_URL, gifSource.path("url").asText());
             }
             PopulateBase.addAdaptorPosition(myIntent, submission, adapterPosition, contextActivity);
             contextActivity.startActivity(myIntent);

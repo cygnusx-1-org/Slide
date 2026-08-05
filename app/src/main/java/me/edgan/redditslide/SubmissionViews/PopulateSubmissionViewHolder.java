@@ -475,9 +475,9 @@ public class PopulateSubmissionViewHolder {
                                             mContext,
                                             submission
                                                     .getDataNode()
-                                                    .get("crosspost_parent_list")
-                                                    .get(0)
-                                                    .get("permalink")
+                                                    .path("crosspost_parent_list")
+                                                    .path(0)
+                                                    .path("permalink")
                                                     .asText(),
                                             true);
                                 }
@@ -516,7 +516,7 @@ public class PopulateSubmissionViewHolder {
                 && submission.isSelfPost()
                 && !submission.getSelftext().isEmpty()
                 && !submission.isNsfw()
-                && !submission.getDataNode().get("spoiler").asBoolean()
+                && !submission.getDataNode().path("spoiler").asBoolean()
                 && !submission.getDataNode().path("selftext_html").asText("").trim().isEmpty()) {
             holder.body.setVisibility(View.VISIBLE);
             int typef = new FontPreferences(mContext).getFontTypeComment().getTypeface();
@@ -847,7 +847,7 @@ public class PopulateSubmissionViewHolder {
                                                 nsfw_drawable,
                                                 mContext.getString(R.string.mod_btn_mark_nsfw));
                                     }
-                                    if (submission.getDataNode().get("spoiler").asBoolean()) {
+                                    if (submission.getDataNode().path("spoiler").asBoolean()) {
                                         b.sheet(
                                                 5,
                                                 nsfw_drawable,
@@ -1417,7 +1417,7 @@ public class PopulateSubmissionViewHolder {
                                                                 case 5:
                                                                     if (submission
                                                                             .getDataNode()
-                                                                            .get("spoiler")
+                                                                            .path("spoiler")
                                                                             .asBoolean()) {
                                                                         SubmissionModActions.unSpoiler(
                                                                                 mContext,

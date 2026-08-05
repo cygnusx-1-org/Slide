@@ -200,7 +200,7 @@ public class MainPagerAdapterComment extends MainPagerAdapter {
             args.putString("id", submissionFullName.substring(3));
             args.putBoolean("archived", mainActivity.openingComments.isArchived());
             args.putBoolean(
-                    "contest", mainActivity.openingComments.getDataNode().get("contest_mode").asBoolean());
+                    "contest", mainActivity.openingComments.getDataNode().path("contest_mode").asBoolean());
             args.putBoolean("locked", mainActivity.openingComments.isLocked());
             args.putInt("page", mainActivity.currentComment);
             args.putString("subreddit", mainActivity.openingComments.getSubredditName());

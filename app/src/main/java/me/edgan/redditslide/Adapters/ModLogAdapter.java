@@ -181,8 +181,8 @@ public class ModLogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             b.append(a.getAction())
                     .append(" ")
                     .append(
-                            !a.getDataNode().get("target_title").isNull()
-                                    ? "\"" + a.getDataNode().get("target_title").asText() + "\""
+                            a.getDataNode().hasNonNull("target_title")
+                                    ? "\"" + a.getDataNode().path("target_title").asText() + "\""
                                     : "")
                     .append(a.getTargetAuthor() != null ? " by /u/" + a.getTargetAuthor() : "");
             if (a.getTargetPermalink() != null) {

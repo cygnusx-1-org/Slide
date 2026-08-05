@@ -40,12 +40,17 @@ public class AlbumFullComments extends BaseAlbumFull {
             return;
         }
         final Comment c = s.comment.getComment();
+        // link_id is "t3_" + the submission id; without it there is no submission to open.
+        final String linkId = c.getDataNode().path("link_id").asText();
+        if (linkId.length() <= 3) {
+            return;
+        }
         String url =
                 "https://reddit.com"
                         + "/r/"
                         + c.getSubredditName()
                         + "/comments/"
-                        + c.getDataNode().get("link_id").asText().substring(3)
+                        + linkId.substring(3)
                         + "/nothing/"
                         + c.getId()
                         + "?context=3";

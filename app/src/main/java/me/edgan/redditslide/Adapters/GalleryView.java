@@ -269,8 +269,8 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                                     CompatUtil.fromHtml(
                                                                     submission
                                                                             .getDataNode()
-                                                                            .get("media_embed")
-                                                                            .get("content")
+                                                                            .path("media_embed")
+                                                                            .path("content")
                                                                             .asText())
                                                             .toString();
                                             {

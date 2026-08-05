@@ -187,7 +187,7 @@ public class SettingsSubreddit extends BaseActivityAnim {
                                                                                     .has(
                                                                                             "key_color")
                                                                             && !s.getDataNode()
-                                                                                    .get(
+                                                                                    .path(
                                                                                             "key_color")
                                                                                     .asText()
                                                                                     .isEmpty()
@@ -206,7 +206,7 @@ public class SettingsSubreddit extends BaseActivityAnim {
                                                                                 GetClosestColor
                                                                                         .getClosestColor(
                                                                                                 s.getDataNode()
-                                                                                                        .get(
+                                                                                                        .path(
                                                                                                                 "key_color")
                                                                                                         .asText(),
                                                                                                 SettingsSubreddit

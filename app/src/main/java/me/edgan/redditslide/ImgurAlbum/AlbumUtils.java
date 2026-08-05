@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SecretConstants;
+import me.edgan.redditslide.util.GsonUtil;
 import me.edgan.redditslide.util.HttpUtil;
 import me.edgan.redditslide.util.LogUtil;
 import okhttp3.OkHttpClient;
@@ -148,21 +150,19 @@ public class AlbumUtils {
                             SecretConstants.getImgurApiKey(context));
             if (result == null
                     || !result.has("success")
-                    || !result.get("success").getAsBoolean()
+                    || !GsonUtil.bool(result, "success", false)
                     || !result.has("data")) {
                 return null;
             }
 
-            final JsonObject data = result.getAsJsonObject("data");
+            final JsonObject data = GsonUtil.obj(result, "data");
             final JsonObject firstImage;
-            if (data.has("is_album") && data.get("is_album").getAsBoolean()) {
-                if (!data.has("images")
-                        || !data.get("images").isJsonArray()
-                        || data.getAsJsonArray("images").size() == 0
-                        || !data.getAsJsonArray("images").get(0).isJsonObject()) {
+            if (GsonUtil.bool(data, "is_album", false)) {
+                final JsonArray images = GsonUtil.array(data, "images");
+                if (images.size() == 0 || !images.get(0).isJsonObject()) {
                     return null;
                 }
-                firstImage = data.getAsJsonArray("images").get(0).getAsJsonObject();
+                firstImage = images.get(0).getAsJsonObject();
             } else {
                 firstImage = data; // a bare imgur image, not an album
             }
@@ -170,14 +170,14 @@ public class AlbumUtils {
             if (!firstImage.has("link")) {
                 return null;
             }
-            final String link = firstImage.get("link").getAsString();
-            if (link == null || !link.contains(".")) {
+            final String link = GsonUtil.string(firstImage, "link", "");
+            if (!link.contains(".")) {
                 return null;
             }
             // Skip an animated first item — the viewer opens those as gif/mp4, not a still-image warm
             // (mirrors convertToSingle's detection: the "animated" flag or a gif/mp4 link).
             final boolean animated =
-                    (firstImage.has("animated") && firstImage.get("animated").getAsBoolean())
+                    GsonUtil.bool(firstImage, "animated", false)
                             || link.contains(".gif")
                             || link.endsWith(".mp4");
             if (animated) {
@@ -370,13 +370,14 @@ public class AlbumUtils {
                 if (el.isJsonObject()) {
                     JsonObject resultObj = el.getAsJsonObject();
 
-                    if (resultObj.has("success") && resultObj.get("success").getAsBoolean() && resultObj.has("data")) {
-                        JsonObject dataObj = resultObj.getAsJsonObject("data");
-                        boolean isAlbum = dataObj.has("is_album") && dataObj.get("is_album").getAsBoolean();
+                    if (GsonUtil.bool(resultObj, "success", false) && resultObj.has("data")) {
+                        JsonObject dataObj = GsonUtil.obj(resultObj, "data");
+                        boolean isAlbum = GsonUtil.bool(dataObj, "is_album", false);
 
                         if (isAlbum) {
-                            if (dataObj.has("images") && dataObj.get("images").isJsonArray()) {
-                                for (JsonElement imageElement : dataObj.getAsJsonArray("images")) {
+                            final JsonElement imagesElement = dataObj.get("images");
+                            if (imagesElement != null && imagesElement.isJsonArray()) {
+                                for (JsonElement imageElement : imagesElement.getAsJsonArray()) {
                                     try {
                                         SingleImage imageInData = new ObjectMapper().readValue(imageElement.toString(), SingleImage.class);
 
@@ -424,8 +425,8 @@ public class AlbumUtils {
                             }
                         }
                     } else {
-                        int status = resultObj.has("status") ? resultObj.get("status").getAsInt() : -1;
-                        LogUtil.w("Imgur API call failed or missing 'data' for hash " + currentHash + ". Success: " + (resultObj.has("success") ? resultObj.get("success").getAsBoolean() : "N/A") + ", Status: " + status + ". Response: " + resultObj.toString());
+                        String status = GsonUtil.string(resultObj, "status", "-1");
+                        LogUtil.w("Imgur API call failed or missing 'data' for hash " + currentHash + ". Success: " + (resultObj.has("success") ? GsonUtil.bool(resultObj, "success", false) : "N/A") + ", Status: " + status + ". Response: " + resultObj.toString());
                     }
                 } else {
                     LogUtil.w("Non-object JSON element received for Imgur API call for hash: " + currentHash + ". Element: " + el.toString());

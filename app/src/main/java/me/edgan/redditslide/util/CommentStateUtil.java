@@ -202,7 +202,7 @@ public class CommentStateUtil {
                     && !adapter.submission.isArchived()
                     && !adapter.submission.isLocked()
                     && !(comment.getDataNode().has("locked")
-                            && comment.getDataNode().get("locked").asBoolean())
+                            && comment.getDataNode().path("locked").asBoolean())
                     && !adapter.deleted.contains(n.getFullName())
                     && !comment.getAuthor().equals("[deleted]")
                     && Authentication.didOnline) {

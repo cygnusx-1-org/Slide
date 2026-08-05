@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -110,6 +111,7 @@ public class JsonUtilTest {
         // The &amp; in the source URL is unescaped.
         assertThat(
                 first.getImageUrl(), is("https://preview.redd.it/img1.png?width=100&s=abc"));
+        assertNotNull(first.metadata.p);
         assertThat(first.metadata.p.length, is(1));
 
         GalleryImage second = images.get(1);

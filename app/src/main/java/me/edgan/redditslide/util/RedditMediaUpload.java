@@ -147,16 +147,19 @@ public final class RedditMediaUpload {
             throw new IOException("Unexpected asset.json response: " + assetResponse.getRaw());
         }
 
-        JsonNode args = root.get("args");
-        String action = args.get("action").asText();
+        JsonNode args = root.path("args");
+        String action = args.path("action").asText();
+        if (action.isEmpty()) {
+            throw new IOException("Unexpected asset.json response: " + assetResponse.getRaw());
+        }
         String s3Url = action.startsWith("http") ? action : "https:" + action;
         String assetId = root.path("asset").path("asset_id").asText(null);
 
         MultipartBody.Builder multipartBuilder =
                 new MultipartBody.Builder().setType(MultipartBody.FORM);
-        for (JsonNode field : args.get("fields")) {
+        for (JsonNode field : args.path("fields")) {
             multipartBuilder.addFormDataPart(
-                    field.get("name").asText(), field.get("value").asText());
+                    field.path("name").asText(), field.path("value").asText());
         }
 
         // Step 2: read the image bytes and push them to S3.

@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -110,6 +111,7 @@ public class GalleryImageTest {
                 from(
                         "{\"p\":[{\"u\":\"https://p1.png\",\"x\":1,\"y\":2},"
                                 + "{\"u\":\"https://p2.png\",\"x\":3,\"y\":4}]}");
+        assertNotNull(gi.metadata.p);
         assertThat(gi.metadata.p.length, is(2));
         assertThat(gi.metadata.p[0].u, is("https://p1.png"));
         assertThat(gi.metadata.p[0].x, is(1));

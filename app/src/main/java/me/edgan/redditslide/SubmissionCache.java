@@ -144,7 +144,7 @@ public class SubmissionCache {
         json = json.get("crosspost_parent_list").get(0);
 
         if (json.has("subreddit")) {
-            String subname = json.get("subreddit").asText().toLowerCase(Locale.ENGLISH);
+            String subname = json.path("subreddit").asText().toLowerCase(Locale.ENGLISH);
             SpannableStringBuilder subreddit = new SpannableStringBuilder("/r/" + subname + spacer);
 
             if ((SettingValues.colorSubName
@@ -169,9 +169,9 @@ public class SubmissionCache {
         }
 
         SpannableStringBuilder author =
-                new SpannableStringBuilder(json.get("author").asText() + " ");
+                new SpannableStringBuilder(json.path("author").asText() + " ");
 
-        int authorcolor = Palette.getFontColorUser(json.get("author").asText());
+        int authorcolor = Palette.getFontColorUser(json.path("author").asText());
 
         if (authorcolor != 0) {
             author.setSpan(
@@ -182,10 +182,10 @@ public class SubmissionCache {
         }
         titleString.append(author);
 
-        if (UserTags.isUserTagged(json.get("author").asText())) {
+        if (UserTags.isUserTagged(json.path("author").asText())) {
             SpannableStringBuilder pinned =
                     new SpannableStringBuilder(
-                            " " + UserTags.getUserTag(json.get("author").asText()) + " ");
+                            " " + UserTags.getUserTag(json.path("author").asText()) + " ");
             pinned.setSpan(
                     new RoundedBackgroundSpan(
                             mContext, android.R.color.white, R.color.md_blue_500, false),
@@ -195,7 +195,7 @@ public class SubmissionCache {
             titleString.append(pinned);
         }
 
-        if (UserSubscriptions.friends.contains(json.get("author").asText())) {
+        if (UserSubscriptions.friends.contains(json.path("author").asText())) {
             SpannableStringBuilder pinned =
                     new SpannableStringBuilder(
                             " " + mContext.getString(R.string.profile_friend) + " ");
@@ -614,7 +614,7 @@ public class SubmissionCache {
             titleString.append(" ");
             titleString.append(pinned);
         }
-        if (submission.getDataNode().get("spoiler").asBoolean()) {
+        if (submission.getDataNode().path("spoiler").asBoolean()) {
             SpannableStringBuilder pinned = new SpannableStringBuilder("\u00A0SPOILER\u00A0");
             pinned.setSpan(
                     new RoundedBackgroundSpan(
@@ -625,7 +625,7 @@ public class SubmissionCache {
             titleString.append(" ");
             titleString.append(pinned);
         }
-        if (submission.getDataNode().get("is_original_content").asBoolean()) {
+        if (submission.getDataNode().path("is_original_content").asBoolean()) {
             SpannableStringBuilder pinned = new SpannableStringBuilder("\u00A0OC\u00A0");
             pinned.setSpan(
                     new RoundedBackgroundSpan(

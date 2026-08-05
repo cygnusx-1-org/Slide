@@ -1009,7 +1009,7 @@ public class MainActivity extends BaseActivity
                                                     .putString(
                                                             "page",
                                                             s.getDataNode()
-                                                                    .get("selftext_html")
+                                                                    .path("selftext_html")
                                                                     .asText())
                                                     .apply();
                                             Reddit.appRestart

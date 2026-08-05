@@ -276,7 +276,7 @@ public class ToolboxUI {
                     .replace(
                             "{url}",
                             "https://www.reddit.com"
-                                    + thing.getDataNode().get("permalink").asText())
+                                    + thing.getDataNode().path("permalink").asText())
                     .replace("{domain}", "")
                     .replace("{link}", "undefined");
         } else if (parameter instanceof Submission) {
@@ -289,7 +289,7 @@ public class ToolboxUI {
                     .replace(
                             "{url}",
                             "https://www.reddit.com"
-                                    + thing.getDataNode().get("permalink").asText())
+                                    + thing.getDataNode().path("permalink").asText())
                     .replace("{domain}", thing.getDomain())
                     .replace("{link}", thing.getUrl());
         } else {
@@ -663,10 +663,10 @@ public class ToolboxUI {
                                 logSub,
                                 logTitle,
                                 "https://www.reddit.com"
-                                        + thing.getDataNode().get("permalink").asText());
+                                        + thing.getDataNode().path("permalink").asText());
                 if (s != null) {
                     logResult =
-                            "https://www.reddit.com" + s.getDataNode().get("permalink").asText();
+                            "https://www.reddit.com" + s.getDataNode().path("permalink").asText();
                 } else {
                     success = false;
                 }

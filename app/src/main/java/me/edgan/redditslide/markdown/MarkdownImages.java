@@ -187,10 +187,10 @@ public final class MarkdownImages {
             return null;
         }
         if (s.hasNonNull("gif")) {
-            return s.get("gif").asText();
+            return s.path("gif").asText();
         }
         if (s.hasNonNull("u")) {
-            return s.get("u").asText();
+            return s.path("u").asText();
         }
         return null;
     }

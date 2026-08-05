@@ -433,10 +433,11 @@ dependencies {
     // literally: a dynamic version could enable a new check and break the build at any time.
     errorprone 'com.google.errorprone:error_prone_core:2.50.0'
     errorprone 'com.uber.nullaway:nullaway:0.13.8'
-    // Models the nullability of dependencies whose source we cannot change — Jackson and GSON.
-    // Deliberately not on the processor path yet: NULLAWAY.md phase 8. Its current JRAW entries
-    // are interim; JRAW and UIL are our own forks and get annotated at the source in phase 10.
-    // errorprone project(':nullaway-models')
+    // Models the nullability of dependencies whose source we cannot change — Jackson, GSON and
+    // Apache Commons. NULLAWAY.md phase 8. JRAW and UIL are our own forks, so they are annotated
+    // at the source in phase 10 rather than modelled here; the module's staged JRAW entries are
+    // not returned by nullableReturns() and so are inert.
+    errorprone project(':nullaway-models')
     // Annotations only (~4 KB) and needed at compile time only. Used solely for @NullMarked;
     // nullable annotations stay on androidx.annotation.Nullable, which NullAway recognizes by
     // simple name.
