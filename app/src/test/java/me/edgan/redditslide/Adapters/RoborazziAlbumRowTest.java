@@ -11,6 +11,7 @@ import android.os.Looper;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -95,7 +96,7 @@ public class RoborazziAlbumRowTest {
     }
 
     /** The list under capture, held so it can be torn down when the case fails as well as passes. */
-    private RecyclerView list;
+    @Nullable private RecyclerView list;
 
     @Before
     public void configureScreen() {
@@ -204,7 +205,8 @@ public class RoborazziAlbumRowTest {
                                 + " narrower widths"));
     }
 
-    private static GalleryImage animatedEntry(final String url, final String caption) {
+    private static GalleryImage animatedEntry(
+            final String url, final @Nullable String caption) {
         final ObjectNode node = JsonNodeFactory.instance.objectNode();
         final GalleryImage image = new GalleryImage(node);
         image.url = url;

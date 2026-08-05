@@ -2,6 +2,7 @@ package me.edgan.redditslide.test;
 
 import android.text.Spanned;
 import android.text.style.URLSpan;
+import androidx.annotation.Nullable;
 import io.noties.markwon.core.spans.LinkSpan;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -48,7 +49,7 @@ final class MarkdownNormalizer {
     }
 
     /** Map a span instance to a renderer-independent semantic type, or null to ignore it. */
-    static String mapType(Object span) {
+    static @Nullable String mapType(Object span) {
         // Name checks come first: Slide's spoiler span subclasses URLSpan, so it must not be
         // mis-classified as a LINK.
         String n = span.getClass().getSimpleName();
@@ -80,7 +81,7 @@ final class MarkdownNormalizer {
         }
     }
 
-    static String linkUrl(Object span) {
+    static @Nullable String linkUrl(Object span) {
         if (span instanceof URLSpan) {
             return ((URLSpan) span).getURL();
         }
@@ -91,7 +92,7 @@ final class MarkdownNormalizer {
     }
 
     /** Collapse reddit host variants so {@code /u/x} and {@code https://www.reddit.com/u/x} match. */
-    static String normUrl(String u) {
+    static @Nullable String normUrl(@Nullable String u) {
         if (u == null) {
             return null;
         }

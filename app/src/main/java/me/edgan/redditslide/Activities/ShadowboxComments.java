@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import java.util.ArrayList;
+import java.util.Objects;
 import me.edgan.redditslide.Adapters.CommentUrlObject;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.Fragments.AlbumFullComments;
@@ -20,15 +21,23 @@ import org.jspecify.annotations.NullMarked;
 /** Created by ccrama on 9/17/2015. */
 @NullMarked
 public class ShadowboxComments extends FullScreenActivity {
-    @SuppressWarnings("NullAway.Init")
-    public static ArrayList<CommentUrlObject> comments;
+    /**
+     * The album's comments, set by {@link me.edgan.redditslide.Fragments.CommentPage} before this
+     * activity starts. Static, so it comes back null after process death while a recreated
+     * fragment still carries its old page argument — every reader tests for that.
+     */
+    @Nullable public static ArrayList<CommentUrlObject> comments;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstance) {
         overrideSwipeFromAnywhere();
 
         if (comments == null || comments.isEmpty()) {
+            // finish() does not return, so without this the next line dereferenced the list that
+            // was just found missing. Same shape as Gallery.onCreate.
+            super.onCreate(savedInstance);
             finish();
+            return;
         }
         applyDarkColorTheme(comments.get(0).comment.getComment().getSubredditName());
         super.onCreate(savedInstance);
@@ -36,11 +45,8 @@ public class ShadowboxComments extends FullScreenActivity {
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
         ViewPager pager = (ViewPager) findViewById(R.id.content_view);
-        commentPager = new ShadowboxCommentsPagerAdapter(getSupportFragmentManager());
-        pager.setAdapter(commentPager);
+        pager.setAdapter(new ShadowboxCommentsPagerAdapter(getSupportFragmentManager()));
     }
-
-    ShadowboxCommentsPagerAdapter commentPager;
 
     private static class ShadowboxCommentsPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -54,9 +60,11 @@ public class ShadowboxComments extends FullScreenActivity {
 
             Fragment f = null;
             Bundle args = new Bundle();
-            Comment comment = comments.get(i).comment.getComment();
+            // getCount() reports 0 once the static list is gone, so the pager cannot get here.
+            CommentUrlObject item = Objects.requireNonNull(comments).get(i);
+            Comment comment = item.comment.getComment();
 
-            String url = comments.get(i).url;
+            String url = item.url;
 
             ContentType.Type t = ContentType.getContentType(url);
 
@@ -87,12 +95,12 @@ public class ShadowboxComments extends FullScreenActivity {
                     f.setArguments(args);
                     break;
             }
-            return java.util.Objects.requireNonNull(f);
+            return Objects.requireNonNull(f);
         }
 
         @Override
         public int getCount() {
-            return comments.size();
+            return comments == null ? 0 : comments.size();
         }
     }
 }

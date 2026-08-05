@@ -130,17 +130,22 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
                         "Download - submission title: "
                                 + (submissionTitle != null ? submissionTitle : "null"));
                 for (final GalleryImage elem : images) {
-                    if (elem.isAnimated()) {
-                        // Handle videos/GIFs using GifUtils
-                        GifUtils.cacheSaveGif(
-                                Uri.parse(elem.url),
-                                this,
-                                subreddit != null ? subreddit : "",
-                                submissionTitle != null ? submissionTitle : "",
-                                true);
-                    } else {
-                        // Handle static images using existing image download
-                        doImageSave(false, elem.url, index);
+                    // An entry whose media_metadata carried no url has nothing to download. Skip
+                    // it, but still advance the index so the saved files keep matching positions.
+                    final String elemUrl = elem.url;
+                    if (elemUrl != null) {
+                        if (elem.isAnimated()) {
+                            // Handle videos/GIFs using GifUtils
+                            GifUtils.cacheSaveGif(
+                                    Uri.parse(elemUrl),
+                                    this,
+                                    subreddit != null ? subreddit : "",
+                                    submissionTitle != null ? submissionTitle : "",
+                                    true);
+                        } else {
+                            // Handle static images using existing image download
+                            doImageSave(false, elemUrl, index);
+                        }
                     }
                     index++;
                 }
@@ -475,47 +480,58 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
             final GalleryImage current = ((RedditGalleryPager) getActivity()).images.get(i);
             final String url = current.url;
 
-            if (SettingValues.loadImageLq
-                    && (SettingValues.lowResAlways
-                            || (!NetworkUtil.isConnectedWifi(getActivity())
-                                    && SettingValues.lowResMobile))) {
-                String lqurl =
-                        url.substring(0, url.lastIndexOf("."))
-                                + (SettingValues.lqLow ? "m" : (SettingValues.lqMid ? "l" : "h"))
-                                + url.substring(url.lastIndexOf("."));
-                AlbumPager.loadImage(
-                        rootView,
-                        this,
-                        lqurl,
-                        ((RedditGalleryPager) getActivity()).images.size() == 1);
-            } else {
-                AlbumPager.loadImage(
-                        rootView,
-                        this,
-                        url,
-                        ((RedditGalleryPager) getActivity()).images.size() == 1);
+            // A removed or failed gallery entry carries no url, so there is nothing to load and
+            // nothing for the two handlers below to act on. Same treatment as RedditGallery: guard
+            // each branch that dereferences it and leave the rest of the page alone.
+            if (url != null) {
+                if (SettingValues.loadImageLq
+                        && (SettingValues.lowResAlways
+                                || (!NetworkUtil.isConnectedWifi(getActivity())
+                                        && SettingValues.lowResMobile))) {
+                    String lqurl =
+                            url.substring(0, url.lastIndexOf("."))
+                                    + (SettingValues.lqLow
+                                            ? "m"
+                                            : (SettingValues.lqMid ? "l" : "h"))
+                                    + url.substring(url.lastIndexOf("."));
+                    AlbumPager.loadImage(
+                            rootView,
+                            this,
+                            lqurl,
+                            ((RedditGalleryPager) getActivity()).images.size() == 1);
+                } else {
+                    AlbumPager.loadImage(
+                            rootView,
+                            this,
+                            url,
+                            ((RedditGalleryPager) getActivity()).images.size() == 1);
+                }
             }
 
+            // Both listeners fire long after onCreateView, by when the pager may have detached this
+            // page — getActivity() is null then, and NullAway does not check it (it honours
+            // Intent.getExtras() but not Fragment.getActivity()), so the guard has to be explicit.
             View more = rootView.findViewById(R.id.more);
-            if (more != null) {
+            if (more != null && url != null) {
                 more.setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                ((RedditGalleryPager) getActivity())
-                                        .showBottomSheetImage(url, false, i);
+                        v -> {
+                            final RedditGalleryPager host = (RedditGalleryPager) getActivity();
+                            if (host != null) {
+                                host.showBottomSheetImage(url, false, i);
                             }
                         });
             }
             View save = rootView.findViewById(R.id.save);
             if (save != null) {
-                save.setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v2) {
-                                ((RedditGalleryPager) getActivity()).doImageSave(false, url, i);
-                            }
-                        });
+                if (url != null) {
+                    save.setOnClickListener(
+                            v2 -> {
+                                final RedditGalleryPager host = (RedditGalleryPager) getActivity();
+                                if (host != null) {
+                                    host.doImageSave(false, url, i);
+                                }
+                            });
+                }
                 if (!SettingValues.imageDownloadButton) {
                     save.setVisibility(View.INVISIBLE);
                 }

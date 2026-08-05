@@ -10,6 +10,7 @@ import android.app.Application;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -313,7 +314,8 @@ public class VerticalMediaRowLoadTest {
      * As above; when {@code recorder} is given it captures the executor the row's load is handed to
      * and stops the task running, so the choice is visible without a real load going out.
      */
-    private VerticalMediaAdapter newAdapter(final int count, final Executor[] recorder) {
+    private VerticalMediaAdapter newAdapter(
+            final int count, final @Nullable Executor[] recorder) {
         return new VerticalMediaAdapter(activity, "pics", "A title") {
             @Override
             void execute(
@@ -371,7 +373,7 @@ public class VerticalMediaRowLoadTest {
             }
 
             @Override
-            protected String mediaUrlAt(final int index) {
+            protected @Nullable String mediaUrlAt(final int index) {
                 return null;
             }
 

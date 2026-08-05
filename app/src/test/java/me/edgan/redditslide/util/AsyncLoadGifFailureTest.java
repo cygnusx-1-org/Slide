@@ -14,11 +14,13 @@ import android.os.Looper;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Views.ExoVideoView;
+import org.jspecify.annotations.NullMarked;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +39,7 @@ import org.robolectric.annotation.Config;
  * <p>Also pins the release that makes {@code ExoVideoView.setVideoURI} rebuild its player — the
  * failure path takes the player away while the view is still attached.
  */
+@NullMarked
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 33, application = Application.class)
 public class AsyncLoadGifFailureTest {
@@ -297,18 +300,23 @@ public class AsyncLoadGifFailureTest {
     private class HandingOffLoad extends GifUtils.AsyncLoadGif {
 
         int errors;
-        Uri gfycatResult = Uri.parse(GifUtils.AsyncLoadGif.HANDOFF_SCHEME + "://gifdeliverynetwork");
+        @Nullable Uri gfycatResult =
+                Uri.parse(GifUtils.AsyncLoadGif.HANDOFF_SCHEME + "://gifdeliverynetwork");
 
         HandingOffLoad(final boolean closeIfNull) {
             this(closeIfNull, activity);
         }
 
-        HandingOffLoad(final boolean closeIfNull, final Activity host) {
+        // AsyncLoadGif declares its Activity @NonNull. anUnrecognisedUrlWithNoHostAtAllIsAPlainFailure
+        // deliberately violates that to pin what the class does when a caller hands it a dead host,
+        // so this one super call has to be exempt from the contract it is characterising.
+        @SuppressWarnings("NullAway")
+        HandingOffLoad(final boolean closeIfNull, final @Nullable Activity host) {
             super(host, video, bar, null, closeIfNull, false, null, "pics", "A title");
         }
 
         @Override
-        Uri resolveGfycat(final String name, final String url) {
+        @Nullable Uri resolveGfycat(final String name, final String url) {
             return gfycatResult;
         }
 
@@ -317,7 +325,7 @@ public class AsyncLoadGifFailureTest {
             errors++;
         }
 
-        Uri resolve(final String url) {
+        @Nullable Uri resolve(final String url) {
             return doInBackground(url);
         }
 
@@ -333,14 +341,17 @@ public class AsyncLoadGifFailureTest {
      */
     private class CapturingVideo extends ExoVideoView {
 
-        Player.Listener listener;
+        @Nullable Player.Listener listener;
 
         CapturingVideo() {
             super(activity);
         }
 
         @Override
-        public void setVideoURI(final Uri uri, final VideoType type, final Player.Listener l) {
+        public void setVideoURI(
+                final @Nullable Uri uri,
+                final VideoType type,
+                final @Nullable Player.Listener l) {
             listener = l;
         }
     }
@@ -353,7 +364,10 @@ public class AsyncLoadGifFailureTest {
         }
 
         @Override
-        public void setVideoURI(final Uri uri, final VideoType type, final Player.Listener l) {
+        public void setVideoURI(
+                final @Nullable Uri uri,
+                final VideoType type,
+                final @Nullable Player.Listener l) {
             throw new IllegalStateException("no media source for " + uri);
         }
     }

@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
@@ -73,7 +74,7 @@ public class RedditGalleryFullTest {
     @After
     public void tearDown() {
         // Leave the globals as they were for any same-config test sharing this Robolectric sandbox.
-        Reddit.colors = null;
+        TestUtils.clearRedditColors();
         TestUtils.clearRedditApplication();
     }
 
@@ -99,6 +100,7 @@ public class RedditGalleryFullTest {
         assertNotNull(list.getAdapter());
         assertTrue(list.getAdapter() instanceof RedditGalleryView);
         // One row per image and no leading spacer, since this host has no toolbar over the list.
+        assertNotNull(fragment.images);
         assertEquals(fragment.images.size(), list.getAdapter().getItemCount());
     }
 
@@ -120,6 +122,7 @@ public class RedditGalleryFullTest {
         final TestGallery fragment = host(gallerySubmissionWithNoMedia());
 
         assertNotNull(fragment.getAlbumUrl());
+        assertNotNull(fragment.images);
         assertTrue(fragment.images.isEmpty());
         assertFalse(fragment.hasAlbumToShow());
         assertNull(((RecyclerView) fragment.list).getAdapter());
@@ -139,7 +142,7 @@ public class RedditGalleryFullTest {
     }
 
     /** Runs the fragment through onCreate/onCreateView attached to the activity. */
-    private TestGallery host(final Submission submission) {
+    private TestGallery host(final @Nullable Submission submission) {
         final TestGallery fragment = new TestGallery();
         fragment.submission = submission;
         final Bundle args = new Bundle();
@@ -157,10 +160,10 @@ public class RedditGalleryFullTest {
      * constructor because FragmentTransaction.add insists on being able to recreate it.
      */
     public static class TestGallery extends RedditGalleryFull {
-        Submission submission;
+        @Nullable Submission submission;
 
         @Override
-        Submission resolveSubmission() {
+        @Nullable Submission resolveSubmission() {
             return submission;
         }
     }

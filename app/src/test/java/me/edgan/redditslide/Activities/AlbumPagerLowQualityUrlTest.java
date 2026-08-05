@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import android.app.Application;
 import me.edgan.redditslide.SettingValues;
+import org.jspecify.annotations.NullMarked;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +20,7 @@ import org.robolectric.annotation.Config;
  * one returns the whole string minus nothing and {@code substring(lastIndexOf("."))} throws, so the
  * old inline copies of this either built a prefix like "https://i" or crashed the page.
  */
+@NullMarked
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 33, application = Application.class)
 public class AlbumPagerLowQualityUrlTest {

@@ -199,31 +199,44 @@ configurations {
 // net.ltgt.errorprone has no Android Gradle Plugin support: it creates the errorprone
 // configuration but wires it to nothing, and leaves the options.errorprone extension disabled.
 // Every variant's <variant>AnnotationProcessor extends annotationProcessor, so this one line puts
-// Error Prone on the processor path for all four variants. Unit tests are wired separately when
-// NullAway is enabled for them (see NULLAWAY.md phase 7).
+// Error Prone on the processor path for all four variants.
 configurations.named('annotationProcessor') { extendsFrom configurations.errorprone }
+// Same for unit tests: every variant's <variant>UnitTestAnnotationProcessor extends
+// testAnnotationProcessor. See NULLAWAY.md phase 7.
+configurations.named('testAnnotationProcessor') { extendsFrom configurations.errorprone }
 
 // NullAway rollout, phase 0. Only code marked @NullMarked is analyzed, so this is a no-op until
 // the first package-info.java lands. See NULLAWAY.md.
 tasks.withType(JavaCompile).configureEach { task ->
-    // Error Prone is only on the annotationProcessor path, which the test components do not
-    // extend, so it must stay disabled for every test compile task or javac fails outright with
-    // "plug-in not found: ErrorProne". That covers unit tests, androidTest, and test fixtures —
-    // none of which are in scope until NULLAWAY.md phase 7 wires their processor paths.
-    boolean isTest = task.name.contains('Test')
+    // Error Prone is on the annotationProcessor and testAnnotationProcessor paths only. Any other
+    // test component (androidTest, test fixtures) extends neither, so it must stay disabled there
+    // or javac fails outright with "plug-in not found: ErrorProne".
+    boolean isUnitTest = task.name.contains('UnitTest')
+    boolean isOtherTest = !isUnitTest && task.name.contains('Test')
     options.errorprone {
-        enabled = !isTest
-        // NullAway only. Error Prone's ~500 other checks have never run against this codebase;
-        // adopting them is a separate decision with its own cleanup budget.
+        enabled = !isOtherTest
+        // NullAway only. Error Prone's other checks have never run against this codebase;
+        // adopting them is NULLAWAY.md phase 9, with its own cleanup budget. Disabling them
+        // explicitly also pins behaviour: a future Error Prone release cannot add a check that
+        // breaks the build.
         disableAllChecks = true
         check('NullAway', CheckSeverity.ERROR)
         // dataBinding and viewBinding are enabled, so generated *Binding classes, R, and
         // BuildConfig compile in the same javac invocation.
         excludedPaths = '.*/build/generated/.*'
         option('NullAway:OnlyNullMarked', 'true')
-        // Honor @Nullable found on unannotated third-party code. This is what catches
-        // getIntent().getExtras(), getActivity(), and findViewById() returning null.
+        // Checks array components. Its generics checking needs TYPE_USE annotations and this
+        // codebase uses androidx's declaration-only @Nullable, so that half is inert here.
+        // See NULLAWAY.md phase 7.
+        option('NullAway:JSpecifyMode', 'true')
+        // Honor @Nullable found on unannotated third-party code: getIntent().getExtras() and
+        // Intent.getAction() are caught this way. It reaches less than it looks — getActivity(),
+        // getContext() and findViewById() are @Nullable in the stubs and are NOT honored, by this
+        // option or by a library model. Measured in NULLAWAY.md phases 7 and 8.
         option('NullAway:AcknowledgeRestrictiveAnnotations', 'true')
+        // Read assertNotNull(x) / assertThat(x).isNotNull() as null checks. Only meaningful in
+        // the unit-test compiles, but harmless in the others.
+        option('NullAway:HandleTestAssertionLibraries', 'true')
     }
     // Error Prone forces a forked javac on JDK 16+; this box has no swap, so cap the child JVM.
     options.forkOptions.memoryMaximumSize = '2g'
@@ -420,10 +433,15 @@ dependencies {
     // literally: a dynamic version could enable a new check and break the build at any time.
     errorprone 'com.google.errorprone:error_prone_core:2.50.0'
     errorprone 'com.uber.nullaway:nullaway:0.13.8'
+    // Models the nullability of dependencies whose source we cannot change — Jackson and GSON.
+    // Deliberately not on the processor path yet: NULLAWAY.md phase 8. Its current JRAW entries
+    // are interim; JRAW and UIL are our own forks and get annotated at the source in phase 10.
+    // errorprone project(':nullaway-models')
     // Annotations only (~4 KB) and needed at compile time only. Used solely for @NullMarked;
     // nullable annotations stay on androidx.annotation.Nullable, which NullAway recognizes by
     // simple name.
     compileOnly 'org.jspecify:jspecify:1.0.1'
+    testCompileOnly 'org.jspecify:jspecify:1.0.1'
 
 /** Testing **/
     testImplementation 'junit:junit:4.13.2'
@@ -586,3 +604,4 @@ abstract class RenameApksTask extends DefaultTask {
         )
     }
 }
+

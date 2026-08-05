@@ -7,12 +7,14 @@ import static org.junit.Assert.assertTrue;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import me.edgan.redditslide.Authentication;
+import me.edgan.redditslide.util.PrefUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,8 +40,10 @@ public class AccountMigrationTest {
     private static final String KEY = "accounts";
 
     private SharedPreferences prefs;
+    @SuppressWarnings("NullAway.Init")
     private SharedPreferences originalAuthentication;
-    private String originalRefresh;
+
+    @Nullable private String originalRefresh;
 
     @Before
     public void setUp() {
@@ -87,9 +91,12 @@ public class AccountMigrationTest {
         // `prefs` reference. Same in-memory store, so this is not a disk round-trip: what it pins
         // is that the migrated contents are what a subsequent read returns.
         Set<String> reread =
-                ((Context) ApplicationProvider.getApplicationContext())
-                        .getSharedPreferences("AccountMigrationTest", Context.MODE_PRIVATE)
-                        .getStringSet(KEY, Collections.emptySet());
+                PrefUtil.getStringSet(
+                        ((Context) ApplicationProvider.getApplicationContext())
+                                .getSharedPreferences(
+                                        "AccountMigrationTest", Context.MODE_PRIVATE),
+                        KEY,
+                        Collections.emptySet());
         assertTrue("migrated entry must be readable from preferences", reread.contains("alice:tok123"));
         assertFalse("bare name must be gone from preferences", reread.contains("alice"));
     }

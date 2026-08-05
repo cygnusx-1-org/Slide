@@ -3,6 +3,7 @@ package me.edgan.redditslide.test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -224,6 +225,7 @@ public class PhotoLoaderTest {
         final JsonNode data = node(previewData(PREVIEW_IMAGE));
         final String thumb = PhotoLoader.getPreviewUrl(data, 300);
         final String card = PhotoLoader.getPreviewUrl(data, Integer.MAX_VALUE);
+        assertNotNull(thumb);
         assertThat(thumb, is("https://prev/r320.jpg"));
         assertThat(card, is("https://prev/source.jpg"));
         assertThat(thumb.equals(card), is(false));

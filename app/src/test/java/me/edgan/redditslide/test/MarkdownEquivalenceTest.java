@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
 import me.edgan.redditslide.markdown.RedditMarkwon;
@@ -64,7 +65,9 @@ public class MarkdownEquivalenceTest {
             // Render through a TextView so Markwon's afterSetText hooks (e.g. linkify) run, as in
             // the real app — toMarkdown() alone skips them.
             TextView tv = new TextView(ctx);
-            RedditMarkwon.get(ctx).setMarkdown(tv, RedditSpoilerPreprocessor.sentinelize(md));
+            RedditMarkwon.get(ctx)
+                    .setMarkdown(
+                            tv, Objects.requireNonNull(RedditSpoilerPreprocessor.sentinelize(md)));
             JSONObject slide = MarkdownNormalizer.normalize(id, md, (Spanned) tv.getText());
 
             boolean same =

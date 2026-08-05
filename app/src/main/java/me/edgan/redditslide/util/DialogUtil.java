@@ -9,6 +9,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.util.Log;
 import android.util.TypedValue;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -108,7 +109,7 @@ public class DialogUtil {
      * @param context Context whose theme defines card_background
      * @param dialog The AlertDialog to recolor
      */
-    public static void matchDialogToCardBackground(Context context, Dialog dialog) {
+    public static void matchDialogToCardBackground(Context context, @Nullable Dialog dialog) {
         if (dialog == null || dialog.getWindow() == null) {
             return;
         }
@@ -119,7 +120,7 @@ public class DialogUtil {
     }
 
     /** Overload that takes the context from the dialog itself. */
-    public static void matchDialogToCardBackground(Dialog dialog) {
+    public static void matchDialogToCardBackground(@Nullable Dialog dialog) {
         if (dialog != null) {
             matchDialogToCardBackground(dialog.getContext(), dialog);
         }

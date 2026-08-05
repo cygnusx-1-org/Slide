@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import android.app.Activity;
 import android.app.Application;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.List;
@@ -137,7 +138,7 @@ public class AlbumUtilsErrorReportTest {
         assertEquals(GOOD_LINK, callback.delivered.get(0).getImageUrl());
     }
 
-    private static SingleImage singleImage(final String link) {
+    private static SingleImage singleImage(final @Nullable String link) {
         final SingleImage image = new SingleImage();
         image.setLink(link);
         image.setTitle("A title");
@@ -148,7 +149,7 @@ public class AlbumUtilsErrorReportTest {
     private static class CountingCallback extends AlbumUtils.GetAlbumWithCallback {
 
         int errors;
-        List<Image> delivered;
+        @Nullable List<Image> delivered;
 
         CountingCallback(@NonNull final Activity activity) {
             super(ALBUM_URL, activity);
@@ -160,7 +161,7 @@ public class AlbumUtilsErrorReportTest {
         }
 
         @Override
-        public boolean doWithData(final List<Image> data) {
+        public boolean doWithData(final @Nullable List<Image> data) {
             // The shape every production override has: bail when super says nothing usable came
             // back, so an empty list is never indexed or bound.
             if (!super.doWithData(data)) {

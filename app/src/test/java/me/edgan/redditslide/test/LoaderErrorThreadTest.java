@@ -10,6 +10,7 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.os.Looper;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import me.edgan.redditslide.ImgurAlbum.AlbumUtils;
 import me.edgan.redditslide.Tumblr.TumblrUtils;
@@ -102,7 +103,7 @@ public class LoaderErrorThreadTest {
 
     private static class RecordingTumblrCallback extends TumblrUtils.GetTumblrPostWithCallback {
         int errors;
-        Thread reportedOn;
+        @Nullable Thread reportedOn;
 
         RecordingTumblrCallback(@NonNull final Activity host) {
             super("https://example.tumblr.com/post/1", host);
@@ -122,7 +123,7 @@ public class LoaderErrorThreadTest {
 
     private static class RecordingAlbumCallback extends AlbumUtils.GetAlbumWithCallback {
         int errors;
-        Thread reportedOn;
+        @Nullable Thread reportedOn;
 
         RecordingAlbumCallback(@NonNull final Activity host) {
             super("https://imgur.com/a/abc123", host);

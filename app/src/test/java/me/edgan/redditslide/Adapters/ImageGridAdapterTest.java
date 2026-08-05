@@ -43,6 +43,9 @@ public class ImageGridAdapterTest {
     public void tumblrReturnsAltSizesLargestFirst() throws Exception {
         final Photo photo = photoFixture();
         final List<PhotoSize> sizes = photo.getAltSizes();
+        assertNotNull(sizes);
+        final PhotoSize original = photo.getOriginalSize();
+        assertNotNull(original);
 
         // Captured from api.tumblr.com. If Tumblr ever reverses this, the grids below start asking
         // for the largest file per cell and this test is where that shows up.
@@ -51,7 +54,7 @@ public class ImageGridAdapterTest {
                 sizes.stream().map(PhotoSize::getWidth).collect(Collectors.toList()));
 
         // The first entry is not merely the biggest, it is the original: same url, byte for byte.
-        assertEquals(photo.getOriginalSize().getUrl(), sizes.get(0).getUrl());
+        assertEquals(original.getUrl(), sizes.get(0).getUrl());
     }
 
     @Test
@@ -64,10 +67,14 @@ public class ImageGridAdapterTest {
 
         assertEquals(1, adapter.getCount());
         final String chosen = adapter.getItem(0);
-        assertEquals(photo.getAltSizes().get(photo.getAltSizes().size() - 1).getUrl(), chosen);
+        final List<PhotoSize> sizes = photo.getAltSizes();
+        assertNotNull(sizes);
+        assertEquals(sizes.get(sizes.size() - 1).getUrl(), chosen);
         // 75px, the smallest of the eight — and emphatically not the 900px original.
         assertTrue(chosen.endsWith("_75sq.jpg"));
-        assertNotEquals(photo.getOriginalSize().getUrl(), chosen);
+        final PhotoSize original = photo.getOriginalSize();
+        assertNotNull(original);
+        assertNotEquals(original.getUrl(), chosen);
     }
 
     @Test

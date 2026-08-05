@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import me.edgan.redditslide.R;
+import org.jspecify.annotations.NullMarked;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +29,7 @@ import org.robolectric.annotation.Config;
  * <p>The page is deliberately unattached: the guard has to come before anything that needs a live
  * pager, since the crash it prevents happens while the page is still being created.
  */
+@NullMarked
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 33, application = Application.class)
 public class TumblrPagerVideoPageTest {

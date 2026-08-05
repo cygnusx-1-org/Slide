@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -19,6 +18,7 @@ import me.edgan.redditslide.SecretConstants;
 import me.edgan.redditslide.util.HttpUtil;
 import me.edgan.redditslide.util.LogUtil;
 import okhttp3.OkHttpClient;
+import org.jspecify.annotations.Nullable;
 
 /** Created by carlo_000 on 2/1/2016. */
 public class AlbumUtils {
@@ -330,7 +330,9 @@ public class AlbumUtils {
                 this.hash = hash;
             }
 
-            final JsonElement[] target;
+            // Entries stay null for a hash that was empty or whose fetch threw; the loop
+            // below skips them.
+            final @Nullable JsonElement[] target;
             final ArrayList<Image> jsons = new ArrayList<>();
 
             String[] hashes = hash.split(",");

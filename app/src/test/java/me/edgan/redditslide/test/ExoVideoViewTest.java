@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.media3.common.Player;
@@ -107,6 +108,7 @@ public class ExoVideoViewTest {
         final ExoVideoView view = attach(activity, new ExoVideoView(activity));
 
         final PlayerControlView controls = findControls(view);
+        assertNotNull(controls);
         final Player original = controls.getPlayer();
         assertNotNull(original);
 
@@ -214,7 +216,13 @@ public class ExoVideoViewTest {
 
     private static void assertFrameIsBelowControls(final ExoVideoView view) {
         assertTrue(view.getChildAt(0) instanceof AspectRatioFrameLayout);
-        assertTrue(view.indexOfChild(findFrame(view)) < view.indexOfChild(findControls(view)));
+        final View frame = findFrame(view);
+        final PlayerControlView controls = findControls(view);
+        // indexOfChild answers -1 for a null child, so without these the ordering assertion below
+        // would hold vacuously if either view were missing entirely.
+        assertNotNull(frame);
+        assertNotNull(controls);
+        assertTrue(view.indexOfChild(frame) < view.indexOfChild(controls));
     }
 
     private static ExoVideoView attach(final TestActivity activity, final ExoVideoView view) {
@@ -230,7 +238,7 @@ public class ExoVideoViewTest {
         parent.addView(view);
     }
 
-    private static PlayerControlView findControls(final ExoVideoView view) {
+    private static @Nullable PlayerControlView findControls(final ExoVideoView view) {
         for (int i = 0; i < view.getChildCount(); i++) {
             final View child = view.getChildAt(i);
             if (child instanceof PlayerControlView) {
@@ -240,7 +248,7 @@ public class ExoVideoViewTest {
         return null;
     }
 
-    private static View findFrame(final ExoVideoView view) {
+    private static @Nullable View findFrame(final ExoVideoView view) {
         for (int i = 0; i < view.getChildCount(); i++) {
             final View child = view.getChildAt(i);
             if (child instanceof AspectRatioFrameLayout) {

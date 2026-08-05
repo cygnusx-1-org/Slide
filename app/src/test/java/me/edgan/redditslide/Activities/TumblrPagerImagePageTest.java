@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Views.ImageSource;
+import org.jspecify.annotations.NullMarked;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +30,7 @@ import org.robolectric.annotation.Config;
  * <p>The fragment here is deliberately unattached: the guard has to come before anything that needs an
  * activity, since the crash it prevents happens while the page is still being created.
  */
+@NullMarked
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 33, application = Application.class)
 public class TumblrPagerImagePageTest {

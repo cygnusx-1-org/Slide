@@ -56,6 +56,9 @@ public class SubmissionParserTest {
         assertThat(joined(blocks), not(containsString("dropped")));
     }
 
+    // Deliberately violates getBlocks' declared @NonNull contract, which is the whole point of
+    // the characterization — so NullAway has to be told to allow this one call.
+    @SuppressWarnings("NullAway")
     @Test(expected = NullPointerException.class)
     public void nullInputThrowsNpe() {
         // unescapeHtml4(null) returns null, so the first .replace(...) dereferences null.

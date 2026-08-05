@@ -74,7 +74,7 @@ public class AlbumFullCommentsTest {
     public void tearDown() {
         // Leave the globals as they were for any same-config test sharing this Robolectric sandbox.
         ShadowboxComments.comments = null;
-        Reddit.colors = null;
+        TestUtils.clearRedditColors();
         TestUtils.clearRedditApplication();
     }
 

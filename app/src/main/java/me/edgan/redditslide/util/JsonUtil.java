@@ -14,7 +14,7 @@ public class JsonUtil {
     private static final String TAG = "JsonUtil";
 
     /** Whether this post links to another Reddit post (domain reddit.com or *.reddit.com). */
-    public static boolean linksToReddit(JsonNode dataNode) {
+    public static boolean linksToReddit(@Nullable JsonNode dataNode) {
         if (dataNode == null || !dataNode.has("domain") || dataNode.get("domain").isNull()) {
             return false;
         }
@@ -37,7 +37,8 @@ public class JsonUtil {
         return url;
     }
 
-    public static void getGalleryData(final JsonNode data, final ArrayList<GalleryImage> urls) {
+    public static void getGalleryData(
+            final @Nullable JsonNode data, final ArrayList<GalleryImage> urls) {
         if (data == null || !data.has("gallery_data") || data.get("gallery_data") == null ||
             !data.get("gallery_data").has("items") || data.get("gallery_data").get("items") == null) {
             Log.w(TAG, "Missing or null gallery_data or items in gallery data");

@@ -2,6 +2,7 @@ package me.edgan.redditslide.test;
 
 import static org.junit.Assert.assertEquals;
 
+import androidx.annotation.Nullable;
 import me.edgan.redditslide.markdown.BlockquoteNormalizer;
 import org.junit.Test;
 
@@ -12,7 +13,7 @@ import org.junit.Test;
  */
 public class BlockquoteNormalizerTest {
 
-    private static String merge(String in) {
+    private static @Nullable String merge(@Nullable String in) {
         return BlockquoteNormalizer.mergeAdjacentBlockquotes(in);
     }
 

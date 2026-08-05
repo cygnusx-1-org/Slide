@@ -2,7 +2,6 @@ package me.edgan.redditslide.Toolbox;
 
 import android.util.Base64;
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.media3.common.util.ColorParser;
 import androidx.media3.common.util.UnstableApi;
@@ -27,6 +26,7 @@ import java.util.TreeMap;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 import org.apache.commons.lang3.StringUtils;
+import org.jspecify.annotations.Nullable;
 
 /** A group of usernotes for a subreddit */
 @OptIn(markerClass = UnstableApi.class)
@@ -93,9 +93,13 @@ public class Usernotes {
                 break;
             }
         }
-        for (int i = 0; i < constants.getTypes().length; i++) {
-            if ((constants.getTypes()[i] == null && type == null)
-                    || (constants.getTypes()[i] != null && constants.getTypes()[i].equals(type))) {
+        // Read the array once: an untyped note is a null entry, and repeating getTypes() would
+        // leave the guard and the dereference reading two different expressions.
+        final @Nullable String[] existingTypes = constants.getTypes();
+        for (int i = 0; i < existingTypes.length; i++) {
+            final String existing = existingTypes[i];
+            if ((existing == null && type == null)
+                    || (existing != null && existing.equals(type))) {
                 typeExists = true;
                 typeIndex = i;
                 break;
@@ -419,9 +423,10 @@ public class Usernotes {
         @SuppressWarnings("NullAway.Init")
         private String[] mods; // String array of mods. Usernote mod is index in this
 
+        // An untyped note is stored as a null entry here, which createNote matches on.
         @SerializedName("warnings")
         @SuppressWarnings("NullAway.Init")
-        private String[] types; // String array of used type names corresponding to types in the
+        private @Nullable String[] types; // String array of used type names corresponding to types in the
 
         // config/defaults. Usernote warning is index in this
 
@@ -429,7 +434,7 @@ public class Usernotes {
             // for GSON
         }
 
-        public UsernotesConstants(String[] mods, String[] types) {
+        public UsernotesConstants(String[] mods, @Nullable String[] types) {
             this.mods = mods;
             this.types = types;
         }
@@ -463,7 +468,7 @@ public class Usernotes {
             return newMods.length - 1;
         }
 
-        public String[] getTypes() {
+        public @Nullable String[] getTypes() {
             return types;
         }
 
@@ -476,7 +481,7 @@ public class Usernotes {
          * @return Index of added type
          */
         public int addType(@Nullable String type) {
-            String[] newTypes = new String[types.length + 1];
+            @Nullable String[] newTypes = new @Nullable String[types.length + 1];
             System.arraycopy(types, 0, newTypes, 0, types.length);
             newTypes[newTypes.length - 1] = type;
             types = newTypes;

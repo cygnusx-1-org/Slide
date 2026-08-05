@@ -9,6 +9,7 @@ import android.content.Context;
 import android.text.Spanned;
 import androidx.test.core.app.ApplicationProvider;
 import io.noties.markwon.core.spans.BlockQuoteSpan;
+import java.util.Objects;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.markdown.RedditMarkwon;
@@ -34,7 +35,9 @@ public class MarkdownImagesBlockquoteTest {
         Context c = ApplicationProvider.getApplicationContext();
         SpoilerRobotoTextView tv = new SpoilerRobotoTextView(c);
         RedditMarkwon.setMarkdown(
-                tv, "test", MarkdownImages.unescapeTransportEntities(escapedBody));
+                tv,
+                "test",
+                Objects.requireNonNull(MarkdownImages.unescapeTransportEntities(escapedBody)));
         return (Spanned) tv.getText();
     }
 

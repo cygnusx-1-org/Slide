@@ -1,6 +1,7 @@
 package me.edgan.redditslide.Activities;
 
 import android.util.Log;
+import androidx.annotation.Nullable;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -11,18 +12,15 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class GalleryImage implements Serializable {
     private static final String TAG = "GalleryImage";
-    @SuppressWarnings("NullAway.Init")
-    public String url;
+    @Nullable public String url;
     public int width;
     public int height;
 
-    @SuppressWarnings("NullAway.Init")
-    public String mediaId;
-    @SuppressWarnings("NullAway.Init")
-    public String caption;
+    @Nullable public String mediaId;
+    @Nullable public String caption;
     public MediaMetadata metadata;
 
-    public GalleryImage(JsonNode data) {
+    public GalleryImage(@Nullable JsonNode data) {
         // Add metadata population
         this.metadata = new MediaMetadata();
 
@@ -143,7 +141,12 @@ public class GalleryImage implements Serializable {
         return result;
     }
 
-    public String getImageUrl() {
+    /**
+     * The url to load for this entry, or null when it has none — a removed or failed gallery entry
+     * whose "s" node carried no {@code u}, {@code gif} or {@code mp4} leaves every branch here
+     * returning the (also null) {@link #url}.
+     */
+    @Nullable public String getImageUrl() {
         String resultUrl;
 
         // ANIMATED CONTENT HANDLING

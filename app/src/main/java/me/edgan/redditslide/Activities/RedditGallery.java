@@ -123,17 +123,22 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
             if (images != null) {
                 int index = 0;
                 for (final GalleryImage elem : images) {
-                    if (elem.isAnimated()) {
-                        // Handle videos/GIFs using GifUtils
-                        GifUtils.cacheSaveGif(
-                                Uri.parse(elem.url),
-                                this,
-                                subreddit != null ? subreddit : "",
-                                submissionTitle != null ? submissionTitle : "",
-                                true);
-                    } else {
-                        // Handle static images using existing image download
-                        doImageSave(false, elem.url, index);
+                    // An entry whose media_metadata carried no url has nothing to download. Skip
+                    // it, but still advance the index so the saved files keep matching positions.
+                    final String elemUrl = elem.url;
+                    if (elemUrl != null) {
+                        if (elem.isAnimated()) {
+                            // Handle videos/GIFs using GifUtils
+                            GifUtils.cacheSaveGif(
+                                    Uri.parse(elemUrl),
+                                    this,
+                                    subreddit != null ? subreddit : "",
+                                    submissionTitle != null ? submissionTitle : "",
+                                    true);
+                        } else {
+                            // Handle static images using existing image download
+                            doImageSave(false, elemUrl, index);
+                        }
                     }
                     index++;
                 }
@@ -273,7 +278,7 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
         View rootView;
         @SuppressWarnings("NullAway.Init")
         public RecyclerView recyclerView;
-        private void setLastContentUrl(final String url) {
+        private void setLastContentUrl(final @Nullable String url) {
             lastContentUrl = url; // Store for potential retry after permission grant
         }
 
@@ -427,7 +432,7 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
     static void loadVideo(
             final View rootView,
             final Activity host,
-            final String url,
+            final @Nullable String url,
             final @Nullable String subreddit,
             final @Nullable String submissionTitle) {
         final ProgressBar loader = rootView.findViewById(R.id.gifprogress);

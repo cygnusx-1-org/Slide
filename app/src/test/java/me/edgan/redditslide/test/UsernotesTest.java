@@ -52,6 +52,7 @@ public class UsernotesTest {
     public void blobRoundTrips() {
         String json = "{\"someuser\":{\"ns\":[{\"n\":\"note\",\"l\":\"\",\"t\":1,\"m\":0,\"w\":0}]}}";
         String blob = Usernotes.BlobSerializer.jsonToBlob(json);
+        assertNotNull(blob);
         assertEquals(json, Usernotes.BlobDeserializer.blobToJson(blob));
     }
 
@@ -83,8 +84,9 @@ public class UsernotesTest {
 
         assertEquals(6, un.getSchema());
         // Stored lowercased; lookup is case-insensitive (TreeMap CASE_INSENSITIVE_ORDER).
-        assertNotNull(un.getNotesForUser("someuser"));
-        assertEquals("first note", un.getNotesForUser("SOMEUSER").get(0).getNoteText());
+        List<Usernote> stored = un.getNotesForUser("SOMEUSER");
+        assertNotNull(stored);
+        assertEquals("first note", stored.get(0).getNoteText());
     }
 
     // ---------------------------------------------------------------------
@@ -97,6 +99,7 @@ public class UsernotesTest {
         un.createNote("user1", "hello", "", 5000L, "mod1", null);
 
         List<Usernote> notes = un.getNotesForUser("user1");
+        assertNotNull(notes);
         assertEquals(1, notes.size());
         assertEquals("hello", notes.get(0).getNoteText());
         assertEquals(0, notes.get(0).getMod());
@@ -112,6 +115,7 @@ public class UsernotesTest {
         un.createNote("user1", "new", "", 2000L, "mod1", null);
 
         List<Usernote> notes = un.getNotesForUser("user1");
+        assertNotNull(notes);
         assertEquals(2, notes.size());
         assertEquals("new", notes.get(0).getNoteText());
         assertEquals("old", notes.get(1).getNoteText());
@@ -124,7 +128,9 @@ public class UsernotesTest {
 
         assertEquals(2, un.getConstants().getMods().length);
         assertEquals("mod2", un.getConstants().getModName(1));
-        assertEquals(1, un.getNotesForUser("user1").get(0).getMod());
+        List<Usernote> notes = un.getNotesForUser("user1");
+        assertNotNull(notes);
+        assertEquals(1, notes.get(0).getMod());
     }
 
     @Test
@@ -134,7 +140,9 @@ public class UsernotesTest {
 
         assertEquals(2, un.getConstants().getTypes().length);
         assertEquals("gooduser", un.getConstants().getTypeName(1));
-        assertEquals(1, un.getNotesForUser("user1").get(0).getWarning());
+        List<Usernote> notes = un.getNotesForUser("user1");
+        assertNotNull(notes);
+        assertEquals(1, notes.get(0).getWarning());
     }
 
     // ---------------------------------------------------------------------
@@ -145,7 +153,9 @@ public class UsernotesTest {
     public void removeNote_removesUserWhenLastNoteGone() {
         Usernotes un = usernotes(new String[] {"mod1"}, new String[] {null});
         un.createNote("user1", "only", "", 1000L, "mod1", null);
-        Usernote note = un.getNotesForUser("user1").get(0);
+        List<Usernote> notes = un.getNotesForUser("user1");
+        assertNotNull(notes);
+        Usernote note = notes.get(0);
 
         un.removeNote("user1", note);
         assertNull(un.getNotesForUser("user1"));

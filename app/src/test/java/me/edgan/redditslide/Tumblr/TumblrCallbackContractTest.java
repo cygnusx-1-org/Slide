@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.core.app.ApplicationProvider;
 import com.google.gson.JsonElement;
@@ -17,6 +18,7 @@ import com.google.gson.JsonParser;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import me.edgan.redditslide.Constants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -70,11 +72,12 @@ public class TumblrCallbackContractTest {
         }
 
         @Override
-        public boolean doWithData(final List<Photo> data) {
+        public boolean doWithData(final @Nullable List<Photo> data) {
+            // super returns false for a null or empty list, so reaching here means data is there.
             if (!super.doWithData(data)) {
                 return false;
             }
-            delivered = data.size();
+            delivered = Objects.requireNonNull(data).size();
             return true;
         }
     }

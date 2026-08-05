@@ -28,7 +28,7 @@ public class ContentType {
      * @param bases Any number of hostnames to compare against {@code host}
      * @return If {@code host} contains any of {@code bases}
      */
-    public static boolean hostContains(@Nullable String host, String... bases) {
+    public static boolean hostContains(@Nullable String host, @Nullable String... bases) {
         if (host == null || host.isEmpty()) return false;
 
         for (String base : bases) {

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.app.Application;
 import android.content.Context;
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,6 +14,7 @@ import me.edgan.redditslide.ForceTouch.PeekViewActivity;
 import me.edgan.redditslide.ImgurAlbum.Image;
 import me.edgan.redditslide.Tumblr.Photo;
 import me.edgan.redditslide.Tumblr.PhotoSize;
+import org.jspecify.annotations.NullMarked;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +36,7 @@ import org.robolectric.annotation.Config;
  * none and walking to the url without it is an NPE. Both halves are covered here because both were
  * hardened, and covering one of two identical screens is how the other stops being maintained.
  */
+@NullMarked
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 33, application = Application.class)
 public class PeekMediaViewAlbumTest {
@@ -144,7 +147,7 @@ public class PeekMediaViewAlbumTest {
 
     /** Records what the peek was asked to show instead of loading it. */
     private static class RecordingPeekMediaView extends PeekMediaView {
-        String displayed;
+        @Nullable String displayed;
 
         RecordingPeekMediaView(final Context context) {
             super(context);

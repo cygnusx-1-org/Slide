@@ -1055,7 +1055,7 @@ public class AlbumPager extends BaseSaveActivity {
      * original. Returns {@code url} unchanged when there is no extension to insert the suffix before,
      * since truncating at a missing dot would silently yield a prefix like "https://i".
      */
-    static @Nullable String lowQualityUrl(final String url) {
+    static @Nullable String lowQualityUrl(final @Nullable String url) {
         if (url == null) {
             return null;
         }

@@ -8,6 +8,7 @@ import android.app.Application;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
+import android.view.Window;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import me.edgan.redditslide.R;
@@ -64,7 +65,9 @@ public class DialogUtilTest {
     }
 
     private static int windowColor(AlertDialog dialog) {
-        Drawable bg = dialog.getWindow().getDecorView().getBackground();
+        Window window = dialog.getWindow();
+        assertNotNull("dialog should have a window once shown", window);
+        Drawable bg = window.getDecorView().getBackground();
         assertNotNull("window background should be set", bg);
         assertTrue("window background should be a ColorDrawable", bg instanceof ColorDrawable);
         return ((ColorDrawable) bg).getColor();

@@ -2,3 +2,6 @@ plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
 }
 include ':app'
+// Not shipped: an Error Prone/NullAway processor-path module that declares JRAW's nullable
+// getters. See NULLAWAY.md phase 7.
+include ':nullaway-models'

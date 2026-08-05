@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 import java.time.Duration;
 import me.edgan.redditslide.ClickableText;
@@ -66,22 +67,23 @@ public class TextViewLinkHandlerNullLayoutTest {
 
     @After
     public void tearDown() {
-        Reddit.colors = null;
+        TestUtils.clearRedditColors();
         TestUtils.clearRedditApplication();
     }
 
     /** Records what the handler routes, without SpoilerRobotoTextView's real side effects. */
     private static final class RecordingClickableText implements ClickableText {
-        String clickedUrl;
-        String longClickedUrl;
+        @Nullable String clickedUrl;
+        @Nullable String longClickedUrl;
 
         @Override
-        public void onLinkClick(String url, int xOffset, String subreddit, URLSpan span) {
+        public void onLinkClick(
+                @Nullable String url, int xOffset, String subreddit, URLSpan span) {
             clickedUrl = url;
         }
 
         @Override
-        public void onLinkLongClick(String url, MotionEvent event) {
+        public void onLinkLongClick(@Nullable String url, @Nullable MotionEvent event) {
             longClickedUrl = url;
         }
     }

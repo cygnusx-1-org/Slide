@@ -2,9 +2,11 @@ package me.edgan.redditslide.test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import android.net.Uri;
+import androidx.annotation.Nullable;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.OpenRedditLink.RedditLinkType;
 import org.junit.Test;
@@ -15,7 +17,7 @@ import org.robolectric.RobolectricTestRunner;
 public class OpenRedditLinkTest {
 
     // Less characters
-    private String formatURL(String url) {
+    private @Nullable String formatURL(String url) {
         Uri uri = OpenRedditLink.formatRedditUrl(url);
 
         if (uri == null) {
@@ -27,6 +29,7 @@ public class OpenRedditLinkTest {
 
     private OpenRedditLink.RedditLinkType getType(String url) {
         Uri uri = OpenRedditLink.formatRedditUrl(url);
+        assertNotNull("every url this helper is given is a reddit url", uri);
 
         return OpenRedditLink.getRedditLinkType(uri);
     }

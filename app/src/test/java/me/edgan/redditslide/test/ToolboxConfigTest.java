@@ -1,11 +1,13 @@
 package me.edgan.redditslide.test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 import com.google.gson.Gson;
+import java.util.List;
+import java.util.Map;
 import me.edgan.redditslide.Toolbox.RemovalReasons;
 import me.edgan.redditslide.Toolbox.ToolboxConfig;
 import org.junit.Test;
@@ -36,34 +38,47 @@ public class ToolboxConfigTest {
     @Test
     public void parsesDomainTags() throws Exception {
         ToolboxConfig c = config("toolbox/toolbox_config.json");
-        assertThat(c.getDomainTags().size(), is(1));
-        assertThat(c.getDomainTags().get(0).get("name"), is("imgur.com"));
+        List<Map<String, String>> tags = c.getDomainTags();
+        assertNotNull(tags);
+        assertThat(tags.size(), is(1));
+        assertThat(tags.get(0).get("name"), is("imgur.com"));
     }
 
     @Test
     public void parsesUsernoteColorsIntoMapKeyedByKey() throws Exception {
         ToolboxConfig c = config("toolbox/toolbox_config.json");
-        assertThat(c.getUsernoteTypes().size(), is(2));
-        assertThat(c.getUsernoteTypes().get("spamwarn").get("color"), is("#ff0000"));
-        assertThat(c.getUsernoteTypes().get("spamwarn").get("text"), is("Spam Warning"));
-        assertThat(c.getUsernoteTypes().get("gooduser").get("color"), is("#008000"));
+        Map<String, Map<String, String>> types = c.getUsernoteTypes();
+        assertNotNull(types);
+        assertThat(types.size(), is(2));
+        Map<String, String> spamwarn = types.get("spamwarn");
+        assertNotNull(spamwarn);
+        assertThat(spamwarn.get("color"), is("#ff0000"));
+        assertThat(spamwarn.get("text"), is("Spam Warning"));
+        Map<String, String> gooduser = types.get("gooduser");
+        assertNotNull(gooduser);
+        assertThat(gooduser.get("color"), is("#008000"));
     }
 
     @Test
     public void parsesRemovalReasonsObject() throws Exception {
         RemovalReasons r = config("toolbox/toolbox_config.json").getRemovalReasons();
-        assertThat(r, is(notNullValue()));
+        assertNotNull(r);
         assertThat(r.getPmSubject(), is("Your post was removed"));
         assertThat(r.getLogSub(), is("modlog"));
         assertThat(r.getLogTitle(), is("Removed {title}"));
         assertThat(r.getLogReason(), is("rule violation"));
-        assertThat(r.getReasons().size(), is(2));
+        List<RemovalReasons.RemovalReason> reasons = r.getReasons();
+        assertNotNull(reasons);
+        assertThat(reasons.size(), is(2));
     }
 
     @Test
     public void parsesIndividualRemovalReasonFields() throws Exception {
-        RemovalReasons.RemovalReason reason =
-                config("toolbox/toolbox_config.json").getRemovalReasons().getReasons().get(0);
+        RemovalReasons removalReasons = config("toolbox/toolbox_config.json").getRemovalReasons();
+        assertNotNull(removalReasons);
+        List<RemovalReasons.RemovalReason> reasons = removalReasons.getReasons();
+        assertNotNull(reasons);
+        RemovalReasons.RemovalReason reason = reasons.get(0);
         assertThat(reason.getTitle(), is("Rule 1"));
         assertThat(reason.getFlairText(), is("spam"));
         assertThat(reason.getFlairCSS(), is("spam-css"));

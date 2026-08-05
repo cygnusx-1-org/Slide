@@ -11,6 +11,7 @@ import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -156,7 +157,7 @@ public class RedditGalleryView extends VerticalMediaAdapter {
      * leaves every branch of getImageUrl() returning null.
      */
     @Override
-    protected String mediaUrlAt(final int index) {
+    protected @Nullable String mediaUrlAt(final int index) {
         return images.get(index).getImageUrl();
     }
 

@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import me.edgan.redditslide.R;
+import org.jspecify.annotations.NullMarked;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +28,7 @@ import org.robolectric.annotation.Config;
  * its background pass does is {@code formatUrl(sub[0])}, whose first statement dereferences the url,
  * on a worker thread where nothing catches the NPE.
  */
+@NullMarked
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 33, application = Application.class)
 public class RedditGalleryVideoPageTest {

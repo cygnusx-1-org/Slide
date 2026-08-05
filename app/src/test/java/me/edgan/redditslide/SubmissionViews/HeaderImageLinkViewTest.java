@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Application;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -111,8 +112,9 @@ public class HeaderImageLinkViewTest {
         final Intent startedIntent =
                 org.robolectric.Shadows.shadowOf(activity).getNextStartedActivity();
         assertNotNull(startedIntent);
-        assertThat(
-                startedIntent.getComponent().getClassName(), is(MediaView.class.getName()));
+        final ComponentName component = startedIntent.getComponent();
+        assertNotNull(component);
+        assertThat(component.getClassName(), is(MediaView.class.getName()));
         assertThat(startedIntent.getStringExtra(MediaView.EXTRA_URL), is(submission.getUrl()));
     }
 

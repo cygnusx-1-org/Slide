@@ -15,6 +15,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import org.jspecify.annotations.NullMarked;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +32,7 @@ import org.robolectric.annotation.Config;
  * dereference there did not fail the load: it escaped {@code doInBackground} and {@code AsyncTask}
  * rethrew it as a RuntimeException on the executor thread, which nothing catches.
  */
+@NullMarked
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 33, application = Application.class)
 public class GfycatApiResponseTest {

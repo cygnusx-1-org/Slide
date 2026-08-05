@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import android.content.Context;
 import android.text.Spanned;
 import androidx.test.core.app.ApplicationProvider;
+import java.util.Objects;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.markdown.RedditMarkwon;
@@ -34,7 +35,10 @@ public class SpoilerRealDataTest {
     private static Spanned render(String escapedBody) {
         Context c = ApplicationProvider.getApplicationContext();
         SpoilerRobotoTextView tv = new SpoilerRobotoTextView(c);
-        RedditMarkwon.setMarkdown(tv, "help", MarkdownImages.unescapeTransportEntities(escapedBody));
+        RedditMarkwon.setMarkdown(
+                tv,
+                "help",
+                Objects.requireNonNull(MarkdownImages.unescapeTransportEntities(escapedBody)));
         return (Spanned) tv.getText();
     }
 

@@ -16,6 +16,7 @@ import android.text.Spanned;
 import android.text.style.URLSpan;
 import android.view.MotionEvent;
 import android.view.View;
+import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 import io.noties.markwon.ext.tables.TableRowSpan;
 import me.edgan.redditslide.ClickableText;
@@ -72,7 +73,7 @@ public class TableCellLinkTest {
     public void tearDown() {
         // Restore the pristine (stock-Application) state so this test doesn't leave global statics
         // dirty for a same-config test sharing the Robolectric sandbox (e.g. RoborazziLayoutTest).
-        Reddit.colors = null;
+        TestUtils.clearRedditColors();
         TestUtils.clearRedditApplication();
         RedditMarkwon.invalidate();
     }
@@ -90,15 +91,16 @@ public class TableCellLinkTest {
 
     /** Records the URL the handler routes, without SpoilerRobotoTextView.onLinkClick's side effects. */
     private static final class RecordingClickableText implements ClickableText {
-        String clickedUrl;
+        @Nullable String clickedUrl;
 
         @Override
-        public void onLinkClick(String url, int xOffset, String subreddit, URLSpan span) {
+        public void onLinkClick(
+                @Nullable String url, int xOffset, String subreddit, URLSpan span) {
             clickedUrl = url;
         }
 
         @Override
-        public void onLinkLongClick(String url, MotionEvent event) {}
+        public void onLinkLongClick(@Nullable String url, @Nullable MotionEvent event) {}
     }
 
     /** Render {@code markdown} into a measured, laid-out, drawn TextView so table cell layouts exist. */
@@ -126,7 +128,7 @@ public class TableCellLinkTest {
     }
 
     /** The row span whose cells contain a link to {@code url}, or {@code null} if none does. */
-    private static TableRowSpan rowWithUrl(SpoilerRobotoTextView tv, String url) {
+    private static @Nullable TableRowSpan rowWithUrl(SpoilerRobotoTextView tv, String url) {
         Spanned buffer = (Spanned) tv.getText();
         for (TableRowSpan row : buffer.getSpans(0, buffer.length(), TableRowSpan.class)) {
             if (row.cellWidth() <= 0) {
@@ -153,6 +155,7 @@ public class TableCellLinkTest {
     /** Content-space center (x,y) of the given column's cell in {@code row}. */
     private static int[] cellCenter(SpoilerRobotoTextView tv, TableRowSpan row, int col) {
         Layout layout = tv.getLayout();
+        assertNotNull("renderAndLayout lays the view out, so it has a layout", layout);
         Spanned buffer = (Spanned) tv.getText();
         int line = layout.getLineForOffset(buffer.getSpanStart(row));
         int y = (layout.getLineTop(line) + layout.getLineBottom(line)) / 2;
@@ -206,6 +209,7 @@ public class TableCellLinkTest {
     public void tapOutsideTableRoutesNothing() {
         SpoilerRobotoTextView tv = renderAndLayout(TABLE);
         Layout layout = tv.getLayout();
+        assertNotNull("renderAndLayout lays the view out, so it has a layout", layout);
         int y = (layout.getLineTop(0) + layout.getLineBottom(0)) / 2; // the intro paragraph line
         RecordingClickableText rec = tapAt(tv, 10, y);
         assertNull("tapping non-table text must not route a click", rec.clickedUrl);

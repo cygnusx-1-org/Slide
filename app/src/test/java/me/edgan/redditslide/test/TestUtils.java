@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import me.edgan.redditslide.Reddit;
@@ -37,8 +38,19 @@ public class TestUtils {
         setMApplication(null);
     }
 
+    /**
+     * Restores {@code Reddit.colors} to its pristine (pre-{@link Reddit#onCreate}) null, alongside
+     * {@link #clearRedditApplication()}. The field is {@code @SuppressWarnings("NullAway.Init")} in
+     * main because {@code onCreate} always populates it in the app; nothing runs {@code onCreate}
+     * here, so a test that seeded it has to put it back for the next test in the sandbox.
+     */
+    @SuppressWarnings("NullAway")
+    public static void clearRedditColors() {
+        Reddit.colors = null;
+    }
+
     /** Reflectively set the private static {@code Reddit.mApplication} (there is no public setter). */
-    private static void setMApplication(Application value) {
+    private static void setMApplication(@Nullable Application value) {
         try {
             Field f = Reddit.class.getDeclaredField("mApplication");
             f.setAccessible(true);
@@ -64,7 +76,7 @@ public class TestUtils {
 
         @Override
         public Map<String, ?> getAll() {
-            return null;
+            return Collections.emptyMap();
         }
 
         @Nullable
@@ -100,7 +112,7 @@ public class TestUtils {
 
         @Override
         public Editor edit() {
-            return null;
+            throw new UnsupportedOperationException("MockPreferences is read-only");
         }
 
         @Override
