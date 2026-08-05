@@ -28,6 +28,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -71,20 +72,27 @@ import net.dean.jraw.http.oauth.OAuthException;
 import net.dean.jraw.http.oauth.OAuthHelper;
 import net.dean.jraw.models.LoggedInAccount;
 import net.dean.jraw.models.Subreddit;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 5/27/2015. */
+@NullMarked
 public class Login extends BaseActivityAnim {
+    @SuppressWarnings("NullAway.Init")
     Credentials credentials;
 
+    @SuppressWarnings("NullAway.Init")
     Dialog d;
+    @SuppressWarnings("NullAway.Init")
     CaseInsensitiveArrayList subNames;
+    @SuppressWarnings("NullAway.Init")
     String authorizationUrl;
+    @SuppressWarnings("NullAway.Init")
     OAuthHelper oAuthHelper;
     /** The CSRF state JRAW embedded in the authorize URL, validated on the redirect. */
-    String expectedState;
+    @Nullable String expectedState;
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         overrideSwipeFromAnywhere();
         super.onCreate(savedInstance);
         applyColorTheme("");
@@ -136,6 +144,14 @@ public class Login extends BaseActivityAnim {
             finish();
             return;
         }
+        if (Authentication.reddit == null) {
+            // Offline at startup: Authentication's offline branch never built a client, and
+            // there is no way to run an OAuth flow without one.
+            Toast.makeText(this, R.string.err_general, Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
         oAuthHelper = Authentication.reddit.getOAuthHelper();
         java.net.URL authUrl = oAuthHelper.getAuthorizationUrl(credentials, true, scopes);
         // Capture the CSRF state JRAW embedded in the authorize URL so the redirect can be validated
@@ -338,7 +354,7 @@ public class Login extends BaseActivityAnim {
                     }
 
                     @Override
-                    public WebResourceResponse shouldInterceptRequest(
+                    public @Nullable WebResourceResponse shouldInterceptRequest(
                             WebView view, WebResourceRequest request) {
                         String url = request.getUrl().toString();
                         if (url.contains("reddit.com")) {
@@ -519,7 +535,7 @@ public class Login extends BaseActivityAnim {
      * normal consent/login page) is left to keep loading. Shared by the in-app WebView
      * ({@code webView} non-null) and the Custom Tab ({@code webView} null) paths.
      */
-    private void handleOAuthRedirect(String url, WebView webView) {
+    private void handleOAuthRedirect(String url, @Nullable WebView webView) {
         Uri uri = Uri.parse(url);
         String code;
         String state;
@@ -701,7 +717,7 @@ public class Login extends BaseActivityAnim {
         getWindow().getDecorView().setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_AUTO);
     }
 
-    private WebResourceResponse proxyLoginRequest(WebResourceRequest request) {
+    private @Nullable WebResourceResponse proxyLoginRequest(WebResourceRequest request) {
         final String LOGIN_TAG = "Log into Reddit";
         try {
             URL url = new URL(request.getUrl().toString());
@@ -849,9 +865,10 @@ public class Login extends BaseActivityAnim {
         private static final String LOGIN_TAG = "Log into Reddit";
         private final OAuthHelper mOAuthHelper;
         private final Credentials mCredentials;
+        @SuppressWarnings("NullAway.Init")
         private MaterialProgressDialog mMaterialDialog;
         /** Classified reason the exchange failed, used to pick the dialog message; null on success. */
-        private OAuthLoginHelper.FailureType failureType;
+        @Nullable private OAuthLoginHelper.FailureType failureType;
 
         public UserChallengeTask(OAuthHelper oAuthHelper, Credentials credentials) {
             Log.v(LOGIN_TAG, "UserChallengeTask created");
@@ -874,7 +891,7 @@ public class Login extends BaseActivityAnim {
         }
 
         @Override
-        protected OAuthData doInBackground(String... params) {
+        protected @Nullable OAuthData doInBackground(String... params) {
             Log.v(LOGIN_TAG, "doInBackground: processing challenge URL: " + params[0]);
             try {
                 Log.v(LOGIN_TAG, "Calling onUserChallenge...");
@@ -882,6 +899,10 @@ public class Login extends BaseActivityAnim {
                 if (oAuthData != null) {
                     Log.v(LOGIN_TAG, "OAuthData received successfully");
                     Log.v(LOGIN_TAG, "Authenticating with Reddit...");
+                    if (Authentication.reddit == null) {
+                        return null;
+                    }
+
                     Authentication.reddit.authenticate(oAuthData);
                     Authentication.isLoggedIn = true;
                     String refreshToken = Authentication.reddit.getOAuthData().getRefreshToken();
@@ -940,7 +961,7 @@ public class Login extends BaseActivityAnim {
                 // Catch runtime exceptions, which include Protocol exceptions from OkHttp
                 failureType = OAuthLoginHelper.classifyThrowable(e).failureType;
                 if (e.getCause() instanceof java.net.ProtocolException &&
-                    e.getCause().getMessage().contains("Too many follow-up requests")) {
+                    String.valueOf(e.getCause() == null ? null : e.getCause().getMessage()).contains("Too many follow-up requests")) {
                     Log.e(LOGIN_TAG, "OAuth redirect loop detected: " + e.getCause().getMessage());
                 } else {
                     Log.e(LOGIN_TAG, "OAuth runtime error: " + e.getClass().getSimpleName() + ": " + e.getMessage());

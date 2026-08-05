@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import com.google.android.material.snackbar.Snackbar;
 import java.util.Locale;
@@ -22,7 +23,9 @@ import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import net.dean.jraw.models.LoggedInAccount;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class AsyncNotificationBadge extends AsyncTask<Void, Void, Void> {
     private MainActivity activity;
     int count;
@@ -34,13 +37,17 @@ public class AsyncNotificationBadge extends AsyncTask<Void, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(Void... params) {
+    protected @Nullable Void doInBackground(Void... params) {
+        if (Authentication.reddit == null) {
+            return null;
+        }
+
         try {
             LoggedInAccount me;
             if (Authentication.me == null) {
                 Authentication.me = Authentication.reddit.me();
                 me = Authentication.me;
-                if (Authentication.name.equalsIgnoreCase("loggedout")) {
+                if (Authentication.nameOrEmpty().equalsIgnoreCase("loggedout")) {
                     Authentication.name = me.getFullName();
                     Reddit.appRestart.edit().putString("name", Authentication.name).apply();
                     restart = true;

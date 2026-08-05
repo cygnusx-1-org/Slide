@@ -20,8 +20,10 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.json.JSONObject;
+import org.jspecify.annotations.NullMarked;
 
 // Following methods sourced from https://github.com/Kennyc1012/Opengur, Code by Kenny Campagna
+@NullMarked
 public class ImgurUtils {
 
     /**
@@ -62,7 +64,7 @@ public class ImgurUtils {
         }
     }
 
-    public static File createFile(Uri uri, @NonNull Context context) {
+    public static @Nullable File createFile(Uri uri, @NonNull Context context) {
         InputStream in;
         ContentResolver resolver = context.getContentResolver();
         String type = resolver.getType(uri);
@@ -79,6 +81,10 @@ public class ImgurUtils {
         try {
             in = resolver.openInputStream(uri);
         } catch (FileNotFoundException e) {
+            return null;
+        }
+
+        if (in == null) {
             return null;
         }
 

@@ -9,13 +9,26 @@ import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
+import androidx.annotation.Nullable;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
 import me.edgan.redditslide.R;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by TacoTheDank on 03/15/2021. */
+@NullMarked
 public class AnimatorUtil {
-    public static ValueAnimator flipAnimatorIfNonNull(final boolean isFlipped, final View view) {
+    /**
+     * Always returns null, so the card overflow chevron never actually flips: {@link #flipAnimator}
+     * only builds the animator, and neither this nor its single caller
+     * ({@code CreateCardView.toggleActionbar}) starts it.
+     *
+     * <p>Left that way deliberately. Starting it would flip {@code scaleY} on a view nothing resets
+     * at bind time, so a chevron left mirrored would follow the recycled row onto the next post.
+     * Enabling the animation needs that reset first.
+     */
+    public static @Nullable ValueAnimator flipAnimatorIfNonNull(
+            final boolean isFlipped, final @Nullable View view) {
         if (view != null) {
             flipAnimator(isFlipped, view);
         }

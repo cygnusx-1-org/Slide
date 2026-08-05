@@ -43,8 +43,10 @@ import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import org.apache.commons.lang3.ArrayUtils;
+import org.jspecify.annotations.NullMarked;
 import uz.shift.colorpicker.LineColorPicker;
 
+@NullMarked
 public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartActivity> {
 
     public static boolean changed;
@@ -334,7 +336,9 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
                                         break;
                                     }
                                 }
-                                new ColorPreferences(context).setFontStyle(t);
+                                if (t != null) {
+                                    new ColorPreferences(context).setFontStyle(t);
+                                }
                                 context.restartActivity();
                             });
 

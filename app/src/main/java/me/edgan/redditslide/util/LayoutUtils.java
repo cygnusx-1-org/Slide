@@ -12,17 +12,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
-
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
-
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by TacoTheDank on 12/31/2020. */
+@NullMarked
 public class LayoutUtils {
 
     /** Fallback aspect ratio (height/width) for media whose intrinsic size is unknown. */
@@ -49,7 +49,10 @@ public class LayoutUtils {
                             @Override
                             public void onGlobalLayout() {
                                 tabLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                                tabLayout.getTabAt(tabPosition).select();
+                                final TabLayout.Tab tab = tabLayout.getTabAt(tabPosition);
+                                if (tab != null) {
+                                    tab.select();
+                                }
                             }
                         });
             }
@@ -100,7 +103,8 @@ public class LayoutUtils {
      * same estimate covers a content width of zero, so that padding wider than the list cannot
      * silently collapse rows to nothing.
      */
-    public static int getAlbumRowWidth(final RecyclerView recyclerView, final Context context) {
+    public static int getAlbumRowWidth(
+            final @Nullable RecyclerView recyclerView, final Context context) {
         if (recyclerView != null) {
             final int content =
                     recyclerView.getWidth()
@@ -130,7 +134,7 @@ public class LayoutUtils {
      */
     public static void applyAlbumRowSize(
             final View itemView,
-            final RecyclerView recyclerView,
+            final @Nullable RecyclerView recyclerView,
             final int rowWidth,
             final int mediaWidth,
             final int mediaHeight,

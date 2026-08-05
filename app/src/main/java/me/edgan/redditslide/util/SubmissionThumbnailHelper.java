@@ -5,6 +5,7 @@ import static me.edgan.redditslide.Notifications.ImageDownloadNotificationServic
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import androidx.annotation.Nullable;
 import com.fasterxml.jackson.databind.JsonNode;
 import me.edgan.redditslide.Activities.MediaView;
 import me.edgan.redditslide.ContentType;
@@ -15,8 +16,10 @@ import me.edgan.redditslide.SubmissionViews.PopulateBase;
 import me.edgan.redditslide.Visuals.Palette;
 import net.dean.jraw.models.Submission;
 import org.apache.commons.text.StringEscapeUtils;
+import org.jspecify.annotations.NullMarked;
 
 
+@NullMarked
 public class SubmissionThumbnailHelper {
 
     public static void openRedditContent(String url, Context c) {
@@ -27,7 +30,7 @@ public class SubmissionThumbnailHelper {
             ContentType.Type type,
             Activity contextActivity,
             Submission submission,
-            HeaderImageLinkView baseView,
+            @Nullable HeaderImageLinkView baseView,
             int adapterPosition) {
         if (SettingValues.image) {
             Intent myIntent = new Intent(contextActivity, MediaView.class);
@@ -67,7 +70,7 @@ public class SubmissionThumbnailHelper {
     }
 
     /** The first preview image node, or null if the preview JSON is absent or malformed. */
-    private static JsonNode previewImageNode(JsonNode dataNode) {
+    private static @Nullable JsonNode previewImageNode(@Nullable JsonNode dataNode) {
         if (dataNode == null || !dataNode.has("preview")) {
             return null;
         }
@@ -83,13 +86,13 @@ public class SubmissionThumbnailHelper {
     }
 
     /** The first preview image's source node, or null if the preview JSON is absent or malformed. */
-    private static JsonNode previewSourceNode(JsonNode dataNode) {
+    private static @Nullable JsonNode previewSourceNode(@Nullable JsonNode dataNode) {
         final JsonNode image = previewImageNode(dataNode);
         return (image != null && image.has("source")) ? image.get("source") : null;
     }
 
     /** The preview image's mp4 variant source URL, or null if it is absent or malformed. */
-    private static String previewMp4SourceUrl(JsonNode dataNode) {
+    private static @Nullable String previewMp4SourceUrl(@Nullable JsonNode dataNode) {
         final JsonNode image = previewImageNode(dataNode);
         if (image == null || !image.has("variants")) {
             return null;

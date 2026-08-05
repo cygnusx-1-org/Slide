@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import com.google.common.base.Strings;
@@ -49,21 +50,32 @@ import okhttp3.OkHttpClient;
  * click wiring, and route the differences through the three hooks below.
  */
 public abstract class BaseMediaFragment extends Fragment {
-    public String contentUrl;
-    public String actuallyLoaded;
+    @Nullable public String contentUrl;
+    @Nullable public String actuallyLoaded;
+
+    // rootView is bound by the subclass's onCreateView; client, gson and imgurKey by its
+    // onCreate. Both run before anything below can touch them.
+    @SuppressWarnings("NullAway.Init")
     protected ViewGroup rootView;
+
     protected boolean imageShown;
     protected float previous;
     protected boolean hidden;
+
+    @SuppressWarnings("NullAway.Init")
     protected OkHttpClient client;
+
+    @SuppressWarnings("NullAway.Init")
     protected Gson gson;
+
+    @SuppressWarnings("NullAway.Init")
     protected String imgurKey;
 
     /** Plays a gif/mp4 from a direct media url; the two fragments route this differently. */
     protected abstract void playGifDirect(String url);
 
     /** Url pre-processing before loading; MediaFragment HTML-unescapes here. */
-    protected String prepareUrl(String url) {
+    protected @Nullable String prepareUrl(@Nullable String url) {
         return url;
     }
 
@@ -76,17 +88,17 @@ public abstract class BaseMediaFragment extends Fragment {
         }
     }
 
-    public void doLoadDeviantArt(String url) {
+    public void doLoadDeviantArt(@Nullable String url) {
         final String apiUrl = "http://backend.deviantart.com/oembed?url=" + url;
         LogUtil.v(apiUrl);
         new AsyncTask<Void, Void, JsonObject>() {
             @Override
-            protected JsonObject doInBackground(Void... params) {
+            protected @Nullable JsonObject doInBackground(Void... params) {
                 return HttpUtil.getJsonObject(client, gson, apiUrl);
             }
 
             @Override
-            protected void onPostExecute(JsonObject result) {
+            protected void onPostExecute(@Nullable JsonObject result) {
                 LogUtil.v("doLoad onPostExecute() called with: " + "result = [" + result + "]");
                 if (getActivity() == null || rootView == null) {
                     return; // response arrived after the fragment was torn down
@@ -111,7 +123,11 @@ public abstract class BaseMediaFragment extends Fragment {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public void doLoadImgur(String url) {
+    public void doLoadImgur(@Nullable String url) {
+        if (url == null) {
+            return;
+        }
+
         if (url.endsWith("/")) {
             url = url.substring(0, url.length() - 1);
         }
@@ -126,12 +142,12 @@ public abstract class BaseMediaFragment extends Fragment {
 
             new AsyncTask<Void, Void, JsonObject>() {
                 @Override
-                protected JsonObject doInBackground(Void... params) {
+                protected @Nullable JsonObject doInBackground(Void... params) {
                     return HttpUtil.getImgurJsonObject(client, gson, apiUrl, imgurKey);
                 }
 
                 @Override
-                protected void onPostExecute(JsonObject result) {
+                protected void onPostExecute(@Nullable JsonObject result) {
                     if (getActivity() == null || rootView == null) {
                         return; // response arrived after the fragment was torn down
                     }
@@ -166,7 +182,11 @@ public abstract class BaseMediaFragment extends Fragment {
         }
     }
 
-    public void doLoadXKCD(String url) {
+    public void doLoadXKCD(@Nullable String url) {
+        if (url == null) {
+            return;
+        }
+
         if (!url.endsWith("/")) {
             url = url + "/";
         }
@@ -178,12 +198,12 @@ public abstract class BaseMediaFragment extends Fragment {
             final String finalUrl = url;
             new AsyncTask<Void, Void, JsonObject>() {
                 @Override
-                protected JsonObject doInBackground(Void... params) {
+                protected @Nullable JsonObject doInBackground(Void... params) {
                     return HttpUtil.getJsonObject(client, gson, apiUrl);
                 }
 
                 @Override
-                protected void onPostExecute(final JsonObject result) {
+                protected void onPostExecute(final @Nullable JsonObject result) {
                     if (getActivity() == null || rootView == null) {
                         return; // response arrived after the fragment was torn down
                     }
@@ -230,7 +250,7 @@ public abstract class BaseMediaFragment extends Fragment {
         }
     }
 
-    public void doLoadImage(String contentUrl) {
+    public void doLoadImage(@Nullable String contentUrl) {
         if (contentUrl != null && contentUrl.contains("bildgur.de")) {
             contentUrl = contentUrl.replace("b.bildgur.de", "i.imgur.com");
         }
@@ -315,7 +335,7 @@ public abstract class BaseMediaFragment extends Fragment {
         actuallyLoaded = contentUrl;
     }
 
-    public void displayImage(final String urlB) {
+    public void displayImage(final @Nullable String urlB) {
         if (getActivity() == null || rootView == null) {
             return; // load finished after the fragment was torn down
         }

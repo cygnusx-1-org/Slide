@@ -4,13 +4,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import me.edgan.redditslide.Activities.Inbox;
 import me.edgan.redditslide.Adapters.InboxAdapter;
 import me.edgan.redditslide.Adapters.InboxMessages;
@@ -35,7 +34,9 @@ public class InboxPage extends Fragment {
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_verticalcontent, container, false);
 
         final RecyclerView rv = v.findViewById(R.id.vertical_content);
@@ -85,17 +86,20 @@ public class InboxPage extends Fragment {
                     @Override
                     public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                         super.onScrolled(recyclerView, dx, dy);
-                        visibleItemCount = rv.getLayoutManager().getChildCount();
-                        totalItemCount = rv.getLayoutManager().getItemCount();
+                        final RecyclerView.LayoutManager lm = rv.getLayoutManager();
+                        if (lm == null) return;
 
-                        if (rv.getLayoutManager() instanceof PreCachingLayoutManager) {
+                        visibleItemCount = lm.getChildCount();
+                        totalItemCount = lm.getItemCount();
+
+                        if (lm instanceof PreCachingLayoutManager) {
                             pastVisiblesItems =
-                                    ((PreCachingLayoutManager) rv.getLayoutManager())
+                                    ((PreCachingLayoutManager) lm)
                                             .findFirstVisibleItemPosition();
                         } else {
                             int[] firstVisibleItems = null;
                             firstVisibleItems =
-                                    ((CatchStaggeredGridLayoutManager) rv.getLayoutManager())
+                                    ((CatchStaggeredGridLayoutManager) lm)
                                             .findFirstVisibleItemPositions(firstVisibleItems);
 
                             if (firstVisibleItems != null && firstVisibleItems.length > 0) {
@@ -115,7 +119,7 @@ public class InboxPage extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = this.getArguments();
         id = bundle.getString("id", "");

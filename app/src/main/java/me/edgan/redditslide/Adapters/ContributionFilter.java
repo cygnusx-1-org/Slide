@@ -1,5 +1,6 @@
 package me.edgan.redditslide.Adapters;
 
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Locale;
 import net.dean.jraw.models.Comment;
@@ -95,7 +96,7 @@ public class ContributionFilter {
      * @param contribution The contribution
      * @return The subreddit name, or null if not available
      */
-    private static String getSubredditName(Contribution contribution) {
+    private static @Nullable String getSubredditName(Contribution contribution) {
         if (contribution instanceof Submission) {
             return ((Submission) contribution).getSubredditName();
         } else if (contribution instanceof Comment) {

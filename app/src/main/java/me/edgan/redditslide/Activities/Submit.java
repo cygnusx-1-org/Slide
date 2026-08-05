@@ -27,6 +27,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SwitchCompat;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -71,21 +72,25 @@ import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Subreddit;
 import okhttp3.OkHttpClient;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 3/5/2015. */
+@NullMarked
 public class Submit extends BaseActivity {
 
     private boolean sent;
+    @SuppressWarnings("NullAway.Init")
     private String trying;
     // The locally-picked image for an image post. The upload to Reddit/Imgur is deferred until
     // submit, so this holds the content Uri in the meantime.
+    @SuppressWarnings("NullAway.Init")
     private Uri selectedImageUri;
     // The locally-picked images for a Reddit gallery post; uploaded at submit time.
     private final java.util.ArrayList<Uri> selectedGalleryUris = new java.util.ArrayList<>();
     // Caption EditTexts, one per gallery image, aligned with selectedGalleryUris.
     private final java.util.ArrayList<EditText> galleryCaptionFields = new java.util.ArrayList<>();
-    private String selectedFlairID;
-    private String selectedFlairText;
+    @Nullable private String selectedFlairID;
+    @Nullable private String selectedFlairText;
     private boolean isFlairRequired = false;
     private SwitchCompat inboxReplies;
     private View image;
@@ -98,16 +103,21 @@ public class Submit extends BaseActivity {
 
     private static final int FLAIR_REQUIRED_COLOR = Color.parseColor("#FF9800");
 
+    @SuppressWarnings("NullAway.Init")
     AsyncTask<Void, Void, Subreddit> tchange;
+    @SuppressWarnings("NullAway.Init")
     AsyncTask<Void, Void, Boolean> tFlairRequired;
     private final Handler subredditDebounce = new Handler(Looper.getMainLooper());
-    private Runnable subredditDebounceRunnable;
+    @Nullable private Runnable subredditDebounceRunnable;
     private String lastCheckedSubreddit = "";
+    @SuppressWarnings("NullAway.Init")
     private OkHttpClient client;
+    @SuppressWarnings("NullAway.Init")
     private Gson gson;
     private ActivityResultLauncher<PickVisualMediaRequest> submitImageLauncher;
     private ActivityResultLauncher<PickVisualMediaRequest> editorImageLauncher;
     private ActivityResultLauncher<PickVisualMediaRequest> galleryImageLauncher;
+    @SuppressWarnings("NullAway.Init")
     private MaterialProgressDialog galleryProgress;
 
     @Override
@@ -125,7 +135,7 @@ public class Submit extends BaseActivity {
         }
     }
 
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         disableSwipeBackLayout();
         super.onCreate(savedInstanceState);
 
@@ -332,10 +342,11 @@ public class Submit extends BaseActivity {
                             @Override
                             public void onClick(View v) {
                                 new AsyncTask<String, Void, String>() {
+                                    @SuppressWarnings("NullAway.Init")
                                     Dialog d;
 
                                     @Override
-                                    protected String doInBackground(String... params) {
+                                    protected @Nullable String doInBackground(String... params) {
                                         try {
                                             return TitleExtractor.getPageTitle(params[0]);
                                         } catch (Exception e) {
@@ -392,10 +403,9 @@ public class Submit extends BaseActivity {
                 null,
                 null,
                 editorImageLauncher);
-        if (intent.hasExtra(Intent.EXTRA_TEXT)
-                && !intent.getExtras().getString(Intent.EXTRA_TEXT, "").isEmpty()
+        if (!MiscUtil.orEmpty(intent.getStringExtra(Intent.EXTRA_TEXT)).isEmpty()
                 && !intent.getBooleanExtra(EXTRA_IS_SELF, false)) {
-            String data = intent.getStringExtra(Intent.EXTRA_TEXT);
+            String data = MiscUtil.orEmpty(intent.getStringExtra(Intent.EXTRA_TEXT));
             if (data.contains("\n")) {
                 ((EditText) findViewById(R.id.titletext))
                         .setText(data.substring(0, data.indexOf("\n")));
@@ -423,9 +433,8 @@ public class Submit extends BaseActivity {
                 ((RadioButton) findViewById(R.id.imageradio)).setChecked(true);
             }
         }
-        if (intent.hasExtra(Intent.EXTRA_SUBJECT)
-                && !intent.getExtras().getString(Intent.EXTRA_SUBJECT, "").isEmpty()) {
-            String data = intent.getStringExtra(Intent.EXTRA_SUBJECT);
+        if (!MiscUtil.orEmpty(intent.getStringExtra(Intent.EXTRA_SUBJECT)).isEmpty()) {
+            String data = MiscUtil.orEmpty(intent.getStringExtra(Intent.EXTRA_SUBJECT));
             ((EditText) findViewById(R.id.titletext)).setText(data);
         }
         updateSubmitEnabled();
@@ -463,10 +472,11 @@ public class Submit extends BaseActivity {
                         .show()
                         .getDialog();
         new AsyncTask<Void, Void, JsonArray>() {
+            @SuppressWarnings("NullAway.Init")
             ArrayList<JsonObject> flairs;
 
             @Override
-            protected JsonArray doInBackground(Void... params) {
+            protected @Nullable JsonArray doInBackground(Void... params) {
                 flairs = new ArrayList<>();
                 return FlairUtil.fetchLinkFlairs(client, gson, subreddit);
             }
@@ -504,6 +514,10 @@ public class Submit extends BaseActivity {
                                         allKeys.toArray(new CharSequence[0]),
                                         (dialog, which) -> {
                                             RichFlair selected = flairs.get(allKeys.get(which));
+                                            if (selected == null) {
+                                                return;
+                                            }
+
                                             selectedFlairID = selected.getId();
                                             selectedFlairText = selected.getText();
                                             refreshFlairState();
@@ -548,7 +562,11 @@ public class Submit extends BaseActivity {
         tchange =
                 new AsyncTask<Void, Void, Subreddit>() {
                     @Override
-                    protected Subreddit doInBackground(Void... params) {
+                    protected @Nullable Subreddit doInBackground(Void... params) {
+                        if (Authentication.reddit == null) {
+                            return null;
+                        }
+
                         try {
                             return Authentication.reddit.getSubreddit(subreddit);
                         } catch (Exception ignored) {
@@ -596,6 +614,10 @@ public class Submit extends BaseActivity {
                 new AsyncTask<Void, Void, Boolean>() {
                     @Override
                     protected Boolean doInBackground(Void... voids) {
+                        if (Authentication.reddit == null) {
+                            return false;
+                        }
+
                         try {
                             HttpRequest r =
                                     Authentication.reddit
@@ -860,15 +882,23 @@ public class Submit extends BaseActivity {
         private boolean linkVisible;
         private boolean imageVisible;
         private boolean galleryVisible;
+        @SuppressWarnings("NullAway.Init")
         private String bodyText;
+        @SuppressWarnings("NullAway.Init")
         private String subredditText;
+        @SuppressWarnings("NullAway.Init")
         private String titleText;
+        @SuppressWarnings("NullAway.Init")
         private String urlText;
         private boolean sendReplies;
         private boolean imageReddit;
+        @SuppressWarnings("NullAway.Init")
         private Uri imageUri;
+        @SuppressWarnings("NullAway.Init")
         private java.util.ArrayList<Uri> galleryUris;
+        @SuppressWarnings("NullAway.Init")
         private java.util.ArrayList<String> galleryCaptions;
+        @SuppressWarnings("NullAway.Init")
         private java.util.List<me.edgan.redditslide.markdown.UploadedImage> uploadedImages;
 
         @Override
@@ -898,7 +928,11 @@ public class Submit extends BaseActivity {
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected @Nullable Void doInBackground(Void... voids) {
+            if (Authentication.reddit == null) {
+                return null;
+            }
+
             try {
                 if (selfVisible) {
                     final String text = bodyText;
@@ -1008,7 +1042,6 @@ public class Submit extends BaseActivity {
                                 new Runnable() {
                                     @Override
                                     public void run() {
-
                                         if (e instanceof ApiException) {
                                             showErrorRetryDialog(
                                                     getString(R.string.misc_err)

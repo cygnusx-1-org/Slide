@@ -24,6 +24,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -669,8 +670,12 @@ final AlertDialog reportDialog =
                                         // Load sub's report reasons and show the appropriate ones
                                         new AsyncTask<Void, Void, Ruleset>() {
                                             @Override
-                                            protected Ruleset doInBackground(Void... voids) {
+                                            protected @Nullable Ruleset doInBackground(
+                                                    Void... voids) {
                                                 try {
+                                                    if (Authentication.reddit == null) {
+                                                        return null;
+                                                    }
                                                     return Authentication.reddit.getRules(
                                                             submission.getSubredditName());
                                                 } catch (RuntimeException e) {

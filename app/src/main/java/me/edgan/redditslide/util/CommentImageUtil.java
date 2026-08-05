@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import androidx.annotation.Nullable;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -34,6 +35,7 @@ import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Views.MaxHeightImageView;
 import org.apache.commons.text.StringEscapeUtils;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Renders inline comment images as pre-sized block ImageViews loaded through the app's shared image
@@ -48,6 +50,7 @@ import org.apache.commons.text.StringEscapeUtils;
  *       rest of the comment.
  * </ul>
  */
+@NullMarked
 public final class CommentImageUtil {
 
     private CommentImageUtil() {}
@@ -93,7 +96,7 @@ public final class CommentImageUtil {
     /** url -> aspect ratio (height/width), so a not-yet-loaded image can reserve its slot. */
     private static final Map<String, Double> RATIO_CACHE = new ConcurrentHashMap<>();
 
-    private static DisplayImageOptions options;
+    @Nullable private static DisplayImageOptions options;
 
     private static DisplayImageOptions options() {
         if (options == null) {
@@ -220,7 +223,7 @@ public final class CommentImageUtil {
     }
 
     /** Returns the cached bitmap (memory, or synchronously decoded from disk) or null. No network. */
-    private static Bitmap syncBitmap(ImageLoader loader, String url) {
+    private static @Nullable Bitmap syncBitmap(ImageLoader loader, String url) {
         List<Bitmap> mem = MemoryCacheUtils.findCachedBitmapsForImageUri(url, loader.getMemoryCache());
         for (Bitmap b : mem) {
             if (b != null && !b.isRecycled()) {

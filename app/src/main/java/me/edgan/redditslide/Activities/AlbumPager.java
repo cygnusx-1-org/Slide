@@ -26,6 +26,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -64,6 +65,7 @@ import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.StorageUtil;
 import me.edgan.redditslide.util.SubmissionParser;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Created by ccrama on 1/25/2016.
@@ -72,14 +74,17 @@ import me.edgan.redditslide.util.SubmissionParser;
  * RecyclerView (horizontal vs vertical). It also supports gifs and progress bars which Album.java
  * doesn't.
  */
+@NullMarked
 public class AlbumPager extends BaseSaveActivity {
     private static int adapterPosition;
     public static final String SUBREDDIT = "subreddit";
 
+    @SuppressWarnings("NullAway.Init")
     ViewPager p;
+    @SuppressWarnings("NullAway.Init")
     public List<Image> images;
 
-    private String lastContentUrl;
+    @Nullable private String lastContentUrl;
     private int lastIndex = -1;
 
     private static final String TAG = "AlbumPager";
@@ -113,11 +118,11 @@ public class AlbumPager extends BaseSaveActivity {
         }
 
         if (id == R.id.grid) {
-            mToolbar.findViewById(R.id.grid).callOnClick();
+            requireToolbar().findViewById(R.id.grid).callOnClick();
         }
 
         if (id == R.id.external) {
-            LinkUtil.openExternally(getIntent().getExtras().getString("url", ""));
+            LinkUtil.openExternally(MiscUtil.orEmpty(getIntent().getStringExtra("url")));
         }
 
         if (id == R.id.comments) {
@@ -145,9 +150,9 @@ public class AlbumPager extends BaseSaveActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public String subreddit;
+    public String subreddit = "";
 
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         overrideSwipeFromAnywhere();
         super.onCreate(savedInstanceState);
         getTheme()
@@ -162,11 +167,11 @@ public class AlbumPager extends BaseSaveActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         if (getIntent().hasExtra(SUBREDDIT)) {
-            this.subreddit = getIntent().getStringExtra(SUBREDDIT);
+            this.subreddit = MiscUtil.orEmpty(getIntent().getStringExtra(SUBREDDIT));
         }
 
         if (getIntent().hasExtra(EXTRA_SUBMISSION_TITLE)) {
-            this.submissionTitle = getIntent().getStringExtra(EXTRA_SUBMISSION_TITLE);
+            this.submissionTitle = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_SUBMISSION_TITLE));
         }
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -174,7 +179,7 @@ public class AlbumPager extends BaseSaveActivity {
         ToolbarColorizeHelper.colorizeToolbar(mToolbar, Color.WHITE, this);
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            java.util.Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         }
 
         mToolbar.setPopupTheme(
@@ -182,7 +187,7 @@ public class AlbumPager extends BaseSaveActivity {
 
         adapterPosition = getIntent().getIntExtra(MediaView.ADAPTER_POSITION, -1);
 
-        String url = getIntent().getExtras().getString("url", "");
+        String url = MiscUtil.orEmpty(getIntent().getStringExtra("url"));
         pagerLoad = new LoadIntoPager(url, this);
         pagerLoad.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -230,7 +235,7 @@ public class AlbumPager extends BaseSaveActivity {
         }
 
         @Override
-        public boolean doWithData(final List<Image> jsonElements) {
+        public boolean doWithData(final @Nullable List<Image> jsonElements) {
             // Nothing usable came back, so there are no pages to build; super has already told
             // onError(), which offers the link in a web view instead.
             if (!super.doWithData(jsonElements)) {
@@ -255,7 +260,7 @@ public class AlbumPager extends BaseSaveActivity {
                             p.setOffscreenPageLimit(2);
 
                             if (getSupportActionBar() != null) {
-                                getSupportActionBar().setSubtitle(1 + "/" + images.size());
+                                java.util.Objects.requireNonNull(getSupportActionBar()).setSubtitle(1 + "/" + images.size());
                             }
 
                             AlbumViewPagerAdapter adapter =
@@ -322,7 +327,7 @@ public class AlbumPager extends BaseSaveActivity {
                                             if (SettingValues.oldSwipeMode) {
                                                 if (position != 0) {
                                                     if (getSupportActionBar() != null) {
-                                                        getSupportActionBar()
+                                                        java.util.Objects.requireNonNull(getSupportActionBar())
                                                                 .setSubtitle(
                                                                         (position)
                                                                                 + "/"
@@ -334,7 +339,7 @@ public class AlbumPager extends BaseSaveActivity {
                                                 }
                                             } else {
                                                 if (getSupportActionBar() != null) {
-                                                    getSupportActionBar()
+                                                    java.util.Objects.requireNonNull(getSupportActionBar())
                                                             .setSubtitle(
                                                                     (position + 1)
                                                                             + "/"
@@ -466,7 +471,9 @@ public class AlbumPager extends BaseSaveActivity {
 
         @Override
         public View onCreateView(
-                LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
             rootView =
                     (ViewGroup)
                             inflater.inflate(R.layout.submission_gifcard_album, container, false);
@@ -620,7 +627,7 @@ public class AlbumPager extends BaseSaveActivity {
         }
 
         @Override
-        public void onCreate(Bundle savedInstanceState) {
+        public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             Bundle bundle = this.getArguments();
             i = bundle.getInt("page", 0);
@@ -672,7 +679,7 @@ public class AlbumPager extends BaseSaveActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         // Handle directory selection
@@ -715,7 +722,9 @@ public class AlbumPager extends BaseSaveActivity {
 
         @Override
         public View onCreateView(
-                LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
             final ViewGroup rootView =
                     (ViewGroup) inflater.inflate(R.layout.album_image_pager, container, false);
 
@@ -729,7 +738,7 @@ public class AlbumPager extends BaseSaveActivity {
                         && (SettingValues.lowResAlways
                                 || (!NetworkUtil.isConnectedWifi(getActivity())
                                         && SettingValues.lowResMobile))) {
-                    String lqurl = lowQualityUrl(url);
+                    String lqurl = MiscUtil.orEmpty(lowQualityUrl(url));
                     loadImage(
                             rootView, this, lqurl, ((AlbumPager) getActivity()).images.size() == 1);
                     lq = true;
@@ -936,7 +945,7 @@ public class AlbumPager extends BaseSaveActivity {
         }
 
         @Override
-        public void onCreate(Bundle savedInstanceState) {
+        public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             Bundle bundle = this.getArguments();
             i = bundle.getInt("page", 0);
@@ -988,7 +997,7 @@ public class AlbumPager extends BaseSaveActivity {
                                 && (SettingValues.lowResAlways
                                         || (!NetworkUtil.isConnectedWifi(activity)
                                                 && SettingValues.lowResMobile))) {
-                            String lqurl = lowQualityUrl(url);
+                            String lqurl = MiscUtil.orEmpty(lowQualityUrl(url));
                             loadImage(rootView, ImageFullNoSubmission.this, lqurl, activity.images.size() == 1);
                         } else {
                             loadImage(rootView, ImageFullNoSubmission.this, url, activity.images.size() == 1);
@@ -1046,7 +1055,7 @@ public class AlbumPager extends BaseSaveActivity {
      * original. Returns {@code url} unchanged when there is no extension to insert the suffix before,
      * since truncating at a missing dot would silently yield a prefix like "https://i".
      */
-    static String lowQualityUrl(final String url) {
+    static @Nullable String lowQualityUrl(final String url) {
         if (url == null) {
             return null;
         }

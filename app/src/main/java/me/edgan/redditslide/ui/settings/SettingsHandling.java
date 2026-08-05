@@ -3,18 +3,20 @@ package me.edgan.redditslide.ui.settings;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.ViewGroup;
-
+import androidx.annotation.Nullable;
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by l3d00m on 11/13/2015. */
+@NullMarked
 public class SettingsHandling extends BaseActivityAnim {
 
     private SettingsHandlingFragment fragment = new SettingsHandlingFragment(this);
 
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_handling);

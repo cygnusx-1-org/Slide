@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -33,8 +34,11 @@ import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.StringUtil;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class MainPagerAdapter extends FragmentStatePagerAdapter {
+    @SuppressWarnings("NullAway.Init")
     protected SubmissionsView mCurrentFragment;
     private MainActivity mainActivity;
 
@@ -141,13 +145,15 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
                                                 new Runnable() {
                                                     @Override
                                                     public void run() {
-                                                        mainActivity.getSupportActionBar()
+                                                        java.util.Objects.requireNonNull(
+                                                                        mainActivity
+                                                                                .getSupportActionBar())
                                                                 .setTitle(mainActivity.selectedSub);
                                                     }
                                                 },
                                                 mainActivity.ANIMATE_DURATION + mainActivity.ANIMATE_DURATION_OFFSET);
                             } else {
-                                mainActivity.getSupportActionBar().setTitle(mainActivity.selectedSub);
+                                java.util.Objects.requireNonNull(mainActivity.getSupportActionBar()).setTitle(mainActivity.selectedSub);
                             }
                         } else {
                             mainActivity.mTabLayout.setSelectedTabIndicatorColor(
@@ -271,7 +277,7 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
                 // Ensure reloadItemNumber is valid
                 if (mainActivity.reloadItemNumber >= 0 && mainActivity.reloadItemNumber < mainActivity.usedArray.size()) {
                     if (mainActivity.multiNameToSubsMap.containsKey(mainActivity.usedArray.get(mainActivity.reloadItemNumber))) {
-                        mainActivity.shouldLoad = mainActivity.multiNameToSubsMap.get(mainActivity.usedArray.get(mainActivity.reloadItemNumber));
+                        mainActivity.shouldLoad = mainActivity.multiNameToSubsMap.getOrDefault(mainActivity.usedArray.get(mainActivity.reloadItemNumber), "");
                     } else {
                         mainActivity.shouldLoad = mainActivity.usedArray.get(mainActivity.reloadItemNumber);
                     }
@@ -287,7 +293,7 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
 
 
     @Override
-    public Parcelable saveState() {
+    public @Nullable Parcelable saveState() {
         return null;
     }
 
@@ -302,7 +308,7 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
             mainActivity.shouldLoad = mainActivity.usedArray.get(position);
 
             if (mainActivity.multiNameToSubsMap.containsKey(mainActivity.usedArray.get(position))) {
-                mainActivity.shouldLoad = mainActivity.multiNameToSubsMap.get(mainActivity.usedArray.get(position));
+                mainActivity.shouldLoad = mainActivity.multiNameToSubsMap.getOrDefault(mainActivity.usedArray.get(position), "");
             } else {
                 mainActivity.shouldLoad = mainActivity.usedArray.get(position);
             }

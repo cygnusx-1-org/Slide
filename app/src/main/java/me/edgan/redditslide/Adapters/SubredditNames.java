@@ -2,6 +2,7 @@ package me.edgan.redditslide.Adapters;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -33,8 +34,11 @@ public class SubredditNames {
     public boolean stillShow;
     public boolean loading;
     public SubredditListView parent;
+    @SuppressWarnings("NullAway.Init")
     private Paginator<Subreddit> paginator;
+    @SuppressWarnings("NullAway.Init")
     private SubredditPaginator trendingPaginator;
+    @SuppressWarnings("NullAway.Init")
     private LinkedHashSet<String> trendingSeen;
     Context c;
 
@@ -61,7 +65,7 @@ public class SubredditNames {
     /** Asynchronous task for loading data */
     private class LoadData extends AsyncTask<String, Void, List<Subreddit>> {
         final boolean reset;
-        Context context;
+        @Nullable Context context;
 
         public LoadData(Context context, boolean reset) {
             this.context = context;
@@ -69,7 +73,7 @@ public class SubredditNames {
         }
 
         @Override
-        public void onPostExecute(List<Subreddit> submissions) {
+        public void onPostExecute(@Nullable List<Subreddit> submissions) {
 
             loading = false;
             context = null;
@@ -108,7 +112,7 @@ public class SubredditNames {
         }
 
         @Override
-        protected List<Subreddit> doInBackground(String... subredditPaginators) {
+        protected @Nullable List<Subreddit> doInBackground(String... subredditPaginators) {
 
             List<Subreddit> things = new ArrayList<>();
             try {
@@ -135,6 +139,9 @@ public class SubredditNames {
                                 // already shown in a previous batch
                                 if (!trendingSeen.add(name)) continue;
                                 try {
+                                    if (Authentication.reddit == null) {
+                                        break;
+                                    }
                                     things.add(Authentication.reddit.getSubreddit(name));
                                     added++;
                                 } catch (Exception e) {
@@ -149,7 +156,9 @@ public class SubredditNames {
                     } catch (Exception e) {
                         LogUtil.e(e, "SubredditNames.doInBackground trending failed");
                         if (e.getMessage() != null && e.getMessage().contains("Forbidden")) {
-                            Reddit.authentication.updateToken(context);
+                            if (context != null) {
+                                Reddit.authentication.updateToken(context);
+                            }
                         }
                     }
                 } else if (subredditPaginators[0].equalsIgnoreCase("popular")) {
@@ -171,8 +180,10 @@ public class SubredditNames {
 
                     } catch (Exception e) {
                         LogUtil.e(e, "SubredditNames.doInBackground failed");
-                        if (e.getMessage().contains("Forbidden")) {
-                            Reddit.authentication.updateToken(context);
+                        if (String.valueOf(e.getMessage()).contains("Forbidden")) {
+                            if (context != null) {
+                                Reddit.authentication.updateToken(context);
+                            }
                         }
                     }
                 } else {
@@ -196,8 +207,10 @@ public class SubredditNames {
 
                     } catch (Exception e) {
                         LogUtil.e(e, "SubredditNames.doInBackground failed");
-                        if (e.getMessage().contains("Forbidden")) {
-                            Reddit.authentication.updateToken(context);
+                        if (String.valueOf(e.getMessage()).contains("Forbidden")) {
+                            if (context != null) {
+                                Reddit.authentication.updateToken(context);
+                            }
                         }
                     }
                 }

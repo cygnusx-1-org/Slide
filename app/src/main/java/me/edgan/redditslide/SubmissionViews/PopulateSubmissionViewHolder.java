@@ -29,6 +29,7 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -132,15 +133,19 @@ public class PopulateSubmissionViewHolder {
             final Activity mContext,
             boolean fullscreen,
             final boolean full,
-            final List<T> posts,
-            final RecyclerView recyclerview,
+            final @Nullable List<T> posts,
+            final @Nullable RecyclerView recyclerview,
             final boolean same,
             final boolean offline,
-            final String baseSub,
+            final @Nullable String baseSub,
             @Nullable final CommentAdapter adapter) {
         // A link recovered earlier this session was rewritten onto a now-discarded Submission
         // instance; re-apply it to this freshly bound instance so the recovered link persists
         // across leaving and returning (the recovered title already survives via SubmissionCache).
+        // The peek view (RedditItemView) binds a card with no backing list. Normalize once so
+        // every action below still has a list to look the submission up in; it simply never
+        // finds it, which is the right no-op for a card that is not in any feed.
+        final List<T> postList = posts != null ? posts : new ArrayList<T>();
         PostRecovery.reapplyRecoveredLink(submission);
         holder.itemView.findViewById(R.id.vote).setVisibility(View.GONE);
 
@@ -174,7 +179,7 @@ public class PopulateSubmissionViewHolder {
                             SubmissionModActions.showModBottomSheet(
                                     mContext,
                                     submission,
-                                    posts,
+                                    postList,
                                     holder,
                                     recyclerview,
                                     reports,
@@ -190,7 +195,8 @@ public class PopulateSubmissionViewHolder {
                     @Override
                     public void onClick(View view) {
                         SubmissionBottomSheetActions.showBottomSheet(
-                                mContext, submission, holder, posts, baseSub, recyclerview, full);
+                                mContext, submission, holder, postList, baseSub, recyclerview,
+                                full);
                     }
                 });
 
@@ -342,7 +348,7 @@ public class PopulateSubmissionViewHolder {
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                SubmissionBottomSheetActions.hideSubmission(submission, posts, baseSub, recyclerview, mContext);
+                                SubmissionBottomSheetActions.hideSubmission(submission, postList, baseSub, recyclerview, mContext);
                             }
                         });
             } else {
@@ -761,10 +767,11 @@ public class PopulateSubmissionViewHolder {
                         @Override
                         public void onSingleClick(View v) {
                             new AsyncTask<Void, Void, ArrayList<String>>() {
-                                List<FlairTemplate> flairlist;
+                                List<FlairTemplate> flairlist = new ArrayList<>();
 
                                 @Override
-                                protected ArrayList<String> doInBackground(Void... params) {
+                                protected @Nullable ArrayList<String> doInBackground(
+                                        Void... params) {
                                     FlairReference allFlairs =
                                             new FluentRedditClient(Authentication.reddit)
                                                     .subreddit(submission.getSubredditName())
@@ -785,8 +792,11 @@ public class PopulateSubmissionViewHolder {
                                 }
 
                                 @Override
-                                public void onPostExecute(final ArrayList<String> data) {
-                                    final boolean flair = (data != null && !data.isEmpty());
+                                public void onPostExecute(
+                                        final @Nullable ArrayList<String> data) {
+                                    final List<String> flairNames =
+                                            data == null ? Collections.emptyList() : data;
+                                    final boolean flair = !flairNames.isEmpty();
 
                                     int[] attrs = new int[] {R.attr.tintColor};
                                     TypedArray ta = mContext.obtainStyledAttributes(attrs);
@@ -913,11 +923,13 @@ public class PopulateSubmissionViewHolder {
                                                                                                         dialoglayout);
                                                                         final Dialog d =
                                                                                 builder.create();
-                                                                        d.getWindow()
-                                                                                .setSoftInputMode(
-                                                                                        WindowManager
-                                                                                                .LayoutParams
-                                                                                                .SOFT_INPUT_ADJUST_RESIZE);
+                                                                        if (d.getWindow() != null) {
+                                                                            d.getWindow()
+                                                                                    .setSoftInputMode(
+                                                                                            WindowManager
+                                                                                                    .LayoutParams
+                                                                                                    .SOFT_INPUT_ADJUST_RESIZE);
+                                                                        }
 
                                                                         d.show();
                                                                         dialoglayout
@@ -1156,7 +1168,7 @@ public class PopulateSubmissionViewHolder {
         new ContextThemeWrapper(mContext, new ColorPreferences(mContext).getFontStyle().getBaseId()))
         .setTitle(R.string.sidebar_select_flair)
         .setItems(
-                data.toArray(new CharSequence[0]),
+                flairNames.toArray(new CharSequence[0]),
                 new DialogInterface.OnClickListener() {
                                                                                             @Override
                                                                                             public void onClick(DialogInterface dialog, int which) {

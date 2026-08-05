@@ -36,6 +36,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
@@ -65,6 +66,7 @@ import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.OnSingleClickListener;
+import me.edgan.redditslide.util.PrefUtil;
 import me.edgan.redditslide.util.QrCodeScannerHelper;
 import me.edgan.redditslide.util.SortingUtil;
 import me.edgan.redditslide.util.StorageUtil;
@@ -74,12 +76,15 @@ import net.dean.jraw.models.CommentSort;
 import net.dean.jraw.models.Subreddit;
 import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.TimePeriod;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 3/5/2015. */
+@NullMarked
 public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
 
     public static boolean searchChanged; // whether or not the subreddit search method changed
     private final ActivityType context;
+    @SuppressWarnings("NullAway.Init") // set from the dialog's EditText before it is read
     private String input;
     private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 1337;
 
@@ -572,7 +577,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 // Update location display first
                 if (locationView != null) {
                     String displayPath;
-                    if (hasValidPath) {
+                    if (currentUri != null && hasValidPath) {
                         displayPath = StorageUtil.getDisplayPath(context, currentUri);
                     } else {
                         displayPath = context.getString(R.string.settings_storage_location_unset);
@@ -758,7 +763,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 context.findViewById(R.id.settings_general_set_save_location_view);
         if (setSaveLocationView != null) {
             String loc =
-                    Reddit.appRestart.getString(
+                    PrefUtil.getString(Reddit.appRestart,
                             "imagelocation",
                             context.getString(R.string.settings_storage_location_unset));
             setSaveLocationView.setText(loc);
@@ -1346,7 +1351,8 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
 
         // Update current value display
         String savedClientId =
-                SettingValues.prefs.getString(SettingValues.PREF_REDDIT_CLIENT_ID_OVERRIDE, "");
+                PrefUtil.getString(
+                        SettingValues.prefs, SettingValues.PREF_REDDIT_CLIENT_ID_OVERRIDE, "");
         if (!savedClientId.isEmpty()) {
             currentClientId.setText(savedClientId);
         }
@@ -1362,7 +1368,8 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 context.findViewById(R.id.settings_general_redirect_uri_current);
 
         String savedRedirectUri =
-                SettingValues.prefs.getString(SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE, "");
+                PrefUtil.getString(
+                        SettingValues.prefs, SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE, "");
         if (!savedRedirectUri.isEmpty()) {
             currentRedirectUri.setText(savedRedirectUri);
         }
@@ -1375,7 +1382,8 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 context.findViewById(R.id.settings_general_user_agent_current);
 
         String savedUserAgent =
-                SettingValues.prefs.getString(SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE, "");
+                PrefUtil.getString(
+                        SettingValues.prefs, SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE, "");
         if (!savedUserAgent.isEmpty()) {
             currentUserAgent.setText(savedUserAgent);
         }
@@ -1576,7 +1584,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
 
     private void setSubText() {
         ArrayList<String> rawSubs =
-                StringUtil.stringToArray(Reddit.appRestart.getString(CheckForMail.SUBS_TO_GET, ""));
+                StringUtil.stringToArray(PrefUtil.getString(Reddit.appRestart, CheckForMail.SUBS_TO_GET, ""));
         String subText = context.getString(R.string.sub_post_notifs_settings_none);
         StringBuilder subs = new StringBuilder();
         for (String s : rawSubs) {
@@ -1600,7 +1608,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
 
     private void showSelectDialog() {
         ArrayList<String> rawSubs =
-                StringUtil.stringToArray(Reddit.appRestart.getString(CheckForMail.SUBS_TO_GET, ""));
+                StringUtil.stringToArray(PrefUtil.getString(Reddit.appRestart, CheckForMail.SUBS_TO_GET, ""));
         HashMap<String, Integer> subThresholds = new HashMap<>();
         for (String s : rawSubs) {
             try {
@@ -1697,7 +1705,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
 
     private void showThresholdDialog(ArrayList<String> strings, boolean search) {
         final ArrayList<String> subsRaw =
-                StringUtil.stringToArray(Reddit.appRestart.getString(CheckForMail.SUBS_TO_GET, ""));
+                StringUtil.stringToArray(PrefUtil.getString(Reddit.appRestart, CheckForMail.SUBS_TO_GET, ""));
 
         if (!search) {
             // NOT a sub searched for, was instead a list of all subs
@@ -1772,8 +1780,11 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
         }
 
         @Override
-        protected Subreddit doInBackground(final String... params) {
+        protected @Nullable Subreddit doInBackground(final String... params) {
             try {
+                if (Authentication.reddit == null) {
+                    return null;
+                }
                 return Authentication.reddit.getSubreddit(params[0]);
             } catch (Exception e) {
                 context.runOnUiThread(
@@ -1803,7 +1814,8 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 new ColorPreferences(context).getFontStyle().getBaseId());
 
         final EditText input = new EditText(contextThemeWrapper);
-        String savedClientId = SettingValues.prefs.getString(SettingValues.PREF_REDDIT_CLIENT_ID_OVERRIDE, "");
+        String savedClientId = PrefUtil.getString(
+                        SettingValues.prefs, SettingValues.PREF_REDDIT_CLIENT_ID_OVERRIDE, "");
         input.setText(savedClientId);
 
         // Convert 16dp to pixels and set left padding
@@ -1869,7 +1881,8 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 .setView(dialogContainer)
                 .setPositiveButton(R.string.btn_ok, (dialog, which) -> {
                     String newClientId = StringUtil.stripAllWhitespace(input.getText().toString());
-                    String oldClientId = SettingValues.prefs.getString(SettingValues.PREF_REDDIT_CLIENT_ID_OVERRIDE, "");
+                    String oldClientId = PrefUtil.getString(
+                        SettingValues.prefs, SettingValues.PREF_REDDIT_CLIENT_ID_OVERRIDE, "");
 
                     // Only proceed if the client ID has changed
                     if (!newClientId.equals(oldClientId)) {
@@ -1924,7 +1937,8 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 new ColorPreferences(context).getFontStyle().getBaseId());
 
         final EditText input = new EditText(contextThemeWrapper);
-        String saved = SettingValues.prefs.getString(SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE, "");
+        String saved = PrefUtil.getString(
+                        SettingValues.prefs, SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE, "");
         input.setText(saved);
 
         int paddingPx = (int)(16 * context.getResources().getDisplayMetrics().density);
@@ -1937,7 +1951,8 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 .setView(input)
                 .setPositiveButton(R.string.btn_ok, (dialog, which) -> {
                     String newValue = StringUtil.stripAllWhitespace(input.getText().toString());
-                    String oldValue = SettingValues.prefs.getString(SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE, "");
+                    String oldValue = PrefUtil.getString(
+                        SettingValues.prefs, SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE, "");
 
                     if (!newValue.isEmpty() && !newValue.matches(".+://.+")) {
                         Toast.makeText(context, R.string.settings_reddit_redirect_uri_invalid, Toast.LENGTH_LONG).show();
@@ -1987,7 +2002,8 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 new ColorPreferences(context).getFontStyle().getBaseId());
 
         final EditText input = new EditText(contextThemeWrapper);
-        String saved = SettingValues.prefs.getString(SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE, "");
+        String saved = PrefUtil.getString(
+                        SettingValues.prefs, SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE, "");
         input.setText(saved);
 
         int paddingPx = (int)(16 * context.getResources().getDisplayMetrics().density);
@@ -2000,7 +2016,8 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 .setView(input)
                 .setPositiveButton(R.string.btn_ok, (dialog, which) -> {
                     String newValue = StringUtil.stripLeadingTrailingWhitespace(input.getText().toString());
-                    String oldValue = SettingValues.prefs.getString(SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE, "");
+                    String oldValue = PrefUtil.getString(
+                        SettingValues.prefs, SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE, "");
 
                     if (!newValue.equals(oldValue)) {
                         SettingValues.redditUserAgentOverride = newValue;
@@ -2045,7 +2062,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
      * @param view the parent view to search in
      * @return the first EditText found, or null
      */
-    private EditText findEditTextInView(View view) {
+    private @Nullable EditText findEditTextInView(View view) {
         if (view instanceof EditText) {
             return (EditText) view;
         } else if (view instanceof ViewGroup) {

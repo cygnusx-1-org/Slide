@@ -3,6 +3,7 @@ package me.edgan.redditslide.Adapters;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -26,8 +27,11 @@ public class SubredditSearchPosts extends GeneralPosts {
     private String term;
     private String subreddit = "";
     public boolean loading;
+    @SuppressWarnings("NullAway.Init")
     private Paginator<Submission> paginator;
+    @SuppressWarnings("NullAway.Init")
     public SwipeRefreshLayout refreshLayout;
+    @SuppressWarnings("NullAway.Init")
     private ContributionAdapter adapter;
 
     public Activity parent;
@@ -166,7 +170,7 @@ public class SubredditSearchPosts extends GeneralPosts {
         }
 
         @Override
-        protected ArrayList<Contribution> doInBackground(String... subredditPaginators) {
+        protected @Nullable ArrayList<Contribution> doInBackground(String... subredditPaginators) {
             ArrayList<Contribution> newSubmissions = new ArrayList<>();
             try {
                 if (reset || paginator == null) {
@@ -220,6 +224,7 @@ public class SubredditSearchPosts extends GeneralPosts {
             }
         }
 
+        @SuppressWarnings("NullAway.Init")
         Exception error;
     }
 

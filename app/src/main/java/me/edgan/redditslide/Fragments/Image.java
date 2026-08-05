@@ -6,24 +6,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 
 /** Created by ccrama on 6/2/2015. */
 public class Image extends Fragment {
 
-    String url;
+    @Nullable String url;
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         ViewGroup rootView =
                 (ViewGroup) inflater.inflate(R.layout.submission_imagecard, container, false);
 
@@ -55,7 +55,7 @@ public class Image extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = this.getArguments();
         if (bundle != null) {

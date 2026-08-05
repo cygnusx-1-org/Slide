@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import com.canhub.cropper.CropImageContract;
 import com.canhub.cropper.CropImageContractOptions;
@@ -30,21 +31,26 @@ import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 5/27/2015. */
+@NullMarked
 public class Draw extends BaseActivity {
 
+    @SuppressWarnings("NullAway.Init")
     public static Uri uri;
+    @SuppressWarnings("NullAway.Init")
     public static DoEditorActions editor;
     CanvasView drawView;
     View color;
+    @SuppressWarnings("NullAway.Init")
     Bitmap bitmap;
     boolean enabled;
     private final ActivityResultLauncher<CropImageContractOptions> cropImageLauncher =
             registerForActivityResult(new CropImageContract(), this::cropImageResult);
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         overrideSwipeFromAnywhere();
         disableSwipeBackLayout();
         super.onCreate(savedInstance);
@@ -137,8 +143,9 @@ public class Draw extends BaseActivity {
     }
 
     private void cropImageResult(final CropImageView.CropResult result) {
-        if (result.isSuccessful()) {
-            bitmap = result.getBitmap(this).copy(Bitmap.Config.RGB_565, true);
+        final Bitmap cropped = result.isSuccessful() ? result.getBitmap(this) : null;
+        if (cropped != null) {
+            bitmap = cropped.copy(Bitmap.Config.RGB_565, true);
             BlendModeUtil.tintDrawableAsModulate(color.getBackground(), getLastColor());
             color.setOnClickListener(v -> showColorPicker());
             drawView.drawBitmap(bitmap);

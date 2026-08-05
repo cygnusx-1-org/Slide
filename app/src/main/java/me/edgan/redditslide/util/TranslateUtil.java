@@ -11,12 +11,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import me.edgan.redditslide.R;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Adds a "Google Translate" entry to the text-selection overflow menu of selectable TextViews
  * (e.g. the "Select text to copy" dialogs for posts and comments) and routes the selected text to
  * the Google Translate app, falling back to the web translator when the app is not installed.
  */
+@NullMarked
 public class TranslateUtil {
 
     private static final String GOOGLE_TRANSLATE_PACKAGE = "com.google.android.apps.translate";

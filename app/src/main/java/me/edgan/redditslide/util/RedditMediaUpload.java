@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.webkit.MimeTypeMap;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -24,6 +25,7 @@ import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.jspecify.annotations.NullMarked;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
@@ -41,6 +43,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
  *       the {@code img} element in {@code richtext_json}.
  * </ol>
  */
+@NullMarked
 public final class RedditMediaUpload {
 
     private RedditMediaUpload() {}
@@ -101,6 +104,10 @@ public final class RedditMediaUpload {
      * Runs the two-step upload and returns {@code [s3ResponseXml, fileName, assetId]}.
      */
     private static String[] doUpload(Context context, Uri imageUri) throws IOException {
+        if (Authentication.reddit == null) {
+            throw new IOException("Not signed in");
+        }
+
         ContentResolver contentResolver = context.getContentResolver();
 
         String mimeType = contentResolver.getType(imageUri);
@@ -188,7 +195,8 @@ public final class RedditMediaUpload {
     }
 
     /** Pulls the text of the first {@code <tagName>} element out of the S3 XML response. */
-    private static String parseTagFromXml(String response, String tagName) throws IOException {
+    private static @Nullable String parseTagFromXml(String response, String tagName)
+            throws IOException {
         try {
             XmlPullParser parser = XmlPullParserFactory.newInstance().newPullParser();
             parser.setInput(new StringReader(response));
@@ -213,7 +221,7 @@ public final class RedditMediaUpload {
         return null;
     }
 
-    private static String getFileName(Context context, Uri uri) {
+    private static @Nullable String getFileName(Context context, Uri uri) {
         ContentResolver contentResolver = context.getContentResolver();
         if (contentResolver == null) return null;
         try (Cursor cursor = contentResolver.query(uri, null, null, null, null)) {

@@ -1,6 +1,8 @@
 package me.edgan.redditslide.util;
 
 /** Created by ccrama on 4/10/2016. */
+import androidx.annotation.Nullable;
+
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -8,7 +10,9 @@ import me.edgan.redditslide.Reddit;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class TitleExtractor {
     /* the CASE_INSENSITIVE flag accounts for
      * sites that use uppercase title tags.
@@ -24,7 +28,7 @@ public class TitleExtractor {
      * @return title text (null if document isn't HTML or lacks a title tag)
      * @throws IOException
      */
-    public static String getPageTitle(String url) throws IOException {
+    public static @Nullable String getPageTitle(String url) throws IOException {
         OkHttpClient client = Reddit.client;
         Request request =
                 new Request.Builder()

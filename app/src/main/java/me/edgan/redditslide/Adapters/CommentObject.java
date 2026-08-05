@@ -14,5 +14,6 @@ public class CommentObject {
         return name;
     }
 
+    @SuppressWarnings("NullAway.Init") // set by the CommentItem/MoreChildItem subclasses
     public CommentNode comment;
 }

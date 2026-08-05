@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SwitchCompat;
 import com.google.common.base.Strings;
@@ -37,14 +38,18 @@ import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 3/5/2015. */
+@NullMarked
 public class SettingsActivity extends BaseActivity implements RestartActivity {
 
     private static final int RESTART_SETTINGS_RESULT = 2;
     private int scrollY;
+    @SuppressWarnings("NullAway.Init") // built in BuildLayout, called from onCreate
     private SharedPreferences.OnSharedPreferenceChangeListener prefsListener;
-    private String prev_text;
+
+    @Nullable private String prev_text;
     public static boolean changed; // whether or not a Setting was changed
 
     private SettingsGeneralFragment mSettingsGeneralFragment = new SettingsGeneralFragment(this);
@@ -72,7 +77,7 @@ public class SettingsActivity extends BaseActivity implements RestartActivity {
                             R.layout.activity_settings_reddit_child));
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RESTART_SETTINGS_RESULT) {
             restartActivity();
@@ -118,7 +123,7 @@ public class SettingsActivity extends BaseActivity implements RestartActivity {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings);
@@ -152,7 +157,9 @@ public class SettingsActivity extends BaseActivity implements RestartActivity {
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (event.getKeyCode() == KeyEvent.KEYCODE_SEARCH
                 && event.getAction() == KeyEvent.ACTION_DOWN) {
-            onOptionsItemSelected(mToolbar.getMenu().findItem(R.id.search));
+            if (mToolbar != null) {
+                onOptionsItemSelected(mToolbar.getMenu().findItem(R.id.search));
+            }
             //            (findViewById(R.id.settings_search)).requestFocus();
             MotionEvent motionEventDown =
                     MotionEvent.obtain(
@@ -177,7 +184,7 @@ public class SettingsActivity extends BaseActivity implements RestartActivity {
         return super.dispatchKeyEvent(event);
     }
 
-    private void BuildLayout(String text) {
+    private void BuildLayout(@Nullable String text) {
         LinearLayout parent = (LinearLayout) findViewById(R.id.settings_parent);
 
         /* Clear the settings out, then re-add the default top-level settings */
@@ -222,7 +229,7 @@ public class SettingsActivity extends BaseActivity implements RestartActivity {
                 new SharedPreferences.OnSharedPreferenceChangeListener() {
                     @Override
                     public void onSharedPreferenceChanged(
-                            SharedPreferences sharedPreferences, String key) {
+                            SharedPreferences sharedPreferences, @Nullable String key) {
                         SettingsActivity.changed = true;
                     }
                 };

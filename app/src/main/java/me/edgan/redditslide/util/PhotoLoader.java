@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -29,8 +30,10 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Views.MaxHeightImageView;
 import net.dean.jraw.models.Submission;
 import org.apache.commons.text.StringEscapeUtils;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by TacoTheDank on 12/11/2020. */
+@NullMarked
 public class PhotoLoader {
 
     /** Disk-only warm (offline caching); does not populate the memory cache. */
@@ -58,13 +61,13 @@ public class PhotoLoader {
      * routing so the preload warms the exact cache entry the card later binds; a mismatch reappears
      * as first-view pop-in.
      */
-    public static String resolveFeedImageUrl(
+    public static @Nullable String resolveFeedImageUrl(
             final Context c, final Submission submission, final boolean skipDrawableOnlyPosts) {
         return resolveFeedImageUrl(
                 c, submission, skipDrawableOnlyPosts, feedImageWidth(c, SettingValues.bigPicEnabled));
     }
 
-    public static String resolveFeedImageUrl(
+    public static @Nullable String resolveFeedImageUrl(
             final Context c,
             final Submission submission,
             final boolean skipDrawableOnlyPosts,
@@ -165,12 +168,13 @@ public class PhotoLoader {
      * normalizing the host, or null if none. Shared with HeaderImageLinkView (which delegates here)
      * so the feed card and the preloader resolve the identical URL.
      */
-    public static String getPreviewUrl(final JsonNode dataNode) {
+    public static @Nullable String getPreviewUrl(final @Nullable JsonNode dataNode) {
         // No width bound: the full-resolution source (card / fullscreen behavior).
         return getPreviewUrl(dataNode, Integer.MAX_VALUE);
     }
 
-    public static String getPreviewUrl(final JsonNode dataNode, final int maxWidth) {
+    public static @Nullable String getPreviewUrl(
+            final @Nullable JsonNode dataNode, final int maxWidth) {
         if (dataNode == null) {
             return null;
         }
@@ -186,7 +190,8 @@ public class PhotoLoader {
         return JsonUtil.normalizeRedditPreviewHost(previewUrl, JsonUtil.linksToReddit(dataNode));
     }
 
-    private static String extractPreviewUrl(final JsonNode node, final int maxWidth) {
+    private static @Nullable String extractPreviewUrl(
+            final @Nullable JsonNode node, final int maxWidth) {
         if (node != null
                 && node.has("preview")
                 && node.get("preview").has("images")
@@ -210,7 +215,7 @@ public class PhotoLoader {
      * The node's thumbnail URL if it is a usable image URL, or null for Reddit's placeholder values
      * ("self", "default", "nsfw") or a missing/empty value. Shared with HeaderImageLinkView.
      */
-    public static String getValidThumbnailUrl(final JsonNode node) {
+    public static @Nullable String getValidThumbnailUrl(final @Nullable JsonNode node) {
         if (node != null && node.has("thumbnail") && !node.get("thumbnail").isNull()) {
             final String thumbnail = node.get("thumbnail").asText();
             if (!thumbnail.equals("self")
@@ -235,7 +240,8 @@ public class PhotoLoader {
      * a card (maxWidth == Integer.MAX_VALUE) matches nothing and the callers fall back to the full
      * image. Shared by getHighQualityUrl and the preview path so both size identically.
      */
-    public static String sizedResolutionUrl(final JsonNode imageNode, final int maxWidth) {
+    public static @Nullable String sizedResolutionUrl(
+            final @Nullable JsonNode imageNode, final int maxWidth) {
         if (imageNode == null) {
             return null;
         }
@@ -602,7 +608,7 @@ public class PhotoLoader {
     public static void warmVisibleTapTargets(
             final Context context,
             final RecyclerView rv,
-            final List<?> posts,
+            final @Nullable List<?> posts,
             final int headerOffset,
             final Set<String> warmed) {
         if (context == null || rv == null || posts == null || warmed == null) {
@@ -795,7 +801,8 @@ public class PhotoLoader {
      * still image, resolved through the imgur API. Callers run this off the main thread (the album
      * branch does blocking network I/O).
      */
-    private static String tapTargetUrl(final Context context, final Submission submission) {
+    private static @Nullable String tapTargetUrl(
+            final Context context, final Submission submission) {
         final ContentType.Type type = ContentType.getContentType(submission);
         if (type == ContentType.Type.IMAGE) {
             final String url = submission.getUrl();
@@ -821,7 +828,7 @@ public class PhotoLoader {
      * still-image warm. Null if the gallery JSON is absent or unusable. Mirrors JsonUtil.getGalleryData
      * so the warmed disk entry matches what the viewer later requests.
      */
-    private static String firstGalleryStillSourceUrl(JsonNode dataNode) {
+    private static @Nullable String firstGalleryStillSourceUrl(@Nullable JsonNode dataNode) {
         if (dataNode == null) {
             return null;
         }
@@ -882,7 +889,7 @@ public class PhotoLoader {
      * full-resolution source. Shared by the feed card (HeaderImageLinkView) and the preloader so
      * both reference the same cache entry. Returns null if no usable image exists.
      */
-    public static GalleryPreview getGalleryPreview(JsonNode dataNode) {
+    public static @Nullable GalleryPreview getGalleryPreview(@Nullable JsonNode dataNode) {
         if (dataNode == null) return null;
         // A crosspost keeps its gallery data in the parent submission. Mirror the display path,
         // which always prefers the parent when a crosspost parent is present.

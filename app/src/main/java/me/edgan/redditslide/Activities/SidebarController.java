@@ -12,6 +12,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.AppCompatCheckBox;
@@ -45,6 +46,7 @@ import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
+import me.edgan.redditslide.util.PrefUtil;
 import me.edgan.redditslide.util.SortingUtil;
 import me.edgan.redditslide.util.StringUtil;
 import me.edgan.redditslide.util.SubmissionParser;
@@ -62,16 +64,20 @@ import net.dean.jraw.models.UserRecord;
 import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.TimePeriod;
 import net.dean.jraw.paginators.UserRecordPaginator;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class SidebarController {
 
     private final MainActivity mainActivity;
+    @SuppressWarnings("NullAway.Init")
     private Sorting sorts;
     private TimePeriod time = TimePeriod.DAY;
+    @SuppressWarnings("NullAway.Init")
     private AsyncTask<View, Void, View> currentFlair;
     private final SpoilerRobotoTextView sidebarBody; // Moved from MainActivity
     private final CommentOverflow sidebarOverflow; // Moved from MainActivity
-    private AsyncGetSubredditTask mAsyncGetSubreddit = null; // Moved from MainActivity
+    @Nullable private AsyncGetSubredditTask mAsyncGetSubreddit = null; // Moved from MainActivity
 
     public SidebarController(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
@@ -278,6 +284,7 @@ public class SidebarController {
                                         .show()
                                         .getDialog();
                                 new AsyncTask<Void, Void, Void>() {
+                                    @SuppressWarnings("NullAway.Init")
                                     ArrayList<UserRecord> mods;
 
                                     @Override
@@ -338,9 +345,13 @@ public class SidebarController {
                 if (currentFlair != null) currentFlair.cancel(true);
                 currentFlair =
                         new AsyncTask<View, Void, View>() {
+                            @SuppressWarnings("NullAway.Init")
                             List<FlairTemplate> flairs;
+                            @SuppressWarnings("NullAway.Init")
                             ArrayList<String> flairText;
+                            @SuppressWarnings("NullAway.Init")
                             String current;
+                            @SuppressWarnings("NullAway.Init")
                             AccountManager m;
 
                             @Override
@@ -447,12 +458,12 @@ public class SidebarController {
                                                                                                 }
 
                                                                                                 s = Snackbar.make(
-                                                                                                        mainActivity.mToolbar,R.string.snackbar_flair_success,
+                                                                                                        mainActivity.requireToolbar(),R.string.snackbar_flair_success,
                                                                                                         Snackbar.LENGTH_SHORT
                                                                                                     );
                                                                                             } else {
                                                                                                 s = Snackbar.make(
-                                                                                                        mainActivity.mToolbar, R.string.snackbar_flair_error,
+                                                                                                        mainActivity.requireToolbar(), R.string.snackbar_flair_error,
                                                                                                         Snackbar.LENGTH_SHORT
                                                                                                     );
                                                                                             }
@@ -496,13 +507,13 @@ public class SidebarController {
                                                                                         .setText(mainActivity.getString(R.string.sidebar_flair,current));
                                                                                 }
                                                                                 s = Snackbar.make(
-                                                                                        mainActivity.mToolbar,
+                                                                                        mainActivity.requireToolbar(),
                                                                                         R.string.snackbar_flair_success,
                                                                                         Snackbar.LENGTH_SHORT
                                                                                     );
                                                                             } else {
                                                                                 s = Snackbar.make(
-                                                                                        mainActivity.mToolbar, R.string.snackbar_flair_error,
+                                                                                        mainActivity.requireToolbar(), R.string.snackbar_flair_error,
                                                                                         Snackbar.LENGTH_SHORT
                                                                                     );
                                                                             }
@@ -638,7 +649,7 @@ public class SidebarController {
             setViews(text, subreddit.getDisplayName(), this.sidebarBody, this.sidebarOverflow);
 
             // get all subs that have Notifications enabled
-            ArrayList<String> rawSubs = StringUtil.stringToArray(Reddit.appRestart.getString(CheckForMail.SUBS_TO_GET, ""));
+            ArrayList<String> rawSubs = StringUtil.stringToArray(PrefUtil.getString(Reddit.appRestart, CheckForMail.SUBS_TO_GET, ""));
             HashMap<String, Integer> subThresholds = new HashMap<>();
             for (String s : rawSubs) {
                 try {
@@ -715,7 +726,7 @@ public class SidebarController {
                                                                 final String multiName = multis.keySet().toArray(new String [0])[which];
                                                                 List<String> subs = new ArrayList<String>();
 
-                                                                for (MultiSubreddit sub : multis.get(multiName).getSubreddits()) {
+                                                                for (MultiSubreddit sub : java.util.Objects.requireNonNull(multis.get(multiName)).getSubreddits()) {
                                                                     subs.add(sub.getDisplayName());
                                                                 }
 
@@ -735,7 +746,7 @@ public class SidebarController {
                                                                             mainActivity.drawerLayout.closeDrawers();
 
                                                                             Snackbar s = Snackbar.make(
-                                                                                mainActivity.mToolbar,
+                                                                                mainActivity.requireToolbar(),
                                                                                 mainActivity.getString(R.string.multi_subreddit_added,multiName),
                                                                                 Snackbar.LENGTH_LONG
                                                                             );
@@ -755,7 +766,7 @@ public class SidebarController {
                                                                                     @Override
                                                                                     public void run() {
                                                                                         Snackbar.make(
-                                                                                            mainActivity.mToolbar,
+                                                                                            mainActivity.requireToolbar(),
                                                                                             mainActivity.getString(R.string.multi_error),
                                                                                             Snackbar.LENGTH_LONG
                                                                                         )
@@ -826,7 +837,7 @@ public class SidebarController {
                                                             "20", "40", "50"
                                                         };
                                                         ArrayList<String> subs = StringUtil.stringToArray(
-                                                            Reddit.appRestart.getString(CheckForMail.SUBS_TO_GET, "")
+                                                            PrefUtil.getString(Reddit.appRestart, CheckForMail.SUBS_TO_GET, "")
                                                         );
                                                         subs.add(sub + ":" + thresholds[selectedThreshold[0]]);
                                                         Reddit.appRestart.edit().putString(
@@ -889,7 +900,7 @@ public class SidebarController {
                                                         (dialog1, which1) -> {
                                                             mainActivity.sidebarActions.changeSubscription( subreddit, true); // Force add the subscription
                                                             Snackbar s = Snackbar.make(
-                                                                mainActivity.mToolbar, mainActivity.getString(R.string.misc_subscribed),
+                                                                mainActivity.requireToolbar(), mainActivity.getString(R.string.misc_subscribed),
                                                                 Snackbar.LENGTH_LONG
                                                             );
                                                             LayoutUtils.showSnackbar(s);
@@ -917,7 +928,7 @@ public class SidebarController {
                                         R.string.btn_add_to_sublist,
                                         (dialog, which) -> {
                                             mainActivity.sidebarActions.changeSubscription(subreddit, true); // Force add the subscription
-                                            Snackbar s = Snackbar.make(mainActivity.mToolbar, R.string.sub_added, Snackbar.LENGTH_LONG);
+                                            Snackbar s = Snackbar.make(mainActivity.requireToolbar(), R.string.sub_added, Snackbar.LENGTH_LONG);
                                             LayoutUtils.showSnackbar(s);
                                         })
                                 .setNegativeButton(R.string.btn_cancel, null)
@@ -944,7 +955,7 @@ public class SidebarController {
                                                         (dialog12, which12) -> {
                                                             mainActivity.sidebarActions.changeSubscription(subreddit, false); // Force add the subscription
                                                             Snackbar s = Snackbar.make(
-                                                                mainActivity.mToolbar,
+                                                                mainActivity.requireToolbar(),
                                                                 mainActivity.getString(R.string.misc_unsubscribed),
                                                                 Snackbar.LENGTH_LONG
                                                             );
@@ -972,7 +983,7 @@ public class SidebarController {
                                 .setNeutralButton(
                                     R.string.just_unsub,
                                     (dialog, which) -> { mainActivity.sidebarActions.changeSubscription(subreddit, false); // Force add the subscription
-                                        Snackbar s = Snackbar.make(mainActivity.mToolbar, R.string.misc_unsubscribed, Snackbar.LENGTH_LONG);
+                                        Snackbar s = Snackbar.make(mainActivity.requireToolbar(), R.string.misc_unsubscribed, Snackbar.LENGTH_LONG);
                                         LayoutUtils.showSnackbar(s);
                                     }
                                 )

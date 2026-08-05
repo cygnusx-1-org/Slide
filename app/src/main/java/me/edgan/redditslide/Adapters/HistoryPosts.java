@@ -1,6 +1,7 @@
 package me.edgan.redditslide.Adapters;
 
 import android.os.AsyncTask;
+import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.lusfold.androidkeyvaluestore.KVStore;
 import java.util.ArrayList;
@@ -18,7 +19,9 @@ import net.dean.jraw.paginators.FullnamesPaginator;
 
 /** Created by ccrama on 9/17/2015. */
 public class HistoryPosts extends GeneralPosts {
+    @SuppressWarnings("NullAway.Init")
     private SwipeRefreshLayout refreshLayout;
+    @SuppressWarnings("NullAway.Init")
     private ContributionAdapter adapter;
     public boolean loading;
     String prefix = "";
@@ -39,6 +42,7 @@ public class HistoryPosts extends GeneralPosts {
         new LoadData(reset).execute();
     }
 
+    @SuppressWarnings("NullAway.Init")
     FullnamesPaginator paginator;
 
     public class LoadData extends AsyncTask<String, Void, ArrayList<Contribution>> {
@@ -99,7 +103,7 @@ public class HistoryPosts extends GeneralPosts {
         }
 
         @Override
-        protected ArrayList<Contribution> doInBackground(String... subredditPaginators) {
+        protected @Nullable ArrayList<Contribution> doInBackground(String... subredditPaginators) {
             ArrayList<Contribution> newData = new ArrayList<>();
             try {
                 if (reset || paginator == null) {

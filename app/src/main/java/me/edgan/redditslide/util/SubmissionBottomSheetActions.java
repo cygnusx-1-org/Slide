@@ -21,6 +21,7 @@ import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
@@ -61,13 +62,14 @@ import net.dean.jraw.models.Ruleset;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.SubredditRule;
 import org.apache.commons.text.StringEscapeUtils;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Handles Bottom Sheet actions for Submission views.
  */
+@NullMarked
 public class SubmissionBottomSheetActions {
 
-    public static String reason;
     public static boolean[] chosen = new boolean[] {false, false, false, false, false};
     public static boolean[] oldChosen = new boolean[] {false, false, false, false, false};
 
@@ -77,8 +79,8 @@ public class SubmissionBottomSheetActions {
             final Submission submission,
             final SubmissionViewHolder holder,
             final List<T> posts,
-            final String baseSub,
-            final RecyclerView recyclerview,
+            final @Nullable String baseSub,
+            final @Nullable RecyclerView recyclerview,
             final boolean full) {
 
         int[] attrs = new int[] {R.attr.tintColor};
@@ -304,7 +306,8 @@ public class SubmissionBottomSheetActions {
                                 if (filtered) {
                                     e.apply();
 
-                                    RecyclerView.Adapter<?> adapter = recyclerview.getAdapter();
+                                    RecyclerView.Adapter<?> adapter =
+                                            recyclerview == null ? null : recyclerview.getAdapter();
                                     if (adapter == null) {
                                         return;
                                     }
@@ -404,7 +407,8 @@ public class SubmissionBottomSheetActions {
                         } else {
                             ReadLater.setReadLater(submission, false);
                             if (isReadLater || !Authentication.didOnline) {
-                                final RecyclerView.Adapter<?> adapter = recyclerview.getAdapter();
+                                final RecyclerView.Adapter<?> adapter =
+                                        recyclerview == null ? null : recyclerview.getAdapter();
 
                                 // Operate on the list the adapter is actually displaying; the
                                 // captured reference can be stale after a refresh.
@@ -443,7 +447,9 @@ public class SubmissionBottomSheetActions {
                                                 // Re-resolve at click time in case a refresh
                                                 // swapped in a new adapter list.
                                                 final RecyclerView.Adapter<?> undoAdapter =
-                                                        recyclerview.getAdapter();
+                                                        recyclerview == null
+                                                                ? null
+                                                                : recyclerview.getAdapter();
                                                 if (undoAdapter != null) {
                                                     final List<T> undoList =
                                                             resolveLivePosts(recyclerview, livePosts);
@@ -516,8 +522,11 @@ final AlertDialog reportDialog =
                         // Load sub's report reasons and show the appropriate ones
                         new AsyncTask<Void, Void, Ruleset>() {
                             @Override
-                            protected Ruleset doInBackground(Void... voids) {
+                            protected @Nullable Ruleset doInBackground(Void... voids) {
                                 try {
+                                    if (Authentication.reddit == null) {
+                                        return null;
+                                    }
                                     return Authentication.reddit.getRules(
                                             submission.getSubredditName());
                                 } catch (RuntimeException e) {
@@ -527,7 +536,7 @@ final AlertDialog reportDialog =
                             }
 
                             @Override
-                            protected void onPostExecute(Ruleset rules) {
+                            protected void onPostExecute(@Nullable Ruleset rules) {
                                 reportView.findViewById(R.id.report_loading).setVisibility(View.GONE);
                                 if (rules == null) {
                                     // Could not load rules (offline); leave the dialog as-is
@@ -788,7 +797,7 @@ final AlertDialog reportDialog =
                         BlendModeUtil.tintImageViewAsSrcAtop((ImageView) holder.save, ContextCompat.getColor(mContext, R.color.md_amber_500));
                         holder.save.setContentDescription(mContext.getString(R.string.btn_unsave));
                         s = Snackbar.make(holder.itemView, R.string.submission_info_saved, Snackbar.LENGTH_LONG);
-                        if (Authentication.me.hasGold()) {
+                        if (Authentication.me != null && Authentication.me.hasGold()) {
                             s.setAction(
                                     R.string.category_categorize,
                                     new View.OnClickListener() {
@@ -825,6 +834,7 @@ final AlertDialog reportDialog =
             final Submission submission, View itemView, final Context mContext) {
         new AsyncTask<Void, Void, List<String>>() {
 
+            @SuppressWarnings("NullAway.Init") // assigned in onPreExecute, before doInBackground
             Dialog d;
 
             @Override
@@ -942,7 +952,13 @@ final AlertDialog reportDialog =
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public static <T extends Contribution> void hideSubmission(final Submission submission, final List<T> posts, final String baseSub, final RecyclerView recyclerview, Context c) {
+    public static <T extends Contribution> void hideSubmission(final Submission submission, final List<T> posts, final @Nullable String baseSub, final @Nullable RecyclerView recyclerview, Context c) {
+        // No RecyclerView means this card is not in a feed (the peek view), so there is no row
+        // to remove and no anchor for the undo snackbar.
+        if (recyclerview == null) {
+            return;
+        }
+
         final RecyclerView.Adapter<?> adapter = recyclerview.getAdapter();
         if (adapter == null) {
             return;
@@ -1029,8 +1045,9 @@ final AlertDialog reportDialog =
      */
     @SuppressWarnings("unchecked")
     private static <T extends Contribution> List<T> resolveLivePosts(
-            final RecyclerView recyclerview, final List<T> captured) {
-        final RecyclerView.Adapter<?> adapter = recyclerview.getAdapter();
+            final @Nullable RecyclerView recyclerview, final List<T> captured) {
+        final RecyclerView.Adapter<?> adapter =
+                recyclerview == null ? null : recyclerview.getAdapter();
         if (adapter instanceof me.edgan.redditslide.Adapters.SubmissionAdapter) {
             final List<Submission> live =
                     ((me.edgan.redditslide.Adapters.SubmissionAdapter) adapter).dataSet.posts;

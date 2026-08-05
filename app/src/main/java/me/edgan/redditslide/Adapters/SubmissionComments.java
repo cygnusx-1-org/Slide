@@ -1,6 +1,7 @@
 package me.edgan.redditslide.Adapters;
 
 import android.os.AsyncTask;
+import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
@@ -50,12 +51,17 @@ public class SubmissionComments {
     public final SwipeRefreshLayout refreshLayout;
     private final String fullName;
     private final CommentPage page;
+    @SuppressWarnings("NullAway.Init")
     public ArrayList<CommentObject> comments;
     public HashMap<String, String> commentOPs = new HashMap<>();
+    @SuppressWarnings("NullAway.Init")
     public Submission submission;
+    @SuppressWarnings("NullAway.Init")
     private String context;
     private CommentSort defaultSorting = CommentSort.CONFIDENCE;
+    @SuppressWarnings("NullAway.Init")
     private CommentAdapter adapter;
+    @SuppressWarnings("NullAway.Init")
     public LoadData mLoadData;
     public boolean online = true;
     int contextNumber = 5;
@@ -175,6 +181,10 @@ public class SubmissionComments {
             sort = CommentSort.CONFIDENCE;
         args.put("sort", sort.name().toLowerCase(Locale.ENGLISH));
 
+        if (Authentication.reddit == null) {
+            throw new IllegalStateException("Not signed in");
+        }
+
         RestResponse response =
                 Authentication.reddit.execute(
                         Authentication.reddit
@@ -187,6 +197,10 @@ public class SubmissionComments {
     }
 
     public void reloadSubmission(CommentAdapter commentAdapter) {
+        if (Authentication.reddit == null) {
+            return;
+        }
+
         commentAdapter.submission =
                 Authentication.reddit.getSubmission(submission.getFullName().substring(3));
     }
@@ -214,7 +228,7 @@ public class SubmissionComments {
         }
 
         @Override
-        protected ArrayList<CommentObject> doInBackground(String... subredditPaginators) {
+        protected @Nullable ArrayList<CommentObject> doInBackground(String... subredditPaginators) {
             SubmissionRequest.Builder builder;
             if (context == null) {
                 single = false;

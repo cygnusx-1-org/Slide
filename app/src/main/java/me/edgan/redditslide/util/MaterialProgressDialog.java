@@ -7,13 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Visuals.ColorPreferences;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Lightweight replacement for the deprecated afollestad {@code MaterialDialog} progress dialogs.
@@ -24,6 +23,7 @@ import me.edgan.redditslide.Visuals.ColorPreferences;
  * {@code setMaxProgress} methods those sites relied on. Backed by a {@link
  * com.google.android.material.dialog.MaterialAlertDialogBuilder} and {@code R.layout.dialog_progress}.
  */
+@NullMarked
 public class MaterialProgressDialog {
     private final AlertDialog dialog;
     private final ProgressBar horizontal;
@@ -37,13 +37,13 @@ public class MaterialProgressDialog {
 
     public static class Builder {
         private final Context context;
-        private CharSequence title;
-        private CharSequence content;
+        private @Nullable CharSequence title;
+        private @Nullable CharSequence content;
         private boolean indeterminate = true;
         private int max = 0;
         private boolean cancelable = true;
         private boolean canceledOnTouchOutside = true;
-        private DialogInterface.OnShowListener showListener;
+        private @Nullable DialogInterface.OnShowListener showListener;
 
         public Builder(Context base) {
             this.context =

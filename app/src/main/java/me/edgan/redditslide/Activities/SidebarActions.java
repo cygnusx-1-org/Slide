@@ -3,7 +3,9 @@ package me.edgan.redditslide.Activities;
 import java.util.Locale;
 import me.edgan.redditslide.UserSubscriptions;
 import net.dean.jraw.models.Subreddit;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class SidebarActions {
 
     private final MainActivity mainActivity;

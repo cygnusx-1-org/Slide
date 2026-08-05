@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -24,7 +25,6 @@ import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsClient;
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.browser.customtabs.CustomTabsServiceConnection;
 import androidx.browser.customtabs.CustomTabsSession;
 import androidx.core.content.ContextCompat;
 import java.io.UnsupportedEncodingException;
@@ -32,6 +32,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Locale;
+import java.util.Objects;
 import me.edgan.redditslide.Activities.Crosspost;
 import me.edgan.redditslide.Activities.MakeExternal;
 import me.edgan.redditslide.Activities.ReaderMode;
@@ -44,12 +45,16 @@ import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.SubmissionViews.PopulateBase;
 import net.dean.jraw.models.Submission;
 import org.apache.commons.text.StringEscapeUtils;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class LinkUtil {
 
-    private static CustomTabsSession mCustomTabsSession;
-    private static CustomTabsClient mClient;
-    private static CustomTabsServiceConnection mConnection;
+    @Nullable private static CustomTabsSession mCustomTabsSession;
+
+    // Never assigned: nothing in the app binds a CustomTabsService, so getSession() always returns
+    // null and the custom tab is launched without a warmed-up session.
+    @Nullable private static CustomTabsClient mClient;
 
     public static final String EXTRA_URL = "url";
     public static final String EXTRA_COLOR = "color";
@@ -89,11 +94,16 @@ public class LinkUtil {
                         .setShareState(CustomTabsIntent.SHARE_STATE_ON)
                         .addMenuItem(
                                 contextActivity.getString(R.string.open_links_externally),
-                                pendingIntent)
-                        .setCloseButtonIcon(
-                                DrawableUtil.drawableToBitmap(
-                                        ContextCompat.getDrawable(
-                                                contextActivity, R.drawable.ic_arrow_back)));
+                                pendingIntent);
+
+        final Bitmap closeButtonIcon =
+                DrawableUtil.drawableToBitmap(
+                        Objects.requireNonNull(
+                                ContextCompat.getDrawable(
+                                        contextActivity, R.drawable.ic_arrow_back)));
+        if (closeButtonIcon != null) {
+            builder.setCloseButtonIcon(closeButtonIcon);
+        }
         try {
             CustomTabsIntent customTabsIntent = builder.build();
 
@@ -233,7 +243,7 @@ public class LinkUtil {
         Reddit.getAppContext().startActivity(intent);
     }
 
-    public static CustomTabsSession getSession() {
+    public static @Nullable CustomTabsSession getSession() {
         if (mClient == null) {
             mCustomTabsSession = null;
         } else if (mCustomTabsSession == null) {
@@ -241,7 +251,8 @@ public class LinkUtil {
                     mClient.newSession(
                             new CustomTabsCallback() {
                                 @Override
-                                public void onNavigationEvent(int navigationEvent, Bundle extras) {
+                                public void onNavigationEvent(
+                                        int navigationEvent, @Nullable Bundle extras) {
                                     Log.w(
                                             LogUtil.getTag(),
                                             "onNavigationEvent: Code = " + navigationEvent);
@@ -365,7 +376,7 @@ public class LinkUtil {
     /** Bottom sheet for a raw image/gif link: open externally, share, share image, save. */
     public static void showImageLinkBottomSheet(
             final Activity activity,
-            final String contentUrl,
+            final @Nullable String contentUrl,
             final boolean isGif,
             final Runnable saveAction) {
         int[] attrs = new int[] {R.attr.tintColor};
@@ -378,11 +389,12 @@ public class LinkUtil {
         Drawable save = BlendModeUtil.getTintedDrawable(activity, R.drawable.ic_download, color);
         ta.recycle();
 
-        BottomSheet.Builder b = new BottomSheet.Builder(activity).title(contentUrl);
+        final String url = contentUrl == null ? "" : contentUrl;
+        BottomSheet.Builder b = new BottomSheet.Builder(activity).title(url);
         b.sheet(2, external, activity.getString(R.string.open_externally));
         b.sheet(5, share, activity.getString(R.string.submission_link_share));
         if (!isGif) b.sheet(3, image, activity.getString(R.string.share_image));
-        String lcUrl = contentUrl == null ? "" : contentUrl.toLowerCase(Locale.ENGLISH);
+        String lcUrl = url.toLowerCase(Locale.ENGLISH);
         int q = lcUrl.indexOf('?');
         String path = q < 0 ? lcUrl : lcUrl.substring(0, q);
         boolean isVideo = path.endsWith(".mp4") || lcUrl.contains("format=mp4");
@@ -395,15 +407,22 @@ public class LinkUtil {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        // Nothing to open, share or save without a url; openExternally used to be
+                        // handed the null and log it, and the other two would have launched an
+                        // intent for nothing.
+                        if (url.isEmpty() && which != 4) {
+                            return;
+                        }
+
                         switch (which) {
                             case (2):
-                                LinkUtil.openExternally(contentUrl);
+                                LinkUtil.openExternally(url);
                                 break;
                             case (3):
-                                ShareUtil.shareImage(contentUrl, activity);
+                                ShareUtil.shareImage(url, activity);
                                 break;
                             case (5):
-                                Reddit.defaultShareText("", contentUrl, activity);
+                                Reddit.defaultShareText("", url, activity);
                                 break;
                             case (4):
                                 saveAction.run();

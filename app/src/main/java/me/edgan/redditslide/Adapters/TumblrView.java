@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -59,14 +60,14 @@ public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * height is known.
      */
     public boolean hasToolbarSpacer;
-    public String subreddit;
+    @Nullable public String subreddit;
 
     /**
      * Name for saved files and for MediaView's title, supplied by the host rather than read back off
      * it. This adapter also runs inside Shadowbox (TumblrFull), where the host activity is not the
      * Tumblr activity, and casting to it to reach {@code submissionTitle} threw ClassCastException.
      */
-    private final String submissionTitle;
+    @Nullable private final String submissionTitle;
 
     // Package-private, not private, so the row-mapping tests can name them rather than assert on
     // bare integers. Same visibility as VerticalMediaAdapter's copies.
@@ -81,8 +82,8 @@ public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public TumblrView(
             final Activity context,
             final List<Photo> users,
-            String subreddit,
-            String submissionTitle) {
+            @Nullable String subreddit,
+            @Nullable String submissionTitle) {
 
         main = context;
         this.users = users;
@@ -113,23 +114,20 @@ public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                                         long id) {
                                                     final int offset =
                                                             LayoutUtils.getToolbarOffset(context);
-                                                    if (context instanceof Tumblr) {
-                                                        ((LinearLayoutManager)
-                                                                        ((Tumblr) context)
-                                                                                .album.album
-                                                                                        .recyclerView
-                                                                                        .getLayoutManager())
-                                                                .scrollToPositionWithOffset(
-                                                                        position + 1, offset);
-                                                    } else {
-                                                        ((LinearLayoutManager)
-                                                                        ((RecyclerView)
-                                                                                        context
-                                                                                                .findViewById(
-                                                                                                        R
-                                                                                                                .id
-                                                                                                                .images))
-                                                                                .getLayoutManager())
+                                                    final RecyclerView.LayoutManager lm =
+                                                            context instanceof Tumblr
+                                                                    ? ((Tumblr) context)
+                                                                            .album.album
+                                                                            .recyclerView
+                                                                            .getLayoutManager()
+                                                                    : ((RecyclerView)
+                                                                                    context
+                                                                                            .findViewById(
+                                                                                                    R.id
+                                                                                                            .images))
+                                                                            .getLayoutManager();
+                                                    if (lm != null) {
+                                                        ((LinearLayoutManager) lm)
                                                                 .scrollToPositionWithOffset(
                                                                         position + 1, offset);
                                                     }
@@ -207,14 +205,15 @@ public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             // A photo whose JSON carried no original_size has nothing to show and nothing for a tap
             // to open; getOriginalSize() would be null and every use of it a crash. Same for the
             // photo itself, which Jackson leaves null for a null element in the photos array.
-            final boolean playable = user != null && user.hasOriginalSize();
-            final PhotoSize imageSize = playable ? user.getOriginalSize() : null;
+            final PhotoSize imageSize =
+                    (user != null && user.hasOriginalSize()) ? user.getOriginalSize() : null;
+            final String imageUrl = imageSize == null ? null : imageSize.getUrl();
+            final boolean playable = imageUrl != null;
 
-            if (playable) {
+            if (imageUrl != null) {
                 ((Reddit) main.getApplicationContext())
                         .getImageLoader()
-                        .displayImage(
-                                imageSize.getUrl(), albumHolder.image, ImageGridAdapter.options);
+                        .displayImage(imageUrl, albumHolder.image, ImageGridAdapter.options);
             } else {
                 ((Reddit) main.getApplicationContext())
                         .getImageLoader()
@@ -228,8 +227,8 @@ public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             // Reserve the row's height from the size Tumblr reported so that loading the bitmap
             // never resizes the row. Tumblr may omit either dimension, hence the null checks; the
             // 0 reset matters because the aspect ratio survives recycling.
-            final Integer imageWidth = playable ? imageSize.getWidth() : null;
-            final Integer imageHeight = playable ? imageSize.getHeight() : null;
+            final Integer imageWidth = imageSize == null ? null : imageSize.getWidth();
+            final Integer imageHeight = imageSize == null ? null : imageSize.getHeight();
             albumHolder.image.setAspectRatio(
                     (imageWidth != null && imageHeight != null && imageWidth > 0 && imageHeight > 0)
                             ? (double) imageHeight / (double) imageWidth
@@ -268,16 +267,20 @@ public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             albumHolder.itemView.setOnClickListener(!playable ? null : new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if (imageUrl == null) {
+                        return;
+                    }
+
                     if (SettingValues.image) {
                         Intent myIntent = new Intent(main, MediaView.class);
                         myIntent.putExtra(MediaView.SUBREDDIT, subreddit);
-                        myIntent.putExtra(MediaView.EXTRA_URL, imageSize.getUrl());
+                        myIntent.putExtra(MediaView.EXTRA_URL, imageUrl);
                         if (submissionTitle != null) {
                             myIntent.putExtra(MediaView.EXTRA_SUBMISSION_TITLE, submissionTitle);
                         }
                         main.startActivity(myIntent);
                     } else {
-                        LinkUtil.openExternally(imageSize.getUrl());
+                        LinkUtil.openExternally(imageUrl);
                     }
                 }
             });
@@ -309,7 +312,14 @@ public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 return;
             }
             final PhotoSize size = user.getOriginalSize();
-            final String gifUrl = size.getUrl();
+            final String gifUrl = size == null ? null : size.getUrl();
+            if (gifUrl == null) {
+                gifHolder.itemView.setTag(null);
+                gifHolder.gifCaption.setVisibility(View.GONE);
+                collapseRow(gifHolder);
+                gifHolder.loadState.released();
+                return;
+            }
 
             // Tag the itemView with the URL to check in callbacks
             gifHolder.itemView.setTag(gifUrl);
@@ -320,7 +330,10 @@ public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             // row that is already showing a decoded GIF, or one collapsed by a failure.
             if (gifHolder.loadState.shouldLoad(gifUrl)) {
                 gifHolder.loadState.loadStarted(gifUrl);
-                reserveSlot(gifHolder, size.getWidth(), size.getHeight());
+                reserveSlot(
+                        gifHolder,
+                        size == null ? null : size.getWidth(),
+                        size == null ? null : size.getHeight());
                 gifHolder.gifLoader.setVisibility(View.VISIBLE);
                 gifHolder.gifDisplay.setImageDrawable(null); // Clear previous drawable
                 gifHolder.gifCaption.setVisibility(View.GONE);
@@ -440,7 +453,9 @@ public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * aspect ratio survives recycling.
      */
     static void reserveSlot(
-            final GifViewHolder gifHolder, final Integer width, final Integer height) {
+            final GifViewHolder gifHolder,
+            final @Nullable Integer width,
+            final @Nullable Integer height) {
         gifHolder.gifDisplay.setAspectRatio(
                 (width != null && height != null && width > 0 && height > 0)
                         ? (double) height / (double) width

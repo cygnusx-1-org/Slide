@@ -1,5 +1,7 @@
 package me.edgan.redditslide.util;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 
@@ -9,14 +11,21 @@ import net.dean.jraw.http.HttpRequest;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class FlairUtil {
 
     /**
      * Fetches a subreddit's link-flair list (/api/link_flair_v2.json) through the authenticated
      * JRAW request builder, returning the raw JsonArray (null on failure).
      */
-    public static JsonArray fetchLinkFlairs(OkHttpClient client, Gson gson, String subreddit) {
+    public static @Nullable JsonArray fetchLinkFlairs(
+            OkHttpClient client, Gson gson, String subreddit) {
+        if (Authentication.reddit == null) {
+            return null;
+        }
+
         HttpRequest r =
                 Authentication.reddit
                         .request()

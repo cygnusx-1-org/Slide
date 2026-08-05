@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.widget.HorizontalScrollView;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import java.util.List;
 import me.edgan.redditslide.OpenRedditLink;
@@ -15,8 +16,11 @@ import me.edgan.redditslide.Views.SidebarLayout;
 import me.edgan.redditslide.Views.TitleTextView;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.util.MiscUtil;
+import me.edgan.redditslide.util.PrefUtil;
 import me.edgan.redditslide.util.SubmissionParser;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class Announcement extends BaseActivity {
 
     @Override
@@ -26,7 +30,7 @@ public class Announcement extends BaseActivity {
     }
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         overridePendingTransition(R.anim.fade_in_real, 0);
         disableSwipeBackLayout();
         applyColorTheme();
@@ -44,17 +48,17 @@ public class Announcement extends BaseActivity {
         AppCompatButton commentsBtn = (AppCompatButton) findViewById(R.id.submission_dialog_comments);
 
         setViews(
-                Reddit.appRestart.getString("page", ""),
+                PrefUtil.getString(Reddit.appRestart, "page", ""),
                 "NO SUB",
                 spoilerRobotoTextView,
                 commentOverflow);
-        titleTextView.setText(Reddit.appRestart.getString("title", ""));
+        titleTextView.setText(PrefUtil.getString(Reddit.appRestart, "title", ""));
 
         okBtn.setOnClickListener(v -> finish());
 
         commentsBtn.setOnClickListener(
                 v -> {
-                    OpenRedditLink.openUrl(Announcement.this, Reddit.appRestart.getString("url", ""), true);
+                    OpenRedditLink.openUrl(Announcement.this, PrefUtil.getString(Reddit.appRestart, "url", ""), true);
                     finish();
                 });
     }

@@ -17,13 +17,22 @@ import me.edgan.redditslide.Visuals.ColorPreferences;
 import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.SubmissionSearchPaginator;
 import net.dean.jraw.paginators.TimePeriod;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class SortingUtil {
     public static final Map<String, TimePeriod> times = new HashMap<>();
     public static SubmissionSearchPaginator.SearchSort search =
             SubmissionSearchPaginator.SearchSort.RELEVANCE;
+    // All three are assigned unconditionally by Reddit.doMainStuff, immediately after
+    // SettingValues.setAllValues, before any Slide component can read them.
+    @SuppressWarnings("NullAway.Init")
     public static Sorting defaultSorting;
+
+    @SuppressWarnings("NullAway.Init")
     public static Sorting frontpageSorting;
+
+    @SuppressWarnings("NullAway.Init")
     public static TimePeriod timePeriod;
 
     public static Integer getSortingId(Sorting sort) {

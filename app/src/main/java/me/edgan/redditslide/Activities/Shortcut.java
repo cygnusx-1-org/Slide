@@ -5,6 +5,7 @@ import android.text.Editable;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import me.edgan.redditslide.Adapters.SubChooseAdapter;
 import me.edgan.redditslide.R;
@@ -13,12 +14,14 @@ import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 10/2/2015. */
+@NullMarked
 public class Shortcut extends BaseActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         getTheme().applyStyle(new FontPreferences(this).getCommentFontStyle().getResId(), true);
         getTheme().applyStyle(new FontPreferences(this).getPostFontStyle().getResId(), true);
         getTheme().applyStyle(new ColorPreferences(this).getFontStyle().getBaseId(), true);
@@ -27,6 +30,7 @@ public class Shortcut extends BaseActivity {
         doShortcut();
     }
 
+    @SuppressWarnings("NullAway.Init")
     View header;
 
     public void doShortcut() {

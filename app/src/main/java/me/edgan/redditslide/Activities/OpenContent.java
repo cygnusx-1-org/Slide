@@ -6,19 +6,22 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import java.util.Locale;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 9/28/2015. */
+@NullMarked
 public class OpenContent extends Activity {
 
     public static final String EXTRA_URL = "url";
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         super.onCreate(savedInstance);
         setContentView(R.layout.clear);
 

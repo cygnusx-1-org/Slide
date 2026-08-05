@@ -3,12 +3,10 @@ package me.edgan.redditslide.Fragments;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.List;
-
 import me.edgan.redditslide.Activities.ShadowboxComments;
 import me.edgan.redditslide.Adapters.AlbumView;
 import me.edgan.redditslide.Adapters.CommentUrlObject;
@@ -17,13 +15,12 @@ import me.edgan.redditslide.ImgurAlbum.Image;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.SubmissionViews.PopulateShadowboxInfo;
 import me.edgan.redditslide.util.FileUtil;
-
 import net.dean.jraw.models.Comment;
 
 /** Created by ccrama on 6/2/2015. */
 public class AlbumFullComments extends BaseAlbumFull {
 
-    private CommentUrlObject s;
+    @Nullable private CommentUrlObject s;
 
     @Override
     protected void bindActionbar() {
@@ -33,7 +30,7 @@ public class AlbumFullComments extends BaseAlbumFull {
     }
 
     @Override
-    protected String getAlbumUrl() {
+    protected @Nullable String getAlbumUrl() {
         return s == null ? null : s.url;
     }
 
@@ -71,10 +68,10 @@ public class AlbumFullComments extends BaseAlbumFull {
         }
 
         @Override
-        public boolean doWithData(final List<Image> jsonElements) {
+        public boolean doWithData(final @Nullable List<Image> jsonElements) {
             // Nothing usable came back, so there is no album to build; super has already told
             // onError().
-            if (!super.doWithData(jsonElements)) {
+            if (!super.doWithData(jsonElements) || jsonElements == null) {
                 return false;
             }
             // May be a bug with downloading multiple comment albums off the same submission
@@ -82,15 +79,17 @@ public class AlbumFullComments extends BaseAlbumFull {
                     new AlbumView(
                             baseActivity,
                             jsonElements,
-                            s.getSubredditName(),
-                            FileUtil.buildDownloadName(s.comment.getComment()));
+                            s == null ? null : s.getSubredditName(),
+                            s == null
+                                    ? null
+                                    : FileUtil.buildDownloadName(s.comment.getComment()));
             ((RecyclerView) list).setAdapter(adapter);
             return true;
         }
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         int page = this.getArguments().getInt("page", 0);
         // The backing list is static; after process death it comes back null/empty while

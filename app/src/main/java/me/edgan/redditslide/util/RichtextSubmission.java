@@ -19,6 +19,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Submits comments and self-posts using the Reddit {@code richtext_json} parameter, which is what
@@ -28,6 +29,7 @@ import org.json.JSONObject;
  * <p>Used only when the body contains at least one uploaded image; otherwise the normal JRAW path
  * is kept.
  */
+@NullMarked
 public final class RichtextSubmission {
 
     private RichtextSubmission() {}
@@ -83,7 +85,7 @@ public final class RichtextSubmission {
     }
 
     /** Recursively searches a response for the first {@code name} field with the given prefix. */
-    private static String findThingId(JsonNode node, String prefix) {
+    private static @Nullable String findThingId(@Nullable JsonNode node, String prefix) {
         if (node == null) {
             return null;
         }
@@ -158,7 +160,7 @@ public final class RichtextSubmission {
      * @return the post permalink if Reddit returned one, otherwise {@code null} (image posts are
      *     often finalized asynchronously and only return a websocket URL)
      */
-    public static String submitImage(
+    public static @Nullable String submitImage(
             RedditClient client,
             String subreddit,
             String title,
@@ -199,7 +201,7 @@ public final class RichtextSubmission {
      *
      * @return the post permalink if Reddit returned one, otherwise {@code null}
      */
-    public static String submitGallery(
+    public static @Nullable String submitGallery(
             RedditClient client,
             String subreddit,
             String title,
@@ -276,7 +278,7 @@ public final class RichtextSubmission {
         return id != null ? "t3_" + id : null;
     }
 
-    private static void throwIfError(JsonNode root) throws RedditApiError {
+    private static void throwIfError(@Nullable JsonNode root) throws RedditApiError {
         if (root == null) {
             throw new RedditApiError("Empty response from Reddit");
         }

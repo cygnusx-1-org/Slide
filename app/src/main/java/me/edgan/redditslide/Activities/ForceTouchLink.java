@@ -5,13 +5,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
-
+import androidx.annotation.Nullable;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.Views.ExoVideoView;
 import me.edgan.redditslide.util.GifUtils;
 import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Created by ccrama on 01/29/2016.
@@ -19,10 +20,11 @@ import me.edgan.redditslide.util.MiscUtil;
  * <p>This activity is the basis for the possible inclusion of some sort of "Force Touch" preview
  * system for comment links.
  */
+@NullMarked
 public class ForceTouchLink extends BaseActivityAnim {
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
 
         overridePendingTransition(0, 0);
         super.onCreate(savedInstance);
@@ -50,7 +52,7 @@ public class ForceTouchLink extends BaseActivityAnim {
             finish();
             return;
         }
-        final String url = extras.getString("url");
+        final String url = extras.getString("url", "");
 
         ContentType.Type t = ContentType.getContentType(url);
 

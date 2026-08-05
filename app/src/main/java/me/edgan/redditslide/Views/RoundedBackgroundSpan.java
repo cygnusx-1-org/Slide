@@ -7,10 +7,13 @@ import android.graphics.RectF;
 import android.text.style.ReplacementSpan;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import com.devspark.robototextview.RobotoTypefaces;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by carlo_000 on 3/11/2016. */
+@NullMarked
 public class RoundedBackgroundSpan extends ReplacementSpan {
 
     private int backgroundColor = 0;
@@ -82,7 +85,11 @@ public class RoundedBackgroundSpan extends ReplacementSpan {
 
     @Override
     public int getSize(
-            Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
+            Paint paint,
+            CharSequence text,
+            int start,
+            int end,
+            @Nullable Paint.FontMetricsInt fm) {
         paint.setTypeface(
                 RobotoTypefaces.obtainTypeface(c, RobotoTypefaces.TYPEFACE_ROBOTO_CONDENSED_BOLD));
         final int size = Math.round(paint.measureText(text, start, end));

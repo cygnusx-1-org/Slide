@@ -2,6 +2,7 @@ package me.edgan.redditslide.Activities;
 
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -14,13 +15,16 @@ import me.edgan.redditslide.Fragments.MediaFragmentComment;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.models.Comment;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 9/17/2015. */
+@NullMarked
 public class ShadowboxComments extends FullScreenActivity {
+    @SuppressWarnings("NullAway.Init")
     public static ArrayList<CommentUrlObject> comments;
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         overrideSwipeFromAnywhere();
 
         if (comments == null || comments.isEmpty()) {
@@ -83,7 +87,7 @@ public class ShadowboxComments extends FullScreenActivity {
                     f.setArguments(args);
                     break;
             }
-            return f;
+            return java.util.Objects.requireNonNull(f);
         }
 
         @Override

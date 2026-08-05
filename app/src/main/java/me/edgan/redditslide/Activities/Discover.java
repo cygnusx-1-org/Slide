@@ -7,26 +7,27 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.animation.LinearInterpolator;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-
 import com.google.android.material.tabs.TabLayout;
-
 import me.edgan.redditslide.Fragments.SubredditListView;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 9/17/2015. */
+@NullMarked
 public class Discover extends BaseActivityAnim {
 
+    @SuppressWarnings("NullAway.Init")
     public DiscoverPagerAdapter adapter;
 
     @Override
@@ -66,7 +67,7 @@ public class Discover extends BaseActivityAnim {
     }
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         overrideSwipeFromAnywhere();
 
         super.onCreate(savedInstance);
@@ -78,7 +79,7 @@ public class Discover extends BaseActivityAnim {
         ((DrawerLayout) findViewById(R.id.drawer_layout))
                 .setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         setupAppBar(R.id.toolbar, R.string.discover_title, true, false);
-        mToolbar.setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
+        requireToolbar().setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
 
         findViewById(R.id.header).setBackgroundColor(Palette.getDefaultColor());
         TabLayout tabs = (TabLayout) findViewById(R.id.sliding_tabs);

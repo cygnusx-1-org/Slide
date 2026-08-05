@@ -2,16 +2,18 @@ package me.edgan.redditslide.ui.settings;
 
 import android.os.Bundle;
 import android.view.ViewGroup;
-
+import androidx.annotation.Nullable;
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class SettingsModeration extends BaseActivityAnim {
     private SettingsModerationFragment fragment = new SettingsModerationFragment(this);
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_moderation);

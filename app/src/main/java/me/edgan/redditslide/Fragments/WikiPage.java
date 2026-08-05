@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.webkit.WebViewClientCompat;
@@ -26,19 +26,21 @@ public class WikiPage extends Fragment {
     private String subreddit;
     private String wikiUrl;
 
-    private WikiPageListener listener;
+    @Nullable private WikiPageListener listener;
 
     private WebView webView;
     private SwipeRefreshLayout ref;
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.justtext, container, false);
     }
 
     @Override
-    public void onViewCreated(@NonNull final View view, Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         ref = view.findViewById(R.id.ref);
@@ -126,7 +128,7 @@ public class WikiPage extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = this.getArguments();
         title = bundle.getString("title", "");
@@ -166,7 +168,9 @@ public class WikiPage extends Fragment {
     private class WikiPageJavaScriptInterface {
         @JavascriptInterface
         public void overflowTouched() {
-            listener.overflowTouched();
+            if (listener != null) {
+                listener.overflowTouched();
+            }
         }
     }
 

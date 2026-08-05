@@ -13,6 +13,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import androidx.annotation.Nullable;
 import com.devspark.robototextview.RobotoTypefaces;
 import java.util.List;
 import me.edgan.redditslide.R;
@@ -22,11 +23,16 @@ import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.util.CommentImageUtil;
 import me.edgan.redditslide.util.DisplayUtil;
 import me.edgan.redditslide.util.SubmissionParser;
+import org.jspecify.annotations.NullMarked;
 
 /** Class that provides methods to help bind submissions with multiple blocks of text. */
+@NullMarked
 public class CommentOverflow extends LinearLayout {
+    // Assigned by init(context), which every constructor calls.
+    @SuppressWarnings("NullAway.Init")
     private ColorPreferences colorPreferences;
-    private Typeface typeface = null;
+
+    @Nullable private Typeface typeface = null;
     private int textColor;
     private int fontSize;
     private static final MarginLayoutParams COLUMN_PARAMS;
@@ -108,8 +114,8 @@ public class CommentOverflow extends LinearLayout {
     public void setViews(
             List<String> blocks,
             String subreddit,
-            OnClickListener click,
-            OnLongClickListener longClick) {
+            @Nullable OnClickListener click,
+            @Nullable OnLongClickListener longClick) {
         Context context = getContext();
         int type = new FontPreferences(context).getFontTypeComment().getTypeface();
         if (type >= 0) {
@@ -202,7 +208,10 @@ public class CommentOverflow extends LinearLayout {
     }
 
     private TableLayout formatTable(
-            String text, String subreddit, OnClickListener click, OnLongClickListener longClick) {
+            String text,
+            String subreddit,
+            @Nullable OnClickListener click,
+            @Nullable OnLongClickListener longClick) {
         TableRow.LayoutParams rowParams =
                 new TableRow.LayoutParams(
                         TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);

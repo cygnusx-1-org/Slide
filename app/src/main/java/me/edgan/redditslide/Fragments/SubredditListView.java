@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.fragment.app.Fragment;
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
@@ -27,18 +28,25 @@ import me.edgan.redditslide.util.LogUtil;
 import net.dean.jraw.models.Subreddit;
 
 public class SubredditListView extends Fragment {
+    // posts, rv and adapter are all built in onCreateView, before any callback below runs.
+    @SuppressWarnings("NullAway.Init")
     public SubredditNames posts;
+
+    @SuppressWarnings("NullAway.Init")
     public RecyclerView rv;
     private int visibleItemCount;
     private int pastVisiblesItems;
     private int totalItemCount;
+    @SuppressWarnings("NullAway.Init")
     public SubredditAdapter adapter;
     public String where;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
 
         final Context contextThemeWrapper =
                 new ContextThemeWrapper(
@@ -90,18 +98,21 @@ public class SubredditListView extends Fragment {
         mSwipeRefreshLayout.setOnRefreshListener(this::refresh);
         rv.addOnScrollListener(
                 new ToolbarScrollHideHandler(
-                        ((BaseActivity) getActivity()).mToolbar,
+                        ((BaseActivity) getActivity()).requireToolbar(),
                         getActivity().findViewById(R.id.header)) {
 
                     @Override
                     public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                         super.onScrolled(recyclerView, dx, dy);
                         if (!posts.loading && !posts.nomore) {
-                            visibleItemCount = rv.getLayoutManager().getChildCount();
-                            totalItemCount = rv.getLayoutManager().getItemCount();
+                            final RecyclerView.LayoutManager lm = rv.getLayoutManager();
+                            if (lm == null) return;
+
+                            visibleItemCount = lm.getChildCount();
+                            totalItemCount = lm.getItemCount();
 
                             pastVisiblesItems =
-                                    ((LinearLayoutManager) rv.getLayoutManager())
+                                    ((LinearLayoutManager) lm)
                                             .findFirstVisibleItemPosition();
                             if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
                                 posts.loading = true;
@@ -114,7 +125,7 @@ public class SubredditListView extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = this.getArguments();
         where = bundle.getString("id", "");

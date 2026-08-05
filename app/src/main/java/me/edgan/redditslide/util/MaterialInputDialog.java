@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SwitchCompat;
 
@@ -17,6 +18,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Lightweight replacement for the deprecated afollestad {@code MaterialDialog} text-input dialogs.
@@ -26,6 +28,7 @@ import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
  * and {@link #getActionButton(int)} so call sites migrate with minimal changes. Backed by a {@link
  * com.google.android.material.dialog.MaterialAlertDialogBuilder} wrapping a {@link TextInputLayout}.
  */
+@NullMarked
 public class MaterialInputDialog {
 
     /** Invoked (after show, then on every text change) with the current input. */
@@ -40,9 +43,10 @@ public class MaterialInputDialog {
 
     private final AlertDialog dialog;
     private final EditText editText;
-    private final SwitchCompat toggle;
+    private final @Nullable SwitchCompat toggle;
 
-    private MaterialInputDialog(AlertDialog dialog, EditText editText, SwitchCompat toggle) {
+    private MaterialInputDialog(
+            AlertDialog dialog, EditText editText, @Nullable SwitchCompat toggle) {
         this.dialog = dialog;
         this.editText = editText;
         this.toggle = toggle;
@@ -72,23 +76,23 @@ public class MaterialInputDialog {
 
     public static class Builder {
         private final Context context;
-        private CharSequence title;
-        private CharSequence content;
-        private CharSequence hint;
-        private CharSequence prefill;
+        private @Nullable CharSequence title;
+        private @Nullable CharSequence content;
+        private @Nullable CharSequence hint;
+        private @Nullable CharSequence prefill;
         private int inputType = InputType.TYPE_CLASS_TEXT;
         private int minLength = 0;
         private int maxLength = -1;
-        private InputCallback inputCallback;
-        private CharSequence positiveText;
-        private CharSequence negativeText;
-        private CharSequence neutralText;
-        private ButtonCallback onPositive;
-        private ButtonCallback onNegative;
-        private ButtonCallback onNeutral;
+        private @Nullable InputCallback inputCallback;
+        private @Nullable CharSequence positiveText;
+        private @Nullable CharSequence negativeText;
+        private @Nullable CharSequence neutralText;
+        private @Nullable ButtonCallback onPositive;
+        private @Nullable ButtonCallback onNegative;
+        private @Nullable ButtonCallback onNeutral;
         private boolean cancelable = true;
         private boolean autoDismiss = true;
-        private CharSequence toggleLabel;
+        private @Nullable CharSequence toggleLabel;
         private boolean toggleDefaultOn;
 
         public Builder(Context base) {
@@ -128,7 +132,10 @@ public class MaterialInputDialog {
             return this;
         }
 
-        public Builder input(CharSequence hint, CharSequence prefill, InputCallback callback) {
+        public Builder input(
+                @Nullable CharSequence hint,
+                @Nullable CharSequence prefill,
+                @Nullable InputCallback callback) {
             this.hint = hint;
             this.prefill = prefill;
             this.inputCallback = callback;
@@ -145,7 +152,7 @@ public class MaterialInputDialog {
             return this;
         }
 
-        public Builder onPositive(ButtonCallback cb) {
+        public Builder onPositive(@Nullable ButtonCallback cb) {
             this.onPositive = cb;
             return this;
         }
@@ -160,7 +167,7 @@ public class MaterialInputDialog {
             return this;
         }
 
-        public Builder onNegative(ButtonCallback cb) {
+        public Builder onNegative(@Nullable ButtonCallback cb) {
             this.onNegative = cb;
             return this;
         }
@@ -175,7 +182,7 @@ public class MaterialInputDialog {
             return this;
         }
 
-        public Builder onNeutral(ButtonCallback cb) {
+        public Builder onNeutral(@Nullable ButtonCallback cb) {
             this.onNeutral = cb;
             return this;
         }

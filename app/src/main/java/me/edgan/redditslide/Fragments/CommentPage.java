@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.Toolbar;
@@ -104,6 +105,7 @@ import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
+import me.edgan.redditslide.util.PrefUtil;
 import me.edgan.redditslide.util.ReauthNotifier;
 import me.edgan.redditslide.util.StringUtil;
 import me.edgan.redditslide.util.SubmissionParser;
@@ -137,8 +139,14 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
     private SwipeRefreshLayout mSwipeRefreshLayout;
     public RecyclerView rv;
     private int page;
+    // comments and adapter are both built in onCreateView, before any of the callbacks below
+    // can run.
+    @SuppressWarnings("NullAway.Init")
     private SubmissionComments comments;
+
     private boolean single;
+
+    @SuppressWarnings("NullAway.Init")
     public CommentAdapter adapter;
     private String fullname;
 
@@ -171,19 +179,22 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
     private boolean currentlySubbed;
     private boolean collapsed = SettingValues.collapseCommentsDefault;
 
-    public void doResult(Intent data) {
-        if (data.hasExtra("fullname")) {
-            String fullname = data.getExtras().getString("fullname");
+    public void doResult(@Nullable Intent data) {
+        if (data != null && data.hasExtra("fullname")) {
+            Bundle extras = data.getExtras();
+            String fullname = extras == null ? null : extras.getString("fullname");
 
-            adapter.currentSelectedItem = fullname;
+            adapter.currentSelectedItem = fullname == null ? "" : fullname;
             adapter.reset(getContext(), comments, rv, comments.submission, true);
             adapter.notifyDataSetChanged();
             int i = 2;
             for (CommentObject n : comments.comments) {
                 if (n instanceof CommentItem
                         && n.comment.getComment().getFullName().contains(fullname)) {
-                    ((PreCachingLayoutManagerComments) rv.getLayoutManager())
-                            .scrollToPositionWithOffset(i, toolbar.getHeight());
+                    if (rv.getLayoutManager() != null) {
+                        ((PreCachingLayoutManagerComments) rv.getLayoutManager())
+                                .scrollToPositionWithOffset(i, toolbar.getHeight());
+                    }
                     break;
                 }
                 i++;
@@ -192,17 +203,18 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 423 && resultCode == Activity.RESULT_OK) {
             doResult(data);
-        } else if (requestCode == 3333) {
+        } else if (requestCode == 3333 && getFragmentManager() != null) {
             for (Fragment fragment : getFragmentManager().getFragments()) {
                 fragment.onActivityResult(requestCode, resultCode, data);
             }
         }
     }
 
+    @SuppressWarnings("NullAway.Init") // built in onCreateView
     ToolbarScrollHideHandler toolbarScroll;
     public Toolbar toolbar;
     public int headerHeight;
@@ -331,13 +343,15 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         LayoutInflater localInflater = inflater.cloneInContext(contextThemeWrapper);
         v = localInflater.inflate(R.layout.fragment_verticalcontenttoolbar, container, false);
 
         rv = v.findViewById(R.id.vertical_content);
         rv.setLayoutManager(mLayoutManager);
-        rv.getLayoutManager().scrollToPosition(0);
+        mLayoutManager.scrollToPosition(0);
 
         toolbar = v.findViewById(R.id.toolbar);
         toolbar.setPopupTheme(new ColorPreferences(getActivity()).getFontStyle().getBaseId());
@@ -397,10 +411,13 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                         new String[] {adapter.submission.getAuthor()});
                             }
 
-                            replyDialog
-                                    .getWindow()
-                                    .setSoftInputMode(
-                                            WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+                            if (replyDialog.getWindow() != null) {
+                                replyDialog
+                                        .getWindow()
+                                        .setSoftInputMode(
+                                                WindowManager.LayoutParams
+                                                        .SOFT_INPUT_ADJUST_RESIZE);
+                            }
 
                             replyView
                                     .findViewById(R.id.cancel)
@@ -422,8 +439,10 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                     new HashMap<>();
 
                                             for (String s :
-                                                    Authentication.authentication.getStringSet(
-                                                            "accounts", new HashSet<String>())) {
+                                                    PrefUtil.getStringSet(
+                                                            Authentication.authentication,
+                                                            "accounts",
+                                                            new HashSet<String>())) {
                                                 if (s.contains(":")) {
                                                     accounts.put(s.split(":")[0], s.split(":")[1]);
                                                 } else {
@@ -742,7 +761,9 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                             @Override
                             public boolean onLongClick(View v) {
                                 // Scroll to top
-                                rv.getLayoutManager().scrollToPosition(1);
+                                if (rv.getLayoutManager() != null) {
+                                    rv.getLayoutManager().scrollToPosition(1);
+                                }
                                 return true;
                             }
                         });
@@ -848,8 +869,10 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ((LinearLayoutManager) rv.getLayoutManager())
-                                .scrollToPositionWithOffset(1, headerHeight);
+                        if (rv.getLayoutManager() != null) {
+                            ((LinearLayoutManager) rv.getLayoutManager())
+                                    .scrollToPositionWithOffset(1, headerHeight);
+                        }
                         resetScroll(false);
                     }
                 });
@@ -1372,7 +1395,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                                 .show()
                                                                 .getDialog();
                                                 new AsyncTask<Void, Void, Void>() {
-                                                    ArrayList<UserRecord> mods;
+                                                    ArrayList<UserRecord> mods = new ArrayList<>();
 
                                                     @Override
                                                     protected Void doInBackground(Void... params) {
@@ -1482,7 +1505,9 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                                 getContext());
                                                     }
                                                     for (MultiReddit r :
-                                                            UserSubscriptions.multireddits) {
+                                                            UserSubscriptions.multireddits == null
+                                                                    ? new ArrayList<MultiReddit>()
+                                                                    : UserSubscriptions.multireddits) {
                                                         multis.put(r.getDisplayName(), r);
                                                     }
                                                     return null;
@@ -1537,10 +1562,17 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                                                                 subs =
                                                                                                         new ArrayList<
                                                                                                                 String>();
+                                                                                        final MultiReddit
+                                                                                                chosenMulti =
+                                                                                                        multis.get(
+                                                                                                                multiName);
+                                                                                        if (chosenMulti
+                                                                                                == null) {
+                                                                                            return null;
+                                                                                        }
                                                                                         for (MultiSubreddit
                                                                                                 sub :
-                                                                                                        multis.get(
-                                                                                                                        multiName)
+                                                                                                        chosenMulti
                                                                                                                 .getSubreddits()) {
                                                                                             subs
                                                                                                     .add(
@@ -1959,8 +1991,11 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
         }
 
         @Override
-        protected Subreddit doInBackground(final String... params) {
+        protected @Nullable Subreddit doInBackground(final String... params) {
             try {
+                if (Authentication.reddit == null) {
+                    return null;
+                }
                 return Authentication.reddit.getSubreddit(params[0]);
             } catch (Exception e) {
                 try {
@@ -1971,6 +2006,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
             }
         }
 
+        @SuppressWarnings("NullAway.Init") // assigned in onPreExecute
         Dialog d;
 
         @Override
@@ -1986,6 +2022,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
         }
     }
 
+    @SuppressWarnings("NullAway.Init") // set from the bundle in onCreate
     public CommentSort commentSorting;
 
     private void addClickFunctionSubName(Toolbar toolbar) {
@@ -2073,7 +2110,10 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
             } else {
                 Submission s = ((MainActivity) getActivity()).openingComments;
                 doRefresh(false);
-                comments = new SubmissionComments(fullname, this, mSwipeRefreshLayout, s);
+                comments =
+                        s == null
+                                ? new SubmissionComments(fullname, this, mSwipeRefreshLayout)
+                                : new SubmissionComments(fullname, this, mSwipeRefreshLayout, s);
                 if (adapter == null) {
                     adapter = new CommentAdapter(this, comments, rv, s, getFragmentManager());
                     rv.setAdapter(adapter);
@@ -2144,7 +2184,8 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                         getContext(),
                         comments,
                         rv,
-                        (getActivity() instanceof MainActivity)
+                        (getActivity() instanceof MainActivity
+                                        && ((MainActivity) getActivity()).openingComments != null)
                                 ? ((MainActivity) getActivity()).openingComments
                                 : comments.submission,
                         b);
@@ -2164,7 +2205,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = this.getArguments();
         subreddit = bundle.getString("subreddit", "");
@@ -2432,7 +2473,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
 
     public void doGoUp(int old) {
         int depth = -1;
-        if (adapter.currentlySelected != null) {
+        if (adapter.currentlySelected != null && adapter.currentNode != null) {
             depth = adapter.currentNode.getDepth();
         }
         int pos = (old < 2) ? 0 : old - 1;
@@ -2446,12 +2487,16 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                         if (i + 2 == old) {
                             doGoUp(old - 1);
                         } else {
-                            (((PreCachingLayoutManagerComments) rv.getLayoutManager()))
-                                    .scrollToPositionWithOffset(
-                                            i + 2,
-                                            ((View) toolbar.getParent()).getTranslationY() != 0
-                                                    ? 0
-                                                    : (v.findViewById(R.id.header)).getHeight());
+                            if (rv.getLayoutManager() != null) {
+                                (((PreCachingLayoutManagerComments) rv.getLayoutManager()))
+                                        .scrollToPositionWithOffset(
+                                                i + 2,
+                                                ((View) toolbar.getParent()).getTranslationY()
+                                                                != 0
+                                                        ? 0
+                                                        : (v.findViewById(R.id.header))
+                                                                .getHeight());
+                            }
                         }
                         break;
                     }
@@ -2490,19 +2535,21 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
 
     public void doGoDown(int old) {
         int depth = -1;
-        if (adapter.currentlySelected != null) {
+        if (adapter.currentlySelected != null && adapter.currentNode != null) {
             depth = adapter.currentNode.getDepth();
         }
         int pos = old - 2;
         if (pos < 0) pos = 0;
         String original = adapter.currentComments.get(adapter.getRealPosition(pos)).getName();
         if (old < 2) {
-            (((PreCachingLayoutManagerComments) rv.getLayoutManager()))
-                    .scrollToPositionWithOffset(
-                            2,
-                            ((View) toolbar.getParent()).getTranslationY() != 0
-                                    ? 0
-                                    : (v.findViewById(R.id.header).getHeight()));
+            if (rv.getLayoutManager() != null) {
+                (((PreCachingLayoutManagerComments) rv.getLayoutManager()))
+                        .scrollToPositionWithOffset(
+                                2,
+                                ((View) toolbar.getParent()).getTranslationY() != 0
+                                        ? 0
+                                        : (v.findViewById(R.id.header).getHeight()));
+            }
         } else {
             for (int i = pos + 1; i < adapter.currentComments.size(); i++) {
                 try {
@@ -2513,13 +2560,17 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                             if (o.getName().equals(original)) {
                                 doGoDown(i + 2);
                             } else {
-                                (((PreCachingLayoutManagerComments) rv.getLayoutManager()))
-                                        .scrollToPositionWithOffset(
-                                                i + 2,
-                                                ((View) toolbar.getParent()).getTranslationY() != 0
-                                                        ? 0
-                                                        : (v.findViewById(R.id.header)
-                                                                .getHeight()));
+                                if (rv.getLayoutManager() != null) {
+                                    (((PreCachingLayoutManagerComments) rv.getLayoutManager()))
+                                            .scrollToPositionWithOffset(
+                                                    i + 2,
+                                                    ((View) toolbar.getParent())
+                                                                            .getTranslationY()
+                                                                    != 0
+                                                            ? 0
+                                                            : (v.findViewById(R.id.header)
+                                                                    .getHeight()));
+                                }
                             }
                             break;
                         }

@@ -9,6 +9,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import java.util.ArrayList;
 import java.util.List;
 import me.edgan.redditslide.R;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Drawer that allows for horizontal scrolling views.
@@ -18,6 +19,7 @@ import me.edgan.redditslide.R;
  *
  * <p>Only supports R.id.commentOverflow for now, but could be updated to support any view.
  */
+@NullMarked
 public class SidebarLayout extends DrawerLayout {
     private List<View> scrollableViews = new ArrayList<>();
 

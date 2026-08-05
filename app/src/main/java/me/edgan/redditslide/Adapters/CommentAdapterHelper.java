@@ -34,6 +34,7 @@ import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
@@ -154,7 +155,8 @@ public class CommentAdapterHelper {
                 b.sheet(3, saved, save);
                 b.sheet(16, report, mContext.getString(R.string.btn_report));
             }
-            if (Authentication.name.equalsIgnoreCase(baseNode.getComment().getAuthor())) {
+            if (Authentication.nameOrEmpty()
+                    .equalsIgnoreCase(baseNode.getComment().getAuthor())) {
                 b.sheet(50, replies, mContext.getString(R.string.disable_replies_comment));
             }
         }
@@ -168,7 +170,7 @@ public class CommentAdapterHelper {
         if (CommentRecovery.isRemovedOrDeleted(n) && !CommentRecovery.isRecovered(n.getFullName())) {
             b.sheet(63, history, mContext.getString(R.string.recover_comment));
         }
-        if (!adapter.currentBaseNode.isTopLevel()) {
+        if (!baseNode.isTopLevel()) {
             b.sheet(10, parent, mContext.getString(R.string.comment_parent));
         }
         b.listener(
@@ -271,7 +273,7 @@ final AlertDialog reportDialog =
                                                                                     .toString();
                                                                 }
                                                                 new AsyncReportTask(
-                                                                                adapter.currentBaseNode,
+                                                                                baseNode,
                                                                                 adapter.listView)
                                                                         .execute(reportReason);
                                                             }
@@ -301,10 +303,13 @@ final AlertDialog reportDialog =
                                 // Load sub's report reasons and show the appropriate ones
                                 new AsyncTask<Void, Void, Ruleset>() {
                                     @Override
-                                    protected Ruleset doInBackground(Void... voids) {
+                                    protected @Nullable Ruleset doInBackground(Void... voids) {
                                         try {
+                                            if (Authentication.reddit == null) {
+                                                return null;
+                                            }
                                             return Authentication.reddit.getRules(
-                                                    adapter.currentBaseNode
+                                                    baseNode
                                                             .getComment()
                                                             .getSubredditName());
                                         } catch (RuntimeException e) {
@@ -327,7 +332,7 @@ final AlertDialog reportDialog =
                                             subHeader.setText(
                                                     mContext.getString(
                                                             R.string.report_sub_rules,
-                                                            adapter.currentBaseNode
+                                                            baseNode
                                                                     .getComment()
                                                                     .getSubredditName()));
                                             reasonGroup.addView(
@@ -707,6 +712,7 @@ final AlertDialog reportDialog =
     private static void categorizeComment(final Comment comment, final Context mContext) {
         new AsyncTask<Void, Void, List<String>>() {
 
+            @SuppressWarnings("NullAway.Init") // assigned in onPreExecute
             Dialog d;
 
             @Override
@@ -1621,6 +1627,10 @@ final AlertDialog reportDialog =
 
             @Override
             protected Boolean doInBackground(Void... params) {
+                if (Authentication.reddit == null) {
+                    return false;
+                }
+
                 try {
                     new AccountManager(Authentication.reddit).reply(comment, reason);
                     new ModerationManager(Authentication.reddit).remove(comment, false);
@@ -1737,7 +1747,7 @@ final AlertDialog reportDialog =
             Context mContext,
             SpannableStringBuilder author,
             Comment comment,
-            Submission submission) {
+            @Nullable Submission submission) {
         styleAuthorBadge(mContext, author, comment, submission, comment.getAuthor());
     }
 
@@ -1752,7 +1762,7 @@ final AlertDialog reportDialog =
             Context mContext,
             SpannableStringBuilder author,
             Comment comment,
-            Submission submission,
+            @Nullable Submission submission,
             String authorName) {
         final int authorcolor = Palette.getFontColorUser(authorName);
         if (comment.getDistinguishedStatus() == DistinguishedStatus.ADMIN) {
@@ -2034,7 +2044,7 @@ final AlertDialog reportDialog =
             titleString.append(
                     CommentAdapterHelper.createRemovedLine(
                             (comment.getBannedBy() == null)
-                                    ? Authentication.name
+                                    ? Authentication.nameOrEmpty()
                                     : comment.getBannedBy(),
                             mContext));
         } else if (adapter.approved.contains(comment.getFullName())
@@ -2043,7 +2053,7 @@ final AlertDialog reportDialog =
             titleString.append(
                     CommentAdapterHelper.createApprovedLine(
                             (comment.getApprovedBy() == null)
-                                    ? Authentication.name
+                                    ? Authentication.nameOrEmpty()
                                     : comment.getApprovedBy(),
                             mContext));
         }
@@ -2082,7 +2092,7 @@ final AlertDialog reportDialog =
     public static void doCommentEdit(
             final CommentAdapter adapter,
             final Context mContext,
-            FragmentManager fm,
+            @Nullable FragmentManager fm,
             final CommentNode baseNode,
             String replyText,
             final CommentViewHolder holder) {
@@ -2104,7 +2114,9 @@ final AlertDialog reportDialog =
         final AlertDialog.Builder builder =
                 new AlertDialog.Builder(mContext).setCancelable(false).setView(dialoglayout);
         final Dialog d = builder.create();
-        d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        if (d.getWindow() != null) {
+            d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        }
 
         DialogUtil.matchDialogToCardBackground(d);
         d.show();

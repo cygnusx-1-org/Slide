@@ -28,6 +28,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -75,6 +76,7 @@ import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.SubmissionParser;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Created by ccrama on 1/25/2016.
@@ -83,19 +85,22 @@ import me.edgan.redditslide.util.SubmissionParser;
  * RecyclerView (horizontal vs vertical). It also supports gifs and progress bars which Album.java
  * doesn't.
  */
+@NullMarked
 public class TumblrPager extends BaseSaveActivity {
 
     private static int adapterPosition;
     public static final String SUBREDDIT = "subreddit";
 
     // Add fields to store last save attempt
-    private String lastContentUrl;
+    @Nullable private String lastContentUrl;
     private int lastIndex = -1;
 
+    @SuppressWarnings("NullAway.Init")
     ViewPager p;
 
+    @SuppressWarnings("NullAway.Init")
     public List<Photo> images;
-    public String subreddit;
+    public String subreddit = "";
 
     private static final String TAG = "TumblrPager";
 
@@ -123,10 +128,10 @@ public class TumblrPager extends BaseSaveActivity {
             finish();
         }
         if (id == R.id.grid) {
-            mToolbar.findViewById(R.id.grid).callOnClick();
+            requireToolbar().findViewById(R.id.grid).callOnClick();
         }
         if (id == R.id.external) {
-            LinkUtil.openExternally(getIntent().getExtras().getString("url", ""));
+            LinkUtil.openExternally(MiscUtil.orEmpty(getIntent().getStringExtra("url")));
         }
 
         if (id == R.id.comments) {
@@ -161,7 +166,7 @@ public class TumblrPager extends BaseSaveActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         overrideSwipeFromAnywhere();
         super.onCreate(savedInstanceState);
         getTheme()
@@ -179,13 +184,13 @@ public class TumblrPager extends BaseSaveActivity {
         mToolbar.setTitle(R.string.type_tumblr);
         ToolbarColorizeHelper.colorizeToolbar(mToolbar, Color.WHITE, this);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        java.util.Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         if (getIntent().hasExtra(SUBREDDIT)) {
-            this.subreddit = getIntent().getStringExtra(SUBREDDIT);
+            this.subreddit = MiscUtil.orEmpty(getIntent().getStringExtra(SUBREDDIT));
         }
 
         if (getIntent().hasExtra(EXTRA_SUBMISSION_TITLE)) {
-            this.submissionTitle = getIntent().getStringExtra(EXTRA_SUBMISSION_TITLE);
+            this.submissionTitle = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_SUBMISSION_TITLE));
         }
 
         mToolbar.setPopupTheme(
@@ -193,7 +198,7 @@ public class TumblrPager extends BaseSaveActivity {
 
         adapterPosition = getIntent().getIntExtra(MediaView.ADAPTER_POSITION, -1);
 
-        String url = getIntent().getExtras().getString("url", "");
+        String url = MiscUtil.orEmpty(getIntent().getStringExtra("url"));
         new LoadIntoPager(url, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -215,7 +220,7 @@ public class TumblrPager extends BaseSaveActivity {
         }
 
         @Override
-        public boolean doWithData(final List<Photo> jsonElements) {
+        public boolean doWithData(final @Nullable List<Photo> jsonElements) {
             // A post with no photos has no pages to build; super has already sent this to onError(),
             // which opens the link in the web view and finishes this activity, so there is nothing
             // left to set up here either.
@@ -228,7 +233,7 @@ public class TumblrPager extends BaseSaveActivity {
             p = (ViewPager) findViewById(R.id.images_horizontal);
 
             if (getSupportActionBar() != null) {
-                getSupportActionBar().setSubtitle(1 + "/" + images.size());
+                java.util.Objects.requireNonNull(getSupportActionBar()).setSubtitle(1 + "/" + images.size());
             }
 
             TumblrViewPagerAdapter adapter = new TumblrViewPagerAdapter(getSupportFragmentManager());
@@ -301,7 +306,7 @@ public class TumblrPager extends BaseSaveActivity {
                             if (SettingValues.oldSwipeMode) {
                                 if (position != 0) {
                                     if (getSupportActionBar() != null) {
-                                        getSupportActionBar()
+                                        java.util.Objects.requireNonNull(getSupportActionBar())
                                                 .setSubtitle((position) + "/" + images.size());
                                     }
                                 }
@@ -310,7 +315,7 @@ public class TumblrPager extends BaseSaveActivity {
                                 }
                             } else {
                                 if (getSupportActionBar() != null) {
-                                    getSupportActionBar()
+                                    java.util.Objects.requireNonNull(getSupportActionBar())
                                             .setSubtitle((position + 1) + "/" + images.size());
                                 }
                             }
@@ -389,6 +394,7 @@ public class TumblrPager extends BaseSaveActivity {
     public static class Gif extends Fragment {
 
         private int i = 0;
+        @SuppressWarnings("NullAway.Init")
         private View gif;
         ViewGroup rootView;
         ProgressBar loader;
@@ -412,7 +418,10 @@ public class TumblrPager extends BaseSaveActivity {
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        public View onCreateView(
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
             Bundle bundle = this.getArguments();
             final int i = bundle.getInt("page", 0);
 
@@ -629,7 +638,7 @@ public class TumblrPager extends BaseSaveActivity {
         }
 
         @Override
-        public void onCreate(Bundle savedInstanceState) {
+        public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             Bundle bundle = this.getArguments();
             i = bundle.getInt("page", 0);
@@ -637,12 +646,12 @@ public class TumblrPager extends BaseSaveActivity {
     }
 
     public void showBottomSheetImage(
-            final String contentUrl, final boolean isGif, final int index) {
+            final @Nullable String contentUrl, final boolean isGif, final int index) {
         LinkUtil.showImageLinkBottomSheet(
                 this, contentUrl, isGif, () -> doImageSave(isGif, contentUrl, index));
     }
 
-    public void doImageSave(boolean isGif, String contentUrl, int index) {
+    public void doImageSave(boolean isGif, @Nullable String contentUrl, int index) {
         ImageSaveUtils.doImageSave(
                 this,
                 isGif,
@@ -673,7 +682,9 @@ public class TumblrPager extends BaseSaveActivity {
 
         @Override
         public View onCreateView(
-                LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
             final ViewGroup rootView =
                     (ViewGroup) inflater.inflate(R.layout.album_image_pager, container, false);
 
@@ -863,7 +874,7 @@ public class TumblrPager extends BaseSaveActivity {
         }
 
         @Override
-        public void onCreate(Bundle savedInstanceState) {
+        public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             Bundle bundle = this.getArguments();
             i = bundle.getInt("page", 0);
@@ -948,7 +959,10 @@ public class TumblrPager extends BaseSaveActivity {
      * takes the process down rather than reaching {@code onError()}.
      */
     static void loadVideo(
-            final View rootView, final Activity host, final String url, final String subreddit) {
+            final View rootView,
+            final Activity host,
+            final @Nullable String url,
+            final @Nullable String subreddit) {
         final ProgressBar loader = rootView.findViewById(R.id.gifprogress);
         final TextView size = rootView.findViewById(R.id.size);
         if (url == null) {
@@ -984,7 +998,7 @@ public class TumblrPager extends BaseSaveActivity {
      * main thread, inside the fragment's onCreateView, so paging onto such a photo took the app down
      * rather than showing an empty page.
      */
-    static void loadImage(final View rootView, Fragment f, String url) {
+    static void loadImage(final View rootView, Fragment f, @Nullable String url) {
         final SubsamplingScaleImageView image = rootView.findViewById(R.id.image);
         image.setMinimumDpi(70);
         image.setMinimumTileDpi(240);

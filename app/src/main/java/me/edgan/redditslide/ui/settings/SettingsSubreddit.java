@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.View;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,16 +31,19 @@ import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.models.Subreddit;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 3/5/2015. */
+@NullMarked
 public class SettingsSubreddit extends BaseActivityAnim {
+    @SuppressWarnings("NullAway.Init") // built in onCreate
     public SettingsSubAdapter mSettingsSubAdapter;
     ArrayList<String> changedSubs = new ArrayList<>();
 
     private RecyclerView recycler;
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 2) {
             Intent i = new Intent(SettingsSubreddit.this, SettingsSubreddit.class);
@@ -55,7 +59,7 @@ public class SettingsSubreddit extends BaseActivityAnim {
     int done;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_subreddit);
@@ -251,12 +255,14 @@ public class SettingsSubreddit extends BaseActivityAnim {
                                             .setNegativeButton(R.string.btn_cancel, null)
                                             );
                                 } else {
-                                    Snackbar s =
-                                            Snackbar.make(
-                                                    mToolbar,
-                                                    R.string.err_color_sync_login,
-                                                    Snackbar.LENGTH_SHORT);
-                                    LayoutUtils.showSnackbar(s);
+                                    if (mToolbar != null) {
+                                        Snackbar s =
+                                                Snackbar.make(
+                                                        mToolbar,
+                                                        R.string.err_color_sync_login,
+                                                        Snackbar.LENGTH_SHORT);
+                                        LayoutUtils.showSnackbar(s);
+                                    }
                                 }
                             }
                         });

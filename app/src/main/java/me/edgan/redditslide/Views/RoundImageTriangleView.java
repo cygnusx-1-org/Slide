@@ -12,6 +12,7 @@ import android.util.AttributeSet;
 import androidx.annotation.ColorInt;
 
 import com.google.android.material.imageview.ShapeableImageView;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Created by Carlos on 9/13/2016.
@@ -19,6 +20,7 @@ import com.google.android.material.imageview.ShapeableImageView;
  * <p>Draws a small colored post-type flag with a diagonal depth gradient in the bottom-right
  * corner of the thumbnail. The gradient style is ported from Continuum's PostTypeIndicatorView.
  */
+@NullMarked
 public class RoundImageTriangleView extends ShapeableImageView {
 
     public RoundImageTriangleView(Context context) {

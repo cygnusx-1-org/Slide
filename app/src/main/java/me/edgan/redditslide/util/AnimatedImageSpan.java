@@ -9,9 +9,11 @@ import android.os.Looper;
 import android.text.style.DynamicDrawableSpan;
 import android.util.Log;
 import android.view.View;
-
+import androidx.annotation.Nullable;
 import me.edgan.redditslide.SettingValues;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class AnimatedImageSpan extends DynamicDrawableSpan {
     private final GifDrawable drawable;
     private final View view;
@@ -71,7 +73,12 @@ public class AnimatedImageSpan extends DynamicDrawableSpan {
     }
 
     @Override
-    public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
+    public int getSize(
+            Paint paint,
+            CharSequence text,
+            int start,
+            int end,
+            @Nullable Paint.FontMetricsInt fm) {
         Drawable d = getDrawable();
         Rect rect = d.getBounds();
         int scaledHeight = (int) (rect.height() * SCALE_FACTOR);

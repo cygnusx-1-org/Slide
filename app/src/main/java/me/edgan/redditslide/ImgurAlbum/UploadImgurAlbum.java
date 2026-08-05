@@ -84,6 +84,10 @@ public class UploadImgurAlbum extends AsyncTask<Uri, Integer, String> {
                     new MultipartBody.Builder().setType(MultipartBody.FORM);
             for (Uri uri : sub) {
                 File bitmap = ImgurUtils.createFile(uri, c);
+                if (bitmap == null) {
+                    return null;
+                }
+
                 formBodyBuilder.addFormDataPart(
                         "image",
                         bitmap.getName(),

@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -32,8 +33,10 @@ import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.managers.InboxManager;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 9/17/2015. */
+@NullMarked
 public class Inbox extends BaseActivityAnim {
 
     public static final String EXTRA_UNREAD = "unread";
@@ -115,7 +118,7 @@ public class Inbox extends BaseActivityAnim {
     }
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         overrideSwipeFromAnywhere();
         if (Authentication.reddit == null
                 || !Authentication.reddit.isAuthenticated()
@@ -124,7 +127,11 @@ public class Inbox extends BaseActivityAnim {
 
             new AsyncTask<Void, Void, Void>() {
                 @Override
-                protected Void doInBackground(Void... params) {
+                protected @Nullable Void doInBackground(Void... params) {
+                    if (Authentication.reddit == null) {
+                        return null;
+                    }
+
                     if (Authentication.reddit == null) {
                         new Authentication(getApplicationContext());
                     }
@@ -176,7 +183,7 @@ public class Inbox extends BaseActivityAnim {
         setContentView(R.layout.activity_inbox);
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
         setupAppBar(R.id.toolbar, R.string.title_inbox, true, true);
-        mToolbar.setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
+        requireToolbar().setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
 
         tabs = (TabLayout) findViewById(R.id.sliding_tabs);
         tabs.setTabMode(TabLayout.MODE_SCROLLABLE);

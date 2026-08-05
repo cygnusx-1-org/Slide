@@ -116,8 +116,7 @@ public class TumblrUtils {
          * of those, since it only ever stores a JsonObject it has already screened, so the guard the
          * chain relied on was "the prefs file contains only what we put there".
          */
-        @Nullable
-        static JsonObject asObject(@Nullable final String cached) {
+        @Nullable static JsonObject asObject(@Nullable final String cached) {
             if (cached == null) {
                 return null;
             }
@@ -145,7 +144,9 @@ public class TumblrUtils {
                     try {
                         BaseSaveActivity activity = (BaseSaveActivity) baseActivity;
                         // Only set if not already set
-                        if (activity.submissionTitle == null || activity.submissionTitle.isEmpty()) {
+                        if (postTitle != null
+                                && (activity.submissionTitle == null
+                                        || activity.submissionTitle.isEmpty())) {
                             Log.d(TAG, "Setting Tumblr post title: " + postTitle);
                             activity.submissionTitle = postTitle;
                         }
@@ -184,8 +185,7 @@ public class TumblrUtils {
         /**
          * Extract a suitable title from the post
          */
-        @Nullable
-        private String extractPostTitle(@Nullable TumblrPost post) {
+        @Nullable private String extractPostTitle(@Nullable TumblrPost post) {
             try {
                 if (post != null && post.getResponse() != null &&
                     post.getResponse().getPosts() != null &&
@@ -225,8 +225,7 @@ public class TumblrUtils {
         }
 
         @Override
-        @Nullable
-        protected ArrayList<JsonElement> doInBackground(final String... sub) {
+        @Nullable protected ArrayList<JsonElement> doInBackground(final String... sub) {
             if (baseActivity != null) {
                 String apiUrl =
                         "https://api.tumblr.com/v2/blog/"
@@ -253,7 +252,7 @@ public class TumblrUtils {
                 } else {
                     LogUtil.v(apiUrl);
                     final JsonObject result = HttpUtil.getJsonObject(client, gson, apiUrl);
-                    if (hasPhotos(result)) {
+                    if (result != null && hasPhotos(result)) {
                         if (BuildConfig.DEBUG) {
                             Log.d(TAG, "parseJson: 2" + result.toString());
                         }

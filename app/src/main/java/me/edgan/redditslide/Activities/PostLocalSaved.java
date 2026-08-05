@@ -1,23 +1,24 @@
 package me.edgan.redditslide.Activities;
 
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-
 import me.edgan.redditslide.Fragments.LocalSavedView;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
 /** Viewer for the Local Saved collection (saves Reddit dropped from the /saved listing). */
+@NullMarked
 public class PostLocalSaved extends BaseActivityAnim {
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         overrideSwipeFromAnywhere();
 
         super.onCreate(savedInstance);
@@ -28,7 +29,7 @@ public class PostLocalSaved extends BaseActivityAnim {
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
         setupAppBar(R.id.toolbar, this.getString(R.string.local_saved), true, true);
-        mToolbar.setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
+        requireToolbar().setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
 
         ViewPager pager = (ViewPager) findViewById(R.id.content_view);
         pager.setAdapter(new LocalSavedPagerAdapter(getSupportFragmentManager()));

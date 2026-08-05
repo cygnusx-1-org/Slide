@@ -24,10 +24,13 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.LinkUtil;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class SettingsHandlingFragment implements CompoundButton.OnCheckedChangeListener {
 
     private final Activity context;
+    @SuppressWarnings("NullAway.Init") // bound in Bind(), before any callback below runs
     LinearLayout domainListLayout;
 
     public SettingsHandlingFragment(Activity context) {
@@ -167,7 +170,8 @@ public class SettingsHandlingFragment implements CompoundButton.OnCheckedChangeL
 
                         popupMenu.setOnMenuItemClickListener(
                                 item -> {
-                                    SettingValues.selectedBrowser = packageNames.get(item);
+                                    SettingValues.selectedBrowser =
+                                            packageNames.getOrDefault(item, "");
                                     SettingValues.prefs
                                             .edit()
                                             .putString(
@@ -265,11 +269,11 @@ public class SettingsHandlingFragment implements CompoundButton.OnCheckedChangeL
         }
 
         public static int idResFromValue(int value) {
-            return sBiMap.get(value);
+            return java.util.Objects.requireNonNull(sBiMap.get(value));
         }
 
         public static int valueFromIdRes(@IdRes int idRes) {
-            return sBiMap.inverse().get(idRes);
+            return java.util.Objects.requireNonNull(sBiMap.inverse().get(idRes));
         }
 
         public int getValue() {

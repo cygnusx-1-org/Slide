@@ -4,6 +4,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,20 +21,24 @@ import me.edgan.redditslide.Views.CatchStaggeredGridLayoutManager;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.models.Submission;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 9/17/2015. */
+@NullMarked
 public class Gallery extends FullScreenActivity implements SubmissionDisplay {
     public static final String EXTRA_PROFILE = "profile";
     public static final String EXTRA_PAGE = "page";
     public static final String EXTRA_SUBREDDIT = "subreddit";
     public static final String EXTRA_MULTIREDDIT = "multireddit";
+    @SuppressWarnings("NullAway.Init")
     public PostLoader subredditPosts;
-    public String subreddit;
+    public String subreddit = "";
 
+    @SuppressWarnings("NullAway.Init")
     public ArrayList<Submission> baseSubs;
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         overrideSwipeFromAnywhere();
         Bundle extras = getIntent().getExtras();
         if (extras == null) {
@@ -41,11 +46,12 @@ public class Gallery extends FullScreenActivity implements SubmissionDisplay {
             finish();
             return;
         }
-        subreddit = getIntent().getExtras().getString(EXTRA_SUBREDDIT);
-        String multireddit = getIntent().getExtras().getString(EXTRA_MULTIREDDIT);
-        String profile = getIntent().getExtras().getString(EXTRA_PROFILE, "");
+        subreddit = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_SUBREDDIT));
+        String multireddit = getIntent().getStringExtra(EXTRA_MULTIREDDIT);
+        String profile = getIntent().getStringExtra(EXTRA_PROFILE);
         if (multireddit != null) {
-            subredditPosts = new MultiredditPosts(multireddit, profile);
+            subredditPosts =
+                    new MultiredditPosts(multireddit, MiscUtil.orEmpty(profile));
         } else {
             subredditPosts = new SubredditPosts(subreddit, Gallery.this);
         }
@@ -96,7 +102,7 @@ public class Gallery extends FullScreenActivity implements SubmissionDisplay {
                     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                         super.onScrolled(recyclerView, dx, dy);
                         int[] firstVisibleItems =
-                                ((CatchStaggeredGridLayoutManager) rv.getLayoutManager())
+                                ((CatchStaggeredGridLayoutManager) java.util.Objects.requireNonNull(rv.getLayoutManager()))
                                         .findFirstVisibleItemPositions(null);
                         if (firstVisibleItems != null && firstVisibleItems.length > 0) {
                             for (int firstVisibleItem : firstVisibleItems) {
@@ -122,10 +128,12 @@ public class Gallery extends FullScreenActivity implements SubmissionDisplay {
                 });
     }
 
+    @SuppressWarnings("NullAway.Init")
     GalleryView recyclerAdapter;
     public int pastVisiblesItems;
     public int visibleItemCount;
     public int totalItemCount;
+    @SuppressWarnings("NullAway.Init")
     RecyclerView rv;
 
     @Override
@@ -135,7 +143,7 @@ public class Gallery extends FullScreenActivity implements SubmissionDisplay {
         final int currentOrientation = newConfig.orientation;
 
         final CatchStaggeredGridLayoutManager mLayoutManager =
-                (CatchStaggeredGridLayoutManager) rv.getLayoutManager();
+                (CatchStaggeredGridLayoutManager) java.util.Objects.requireNonNull(rv.getLayoutManager());
 
         mLayoutManager.setSpanCount(LayoutUtils.getNumColumns(currentOrientation, Gallery.this));
     }

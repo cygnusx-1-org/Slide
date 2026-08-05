@@ -5,8 +5,10 @@ import android.content.res.Resources;
 import android.util.AttributeSet;
 
 import androidx.appcompat.widget.AppCompatImageView;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by Carlos on 6/2/2016. */
+@NullMarked
 public class MaxHeightImageView extends AppCompatImageView {
     public MaxHeightImageView(Context context) {
         super(context);

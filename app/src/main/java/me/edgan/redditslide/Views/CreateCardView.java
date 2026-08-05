@@ -16,13 +16,20 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.AnimatorUtil;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.DisplayUtil;
+import me.edgan.redditslide.util.PrefUtil;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 9/18/2015. */
+@NullMarked
 public class CreateCardView {
 
     public static View CreateView(ViewGroup viewGroup) {
         CardEnum cardEnum = SettingValues.defaultCardView;
-        View v = null;
+        // Default to the list layout so the switch below can only ever replace it: a CardEnum
+        // constant with no case here would otherwise leave v null and NPE on the next line.
+        View v =
+                LayoutInflater.from(viewGroup.getContext())
+                        .inflate(R.layout.submission_list, viewGroup, false);
         switch (cardEnum) {
             case LARGE:
                 if (SettingValues.middleImage) {
@@ -467,8 +474,10 @@ public class CreateCardView {
 
     public static boolean isCard() {
         return CardEnum.valueOf(
-                        SettingValues.prefs.getString(
-                                "defaultCardViewNew", SettingValues.defaultCardView.toString()))
+                        PrefUtil.getString(
+                                SettingValues.prefs,
+                                "defaultCardViewNew",
+                                SettingValues.defaultCardView.toString()))
                 == CardEnum.LARGE;
     }
 
@@ -478,8 +487,10 @@ public class CreateCardView {
 
     public static boolean isDesktop() {
         return CardEnum.valueOf(
-                        SettingValues.prefs.getString(
-                                "defaultCardViewNew", SettingValues.defaultCardView.toString()))
+                        PrefUtil.getString(
+                                SettingValues.prefs,
+                                "defaultCardViewNew",
+                                SettingValues.defaultCardView.toString()))
                 == CardEnum.DESKTOP;
     }
 

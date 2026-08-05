@@ -1,12 +1,15 @@
 package me.edgan.redditslide.util;
 
 import android.util.Log;
+import androidx.annotation.Nullable;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import me.edgan.redditslide.Activities.GalleryImage;
 import org.apache.commons.text.StringEscapeUtils;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by TacoTheDank on 04/04/2021. */
+@NullMarked
 public class JsonUtil {
     private static final String TAG = "JsonUtil";
 
@@ -26,7 +29,8 @@ public class JsonUtil {
      * itself) loads fine, so rewrite to it — but only for reddit links, so genuine external-link
      * previews (news sites, etc.) keep their external-preview URLs.
      */
-    public static String normalizeRedditPreviewHost(String url, boolean linksToReddit) {
+    public static @Nullable String normalizeRedditPreviewHost(
+            @Nullable String url, boolean linksToReddit) {
         if (linksToReddit && url != null) {
             return url.replace("://external-preview.redd.it/", "://preview.redd.it/");
         }

@@ -1,13 +1,16 @@
 package me.edgan.redditslide.util;
 
+import android.graphics.PointF;
 import android.view.MotionEvent;
 import androidx.annotation.NonNull;
 
 import me.edgan.redditslide.Views.SubsamplingScaleImageView;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Utility class for handling touch events for SubsamplingScaleImageView.
  */
+@NullMarked
 public class TouchEventUtil {
 
     // Moved from SubsamplingScaleImageView
@@ -151,7 +154,12 @@ public class TouchEventUtil {
                                         || (previousScale * SubsamplingScaleImageViewStateHelper.sWidth(view) < view.getWidth()
                                                 && view.scale * SubsamplingScaleImageViewStateHelper.sWidth(view) >= view.getWidth())) {
                                     view.fitToBounds(true);
-                                    view.vCenterStart.set(SubsamplingScaleImageViewStateHelper.sourceToViewCoord(view, view.quickScaleSCenter));
+                                    PointF quickScaleVCenter =
+                                            SubsamplingScaleImageViewStateHelper.sourceToViewCoord(
+                                                    view, view.quickScaleSCenter);
+                                    if (quickScaleVCenter != null) {
+                                        view.vCenterStart.set(quickScaleVCenter);
+                                    }
                                     view.vTranslateStart.set(view.vTranslate);
                                     view.scaleStart = view.scale;
                                     dist = 0;

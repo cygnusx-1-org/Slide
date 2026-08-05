@@ -30,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.PopupMenu;
@@ -76,10 +77,12 @@ import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.TimePeriod;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jspecify.annotations.NullMarked;
 import uz.shift.colorpicker.LineColorPicker;
 import uz.shift.colorpicker.OnColorChangedListener;
 
 /** Created by ccrama on 9/17/2015. */
+@NullMarked
 public class Profile extends BaseActivityAnim {
 
     public static final String EXTRA_PROFILE = "profile";
@@ -88,11 +91,13 @@ public class Profile extends BaseActivityAnim {
     public static final String EXTRA_SUBMIT = "submitted";
     public static final String EXTRA_UPVOTE = "upvoted";
     public static final String EXTRA_HISTORY = "history";
-    private String name;
-    private Account account;
+    private String name = "";
+    @Nullable private Account account;
+    @SuppressWarnings("NullAway.Init")
     private List<Trophy> trophyCase;
     private ViewPager pager;
     private TabLayout tabs;
+    @SuppressWarnings("NullAway.Init")
     private String[] usedArray;
     public boolean isSavedView;
 
@@ -103,32 +108,38 @@ public class Profile extends BaseActivityAnim {
 
     private boolean friend;
     private boolean following;
+    @SuppressWarnings("NullAway.Init")
     private MenuItem sortItem;
+    @SuppressWarnings("NullAway.Init")
     private MenuItem categoryItem;
+    @SuppressWarnings("NullAway.Init")
     private MenuItem searchItem;
+    @SuppressWarnings("NullAway.Init")
     private ProfilePagerAdapter pagerAdapter;
+    @SuppressWarnings("NullAway.Init")
     public static Sorting profSort;
+    @SuppressWarnings("NullAway.Init")
     public static TimePeriod profTime;
 
     // Search state
-    private String currentSearchQuery = null;
+    private @Nullable String currentSearchQuery = null;
     private boolean isSearchActive = false;
     private int searchActiveTab = -1; // Track which tab has active search
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         overrideSwipeFromAnywhere();
 
         super.onCreate(savedInstance);
 
-        name = getIntent().getExtras().getString(EXTRA_PROFILE, "");
+        name = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_PROFILE));
 
         applyColorTheme();
         setContentView(R.layout.activity_profile);
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
         setupUserAppBar(R.id.toolbar, name, true, name);
-        mToolbar.setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
+        requireToolbar().setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
 
         profSort = Sorting.NEW;
         profTime = TimePeriod.ALL;
@@ -266,7 +277,11 @@ public class Profile extends BaseActivityAnim {
     private class getProfile extends AsyncTask<String, Void, Void> {
 
         @Override
-        protected Void doInBackground(String... params) {
+        protected @Nullable Void doInBackground(String... params) {
+            if (Authentication.reddit == null) {
+                return null;
+            }
+
             try {
                 if (!isValidUsername(params[0])) {
                     account = null;
@@ -384,6 +399,10 @@ public class Profile extends BaseActivityAnim {
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
+                if (Authentication.reddit == null) {
+                    return false;
+                }
+
                 try {
                     RestResponse response = Authentication.reddit.execute(
                         Authentication.reddit.request()
@@ -427,6 +446,10 @@ public class Profile extends BaseActivityAnim {
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
+                if (Authentication.reddit == null) {
+                    return false;
+                }
+
                 try {
                     RestResponse response = Authentication.reddit.execute(
                         Authentication.reddit.request()
@@ -465,6 +488,14 @@ public class Profile extends BaseActivityAnim {
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
+                if (Authentication.reddit == null) {
+                    return false;
+                }
+
+                if (account == null) {
+                    return false;
+                }
+
                 Map<String, String> map = new HashMap<>();
                 map.put("account_id", "t2_" + account.getId());
                 try {
@@ -495,9 +526,22 @@ public class Profile extends BaseActivityAnim {
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
+                if (Authentication.reddit == null) {
+                    return false;
+                }
+
+                if (account == null || Authentication.me == null) {
+                    return false;
+                }
+
                 Map<String, String> map = new HashMap<>();
                 map.put("id", "t2_" + account.getId());
-                map.put("container", "t2_" + Authentication.reddit.getUser(Authentication.me.getFullName()).getId());
+                map.put(
+                        "container",
+                        "t2_"
+                                + Authentication.reddit
+                                        .getUser(Authentication.me.getFullName())
+                                        .getId());
                 map.put("type", "enemy"); // required parameter for unblocking
                 try {
                     Authentication.reddit.execute(
@@ -626,7 +670,9 @@ public class Profile extends BaseActivityAnim {
         popup.show();
     }
 
-    public String category;
+    @SuppressWarnings("NullAway.Init")
+    @Nullable public String category;
+    @SuppressWarnings("NullAway.Init")
     public String subreddit;
 
     @Override
@@ -663,6 +709,7 @@ public class Profile extends BaseActivityAnim {
             getOnBackPressedDispatcher().onBackPressed();
         } else if (itemId == R.id.category) {
             new AsyncTask<Void, Void, List<String>>() {
+                    @SuppressWarnings("NullAway.Init")
                     Dialog d;
 
                     @Override
@@ -891,7 +938,10 @@ public class Profile extends BaseActivityAnim {
                                                 LinkUtil.openUrl(
                                                         LinkUtil.formatURL(t.getAboutUrl())
                                                                 .toString(),
-                                                        Palette.getColorUser(account.getFullName()),
+                                                        Palette.getColorUser(
+                                                                account == null
+                                                                        ? ""
+                                                                        : account.getFullName()),
                                                         Profile.this);
                                             }
                                         });
@@ -1009,6 +1059,10 @@ public class Profile extends BaseActivityAnim {
                                                 new AsyncTask<Void, Void, Boolean>() {
                                                     @Override
                                                     protected Boolean doInBackground(Void... params) {
+                                                        if (Authentication.reddit == null) {
+                                                            return false;
+                                                        }
+
                                                         try {
                                                             AccountManager m =
                                                                     new AccountManager(

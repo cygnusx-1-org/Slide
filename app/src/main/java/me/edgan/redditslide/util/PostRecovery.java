@@ -1,21 +1,21 @@
 package me.edgan.redditslide.util;
 
+import androidx.annotation.Nullable;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import me.edgan.redditslide.Reddit;
 import net.dean.jraw.models.Flair;
 import net.dean.jraw.models.Submission;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Recovers the original title and body (or link) of removed/deleted posts from the Arctic Shift
@@ -35,6 +35,7 @@ import net.dean.jraw.models.Submission;
  * user actually recovers something. {@link #fetch} performs only the network call and touches no
  * shared state.
  */
+@NullMarked
 public final class PostRecovery {
 
     private static final String ARCTIC_SHIFT_POSTS =
@@ -73,13 +74,13 @@ public final class PostRecovery {
     /** A recovered flair's text and css class; either may be null. Groups the pair so the four
      * flair strings can't be transposed across {@link Result}'s constructor. */
     public static final class Flairs {
-        public final String text;
-        public final String css;
+        public final @Nullable String text;
+        public final @Nullable String css;
 
         /** No flair recovered. */
         public static final Flairs NONE = new Flairs(null, null);
 
-        Flairs(String text, String css) {
+        Flairs(@Nullable String text, @Nullable String css) {
             this.text = text;
             this.css = css;
         }
@@ -99,20 +100,20 @@ public final class PostRecovery {
      * longer carries one.
      */
     public static final class Result {
-        public final String title;
-        public final String body;
-        public final String url;
-        public final String author;
+        public final @Nullable String title;
+        public final @Nullable String body;
+        public final @Nullable String url;
+        public final @Nullable String author;
         public final Flairs linkFlair;
         public final Flairs authorFlair;
 
         Result(
-                String title,
-                String body,
-                String url,
-                String author,
-                Flairs linkFlair,
-                Flairs authorFlair) {
+                @Nullable String title,
+                @Nullable String body,
+                @Nullable String url,
+                @Nullable String author,
+                @Nullable Flairs linkFlair,
+                @Nullable Flairs authorFlair) {
             this.title = title;
             this.body = body;
             this.url = url;
@@ -138,7 +139,8 @@ public final class PostRecovery {
      * intact (nothing to recover, and reinstating it would gain nothing) or the archive has no real
      * original. Pure and side-effect-free; shared with {@link CommentRecovery} and unit-tested.
      */
-    public static String recoverField(String liveValue, String archiveValue) {
+    public static @Nullable String recoverField(
+            @Nullable String liveValue, @Nullable String archiveValue) {
         if (!isPlaceholder(liveValue)) return null;
         return isPlaceholder(archiveValue) ? null : archiveValue;
     }
@@ -163,7 +165,7 @@ public final class PostRecovery {
      * rather than the original. Shared with {@link CommentRecovery}, which applies the same taxonomy
      * to a comment's body and author.
      */
-    static boolean isPlaceholder(String s) {
+    static boolean isPlaceholder(@Nullable String s) {
         if (s == null) return false;
         String lower = s.trim().toLowerCase(Locale.ENGLISH);
         return lower.equals("[removed]")
@@ -173,21 +175,21 @@ public final class PostRecovery {
     }
 
     /** Previously recovered markdown body for this fullname, or null if none. */
-    public static String getRecovered(String fullName) {
+    public static @Nullable String getRecovered(String fullName) {
         if (!hasRecoveries) return null;
         Result r = recovered.get(fullName);
         return r == null ? null : r.body;
     }
 
     /** Previously recovered title for this fullname, or null if none. */
-    public static String getRecoveredTitle(String fullName) {
+    public static @Nullable String getRecoveredTitle(String fullName) {
         if (!hasRecoveries) return null;
         Result r = recovered.get(fullName);
         return r == null ? null : r.title;
     }
 
     /** Previously recovered author for this fullname, or null if none. */
-    public static String getRecoveredAuthor(String fullName) {
+    public static @Nullable String getRecoveredAuthor(String fullName) {
         if (!hasRecoveries) return null;
         Result r = recovered.get(fullName);
         return r == null ? null : r.author;
@@ -310,7 +312,7 @@ public final class PostRecovery {
     }
 
     /** Whether the given flair already carries text or a css class (null flair counts as none). */
-    private static boolean hasFlair(Flair flair) {
+    private static boolean hasFlair(@Nullable Flair flair) {
         return flair != null
                 && ((flair.getText() != null && !flair.getText().isEmpty())
                         || (flair.getCssClass() != null && !flair.getCssClass().isEmpty()));
@@ -367,7 +369,8 @@ public final class PostRecovery {
      * can't race a rehash when this runs on the background feed-caching thread; the standard post
      * JSON always carries both keys (as null or a string).
      */
-    private static void applyRecoveredFlair(Submission s, String text, String css) {
+    private static void applyRecoveredFlair(
+            Submission s, @Nullable String text, @Nullable String css) {
         JsonNode node = s.getDataNode();
         if (!(node instanceof ObjectNode)) return;
         ObjectNode obj = (ObjectNode) node;
@@ -381,7 +384,8 @@ public final class PostRecovery {
      * no-restructure discipline as {@link #applyRecoveredFlair}: only pre-existing keys are
      * replaced, and the standard post JSON always carries both.
      */
-    private static void applyRecoveredAuthorFlair(Submission s, String text, String css) {
+    private static void applyRecoveredAuthorFlair(
+            Submission s, @Nullable String text, @Nullable String css) {
         JsonNode node = s.getDataNode();
         if (!(node instanceof ObjectNode)) return;
         ObjectNode obj = (ObjectNode) node;
@@ -416,7 +420,7 @@ public final class PostRecovery {
     }
 
     /** Reads a non-blank string-valued field, or null (also rejects null/object/array values). */
-    private static String readString(JsonObject obj, String key) {
+    private static @Nullable String readString(JsonObject obj, String key) {
         if (!obj.has(key) || !obj.get(key).isJsonPrimitive()) return null;
         String value = obj.get(key).getAsString();
         return value.trim().isEmpty() ? null : value;
@@ -432,7 +436,7 @@ public final class PostRecovery {
      * link's target; otherwise null. Lets a removed post whose entire self-text is a link be
      * recovered as a real link post instead of body text.
      */
-    private static String soleLink(String body) {
+    private static @Nullable String soleLink(String body) {
         String trimmed = body.trim();
         Matcher m = SOLE_MARKDOWN_LINK.matcher(trimmed);
         if (m.matches()) return m.group(1);

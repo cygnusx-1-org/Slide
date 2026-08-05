@@ -1,6 +1,7 @@
 package me.edgan.redditslide.Adapters;
 
 import android.os.AsyncTask;
+import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.util.ArrayList;
 import java.util.Map;
@@ -23,17 +24,20 @@ public class ContributionPosts extends GeneralPosts {
     protected final String where;
     protected final String subreddit;
     public boolean loading;
+    @SuppressWarnings("NullAway.Init")
     private UserContributionPaginator paginator;
+    @SuppressWarnings("NullAway.Init")
     protected SwipeRefreshLayout refreshLayout;
+    @SuppressWarnings("NullAway.Init")
     protected ContributionAdapter adapter;
-    protected OnLoadCompleteListener loadCompleteListener;
+    @Nullable protected OnLoadCompleteListener loadCompleteListener;
 
     /** Notified after each page finishes loading so callers can page to the end. */
     public interface OnLoadCompleteListener {
         void onLoadComplete();
     }
 
-    public void setOnLoadCompleteListener(OnLoadCompleteListener listener) {
+    public void setOnLoadCompleteListener(@Nullable OnLoadCompleteListener listener) {
         this.loadCompleteListener = listener;
     }
 
@@ -116,7 +120,8 @@ public class ContributionPosts extends GeneralPosts {
         }
 
         @Override
-        protected ArrayList<Contribution> doInBackground(String... subredditPaginators) {
+        protected @Nullable ArrayList<Contribution> doInBackground(
+                String... subredditPaginators) {
             ArrayList<Contribution> newData = new ArrayList<>();
             try {
                 if (reset || paginator == null) {
@@ -127,7 +132,7 @@ public class ContributionPosts extends GeneralPosts {
                     paginator =
                             new UserProfilePaginator(Authentication.reddit, where, subreddit) {
                                 @Override
-                                protected Map<String, String> getExtraQueryArgs() {
+                                protected @Nullable Map<String, String> getExtraQueryArgs() {
                                     Map<String, String> args = super.getExtraQueryArgs();
                                     args.put("feature", "link_preview");
                                     args.put("always_show_media", "1");

@@ -4,10 +4,12 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-
+import androidx.annotation.Nullable;
 import me.edgan.redditslide.Views.AnimationBuilder;
 import me.edgan.redditslide.Views.SubsamplingScaleImageView;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class ImageViewGestureListener extends GestureDetector.SimpleOnGestureListener {
 
     private static final String TAG = ImageViewGestureListener.class.getSimpleName();
@@ -21,7 +23,8 @@ public class ImageViewGestureListener extends GestureDetector.SimpleOnGestureLis
     }
 
     @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+    public boolean onFling(
+            @Nullable MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         if (view.panEnabled
                 && view.readySent && view.vTranslate != null && e1 != null && e2 != null
                 && (Math.abs(e1.getX() - e2.getX()) > 50 || Math.abs(e1.getY() - e2.getY()) > 50)

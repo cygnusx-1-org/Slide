@@ -42,6 +42,7 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.SwitchCompat;
@@ -109,12 +110,15 @@ import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.NetworkStateReceiver;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
+import me.edgan.redditslide.util.PrefUtil;
 import me.edgan.redditslide.util.TimeUtils;
 import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.models.MultiReddit;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.paginators.SubredditPaginator;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class MainActivity extends BaseActivity
         implements NetworkStateReceiver.NetworkStateReceiverListener {
     public static final String EXTRA_PAGE_TO = "pageTo";
@@ -127,60 +131,89 @@ public class MainActivity extends BaseActivity
     static final int INBOX_RESULT = 66;
     static final int RESET_ADAPTER_RESULT = 3;
     static final int SETTINGS_RESULT = 2;
-    public static Loader loader;
+    @Nullable public static Loader loader;
     public static boolean datasetChanged;
     public static Map<String, String> multiNameToSubsMap = new HashMap<>();
     public static boolean checkedPopups;
+    @SuppressWarnings("NullAway.Init")
     public static String shouldLoad;
     public static boolean isRestart;
     public static int restartPage;
     public final long ANIMATE_DURATION = 250; // duration of animations
     final long ANIMATE_DURATION_OFFSET = 45; // offset for smoothing out the exit animations
     public boolean singleMode;
+    @SuppressWarnings("NullAway.Init")
     public ToggleSwipeViewPager pager;
+    @SuppressWarnings("NullAway.Init")
     public CaseInsensitiveArrayList usedArray;
+    @SuppressWarnings("NullAway.Init")
     public DrawerLayout drawerLayout;
+    @SuppressWarnings("NullAway.Init")
     public View hea;
+    @SuppressWarnings("NullAway.Init")
     public EditText drawerSearch;
+    @SuppressWarnings("NullAway.Init")
     public View header;
+    @SuppressWarnings("NullAway.Init")
     public String subToDo;
+    @SuppressWarnings("NullAway.Init")
     public MainPagerAdapter adapter;
     public int toGoto = 0;
     public boolean first = true;
+    @SuppressWarnings("NullAway.Init")
     public TabLayout mTabLayout;
+    @SuppressWarnings("NullAway.Init")
     public ListView drawerSubList;
+    @SuppressWarnings("NullAway.Init")
     public String selectedSub; // currently selected subreddit
+    @SuppressWarnings("NullAway.Init")
     public Runnable doImage;
-    public Intent data;
+    @Nullable public Intent data;
     public boolean commentPager = false;
-    public Runnable runAfterLoad;
+    @Nullable public Runnable runAfterLoad;
     public boolean canSubmit;
     // if the view mode is set to Subreddit Tabs, save the title ("Slide" or "Slide (debug)")
+    @SuppressWarnings("NullAway.Init")
     public String tabViewModeTitle;
     public int currentComment;
-    public Submission openingComments;
+    @SuppressWarnings("NullAway.Init")
+    @Nullable public Submission openingComments;
     public int toOpenComments = -1;
     public boolean inNightMode;
     boolean changed;
+    @SuppressWarnings("NullAway.Init")
     String term;
+    @SuppressWarnings("NullAway.Init")
     View headerMain;
+    @SuppressWarnings("NullAway.Init")
     Dialog d;
+    @SuppressWarnings("NullAway.Init")
     public AsyncTask<View, Void, View> currentFlair;
+    @SuppressWarnings("NullAway.Init")
     View accountsArea;
+    @SuppressWarnings("NullAway.Init")
     SideArrayAdapter sideArrayAdapter;
+    @SuppressWarnings("NullAway.Init")
     Menu menu;
+    @SuppressWarnings("NullAway.Init")
     AsyncTask caching;
     int back;
     int headerHeight;
     public int reloadItemNumber = -2;
     private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 1001;
 
+    @SuppressWarnings("NullAway.Init")
     private View rootView;
 
+    @SuppressWarnings("NullAway.Init")
     DrawerController drawerController;
+    @SuppressWarnings("NullAway.Init")
     public ToolbarSearchController toolbarSearchController;
+    @SuppressWarnings("NullAway.Init")
     SidebarController sidebarController;
+    @SuppressWarnings("NullAway.Init")
     SidebarActions sidebarActions;
+    @SuppressWarnings("NullAway.Init")
     SubredditSortController subredditSortController;
 
     public DrawerController getDrawerController() {
@@ -188,7 +221,7 @@ public class MainActivity extends BaseActivity
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == SETTINGS_RESULT) {
             int current = pager.getCurrentItem();
 
@@ -232,25 +265,30 @@ public class MainActivity extends BaseActivity
                 KeyboardUtil.hideKeyboard(this, view.getWindowToken(), 0);
             }
         } else if (requestCode == 2002 && resultCode != RESULT_OK) {
-            mToolbar.performLongClick(); // search was init from the toolbar, so return focus to the
+            requireToolbar().performLongClick(); // search was init from the toolbar, so return focus to the
             // toolbar
         } else if (requestCode == 423 && resultCode == RESULT_OK) {
             ((MainPagerAdapterComment) adapter).mCurrentComments.doResult(data);
-        } else if (requestCode == 940) {
+        } else if (requestCode == 940 && data != null) {
             if (adapter != null && adapter.getCurrentFragment() != null) {
                 if (resultCode == RESULT_OK) {
                     ArrayList<Integer> posts = data.getIntegerArrayListExtra("seen");
-                    ((SubmissionsView) adapter.getCurrentFragment()).adapter.refreshView(posts);
+                    if (posts != null) {
+                        ((SubmissionsView) adapter.getCurrentFragment())
+                                .adapter
+                                .refreshView(posts);
+                    }
                     if (data.hasExtra("lastPage")
                             && data.getIntExtra("lastPage", 0) != 0
                             && ((SubmissionsView) adapter.getCurrentFragment())
                                             .rv.getLayoutManager()
                                     instanceof LinearLayoutManager) {
                         ((LinearLayoutManager)
-                                        ((SubmissionsView) adapter.getCurrentFragment())
-                                                .rv.getLayoutManager())
+                                        java.util.Objects.requireNonNull(
+                                                ((SubmissionsView) adapter.getCurrentFragment())
+                                                .rv.getLayoutManager()))
                                 .scrollToPositionWithOffset(
-                                        data.getIntExtra("lastPage", 0) + 1, mToolbar.getHeight());
+                                        data.getIntExtra("lastPage", 0) + 1, requireToolbar().getHeight());
                     }
                 } else {
                     ((SubmissionsView) adapter.getCurrentFragment()).adapter.refreshView();
@@ -839,7 +877,7 @@ public class MainActivity extends BaseActivity
     }
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         inNightMode = SettingValues.isNight();
         disableSwipeBackLayout();
         super.onCreate(savedInstanceState);
@@ -892,15 +930,15 @@ public class MainActivity extends BaseActivity
                                     new AsyncNotificationBadge(MainActivity.this)
                                             .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                                 }
-                                if (!Reddit.appRestart
-                                        .getString(CheckForMail.SUBS_TO_GET, "")
+                                if (!PrefUtil.getString(
+                                                Reddit.appRestart, CheckForMail.SUBS_TO_GET, "")
                                         .isEmpty()) {
                                     new CheckForMail.AsyncGetSubs(MainActivity.this)
                                             .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                                 }
                                 new AsyncTask<Void, Void, Submission>() {
                                     @Override
-                                    protected Submission doInBackground(Void... params) {
+                                    protected @Nullable Submission doInBackground(Void... params) {
                                         if (Authentication.isLoggedIn)
                                             UserSubscriptions.doOnlineSyncing();
                                         try {
@@ -1093,12 +1131,12 @@ public class MainActivity extends BaseActivity
 
             LogUtil.v("Starting main " + Authentication.name);
             Authentication.isLoggedIn = Reddit.appRestart.getBoolean("loggedin", false);
-            Authentication.name = Reddit.appRestart.getString("name", "LOGGEDOUT");
+            Authentication.name = PrefUtil.getString(Reddit.appRestart, "name", "LOGGEDOUT");
             UserSubscriptions.doMainActivitySubs(this);
         } else if (!first) {
             LogUtil.v("Starting main 2 " + Authentication.name);
             Authentication.isLoggedIn = Reddit.appRestart.getBoolean("loggedin", false);
-            Authentication.name = Reddit.appRestart.getString("name", "LOGGEDOUT");
+            Authentication.name = PrefUtil.getString(Reddit.appRestart, "name", "LOGGEDOUT");
             Reddit.appRestart.edit().putBoolean("isRestarting", false).apply();
             Reddit.isRestarting = false;
             UserSubscriptions.doMainActivitySubs(this);
@@ -1193,6 +1231,7 @@ public class MainActivity extends BaseActivity
         }
     }
 
+    @SuppressWarnings("NullAway.Init")
     NetworkStateReceiver networkStateReceiver;
 
     @Override
@@ -1207,7 +1246,7 @@ public class MainActivity extends BaseActivity
                 && headerMain != null
                 && runAfterLoad == null) {
             new AsyncNotificationBadge(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } else if (Authentication.isLoggedIn && Authentication.name.equalsIgnoreCase("loggedout")) {
+        } else if (Authentication.isLoggedIn && Authentication.nameOrEmpty().equalsIgnoreCase("loggedout")) {
             restartTheme(); // force a restart because we should not be here
         }
 
@@ -1251,7 +1290,7 @@ public class MainActivity extends BaseActivity
 
                 if (SettingValues.subredditSearchMethod
                         == Constants.SUBREDDIT_SEARCH_METHOD_DRAWER) {
-                    mToolbar.setOnLongClickListener(
+                    requireToolbar().setOnLongClickListener(
                             null); // remove the long click listener from the toolbar
                     findViewById(R.id.drawer_divider).setVisibility(View.GONE);
                 } else if (SettingValues.subredditSearchMethod
@@ -1435,7 +1474,7 @@ public class MainActivity extends BaseActivity
         setRecentBar(usedArray.get(position));
 
         if (SettingValues.single) {
-            getSupportActionBar().setTitle(usedArray.get(position));
+            java.util.Objects.requireNonNull(getSupportActionBar()).setTitle(usedArray.get(position));
         } else {
             if (mTabLayout != null) {
                 mTabLayout.setSelectedTabIndicatorColor(
@@ -1479,8 +1518,9 @@ public class MainActivity extends BaseActivity
                 && currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
             position =
                     ((LinearLayoutManager)
-                                            ((SubmissionsView) adapter.getCurrentFragment())
-                                                    .rv.getLayoutManager())
+                                            java.util.Objects.requireNonNull(
+                                                    ((SubmissionsView) adapter.getCurrentFragment())
+                                                    .rv.getLayoutManager()))
                                     .findFirstCompletelyVisibleItemPosition()
                             - 1;
         } else if (((SubmissionsView) adapter.getCurrentFragment()).rv.getLayoutManager()
@@ -1488,8 +1528,9 @@ public class MainActivity extends BaseActivity
             int[] firstVisibleItems = null;
             firstVisibleItems =
                     ((CatchStaggeredGridLayoutManager)
-                                    ((SubmissionsView) adapter.getCurrentFragment())
-                                            .rv.getLayoutManager())
+                                    java.util.Objects.requireNonNull(
+                                            ((SubmissionsView) adapter.getCurrentFragment())
+                                            .rv.getLayoutManager()))
                             .findFirstCompletelyVisibleItemPositions(firstVisibleItems);
             if (firstVisibleItems != null && firstVisibleItems.length > 0) {
                 position = firstVisibleItems[0] - 1;
@@ -1497,8 +1538,9 @@ public class MainActivity extends BaseActivity
         } else {
             position =
                     ((PreCachingLayoutManager)
-                                            ((SubmissionsView) adapter.getCurrentFragment())
-                                                    .rv.getLayoutManager())
+                                            java.util.Objects.requireNonNull(
+                                                    ((SubmissionsView) adapter.getCurrentFragment())
+                                                    .rv.getLayoutManager()))
                                     .findFirstCompletelyVisibleItemPosition()
                             - 1;
         }
@@ -1507,6 +1549,7 @@ public class MainActivity extends BaseActivity
 
 
 
+    @SuppressWarnings("NullAway.Init")
     public static String randomoverride;
 
     public void reloadSubs() {
@@ -1536,7 +1579,7 @@ public class MainActivity extends BaseActivity
             }
 
             if (SettingValues.single) {
-                getSupportActionBar().setTitle(shouldLoad);
+                java.util.Objects.requireNonNull(getSupportActionBar()).setTitle(shouldLoad);
             }
 
             setToolbarClick();
@@ -1648,7 +1691,8 @@ public class MainActivity extends BaseActivity
         if (((adapter.getCurrentFragment()) == null)) return;
         int[] firstVisibleItems =
                 ((CatchStaggeredGridLayoutManager)
-                                (((SubmissionsView) adapter.getCurrentFragment())
+                                java.util.Objects.requireNonNull(
+                                        ((SubmissionsView) adapter.getCurrentFragment())
                                         .rv.getLayoutManager()))
                         .findFirstVisibleItemPositions(null);
         if (firstVisibleItems != null && firstVisibleItems.length > 0) {
@@ -1718,7 +1762,7 @@ public class MainActivity extends BaseActivity
                     LayoutUtils.scrollToTabAfterLayout(mTabLayout, toGoto);
                 }
             } else {
-                getSupportActionBar().setTitle(usedArray.get(toGoto));
+                java.util.Objects.requireNonNull(getSupportActionBar()).setTitle(usedArray.get(toGoto));
                 pager.setCurrentItem(toGoto);
             }
             setToolbarClick();
@@ -1743,7 +1787,7 @@ public class MainActivity extends BaseActivity
                     });
         } else {
             LogUtil.v("notnull");
-            mToolbar.setOnClickListener(
+            requireToolbar().setOnClickListener(
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -1905,7 +1949,13 @@ public class MainActivity extends BaseActivity
 
         Bitmap over =
                 DrawableUtil.drawableToBitmap(
-                        ResourcesCompat.getDrawable(getResources(), overlay, null));
+                        java.util.Objects.requireNonNull(
+                                ResourcesCompat.getDrawable(getResources(), overlay, null)));
+
+        if (over == null) {
+            // The overlay drawable produced no bitmap; the plain colored circle is still a usable icon.
+            return IconCompat.createWithBitmap(color);
+        }
 
         Canvas canvas = new Canvas(color);
         canvas.drawBitmap(

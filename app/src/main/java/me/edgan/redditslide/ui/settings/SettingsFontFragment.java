@@ -15,7 +15,9 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.FontPreferences.FontTypeComment;
 import me.edgan.redditslide.Visuals.FontPreferences.FontTypeTitle;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class SettingsFontFragment {
 
     private final Activity context;

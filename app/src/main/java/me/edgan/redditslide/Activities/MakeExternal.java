@@ -3,16 +3,19 @@ package me.edgan.redditslide.Activities;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import androidx.annotation.Nullable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.LogUtil;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 9/28/2015. */
+@NullMarked
 public class MakeExternal extends Activity {
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         super.onCreate(savedInstance);
         String url = getIntent().getStringExtra("url");
         if (url != null) {

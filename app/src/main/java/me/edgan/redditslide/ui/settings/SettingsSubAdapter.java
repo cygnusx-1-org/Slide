@@ -25,10 +25,12 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
+import org.jspecify.annotations.NullMarked;
 import uz.shift.colorpicker.LineColorPicker;
 import uz.shift.colorpicker.OnColorChangedListener;
 
 /** Created by ccrama on 8/17/2015. */
+@NullMarked
 public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.ViewHolder> {
     private final ArrayList<String> objects;
 
@@ -140,7 +142,9 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
         int currentAccentColor;
 
         final ColorPreferences colorPrefs = new ColorPreferences(context);
-        final String subreddit = multipleSubs ? null : subreddits.get(0);
+        // The list is non-empty (guarded above); every use below is inside a !multipleSubs
+        // branch, so this is the single sub being edited and never a marker for "multiple".
+        final String subreddit = subreddits.get(0);
         final SwitchCompat bigPics = dialoglayout.findViewById(R.id.bigpics);
         final SwitchCompat selftext = dialoglayout.findViewById(R.id.selftext);
 

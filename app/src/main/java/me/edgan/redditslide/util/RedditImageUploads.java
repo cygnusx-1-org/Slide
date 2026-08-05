@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import me.edgan.redditslide.markdown.UploadedImage;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Tracks the Reddit-hosted images that have been inserted into a particular editor so the send path
@@ -14,6 +15,7 @@ import me.edgan.redditslide.markdown.UploadedImage;
  * <p>Keyed weakly by the editor so entries disappear when the view is gone. The editor toolbar
  * ({@code DoEditorActions}) records images here; the comment/post send sites read them back.
  */
+@NullMarked
 public final class RedditImageUploads {
     private static final Map<EditText, List<UploadedImage>> MAP = new WeakHashMap<>();
 

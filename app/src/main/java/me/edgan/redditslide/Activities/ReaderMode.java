@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -23,15 +24,19 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class ReaderMode extends BaseActivityAnim {
     private int mSubredditColor;
+    @SuppressWarnings("NullAway.Init")
     public static String html;
+    @SuppressWarnings("NullAway.Init")
     SpoilerRobotoTextView v;
-    private String url;
+    private String url = "";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         overrideSwipeFromAnywhere();
         super.onCreate(savedInstanceState);
         applyColorTheme("");
@@ -49,7 +54,7 @@ public class ReaderMode extends BaseActivityAnim {
         setupAppBar(R.id.toolbar, "", true, mSubredditColor, R.id.appbar);
 
         if (getIntent().hasExtra("url")) {
-            url = getIntent().getExtras().getString(LinkUtil.EXTRA_URL, "");
+            url = MiscUtil.orEmpty(getIntent().getStringExtra(LinkUtil.EXTRA_URL));
             ((Toolbar) findViewById(R.id.toolbar)).setTitle(url);
         }
 
@@ -91,7 +96,9 @@ public class ReaderMode extends BaseActivityAnim {
     }
 
     public class AsyncGetArticle extends AsyncTask<Void, Void, Void> {
+        @SuppressWarnings("NullAway.Init")
         String articleText;
+        @SuppressWarnings("NullAway.Init")
         String title;
 
         @Override

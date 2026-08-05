@@ -2,6 +2,7 @@ package me.edgan.redditslide.Adapters;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -38,8 +39,11 @@ public class MultiredditPosts implements PostLoader {
     public boolean offline;
     public boolean loading;
     public String profile;
+    @SuppressWarnings("NullAway.Init")
     private MultiRedditPaginator paginator;
+    @SuppressWarnings("NullAway.Init")
     Context c;
+    @SuppressWarnings("NullAway.Init")
     MultiredditAdapter adapter;
 
     public MultiredditPosts(String multireddit, String profile) {
@@ -84,7 +88,19 @@ public class MultiredditPosts implements PostLoader {
         return posts;
     }
 
-    public MultiReddit multiReddit;
+    // Null when the constructor could not resolve the name; loadMore is the single entry
+    // point and reports the error rather than proceeding.
+    @Nullable public MultiReddit multiReddit;
+
+    /** Display name of the multireddit, or "" when it could not be resolved. */
+    public String displayName() {
+        return multiReddit == null ? "" : multiReddit.getDisplayName();
+    }
+
+    /** Cache key part for a multireddit; empty when it could not be resolved. */
+    private static String multiName(final @Nullable MultiReddit multi) {
+        return multi == null ? "" : multi.getDisplayName().toLowerCase(Locale.ENGLISH);
+    }
 
     @Override
     public boolean hasMore() {
@@ -130,9 +146,7 @@ public class MultiredditPosts implements PostLoader {
                 if (!usedOffline)
                     OfflineSubreddit.getSubreddit(
                                     "multi_"
-                                            + multiReddit
-                                                    .getDisplayName()
-                                                    .toLowerCase(Locale.ENGLISH),
+                                            + multiName(multiReddit),
                                     false,
                                     context)
                             .overwriteSubmissions(posts)
@@ -157,9 +171,7 @@ public class MultiredditPosts implements PostLoader {
                 nomore = true;
             } else if (!OfflineSubreddit.getSubreddit(
                                     "multi_"
-                                            + multiReddit
-                                                    .getDisplayName()
-                                                    .toLowerCase(Locale.ENGLISH),
+                                            + multiName(multiReddit),
                                     false,
                                     context)
                             .submissions
@@ -169,7 +181,7 @@ public class MultiredditPosts implements PostLoader {
                 offline = true;
                 final OfflineSubreddit cached =
                         OfflineSubreddit.getSubreddit(
-                                "multi_" + multiReddit.getDisplayName().toLowerCase(Locale.ENGLISH),
+                                "multi_" + multiName(multiReddit),
                                 true,
                                 context);
 
@@ -177,7 +189,7 @@ public class MultiredditPosts implements PostLoader {
                 for (Submission s : cached.submissions) {
                     if (!PostMatch.doesMatch(
                             s,
-                            "multi_" + multiReddit.getDisplayName().toLowerCase(Locale.ENGLISH),
+                            "multi_" + multiName(multiReddit),
                             false)) {
                         finalSubs.add(s);
                     }
@@ -199,7 +211,7 @@ public class MultiredditPosts implements PostLoader {
         }
 
         @Override
-        protected List<Submission> doInBackground(MultiReddit... subredditPaginators) {
+        protected @Nullable List<Submission> doInBackground(MultiReddit... subredditPaginators) {
             if (!NetworkUtil.isConnected(context)) {
                 offline = true;
                 return null;
@@ -239,7 +251,7 @@ public class MultiredditPosts implements PostLoader {
 
             } catch (Exception e) {
                 LogUtil.e(e, "MultiredditPosts.doInBackground failed");
-                if (e.getMessage().contains("Forbidden")) {
+                if (String.valueOf(e.getMessage()).contains("Forbidden")) {
                     Reddit.authentication.updateToken(context);
                 }
             }

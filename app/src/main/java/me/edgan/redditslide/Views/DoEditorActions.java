@@ -62,8 +62,10 @@ import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.json.JSONObject;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by carlo_000 on 10/18/2015. */
+@NullMarked
 public class DoEditorActions {
 
     private static final AtomicInteger registryCounter = new AtomicInteger(0);
@@ -71,9 +73,9 @@ public class DoEditorActions {
     public static void doActions(
             final EditText editText,
             final View baseView,
-            final FragmentManager fm,
+            final @Nullable FragmentManager fm,
             final Activity a,
-            final String oldComment,
+            final @Nullable String oldComment,
             @Nullable final String[] authors) {
         doActions(editText, baseView, fm, a, oldComment, authors, null);
     }
@@ -81,9 +83,9 @@ public class DoEditorActions {
     public static void doActions(
             final EditText editText,
             final View baseView,
-            final FragmentManager fm,
+            final @Nullable FragmentManager fm,
             final Activity a,
-            final String oldComment,
+            final @Nullable String oldComment,
             @Nullable final String[] authors,
             @Nullable final ActivityResultLauncher<PickVisualMediaRequest> imageLauncher) {
         baseView.findViewById(R.id.bold)
@@ -362,7 +364,9 @@ public class DoEditorActions {
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                doDraw(a, editText, fm);
+                                if (fm != null) {
+                                    doDraw(a, editText, fm);
+                                }
                             }
                         });
         /*todo baseView.findViewById(R.id.superscript).setOnClickListener(new View.OnClickListener() {
@@ -681,9 +685,9 @@ public class DoEditorActions {
         }
     }
 
-    public static Editable e;
+    @Nullable public static Editable e;
     public static int sStart, sEnd;
-    public static EditText currentImageTarget;
+    @Nullable public static EditText currentImageTarget;
     // When true, the next picked image is uploaded to Reddit (inline) instead of Imgur (link).
     public static boolean uploadToReddit;
     // The image-toolbar button per editor, so it can be greyed out after a comment's one allowed
@@ -731,17 +735,21 @@ public class DoEditorActions {
 
     public static class AuxiliaryFragment extends Fragment {
         @Override
-        public void onActivityResult(int requestCode, int resultCode, final Intent data) {
+        public void onActivityResult(
+                int requestCode, int resultCode, final @Nullable Intent data) {
             super.onActivityResult(requestCode, resultCode, data);
             if (data != null && data.getData() != null) {
-                handleImageIntent(
-                        new ArrayList<Uri>() {
-                            {
-                                add(data.getData());
-                            }
-                        },
-                        e,
-                        getContext());
+                final Editable target = e;
+                if (target != null) {
+                    handleImageIntent(
+                            new ArrayList<Uri>() {
+                                {
+                                    add(data.getData());
+                                }
+                            },
+                            target,
+                            getContext());
+                }
 
                 getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
             }
@@ -1015,9 +1023,12 @@ public class DoEditorActions {
                                                                 + ")";
                                                 int start = Math.max(sStart, 0);
                                                 int end = Math.max(sEnd, 0);
-                                                DoEditorActions.e.insert(Math.max(start, end), s);
-                                                DoEditorActions.e.delete(start, end);
-                                                DoEditorActions.e = null;
+                                                if (DoEditorActions.e != null) {
+                                                    DoEditorActions.e.insert(
+                                                            Math.max(start, end), s);
+                                                    DoEditorActions.e.delete(start, end);
+                                                    DoEditorActions.e = null;
+                                                }
                                                 sStart = 0;
                                                 sEnd = 0;
                                             }
@@ -1130,7 +1141,7 @@ public class DoEditorActions {
         }
     }
 
-    private static void setImageButtonEnabled(View v, boolean enabled) {
+    private static void setImageButtonEnabled(@Nullable View v, boolean enabled) {
         if (v == null) {
             return;
         }
@@ -1157,6 +1168,8 @@ public class DoEditorActions {
     private static class UploadRedditImageTask extends android.os.AsyncTask<Uri, Void, Object> {
         private final Context c;
         private final EditText editText;
+
+        @SuppressWarnings("NullAway.Init") // assigned in onPreExecute, before doInBackground
         private MaterialProgressDialog dialog;
 
         UploadRedditImageTask(Context c, EditText editText) {

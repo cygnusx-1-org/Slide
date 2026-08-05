@@ -29,7 +29,8 @@ public class ToolbarScrollHideHandler extends RecyclerView.OnScrollListener {
         mAppBar = appBar;
     }
 
-    public ToolbarScrollHideHandler(Toolbar t, View appBar, View extra, View opposite) {
+    public ToolbarScrollHideHandler(
+            Toolbar t, View appBar, View extra, @Nullable View opposite) {
         tToolbar = t;
         mAppBar = appBar;
         this.extra = extra;

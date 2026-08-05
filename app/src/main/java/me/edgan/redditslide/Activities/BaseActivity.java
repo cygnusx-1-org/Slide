@@ -35,18 +35,22 @@ import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.GifUtils;
 import me.edgan.redditslide.util.LogUtil;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * This is an activity which is the base for most of Slide's activities. It has support for handling
  * of swiping, setting up the AppBar (toolbar), and coloring of applicable views.
  */
+@NullMarked
 public class BaseActivity extends PeekViewActivity implements SwipeBackActivityBase {
     @Nullable public Toolbar mToolbar;
+    @SuppressWarnings("NullAway.Init")
     protected SwipeBackActivityHelper mHelper;
     protected boolean overrideRedditSwipeAnywhere = false;
     protected boolean enableSwipeBackLayout = true;
     protected boolean overrideSwipeFromAnywhere = false;
     protected boolean verticalExit = false;
+    @SuppressWarnings("NullAway.Init")
     protected GifUtils.AsyncLoadGif currentGif;
 
     /**
@@ -154,7 +158,7 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         applyOverrideLanguage();
 
         super.onCreate(savedInstanceState);
@@ -202,7 +206,7 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         if (enableSwipeBackLayout) mHelper.onPostCreate();
         setupEdgeToEdge();
@@ -292,8 +296,12 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
                                     base[3] + bottom);
                         }
                     }
-                    setScrimHeight(mStatusBarScrim, bars.top);
-                    setScrimHeight(mNavBarScrim, bars.bottom);
+                    if (mStatusBarScrim != null) {
+                        setScrimHeight(mStatusBarScrim, bars.top);
+                    }
+                    if (mNavBarScrim != null) {
+                        setScrimHeight(mNavBarScrim, bars.bottom);
+                    }
                     return WindowInsetsCompat.CONSUMED;
                 });
     }
@@ -381,7 +389,7 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
     }
 
     @Override
-    public SwipeBackLayout getSwipeBackLayout() {
+    public @Nullable SwipeBackLayout getSwipeBackLayout() {
         if (enableSwipeBackLayout) {
             return mHelper.getSwipeBackLayout();
         } else {
@@ -391,14 +399,14 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
 
     @Override
     public void setSwipeBackEnable(boolean enable) {
-        if (enableSwipeBackLayout) getSwipeBackLayout().setEnableGesture(enable);
+        if (enableSwipeBackLayout) java.util.Objects.requireNonNull(getSwipeBackLayout()).setEnableGesture(enable);
     }
 
     @Override
     public void scrollToFinishActivity() {
         if (enableSwipeBackLayout) {
             Utils.convertActivityToTranslucent(this);
-            getSwipeBackLayout().scrollToFinishActivity();
+            java.util.Objects.requireNonNull(getSwipeBackLayout()).scrollToFinishActivity();
         }
     }
 
@@ -472,6 +480,15 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
      * @param title String resource for the toolbar's title
      * @param enableUpButton Whether or not the toolbar should have up navigation
      */
+    /**
+     * The toolbar, asserted present. Callers of this have already run {@link #setupAppBar}, which
+     * binds it from the activity's layout and dereferences it itself. A screen that never sets one
+     * up must read {@link #mToolbar} and test it instead.
+     */
+    public Toolbar requireToolbar() {
+        return java.util.Objects.requireNonNull(mToolbar, "setupAppBar has not run");
+    }
+
     protected void setupAppBar(
             @IdRes int toolbar,
             @StringRes int title,
@@ -498,8 +515,8 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
         setSupportActionBar(mToolbar);
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(enableUpButton);
-            getSupportActionBar().setTitle(title);
+            java.util.Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(enableUpButton);
+            java.util.Objects.requireNonNull(getSupportActionBar()).setTitle(title);
         }
 
         themeSystemBars(systemBarColor);
@@ -527,8 +544,8 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
         setSupportActionBar(mToolbar);
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(enableUpButton);
-            getSupportActionBar().setTitle(title);
+            java.util.Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(enableUpButton);
+            java.util.Objects.requireNonNull(getSupportActionBar()).setTitle(title);
         }
 
         themeSystemBars(systemBarColor);
@@ -552,9 +569,9 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
         setSupportActionBar(mToolbar);
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(enableUpButton);
+            java.util.Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(enableUpButton);
             if (title != null) {
-                getSupportActionBar().setTitle(title);
+                java.util.Objects.requireNonNull(getSupportActionBar()).setTitle(title);
             }
         }
 
@@ -578,8 +595,8 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
         setSupportActionBar(mToolbar);
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(enableUpButton);
-            getSupportActionBar().setTitle(title);
+            java.util.Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(enableUpButton);
+            java.util.Objects.requireNonNull(getSupportActionBar()).setTitle(title);
         }
 
         themeSystemBars(subreddit);
@@ -665,7 +682,7 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
 
     private void setRecentBarTaskDescription(@Nullable String title, int color) {
         int icon =
-                title.equalsIgnoreCase("androidcirclejerk")
+                "androidcirclejerk".equalsIgnoreCase(title)
                         ? R.drawable.matiasduarte
                         : R.drawable.ic_launcher;
 

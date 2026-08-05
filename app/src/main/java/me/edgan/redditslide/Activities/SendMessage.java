@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -36,32 +37,39 @@ import net.dean.jraw.ApiException;
 import net.dean.jraw.managers.InboxManager;
 import net.dean.jraw.models.Captcha;
 import net.dean.jraw.models.PrivateMessage;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 3/5/2015. */
+@NullMarked
 public class SendMessage extends BaseActivity {
     public static final String EXTRA_NAME = "name";
     public static final String EXTRA_REPLY = "reply";
     public static final String EXTRA_MESSAGE = "message";
     public static final String EXTRA_SUBJECT = "subject";
 
+    @SuppressWarnings("NullAway.Init")
     public String URL;
     private Boolean reply;
-    private PrivateMessage previousMessage;
+    private @Nullable PrivateMessage previousMessage;
     private EditText subject;
     private EditText to;
+    @SuppressWarnings("NullAway.Init")
     private String bodytext;
+    @SuppressWarnings("NullAway.Init")
     private String subjecttext;
+    @SuppressWarnings("NullAway.Init")
     private String totext;
     private EditText body;
 
+    @SuppressWarnings("NullAway.Init")
     private String
             messageSentStatus; // the String to show in the Toast for when the message is sent
     private boolean messageSent = true; // whether or not the message was sent successfully
 
-    String author;
+    @Nullable String author;
     private ActivityResultLauncher<PickVisualMediaRequest> editorImageLauncher;
 
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         disableSwipeBackLayout();
         super.onCreate(savedInstanceState);
 
@@ -131,14 +139,14 @@ public class SendMessage extends BaseActivity {
                 });
 
         if (getIntent() != null && getIntent().hasExtra(EXTRA_NAME)) {
-            name = getIntent().getExtras().getString(EXTRA_NAME, "");
+            name = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_NAME));
             to.setText(name);
             to.setInputType(InputType.TYPE_NULL);
 
             if (reply) {
                 b.setTitle(getString(R.string.mail_reply_to, name));
                 previousMessage = DataShare.sharedMessage;
-                if (previousMessage.getSubject() != null)
+                if (previousMessage != null && previousMessage.getSubject() != null)
                     subject.setText(getString(R.string.mail_re, previousMessage.getSubject()));
                 subject.setInputType(InputType.TYPE_NULL);
 
@@ -154,7 +162,10 @@ public class SendMessage extends BaseActivity {
                             public void onClick(View v) {
                                 DialogUtil.showWithCardBackground(new AlertDialog.Builder(SendMessage.this)
                                         .setTitle(getString(R.string.mail_author_wrote, name))
-                                        .setMessage(previousMessage.getBody())
+                                        .setMessage(
+                                                previousMessage == null
+                                                        ? ""
+                                                        : previousMessage.getBody())
                                         );
                             }
                         });
@@ -210,10 +221,10 @@ public class SendMessage extends BaseActivity {
     }
 
     private class AsyncDo extends AsyncTask<Void, Void, Void> {
-        String tried;
-        Captcha captcha;
+        @Nullable String tried;
+        @Nullable Captcha captcha;
 
-        public AsyncDo(Captcha captcha, String tried) {
+        public AsyncDo(@Nullable Captcha captcha, @Nullable String tried) {
             this.captcha = captcha;
             this.tried = tried;
         }
@@ -224,7 +235,7 @@ public class SendMessage extends BaseActivity {
             return null;
         }
 
-        public void sendMessage(Captcha captcha, String captchaAttempt) {
+        public void sendMessage(@Nullable Captcha captcha, @Nullable String captchaAttempt) {
             if (reply) {
                 try {
                     new net.dean.jraw.managers.AccountManager(Authentication.reddit)
@@ -239,7 +250,7 @@ public class SendMessage extends BaseActivity {
                         new InboxManager(Authentication.reddit)
                                 .compose(totext, subjecttext, bodytext, captcha, captchaAttempt);
                     else {
-                        String to = author;
+                        String to = MiscUtil.orEmpty(author);
                         if (to.startsWith("/r/")) {
                             to = to.substring(3);
                             new InboxManager(Authentication.reddit)

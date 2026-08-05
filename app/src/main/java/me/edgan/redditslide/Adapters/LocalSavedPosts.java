@@ -1,16 +1,13 @@
 package me.edgan.redditslide.Adapters;
 
 import android.os.AsyncTask;
-
+import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import java.util.ArrayList;
-
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.SubmissionViews.LocalSaved;
 import me.edgan.redditslide.util.LogUtil;
-
 import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Thing;
@@ -22,7 +19,10 @@ import net.dean.jraw.paginators.FullnamesPaginator;
  * ({@link FullnamesPaginator}). Items removed by a moderator render as whatever Reddit now returns.
  */
 public class LocalSavedPosts extends GeneralPosts {
+    @SuppressWarnings("NullAway.Init") // bound by bindAdapter before any load
     private SwipeRefreshLayout refreshLayout;
+
+    @SuppressWarnings("NullAway.Init")
     private ContributionAdapter adapter;
     public boolean loading;
 
@@ -46,7 +46,7 @@ public class LocalSavedPosts extends GeneralPosts {
         }
 
         @Override
-        protected ArrayList<Contribution> doInBackground(Void... params) {
+        protected @Nullable ArrayList<Contribution> doInBackground(Void... params) {
             try {
                 if (reset) {
                     LocalSaved.reconcile();

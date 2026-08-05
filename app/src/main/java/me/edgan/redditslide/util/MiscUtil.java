@@ -11,12 +11,12 @@ import android.text.style.RelativeSizeSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-
+import androidx.annotation.Nullable;
 import me.edgan.redditslide.Adapters.ProfileCommentViewHolder;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Created by TacoTheDank on 03/15/2021.
@@ -24,7 +24,17 @@ import me.edgan.redditslide.SettingValues;
  * <p>These functions wouldn't really make sense to be anywhere else, so... MiscUtil is meant to be
  * temporary; these functions will ideally eventually go into their own little places.
  */
+@NullMarked
 public class MiscUtil {
+
+    /**
+     * {@code value}, or {@code ""} when it is null. For intent extras a screen cannot run without:
+     * a missing one used to surface as an NPE somewhere further down, and an empty string reaches
+     * the same "nothing to show" handling the rest of the code already has.
+     */
+    public static String orEmpty(final @Nullable String value) {
+        return value == null ? "" : value;
+    }
 
     // Used in SubredditView, MainActivity, and CommentPage (ugly-af code moment)
     public static void doSubscribeButtonText(boolean currentlySubbed, TextView subscribe) {
@@ -159,7 +169,8 @@ public class MiscUtil {
      * @param rootView The root view containing the buttons (null for activity-level)
      * @param activity The activity context
      */
-    public static void adjustButtonSizesForSmallScreens(View rootView, Activity activity) {
+    public static void adjustButtonSizesForSmallScreens(
+            @Nullable View rootView, Activity activity) {
         if (activity == null) return;
 
         // Get the smallest screen width in dp (respects Developer Options setting)

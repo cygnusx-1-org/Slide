@@ -15,9 +15,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.content.ContextCompat;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.MissingNode;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -57,14 +59,20 @@ import org.apache.commons.text.StringEscapeUtils;
 
 /** Created by carlo_000 on 2/7/2016. */
 public class HeaderImageLinkView extends RelativeLayout {
-    public String loadedUrl;
+    @Nullable public String loadedUrl;
     public boolean lq;
+
+    // Installed by PopulateSubmissionViewHolder (setThumbnail, line 385) before setSubmission,
+    // from the thumbimage2 view every submission layout defines.
+    @SuppressWarnings("NullAway.Init")
     public ImageView thumbImage2;
-    public TextView secondTitle;
-    public TextView secondSubTitle;
-    public View wrapArea;
+
+    // Only installed by setWrapArea, which the adapter calls for full (comment-screen) views.
+    @Nullable public TextView secondTitle;
+    @Nullable public TextView secondSubTitle;
+    @Nullable public View wrapArea;
     String lastDone = "";
-    ContentType.Type type;
+    ContentType.Type type = ContentType.Type.NONE;
     DisplayImageOptions bigOptions =
             new DisplayImageOptions.Builder()
                     .resetViewBeforeLoading(false)
@@ -81,27 +89,35 @@ public class HeaderImageLinkView extends RelativeLayout {
                     .displayer(new SimpleBitmapDisplayer())
                     .build();
     boolean clickHandled;
+
+    // handler and longClicked are both assigned by setBottomSheet, which registers the touch
+    // listener that reads them; event is set by that listener before the long-press runnable
+    // fires, and is null until the first touch.
+    @SuppressWarnings("NullAway.Init")
     Handler handler;
-    MotionEvent event;
+
+    @Nullable MotionEvent event;
+
+    @SuppressWarnings("NullAway.Init")
     Runnable longClicked;
     float position;
     private TextView title;
-    private TextView info;
+    @Nullable private TextView info;
     public MaxHeightImageView backdrop;
     private boolean forceThumb;
 
     // Cache the resolved gallery preview, keyed by the data node identity, so re-binds of the same
     // card skip re-traversing the gallery JSON while a refreshed submission (new node) recomputes.
-    private JsonNode galleryPreviewKey;
-    private PhotoLoader.GalleryPreview galleryPreviewCache;
+    @Nullable private JsonNode galleryPreviewKey;
+    @Nullable private PhotoLoader.GalleryPreview galleryPreviewCache;
 
     // Same idea for single-image posts. The chosen URL also depends on the low-quality decision
     // (which varies with network state) and the display width (thumbnail vs card), so those are
     // part of the key too.
-    private JsonNode imagePreviewKey;
+    @Nullable private JsonNode imagePreviewKey;
     private boolean imagePreviewLowQ;
     private int imagePreviewWidth;
-    private String imagePreviewUrlCache;
+    @Nullable private String imagePreviewUrlCache;
 
     private static final List<String> PLACEHOLDER_URLS =
             Arrays.asList("self", "default", "image", "nsfw", "spoiler", "");
@@ -172,7 +188,11 @@ public class HeaderImageLinkView extends RelativeLayout {
 
     boolean thumbUsed;
 
-    public void doImageAndText(final Submission submission, boolean full, String baseSub, boolean news) {
+    public void doImageAndText(
+            final Submission submission,
+            boolean full,
+            @Nullable String baseSub,
+            boolean news) {
         backdrop.setAspectRatio(0);
         backdrop.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
@@ -196,7 +216,8 @@ public class HeaderImageLinkView extends RelativeLayout {
 
         JsonNode dataNode = submission.getDataNode();
         JsonNode spoiler = (dataNode != null) ? dataNode.get("spoiler") : null;
-        JsonNode thumbnail = (dataNode != null) ? dataNode.get("thumbnail") : null;
+        JsonNode thumbnail =
+                (dataNode != null) ? dataNode.path("thumbnail") : MissingNode.getInstance();
 
         if (type == ContentType.Type.SELF && SettingValues.hideSelftextLeadImage
                 || SettingValues.noImages && submission.isSelfPost()) {
@@ -237,7 +258,9 @@ public class HeaderImageLinkView extends RelativeLayout {
                 if (!full && !submission.isSelfPost()) {
                     thumbImage2.setVisibility(View.VISIBLE);
                 } else {
-                    if (full && !submission.isSelfPost()) wrapArea.setVisibility(View.VISIBLE);
+                    if (full && !submission.isSelfPost() && wrapArea != null) {
+                        wrapArea.setVisibility(View.VISIBLE);
+                    }
                 }
                 thumbImage2.setImageDrawable(
                         ContextCompat.getDrawable(
@@ -280,7 +303,7 @@ public class HeaderImageLinkView extends RelativeLayout {
                 setVisibility(View.GONE);
                 if (!full) {
                     thumbImage2.setVisibility(View.VISIBLE);
-                } else {
+                } else if (wrapArea != null) {
                     wrapArea.setVisibility(View.VISIBLE);
                 }
 
@@ -328,7 +351,7 @@ public class HeaderImageLinkView extends RelativeLayout {
             } else {
                 findViewById(R.id.tag).setVisibility(View.GONE);
                 title.setVisibility(View.VISIBLE);
-                info.setVisibility(View.VISIBLE);
+                if (info != null) info.setVisibility(View.VISIBLE);
             }
 
             if (SettingValues.smallTag != 0 && !full && !news) {
@@ -353,7 +376,10 @@ public class HeaderImageLinkView extends RelativeLayout {
         return (width * ratio);
     }
 
-    public void onLinkLongClick(final String url, MotionEvent event, final Submission submission) {
+    public void onLinkLongClick(
+            final @Nullable String url,
+            @Nullable MotionEvent event,
+            final Submission submission) {
         popped = false;
 
         if (url == null || SettingValues.noPreviewImageLongClick) {
@@ -385,7 +411,7 @@ public class HeaderImageLinkView extends RelativeLayout {
         }
 
         if (activity != null && !activity.isFinishing()) {
-            if (SettingValues.peek) {
+            if (SettingValues.peek && event != null) {
                 Peek.into(
                         R.layout.peek_view_submission,
                         new SimpleOnPeek() {
@@ -531,7 +557,7 @@ public class HeaderImageLinkView extends RelativeLayout {
     public void setSubmission(
             final Submission submission,
             final boolean full,
-            String baseSub,
+            @Nullable String baseSub,
             ContentType.Type type) {
         this.type = type;
         if (!lastDone.equals(submission.getFullName())) {
@@ -549,7 +575,7 @@ public class HeaderImageLinkView extends RelativeLayout {
     public void setSubmissionNews(
             final Submission submission,
             final boolean full,
-            String baseSub,
+            @Nullable String baseSub,
             ContentType.Type type) {
         this.type = type;
         if (!lastDone.equals(submission.getFullName())) {
@@ -588,7 +614,7 @@ public class HeaderImageLinkView extends RelativeLayout {
         this.backdrop.setMaxHeight(MaxHeightImageView.maxHeight);
     }
 
-    private void handleTypes(Submission submission, String baseSub, boolean full) {
+    private void handleTypes(Submission submission, @Nullable String baseSub, boolean full) {
         JsonNode dataNode = submission.getDataNode();
 
         // Prefer a genuine preview image. For crossposts the preview lives on the
@@ -635,11 +661,11 @@ public class HeaderImageLinkView extends RelativeLayout {
     }
 
     // Delegated to PhotoLoader so the feed card and the preloader use identical thumbnail selection.
-    private String getValidThumbnailUrl(JsonNode node) {
+    private @Nullable String getValidThumbnailUrl(@Nullable JsonNode node) {
         return PhotoLoader.getValidThumbnailUrl(node);
     }
 
-    private JsonNode getPreviewSource(JsonNode dataNode) {
+    private @Nullable JsonNode getPreviewSource(@Nullable JsonNode dataNode) {
         if (dataNode == null) return null;
         JsonNode images = dataNode.path("preview").path("images");
         if (!images.isArray() || images.isEmpty()) return null;
@@ -647,7 +673,7 @@ public class HeaderImageLinkView extends RelativeLayout {
         return source.isObject() ? source : null;
     }
 
-    private void handleRedditGalleryType(Submission submission, String baseSub, boolean full, boolean forceThumb) {
+    private void handleRedditGalleryType(Submission submission, @Nullable String baseSub, boolean full, boolean forceThumb) {
         JsonNode dataNode = submission.getDataNode();
 
         // If this is a crosspost, we need to load the gallery data from the parent submission
@@ -668,7 +694,7 @@ public class HeaderImageLinkView extends RelativeLayout {
         }
     }
 
-    private void handleVRedditType(Submission submission, String baseSub, boolean full, boolean forceThumb) {
+    private void handleVRedditType(Submission submission, @Nullable String baseSub, boolean full, boolean forceThumb) {
         JsonNode dataNode = submission.getDataNode();
         String previewUrl =
                 getPreviewUrl(
@@ -716,11 +742,11 @@ public class HeaderImageLinkView extends RelativeLayout {
     }
 
     // Delegated to PhotoLoader so the feed card and the preloader resolve the identical preview URL.
-    private String getPreviewUrl(JsonNode dataNode) {
+    private @Nullable String getPreviewUrl(@Nullable JsonNode dataNode) {
         return PhotoLoader.getPreviewUrl(dataNode);
     }
 
-    private String getPreviewUrl(JsonNode dataNode, int maxWidth) {
+    private @Nullable String getPreviewUrl(@Nullable JsonNode dataNode, int maxWidth) {
         return PhotoLoader.getPreviewUrl(dataNode, maxWidth);
     }
 
@@ -731,14 +757,10 @@ public class HeaderImageLinkView extends RelativeLayout {
         return PhotoLoader.feedImageWidth(getContext(), !showThumb);
     }
 
-    private void handlePreviewImage(String previewUrl, Submission submission, String baseSub, boolean full, boolean forceThumb) {
+    private void handlePreviewImage(String previewUrl, Submission submission, @Nullable String baseSub, boolean full, boolean forceThumb) {
         if (!full && !SettingValues.isPicsEnabled(baseSub) || forceThumb) {
             if (!submission.isSelfPost() || full) {
-                if (!full) {
-                    thumbImage2.setVisibility(View.VISIBLE);
-                } else {
-                    wrapArea.setVisibility(View.VISIBLE);
-                }
+                setThumbAndWrapVisibility(full, true);
                 loadedUrl = previewUrl;
                 displayImage(previewUrl, thumbImage2);
             } else {
@@ -754,14 +776,10 @@ public class HeaderImageLinkView extends RelativeLayout {
         loadedUrl = previewUrl;
         displayImage(previewUrl, backdrop);
         setVisibility(View.VISIBLE);
-        if (!full) {
-            thumbImage2.setVisibility(View.GONE);
-        } else {
-            wrapArea.setVisibility(View.GONE);
-        }
+        setThumbAndWrapVisibility(full, false);
     }
 
-    private void displayImage(String url, ImageView target) {
+    private void displayImage(@Nullable String url, ImageView target) {
         backdrop.setVisibility(View.VISIBLE);
         displayImageCachedFirst(url, target, TRANSPARENCY_LISTENER);
     }
@@ -774,7 +792,7 @@ public class HeaderImageLinkView extends RelativeLayout {
      * back to the normal async load, so a rare miss simply behaves as before.
      */
     private void displayImageCachedFirst(
-            String url, ImageView target, ImageLoadingListener listener) {
+            @Nullable String url, @Nullable ImageView target, @Nullable ImageLoadingListener listener) {
         final ImageLoader loader =
                 ((Reddit) getContext().getApplicationContext()).getImageLoader();
         final boolean isThumb = target instanceof RoundImageTriangleView;
@@ -815,7 +833,7 @@ public class HeaderImageLinkView extends RelativeLayout {
         loader.displayImage(url, target, bigOptions, listener);
     }
 
-    private static Bitmap firstCachedBitmap(ImageLoader loader, String uri) {
+    private static @Nullable Bitmap firstCachedBitmap(ImageLoader loader, String uri) {
         for (Bitmap cached :
                 MemoryCacheUtils.findCachedBitmapsForImageUri(uri, loader.getMemoryCache())) {
             if (cached != null && !cached.isRecycled()) {
@@ -832,7 +850,7 @@ public class HeaderImageLinkView extends RelativeLayout {
     // and cached under, the preloader's target size/key so the result reuses the preloader's memory
     // entry instead of adding a second differently sized one, and repeat binds hit memory instead
     // of re-decoding.
-    private Bitmap syncDecodeThumbnailFromDisk(ImageLoader loader, String uri) {
+    private @Nullable Bitmap syncDecodeThumbnailFromDisk(ImageLoader loader, String uri) {
         try {
             final File diskFile = loader.getDiskCache().get(uri);
             if (diskFile == null || !diskFile.exists()) {
@@ -871,7 +889,7 @@ public class HeaderImageLinkView extends RelativeLayout {
         return null;
     }
 
-    private void handleImageType(Submission submission, String baseSub, boolean full, boolean forceThumb, boolean loadLq) {
+    private void handleImageType(Submission submission, @Nullable String baseSub, boolean full, boolean forceThumb, boolean loadLq) {
         final boolean lowQ =
                 loadLq
                         && submission.getThumbnails() != null
@@ -907,11 +925,7 @@ public class HeaderImageLinkView extends RelativeLayout {
 
         if (showThumb) {
             if (!submission.isSelfPost() || full) {
-                if (!full) {
-                    thumbImage2.setVisibility(View.VISIBLE);
-                } else {
-                    wrapArea.setVisibility(View.VISIBLE);
-                }
+                setThumbAndWrapVisibility(full, true);
 
                 loadedUrl = url;
                 displayImage(url, thumbImage2);
@@ -923,11 +937,7 @@ public class HeaderImageLinkView extends RelativeLayout {
             loadedUrl = url;
             displayImage(url, backdrop);
             setVisibility(View.VISIBLE);
-            if (!full) {
-                thumbImage2.setVisibility(View.GONE);
-            } else {
-                wrapArea.setVisibility(View.GONE);
-            }
+            setThumbAndWrapVisibility(full, false);
         }
     }
 
@@ -1010,7 +1020,7 @@ public class HeaderImageLinkView extends RelativeLayout {
     }
 
     private void handleThumbnailDisplay(Submission submission, boolean full, boolean forceThumb,
-            boolean loadLq, String baseSub, boolean news) {
+            boolean loadLq, @Nullable String baseSub, boolean news) {
         boolean shouldShowThumb = !SettingValues.isPicsEnabled(baseSub) && !full
                 || forceThumb;
         String url = getSubmissionUrl(submission, loadLq, feedImageWidth(shouldShowThumb));
@@ -1069,11 +1079,7 @@ public class HeaderImageLinkView extends RelativeLayout {
             return;
         }
 
-        if (!full) {
-            thumbImage2.setVisibility(View.VISIBLE);
-        } else {
-            wrapArea.setVisibility(View.VISIBLE);
-        }
+        setThumbAndWrapVisibility(full, true);
         loadedUrl = url;
 
         ImageLoadingListener detailedListener = new ImageLoadingListener() {
@@ -1202,14 +1208,10 @@ public class HeaderImageLinkView extends RelativeLayout {
 
     private void handleSpecialSubmissionType(Submission submission, boolean full, boolean forceThumb, int drawableResId) {
         setVisibility(View.GONE);
-        if (!full || forceThumb) {
-            thumbImage2.setVisibility(View.VISIBLE);
-        } else {
-            wrapArea.setVisibility(View.VISIBLE);
-        }
+        setThumbAndWrapVisibility(full && !forceThumb, true);
 
         if (submission.isSelfPost() && full) {
-            wrapArea.setVisibility(View.GONE);
+            setThumbAndWrapVisibility(true, false);
         } else {
             thumbImage2.setImageDrawable(
                     ContextCompat.getDrawable(getContext(), drawableResId));
@@ -1227,10 +1229,12 @@ public class HeaderImageLinkView extends RelativeLayout {
     }
 
     private void setupFullView(Submission submission, boolean full, boolean forceThumb, ContentType.Type type) {
-        if (wrapArea.getVisibility() == View.VISIBLE) {
-            title = secondTitle;
+        final View wrap = wrapArea;
+        final TextView wrapTitle = secondTitle;
+        if (wrap != null && wrapTitle != null && wrap.getVisibility() == View.VISIBLE) {
+            title = wrapTitle;
             info = secondSubTitle;
-            setBottomSheet(wrapArea, submission, full);
+            setBottomSheet(wrap, submission, full);
         } else {
             setupDefaultTitleAndInfo();
             View targetView = determineBottomSheetTarget(submission, forceThumb, type);
@@ -1262,14 +1266,15 @@ public class HeaderImageLinkView extends RelativeLayout {
     }
 
     private void setThumbAndWrapVisibility(boolean full, boolean visible) {
+        final int visibility = visible ? View.VISIBLE : View.GONE;
         if (!full) {
-            thumbImage2.setVisibility(visible ? View.VISIBLE : View.GONE);
-        } else {
-            wrapArea.setVisibility(visible ? View.VISIBLE : View.GONE);
+            thumbImage2.setVisibility(visibility);
+        } else if (wrapArea != null) {
+            wrapArea.setVisibility(visibility);
         }
     }
 
-    private void handleGalleryData(JsonNode dataNode, Submission submission, String baseSub, boolean full, boolean forceThumb) {
+    private void handleGalleryData(JsonNode dataNode, Submission submission, @Nullable String baseSub, boolean full, boolean forceThumb) {
         // Selection logic is shared with the preloader so the card and PhotoLoader reference the
         // same (sized) gallery image — see PhotoLoader.getGalleryPreview. Cache by data node
         // identity: a re-bind of the same card skips re-parsing, a refreshed submission recomputes.

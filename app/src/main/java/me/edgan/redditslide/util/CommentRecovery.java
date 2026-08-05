@@ -1,15 +1,15 @@
 package me.edgan.redditslide.util;
 
+import androidx.annotation.Nullable;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import me.edgan.redditslide.Reddit;
 import net.dean.jraw.models.Comment;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Recovers the original body and author of removed/deleted comments from the Arctic Shift archive.
@@ -35,6 +35,7 @@ import net.dean.jraw.models.Comment;
  * <p>The placeholder taxonomy itself lives in {@link PostRecovery#isPlaceholder} and is shared
  * rather than copied — it has already been corrected once and two copies would drift.
  */
+@NullMarked
 public final class CommentRecovery {
 
     private static final String ARCTIC_SHIFT_COMMENTS =
@@ -71,10 +72,10 @@ public final class CommentRecovery {
      * recovers only the byline.
      */
     public static final class Result {
-        public final String body;
-        public final String author;
+        public final @Nullable String body;
+        public final @Nullable String author;
 
-        Result(String body, String author) {
+        Result(@Nullable String body, @Nullable String author) {
             this.body = body;
             this.author = author;
         }
@@ -91,14 +92,14 @@ public final class CommentRecovery {
     }
 
     /** Previously recovered markdown body for this fullname, or null if none. */
-    public static String getRecovered(String fullName) {
+    public static @Nullable String getRecovered(String fullName) {
         if (!hasRecoveries) return null;
         Result r = recovered.get(fullName);
         return r == null ? null : r.body;
     }
 
     /** Previously recovered author for this fullname, or null if none. */
-    public static String getRecoveredAuthor(String fullName) {
+    public static @Nullable String getRecoveredAuthor(String fullName) {
         if (!hasRecoveries) return null;
         Result r = recovered.get(fullName);
         return r == null ? null : r.author;
@@ -144,7 +145,7 @@ public final class CommentRecovery {
      * valid-but-unexpected payload (error envelope, schema drift, null/non-object element) must not
      * throw out of the background task and crash the app.
      */
-    public static Result parse(JsonObject obj) {
+    public static Result parse(@Nullable JsonObject obj) {
         if (obj == null || !obj.has("data") || !obj.get("data").isJsonArray()) {
             return new Result(null, null);
         }
@@ -175,7 +176,7 @@ public final class CommentRecovery {
     }
 
     /** Reads a non-blank string-valued field, or null (also rejects null/object/array values). */
-    private static String readString(JsonObject obj, String key) {
+    private static @Nullable String readString(JsonObject obj, String key) {
         if (!obj.has(key) || !obj.get(key).isJsonPrimitive()) return null;
         String value = obj.get(key).getAsString();
         return value.trim().isEmpty() ? null : value;

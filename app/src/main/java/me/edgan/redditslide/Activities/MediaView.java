@@ -27,6 +27,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
@@ -78,11 +79,14 @@ import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
+import me.edgan.redditslide.util.PrefUtil;
 import me.edgan.redditslide.util.ShareUtil;
 import me.edgan.redditslide.util.StorageUtil;
 import org.apache.commons.text.StringEscapeUtils;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 3/5/2015. */
+@NullMarked
 public class MediaView extends BaseSaveActivity {
     public static final String EXTRA_URL = "url";
     public static final String SUBREDDIT = "sub";
@@ -93,8 +97,10 @@ public class MediaView extends BaseSaveActivity {
     public static final String EXTRA_SHARE_URL = "urlShare";
     public static final String EXTRA_OPEN_COMMENTS_DIRECT = "open_comments_direct";
 
+    @SuppressWarnings("NullAway.Init")
     public static String fileLoc;
-    public String subreddit;
+    public String subreddit = "";
+    @SuppressWarnings("NullAway.Init")
     private String submissionTitle;
     private int index;
     public static boolean didLoadGif;
@@ -102,24 +108,29 @@ public class MediaView extends BaseSaveActivity {
     public float previous;
     public boolean hidden;
     public boolean imageShown;
+    @SuppressWarnings("NullAway.Init")
     public String actuallyLoaded;
     public boolean isGif;
     private int currentRotation = 0; // Track current rotation in degrees
     private int currentGifRotation = 0; // Track current rotation for direct GIFs
 
+    @SuppressWarnings("NullAway.Init")
     private NotificationManager mNotifyManager;
+    @SuppressWarnings("NullAway.Init")
     private NotificationCompat.Builder mBuilder;
     private long stopPosition;
+    @SuppressWarnings("NullAway.Init")
     private GifUtils.AsyncLoadGif gif;
-    private String contentUrl;
+    private String contentUrl = "";
+    @SuppressWarnings("NullAway.Init")
     private ExoVideoView videoView;
     private Gson gson;
     private String imgurKey;
-    private String lastContentUrl;
+    @Nullable private String lastContentUrl;
 
     // Fields for direct GIF handling
     private ImageView directGifViewer;
-    private GifDrawable activeGifDrawable; // To manage its lifecycle
+    @Nullable private GifDrawable activeGifDrawable; // To manage its lifecycle
 
     private static final String TAG = "MediaView";
 
@@ -297,20 +308,21 @@ public class MediaView extends BaseSaveActivity {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                if (Reddit.appRestart.getString("imagelocation", "").isEmpty()) {
+                if (PrefUtil.getString(Reddit.appRestart, "imagelocation", "").isEmpty()) {
                     showFirstDialog();
-                } else if (!new File(Reddit.appRestart.getString("imagelocation", "")).exists()) {
+                } else if (!new File(PrefUtil.getString(Reddit.appRestart, "imagelocation", "")).exists()) {
                     showErrorDialog();
                 } else {
                     final File f =
                             new File(
-                                    Reddit.appRestart.getString("imagelocation", "")
+                                    PrefUtil.getString(Reddit.appRestart, "imagelocation", "")
                                             + File.separator
                                             + UUID.randomUUID().toString()
                                             + baseUrl.substring(baseUrl.lastIndexOf(".")));
                     mNotifyManager =
-                            ContextCompat.getSystemService(
-                                    MediaView.this, NotificationManager.class);
+                            java.util.Objects.requireNonNull(
+                                    ContextCompat.getSystemService(
+                                            MediaView.this, NotificationManager.class));
                     mBuilder = new NotificationCompat.Builder(MediaView.this, Reddit.CHANNEL_IMG);
                     mBuilder.setContentTitle(getString(R.string.mediaview_saving, baseUrl))
                             .setSmallIcon(R.drawable.ic_download);
@@ -438,7 +450,7 @@ public class MediaView extends BaseSaveActivity {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         overrideRedditSwipeAnywhere();
         super.onCreate(savedInstanceState);
         getTheme().applyStyle(new ColorPreferences(this).getDarkThemeSubreddit(""), true);
@@ -474,9 +486,9 @@ public class MediaView extends BaseSaveActivity {
             return;
         }
         final String firstUrl = mediaExtras.getString(EXTRA_DISPLAY_URL, "");
-        contentUrl = mediaExtras.getString(EXTRA_URL);
+        contentUrl = mediaExtras.getString(EXTRA_URL, "");
 
-        if (contentUrl == null || contentUrl.isEmpty()) {
+        if (contentUrl.isEmpty()) {
             finish();
             return;
         }
@@ -490,7 +502,7 @@ public class MediaView extends BaseSaveActivity {
 
         actuallyLoaded = contentUrl;
         if (getIntent().hasExtra(SUBMISSION_URL)) {
-            final int commentUrl = getIntent().getExtras().getInt(ADAPTER_POSITION);
+            final int commentUrl = getIntent().getIntExtra(ADAPTER_POSITION, 0);
             final String submissionPermalink = getIntent().getStringExtra(SUBMISSION_URL);
             final boolean openCommentsDirect =
                     getIntent().getBooleanExtra(EXTRA_OPEN_COMMENTS_DIRECT, false);
@@ -515,16 +527,16 @@ public class MediaView extends BaseSaveActivity {
             findViewById(R.id.comments).setVisibility(View.GONE);
         }
         if (getIntent().hasExtra(SUBREDDIT)) {
-            subreddit = getIntent().getExtras().getString(SUBREDDIT);
+            subreddit = MiscUtil.orEmpty(getIntent().getStringExtra(SUBREDDIT));
         }
         if (getIntent().hasExtra(EXTRA_SUBMISSION_TITLE)) {
-            submissionTitle = getIntent().getExtras().getString(EXTRA_SUBMISSION_TITLE);
+            submissionTitle = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_SUBMISSION_TITLE));
         }
         index = getIntent().getIntExtra("index", -1);
         findViewById(R.id.mute).setVisibility(View.GONE);
 
         if (getIntent().hasExtra(EXTRA_LQ)) {
-            String lqUrl = getIntent().getStringExtra(EXTRA_DISPLAY_URL);
+            String lqUrl = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_DISPLAY_URL));
             displayImage(lqUrl);
             // Reveal the rotate buttons for the low-res image, same as doLoadImage does — otherwise
             // rotation is unavailable until HQ is tapped.
@@ -831,7 +843,7 @@ public class MediaView extends BaseSaveActivity {
 
             new AsyncTask<Void, Void, JsonObject>() {
                 @Override
-                protected JsonObject doInBackground(Void... params) {
+                protected @Nullable JsonObject doInBackground(Void... params) {
                     return HttpUtil.getImgurJsonObject(Reddit.client, gson, apiUrl, imgurKey);
                 }
 
@@ -875,7 +887,7 @@ public class MediaView extends BaseSaveActivity {
             final String finalUrl = url;
             new AsyncTask<Void, Void, JsonObject>() {
                 @Override
-                protected JsonObject doInBackground(Void... params) {
+                protected @Nullable JsonObject doInBackground(Void... params) {
                     return HttpUtil.getJsonObject(Reddit.client, gson, apiUrl);
                 }
 
@@ -892,7 +904,7 @@ public class MediaView extends BaseSaveActivity {
                                         .setOnLongClickListener(
                                                 new View.OnLongClickListener() {
                                                     @Override
-                                                    public boolean onLongClick(View v) {
+                                                    public @Nullable boolean onLongClick(View v) {
                                                         try {
                                                             DialogUtil.showWithCardBackground(new AlertDialog.Builder(MediaView.this)
                                                                     .setTitle(
@@ -932,7 +944,7 @@ public class MediaView extends BaseSaveActivity {
         LogUtil.v(apiUrl);
         new AsyncTask<Void, Void, JsonObject>() {
             @Override
-            protected JsonObject doInBackground(Void... params) {
+            protected @Nullable JsonObject doInBackground(Void... params) {
                 return HttpUtil.getJsonObject(Reddit.client, gson, apiUrl);
             }
 
@@ -1357,7 +1369,9 @@ public class MediaView extends BaseSaveActivity {
             // always download the original file, or use the cached original if that is currently
             // displayed
             i.putExtra("actuallyLoaded", lastContentUrl);
-            i.putExtra("downloadUri", StorageUtil.getStorageUri(this).toString());
+            i.putExtra(
+                    "downloadUri",
+                    java.util.Objects.requireNonNull(StorageUtil.getStorageUri(this)).toString());
             if (subreddit != null && !subreddit.isEmpty()) i.putExtra("subreddit", subreddit);
             if (submissionTitle != null) i.putExtra(EXTRA_SUBMISSION_TITLE, submissionTitle);
             i.putExtra("index", index);

@@ -12,7 +12,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class ShareUtil {
     private ShareUtil() {}
 

@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioGroup;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import java.util.ArrayList;
 import me.edgan.redditslide.Adapters.SubChooseAdapter;
@@ -22,14 +23,16 @@ import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SortingUtil;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by carlo_000 on 5/4/2016. */
+@NullMarked
 public class SetupWidget extends BaseActivity {
 
     private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         disableSwipeBackLayout();
         getTheme().applyStyle(new FontPreferences(this).getCommentFontStyle().getResId(), true);
         getTheme().applyStyle(new FontPreferences(this).getPostFontStyle().getResId(), true);
@@ -54,6 +57,7 @@ public class SetupWidget extends BaseActivity {
                             AppWidgetManager.INVALID_APPWIDGET_ID);
     }
 
+    @SuppressWarnings("NullAway.Init")
     View header;
 
     public void doShortcut() {
@@ -86,6 +90,7 @@ public class SetupWidget extends BaseActivity {
                         });
     }
 
+    @SuppressWarnings("NullAway.Init")
     public String name;
 
     /**

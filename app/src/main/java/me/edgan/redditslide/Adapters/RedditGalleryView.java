@@ -69,18 +69,26 @@ public class RedditGalleryView extends VerticalMediaAdapter {
                                             View imagesView = context.findViewById(R.id.images);
                                             if (context instanceof Album) {
                                                 // This is the older Album activity
-                                                ((LinearLayoutManager)((Album) context).album.album.recyclerView.getLayoutManager())
+                                                final RecyclerView.LayoutManager albumLm =
+                                                        ((Album) context).album.album.recyclerView.getLayoutManager();
+                                                if (albumLm != null) {
+                                                    ((LinearLayoutManager) albumLm)
                                                         .scrollToPositionWithOffset(
                                                                 position + 1,
                                                                 LayoutUtils.getToolbarOffset(context));
+                                                }
                                             } else if (imagesView instanceof RecyclerView) {
                                                 // This case is when R.id.images in the context's layout is a RecyclerView.
                                                 // For RedditGallery, R.id.images is a ViewPager, so this branch is not hit.
                                                 // Original logic for this case:
-                                                ((LinearLayoutManager)((RecyclerView) imagesView).getLayoutManager())
+                                                final RecyclerView.LayoutManager imagesLm =
+                                                        ((RecyclerView) imagesView).getLayoutManager();
+                                                if (imagesLm != null) {
+                                                    ((LinearLayoutManager) imagesLm)
                                                         .scrollToPositionWithOffset(
                                                                 position + 1, // Grid position is 0-indexed for images
                                                                 LayoutUtils.getToolbarOffset(context));
+                                                }
                                             } else if (imagesView instanceof ViewPager) {
                                                 if (context instanceof RedditGallery) { // Specific fix for RedditGallery (vertical album)
                                                     ViewPager mainViewPagerInRedditGallery = (ViewPager) imagesView;
@@ -109,8 +117,12 @@ public class RedditGalleryView extends VerticalMediaAdapter {
                                                             offset = redditGalleryActivity.mToolbar.getHeight();
                                                         }
 
-                                                        ((LinearLayoutManager) albumFrag.recyclerView.getLayoutManager())
-                                                            .scrollToPositionWithOffset(scrollToRecyclerPosition, offset);
+                                                        final RecyclerView.LayoutManager fragLm =
+                                                                albumFrag.recyclerView.getLayoutManager();
+                                                        if (fragLm != null) {
+                                                            ((LinearLayoutManager) fragLm)
+                                                                .scrollToPositionWithOffset(scrollToRecyclerPosition, offset);
+                                                        }
                                                     }
                                                 } else {
                                                     // Fallback for other contexts where R.id.images is a ViewPager

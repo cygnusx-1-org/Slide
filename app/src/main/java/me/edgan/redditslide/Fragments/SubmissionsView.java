@@ -24,6 +24,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.graphics.ColorUtils;
@@ -73,8 +74,14 @@ import net.dean.jraw.models.Submission;
 public class SubmissionsView extends Fragment implements SubmissionDisplay {
     private static int adapterPosition;
     private static int currentPosition;
+    // posts, rv and adapter are all built in onCreateView, before any callback below can run.
+    @SuppressWarnings("NullAway.Init")
     public SubredditPosts posts;
+
+    @SuppressWarnings("NullAway.Init")
     public RecyclerView rv;
+
+    @SuppressWarnings("NullAway.Init")
     public SubmissionAdapter adapter;
     public String id;
     public boolean main;
@@ -94,7 +101,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
     // micro-stop. Cleared in updateSuccess when a refresh/reset replaces the list.
     private final Set<String> warmedTapTargets = new HashSet<>();
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private static Submission currentSubmission;
+    @Nullable private static Submission currentSubmission;
     private int lastRotationAnchor = RecyclerView.NO_POSITION;
 
     @Override
@@ -105,6 +112,9 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
 
         final CatchStaggeredGridLayoutManager mLayoutManager =
                 (CatchStaggeredGridLayoutManager) rv.getLayoutManager();
+        if (mLayoutManager == null) {
+            return;
+        }
 
         final int newSpan = LayoutUtils.getNumColumns(currentOrientation, getActivity());
         final int paddingTop = rv.getPaddingTop();
@@ -192,14 +202,16 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
         mLayoutManager.setSpanCount(newSpan);
     }
 
-    Runnable mLongPressRunnable;
+    @Nullable Runnable mLongPressRunnable;
     GestureDetector detector =
             new GestureDetector(getActivity(), new GestureDetector.SimpleOnGestureListener());
     float origY;
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
 
         final Context contextThemeWrapper =
                 new ContextThemeWrapper(
@@ -238,7 +250,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
         rv.setLayoutManager(mLayoutManager);
         rv.setItemAnimator(
                 new SlideUpAlphaAnimator().withInterpolator(new LinearOutSlowInInterpolator()));
-        rv.getLayoutManager().scrollToPosition(0);
+        mLayoutManager.scrollToPosition(0);
 
         mSwipeRefreshLayout = v.findViewById(R.id.activity_main_swipe_refresh_layout);
         mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors(id, getContext()));
@@ -294,7 +306,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                 fab.setContentDescription(getString(R.string.btn_fab_search));
                 fab.setOnClickListener(
                         new View.OnClickListener() {
-                            String term;
+                            String term = "";
 
                             @Override
                             public void onClick(View v) {
@@ -512,7 +524,8 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                             @Override
                             public boolean onTouch(View v, MotionEvent event) {
                                 detector.onTouchEvent(event);
-                                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                                if (event.getAction() == MotionEvent.ACTION_DOWN
+                                        && mLongPressRunnable != null) {
                                     origY = event.getY();
                                     handler.postDelayed(
                                             mLongPressRunnable,
@@ -522,7 +535,9 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                                                 && Math.abs(event.getY() - origY)
                                                         > fab.getHeight() / 2.0f)
                                         || (event.getAction() == MotionEvent.ACTION_UP)) {
-                                    handler.removeCallbacks(mLongPressRunnable);
+                                    if (mLongPressRunnable != null) {
+                                        handler.removeCallbacks(mLongPressRunnable);
+                                    }
                                 }
                                 return false;
                             }
@@ -584,8 +599,9 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
         return v;
     }
 
-    View header;
+    @Nullable View header;
 
+    @SuppressWarnings("NullAway.Init") // built in onCreateView
     ToolbarScrollHideHandler toolbarScroll;
 
     @NonNull
@@ -636,7 +652,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
         mSwipeRefreshLayout.setOnRefreshListener(this::refresh);
     }
 
-    public List<Submission> clearSeenPosts(boolean forever) {
+    public @Nullable List<Submission> clearSeenPosts(boolean forever) {
         if (adapter.dataSet.posts != null) {
 
             List<Submission> originalDataSetPosts = adapter.dataSet.posts;
@@ -673,7 +689,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Bundle bundle = this.getArguments();
@@ -712,7 +728,9 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
 
     public void forceRefresh() {
         toolbarScroll.toolbarShow();
-        rv.getLayoutManager().scrollToPosition(0);
+        if (rv.getLayoutManager() != null) {
+            rv.getLayoutManager().scrollToPosition(0);
+        }
         mSwipeRefreshLayout.post(
                 new Runnable() {
                     @Override
@@ -742,7 +760,9 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                                 // Ensure layout manager state is consistent
                                 CatchStaggeredGridLayoutManager layoutManager =
                                         (CatchStaggeredGridLayoutManager) rv.getLayoutManager();
-                                layoutManager.invalidateSpanAssignments();
+                                if (layoutManager != null) {
+                                    layoutManager.invalidateSpanAssignments();
+                                }
 
                                 final int insertCount = posts.posts.size() - startIndex;
                                 if (startIndex != -1 && !forced && insertCount > 0) {
@@ -774,7 +794,9 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
             if (MainActivity.isRestart) {
                 MainActivity.isRestart = false;
                 posts.offline = false;
-                rv.getLayoutManager().scrollToPosition(MainActivity.restartPage + 1);
+                if (rv.getLayoutManager() != null) {
+                    rv.getLayoutManager().scrollToPosition(MainActivity.restartPage + 1);
+                }
             }
             // startIndex is -1 on a reset/refresh (and 0 for a degenerate first append); reset the
             // scroll/toolbar state on those, not on ordinary pagination. (Under the old start
@@ -842,16 +864,21 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
     public void resetScroll() {
         if (toolbarScroll == null) {
             toolbarScroll =
-                    new ToolbarScrollHideHandler(((BaseActivity) getActivity()).mToolbar, header) {
+                    new ToolbarScrollHideHandler(
+                            ((BaseActivity) getActivity()).requireToolbar(),
+                            java.util.Objects.requireNonNull(header)) {
                         @Override
                         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                             super.onScrolled(recyclerView, dx, dy);
 
-                            visibleItemCount = rv.getLayoutManager().getChildCount();
-                            totalItemCount = rv.getLayoutManager().getItemCount();
+                            final RecyclerView.LayoutManager lm = rv.getLayoutManager();
+                            if (lm == null) return;
+
+                            visibleItemCount = lm.getChildCount();
+                            totalItemCount = lm.getItemCount();
 
                             int[] firstVisibleItems =
-                                    ((CatchStaggeredGridLayoutManager) rv.getLayoutManager())
+                                    ((CatchStaggeredGridLayoutManager) lm)
                                             .findFirstVisibleItemPositions(null);
                             if (firstVisibleItems != null && firstVisibleItems.length > 0) {
                                 pastVisiblesItems = firstVisibleItems[firstVisibleItems.length - 1];

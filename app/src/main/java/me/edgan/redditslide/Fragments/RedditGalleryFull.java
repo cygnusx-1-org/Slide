@@ -1,29 +1,25 @@
 package me.edgan.redditslide.Fragments;
 
 import android.os.Bundle;
-
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import me.edgan.redditslide.Activities.GalleryImage;
 import me.edgan.redditslide.Adapters.RedditGalleryView;
 import me.edgan.redditslide.SubmissionViews.PopulateShadowboxInfo;
 import me.edgan.redditslide.util.LogUtil;
-
 import net.dean.jraw.models.Submission;
 
 public class RedditGalleryFull extends BaseAlbumFull {
 
     private int i;
     // Package-private so the fragment's own test can stand them up without a live Shadowbox host.
-    Submission s;
-    List<GalleryImage> images;
+    @Nullable Submission s;
+    @Nullable List<GalleryImage> images;
 
     List<GalleryImage> extractGalleryImages(Submission submission) {
         List<GalleryImage> galleryImages = new ArrayList<>();
@@ -94,6 +90,9 @@ public class RedditGalleryFull extends BaseAlbumFull {
 
     @Override
     protected void bindActionbar() {
+        if (s == null) {
+            return;
+        }
         PopulateShadowboxInfo.doActionbar(s, rootView, getActivity(), true);
     }
 
@@ -103,7 +102,7 @@ public class RedditGalleryFull extends BaseAlbumFull {
      * this page renders.
      */
     @Override
-    protected String getAlbumUrl() {
+    protected @Nullable String getAlbumUrl() {
         return s == null ? null : s.getUrl();
     }
 
@@ -124,14 +123,23 @@ public class RedditGalleryFull extends BaseAlbumFull {
      */
     @Override
     protected void loadAlbum(String url) {
+        final Submission submission = s;
+        final List<GalleryImage> galleryImages = images;
+        if (submission == null || galleryImages == null) {
+            return;
+        }
+
         ((RecyclerView) list)
                 .setAdapter(
                         new RedditGalleryView(
-                                getActivity(), images, s.getSubredditName(), s.getTitle()));
+                                getActivity(),
+                                galleryImages,
+                                submission.getSubredditName(),
+                                submission.getTitle()));
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         i = this.getArguments().getInt("page", 0);
         s = resolveSubmission();
@@ -144,7 +152,7 @@ public class RedditGalleryFull extends BaseAlbumFull {
      * The submission this page shows. Separated from {@link #onCreate} only so a test can host this
      * fragment without a live Shadowbox behind it — everything else here works off {@code s}.
      */
-    Submission resolveSubmission() {
+    @Nullable Submission resolveSubmission() {
         return submissionForShadowboxPage();
     }
 }

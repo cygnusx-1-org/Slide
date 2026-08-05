@@ -3,6 +3,8 @@ package me.edgan.redditslide.Views;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
+import androidx.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
 
 // Previously backed the io.codetail CircularReveal library's ViewRevealManager to clip
 // circular reveals on pre-Lollipop. minSdk is 29, so android.view.ViewAnimationUtils
@@ -10,17 +12,18 @@ import android.widget.RelativeLayout;
 // thin RelativeLayout subclass because it is referenced by class name in the submission
 // card layouts (submission_list.xml, submission_largecard.xml, etc.).
 
+@NullMarked
 public class RevealRelativeLayout extends RelativeLayout {
 
     public RevealRelativeLayout(Context context) {
         this(context, null);
     }
 
-    public RevealRelativeLayout(Context context, AttributeSet attrs) {
+    public RevealRelativeLayout(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public RevealRelativeLayout(Context context, AttributeSet attrs, int defStyle) {
+    public RevealRelativeLayout(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 

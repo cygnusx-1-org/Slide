@@ -16,8 +16,10 @@ import androidx.documentfile.provider.DocumentFile;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.Palette;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by TacoTheDank on 07/14/2021. Updated to use Storage Access Framework */
+@NullMarked
 public class DialogUtil {
     private static final String TAG = "DialogUtil";
 

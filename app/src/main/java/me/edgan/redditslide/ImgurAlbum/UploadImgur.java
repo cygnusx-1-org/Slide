@@ -36,6 +36,9 @@ public class UploadImgur extends AsyncTask<Uri, Integer, JSONObject> {
     @Nullable
     protected JSONObject doInBackground(Uri... sub) {
         File bitmap = ImgurUtils.createFile(sub[0], c);
+        if (bitmap == null) {
+            return null;
+        }
 
         final OkHttpClient client = Reddit.client;
 

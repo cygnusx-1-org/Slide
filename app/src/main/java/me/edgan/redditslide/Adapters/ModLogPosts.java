@@ -1,6 +1,7 @@
 package me.edgan.redditslide.Adapters;
 
 import android.os.AsyncTask;
+import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -10,10 +11,14 @@ import net.dean.jraw.paginators.ModLogPaginator;
 
 /** Created by ccrama on 9/17/2015. */
 public class ModLogPosts {
+    @SuppressWarnings("NullAway.Init")
     public ArrayList<ModAction> posts;
     public boolean loading;
+    @SuppressWarnings("NullAway.Init")
     private SwipeRefreshLayout refreshLayout;
+    @SuppressWarnings("NullAway.Init")
     private ModLogAdapter adapter;
+    @SuppressWarnings("NullAway.Init")
     private ModLogPaginator paginator;
 
     public ModLogPosts() {}
@@ -56,7 +61,7 @@ public class ModLogPosts {
         }
 
         @Override
-        protected ArrayList<ModAction> doInBackground(String... subredditPaginators) {
+        protected @Nullable ArrayList<ModAction> doInBackground(String... subredditPaginators) {
             try {
                 if (reset || paginator == null) {
                     paginator = new ModLogPaginator(Authentication.reddit, "mod");

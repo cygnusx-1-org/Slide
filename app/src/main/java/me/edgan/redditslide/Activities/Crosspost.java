@@ -19,6 +19,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SwitchCompat;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -59,15 +60,18 @@ import net.dean.jraw.http.RestResponse;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Subreddit;
 import okhttp3.OkHttpClient;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 3/5/2015. */
+@NullMarked
 public class Crosspost extends BaseActivity {
 
+    @SuppressWarnings("NullAway.Init")
     public static Submission toCrosspost;
     private SwitchCompat inboxReplies;
 
-    private String selectedFlairID;
-    private String selectedFlairText;
+    private @Nullable String selectedFlairID;
+    @Nullable private String selectedFlairText;
     private boolean allowsCrossposts = true;
     private boolean isFlairRequired = false;
 
@@ -77,18 +81,22 @@ public class Crosspost extends BaseActivity {
         DOES_NOT_EXIST
     }
 
-    private CrosspostBlockReason blockReason;
+    @Nullable private CrosspostBlockReason blockReason;
     private boolean lastSubredditExists = true;
 
+    @SuppressWarnings("NullAway.Init")
     AsyncTask<Void, Void, Subreddit> tchange;
+    @SuppressWarnings("NullAway.Init")
     AsyncTask<Void, Void, Boolean> tFlairRequired;
+    @SuppressWarnings("NullAway.Init")
     AsyncTask<Void, Void, Set<String>> tCrosspostable;
     private final Handler subredditDebounce = new Handler(Looper.getMainLooper());
-    private Runnable subredditDebounceRunnable;
+    @Nullable private Runnable subredditDebounceRunnable;
     private String lastCheckedSubreddit = "";
+    @SuppressWarnings("NullAway.Init")
     private Set<String> crosspostableSubs;
 
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         disableSwipeBackLayout();
         super.onCreate(savedInstanceState);
         applyColorTheme();
@@ -228,7 +236,11 @@ public class Crosspost extends BaseActivity {
         tCrosspostable =
                 new AsyncTask<Void, Void, Set<String>>() {
                     @Override
-                    protected Set<String> doInBackground(Void... voids) {
+                    protected @Nullable Set<String> doInBackground(Void... voids) {
+                        if (Authentication.reddit == null) {
+                            return null;
+                        }
+
                         try {
                             HttpRequest r =
                                     Authentication.reddit
@@ -391,7 +403,11 @@ public class Crosspost extends BaseActivity {
         tchange =
                 new AsyncTask<Void, Void, Subreddit>() {
                     @Override
-                    protected Subreddit doInBackground(Void... params) {
+                    protected @Nullable Subreddit doInBackground(Void... params) {
+                        if (Authentication.reddit == null) {
+                            return null;
+                        }
+
                         try {
                             return Authentication.reddit.getSubreddit(subreddit);
                         } catch (Exception e) {
@@ -450,6 +466,10 @@ public class Crosspost extends BaseActivity {
                 new AsyncTask<Void, Void, Boolean>() {
                     @Override
                     protected Boolean doInBackground(Void... voids) {
+                        if (Authentication.reddit == null) {
+                            return false;
+                        }
+
                         try {
                             HttpRequest r =
                                     Authentication.reddit
@@ -503,7 +523,7 @@ public class Crosspost extends BaseActivity {
                         .getDialog();
         new AsyncTask<Void, Void, JsonArray>() {
             @Override
-            protected JsonArray doInBackground(Void... params) {
+            protected @Nullable JsonArray doInBackground(Void... params) {
                 return FlairUtil.fetchLinkFlairs(client, gson, subreddit);
             }
 
@@ -541,6 +561,10 @@ public class Crosspost extends BaseActivity {
                                         allKeys.toArray(new CharSequence[0]),
                                         (dialog, which) -> {
                                             RichFlair selected = flairs.get(allKeys.get(which));
+                                            if (selected == null) {
+                                                return;
+                                            }
+
                                             selectedFlairID = selected.getId();
                                             selectedFlairText = selected.getText();
                                             refreshInputState(subreddit);
@@ -593,7 +617,9 @@ public class Crosspost extends BaseActivity {
 
         // Snapshot of View state, captured on the UI thread in onPreExecute().
         // doInBackground() runs on a worker thread and must not touch Views directly.
+        @SuppressWarnings("NullAway.Init")
         private String subreddit;
+        @SuppressWarnings("NullAway.Init")
         private String title;
         private boolean sendReplies;
 
@@ -608,7 +634,11 @@ public class Crosspost extends BaseActivity {
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected @Nullable Void doInBackground(Void... voids) {
+            if (Authentication.reddit == null) {
+                return null;
+            }
+
             try {
                 try {
                     Map<String, String> args = new HashMap<>();

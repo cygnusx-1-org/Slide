@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
+import androidx.annotation.Nullable;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
@@ -71,7 +72,7 @@ public class ImageGridAdapter extends android.widget.BaseAdapter {
      * a deserialized list holds a null for a null element in the JSON array, which Jackson leaves in
      * place (Photo and Image are both read with an ObjectMapper).
      */
-    private void addUrl(final String url) {
+    private void addUrl(final @Nullable String url) {
         jsons.add(url);
     }
 
@@ -91,7 +92,7 @@ public class ImageGridAdapter extends android.widget.BaseAdapter {
      * into every cell of a five-column grid. Taking the last everywhere is a deliberate change to
      * them, not preserved behaviour.
      */
-    private static String thumbnailUrl(final Photo photo) {
+    private static @Nullable String thumbnailUrl(final Photo photo) {
         final List<PhotoSize> altSizes = photo.getAltSizes();
         if (altSizes != null) {
             // Backwards from the smallest: an entry that is null or carries no url costs one step up
@@ -115,7 +116,7 @@ public class ImageGridAdapter extends android.widget.BaseAdapter {
      * <p>Shared with {@link me.edgan.redditslide.Activities.TumblrPager}, which picks a mid-sized
      * entry rather than the smallest but has the same nulls to survive.
      */
-    public static String sizeUrl(final List<PhotoSize> sizes, final int index) {
+    public static @Nullable String sizeUrl(final @Nullable List<PhotoSize> sizes, final int index) {
         if (sizes == null || index < 0 || index >= sizes.size()) {
             return null;
         }
@@ -136,7 +137,7 @@ public class ImageGridAdapter extends android.widget.BaseAdapter {
     }
 
     // create a new ImageView for each item referenced by the Adapter
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, @Nullable View convertView, ViewGroup parent) {
         ImageView imageView;
         GridView grid = (GridView) parent;
         int size = grid.getColumnWidth();

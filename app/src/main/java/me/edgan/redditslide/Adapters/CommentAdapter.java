@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
@@ -69,6 +70,7 @@ import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
+import me.edgan.redditslide.util.PrefUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import net.dean.jraw.ApiException;
 import net.dean.jraw.RedditClient;
@@ -86,14 +88,19 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public final Bitmap[] awardIcons;
     public Context mContext;
     public SubmissionComments dataSet;
+    // Left unset by the constructor when the host had no loaded submission yet. Every read is
+    // on a path that only runs once one has arrived; a host without one produced the same
+    // dereference before this field was annotated.
+    @SuppressWarnings("NullAway.Init")
     public Submission submission;
-    public CommentViewHolder currentlySelected;
-    public CommentNode currentNode;
+    public @Nullable CommentViewHolder currentlySelected;
+    public @Nullable CommentNode currentNode;
     public String currentSelectedItem = "";
     public int shiftFrom;
-    public FragmentManager fm;
+    @Nullable public FragmentManager fm;
     public int clickpos;
     public int currentPos;
+    @SuppressWarnings("NullAway.Init")
     public CommentViewHolder isHolder;
     public boolean isClicking;
     public HashMap<String, Integer> keys = new HashMap<>();
@@ -108,12 +115,14 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public ArrayList<String> toCollapse;
     public String backedText = "";
     public String currentlyEditingId = "";
+    @SuppressWarnings("NullAway.Init")
     public SubmissionViewHolder submissionViewHolder;
     long lastSeen = 0;
     public ArrayList<String> approved = new ArrayList<>();
     public ArrayList<String> removed = new ArrayList<>();
 
     /** Visible row index -> index in currentComments. See {@link #getRealPosition(int)}. */
+    @SuppressWarnings("NullAway.Init")
     private ArrayList<Integer> visiblePositions;
 
     /** Volatile: AsyncForceLoadChild mutates currentComments off the UI thread. */
@@ -138,15 +147,19 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             CommentPage mContext,
             SubmissionComments dataSet,
             RecyclerView listView,
-            Submission submission,
-            FragmentManager fm) {
+            @Nullable Submission submission,
+            @Nullable FragmentManager fm) {
         this.mContext = mContext.getContext();
         mPage = mContext;
         this.listView = listView;
         this.dataSet = dataSet;
         this.fm = fm;
 
-        this.submission = submission;
+        // Left unset when the host has no loaded submission yet, exactly as before: the field
+        // is read by code that only runs once one has arrived.
+        if (submission != null) {
+            this.submission = submission;
+        }
         hidden = new HashSet<>();
         currentComments = dataSet.comments;
         if (currentComments != null) {
@@ -217,8 +230,10 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             for (CommentObject n : currentComments) {
                 if (n instanceof CommentItem
                         && n.comment.getComment().getFullName().contains(currentSelectedItem)) {
-                    ((PreCachingLayoutManagerComments) listView.getLayoutManager())
-                            .scrollToPositionWithOffset(i, mPage.headerHeight);
+                    if (listView.getLayoutManager() != null) {
+                        ((PreCachingLayoutManagerComments) listView.getLayoutManager())
+                                .scrollToPositionWithOffset(i, mPage.headerHeight);
+                    }
                     break;
                 }
                 i++;
@@ -435,8 +450,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     // New Reddit-style: render the raw markdown body via Markwon (issue #179).
                     setViewsMarkdown(comment, submission.getSubredditName(), holder);
                 } else {
+                    final List<String> cachedBlocks = getBlocksCached(comment);
                     setViews(
-                            getBlocksCached(comment),
+                            cachedBlocks == null ? new ArrayList<String>() : cachedBlocks,
                             submission.getSubredditName(),
                             holder,
                             singleClick,
@@ -790,8 +806,8 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    public AsyncLoadMoreTask currentLoading;
-    public String changedProfile;
+    public @Nullable AsyncLoadMoreTask currentLoading;
+    public @Nullable String changedProfile;
 
     private void doReplySubmission(RecyclerView.ViewHolder submissionViewHolder) {
         final View replyArea = submissionViewHolder.itemView.findViewById(R.id.innerSend);
@@ -818,8 +834,10 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             final HashMap<String, String> accounts = new HashMap<>();
 
                             for (String s :
-                                    Authentication.authentication.getStringSet(
-                                            "accounts", new HashSet<String>())) {
+                                    PrefUtil.getStringSet(
+                                            Authentication.authentication,
+                                            "accounts",
+                                            new HashSet<String>())) {
                                 if (s.contains(":")) {
                                     accounts.put(s.split(":")[0], s.split(":")[1]);
                                 } else {
@@ -893,7 +911,11 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     if (currentlyEditing != null) {
                                         String text = currentlyEditing.getText().toString();
                                         ReplyTaskComment replyTask =
-                                                new ReplyTaskComment(submission, changedProfile);
+                                                new ReplyTaskComment(
+                                                        submission,
+                                                        changedProfile == null
+                                                                ? Authentication.nameOrEmpty()
+                                                                : changedProfile);
                                         replyTask.uploadedImages =
                                                 me.edgan.redditslide.util.RedditImageUploads
                                                         .consume(currentlyEditing);
@@ -1040,7 +1062,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      * placeholders), the source html, and {@code skipImages}, which follows the live data-saving
      * state and decides whether images become their own blocks.
      */
-    private List<String> getBlocksCached(Comment comment) {
+    private @Nullable List<String> getBlocksCached(Comment comment) {
         final JsonNode dataNode = comment.getDataNode();
         final String bodyHtml = dataNode.path("body_html").asText("");
         if (bodyHtml.isEmpty()) {
@@ -1281,6 +1303,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mAnimator.start();
     }
 
+    @SuppressWarnings("NullAway.Init")
     ValueAnimator mAnimator;
 
     public void expand(final View l) { // Made public (was private)
@@ -1378,7 +1401,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mAnimator.start();
     }
 
-    public CommentNode currentBaseNode;
+    public @Nullable CommentNode currentBaseNode;
 
     public void setCommentStateHighlighted(
             final CommentViewHolder holder,
@@ -1409,7 +1432,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    public EditText currentlyEditing;
+    public @Nullable EditText currentlyEditing;
 
     public void resetMenu(LinearLayout v, boolean collapsed) {
         v.removeAllViews();
@@ -1437,7 +1460,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 && lastSeen < c.getCreated().getTime()
                 && !dataSet.single
                 && SettingValues.commentLastVisit
-                && !Authentication.name.equals(c.getAuthor())) {
+                && !Authentication.nameOrEmpty().equals(c.getAuthor())) {
             color = Palette.getColor(baseNode.getComment().getSubredditName());
             color = Color.argb(20, Color.red(color), Color.green(color), Color.blue(color));
         } else {
@@ -2081,12 +2104,15 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
 
                 currentPos = holderPos + 1;
+                final RecyclerView.LayoutManager shiftLm = listView.getLayoutManager();
                 toShiftTo =
-                        ((LinearLayoutManager) listView.getLayoutManager())
-                                .findLastVisibleItemPosition();
+                        shiftLm == null
+                                ? -1
+                                : ((LinearLayoutManager) shiftLm).findLastVisibleItemPosition();
                 shiftFrom =
-                        ((LinearLayoutManager) listView.getLayoutManager())
-                                .findFirstVisibleItemPosition();
+                        shiftLm == null
+                                ? -1
+                                : ((LinearLayoutManager) shiftLm).findFirstVisibleItemPosition();
 
                 dataSet.refreshLayout.setRefreshing(false);
             } else {
@@ -2171,7 +2197,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public class ReplyTaskComment extends AsyncTask<String, Void, String> {
         public Contribution sub;
+        @SuppressWarnings("NullAway.Init")
         CommentNode node;
+        @SuppressWarnings("NullAway.Init")
         CommentViewHolder holder;
         boolean isSubmission;
         String profileName;
@@ -2243,12 +2271,14 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
         }
 
-        String why;
-        String commentBack;
+        @Nullable String why;
+        @Nullable String commentBack;
+
+        @Nullable
         public java.util.List<me.edgan.redditslide.markdown.UploadedImage> uploadedImages;
 
         @Override
-        protected String doInBackground(String... comment) {
+        protected @Nullable String doInBackground(String... comment) {
             if (Authentication.me != null) {
                 try {
                     commentBack = comment[0];
@@ -2256,6 +2286,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             profileName.equals(Authentication.name)
                                     ? Authentication.reddit
                                     : getAuthenticatedClient(profileName);
+                    if (client == null) {
+                        return null;
+                    }
 
                     if (uploadedImages != null && !uploadedImages.isEmpty()) {
                         // Inline Reddit images require submitting the body as richtext_json, which
@@ -2289,7 +2322,8 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         final HashMap<String, String> accounts = new HashMap<>();
 
         for (String s :
-                Authentication.authentication.getStringSet("accounts", new HashSet<String>())) {
+                PrefUtil.getStringSet(
+                        Authentication.authentication, "accounts", new HashSet<String>())) {
             if (s.contains(":")) {
                 accounts.put(s.split(":")[0], s.split(":")[1]);
             } else {
@@ -2302,7 +2336,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         } else {
             ArrayList<String> tokens =
                     new ArrayList<>(
-                            Authentication.authentication.getStringSet(
+                            PrefUtil.getStringSet(Authentication.authentication,
                                     "tokens", new HashSet<String>()));
             int index = keys.indexOf(profileName);
             if (keys.indexOf(profileName) > tokens.size()) {

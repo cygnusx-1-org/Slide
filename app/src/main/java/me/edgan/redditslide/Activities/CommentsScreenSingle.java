@@ -9,6 +9,7 @@ import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -31,6 +32,7 @@ import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.models.Submission;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Created by ccrama on 9/17/2015.
@@ -38,18 +40,24 @@ import net.dean.jraw.models.Submission;
  * <p>This activity takes parameters for a submission id (through intent or direct link), retrieves
  * the Submission object, and then displays the submission with its comments.
  */
+@NullMarked
 public class CommentsScreenSingle extends BaseActivityAnim {
+    @SuppressWarnings("NullAway.Init")
     CommentsScreenSinglePagerAdapter comments;
     boolean np;
+    @SuppressWarnings("NullAway.Init")
     private ViewPager pager;
+    @SuppressWarnings("NullAway.Init")
     private String subreddit;
+    @SuppressWarnings("NullAway.Init")
     private String name;
+    @SuppressWarnings("NullAway.Init")
     private String context;
     private int contextNumber;
     private Boolean doneTranslucent = false;
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 14 && comments != null) {
@@ -81,7 +89,7 @@ public class CommentsScreenSingle extends BaseActivityAnim {
     }
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         disableSwipeBackLayout();
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         getWindow().getDecorView().setBackground(null);
@@ -188,12 +196,12 @@ public class CommentsScreenSingle extends BaseActivityAnim {
                     if (position == 0 && positionOffsetPixels == 0) {
                         finish();
                     }
+                    final CommentsScreenSinglePagerAdapter pagerAdapter =
+                            (CommentsScreenSinglePagerAdapter) pager.getAdapter();
                     if (position == 0
-                            && ((CommentsScreenSinglePagerAdapter) pager.getAdapter())
-                                        .blankPage
-                                != null) {
-                        ((CommentsScreenSinglePagerAdapter) pager.getAdapter())
-                                .blankPage.doOffset(positionOffset);
+                            && pagerAdapter != null
+                            && pagerAdapter.blankPage != null) {
+                        pagerAdapter.blankPage.doOffset(positionOffset);
                     }
                 }
             });
@@ -215,7 +223,11 @@ public class CommentsScreenSingle extends BaseActivityAnim {
         }
 
         @Override
-        protected String doInBackground(String... params) {
+        protected @Nullable String doInBackground(String... params) {
+            if (Authentication.reddit == null) {
+                return null;
+            }
+
             try {
                 final Submission s = Authentication.reddit.getSubmission(params[0]);
                 if (SettingValues.storeHistory) {
@@ -264,7 +276,9 @@ public class CommentsScreenSingle extends BaseActivityAnim {
     }
 
     private class CommentsScreenSinglePagerAdapter extends FragmentStatePagerAdapter {
+        @SuppressWarnings("NullAway.Init")
         private Fragment mCurrentFragment;
+        @SuppressWarnings("NullAway.Init")
         public BlankFragment blankPage;
 
         CommentsScreenSinglePagerAdapter(FragmentManager fm) {

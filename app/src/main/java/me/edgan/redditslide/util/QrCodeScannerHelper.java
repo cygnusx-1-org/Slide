@@ -21,8 +21,10 @@ import java.util.List;
 import java.util.Map;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Visuals.ColorPreferences;
+import org.jspecify.annotations.NullMarked;
 
 /** Helper class for scanning QR codes, specifically for Reddit Client IDs. */
+@NullMarked
 public class QrCodeScannerHelper {
 
     public static final int CAMERA_PERMISSION_REQUEST_CODE = 1338;

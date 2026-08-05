@@ -3,20 +3,20 @@ package me.edgan.redditslide.util;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask; // Added
+import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast; // Added
-
-// Added
-import com.google.gson.JsonObject; // Added
-
+import android.widget.Toast;
+import androidx.annotation.Nullable;
+import com.google.gson.JsonObject;
 import me.edgan.redditslide.Notifications.ImageDownloadNotificationService;
-import me.edgan.redditslide.R; // Added
+import me.edgan.redditslide.R;
+import org.jspecify.annotations.NullMarked;
 // Added
 // Added
 
 // Added
 
+@NullMarked
 public class ImageSaveUtils {
     private static final String TAG = "ImageSaveUtils";
     public static final String EXTRA_SUBMISSION_TITLE = ImageDownloadNotificationService.EXTRA_SUBMISSION_TITLE;
@@ -35,10 +35,10 @@ public class ImageSaveUtils {
     public static void doImageSave(
             Activity activity,
             boolean isGif,
-            String contentUrl,
+            @Nullable String contentUrl,
             int index,
-            String subreddit,
-            String submissionTitle,
+            @Nullable String subreddit,
+            @Nullable String submissionTitle,
             Runnable showFirstDialogCallback) {
 
         Uri storageUri = StorageUtil.getStorageUri(activity);
@@ -53,9 +53,9 @@ public class ImageSaveUtils {
                 // Handle video/gif save asynchronously
                 new ResolveAndSaveGifTask(
                         activity,
-                        contentUrl,
-                        subreddit,
-                        submissionTitle,
+                        contentUrl == null ? "" : contentUrl,
+                        subreddit == null ? "" : subreddit,
+                        submissionTitle == null ? "" : submissionTitle,
                         showFirstDialogCallback,
                         index
                 ).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -88,7 +88,7 @@ public class ImageSaveUtils {
         private final String submissionTitle;
         private final Runnable showFirstDialogCallback;
         private final int index;
-        private Exception error = null;
+        @Nullable private Exception error = null;
 
         ResolveAndSaveGifTask(Activity activity, String initialUrl, String subreddit, String submissionTitle, Runnable showFirstDialogCallback) {
             this(activity, initialUrl, subreddit, submissionTitle, showFirstDialogCallback, -1);
@@ -104,7 +104,7 @@ public class ImageSaveUtils {
         }
 
         @Override
-        protected Uri doInBackground(Void... params) {
+        protected @Nullable Uri doInBackground(Void... params) {
             // Logic adapted from GifUtils.AsyncLoadGif.doInBackground
             final String url = GifUtils.AsyncLoadGif.formatUrl(initialUrl);
             GifUtils.AsyncLoadGif.VideoType videoType = GifUtils.AsyncLoadGif.getVideoType(url);
@@ -170,7 +170,7 @@ public class ImageSaveUtils {
         }
 
         @Override
-        protected void onPostExecute(Uri resolvedUri) {
+        protected void onPostExecute(@Nullable Uri resolvedUri) {
             if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
                 return; // Activity gone
             }

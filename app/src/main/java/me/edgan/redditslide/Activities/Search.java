@@ -9,6 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -33,7 +34,9 @@ import net.dean.jraw.paginators.SubmissionSearchPaginator;
 import net.dean.jraw.paginators.TimePeriod;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class Search extends BaseActivityAnim {
 
     public static final String EXTRA_TERM = "term";
@@ -49,16 +52,19 @@ public class Search extends BaseActivityAnim {
     private int totalItemCount;
     private int visibleItemCount;
     private int pastVisiblesItems;
+    @SuppressWarnings("NullAway.Init")
     private ContributionAdapter adapter;
 
+    @SuppressWarnings("NullAway.Init")
     private String where;
-    private String subreddit;
+    private String subreddit = "";
     //    private String site;
     //    private String url;
     //    private boolean self;
     //    private boolean nsfw;
     //    private String author;
 
+    @SuppressWarnings("NullAway.Init")
     private SubredditSearchPosts posts;
 
     @Override
@@ -107,7 +113,7 @@ public class Search extends BaseActivityAnim {
                         // When the .name() is returned for both of the ENUMs, it will be in all
                         // caps.
                         // So, make it lowercase, then capitalize the first letter of each.
-                        getSupportActionBar()
+                        java.util.Objects.requireNonNull(getSupportActionBar())
                                 .setSubtitle(
                                         StringUtils.capitalize(
                                                         SortingUtil.search
@@ -152,7 +158,7 @@ public class Search extends BaseActivityAnim {
                         // When the .name() is returned for both of the ENUMs, it will be in all
                         // caps.
                         // So, make it lowercase, then capitalize the first letter of each.
-                        getSupportActionBar()
+                        java.util.Objects.requireNonNull(getSupportActionBar())
                                 .setSubtitle(
                                         StringUtils.capitalize(
                                                         SortingUtil.search
@@ -169,6 +175,7 @@ public class Search extends BaseActivityAnim {
                 );
     }
 
+    @SuppressWarnings("NullAway.Init")
     public TimePeriod time;
 
     @Override
@@ -215,10 +222,11 @@ public class Search extends BaseActivityAnim {
     }
 
     public boolean multireddit;
+    @SuppressWarnings("NullAway.Init")
     RecyclerView rv;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         overrideSwipeFromAnywhere();
         super.onCreate(savedInstanceState);
 
@@ -238,38 +246,39 @@ public class Search extends BaseActivityAnim {
 
         if (getIntent().hasExtra(EXTRA_MULTIREDDIT)) {
             multireddit = true;
-            subreddit = getIntent().getExtras().getString(EXTRA_MULTIREDDIT);
+            subreddit = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_MULTIREDDIT));
         } else {
             if (getIntent().hasExtra(EXTRA_AUTHOR)) {
-                where = where + "&author=" + getIntent().getExtras().getString(EXTRA_AUTHOR);
+                where = where + "&author=" + getIntent().getStringExtra(EXTRA_AUTHOR);
             }
             if (getIntent().hasExtra(EXTRA_NSFW)) {
                 where =
                         where
                                 + "&nsfw="
-                                + (getIntent().getExtras().getBoolean(EXTRA_NSFW) ? "yes" : "no");
+                                + (getIntent().getBooleanExtra(EXTRA_NSFW, false) ? "yes" : "no");
             }
             if (getIntent().hasExtra(EXTRA_SELF)) {
                 where =
                         where
                                 + "&selftext="
-                                + (getIntent().getExtras().getBoolean(EXTRA_SELF) ? "yes" : "no");
+                                + (getIntent().getBooleanExtra(EXTRA_SELF, false) ? "yes" : "no");
             }
             if (getIntent().hasExtra(EXTRA_SITE)) {
-                where = where + "&site=" + getIntent().getExtras().getString(EXTRA_SITE);
+                where = where + "&site=" + getIntent().getStringExtra(EXTRA_SITE);
             }
             if (getIntent().hasExtra(EXTRA_URL)) {
-                where = where + "&url=" + getIntent().getExtras().getString(EXTRA_URL);
+                where = where + "&url=" + getIntent().getStringExtra(EXTRA_URL);
             }
             if (getIntent().hasExtra(EXTRA_TIME)) {
                 TimePeriod timePeriod =
-                        TimeUtils.stringToTimePeriod(getIntent().getExtras().getString(EXTRA_TIME));
+                        TimeUtils.stringToTimePeriod(
+                                MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_TIME)));
                 if (timePeriod != null) {
                     time = timePeriod;
                 }
             }
 
-            subreddit = getIntent().getExtras().getString(EXTRA_SUBREDDIT, "");
+            subreddit = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_SUBREDDIT));
         }
 
         where = StringEscapeUtils.unescapeHtml4(where);
@@ -277,22 +286,22 @@ public class Search extends BaseActivityAnim {
         setupSubredditAppBar(R.id.toolbar, "Search", true, subreddit.toLowerCase(Locale.ENGLISH));
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(CompatUtil.fromHtml(where));
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            java.util.Objects.requireNonNull(getSupportActionBar()).setTitle(CompatUtil.fromHtml(where));
+            java.util.Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         }
         assert mToolbar != null; // it won't be, trust me
-        mToolbar.setNavigationOnClickListener(
+        requireToolbar().setNavigationOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         getOnBackPressedDispatcher().onBackPressed(); // Simulate a system's "Back" button functionality.
                     }
                 });
-        mToolbar.setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
+        requireToolbar().setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
 
         // When the .name() is returned for both of the ENUMs, it will be in all caps.
         // So, make it lowercase, then capitalize the first letter of each.
-        getSupportActionBar()
+        java.util.Objects.requireNonNull(getSupportActionBar())
                 .setSubtitle(
                         StringUtils.capitalize(
                                         SortingUtil.search.name().toLowerCase(Locale.ENGLISH))
@@ -307,12 +316,12 @@ public class Search extends BaseActivityAnim {
         rv.setLayoutManager(mLayoutManager);
 
         rv.addOnScrollListener(
-                new ToolbarScrollHideHandler(mToolbar, findViewById(R.id.header)) {
+                new ToolbarScrollHideHandler(requireToolbar(), findViewById(R.id.header)) {
                     @Override
                     public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                         super.onScrolled(recyclerView, dx, dy);
 
-                        visibleItemCount = rv.getLayoutManager().getChildCount();
+                        visibleItemCount = java.util.Objects.requireNonNull(rv.getLayoutManager()).getChildCount();
                         totalItemCount = rv.getLayoutManager().getItemCount();
                         if (rv.getLayoutManager() instanceof PreCachingLayoutManager) {
                             pastVisiblesItems =
@@ -381,7 +390,7 @@ public class Search extends BaseActivityAnim {
         final int currentOrientation = newConfig.orientation;
 
         final CatchStaggeredGridLayoutManager mLayoutManager =
-                (CatchStaggeredGridLayoutManager) rv.getLayoutManager();
+                (CatchStaggeredGridLayoutManager) java.util.Objects.requireNonNull(rv.getLayoutManager());
 
         mLayoutManager.setSpanCount(LayoutUtils.getNumColumns(currentOrientation, Search.this));
     }

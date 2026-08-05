@@ -242,7 +242,9 @@ public class Reddit extends Application implements Application.ActivityLifecycle
         ReauthNotifier.detach(activity);
     }
 
-    public static void setDefaultErrorHandler(Context base) {
+    /** Pass null to clear the handler: the weak reference then resolves to nothing and the
+     * previous android handler is all that runs. */
+    public static void setDefaultErrorHandler(@Nullable Context base) {
         // START code adapted from https://github.com/QuantumBadger/RedReader/
         final Thread.UncaughtExceptionHandler androidHandler =
                 Thread.getDefaultUncaughtExceptionHandler();

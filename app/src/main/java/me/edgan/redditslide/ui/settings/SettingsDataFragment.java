@@ -9,7 +9,9 @@ import androidx.appcompat.widget.SwitchCompat;
 
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class SettingsDataFragment {
 
     private final Activity context;

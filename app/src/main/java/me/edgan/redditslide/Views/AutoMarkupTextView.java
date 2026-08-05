@@ -6,8 +6,10 @@ import android.util.AttributeSet;
 
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.text.util.LinkifyCompat;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 5/5/2015. */
+@NullMarked
 public class AutoMarkupTextView extends AppCompatTextView {
 
     public AutoMarkupTextView(Context context, AttributeSet attrs, int defStyle) {

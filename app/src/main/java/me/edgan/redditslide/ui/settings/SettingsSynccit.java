@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import java.util.Collections;
 import me.edgan.redditslide.Activities.BaseActivityAnim;
@@ -16,14 +17,16 @@ import me.edgan.redditslide.Synccit.SynccitRead;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 2/16/2015. */
+@NullMarked
 public class SettingsSynccit extends BaseActivityAnim {
 
     EditText name;
     EditText auth;
 
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_synccit);

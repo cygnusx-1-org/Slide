@@ -6,6 +6,7 @@ import java.util.Map;
 
 import me.edgan.redditslide.SubmissionViews.LocalSaved;
 import me.edgan.redditslide.SubmissionViews.ReadLater;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Serializes the small, user-meaningful {@link KVStore} collections so settings backup/restore can
@@ -20,6 +21,7 @@ import me.edgan.redditslide.SubmissionViews.ReadLater;
  * any key or value (keys are fixed prefixes + Reddit fullnames, values are timestamps), so it can
  * be embedded as a single backup entry without escaping.
  */
+@NullMarked
 public class KVStoreBackup {
 
     /** Backup-entry name used to tag the serialized KVStore blob inside the backup file. */

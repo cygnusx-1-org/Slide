@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.R;
@@ -14,15 +15,17 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.StorageUtil;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 3/5/2015. */
+@NullMarked
 public class SettingsGeneral extends BaseActivityAnim implements StorageUtil.DirectoryChooserHost {
 
     private SettingsGeneralFragment fragment = new SettingsGeneralFragment(this);
-    private StorageUtil.OnDirectorySelectedListener directorySelectedListener;
+    @Nullable private StorageUtil.OnDirectorySelectedListener directorySelectedListener;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_general);
@@ -99,11 +102,16 @@ public class SettingsGeneral extends BaseActivityAnim implements StorageUtil.Dir
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == StorageUtil.REQUEST_STORAGE_ACCESS && resultCode == Activity.RESULT_OK) {
+        if (requestCode == StorageUtil.REQUEST_STORAGE_ACCESS
+                && resultCode == Activity.RESULT_OK
+                && data != null) {
             Uri uri = data.getData();
+            if (uri == null) {
+                return;
+            }
 
             try {
                 final int dataFlags = data.getFlags();
@@ -149,12 +157,13 @@ public class SettingsGeneral extends BaseActivityAnim implements StorageUtil.Dir
     }
 
     @Override
-    public void setDirectorySelectedListener(StorageUtil.OnDirectorySelectedListener listener) {
+    public void setDirectorySelectedListener(
+            @Nullable StorageUtil.OnDirectorySelectedListener listener) {
         this.directorySelectedListener = listener;
     }
 
     @Override
-    public StorageUtil.OnDirectorySelectedListener getDirectorySelectedListener() {
+    public @Nullable StorageUtil.OnDirectorySelectedListener getDirectorySelectedListener() {
         return directorySelectedListener;
     }
 

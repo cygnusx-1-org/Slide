@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.annotation.Nullable;
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.BuildConfig;
 import me.edgan.redditslide.OpenRedditLink;
@@ -15,11 +15,13 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.util.ClipboardUtil;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by l3d00m on 11/12/2015. */
+@NullMarked
 public class SettingsAbout extends BaseActivityAnim {
 
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_about);

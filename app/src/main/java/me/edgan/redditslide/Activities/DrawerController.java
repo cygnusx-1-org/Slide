@@ -59,15 +59,23 @@ import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
+import me.edgan.redditslide.util.PrefUtil;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class DrawerController {
 
     private final MainActivity mainActivity;
+    @SuppressWarnings("NullAway.Init")
     ListView drawerSubList;
+    @SuppressWarnings("NullAway.Init")
     EditText drawerSearch;
+    @SuppressWarnings("NullAway.Init")
     View hea;
+    @SuppressWarnings("NullAway.Init")
     View accountsArea;
+    @SuppressWarnings("NullAway.Init")
     SideArrayAdapter sideArrayAdapter;
     HashMap<String, String> accounts = new HashMap<>();
 
@@ -235,7 +243,7 @@ public class DrawerController {
                                 }
                             });
 
-            for (String s : Authentication.authentication.getStringSet("accounts", new HashSet<String>())) {
+            for (String s : PrefUtil.getStringSet(Authentication.authentication, "accounts", new HashSet<String>())) {
                 if (s.contains(":")) {
                     accounts.put(s.split(":")[0], s.split(":")[1]);
                 } else {
@@ -264,7 +272,7 @@ public class DrawerController {
                                                 .setNegativeButton(
                                                         R.string.btn_delete,
                                                         (dialog2, which2) -> {
-                                                            Set<String> accounts2 = Authentication.authentication.getStringSet("accounts", new HashSet<>());
+                                                            Set<String> accounts2 = PrefUtil.getStringSet(Authentication.authentication, "accounts", new HashSet<>());
                                                             Set<String> done = new HashSet<>();
 
                                                             for (String s : accounts2) {
@@ -292,7 +300,7 @@ public class DrawerController {
                                                                             LogUtil.v(e.getKey() + ":" + e.getValue());
                                                                         }
 
-                                                                        if (accounts.containsKey(s) && !accounts.get(s).isEmpty()) {
+                                                                        if (accounts.containsKey(s) && !accounts.getOrDefault(s, "").isEmpty()) {
                                                                             Authentication.authentication
                                                                                 .edit()
                                                                                 .putString("lasttoken", accounts.get(s))
@@ -352,7 +360,7 @@ public class DrawerController {
 
                                 if (!accName.equalsIgnoreCase(Authentication.name)) {
                                     LogUtil.v("Switching to " + accName);
-                                    if (!accounts.get(accName).isEmpty()) {
+                                    if (!accounts.getOrDefault(accName, "").isEmpty()) {
                                         LogUtil.v("Using token " + accounts.get(accName));
                                         Authentication.authentication
                                             .edit()
@@ -360,7 +368,7 @@ public class DrawerController {
                                             .remove("backedCreds")
                                             .apply();
                                     } else {
-                                        ArrayList<String> tokens = new ArrayList<>(Authentication.authentication.getStringSet("tokens", new HashSet<String>()));
+                                        ArrayList<String> tokens = new ArrayList<>(PrefUtil.getStringSet(Authentication.authentication, "tokens", new HashSet<String>()));
                                         Authentication.authentication
                                             .edit()
                                             .putString("lasttoken", tokens.get(keys.indexOf(accName)))
@@ -478,7 +486,7 @@ public class DrawerController {
                             });
             final HashMap<String, String> accounts = new HashMap<>();
 
-            for (String s : Authentication.authentication.getStringSet("accounts", new HashSet<String>())) {
+            for (String s : PrefUtil.getStringSet(Authentication.authentication, "accounts", new HashSet<String>())) {
                 if (s.contains(":")) {
                     accounts.put(s.split(":")[0], s.split(":")[1]);
                 } else {
@@ -504,7 +512,7 @@ public class DrawerController {
                                             .setNegativeButton(
                                                     R.string.btn_delete,
                                                     (dialog2, which2) -> {
-                                                        Set<String> accounts2 = Authentication.authentication.getStringSet("accounts", new HashSet<>());
+                                                        Set<String> accounts2 = PrefUtil.getStringSet(Authentication.authentication, "accounts", new HashSet<>());
                                                         Set<String> done = new HashSet<>();
 
                                                         for (String s : accounts2) {
@@ -524,7 +532,7 @@ public class DrawerController {
                                                                 if (!s.equalsIgnoreCase(accName)) {
                                                                     d = true;
                                                                     LogUtil.v("Switching to " + s);
-                                                                    if (!accounts.get(s).isEmpty()) {
+                                                                    if (!accounts.getOrDefault(s, "").isEmpty()) {
                                                                         Authentication.authentication
                                                                                 .edit()
                                                                                 .putString("lasttoken", accounts.get(s))
@@ -574,14 +582,14 @@ public class DrawerController {
                             @Override
                             public void onSingleClick(View v) {
                                 if (!accName.equalsIgnoreCase(Authentication.name)) {
-                                    if (!accounts.get(accName).isEmpty()) {
+                                    if (!accounts.getOrDefault(accName, "").isEmpty()) {
                                         Authentication.authentication
                                             .edit()
                                             .putString("lasttoken", accounts.get(accName))
                                             .remove("backedCreds")
                                             .commit();
                                     } else {
-                                        ArrayList<String> tokens = new ArrayList<>(Authentication.authentication.getStringSet("tokens", new HashSet<String>()));
+                                        ArrayList<String> tokens = new ArrayList<>(PrefUtil.getStringSet(Authentication.authentication, "tokens", new HashSet<String>()));
                                         Authentication.authentication
                                             .edit()
                                             .putString("lasttoken", tokens.get(keys.indexOf(accName)))

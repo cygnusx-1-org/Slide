@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -35,6 +36,7 @@ import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.ImageSaveUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Created by ccrama on 9/7/2016.
@@ -42,12 +44,14 @@ import me.edgan.redditslide.util.MiscUtil;
  * <p>This class is responsible for accessing the Tumblr api to get the image-related json data from
  * a URL. It extends FullScreenActivity and supports swipe from anywhere.
  */
+@NullMarked
 public class Tumblr extends BaseSaveActivity {
     public static final String EXTRA_URL = "url";
+    @SuppressWarnings("NullAway.Init")
     private List<Photo> images;
     public static final String SUBREDDIT = "subreddit";
     private int adapterPosition;
-    public String subreddit;
+    public String subreddit = "";
 
     private static final String TAG = "Tumblr";
 
@@ -78,7 +82,7 @@ public class Tumblr extends BaseSaveActivity {
             finish();
         }
         if (id == R.id.grid) {
-            mToolbar.findViewById(R.id.grid).callOnClick();
+            requireToolbar().findViewById(R.id.grid).callOnClick();
         }
         if (id == R.id.comments) {
             String submissionPermalink = getIntent().getStringExtra(MediaView.SUBMISSION_URL);
@@ -112,6 +116,7 @@ public class Tumblr extends BaseSaveActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressWarnings("NullAway.Init")
     public String url;
 
     @Override
@@ -127,7 +132,7 @@ public class Tumblr extends BaseSaveActivity {
 
     public TumblrPagerAdapter album;
 
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         overrideSwipeFromAnywhere();
         super.onCreate(savedInstanceState);
         getTheme()
@@ -147,11 +152,11 @@ public class Tumblr extends BaseSaveActivity {
         pager.setAdapter(album);
         pager.setCurrentItem(1);
         if (getIntent().hasExtra(SUBREDDIT)) {
-            subreddit = getIntent().getStringExtra(SUBREDDIT);
+            subreddit = MiscUtil.orEmpty(getIntent().getStringExtra(SUBREDDIT));
         }
 
         if (getIntent().hasExtra(EXTRA_SUBMISSION_TITLE)) {
-            this.submissionTitle = getIntent().getStringExtra(EXTRA_SUBMISSION_TITLE);
+            this.submissionTitle = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_SUBMISSION_TITLE));
         }
 
         if (SettingValues.oldSwipeMode) {
@@ -165,13 +170,12 @@ public class Tumblr extends BaseSaveActivity {
                             if (position == 0 && positionOffsetPixels == 0) {
                                 finish();
                             }
+                            final TumblrPagerAdapter pagerAdapter =
+                                    (TumblrPagerAdapter) pager.getAdapter();
                             if (position == 0
-                                    && ((TumblrPagerAdapter) pager.getAdapter()).blankPage
-                                            != null) {
-                                if (((TumblrPagerAdapter) pager.getAdapter()).blankPage != null) {
-                                    ((TumblrPagerAdapter) pager.getAdapter())
-                                            .blankPage.doOffset(positionOffset);
-                                }
+                                    && pagerAdapter != null
+                                    && pagerAdapter.blankPage != null) {
+                                pagerAdapter.blankPage.doOffset(positionOffset);
                             }
                         }
                     });
@@ -181,7 +185,9 @@ public class Tumblr extends BaseSaveActivity {
     }
 
     public static class TumblrPagerAdapter extends FragmentStatePagerAdapter {
+        @SuppressWarnings("NullAway.Init")
         public AlbumFrag album;
+        @SuppressWarnings("NullAway.Init")
         public BlankFragment blankPage;
 
         public TumblrPagerAdapter(FragmentManager fm) {
@@ -221,7 +227,9 @@ public class Tumblr extends BaseSaveActivity {
 
         @Override
         public View onCreateView(
-                LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
             rootView = inflater.inflate(R.layout.fragment_verticalalbum, container, false);
 
             final PreCachingLayoutManager mLayoutManager =
@@ -229,16 +237,17 @@ public class Tumblr extends BaseSaveActivity {
             recyclerView = rootView.findViewById(R.id.images);
             recyclerView.setLayoutManager(mLayoutManager);
             ((Tumblr) getActivity()).url =
-                    getActivity().getIntent().getExtras().getString(EXTRA_URL, "");
+                    MiscUtil.orEmpty(getActivity().getIntent().getStringExtra(EXTRA_URL));
 
             new LoadIntoRecycler(((Tumblr) getActivity()).url, getActivity())
                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             ((Tumblr) getActivity()).mToolbar = rootView.findViewById(R.id.toolbar);
-            ((Tumblr) getActivity()).mToolbar.setTitle(R.string.type_tumblr);
+            ((Tumblr) getActivity()).requireToolbar().setTitle(R.string.type_tumblr);
             ToolbarColorizeHelper.colorizeToolbar(
-                    ((Tumblr) getActivity()).mToolbar, Color.WHITE, (getActivity()));
-            ((Tumblr) getActivity()).setSupportActionBar(((Tumblr) getActivity()).mToolbar);
-            ((Tumblr) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                    ((Tumblr) getActivity()).requireToolbar(), Color.WHITE, (getActivity()));
+            ((Tumblr) getActivity()).setSupportActionBar(((Tumblr) getActivity()).requireToolbar());
+            java.util.Objects.requireNonNull(((Tumblr) getActivity()).getSupportActionBar())
+                    .setDisplayHomeAsUpEnabled(true);
 
             ((Tumblr) getActivity())
                     .mToolbar.setPopupTheme(
@@ -272,7 +281,7 @@ public class Tumblr extends BaseSaveActivity {
             }
 
             @Override
-            public boolean doWithData(final List<Photo> jsonElements) {
+            public boolean doWithData(final @Nullable List<Photo> jsonElements) {
                 // A post with no photos has no album to build; super has already sent this to
                 // onError(), which opens the link in the web view instead.
                 if (!super.doWithData(jsonElements)) {

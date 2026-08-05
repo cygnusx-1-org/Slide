@@ -36,7 +36,9 @@ import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
 import net.dean.jraw.models.Comment;
 import net.dean.jraw.models.CommentNode;
 import net.dean.jraw.models.VoteDirection;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class CommentStateUtil {
 
     /**
@@ -51,8 +53,11 @@ public class CommentStateUtil {
             boolean isReplying,
             boolean animate) {
 
-        if (adapter.currentlySelected != null && adapter.currentlySelected != holder) {
-            adapter.setCommentStateUnhighlighted(adapter.currentlySelected, adapter.currentBaseNode, true);
+        if (adapter.currentlySelected != null
+                && adapter.currentlySelected != holder
+                && adapter.currentBaseNode != null) {
+            adapter.setCommentStateUnhighlighted(
+                    adapter.currentlySelected, adapter.currentBaseNode, true);
         }
 
         // If a comment is hidden and (Swap long press == true), then a single click will un-hide
@@ -255,7 +260,10 @@ public class CommentStateUtil {
                                 final HashMap<String, String> accounts = new HashMap<>();
 
                                 for (String s :
-                                        Authentication.authentication.getStringSet("accounts", new HashSet<String>())) {
+                                        PrefUtil.getStringSet(
+                                                Authentication.authentication,
+                                                "accounts",
+                                                new HashSet<String>())) {
                                     if (s.contains(":")) {
                                         accounts.put(s.split(":")[0], s.split(":")[1]);
                                     } else {
@@ -376,7 +384,10 @@ public class CommentStateUtil {
                                         final HashMap<String, String> accounts =
                                                 new HashMap<>();
 
-                                        for (String s : Authentication.authentication.getStringSet("accounts", new HashSet<String>())) {
+                                        for (String s : PrefUtil.getStringSet(
+                                                Authentication.authentication,
+                                                "accounts",
+                                                new HashSet<String>())) {
                                             if (s.contains(":")) {
                                                 accounts.put(s.split(":")[0], s.split(":")[1]);
                                             } else {
@@ -448,7 +459,14 @@ public class CommentStateUtil {
                             if (adapter.currentlyEditing != null) {
                                 String text = adapter.currentlyEditing.getText().toString();
                                 // Instantiate inner class via adapter instance
-                                adapter.new ReplyTaskComment(n, baseNode, holder, adapter.changedProfile).execute(text);
+                                adapter.new ReplyTaskComment(
+                                                n,
+                                                baseNode,
+                                                holder,
+                                                adapter.changedProfile == null
+                                                        ? Authentication.nameOrEmpty()
+                                                        : adapter.changedProfile)
+                                        .execute(text);
                                 adapter.currentlyEditing = null;
                                 adapter.editingPosition = -1;
                             }

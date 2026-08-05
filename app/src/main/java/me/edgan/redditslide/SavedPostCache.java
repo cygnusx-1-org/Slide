@@ -109,7 +109,7 @@ public class SavedPostCache {
     }
 
     /** True if a cache entry for this key exists, post-dates the last invalidate, and is unexpired. */
-    public static boolean isFresh(String username, String category) {
+    public static boolean isFresh(String username, @Nullable String category) {
         long t = prefs().getLong(key(username, category) + SUFFIX_TIME, 0L);
         return t > invalidatedAt && (System.currentTimeMillis() - t) < SAVED_CACHE_TTL_MS;
     }
@@ -121,7 +121,7 @@ public class SavedPostCache {
      * rather than slurping it into a String first.
      */
     @Nullable
-    public static Cached load(String username, String category) {
+    public static Cached load(String username, @Nullable String category) {
         String k = key(username, category);
         SharedPreferences prefs = prefs();
         long t = prefs.getLong(k + SUFFIX_TIME, 0L);
@@ -159,7 +159,7 @@ public class SavedPostCache {
      * dropped. {@code complete} records whether the entire saved list was captured.
      */
     public static void store(
-            String username, String category, List<Contribution> posts, boolean complete) {
+            String username, @Nullable String category, List<Contribution> posts, boolean complete) {
         if (posts == null) {
             return;
         }

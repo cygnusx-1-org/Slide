@@ -2,14 +2,16 @@ package me.edgan.redditslide.Activities;
 
 import android.os.AsyncTask;
 import android.util.Log;
-
+import androidx.annotation.Nullable;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.util.LogUtil;
 import net.dean.jraw.models.Subreddit;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * AsyncTask to fetch Subreddit details asynchronously.
  */
+@NullMarked
 public class AsyncGetSubredditTask extends AsyncTask<String, Void, Subreddit> {
 
     private SidebarController sidebarController;
@@ -33,7 +35,7 @@ public class AsyncGetSubredditTask extends AsyncTask<String, Void, Subreddit> {
     }
 
     @Override
-    protected Subreddit doInBackground(String... params) {
+    protected @Nullable Subreddit doInBackground(String... params) {
         if (params == null || params.length == 0 || params[0] == null || params[0].isEmpty()) {
             Log.e(LogUtil.getTag(), "Subreddit name parameter is missing or empty.");
             return null;

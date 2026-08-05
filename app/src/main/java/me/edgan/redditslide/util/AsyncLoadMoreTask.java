@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -31,7 +32,9 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import net.dean.jraw.models.CommentNode;
 import net.dean.jraw.models.MoreChildren;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
     private final MoreCommentViewHolder holder;
     private final int holderPos;
@@ -44,8 +47,8 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
     private final ArrayList<CommentObject> currentComments;
     private final HashMap<String, Integer> keys;
 
-    private ArrayList<CommentObject> finalData;
-    private MoreChildItem targetItem;
+    private ArrayList<CommentObject> finalData = new ArrayList<>();
+    @Nullable private MoreChildItem targetItem;
 
     public AsyncLoadMoreTask(
             int dataPos,
@@ -69,7 +72,7 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
     }
 
     @Override
-    public void onPostExecute(Integer data) {
+    public void onPostExecute(@Nullable Integer data) {
         adapter.currentLoading = null;
         if (isCancelled()) {
             return;
@@ -93,14 +96,15 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
                             // Re-resolve the placeholder using its stable key. The original
                             // captured index is only a hint because collapsed/hidden rows can
                             // leave us one slot off by the time this callback runs.
+                            final MoreChildItem target = targetItem;
                             int currentDataPos = findPlaceholderPosition();
-                            if (currentDataPos < 0) {
+                            if (target == null || currentDataPos < 0) {
                                 Log.w(LogUtil.getTag(), "Target MoreChildItem no longer in list; nothing to apply.");
                                 resetLoadingIndicator();
                                 return;
                             }
 
-                            String placeholderKey = targetItem.getName();
+                            String placeholderKey = target.getName();
                             currentComments.remove(currentDataPos);
                             keys.remove(placeholderKey);
 
@@ -156,7 +160,7 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
         }
 
         Integer keyedPosition = keys.get(placeholderKey);
-        if (isMatchingPlaceholderPosition(keyedPosition, placeholderKey)) {
+        if (keyedPosition != null && isMatchingPlaceholderPosition(keyedPosition, placeholderKey)) {
             return keyedPosition;
         }
 
@@ -181,7 +185,8 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
         return -1;
     }
 
-    private boolean isMatchingPlaceholderPosition(Integer position, String placeholderKey) {
+    private boolean isMatchingPlaceholderPosition(
+            @Nullable Integer position, String placeholderKey) {
         return position != null
                 && position >= 0
                 && position < currentComments.size()
@@ -190,7 +195,7 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
 
 
     @Override
-    protected Integer doInBackground(MoreChildItem... params) {
+    protected @Nullable Integer doInBackground(MoreChildItem... params) {
         finalData = new ArrayList<>();
         int itemsAddedCount = 0;
         if (params.length > 0) {

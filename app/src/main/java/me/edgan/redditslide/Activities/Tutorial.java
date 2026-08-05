@@ -18,6 +18,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -45,8 +46,10 @@ import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.QrCodeScannerHelper;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 3/5/2015. */
+@NullMarked
 public class Tutorial extends AppCompatActivity {
     /** The pages (wizard steps) to show in this demo. */
     private static final int POS_WELCOME = 0;
@@ -59,7 +62,7 @@ public class Tutorial extends AppCompatActivity {
     private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 1001;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getOnBackPressedDispatcher().addCallback(this, mBackCallback);
 
@@ -243,13 +246,13 @@ public class Tutorial extends AppCompatActivity {
     }
 
     public static class Welcome extends Fragment {
-        private FragmentWelcomeBinding welcomeBinding;
+        private @Nullable FragmentWelcomeBinding welcomeBinding;
 
         @Override
         public View onCreateView(
                 @NonNull LayoutInflater inflater,
-                final ViewGroup container,
-                Bundle savedInstanceState) {
+                final @Nullable ViewGroup container,
+                @Nullable Bundle savedInstanceState) {
             welcomeBinding = FragmentWelcomeBinding.inflate(inflater, container, false);
             welcomeBinding.welcomeGetStarted.setOnClickListener(
                     v1 -> ((Tutorial) getActivity()).binding.tutorialViewPager.setCurrentItem(1));
@@ -262,7 +265,9 @@ public class Tutorial extends AppCompatActivity {
             });
 
             // Keep the bottom buttons above the navigation bar under edge-to-edge (Android 15+).
-            applySystemBarInsets(welcomeBinding.bottomButtons, container);
+            if (container != null) {
+                applySystemBarInsets(welcomeBinding.bottomButtons, container);
+            }
 
             return welcomeBinding.getRoot();
         }
@@ -275,17 +280,17 @@ public class Tutorial extends AppCompatActivity {
     }
 
     public static class Personalize extends Fragment {
-        private FragmentPersonalizeBinding personalizeBinding;
+        private @Nullable FragmentPersonalizeBinding personalizeBinding;
 
         // Held so the dialog can be dismissed before the activity finishes, which would otherwise
         // leak its window, and so it cannot outlive the fragment's view.
-        private AlertDialog activeDialog;
+        @Nullable private AlertDialog activeDialog;
 
         @Override
         public View onCreateView(
                 @NonNull LayoutInflater inflater,
-                final ViewGroup container,
-                Bundle savedInstanceState) {
+                final @Nullable ViewGroup container,
+                @Nullable Bundle savedInstanceState) {
             ((Tutorial) getActivity()).back =
                     new ColorPreferences(getContext()).getFontStyle().getThemeType();
 
@@ -501,8 +506,11 @@ public class Tutorial extends AppCompatActivity {
             // Keep the Done button above the navigation bar under edge-to-edge (Android 15+). It
             // is pinned to the right, so the left inset would only widen its touch target over the
             // list. The scroll view stops above the button, so it only needs the horizontal insets.
-            applySystemBarInsets(personalizeBinding.done, container, false, true, true);
-            applySystemBarInsets(personalizeBinding.personalizeScroll, container, true, true, false);
+            if (container != null) {
+                applySystemBarInsets(personalizeBinding.done, container, false, true, true);
+                applySystemBarInsets(
+                        personalizeBinding.personalizeScroll, container, true, true, false);
+            }
 
             return personalizeBinding.getRoot();
         }

@@ -10,6 +10,8 @@ import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,11 +30,13 @@ import net.dean.jraw.http.oauth.OAuthData;
 import net.dean.jraw.http.oauth.OAuthException;
 import net.dean.jraw.http.oauth.OAuthHelper;
 import net.dean.jraw.models.LoggedInAccount;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 5/27/2015. */
+@NullMarked
 public class Reauthenticate extends BaseActivityAnim {
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         super.onCreate(savedInstance);
         applyColorTheme("");
         setContentView(R.layout.activity_login);
@@ -67,6 +71,14 @@ public class Reauthenticate extends BaseActivityAnim {
             "mysubreddits",
             "wikiedit"
         };
+        if (Authentication.reddit == null) {
+            // Offline at startup: Authentication's offline branch never built a client, and
+            // there is no way to run an OAuth flow without one.
+            Toast.makeText(this, R.string.err_general, Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
         final OAuthHelper oAuthHelper = Authentication.reddit.getOAuthHelper();
         final Credentials credentials =
                 Credentials.installedApp(Constants.getClientId(), Constants.getRedirectUrl());
@@ -108,6 +120,7 @@ public class Reauthenticate extends BaseActivityAnim {
     private final class UserChallengeTask extends AsyncTask<String, Void, OAuthData> {
         private final OAuthHelper mOAuthHelper;
         private final Credentials mCredentials;
+        @SuppressWarnings("NullAway.Init")
         private MaterialProgressDialog mMaterialDialog;
 
         public UserChallengeTask(OAuthHelper oAuthHelper, Credentials credentials) {
@@ -130,7 +143,11 @@ public class Reauthenticate extends BaseActivityAnim {
         }
 
         @Override
-        protected OAuthData doInBackground(String... params) {
+        protected @Nullable OAuthData doInBackground(String... params) {
+            if (Authentication.reddit == null) {
+                return null;
+            }
+
             try {
                 OAuthData oAuthData = mOAuthHelper.onUserChallenge(params[0], mCredentials);
                 if (oAuthData != null) {
@@ -172,7 +189,7 @@ public class Reauthenticate extends BaseActivityAnim {
             } catch (IllegalStateException | NetworkException | OAuthException e) {
                 // Handle me gracefully
                 Log.e(LogUtil.getTag(), "OAuth failed");
-                Log.e(LogUtil.getTag(), e.getMessage());
+                Log.e(LogUtil.getTag(), String.valueOf(e.getMessage()));
             }
             return null;
         }

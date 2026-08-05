@@ -5,27 +5,33 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import me.edgan.redditslide.Activities.CommentsScreen;
 import me.edgan.redditslide.Activities.Shadowbox;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SubmissionViews.PopulateShadowboxInfo;
-
 import net.dean.jraw.models.Submission;
 
 /** Created by ccrama on 6/2/2015. */
 public class TitleFull extends Fragment {
 
     private int i = 0;
-    private Submission s;
+    @Nullable private Submission s;
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         ViewGroup rootView =
                 (ViewGroup) inflater.inflate(R.layout.submission_titlecard, container, false);
+
+        // onCreate finishes the activity when the (static) backing list no longer holds this
+        // page — which happens on a process-death restore — but the view is still created.
+        if (s == null) {
+            return rootView;
+        }
 
         PopulateShadowboxInfo.doActionbar(s, rootView, getActivity(), true);
 
@@ -44,10 +50,10 @@ public class TitleFull extends Fragment {
         return rootView;
     }
 
-    public String sub;
+    @Nullable public String sub;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = this.getArguments();
         i = bundle.getInt("page", 0);

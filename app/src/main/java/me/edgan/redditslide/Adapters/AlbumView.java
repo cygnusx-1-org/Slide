@@ -9,15 +9,12 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.devspark.robototextview.RobotoTypefaces;
-
 import java.util.List;
-
 import me.edgan.redditslide.Activities.Album;
 import me.edgan.redditslide.ImgurAlbum.Image;
 import me.edgan.redditslide.R;
@@ -36,8 +33,8 @@ public class AlbumView extends VerticalMediaAdapter {
     public AlbumView(
             final Activity context,
             final List<Image> users,
-            String subreddit,
-            String SubmissionTitle) {
+            @Nullable String subreddit,
+            @Nullable String SubmissionTitle) {
         super(context, subreddit, SubmissionTitle);
         this.users = users;
 
@@ -59,12 +56,12 @@ public class AlbumView extends VerticalMediaAdapter {
                                             new AdapterView.OnItemClickListener() {
                                                 public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                                                     final int offset = LayoutUtils.getToolbarOffset(context);
-                                                    if (context instanceof Album) {
-                                                        ((LinearLayoutManager) ((Album) context).album.album.recyclerView.getLayoutManager())
-                                                                .scrollToPositionWithOffset(position + 1, offset);
-
-                                                    } else {
-                                                        ((LinearLayoutManager) ((RecyclerView) context.findViewById(R.id.images)).getLayoutManager())
+                                                    final RecyclerView.LayoutManager lm =
+                                                            context instanceof Album
+                                                                    ? ((Album) context).album.album.recyclerView.getLayoutManager()
+                                                                    : ((RecyclerView) context.findViewById(R.id.images)).getLayoutManager();
+                                                    if (lm != null) {
+                                                        ((LinearLayoutManager) lm)
                                                                 .scrollToPositionWithOffset(position + 1, offset);
                                                     }
                                                     d.dismiss();
@@ -87,7 +84,7 @@ public class AlbumView extends VerticalMediaAdapter {
     }
 
     @Override
-    protected String mediaUrlAt(final int index) {
+    protected @Nullable String mediaUrlAt(final int index) {
         final Image image = users.get(index);
         return image.hasImageUrl() ? image.getImageUrl() : null;
     }
@@ -194,7 +191,7 @@ public class AlbumView extends VerticalMediaAdapter {
 
         // -1: the Imgur still path has never sent an index, and MediaView only uses one to page a
         // gallery and to name a saved file.
-        holder.itemView.setOnClickListener(playable ? v -> openMedia(url, -1) : null);
+        holder.itemView.setOnClickListener(url == null ? null : v -> openMedia(url, -1));
         // After setOnClickListener, not before: that method turns clickable back on when it is
         // handed a null listener, so setting this first would leave an inert row still clickable.
         holder.itemView.setClickable(playable);

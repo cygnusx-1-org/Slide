@@ -94,7 +94,7 @@ public class MultiredditAdapter extends PaginatedListAdapter {
             CreateCardView.colorCard(
                     submission.getSubredditName().toLowerCase(Locale.ENGLISH),
                     holder.itemView,
-                    "multi_" + dataSet.multiReddit.getDisplayName(),
+                    "multi_" + dataSet.displayName(),
                     true);
             holder.itemView.setOnClickListener(
                     new View.OnClickListener() {
@@ -112,7 +112,7 @@ public class MultiredditAdapter extends PaginatedListAdapter {
                                         holder2.getBindingAdapterPosition() - 1);
                                 i2.putExtra(
                                         CommentsScreen.EXTRA_MULTIREDDIT,
-                                        dataSet.multiReddit.getDisplayName());
+                                        dataSet.displayName());
                                 context.startActivityForResult(i2, 940);
                                 i2.putExtra("fullname", submission.getFullName());
                                 clicked = holder2.getBindingAdapterPosition();
@@ -139,10 +139,7 @@ public class MultiredditAdapter extends PaginatedListAdapter {
                             listView,
                             true,
                             false,
-                            "multi_"
-                                    + dataSet.multiReddit
-                                            .getDisplayName()
-                                            .toLowerCase(Locale.ENGLISH),
+                            "multi_" + dataSet.displayName().toLowerCase(Locale.ENGLISH),
                             null);
         }
         if (holder2 instanceof SubmissionFooterViewHolder) {

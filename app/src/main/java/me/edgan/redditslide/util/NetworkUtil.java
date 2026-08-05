@@ -8,12 +8,14 @@ import android.net.NetworkCapabilities;
 import androidx.core.content.ContextCompat;
 
 import me.edgan.redditslide.Reddit;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Collection of various network utility methods.
  *
  * @author Matthew Dean
  */
+@NullMarked
 public class NetworkUtil {
 
     private NetworkUtil() {}

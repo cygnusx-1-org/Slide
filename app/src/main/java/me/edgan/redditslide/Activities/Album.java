@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -39,6 +40,7 @@ import me.edgan.redditslide.util.ImageSaveUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Created by ccrama on 3/5/2015.
@@ -46,9 +48,11 @@ import me.edgan.redditslide.util.MiscUtil;
  * <p>This class is responsible for accessing the Imgur api to get the album json data from a URL or
  * Imgur hash. It extends FullScreenActivity and supports swipe from anywhere.
  */
+@NullMarked
 public class Album extends BaseSaveActivity {
     public static final String EXTRA_URL = "url";
     public static final String SUBREDDIT = "subreddit";
+    @SuppressWarnings("NullAway.Init")
     private List<Image> images;
     private int adapterPosition;
 
@@ -82,7 +86,7 @@ public class Album extends BaseSaveActivity {
             finish();
         }
         if (id == R.id.grid) {
-            mToolbar.findViewById(R.id.grid).callOnClick();
+            requireToolbar().findViewById(R.id.grid).callOnClick();
         }
         if (id == R.id.comments) {
             String submissionPermalink = getIntent().getStringExtra(MediaView.SUBMISSION_URL);
@@ -113,8 +117,10 @@ public class Album extends BaseSaveActivity {
         ImageSaveUtils.doImageSave(this, isGif, contentUrl, index, subreddit, submissionTitle, this::showFirstDialog);
     }
 
+    @SuppressWarnings("NullAway.Init")
     public String url;
-    public String subreddit;
+    public String subreddit = "";
+    @SuppressWarnings("NullAway.Init")
     public String submissionTitle;
 
     @Override
@@ -132,7 +138,7 @@ public class Album extends BaseSaveActivity {
 
     public AlbumPagerAdapter album;
 
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         overrideSwipeFromAnywhere();
         super.onCreate(savedInstanceState);
         getTheme().applyStyle(new ColorPreferences(this).getDarkThemeSubreddit(ColorPreferences.FONT_STYLE), true);
@@ -142,11 +148,11 @@ public class Album extends BaseSaveActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         if (getIntent().hasExtra(SUBREDDIT)) {
-            this.subreddit = getIntent().getExtras().getString(SUBREDDIT);
+            this.subreddit = MiscUtil.orEmpty(getIntent().getStringExtra(SUBREDDIT));
         }
 
         if (getIntent().hasExtra(EXTRA_SUBMISSION_TITLE)) {
-            this.submissionTitle = getIntent().getExtras().getString(EXTRA_SUBMISSION_TITLE);
+            this.submissionTitle = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_SUBMISSION_TITLE));
         }
 
         final ViewPager pager = (ViewPager) findViewById(R.id.images);
@@ -167,12 +173,12 @@ public class Album extends BaseSaveActivity {
                                 finish();
                             }
 
+                            final AlbumPagerAdapter pagerAdapter =
+                                    (AlbumPagerAdapter) pager.getAdapter();
                             if (position == 0
-                                    && ((AlbumPagerAdapter) pager.getAdapter()).blankPage != null) {
-                                if (((AlbumPagerAdapter) pager.getAdapter()).blankPage != null) {
-                                    ((AlbumPagerAdapter) pager.getAdapter())
-                                            .blankPage.doOffset(positionOffset);
-                                }
+                                    && pagerAdapter != null
+                                    && pagerAdapter.blankPage != null) {
+                                pagerAdapter.blankPage.doOffset(positionOffset);
                             }
                         }
                     });
@@ -182,7 +188,9 @@ public class Album extends BaseSaveActivity {
     }
 
     public static class AlbumPagerAdapter extends FragmentStatePagerAdapter {
+        @SuppressWarnings("NullAway.Init")
         public BlankFragment blankPage;
+        @SuppressWarnings("NullAway.Init")
         public AlbumFrag album;
 
         public AlbumPagerAdapter(FragmentManager fm) {
@@ -222,22 +230,26 @@ public class Album extends BaseSaveActivity {
 
         @Override
         public View onCreateView(
-                LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
             rootView = inflater.inflate(R.layout.fragment_verticalalbum, container, false);
 
             final PreCachingLayoutManager mLayoutManager = new PreCachingLayoutManager(getActivity());
             recyclerView = rootView.findViewById(R.id.images);
             recyclerView.setLayoutManager(mLayoutManager);
-            ((Album) getActivity()).url = getActivity().getIntent().getExtras().getString(EXTRA_URL, "");
+            ((Album) getActivity()).url =
+                    MiscUtil.orEmpty(getActivity().getIntent().getStringExtra(EXTRA_URL));
 
             new LoadIntoRecycler(((Album) getActivity()).url, getActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             ((Album) getActivity()).mToolbar = rootView.findViewById(R.id.toolbar);
-            ((Album) getActivity()).mToolbar.setTitle(R.string.type_album);
-            ToolbarColorizeHelper.colorizeToolbar(((Album) getActivity()).mToolbar, Color.WHITE, (getActivity()));
-            ((Album) getActivity()).setSupportActionBar(((Album) getActivity()).mToolbar);
-            ((Album) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            ((Album) getActivity()).requireToolbar().setTitle(R.string.type_album);
+            ToolbarColorizeHelper.colorizeToolbar(((Album) getActivity()).requireToolbar(), Color.WHITE, (getActivity()));
+            ((Album) getActivity()).setSupportActionBar(((Album) getActivity()).requireToolbar());
+            java.util.Objects.requireNonNull(((Album) getActivity()).getSupportActionBar())
+                    .setDisplayHomeAsUpEnabled(true);
 
-            ((Album) getActivity()).mToolbar.setPopupTheme(new ColorPreferences(getActivity()).getDarkThemeSubreddit(ColorPreferences.FONT_STYLE));
+            ((Album) getActivity()).requireToolbar().setPopupTheme(new ColorPreferences(getActivity()).getDarkThemeSubreddit(ColorPreferences.FONT_STYLE));
             return rootView;
         }
 
@@ -282,7 +294,7 @@ public class Album extends BaseSaveActivity {
             }
 
             @Override
-            public boolean doWithData(final List<Image> jsonElements) {
+            public boolean doWithData(final @Nullable List<Image> jsonElements) {
                 // Nothing usable came back, so there is no album to build; super has already told
                 // onError(), which offers the link in a web view instead.
                 if (!super.doWithData(jsonElements)) {

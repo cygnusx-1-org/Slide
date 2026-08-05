@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.concurrent.Executor;
@@ -48,8 +49,8 @@ abstract class VerticalMediaAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     protected static final int VIEW_TYPE_SPACER = 6;
 
     protected final Activity main;
-    protected final String subreddit;
-    protected final String submissionTitle;
+    @Nullable protected final String subreddit;
+    @Nullable protected final String submissionTitle;
 
     /**
      * Whether the list leads with a spacer row that keeps the first item clear of an overlaying
@@ -63,12 +64,14 @@ abstract class VerticalMediaAdapter extends RecyclerView.Adapter<RecyclerView.Vi
      */
     private final boolean hasToolbarSpacer;
 
-    private RecyclerView recyclerView;
-    private View.OnLayoutChangeListener widthChangeListener;
+    @Nullable private RecyclerView recyclerView;
+    @Nullable private View.OnLayoutChangeListener widthChangeListener;
     private int lastRowWidth;
 
     protected VerticalMediaAdapter(
-            final Activity main, final String subreddit, final String submissionTitle) {
+            final Activity main,
+            final @Nullable String subreddit,
+            final @Nullable String submissionTitle) {
         this.main = main;
         this.subreddit = subreddit;
         this.submissionTitle = submissionTitle;
@@ -97,7 +100,7 @@ abstract class VerticalMediaAdapter extends RecyclerView.Adapter<RecyclerView.Vi
      * Url for the entry at {@code index}, or null when it has none. A null makes the row inert: no
      * load is started, the play button is hidden and no tap opens anything.
      */
-    protected abstract String mediaUrlAt(int index);
+    protected abstract @Nullable String mediaUrlAt(int index);
 
     /** Intrinsic width of the entry at {@code index}, or 0 when unknown. */
     protected abstract int mediaWidthAt(int index);
@@ -263,17 +266,19 @@ abstract class VerticalMediaAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         if (holder.playButton != null) {
             holder.playButton.setVisibility(playable ? View.VISIBLE : View.GONE);
             holder.playButton.setAlpha(0.8f);
-            holder.playButton.setOnClickListener(playable ? v -> openMedia(url, index) : null);
+            holder.playButton.setOnClickListener(
+                    url == null ? null : v -> openMedia(url, index));
         }
         // setClickable after setOnClickListener, not before: that method turns clickable back on
         // when it is handed a null listener, so setting it first would leave an unplayable row
         // swallowing taps and announcing itself as actionable.
-        holder.exoVideoView.setOnClickListener(playable ? v -> openMedia(url, index) : null);
+        holder.exoVideoView.setOnClickListener(
+                url == null ? null : v -> openMedia(url, index));
         holder.exoVideoView.setClickable(playable);
 
         // Load only what this row is not already showing; see MediaRowLoadState for why the player's
         // own state cannot answer that.
-        final boolean loading = playable && holder.loadState.shouldLoad(url);
+        final boolean loading = url != null && holder.loadState.shouldLoad(url);
 
         // Only a row with nothing coming hides the progress bar. @id/gifprogress is visible in the
         // layout and nothing but reaching STATE_READY hides it, so a row inheriting one from the item
@@ -285,7 +290,7 @@ abstract class VerticalMediaAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             holder.loader.setVisibility(View.GONE);
         }
 
-        if (loading) {
+        if (loading && url != null) {
             startLoad(holder, url);
         }
     }
@@ -294,7 +299,11 @@ abstract class VerticalMediaAdapter extends RecyclerView.Adapter<RecyclerView.Vi
      * Opens the full-screen viewer, or the browser when in-app media is switched off. The index is
      * what MediaView pages and names saved files by; pass -1 where the caller has none to give.
      */
-    protected final void openMedia(final String url, final int index) {
+    protected final void openMedia(final @Nullable String url, final int index) {
+        if (url == null) {
+            return;
+        }
+
         if (!SettingValues.image) {
             LinkUtil.openExternally(url);
             return;
@@ -343,7 +352,7 @@ abstract class VerticalMediaAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                     }
 
                     @Override
-                    protected void onPostExecute(final Uri uri) {
+                    protected void onPostExecute(final @Nullable Uri uri) {
                         super.onPostExecute(uri);
                         // Done either way; the row no longer has anything to cancel.
                         if (holder.load == this) {
@@ -467,7 +476,7 @@ abstract class VerticalMediaAdapter extends RecyclerView.Adapter<RecyclerView.Vi
          * The load in flight for this row, so it can be dropped when the row moves on. Null once the
          * load has finished or been cancelled — there is nothing left to drop in either case.
          */
-        GifUtils.AsyncLoadGif load;
+        @Nullable GifUtils.AsyncLoadGif load;
 
         /**
          * Abandons the load in flight, if any. Cancelling before the task reaches onPostExecute is

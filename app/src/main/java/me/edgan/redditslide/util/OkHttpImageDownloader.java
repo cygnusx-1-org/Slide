@@ -9,6 +9,7 @@ import java.io.InputStream;
 import me.edgan.redditslide.Reddit;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Implementation of ImageDownloader which uses {@link com.squareup.okhttp.OkHttpClient} for image
@@ -17,6 +18,7 @@ import okhttp3.ResponseBody;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @author Leo Link (mr[dot]leolink[at]gmail[dot]com)
  */
+@NullMarked
 public class OkHttpImageDownloader extends BaseImageDownloader {
 
     public OkHttpImageDownloader(Context context) {

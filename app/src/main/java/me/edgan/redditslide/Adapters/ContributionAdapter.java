@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.devspark.robototextview.RobotoTypefaces;
@@ -56,10 +57,10 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public GeneralPosts dataSet;
 
     // Search/filter state
-    private ArrayList<Contribution> originalData = null;
-    private ArrayList<Contribution> filteredData = null;
-    private String currentQuery = null;
-    private String currentWhere = null;
+    @Nullable private ArrayList<Contribution> originalData = null;
+    @Nullable private ArrayList<Contribution> filteredData = null;
+    @Nullable private String currentQuery = null;
+    @Nullable private String currentWhere = null;
 
     public ContributionAdapter(Activity mContext, GeneralPosts dataSet, RecyclerView listView) {
         this.mContext = mContext;
@@ -448,7 +449,7 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             JsonNode dataNode,
             String subredditName,
             ProfileCommentViewHolder holder,
-            String searchQuery) {
+            @Nullable String searchQuery) {
         // Render the body without renderInto's own search highlight: that one uses the
         // subreddit color and is reserved for the in-thread comment search. Apply the
         // same highlight the post title uses instead, so title and body colors match.
@@ -463,7 +464,7 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 
-    private void setViews(String rawHTML, String subredditName, ProfileCommentViewHolder holder, String searchQuery) {
+    private void setViews(String rawHTML, String subredditName, ProfileCommentViewHolder holder, @Nullable String searchQuery) {
         if (rawHTML.isEmpty()) {
             return;
         }
@@ -614,7 +615,7 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
      *
      * @return The current query string, or null if no filter is active
      */
-    public String getCurrentQuery() {
+    public @Nullable String getCurrentQuery() {
         return currentQuery;
     }
 

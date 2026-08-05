@@ -15,6 +15,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -24,11 +25,13 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Displays a single type of post filter (domain, selftext, title, profile, subreddit or flair) as
  * its own searchable list, enforcing a maximum number of entries.
  */
+@NullMarked
 public class SettingsFilterList extends BaseActivityAnim {
 
     /** Intent extra used to choose which {@link FilterType} this screen edits. */
@@ -116,7 +119,7 @@ public class SettingsFilterList extends BaseActivityAnim {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_filter_list);

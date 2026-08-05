@@ -14,12 +14,14 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * A class that helps with HTTP requests and response parsing.
  *
  * <p>Created by Fernando Barillas on 7/13/16.
  */
+@NullMarked
 public class HttpUtil {
 
 
@@ -27,9 +29,9 @@ public class HttpUtil {
     public static final class ImgurMedia {
         public final String type;
         private final String url;
-        private final String mp4;
+        private final @Nullable String mp4;
 
-        private ImgurMedia(String type, String url, String mp4) {
+        private ImgurMedia(String type, String url, @Nullable String mp4) {
             this.type = type;
             this.url = url;
             this.mp4 = mp4;
@@ -96,7 +98,7 @@ public class HttpUtil {
      * @return A JsonObject representation of the API response, null when there was an error or
      *     Exception thrown by the HTTP call
      */
-    public static JsonObject getImgurJsonObject(
+    public static @Nullable JsonObject getImgurJsonObject(
             final OkHttpClient client,
             final Gson gson,
             final String apiUrl,
@@ -118,7 +120,7 @@ public class HttpUtil {
      * @return A JsonObject representation of the API response, null when there was an error or
      *     Exception thrown by the HTTP call
      */
-    public static JsonObject getJsonObject(
+    public static @Nullable JsonObject getJsonObject(
             final OkHttpClient client,
             final Gson gson,
             final String apiUrl,
@@ -157,7 +159,7 @@ public class HttpUtil {
      * @return A JsonObject representation of the API response, null when there was an error or
      *     Exception thrown by the HTTP call
      */
-    public static JsonArray getJsonArray(
+    public static @Nullable JsonArray getJsonArray(
             final OkHttpClient client, final Gson gson, final Request request) {
         if (client == null || gson == null || request == null) return null;
 
@@ -183,7 +185,7 @@ public class HttpUtil {
      * @return A JsonObject representation of the API response, null when there was an error or
      *     Exception thrown by the HTTP call
      */
-    public static JsonObject getJsonObject(
+    public static @Nullable JsonObject getJsonObject(
             final OkHttpClient client, final Gson gson, final String apiUrl) {
         return getJsonObject(client, gson, apiUrl, null);
     }

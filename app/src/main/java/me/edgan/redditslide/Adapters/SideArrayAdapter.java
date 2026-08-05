@@ -15,6 +15,7 @@ import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -125,23 +126,22 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
                                 ((ImageView)
                                         ((MainActivity) getContext())
                                                 .findViewById(R.id.close_search_toolbar)));
-                if (SettingValues.single) {
-                    ((MainActivity) getContext())
-                            .getSupportActionBar()
-                            .setTitle(((MainActivity) getContext()).selectedSub);
-                } else {
-                    ((MainActivity) getContext())
-                            .getSupportActionBar()
-                            .setTitle(((MainActivity) getContext()).tabViewModeTitle);
+                final androidx.appcompat.app.ActionBar actionBar =
+                        ((MainActivity) getContext()).getSupportActionBar();
+                if (actionBar != null) {
+                    actionBar.setTitle(
+                            SettingValues.single
+                                    ? ((MainActivity) getContext()).selectedSub
+                                    : ((MainActivity) getContext()).tabViewModeTitle);
                 }
             }
         } catch (NullPointerException npe) {
-            Log.e(getClass().getName(), npe.getMessage());
+            Log.e(getClass().getName(), String.valueOf(npe.getMessage()));
         }
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(int position, @Nullable View convertView, ViewGroup parent) {
         if (position < fitems.size()) {
             convertView =
                     LayoutInflater.from(getContext())
@@ -149,9 +149,9 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
 
             final String sub;
             final String base = fitems.get(position);
-            if (multiToMatch.containsKey(fitems.get(position))
-                    && !fitems.get(position).contains("/m/")) {
-                sub = multiToMatch.get(fitems.get(position));
+            final String matched = multiToMatch.get(fitems.get(position));
+            if (matched != null && !fitems.get(position).contains("/m/")) {
+                sub = matched;
             } else {
                 sub = fitems.get(position);
             }

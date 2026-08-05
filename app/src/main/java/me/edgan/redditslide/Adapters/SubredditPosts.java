@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,13 +45,16 @@ import net.dean.jraw.paginators.SubredditPaginator;
 public class SubredditPosts implements PostLoader {
     public List<Submission> posts;
     public String subreddit;
+    @SuppressWarnings("NullAway.Init")
     public String subredditRandom;
     public boolean nomore = false;
     public boolean offline;
     public boolean forced;
     public boolean loading;
     public boolean error;
+    @SuppressWarnings("NullAway.Init")
     private Paginator paginator;
+    @SuppressWarnings("NullAway.Init")
     public OfflineSubreddit cached;
     Context c;
     boolean force18;
@@ -80,6 +84,7 @@ public class SubredditPosts implements PostLoader {
         loadMore(context, display, reset);
     }
 
+    @SuppressWarnings("NullAway.Init")
     public ArrayList<String> all;
 
     @Override
@@ -95,6 +100,7 @@ public class SubredditPosts implements PostLoader {
     boolean authedOnce = false;
     boolean usedOffline;
     public long currentid;
+    @SuppressWarnings("NullAway.Init")
     public SubmissionDisplay displayer;
 
     /** Asynchronous task for loading data */
@@ -221,7 +227,7 @@ public class SubredditPosts implements PostLoader {
         }
 
         @Override
-        protected List<Submission> doInBackground(String... subredditPaginators) {
+        protected @Nullable List<Submission> doInBackground(String... subredditPaginators) {
             if (BuildConfig.DEBUG) LogUtil.v("Loading data");
             if ((!NetworkUtil.isConnected(context) && !Authentication.didOnline)
                     || MainActivity.isRestart) {
@@ -361,6 +367,7 @@ public class SubredditPosts implements PostLoader {
         }
 
         int retryCount = 0;
+        @SuppressWarnings("NullAway.Init")
         Exception error;
     }
 
@@ -385,10 +392,13 @@ public class SubredditPosts implements PostLoader {
             base[i] = s;
             i++;
         }
-        ((MainActivity) c).getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        ((MainActivity) c)
-                .getSupportActionBar()
-                .setListNavigationCallbacks(
+        final ActionBar actionBar = ((MainActivity) c).getSupportActionBar();
+        if (actionBar == null) {
+            return;
+        }
+
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        actionBar.setListNavigationCallbacks(
                         new OfflineSubAdapter(c, android.R.layout.simple_list_item_1, titles),
                         new ActionBar.OnNavigationListener() {
 
@@ -399,6 +409,7 @@ public class SubredditPosts implements PostLoader {
                                 currentid = OfflineSubreddit.currentid;
 
                                 new AsyncTask<Void, Void, Void>() {
+                                    @SuppressWarnings("NullAway.Init") // set in doInBackground
                                     OfflineSubreddit cached;
 
                                     @Override

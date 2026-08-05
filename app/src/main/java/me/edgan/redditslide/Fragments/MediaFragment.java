@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import androidx.annotation.Nullable;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -48,14 +49,17 @@ import org.apache.commons.text.StringEscapeUtils;
 /** Created by ccrama on 6/2/2015. */
 public class MediaFragment extends BaseMediaFragment {
 
-    public String firstUrl;
-    public String sub;
+    @Nullable public String firstUrl;
+    public String sub = "";
     public int i;
+
+    @SuppressWarnings("NullAway.Init") // bound in onCreateView
     private ExoVideoView videoView;
+
     private long stopPosition;
     public boolean isGif;
-    private GifUtils.AsyncLoadGif gif;
-    private Submission s;
+    @Nullable private GifUtils.AsyncLoadGif gif;
+    @Nullable private Submission s;
 
     @Override
     public void onDestroy() {
@@ -103,13 +107,22 @@ public class MediaFragment extends BaseMediaFragment {
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         rootView = (ViewGroup) inflater.inflate(R.layout.submission_mediacard, container, false);
         if (savedInstanceState != null && savedInstanceState.containsKey("position")) {
             stopPosition = savedInstanceState.getLong("position");
         }
 
-        PopulateShadowboxInfo.doActionbar(s, rootView, getActivity(), true);
+        // onCreate finishes the activity when the (static) backing list no longer holds this
+        // page — which happens on a process-death restore — but the view is still created.
+        final Submission submission = s;
+        if (submission == null) {
+            return rootView;
+        }
+
+        PopulateShadowboxInfo.doActionbar(submission, rootView, getActivity(), true);
         View thumbnailView = (rootView.findViewById(R.id.thumbimage2));
 
         thumbnailView.setVisibility(View.GONE);
@@ -119,42 +132,42 @@ public class MediaFragment extends BaseMediaFragment {
         SubsamplingScaleImageView img = rootView.findViewById(R.id.submission_image);
 
         final SlidingUpPanelLayout slideLayout = rootView.findViewById(R.id.sliding_layout);
-        ContentType.Type type = ContentType.getContentType(s);
+        ContentType.Type type = ContentType.getContentType(submission);
 
         if (type == ContentType.Type.VREDDIT_REDIRECT || type == ContentType.Type.VREDDIT_DIRECT) {
-            if ((!s.getDataNode().has("media") || !s.getDataNode().get("media").has("reddit_video"))
-                    && !s.getDataNode().has("crosspost_parent_list")) {
+            if ((!submission.getDataNode().has("media") || !submission.getDataNode().get("media").has("reddit_video"))
+                    && !submission.getDataNode().has("crosspost_parent_list")) {
                 type = ContentType.Type.LINK;
             }
         }
 
         img.setAlpha(1f);
 
-        if (Strings.isNullOrEmpty(s.getThumbnail())
+        if (Strings.isNullOrEmpty(submission.getThumbnail())
                 || Strings.isNullOrEmpty(firstUrl)
-                || (s.isNsfw() && SettingValues.getIsNSFWEnabled())) {
+                || (submission.isNsfw() && SettingValues.getIsNSFWEnabled())) {
             thumbnailView.setVisibility(View.VISIBLE);
             ((ImageView) thumbnailView).setImageResource(R.drawable.web);
-            addClickFunctions(thumbnailView, slideLayout, rootView, type, getActivity(), s);
-            addClickFunctions(typeImage, slideLayout, rootView, type, getActivity(), s);
+            addClickFunctions(thumbnailView, slideLayout, rootView, type, getActivity(), submission);
+            addClickFunctions(typeImage, slideLayout, rootView, type, getActivity(), submission);
             (rootView.findViewById(R.id.progress)).setVisibility(View.GONE);
 
-            if ((s.isNsfw() && SettingValues.getIsNSFWEnabled())) {
+            if ((submission.isNsfw() && SettingValues.getIsNSFWEnabled())) {
                 ((ImageView) thumbnailView).setImageResource(R.drawable.nsfw);
             } else {
-                if (Strings.isNullOrEmpty(firstUrl) && !Strings.isNullOrEmpty(s.getThumbnail())) {
+                if (Strings.isNullOrEmpty(firstUrl) && !Strings.isNullOrEmpty(submission.getThumbnail())) {
                     ((Reddit) getContext().getApplicationContext())
                             .getImageLoader()
-                            .displayImage(s.getThumbnail(), ((ImageView) thumbnailView));
+                            .displayImage(submission.getThumbnail(), ((ImageView) thumbnailView));
                 }
             }
 
         } else {
             thumbnailView.setVisibility(View.GONE);
-            addClickFunctions(img, slideLayout, rootView, type, getActivity(), s);
+            addClickFunctions(img, slideLayout, rootView, type, getActivity(), submission);
         }
 
-        if (!s.isNsfw() || !SettingValues.getIsNSFWEnabled()) {
+        if (!submission.isNsfw() || !SettingValues.getIsNSFWEnabled()) {
             if (type == ContentType.Type.EXTERNAL
                     || type == ContentType.Type.LINK
                     || type == ContentType.Type.REDDIT
@@ -257,7 +270,7 @@ public class MediaFragment extends BaseMediaFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = this.getArguments();
         firstUrl = bundle.getString("firstUrl");
@@ -275,7 +288,7 @@ public class MediaFragment extends BaseMediaFragment {
         imgurKey = SecretConstants.getImgurApiKey(getContext());
     }
 
-    public void doLoad(final String contentUrl, ContentType.Type type) {
+    public void doLoad(final @Nullable String contentUrl, ContentType.Type type) {
         switch (type) {
             case DEVIANTART:
                 doLoadDeviantArt(contentUrl);
@@ -295,7 +308,9 @@ public class MediaFragment extends BaseMediaFragment {
             case VREDDIT_REDIRECT:
             case VREDDIT_DIRECT:
             case GIF:
-                doLoadGif(s);
+                if (s != null) {
+                    doLoadGif(s);
+                }
                 break;
         }
     }
@@ -589,8 +604,8 @@ public class MediaFragment extends BaseMediaFragment {
     }
 
     @Override
-    protected String prepareUrl(String url) {
-        return StringEscapeUtils.unescapeHtml4(url);
+    protected @Nullable String prepareUrl(@Nullable String url) {
+        return url == null ? null : StringEscapeUtils.unescapeHtml4(url);
     }
 
 }

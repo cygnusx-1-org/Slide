@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 import me.edgan.redditslide.Activities.BaseActivityAnim;
@@ -16,15 +17,17 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.ui.settings.SettingsFilterList.FilterType;
 import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by l3d00m on 11/13/2015. */
+@NullMarked
 public class SettingsFilter extends BaseActivityAnim {
 
     // Selectable "older than" thresholds, in days
     private static final int[] FILTER_OLD_POSTS_DAY_OPTIONS = {1, 2, 3, 4, 5, 6, 7, 14, 21, 28, 30};
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_filters);

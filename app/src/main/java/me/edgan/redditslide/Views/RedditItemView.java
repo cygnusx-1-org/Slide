@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.core.content.ContextCompat;
 import com.devspark.robototextview.RobotoTypefaces;
@@ -46,18 +47,20 @@ import net.dean.jraw.models.Comment;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Subreddit;
 import net.dean.jraw.models.VoteDirection;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 3/5/2015. */
+@NullMarked
 public class RedditItemView extends RelativeLayout {
 
-    OpenRedditLink.RedditLinkType contentType;
+    OpenRedditLink.RedditLinkType contentType = OpenRedditLink.RedditLinkType.OTHER;
 
-    public RedditItemView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public RedditItemView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
 
-    public RedditItemView(Context context, AttributeSet attrs) {
+    public RedditItemView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
@@ -72,11 +75,17 @@ public class RedditItemView extends RelativeLayout {
         this.progress = progress;
         Uri uri = OpenRedditLink.formatRedditUrl(url);
 
+        // Not a reddit link: the peek falls back to the plain link view. Returning is not
+        // optional — everything below dereferences the uri.
         if (uri == null) {
             v.doLoadLink(url);
-        } else if (url.startsWith("np")) {
+            return;
+        }
+
+        if (url.startsWith("np") && uri.getHost() != null) {
             uri = uri.buildUpon().authority(uri.getHost().substring(2)).build();
         }
+
         List<String> parts = uri.getPathSegments();
 
         contentType = OpenRedditLink.getRedditLinkType(uri);
@@ -148,7 +157,7 @@ public class RedditItemView extends RelativeLayout {
         }
     }
 
-    ProgressBar progress;
+    @Nullable ProgressBar progress;
 
     public class AsyncLoadProfile extends AsyncTask<Void, Void, Account> {
 
@@ -159,8 +168,11 @@ public class RedditItemView extends RelativeLayout {
         }
 
         @Override
-        protected Account doInBackground(Void... params) {
+        protected @Nullable Account doInBackground(Void... params) {
             try {
+                if (Authentication.reddit == null) {
+                    return null;
+                }
                 return Authentication.reddit.getUser(id);
             } catch (Exception e) {
                 return null;
@@ -168,7 +180,7 @@ public class RedditItemView extends RelativeLayout {
         }
 
         @Override
-        protected void onPostExecute(Account account) {
+        protected void onPostExecute(@Nullable Account account) {
             if (account != null
                     && (account.getDataNode().has("is_suspended")
                             && !account.getDataNode().get("is_suspended").asBoolean())) {
@@ -218,8 +230,11 @@ public class RedditItemView extends RelativeLayout {
         }
 
         @Override
-        protected Subreddit doInBackground(Void... params) {
+        protected @Nullable Subreddit doInBackground(Void... params) {
             try {
+                if (Authentication.reddit == null) {
+                    return null;
+                }
                 return Authentication.reddit.getSubreddit(id);
             } catch (Exception e) {
                 return null;
@@ -227,7 +242,7 @@ public class RedditItemView extends RelativeLayout {
         }
 
         @Override
-        protected void onPostExecute(Subreddit subreddit) {
+        protected void onPostExecute(@Nullable Subreddit subreddit) {
             if (subreddit != null) {
                 View content =
                         LayoutInflater.from(getContext())
@@ -310,8 +325,11 @@ public class RedditItemView extends RelativeLayout {
         }
 
         @Override
-        protected Comment doInBackground(Void... params) {
+        protected @Nullable Comment doInBackground(Void... params) {
             try {
+                if (Authentication.reddit == null) {
+                    return null;
+                }
                 return (Comment) Authentication.reddit.get("t1_" + id).get(0);
             } catch (Exception e) {
                 return null;
@@ -319,7 +337,7 @@ public class RedditItemView extends RelativeLayout {
         }
 
         @Override
-        protected void onPostExecute(Comment comment) {
+        protected void onPostExecute(@Nullable Comment comment) {
             if (comment != null) {
                 LogUtil.v("Adding view");
                 View content =
@@ -345,8 +363,11 @@ public class RedditItemView extends RelativeLayout {
         }
 
         @Override
-        protected Submission doInBackground(Void... params) {
+        protected @Nullable Submission doInBackground(Void... params) {
             try {
+                if (Authentication.reddit == null) {
+                    return null;
+                }
                 return Authentication.reddit.getSubmission(id);
             } catch (Exception e) {
                 return null;
@@ -354,7 +375,7 @@ public class RedditItemView extends RelativeLayout {
         }
 
         @Override
-        protected void onPostExecute(Submission submission) {
+        protected void onPostExecute(@Nullable Submission submission) {
             if (submission != null) {
                 View content = CreateCardView.CreateView(RedditItemView.this);
                 RelativeLayout.LayoutParams params = (LayoutParams) content.getLayoutParams();

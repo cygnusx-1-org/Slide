@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import java.util.List;
 import me.edgan.redditslide.Activities.CommentsScreen;
@@ -26,7 +27,9 @@ public class SelftextFull extends Fragment {
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         ViewGroup rootView =
                 (ViewGroup) inflater.inflate(R.layout.submission_textcard, container, false);
 
@@ -63,10 +66,10 @@ public class SelftextFull extends Fragment {
         return rootView;
     }
 
-    public String sub;
+    @Nullable public String sub;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = this.getArguments();
         i = bundle.getInt("page", 0);

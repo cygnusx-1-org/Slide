@@ -57,6 +57,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import me.edgan.redditslide.Activities.MediaView;
 import me.edgan.redditslide.Activities.Website;
@@ -70,8 +71,10 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.jspecify.annotations.NullMarked;
 
 /** GIF handling utilities */
+@NullMarked
 @OptIn(markerClass = UnstableApi.class)
 public class GifUtils {
     private static final String TAG = "GifUtils";
@@ -123,7 +126,10 @@ public class GifUtils {
     }
 
     public static void downloadGif(
-            String url, GifDownloadCallback callback, Context context, String submissionTitle) {
+            String url,
+            GifDownloadCallback callback,
+            Context context,
+            @Nullable String submissionTitle) {
         new DownloadGifTask(url, callback, context, submissionTitle)
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -137,8 +143,8 @@ public class GifUtils {
         private String url;
         private GifDownloadCallback callback;
         private Context context;
-        private Exception exception;
-        private final String submissionTitle;
+        @Nullable private Exception exception;
+        @Nullable private final String submissionTitle;
 
         DownloadGifTask(String url, GifDownloadCallback callback, Context context) {
             this.url = url;
@@ -148,7 +154,10 @@ public class GifUtils {
         }
 
         DownloadGifTask(
-                String url, GifDownloadCallback callback, Context context, String submissionTitle) {
+                String url,
+                GifDownloadCallback callback,
+                Context context,
+                @Nullable String submissionTitle) {
             this.url = url;
             this.callback = callback;
             this.context = context.getApplicationContext();
@@ -156,7 +165,7 @@ public class GifUtils {
         }
 
         @Override
-        protected File doInBackground(Void... voids) {
+        protected @Nullable File doInBackground(Void... voids) {
             // Reuse the shared client: a new OkHttpClient brings its own dispatcher, thread pool
             // and connection pool, so every GIF download started from scratch.
             OkHttpClient client = Reddit.client;
@@ -227,7 +236,7 @@ public class GifUtils {
         }
 
         @Override
-        protected void onPostExecute(File gifFile) {
+        protected void onPostExecute(@Nullable File gifFile) {
             if (gifFile != null) {
                 callback.onGifDownloaded(gifFile);
             } else {
@@ -291,14 +300,13 @@ public class GifUtils {
         } else {
             new AsyncTask<Void, Integer, DocumentFile>() {
                 NotificationManager notifMgr =
-                        ContextCompat.getSystemService(activity, NotificationManager.class);
-                Exception saveError;
+                        Objects.requireNonNull(
+                                ContextCompat.getSystemService(
+                                        activity, NotificationManager.class));
+                @Nullable Exception saveError;
 
                 @Override
-                protected DocumentFile doInBackground(Void... voids) {
-                    NotificationManager notifMgr =
-                            ContextCompat.getSystemService(activity, NotificationManager.class);
-                    Exception saveError;
+                protected @Nullable DocumentFile doInBackground(Void... voids) {
                     InputStream in = null;
                     OutputStream out = null;
 
@@ -539,7 +547,7 @@ public class GifUtils {
                 }
 
                 @Override
-                protected void onPostExecute(DocumentFile result) {
+                protected void onPostExecute(@Nullable DocumentFile result) {
                     if (save) {
                         notifMgr.cancel(1);
                         if (result != null) {
@@ -569,14 +577,14 @@ public class GifUtils {
 
         private Activity c;
         private ExoVideoView video;
-        private ProgressBar progressBar;
-        private View placeholder;
+        @Nullable private ProgressBar progressBar;
+        @Nullable private View placeholder;
         private boolean closeIfNull;
         private boolean autostart;
-        public String subreddit;
-        public String submissionTitle;
+        @Nullable public String subreddit;
+        @Nullable public String submissionTitle;
 
-        private TextView size;
+        @Nullable private TextView size;
         private boolean wasPlayingBeforePause = false;
 
         public AsyncLoadGif(
@@ -586,7 +594,7 @@ public class GifUtils {
                 @Nullable View placeholder,
                 boolean closeIfNull,
                 boolean autostart,
-                String subreddit) {
+                @Nullable String subreddit) {
             this.c = c;
             this.subreddit = subreddit;
             this.video = video;
@@ -603,9 +611,9 @@ public class GifUtils {
                 @Nullable View placeholder,
                 boolean closeIfNull,
                 boolean autostart,
-                TextView size,
-                String subreddit,
-                String submissionTitle) {
+                @Nullable TextView size,
+                @Nullable String subreddit,
+                @Nullable String submissionTitle) {
             this.c = c;
             this.video = video;
             this.subreddit = subreddit;
@@ -845,7 +853,7 @@ public class GifUtils {
          * @param name the name of the gfy
          * @return the result
          */
-        public static JsonObject getApiResponse(String host, String name) {
+        public static @Nullable JsonObject getApiResponse(String host, String name) {
             String domain = "api." + host + ".com";
             String gfycatUrl = "https://" + domain + "/v1/gfycats" + name;
 
@@ -863,7 +871,7 @@ public class GifUtils {
          *     most likely, and an unguarded dereference here escapes doInBackground as an
          *     AsyncTask-rethrown RuntimeException rather than a load failure.
          */
-        public static String getUrlFromApi(JsonObject result) {
+        public static @Nullable String getUrlFromApi(@Nullable JsonObject result) {
             // isJsonObject, not getAsJsonObject: Gson's getAsJsonObject(name) is an unchecked cast,
             // so a member present but JSON-null ("gfyItem": null) hands back JsonNull and the cast
             // throws ClassCastException rather than yielding the null this checks for.
@@ -939,7 +947,12 @@ public class GifUtils {
          * that had since been cancelled. The caller now reports once from onPostExecute, which does
          * not run for a cancelled task.
          */
-        public static Uri loadRedGifs(String name, String fullUrl, Activity c, ProgressBar progressBar, boolean closeIfNull) {
+        public static @Nullable Uri loadRedGifs(
+                String name,
+                String fullUrl,
+                @Nullable Activity c,
+                @Nullable ProgressBar progressBar,
+                boolean closeIfNull) {
             showProgressBar(c, progressBar, true);
 
             // Remove leading slash if present
@@ -948,7 +961,7 @@ public class GifUtils {
             try {
                 // Check if existing token is valid
                 AuthToken currentToken = TOKEN.get();
-                if (!currentToken.isValid()) {
+                if (currentToken == null || !currentToken.isValid()) {
                     currentToken = getNewToken(client);
                 }
 
@@ -1004,7 +1017,7 @@ public class GifUtils {
         }
 
         /** Whether {@code uri} is the marker {@link #HANDOFF_SCHEME} describes. */
-        public static boolean isHandoff(Uri uri) {
+        public static boolean isHandoff(@Nullable Uri uri) {
             return uri != null && HANDOFF_SCHEME.equals(uri.getScheme());
         }
 
@@ -1017,7 +1030,12 @@ public class GifUtils {
          *     the whole failure signal and there is no error callback beside it — or the marker
          *     {@link #HANDOFF_SCHEME} describes, which {@link #isHandoff} recognises.
          */
-        public static Uri loadGfycat(String name, String fullUrl, Activity c, ProgressBar progressBar, boolean closeIfNull) {
+        public static @Nullable Uri loadGfycat(
+                String name,
+                String fullUrl,
+                @Nullable Activity c,
+                @Nullable ProgressBar progressBar,
+                boolean closeIfNull) {
             showProgressBar(c, progressBar, true);
             String host = "gfycat";
             if (fullUrl.contains("redgifs")) {
@@ -1100,7 +1118,7 @@ public class GifUtils {
          * stand in for the network. Production behaviour is the static call and nothing else.
          */
         @VisibleForTesting
-        Uri resolveGfycat(final String name, final String url) {
+        @Nullable Uri resolveGfycat(final String name, final String url) {
             return loadGfycat(name, url, c, progressBar, closeIfNull);
         }
 
@@ -1125,7 +1143,7 @@ public class GifUtils {
         }
 
         @Override
-        protected Uri doInBackground(String... sub) {
+        protected @Nullable Uri doInBackground(String... sub) {
             final String url = formatUrl(sub[0]);
             VideoType videoType = getVideoType(url);
             LogUtil.v(url + ", VideoType: " + videoType);
@@ -1265,7 +1283,7 @@ public class GifUtils {
         }
 
         @Override
-        protected void onPostExecute(Uri uri) {
+        protected void onPostExecute(@Nullable Uri uri) {
             if (uri == null || video == null) {
                 cancel();
                 nothingIsComing();
@@ -1382,6 +1400,10 @@ public class GifUtils {
                                 }
                             }
 
+                            if (hqUri == null) {
+                                continue;
+                            }
+
                             Request request = new Request.Builder().url(hqUri).head().build();
                             Response response = null;
                             try {
@@ -1459,7 +1481,9 @@ public class GifUtils {
      * @param isIndeterminate True to show an indeterminate ProgressBar, false otherwise
      */
     private static void showProgressBar(
-            final Activity activity, final ProgressBar progressBar, final boolean isIndeterminate) {
+            final @Nullable Activity activity,
+            final @Nullable ProgressBar progressBar,
+            final boolean isIndeterminate) {
         if (activity == null) return;
         if (Looper.myLooper() == Looper.getMainLooper()) {
             // Current Thread is Main Thread.
@@ -1525,7 +1549,7 @@ public class GifUtils {
             for (int i = 0; i < videoExtractor.getTrackCount(); i++) {
                 MediaFormat format = videoExtractor.getTrackFormat(i);
                 String mime = format.getString(MediaFormat.KEY_MIME);
-                if (mime.startsWith("video/")) {
+                if (mime != null && mime.startsWith("video/")) {
                     videoExtractor.selectTrack(i);
                     videoTrackIndex = muxer.addTrack(format);
                     break;
@@ -1536,7 +1560,7 @@ public class GifUtils {
             for (int i = 0; i < audioExtractor.getTrackCount(); i++) {
                 MediaFormat format = audioExtractor.getTrackFormat(i);
                 String mime = format.getString(MediaFormat.KEY_MIME);
-                if (mime.startsWith("audio/")) {
+                if (mime != null && mime.startsWith("audio/")) {
                     audioExtractor.selectTrack(i);
                     audioTrackIndex = muxer.addTrack(format);
                     break;

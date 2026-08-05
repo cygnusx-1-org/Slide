@@ -19,6 +19,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -52,20 +53,26 @@ import net.dean.jraw.models.MultiSubreddit;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.TimePeriod;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 9/17/2015. */
+@NullMarked
 public class MultiredditOverview extends BaseActivityAnim {
 
     public static final String EXTRA_PROFILE = "profile";
     public static final String EXTRA_MULTI = "multi";
 
+    @SuppressWarnings("NullAway.Init")
     public static Activity multiActivity;
 
-    public static MultiReddit searchMulti;
+    @SuppressWarnings("NullAway.Init")
+    @Nullable public static MultiReddit searchMulti;
+    @SuppressWarnings("NullAway.Init")
     public MultiredditOverviewPagerAdapter adapter;
     private ViewPager pager;
-    private String profile;
+    private String profile = "";
     private TabLayout tabs;
+    @SuppressWarnings("NullAway.Init")
     private List<MultiReddit> usedArray;
     private String initialMulti;
 
@@ -108,8 +115,9 @@ public class MultiredditOverview extends BaseActivityAnim {
                 && currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
             position =
                     ((LinearLayoutManager)
-                                            ((MultiredditView) adapter.getCurrentFragment())
-                                                    .rv.getLayoutManager())
+                                            java.util.Objects.requireNonNull(
+                                                    ((MultiredditView) adapter.getCurrentFragment())
+                                                    .rv.getLayoutManager()))
                                     .findFirstVisibleItemPosition()
                             - 1;
         } else if (((MultiredditView) adapter.getCurrentFragment()).rv.getLayoutManager()
@@ -117,8 +125,9 @@ public class MultiredditOverview extends BaseActivityAnim {
             int[] firstVisibleItems = null;
             firstVisibleItems =
                     ((CatchStaggeredGridLayoutManager)
-                                    ((MultiredditView) adapter.getCurrentFragment())
-                                            .rv.getLayoutManager())
+                                    java.util.Objects.requireNonNull(
+                                            ((MultiredditView) adapter.getCurrentFragment())
+                                            .rv.getLayoutManager()))
                             .findFirstVisibleItemPositions(firstVisibleItems);
             if (firstVisibleItems != null && firstVisibleItems.length > 0) {
                 position = firstVisibleItems[0] - 1;
@@ -126,14 +135,16 @@ public class MultiredditOverview extends BaseActivityAnim {
         } else {
             position =
                     ((PreCachingLayoutManager)
-                                            ((MultiredditView) adapter.getCurrentFragment())
-                                                    .rv.getLayoutManager())
+                                            java.util.Objects.requireNonNull(
+                                                    ((MultiredditView) adapter.getCurrentFragment())
+                                                    .rv.getLayoutManager()))
                                     .findFirstVisibleItemPosition()
                             - 1;
         }
         return position;
     }
 
+    @SuppressWarnings("NullAway.Init")
     String term;
 
     @Override
@@ -208,7 +219,10 @@ public class MultiredditOverview extends BaseActivityAnim {
                                                             i.putExtra(Search.EXTRA_TERM, term);
                                                             i.putExtra(
                                                                     Search.EXTRA_MULTIREDDIT,
-                                                                    searchMulti.getDisplayName());
+                                                                    searchMulti == null
+                                                                            ? ""
+                                                                            : searchMulti
+                                                                                    .getDisplayName());
                                                             startActivity(i);
                                                         });
 
@@ -242,7 +256,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                 i2.putExtra(Gallery.EXTRA_PROFILE, profile);
                 i2.putExtra(
                         Gallery.EXTRA_MULTIREDDIT,
-                        currentFragment.posts.multiReddit.getDisplayName());
+                        currentFragment.posts.displayName());
                 startActivity(i2);
             }
             return true;
@@ -253,7 +267,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                 i.putExtra(Shadowbox.EXTRA_PROFILE, profile);
                 i.putExtra(
                         Shadowbox.EXTRA_MULTIREDDIT,
-                        currentFragment.posts.multiReddit.getDisplayName());
+                        currentFragment.posts.displayName());
                 startActivity(i);
             }
             return true;
@@ -301,7 +315,7 @@ public class MultiredditOverview extends BaseActivityAnim {
     }
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         overrideSwipeFromAnywhere();
         multiActivity = this;
         super.onCreate(savedInstance);
@@ -317,13 +331,13 @@ public class MultiredditOverview extends BaseActivityAnim {
         tabs.setTabMode(TabLayout.MODE_SCROLLABLE);
 
         pager = (ViewPager) findViewById(R.id.content_view);
-        mToolbar.setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
+        requireToolbar().setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
 
         profile = "";
         initialMulti = "";
         if (getIntent().getExtras() != null) {
-            profile = getIntent().getExtras().getString(EXTRA_PROFILE, "");
-            initialMulti = getIntent().getExtras().getString(EXTRA_MULTI, "");
+            profile = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_PROFILE));
+            initialMulti = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_MULTI));
         }
         if (profile.equalsIgnoreCase(Authentication.name)) {
             profile = "";
@@ -353,11 +367,10 @@ public class MultiredditOverview extends BaseActivityAnim {
                 new PopupMenu(MultiredditOverview.this, findViewById(R.id.anchor), Gravity.RIGHT);
         String id =
                 ((MultiredditView)
-                                (((MultiredditOverviewPagerAdapter) pager.getAdapter())
+                                (((MultiredditOverviewPagerAdapter) java.util.Objects.requireNonNull(pager.getAdapter()))
                                         .getCurrentFragment()))
                         .posts
-                        .multiReddit
-                        .getDisplayName()
+                        .displayName()
                         .toLowerCase(Locale.ENGLISH);
         final Spannable[] base = SortingUtil.getSortingSpannables("multi_" + id);
         for (Spannable s : base) {
@@ -389,8 +402,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                                                                                             .getAdapter())
                                                                             .getCurrentFragment()))
                                                             .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             Sorting.HOT);
                                     reloadSubs();
@@ -404,8 +416,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                                                                                             .getAdapter())
                                                                             .getCurrentFragment()))
                                                             .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             Sorting.NEW);
                                     reloadSubs();
@@ -419,8 +430,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                                                                                             .getAdapter())
                                                                             .getCurrentFragment()))
                                                             .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             Sorting.RISING);
                                     reloadSubs();
@@ -434,8 +444,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                                                                                             .getAdapter())
                                                                             .getCurrentFragment()))
                                                             .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             Sorting.TOP);
                                     openPopupTime();
@@ -449,8 +458,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                                                                                             .getAdapter())
                                                                             .getCurrentFragment()))
                                                             .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             Sorting.CONTROVERSIAL);
                                     openPopupTime();
@@ -468,11 +476,10 @@ public class MultiredditOverview extends BaseActivityAnim {
                 new PopupMenu(MultiredditOverview.this, findViewById(R.id.anchor), Gravity.RIGHT);
         String id =
                 ((MultiredditView)
-                                (((MultiredditOverviewPagerAdapter) pager.getAdapter())
+                                (((MultiredditOverviewPagerAdapter) java.util.Objects.requireNonNull(pager.getAdapter()))
                                         .getCurrentFragment()))
                         .posts
-                        .multiReddit
-                        .getDisplayName()
+                        .displayName()
                         .toLowerCase(Locale.ENGLISH);
         final Spannable[] base = SortingUtil.getSortingTimesSpannables("multi_" + id);
         for (Spannable s : base) {
@@ -500,8 +507,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                                                                                             .getAdapter())
                                                                             .getCurrentFragment()))
                                                             .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             TimePeriod.HOUR);
                                     reloadSubs();
@@ -515,8 +521,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                                                                                             .getAdapter())
                                                                             .getCurrentFragment()))
                                                             .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             TimePeriod.DAY);
                                     reloadSubs();
@@ -530,8 +535,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                                                                                             .getAdapter())
                                                                             .getCurrentFragment()))
                                                             .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             TimePeriod.WEEK);
                                     reloadSubs();
@@ -545,8 +549,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                                                                                             .getAdapter())
                                                                             .getCurrentFragment()))
                                                             .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             TimePeriod.MONTH);
                                     reloadSubs();
@@ -560,8 +563,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                                                                                             .getAdapter())
                                                                             .getCurrentFragment()))
                                                             .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             TimePeriod.YEAR);
                                     reloadSubs();
@@ -575,8 +577,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                                                                                             .getAdapter())
                                                                             .getCurrentFragment()))
                                                             .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             TimePeriod.ALL);
                                     reloadSubs();
@@ -641,10 +642,11 @@ public class MultiredditOverview extends BaseActivityAnim {
                                 int pastVisiblesItems = 0;
                                 int[] firstVisibleItems =
                                         ((CatchStaggeredGridLayoutManager)
-                                                        (((MultiredditView)
-                                                                        adapter
-                                                                                .getCurrentFragment())
-                                                                .rv.getLayoutManager()))
+                                                        java.util.Objects.requireNonNull(
+                                                                ((MultiredditView)
+                                                                                adapter
+                                                                                        .getCurrentFragment())
+                                                                        .rv.getLayoutManager()))
                                                 .findFirstVisibleItemPositions(null);
                                 if (firstVisibleItems != null && firstVisibleItems.length > 0) {
                                     for (int firstVisibleItem : firstVisibleItems) {
@@ -759,6 +761,7 @@ public class MultiredditOverview extends BaseActivityAnim {
             return f;
         }
 
+        @SuppressWarnings("NullAway.Init")
         private Fragment mCurrentFragment;
 
         Fragment getCurrentFragment() {
@@ -790,7 +793,7 @@ public class MultiredditOverview extends BaseActivityAnim {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         // Check if adapter exists and has a current fragment

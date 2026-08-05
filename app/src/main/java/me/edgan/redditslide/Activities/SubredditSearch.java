@@ -6,17 +6,18 @@ import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
 import me.edgan.redditslide.Fragments.SubredditListView;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 9/17/2015. */
+@NullMarked
 public class SubredditSearch extends BaseActivityAnim {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -56,17 +57,17 @@ public class SubredditSearch extends BaseActivityAnim {
         }
     }
 
-    String term;
+    @Nullable String term;
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         super.onCreate(savedInstance);
         Bundle extras = getIntent().getExtras();
         if (extras == null) {
             finish();
             return;
         }
-        term = extras.getString("term");
+        term = extras.getString("term", "");
         applyColorTheme("");
         setContentView(R.layout.activity_fragmentinner);
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());

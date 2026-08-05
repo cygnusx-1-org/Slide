@@ -6,18 +6,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-
 import me.edgan.redditslide.Activities.CommentsScreen;
 import me.edgan.redditslide.Activities.Shadowbox;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.util.LayoutUtils;
-
 import net.dean.jraw.models.Submission;
 
 /**
@@ -42,7 +39,7 @@ public abstract class BaseAlbumFull extends Fragment {
     protected abstract void bindActionbar();
 
     /** The album/gallery url to load. */
-    protected abstract String getAlbumUrl();
+    protected abstract @Nullable String getAlbumUrl();
 
     /** Opens the comments for the displayed content (tap while the panel is expanded). */
     protected abstract void openComments();
@@ -66,7 +63,9 @@ public abstract class BaseAlbumFull extends Fragment {
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.submission_albumcard, container, false);
         bindActionbar();
 
@@ -92,7 +91,7 @@ public abstract class BaseAlbumFull extends Fragment {
                              * which made both cancels below dead code and let a flick leave two
                              * animators driving the panel's alpha at once.
                              */
-                            private ValueAnimator va;
+                            @Nullable private ValueAnimator va;
 
                             @Override
                             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -192,7 +191,10 @@ public abstract class BaseAlbumFull extends Fragment {
                         });
 
         if (hasAlbumToShow()) {
-            loadAlbum(getAlbumUrl());
+            final String albumUrl = getAlbumUrl();
+            // RedditGalleryFull renders from its own image list and ignores this argument; every
+            // other page only gets here because getAlbumUrl() was non-null.
+            loadAlbum(albumUrl == null ? "" : albumUrl);
         }
 
         return rootView;
@@ -222,7 +224,7 @@ public abstract class BaseAlbumFull extends Fragment {
     }
 
     /** Shadowbox-hosted subclasses: resolve this page's submission, finishing if it is gone. */
-    protected Submission submissionForShadowboxPage() {
+    protected @Nullable Submission submissionForShadowboxPage() {
         Bundle bundle = this.getArguments();
         if (((Shadowbox) getActivity()).subredditPosts == null
                 || ((Shadowbox) getActivity()).subredditPosts.getPosts().size()

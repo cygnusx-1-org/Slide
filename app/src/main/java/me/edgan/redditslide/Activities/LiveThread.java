@@ -19,6 +19,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -58,10 +59,13 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class LiveThread extends BaseActivityAnim {
 
     public static final String EXTRA_LIVEURL = "liveurl";
+    @SuppressWarnings("NullAway.Init")
     public net.dean.jraw.models.LiveThread thread;
 
     @Override
@@ -87,6 +91,7 @@ public class LiveThread extends BaseActivityAnim {
 
     public RecyclerView baseRecycler;
 
+    @SuppressWarnings("NullAway.Init")
     public String term;
 
     @Override
@@ -95,7 +100,7 @@ public class LiveThread extends BaseActivityAnim {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         overrideSwipeFromAnywhere();
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         getWindow().getDecorView().setBackground(null);
@@ -107,6 +112,7 @@ public class LiveThread extends BaseActivityAnim {
         baseRecycler = (RecyclerView) findViewById(R.id.content_view);
         baseRecycler.setLayoutManager(new LinearLayoutManager(LiveThread.this));
         new AsyncTask<Void, Void, Void>() {
+            @SuppressWarnings("NullAway.Init")
             MaterialProgressDialog d;
 
             @Override
@@ -159,7 +165,9 @@ public class LiveThread extends BaseActivityAnim {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    @SuppressWarnings("NullAway.Init")
     ArrayList<LiveUpdate> updates;
+    @SuppressWarnings("NullAway.Init")
     LiveThreadPaginator paginator;
 
     public void doPaginator() {
@@ -332,6 +340,7 @@ public class LiveThread extends BaseActivityAnim {
             private Gson gson;
             String url;
             private WebView view;
+            @SuppressWarnings("NullAway.Init")
             TwitterObject twitter;
 
             public LoadTwitter(@NonNull WebView view, @NonNull String url) {
@@ -349,6 +358,10 @@ public class LiveThread extends BaseActivityAnim {
                                     gson,
                                     "https://publish.twitter.com/oembed?url=" + url,
                                     null);
+                    if (result == null) {
+                        return;
+                    }
+
                     LogUtil.v("Got " + CompatUtil.fromHtml(result.toString()));
                     twitter = new ObjectMapper().readValue(result.toString(), TwitterObject.class);
                 } catch (Exception e) {

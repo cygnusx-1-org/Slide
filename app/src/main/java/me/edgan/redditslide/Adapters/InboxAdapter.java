@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -165,7 +166,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             String direction = "from ";
             if (!dataSet.where.contains("mod")
                     && comment.getDataNode().has("dest")
-                    && !Authentication.name.equalsIgnoreCase(
+                    && !Authentication.nameOrEmpty().equalsIgnoreCase(
                             comment.getDataNode().get("dest").asText())
                     && !comment.getDataNode().get("dest").asText().equals("reddit")) {
                 author = comment.getDataNode().get("dest").asText().replace("#", "/r/");
@@ -318,7 +319,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                             String author = comment.getAuthor();
                             if (!dataSet.where.contains("mod")
                                     && comment.getDataNode().has("dest")
-                                    && !Authentication.name.equalsIgnoreCase(
+                                    && !Authentication.nameOrEmpty().equalsIgnoreCase(
                                             comment.getDataNode().get("dest").asText())
                                     && !comment.getDataNode()
                                             .get("dest")
@@ -509,7 +510,9 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(mContext).setView(dialoglayout);
         final Dialog d = builder.create();
-        d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        if (d.getWindow() != null) {
+            d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        }
 
         DialogUtil.matchDialogToCardBackground(d);
         d.show();
@@ -537,6 +540,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     private class AsyncReplyTask extends AsyncTask<Void, Void, Void> {
+        @SuppressWarnings("NullAway.Init")
         String trying;
 
         Message replyTo;
@@ -556,7 +560,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         boolean sent;
 
-        public void sendMessage(Captcha captcha, String captchaAttempt) {
+        public void sendMessage(@Nullable Captcha captcha, @Nullable String captchaAttempt) {
             try {
                 new net.dean.jraw.managers.AccountManager(Authentication.reddit)
                         .reply(replyTo, text);

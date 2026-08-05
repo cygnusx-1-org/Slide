@@ -6,8 +6,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import me.edgan.redditslide.util.LogUtil;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by carlo_000 on 10/12/2015. */
+@NullMarked
 public class PreCachingLayoutManagerComments extends LinearLayoutManager {
     private static final int DEFAULT_EXTRA_LAYOUT_SPACE = 900;
     private final Context context;

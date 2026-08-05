@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -34,7 +35,9 @@ public class HistoryView extends Fragment {
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_verticalcontent, container, false);
 
@@ -99,16 +102,19 @@ public class HistoryView extends Fragment {
                     @Override
                     public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                         super.onScrolled(recyclerView, dx, dy);
-                        visibleItemCount = rv.getLayoutManager().getChildCount();
-                        totalItemCount = rv.getLayoutManager().getItemCount();
-                        if (rv.getLayoutManager() instanceof PreCachingLayoutManager) {
+                        final RecyclerView.LayoutManager lm = rv.getLayoutManager();
+                        if (lm == null) return;
+
+                        visibleItemCount = lm.getChildCount();
+                        totalItemCount = lm.getItemCount();
+                        if (lm instanceof PreCachingLayoutManager) {
                             pastVisiblesItems =
-                                    ((PreCachingLayoutManager) rv.getLayoutManager())
+                                    ((PreCachingLayoutManager) lm)
                                             .findFirstVisibleItemPosition();
                         } else {
                             int[] firstVisibleItems = null;
                             firstVisibleItems =
-                                    ((CatchStaggeredGridLayoutManager) rv.getLayoutManager())
+                                    ((CatchStaggeredGridLayoutManager) lm)
                                             .findFirstVisibleItemPositions(firstVisibleItems);
                             if (firstVisibleItems != null && firstVisibleItems.length > 0) {
                                 pastVisiblesItems = firstVisibleItems[0];

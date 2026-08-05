@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.google.android.material.snackbar.Snackbar;
 import me.edgan.redditslide.Activities.MainActivity;
 import me.edgan.redditslide.Activities.MediaView;
@@ -25,7 +26,10 @@ public class PopulateBase {
     }
 
     public static void addAdaptorPosition(
-            Intent myIntent, Submission submission, int adapterPosition, Context context) {
+            Intent myIntent,
+            Submission submission,
+            int adapterPosition,
+            @Nullable Context context) {
         if (submission.getComments() == null && adapterPosition != -1) {
             myIntent.putExtra(MediaView.ADAPTER_POSITION, adapterPosition);
             myIntent.putExtra(MediaView.SUBMISSION_URL, submission.getPermalink());

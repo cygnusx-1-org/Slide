@@ -7,6 +7,7 @@ import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
@@ -14,8 +15,10 @@ import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 3/5/2015. */
+@NullMarked
 public class FullscreenVideo extends FullScreenActivity {
 
     public static final String EXTRA_HTML = "html";
@@ -28,7 +31,7 @@ public class FullscreenVideo extends FullScreenActivity {
         overridePendingTransition(0, R.anim.fade_out);
     }
 
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         overrideRedditSwipeAnywhere();
 
         super.onCreate(savedInstanceState);
@@ -36,7 +39,7 @@ public class FullscreenVideo extends FullScreenActivity {
 
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
-        String data = getIntent().getExtras().getString(EXTRA_HTML);
+        String data = getIntent().getStringExtra(EXTRA_HTML);
         v = (WebView) findViewById(R.id.webgif);
 
         Window window = this.getWindow();
@@ -50,6 +53,11 @@ public class FullscreenVideo extends FullScreenActivity {
         settings.setJavaScriptEnabled(true);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
         settings.setPluginState(WebSettings.PluginState.ON);
+
+        if (dat == null) {
+            finish();
+            return;
+        }
 
         v.setWebChromeClient(new WebChromeClient());
         LogUtil.v(dat);

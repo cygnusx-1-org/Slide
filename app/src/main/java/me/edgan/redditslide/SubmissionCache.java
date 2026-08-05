@@ -62,7 +62,7 @@ public class SubmissionCache {
     }
 
     public static void cacheSubmissions(
-            List<Submission> submissions, Context mContext, String baseSub) {
+            List<Submission> submissions, Context mContext, @Nullable String baseSub) {
         cacheInfo(submissions, mContext, baseSub);
     }
 
@@ -75,7 +75,8 @@ public class SubmissionCache {
         }
     }
 
-    private static void cacheInfo(List<Submission> submissions, Context mContext, String baseSub) {
+    private static void cacheInfo(
+            List<Submission> submissions, Context mContext, @Nullable String baseSub) {
 
         for (Submission submission : submissions) {
             // Re-apply any recovered link before building the spannables so the cached info line
@@ -87,7 +88,8 @@ public class SubmissionCache {
         }
     }
 
-    public static void updateInfoSpannable(Submission changed, Context mContext, String baseSub) {
+    public static void updateInfoSpannable(
+            Submission changed, Context mContext, @Nullable String baseSub) {
         info.put(changed.getFullName(), getInfoSpannable(changed, mContext, baseSub));
     }
 
@@ -115,7 +117,7 @@ public class SubmissionCache {
     }
 
     public static SpannableStringBuilder getInfoLine(
-            Submission s, Context mContext, String baseSub) {
+            Submission s, Context mContext, @Nullable String baseSub) {
         if (info.containsKey(s.getFullName())) {
             SpannableStringBuilder infoLine = info.get(s.getFullName());
             if (infoLine != null) {
@@ -209,7 +211,7 @@ public class SubmissionCache {
     }
 
     private static SpannableStringBuilder getInfoSpannable(
-            Submission submission, Context mContext, String baseSub) {
+            Submission submission, Context mContext, @Nullable String baseSub) {
         String spacer = mContext.getString(R.string.submission_properties_seperator);
         SpannableStringBuilder titleString = new SpannableStringBuilder();
 

@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ProgressBar;
+import androidx.annotation.Nullable;
 import com.google.gson.Gson;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import me.edgan.redditslide.Activities.MediaView;
@@ -33,11 +34,13 @@ import net.dean.jraw.models.Comment;
 /** Created by ccrama on 6/2/2015. */
 public class MediaFragmentComment extends BaseMediaFragment {
 
-    public String sub;
+    public String sub = "";
     public int i;
+    @SuppressWarnings("NullAway.Init") // bound in onCreateView
     private ExoVideoView videoView;
     private long stopPosition;
     public boolean isGif;
+    @SuppressWarnings("NullAway.Init") // set from the bundle in onCreate
     private CommentUrlObject s;
 
     @Override
@@ -79,7 +82,9 @@ public class MediaFragmentComment extends BaseMediaFragment {
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         rootView = (ViewGroup) inflater.inflate(R.layout.submission_mediacard, container, false);
         if (s == null) {
             // Arguments were missing in onCreate; nothing to populate.
@@ -95,7 +100,10 @@ public class MediaFragmentComment extends BaseMediaFragment {
         }
         (rootView.findViewById(R.id.thumbimage2)).setVisibility(View.GONE);
 
-        ContentType.Type type = ContentType.getContentType(contentUrl);
+        ContentType.Type type =
+                contentUrl == null
+                        ? ContentType.Type.NONE
+                        : ContentType.getContentType(contentUrl);
 
         if (ContentType.fullImage(type)) {
             (rootView.findViewById(R.id.thumbimage2)).setVisibility(View.GONE);
@@ -169,7 +177,7 @@ public class MediaFragmentComment extends BaseMediaFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = this.getArguments();
         if (bundle != null) {
@@ -190,7 +198,11 @@ public class MediaFragmentComment extends BaseMediaFragment {
         imgurKey = SecretConstants.getImgurApiKey(getContext());
     }
 
-    public void doLoad(final String contentUrl) {
+    public void doLoad(final @Nullable String contentUrl) {
+        if (contentUrl == null) {
+            return;
+        }
+
         switch (ContentType.getContentType(contentUrl)) {
             case DEVIANTART:
                 doLoadDeviantArt(contentUrl);

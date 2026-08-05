@@ -3,6 +3,7 @@ package me.edgan.redditslide.Activities;
 import android.os.Bundle;
 import android.text.Editable;
 import android.widget.EditText;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import me.edgan.redditslide.Views.PreCachingLayoutManager;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
 import net.dean.jraw.models.CommentNode;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Created by ccrama on 9/17/2015.
@@ -22,10 +24,11 @@ import net.dean.jraw.models.CommentNode;
  * <p>This activity takes the shared comment data and allows for searching through the text of the
  * CommentNodes.
  */
+@NullMarked
 public class CommentSearch extends BaseActivityAnim {
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         overrideRedditSwipeAnywhere();
 
         super.onCreate(savedInstance);

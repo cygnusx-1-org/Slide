@@ -1,5 +1,6 @@
 package me.edgan.redditslide.Adapters;
 
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Map;
 import me.edgan.redditslide.Authentication;
@@ -15,7 +16,7 @@ import net.dean.jraw.paginators.UserSavedPaginator;
 
 /** Created by ccrama on 9/17/2015. */
 public class ContributionPostsSaved extends ContributionPosts {
-    private final String category;
+    private final @Nullable String category;
 
     /** Set true before a reset load to skip the hard-TTL cache and force a fresh network fetch. */
     public boolean bypassCache;
@@ -23,11 +24,12 @@ public class ContributionPostsSaved extends ContributionPosts {
     /** Marks that the last load was served from cache, so we don't re-stamp its TTL. */
     private boolean servedFromCache;
 
-    public ContributionPostsSaved(String subreddit, String where, String category) {
+    public ContributionPostsSaved(String subreddit, String where, @Nullable String category) {
         super(subreddit, where);
         this.category = category;
     }
 
+    @SuppressWarnings("NullAway.Init")
     UserSavedPaginator paginator;
 
     @Override
@@ -52,21 +54,22 @@ public class ContributionPostsSaved extends ContributionPosts {
                     && !servedFromCache
                     && posts != null) {
                 // Cache the whole accumulated list (submissions AND saved comments), in order.
-                SavedPostCache.store(Authentication.name, category, posts, true);
+                SavedPostCache.store(Authentication.nameOrEmpty(), category, posts, true);
             }
             super.onPostExecute(submissions);
         }
 
         @Override
-        protected ArrayList<Contribution> doInBackground(String... subredditPaginators) {
+        protected @Nullable ArrayList<Contribution> doInBackground(
+                String... subredditPaginators) {
             servedFromCache = false;
             boolean bypass = bypassCache;
             if (reset) {
                 bypassCache = false; // one-shot: consume the bypass request
                 nomore = false; // a fresh reset can page again even after a prior "no more"
-                if (!bypass && SavedPostCache.isFresh(Authentication.name, category)) {
+                if (!bypass && SavedPostCache.isFresh(Authentication.nameOrEmpty(), category)) {
                     SavedPostCache.Cached cached =
-                            SavedPostCache.load(Authentication.name, category);
+                            SavedPostCache.load(Authentication.nameOrEmpty(), category);
                     if (cached != null && cached.complete) {
                         servedFromCache = true;
                         nomore = true; // the cache holds the whole saved list
@@ -85,7 +88,7 @@ public class ContributionPostsSaved extends ContributionPosts {
                     paginator =
                             new UserSavedPaginator(Authentication.reddit, where, subreddit) {
                                 @Override
-                                protected Map<String, String> getExtraQueryArgs() {
+                                protected @Nullable Map<String, String> getExtraQueryArgs() {
                                     Map<String, String> args = super.getExtraQueryArgs();
                                     args.put("feature", "link_preview");
                                     args.put("always_show_media", "1");

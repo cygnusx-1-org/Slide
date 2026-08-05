@@ -3,6 +3,7 @@ package me.edgan.redditslide.Fragments;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import androidx.annotation.Nullable;
 
 /**
  * Created by PKhurana on 7/8/16. Adopted from
@@ -23,7 +24,12 @@ public abstract class OnFlingGestureListener implements View.OnTouchListener {
         private static final int SWIPE_THRESHOLD_VELOCITY = 100;
 
         @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        public boolean onFling(
+                @Nullable MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            if (e1 == null) {
+                return false;
+            }
+
             if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE
                     && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                 onRightToLeft();

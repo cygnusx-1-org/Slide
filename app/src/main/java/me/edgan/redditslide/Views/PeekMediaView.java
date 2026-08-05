@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import androidx.annotation.Nullable;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -54,23 +55,35 @@ import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import net.dean.jraw.models.Submission;
 import org.apache.commons.text.StringEscapeUtils;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 3/5/2015. */
+@NullMarked
 public class PeekMediaView extends RelativeLayout {
 
-    ContentType.Type contentType;
-    private GifUtils.AsyncLoadGif gif;
+    ContentType.Type contentType = ContentType.Type.NONE;
+    @Nullable private GifUtils.AsyncLoadGif gif;
+
+    // videoView, website, progress and image are all bound by init(), which every constructor
+    // calls, from views the peek_media_view layout always defines.
+    @SuppressWarnings("NullAway.Init")
     private ExoVideoView videoView;
+
+    @SuppressWarnings("NullAway.Init")
     public WebView website;
+
+    @SuppressWarnings("NullAway.Init")
     private ProgressBar progress;
+
+    @SuppressWarnings("NullAway.Init")
     private SubsamplingScaleImageView image;
 
-    public PeekMediaView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public PeekMediaView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
 
-    public PeekMediaView(Context context, AttributeSet attrs) {
+    public PeekMediaView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
@@ -180,7 +193,7 @@ public class PeekMediaView extends RelativeLayout {
             }
 
             @Override
-            public boolean doWithData(final List<Image> jsonElements) {
+            public boolean doWithData(final @Nullable List<Image> jsonElements) {
                 // Nothing usable came back, so there is nothing to index below; super has already
                 // sent this to onError(), which falls back to opening the link.
                 if (!super.doWithData(jsonElements)) {
@@ -233,7 +246,7 @@ public class PeekMediaView extends RelativeLayout {
             }
 
             @Override
-            public boolean doWithData(final List<Photo> jsonElements) {
+            public boolean doWithData(final @Nullable List<Photo> jsonElements) {
                 // A post with no photos leaves nothing to index below; super has already sent this
                 // to onError(), which falls back to opening the link.
                 if (!super.doWithData(jsonElements)) {
@@ -261,11 +274,11 @@ public class PeekMediaView extends RelativeLayout {
         };
     }
 
-    List<Image> images;
-    List<Photo> tumblrImages;
+    @Nullable List<Image> images;
+    @Nullable List<Photo> tumblrImages;
 
-    WebChromeClient client;
-    WebViewClient webClient;
+    @Nullable WebChromeClient client;
+    @Nullable WebViewClient webClient;
 
     public void setValue(int newProgress) {
         progress.setProgress(newProgress);
@@ -290,12 +303,12 @@ public class PeekMediaView extends RelativeLayout {
 
             new AsyncTask<Void, Void, JsonObject>() {
                 @Override
-                protected JsonObject doInBackground(Void... params) {
+                protected @Nullable JsonObject doInBackground(Void... params) {
                     return HttpUtil.getJsonObject(Reddit.client, new Gson(), apiUrl);
                 }
 
                 @Override
-                protected void onPostExecute(final JsonObject result) {
+                protected void onPostExecute(final @Nullable JsonObject result) {
                     if (result != null && !result.isJsonNull() && result.has("error")) {
                         doLoadLink(url);
                     } else {
@@ -329,7 +342,8 @@ public class PeekMediaView extends RelativeLayout {
                     private Map<String, Boolean> loadedUrls = new HashMap<>();
 
                     @Override
-                    public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+                    public @Nullable WebResourceResponse shouldInterceptRequest(
+                            WebView view, String url) {
                         boolean ad;
                         if (!loadedUrls.containsKey(url)) {
                             ad = AdBlocker.isAd(url, getContext());
@@ -377,12 +391,12 @@ public class PeekMediaView extends RelativeLayout {
         LogUtil.v(apiUrl);
         new AsyncTask<Void, Void, JsonObject>() {
             @Override
-            protected JsonObject doInBackground(Void... params) {
+            protected @Nullable JsonObject doInBackground(Void... params) {
                 return HttpUtil.getJsonObject(Reddit.client, new Gson(), apiUrl);
             }
 
             @Override
-            protected void onPostExecute(JsonObject result) {
+            protected void onPostExecute(@Nullable JsonObject result) {
                 LogUtil.v("doLoad onPostExecute() called with: " + "result = [" + result + "]");
                 if (result != null
                         && !result.isJsonNull()
@@ -417,7 +431,7 @@ public class PeekMediaView extends RelativeLayout {
             final Context context = getContext();
             new AsyncTask<Void, Void, JsonObject>() {
                 @Override
-                protected JsonObject doInBackground(Void... params) {
+                protected @Nullable JsonObject doInBackground(Void... params) {
                     return HttpUtil.getImgurJsonObject(
                             Reddit.client,
                             new Gson(),
@@ -525,7 +539,7 @@ public class PeekMediaView extends RelativeLayout {
         }
     }
 
-    String actuallyLoaded;
+    @Nullable String actuallyLoaded;
 
     public void doLoadGif(final String dat) {
         videoView = findViewById(R.id.gif);

@@ -5,15 +5,20 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.io.Serializable;
 import java.util.Arrays;
 import org.apache.commons.text.StringEscapeUtils;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 09/22/2020. */
+@NullMarked
 public class GalleryImage implements Serializable {
     private static final String TAG = "GalleryImage";
+    @SuppressWarnings("NullAway.Init")
     public String url;
     public int width;
     public int height;
 
+    @SuppressWarnings("NullAway.Init")
     public String mediaId;
+    @SuppressWarnings("NullAway.Init")
     public String caption;
     public MediaMetadata metadata;
 
@@ -178,14 +183,20 @@ public class GalleryImage implements Serializable {
     public static class MediaMetadata implements Serializable {
         private static final long serialVersionUID = 1L;
 
+        @SuppressWarnings("NullAway.Init")
         public String e; // type (e.g., "Image", "AnimatedImage")
+        @SuppressWarnings("NullAway.Init")
         public String m; // mimetype (e.g., "image/gif", "image/jpg")
+        @SuppressWarnings("NullAway.Init")
         public String s; // status
         public long id; // media id
         public boolean animated; // whether media is animated
+        @SuppressWarnings("NullAway.Init")
         public String ext; // file extension with dot (e.g., ".gif")
 
+        @SuppressWarnings("NullAway.Init")
         public Preview[] p; // array of preview images
+        @SuppressWarnings("NullAway.Init")
         public Source source; // source object containing URLs
 
         @Override
@@ -218,6 +229,7 @@ public class GalleryImage implements Serializable {
             private static final long serialVersionUID = 1L;
             public int y; // height
             public int x; // width
+            @SuppressWarnings("NullAway.Init")
             public String u; // preview URL
         }
 
@@ -225,8 +237,11 @@ public class GalleryImage implements Serializable {
             private static final long serialVersionUID = 1L;
             public int y; // height
             public int x; // width
+            @SuppressWarnings("NullAway.Init")
             public String u; // direct URL for non-animated
+            @SuppressWarnings("NullAway.Init")
             public String gif; // gif URL for animated
+            @SuppressWarnings("NullAway.Init")
             public String mp4; // mp4 URL for animated
         }
     }

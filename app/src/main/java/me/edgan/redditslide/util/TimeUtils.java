@@ -2,12 +2,13 @@ package me.edgan.redditslide.util;
 
 import android.content.Context;
 import android.content.res.Resources;
-
+import androidx.annotation.Nullable;
 import me.edgan.redditslide.R;
-
 import net.dean.jraw.paginators.TimePeriod;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 3/1/2015. */
+@NullMarked
 public class TimeUtils {
 
     private static final long SECOND_MILLIS = 1000;
@@ -19,7 +20,7 @@ public class TimeUtils {
 
     private TimeUtils() {}
 
-    public static String getTimeAgo(long time, Context c) {
+    public static @Nullable String getTimeAgo(long time, Context c) {
         if (time < 1000000000000L) {
             // if timestamp given in seconds, convert to millis
             time *= 1000;
@@ -48,7 +49,7 @@ public class TimeUtils {
         }
     }
 
-    public static String getTimeSince(long time, Context c) {
+    public static @Nullable String getTimeSince(long time, Context c) {
         if (time < 1000000000000L) {
             // if timestamp given in seconds, convert to millis
             time *= 1000;
@@ -101,7 +102,7 @@ public class TimeUtils {
         return hour.isEmpty() ? minute : hour + " " + minute;
     }
 
-    public static TimePeriod stringToTimePeriod(String time) {
+    public static @Nullable TimePeriod stringToTimePeriod(String time) {
         for (TimePeriod timePeriod : TimePeriod.values()) {
             if (timePeriod.toString().equalsIgnoreCase(time)) {
                 return timePeriod;

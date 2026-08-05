@@ -6,8 +6,10 @@ import android.content.Context;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import java.util.Locale;
 import me.edgan.redditslide.R;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Reads post and comment text out loud using the device's text-to-speech engine. A single engine
@@ -21,20 +23,21 @@ import me.edgan.redditslide.R;
  * sheet and copy dialogs are plain dialogs that don't stop their host activity, so opening them
  * does not interrupt playback.
  */
+@NullMarked
 public class ReadAloudUtil {
 
     private static final String UTTERANCE_ID = "slide_read_aloud";
 
-    private static TextToSpeech tts;
+    @Nullable private static TextToSpeech tts;
     private static boolean ready;
-    private static String pending;
+    @Nullable private static String pending;
     private static boolean lifecycleRegistered;
 
     /**
      * Speaks {@code text} aloud, lazily initializing the TTS engine on first use. If the engine is
      * already speaking, this call stops it instead (so the menu item toggles playback).
      */
-    public static void readAloud(final Context context, final String text) {
+    public static void readAloud(final Context context, final @Nullable String text) {
         if (text == null || text.trim().isEmpty()) {
             return;
         }
@@ -64,9 +67,13 @@ public class ReadAloudUtil {
                             status -> {
                                 if (status == TextToSpeech.SUCCESS) {
                                     ready = true;
-                                    tts.setLanguage(Locale.getDefault());
-                                    if (pending != null) {
-                                        speak(pending);
+                                    final TextToSpeech engine = tts;
+                                    if (engine != null) {
+                                        engine.setLanguage(Locale.getDefault());
+                                    }
+                                    final String queued = pending;
+                                    if (queued != null) {
+                                        speak(queued);
                                         pending = null;
                                     }
                                 } else {
@@ -82,7 +89,10 @@ public class ReadAloudUtil {
     }
 
     private static void speak(final String text) {
-        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, UTTERANCE_ID);
+        final TextToSpeech engine = tts;
+        if (engine != null) {
+            engine.speak(text, TextToSpeech.QUEUE_FLUSH, null, UTTERANCE_ID);
+        }
     }
 
     /** Stops any in-progress playback. Safe to call when nothing is speaking. */
@@ -119,7 +129,7 @@ public class ReadAloudUtil {
 
                             @Override
                             public void onActivityCreated(
-                                    Activity activity, Bundle savedInstanceState) {}
+                                    Activity activity, @Nullable Bundle savedInstanceState) {}
 
                             @Override
                             public void onActivityStarted(Activity activity) {}

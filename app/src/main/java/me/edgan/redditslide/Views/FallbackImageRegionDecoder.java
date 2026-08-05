@@ -7,7 +7,10 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
 
+import androidx.annotation.Nullable;
+
 import com.davemorrissey.labs.subscaleview.decoder.ImageRegionDecoder;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Fallback {@link ImageRegionDecoder} used when the default {@link
@@ -20,11 +23,12 @@ import com.davemorrissey.labs.subscaleview.decoder.ImageRegionDecoder;
  * memory, this is heavier than true region decoding, but it only ever runs as the fallback path
  * for the rare images the native region decoder cannot open.
  */
+@NullMarked
 public class FallbackImageRegionDecoder implements ImageRegionDecoder {
 
     private static final String ASSET_PREFIX = "file:///android_asset/";
 
-    private Bitmap bitmap;
+    @Nullable private Bitmap bitmap;
 
     @Override
     public Point init(Context context, Uri uri) throws Exception {
@@ -51,8 +55,11 @@ public class FallbackImageRegionDecoder implements ImageRegionDecoder {
 
     @Override
     public synchronized Bitmap decodeRegion(Rect sRect, int sampleSize) {
+        // ImageRegionDecoder declares a non-null result, so a failure has to be thrown rather
+        // than returned. SubsamplingScaleImageView's TileLoadTask catches it and reports it
+        // through onTileLoadError, which a silent null never reached.
         if (bitmap == null || bitmap.isRecycled()) {
-            return null;
+            throw new IllegalStateException("decodeRegion called after recycle()");
         }
         try {
             final int left = Math.max(0, sRect.left);
@@ -73,7 +80,7 @@ public class FallbackImageRegionDecoder implements ImageRegionDecoder {
             }
             return region;
         } catch (Exception e) {
-            return null;
+            throw new IllegalStateException("Failed to decode region", e);
         }
     }
 

@@ -11,7 +11,9 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.LinkUtil;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class SettingsRedditFragment {
 
     private final Activity context;

@@ -9,13 +9,15 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-
 import java.io.File;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 9/28/2015. */
+@NullMarked
 public class DeleteFile extends Activity {
 
     public static final String NOTIFICATION_ID = "NOTIFICATION_ID";
@@ -34,7 +36,7 @@ public class DeleteFile extends Activity {
     }
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         super.onCreate(savedInstance);
         Intent intent = getIntent();
 
@@ -48,7 +50,7 @@ public class DeleteFile extends Activity {
         String image;
 
         if (extras != null) {
-            image = getIntent().getStringExtra(PATH);
+            image = MiscUtil.orEmpty(getIntent().getStringExtra(PATH));
             image =
                     image.replace(
                             "/external_files",

@@ -3,6 +3,7 @@ package me.edgan.redditslide.Activities;
 import android.os.Bundle;
 import android.os.Parcelable;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
@@ -14,11 +15,15 @@ import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.StringUtil;
+import org.jspecify.annotations.NullMarked;
 
 
+@NullMarked
 public class MainPagerAdapterComment extends MainPagerAdapter {
     public int size;
+    @SuppressWarnings("NullAway.Init")
     public Fragment storedFragment;
+    @SuppressWarnings("NullAway.Init")
     CommentPage mCurrentComments;
     MainActivity mainActivity;
 
@@ -58,8 +63,15 @@ public class MainPagerAdapterComment extends MainPagerAdapter {
                                 }
 
                                 mainActivity.pager.setSwipeLeftOnly(true);
-                                mainActivity.themeSystemBars(mainActivity.openingComments.getSubredditName().toLowerCase(Locale.ENGLISH));
-                                mainActivity.setRecentBar(mainActivity.openingComments.getSubredditName().toLowerCase(Locale.ENGLISH));
+                                if (mainActivity.openingComments != null) {
+                                    final String sub =
+                                            mainActivity
+                                                    .openingComments
+                                                    .getSubredditName()
+                                                    .toLowerCase(Locale.ENGLISH);
+                                    mainActivity.themeSystemBars(sub);
+                                    mainActivity.setRecentBar(sub);
+                                }
                             }
                         }
                     }
@@ -199,7 +211,7 @@ public class MainPagerAdapterComment extends MainPagerAdapter {
     }
 
     @Override
-    public Parcelable saveState() {
+    public @Nullable Parcelable saveState() {
         return null;
     }
 
@@ -207,7 +219,7 @@ public class MainPagerAdapterComment extends MainPagerAdapter {
     public void doSetPrimary(Object object, int position) {
         if (position != mainActivity.toOpenComments) {
             if (mainActivity.multiNameToSubsMap.containsKey(mainActivity.usedArray.get(position))) {
-                mainActivity.shouldLoad = mainActivity.multiNameToSubsMap.get(mainActivity.usedArray.get(position));
+                mainActivity.shouldLoad = mainActivity.multiNameToSubsMap.getOrDefault(mainActivity.usedArray.get(position), "");
             } else {
                 mainActivity.shouldLoad = mainActivity.usedArray.get(position);
             }

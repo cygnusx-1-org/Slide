@@ -9,7 +9,9 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.util.DialogUtil;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class SettingsHistoryFragment {
 
     private final Activity context;

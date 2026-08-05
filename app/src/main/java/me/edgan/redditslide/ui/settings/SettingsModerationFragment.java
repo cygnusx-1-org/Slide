@@ -5,9 +5,8 @@ import android.os.AsyncTask;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import androidx.appcompat.widget.SwitchCompat;
-
+import java.util.ArrayList;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SettingValues.RemovalReasonType;
@@ -15,8 +14,10 @@ import me.edgan.redditslide.SettingValues.ToolboxRemovalMessageType;
 import me.edgan.redditslide.Toolbox.Toolbox;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.util.MaterialProgressDialog;
+import org.jspecify.annotations.NullMarked;
 
 
+@NullMarked
 public class SettingsModerationFragment {
 
     private final Activity context;
@@ -117,7 +118,10 @@ public class SettingsModerationFragment {
                     }
 
                     // download and cache toolbox stuff in the background unless it's already loaded
-                    for (String sub : UserSubscriptions.modOf) {
+                    for (String sub :
+                            UserSubscriptions.modOf == null
+                                    ? new ArrayList<String>()
+                                    : UserSubscriptions.modOf) {
                         Toolbox.ensureConfigCachedLoaded(sub, false);
                         Toolbox.ensureUsernotesCachedLoaded(sub, false);
                     }
@@ -210,7 +214,11 @@ public class SettingsModerationFragment {
                     MaterialProgressDialog dialog =
                             new MaterialProgressDialog.Builder(context)
                                     .content(R.string.settings_mod_toolbox_refreshing)
-                                    .progress(false, UserSubscriptions.modOf.size() * 2)
+                                    .progress(
+                                            false,
+                                            UserSubscriptions.modOf == null
+                                                    ? 0
+                                                    : UserSubscriptions.modOf.size() * 2)
                                     .cancelable(false)
                                     .build();
                     dialog.show();
@@ -251,7 +259,10 @@ public class SettingsModerationFragment {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            for (String sub : UserSubscriptions.modOf) {
+            for (String sub :
+                    UserSubscriptions.modOf == null
+                            ? new ArrayList<String>()
+                            : UserSubscriptions.modOf) {
                 try {
                     Toolbox.downloadToolboxConfig(sub);
                 } catch (RuntimeException ignored) {

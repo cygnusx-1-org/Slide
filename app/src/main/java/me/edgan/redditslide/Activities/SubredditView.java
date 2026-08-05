@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.appcompat.widget.PopupMenu;
@@ -74,6 +75,7 @@ import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
+import me.edgan.redditslide.util.PrefUtil;
 import me.edgan.redditslide.util.SortingUtil;
 import me.edgan.redditslide.util.StringUtil;
 import me.edgan.redditslide.util.SubmissionParser;
@@ -92,49 +94,59 @@ import net.dean.jraw.models.UserRecord;
 import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.TimePeriod;
 import net.dean.jraw.paginators.UserRecordPaginator;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class SubredditView extends BaseActivity {
 
     public static final String EXTRA_SUBREDDIT = "subreddit";
     public boolean canSubmit = true;
-    public String subreddit;
+    public String subreddit = "";
+    @SuppressWarnings("NullAway.Init")
     public Submission openingComments;
     public int currentComment;
     public SubredditPagerAdapter adapter;
+    @SuppressWarnings("NullAway.Init")
     public String term;
     public ToggleSwipeViewPager pager;
     public boolean singleMode;
     public boolean commentPager;
     public boolean loaded;
     View header;
+    @SuppressWarnings("NullAway.Init")
     Subreddit sub;
     private DrawerLayout drawerLayout;
     private boolean currentlySubbed = false;
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         // Check which request we're responding to
         if (requestCode == 2) {
             // Make sure the request was successful
             pager.setAdapter(new SubredditPagerAdapter(getSupportFragmentManager()));
         } else if (requestCode == 1) {
             restartTheme();
-        } else if (requestCode == 940) {
+        } else if (requestCode == 940 && data != null) {
             if (adapter != null && adapter.getCurrentFragment() != null) {
                 if (resultCode == RESULT_OK) {
                     LogUtil.v("Doing hide posts");
                     ArrayList<Integer> posts = data.getIntegerArrayListExtra("seen");
-                    ((SubmissionsView) adapter.getCurrentFragment()).adapter.refreshView(posts);
+                    if (posts != null) {
+                        ((SubmissionsView) adapter.getCurrentFragment())
+                                .adapter
+                                .refreshView(posts);
+                    }
                     if (data.hasExtra("lastPage")
                             && data.getIntExtra("lastPage", 0) != 0
                             && ((SubmissionsView) adapter.getCurrentFragment())
                                             .rv.getLayoutManager()
                                     instanceof LinearLayoutManager) {
                         ((LinearLayoutManager)
-                                        ((SubmissionsView) adapter.getCurrentFragment())
-                                                .rv.getLayoutManager())
+                                        java.util.Objects.requireNonNull(
+                                                ((SubmissionsView) adapter.getCurrentFragment())
+                                                .rv.getLayoutManager()))
                                 .scrollToPositionWithOffset(
-                                        data.getIntExtra("lastPage", 0) + 1, mToolbar.getHeight());
+                                        data.getIntExtra("lastPage", 0) + 1, requireToolbar().getHeight());
                     }
                 } else {
                     ((SubmissionsView) adapter.getCurrentFragment()).adapter.refreshView();
@@ -165,7 +177,7 @@ public class SubredditView extends BaseActivity {
             };
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         overrideSwipeFromAnywhere();
         if (SettingValues.commentPager && SettingValues.single) {
             disableSwipeBackLayout();
@@ -180,7 +192,7 @@ public class SubredditView extends BaseActivity {
             restarting = false;
         }
 
-        subreddit = getIntent().getExtras().getString(EXTRA_SUBREDDIT, "");
+        subreddit = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_SUBREDDIT));
         applyColorTheme(subreddit);
         setContentView(R.layout.activity_singlesubreddit);
         setupSubredditAppBar(R.id.toolbar, subreddit, true, subreddit);
@@ -188,7 +200,7 @@ public class SubredditView extends BaseActivity {
         header = findViewById(R.id.header);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         setResult(3);
-        mToolbar.setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
+        requireToolbar().setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
         pager = (ToggleSwipeViewPager) findViewById(R.id.content_view);
         singleMode = SettingValues.single;
         commentPager = false;
@@ -205,15 +217,18 @@ public class SubredditView extends BaseActivity {
 
         MiscUtil.setupOldSwipeModeBackground(this, pager);
 
-        mToolbar.setOnClickListener(
+        requireToolbar().setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         int pastVisiblesItems = 0;
                         int[] firstVisibleItems =
                                 ((CatchStaggeredGridLayoutManager)
-                                                ((SubmissionsView) (adapter.getCurrentFragment()))
-                                                        .rv.getLayoutManager())
+                                                java.util.Objects.requireNonNull(
+                                                        ((SubmissionsView)
+                                                                        (adapter
+                                                                                .getCurrentFragment()))
+                                                                .rv.getLayoutManager()))
                                         .findFirstVisibleItemPositions(null);
                         if (firstVisibleItems != null && firstVisibleItems.length > 0) {
                             for (int firstVisibleItem : firstVisibleItems) {
@@ -280,7 +295,7 @@ public class SubredditView extends BaseActivity {
             menu.findItem(R.id.sidebar).setVisible(false);
         }
 
-        mToolbar.getMenu()
+        requireToolbar().getMenu()
                 .findItem(R.id.theme)
                 .setOnMenuItemClickListener(
                         new MenuItem.OnMenuItemClickListener() {
@@ -404,7 +419,7 @@ public class SubredditView extends BaseActivity {
         } else if (itemId == R.id.action_shadowbox) {
             List<Submission> sPosts =
                     ((SubmissionsView)
-                                    ((SubredditPagerAdapter) pager.getAdapter())
+                                    ((SubredditPagerAdapter) java.util.Objects.requireNonNull(pager.getAdapter()))
                                             .getCurrentFragment())
                             .posts
                             .posts;
@@ -459,10 +474,11 @@ public class SubredditView extends BaseActivity {
     private void setSubFlair(
             final String subOverride,
             final FlairTemplate t,
-            final String flairText,
+            final @Nullable String flairText,
             final AccountManager m,
             final View dialoglayout) {
         new AsyncTask<Void, Void, Boolean>() {
+            @SuppressWarnings("NullAway.Init")
             String current;
 
             @Override
@@ -493,13 +509,13 @@ public class SubredditView extends BaseActivity {
                     }
                     s =
                             Snackbar.make(
-                                    mToolbar,
+                                    requireToolbar(),
                                     R.string.snackbar_flair_success,
                                     Snackbar.LENGTH_SHORT);
                 } else {
                     s =
                             Snackbar.make(
-                                    mToolbar,
+                                    requireToolbar(),
                                     R.string.snackbar_flair_error,
                                     Snackbar.LENGTH_SHORT);
                 }
@@ -742,6 +758,7 @@ public class SubredditView extends BaseActivity {
                                                     .show()
                                                     .getDialog();
                                     new AsyncTask<Void, Void, Void>() {
+                                        @SuppressWarnings("NullAway.Init")
                                         ArrayList<UserRecord> mods;
 
                                         @Override
@@ -815,9 +832,13 @@ public class SubredditView extends BaseActivity {
             dialoglayout.findViewById(R.id.flair).setVisibility(View.GONE);
             if (Authentication.didOnline && Authentication.isLoggedIn) {
                 new AsyncTask<View, Void, View>() {
+                    @SuppressWarnings("NullAway.Init")
                     List<FlairTemplate> flairs;
+                    @SuppressWarnings("NullAway.Init")
                     ArrayList<String> flairText;
+                    @SuppressWarnings("NullAway.Init")
                     String current;
+                    @SuppressWarnings("NullAway.Init")
                     AccountManager m;
 
                     @Override
@@ -991,8 +1012,9 @@ public class SubredditView extends BaseActivity {
                 && currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
             position =
                     ((LinearLayoutManager)
-                                            ((SubmissionsView) adapter.getCurrentFragment())
-                                                    .rv.getLayoutManager())
+                                            java.util.Objects.requireNonNull(
+                                                    ((SubmissionsView) adapter.getCurrentFragment())
+                                                    .rv.getLayoutManager()))
                                     .findFirstCompletelyVisibleItemPosition()
                             - 1;
         } else if (((SubmissionsView) adapter.getCurrentFragment()).rv.getLayoutManager()
@@ -1000,8 +1022,9 @@ public class SubredditView extends BaseActivity {
             int[] firstVisibleItems = null;
             firstVisibleItems =
                     ((CatchStaggeredGridLayoutManager)
-                                    ((SubmissionsView) adapter.getCurrentFragment())
-                                            .rv.getLayoutManager())
+                                    java.util.Objects.requireNonNull(
+                                            ((SubmissionsView) adapter.getCurrentFragment())
+                                            .rv.getLayoutManager()))
                             .findFirstCompletelyVisibleItemPositions(firstVisibleItems);
             if (firstVisibleItems != null && firstVisibleItems.length > 0) {
                 position = firstVisibleItems[0] - 1;
@@ -1009,8 +1032,9 @@ public class SubredditView extends BaseActivity {
         } else {
             position =
                     ((PreCachingLayoutManager)
-                                            ((SubmissionsView) adapter.getCurrentFragment())
-                                                    .rv.getLayoutManager())
+                                            java.util.Objects.requireNonNull(
+                                                    ((SubmissionsView) adapter.getCurrentFragment())
+                                                    .rv.getLayoutManager()))
                                     .findFirstCompletelyVisibleItemPosition()
                             - 1;
         }
@@ -1018,6 +1042,7 @@ public class SubredditView extends BaseActivity {
     }
 
     TimePeriod time = TimePeriod.DAY;
+    @SuppressWarnings("NullAway.Init")
     Sorting sorts;
 
     private void askTimePeriod(final Sorting sort, final String sub, final View dialoglayout) {
@@ -1203,7 +1228,7 @@ public class SubredditView extends BaseActivity {
         }
         Snackbar s =
                 Snackbar.make(
-                        mToolbar,
+                        requireToolbar(),
                         isChecked
                                 ? getString(R.string.misc_subscribed)
                                 : getString(R.string.misc_unsubscribed),
@@ -1235,7 +1260,7 @@ public class SubredditView extends BaseActivity {
                 // get all subs that have Notifications enabled
                 ArrayList<String> rawSubs =
                         StringUtil.stringToArray(
-                                Reddit.appRestart.getString(CheckForMail.SUBS_TO_GET, ""));
+                                PrefUtil.getString(Reddit.appRestart, CheckForMail.SUBS_TO_GET, ""));
                 HashMap<String, Integer> subThresholds = new HashMap<>();
                 for (String s : rawSubs) {
                     try {
@@ -1328,8 +1353,9 @@ public class SubredditView extends BaseActivity {
                                                                                             String>();
                                                                             for (MultiSubreddit
                                                                                     sub :
-                                                                                            multis.get(
-                                                                                                            multiName)
+                                                                                            java.util.Objects.requireNonNull(
+                                                                                                            multis.get(
+                                                                                                                    multiName))
                                                                                                     .getSubreddits()) {
                                                                                 subs.add(
                                                                                         sub
@@ -1367,7 +1393,7 @@ public class SubredditView extends BaseActivity {
                                                                                                     s =
                                                                                                             Snackbar
                                                                                                                     .make(
-                                                                                                                            mToolbar,
+                                                                                                                            requireToolbar(),
                                                                                                                             getString(
                                                                                                                                     R
                                                                                                                                             .string
@@ -1396,7 +1422,7 @@ public class SubredditView extends BaseActivity {
                                                                                                                 run() {
                                                                                                             Snackbar
                                                                                                                     .make(
-                                                                                                                            mToolbar,
+                                                                                                                            requireToolbar(),
                                                                                                                             getString(
                                                                                                                                     R
                                                                                                                                             .string
@@ -1470,7 +1496,7 @@ public class SubredditView extends BaseActivity {
                                                                                         R.string.btn_yes,
                                                                                         (dialog1, which1) -> {
                                                                                             changeSubscription(subreddit, true); // Force add the subscription
-                                                                                            Snackbar s = Snackbar.make(mToolbar,
+                                                                                            Snackbar s = Snackbar.make(requireToolbar(),
                                                                                                     getString(R.string.misc_subscribed),
                                                                                                     Snackbar.LENGTH_SHORT);
                                                                                             LayoutUtils.showSnackbar(s);
@@ -1498,7 +1524,7 @@ public class SubredditView extends BaseActivity {
                                                     R.string.btn_add_to_sublist,
                                                     (dialog, which) -> {
                                                         changeSubscription(subreddit, true); // Force add the subscription
-                                                        Snackbar s = Snackbar.make(mToolbar, R.string.sub_added, Snackbar.LENGTH_SHORT);
+                                                        Snackbar s = Snackbar.make(requireToolbar(), R.string.sub_added, Snackbar.LENGTH_SHORT);
                                                         LayoutUtils.showSnackbar(s);
                                                     })
                                             .show();
@@ -1540,7 +1566,7 @@ public class SubredditView extends BaseActivity {
                                                                                         R.string.btn_yes,
                                                                                         (dialog12, which12) -> {
                                                                                             changeSubscription(subreddit, false); // Force add the subscription
-                                                                                            Snackbar s = Snackbar.make(mToolbar,
+                                                                                            Snackbar s = Snackbar.make(requireToolbar(),
                                                                                                     getString(R.string.misc_unsubscribed),
                                                                                                     Snackbar.LENGTH_SHORT);
                                                                                             LayoutUtils.showSnackbar(s);
@@ -1568,7 +1594,7 @@ public class SubredditView extends BaseActivity {
                                                     R.string.just_unsub,
                                                     (dialog, which) -> {
                                                         changeSubscription(subreddit, false); // Force add the subscription
-                                                        Snackbar s = Snackbar.make(mToolbar, R.string.misc_unsubscribed, Snackbar.LENGTH_SHORT);
+                                                        Snackbar s = Snackbar.make(requireToolbar(), R.string.misc_unsubscribed, Snackbar.LENGTH_SHORT);
                                                         LayoutUtils.showSnackbar(s);
                                                     })
                                             .setNegativeButton(R.string.btn_cancel, null)
@@ -1623,7 +1649,7 @@ public class SubredditView extends BaseActivity {
                                                                             .setPositiveButton(R.string.btn_ok, (dialog2, which2) -> {
                                                                                 ArrayList<String> subs =
                                                                                         StringUtil.stringToArray(
-                                                                                                Reddit.appRestart.getString(
+                                                                                                PrefUtil.getString(Reddit.appRestart,
                                                                                                         CheckForMail.SUBS_TO_GET,
                                                                                                         ""));
                                                                                 subs.add(sub + ":" + thresholds[selectedThreshold[0]]);
@@ -1754,7 +1780,9 @@ public class SubredditView extends BaseActivity {
     }
 
     public class SubredditPagerAdapter extends FragmentStatePagerAdapter {
+        @SuppressWarnings("NullAway.Init")
         private SubmissionsView mCurrentFragment;
+        @SuppressWarnings("NullAway.Init")
         private BlankFragment blankPage;
 
         public SubredditPagerAdapter(FragmentManager fm) {
@@ -1782,7 +1810,7 @@ public class SubredditView extends BaseActivity {
                                         overridePendingTransition(0, R.anim.fade_out);
                                     }
 
-                                    ((SubredditPagerAdapter) pager.getAdapter())
+                                    ((SubredditPagerAdapter) java.util.Objects.requireNonNull(pager.getAdapter()))
                                             .blankPage.doOffset(positionOffset);
                                 }
                             }
@@ -1836,7 +1864,7 @@ public class SubredditView extends BaseActivity {
         }
 
         @Override
-        public Parcelable saveState() {
+        public @Nullable Parcelable saveState() {
             return null;
         }
 
@@ -1859,8 +1887,11 @@ public class SubredditView extends BaseActivity {
 
     public class SubredditPagerAdapterComment extends SubredditPagerAdapter {
         public int size = 2;
+        @SuppressWarnings("NullAway.Init")
         public Fragment storedFragment;
+        @SuppressWarnings("NullAway.Init")
         BlankFragment blankPage;
+        @SuppressWarnings("NullAway.Init")
         private SubmissionsView mCurrentFragment;
         int currentItem = 0;
 
@@ -1932,7 +1963,7 @@ public class SubredditView extends BaseActivity {
         }
 
         @Override
-        public Parcelable saveState() {
+        public @Nullable Parcelable saveState() {
             return null;
         }
 
@@ -2051,8 +2082,12 @@ public class SubredditView extends BaseActivity {
         }
 
         @Override
-        protected Subreddit doInBackground(final String... params) {
+        protected @Nullable Subreddit doInBackground(final String... params) {
             try {
+                if (Authentication.reddit == null) {
+                    return null;
+                }
+
                 Subreddit result = Authentication.reddit.getSubreddit(params[0]);
                 if (result.isNsfw() == null) {
                     // Sub is probably a user profile backing subreddit for a deleted/suspended user

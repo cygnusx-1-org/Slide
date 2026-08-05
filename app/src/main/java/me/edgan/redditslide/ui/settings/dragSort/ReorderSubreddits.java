@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.appcompat.widget.Toolbar;
@@ -64,14 +65,28 @@ import net.dean.jraw.paginators.UserSubredditsPaginator;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class ReorderSubreddits extends BaseActivityAnim {
 
+    // subs, adapter, recyclerView and input are built in onCreate; subscribe in
+    // onCreateOptionsMenu, which the framework calls before any menu callback can fire.
+    @SuppressWarnings("NullAway.Init")
     private CaseInsensitiveArrayList subs;
+
+    @SuppressWarnings("NullAway.Init")
     private CustomAdapter adapter;
+
+    @SuppressWarnings("NullAway.Init")
     private RecyclerView recyclerView;
+
+    @SuppressWarnings("NullAway.Init")
     private String input;
+
     public static final String MULTI_REDDIT = "/m/";
+
+    @SuppressWarnings("NullAway.Init")
     MenuItem subscribe;
 
     @Override
@@ -224,7 +239,7 @@ public class ReorderSubreddits extends BaseActivityAnim {
     private int done = 0;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         disableSwipeBackLayout();
         super.onCreate(savedInstanceState);
         getOnBackPressedDispatcher().addCallback(this, mBackCallback);
@@ -234,8 +249,12 @@ public class ReorderSubreddits extends BaseActivityAnim {
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
         setupAppBar(R.id.toolbar, R.string.settings_manage_subscriptions, false, true);
-        mToolbar.setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (mToolbar != null) {
+            mToolbar.setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
+        }
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         isSubscribed = new HashMap<>();
         if (Authentication.isLoggedIn) {
@@ -285,6 +304,7 @@ public class ReorderSubreddits extends BaseActivityAnim {
                     }
                 }
 
+                @SuppressWarnings("NullAway.Init") // assigned in onPreExecute
                 Dialog d;
 
                 @Override
@@ -567,7 +587,7 @@ public class ReorderSubreddits extends BaseActivityAnim {
         }
 
         @Override
-        protected ArrayList<String> doInBackground(Void... params) {
+        protected @Nullable ArrayList<String> doInBackground(Void... params) {
             ReorderSubreddits activity = activityRef.get();
             if (activity == null) return null; // Activity has been destroyed
 
@@ -890,13 +910,13 @@ public class ReorderSubreddits extends BaseActivityAnim {
             }
         }
 
-        ArrayList<Subreddit> otherSubs;
-        String sub;
+        ArrayList<Subreddit> otherSubs = new ArrayList<>();
+        String sub = "";
 
         @Override
-        protected Subreddit doInBackground(final String... params) {
+        protected @Nullable Subreddit doInBackground(final String... params) {
             sub = params[0];
-            if (isSpecial(sub)) return null;
+            if (isSpecial(sub) || Authentication.reddit == null) return null;
             try {
                 return (subs.contains(params[0])
                         ? null
@@ -1110,8 +1130,8 @@ public class ReorderSubreddits extends BaseActivityAnim {
                             }
                         });
                 holder.check.setChecked(
-                        isSubscribed.containsKey(origPos.toLowerCase(Locale.ENGLISH))
-                                && isSubscribed.get(origPos.toLowerCase(Locale.ENGLISH)));
+                        Boolean.TRUE.equals(
+                                isSubscribed.get(origPos.toLowerCase(Locale.ENGLISH))));
                 holder.check.setOnCheckedChangeListener(
                         new CompoundButton.OnCheckedChangeListener() {
                             @Override
@@ -1119,10 +1139,14 @@ public class ReorderSubreddits extends BaseActivityAnim {
                                     CompoundButton buttonView, boolean isChecked) {
                                 if (!isChecked) {
                                     new UserSubscriptions.UnsubscribeTask().execute(origPos);
-                                    LayoutUtils.showSnackbar(Snackbar.make(mToolbar, getString(R.string.reorder_unsubscribed_toast, origPos), Snackbar.LENGTH_SHORT));
+                                    if (mToolbar != null) {
+                                        LayoutUtils.showSnackbar(Snackbar.make(mToolbar, getString(R.string.reorder_unsubscribed_toast, origPos), Snackbar.LENGTH_SHORT));
+                                    }
                                 } else {
                                     new UserSubscriptions.SubscribeTask(ReorderSubreddits.this).execute(origPos);
-                                    LayoutUtils.showSnackbar(Snackbar.make(mToolbar, getString(R.string.reorder_subscribed_toast, origPos), Snackbar.LENGTH_SHORT));
+                                    if (mToolbar != null) {
+                                        LayoutUtils.showSnackbar(Snackbar.make(mToolbar, getString(R.string.reorder_subscribed_toast, origPos), Snackbar.LENGTH_SHORT));
+                                    }
                                 }
                                 isSubscribed.put(origPos.toLowerCase(Locale.ENGLISH), isChecked);
                             }
@@ -1324,9 +1348,14 @@ public class ReorderSubreddits extends BaseActivityAnim {
      * Shows a dialog for importing existing multireddits
      */
     private void showImportMultiredditDialog() {
-        final String[] multis = new String[UserSubscriptions.multireddits.size()];
+        final List<MultiReddit> multireddits = UserSubscriptions.multireddits;
+        if (multireddits == null) {
+            return;
+        }
+
+        final String[] multis = new String[multireddits.size()];
         int i = 0;
-        for (MultiReddit m : UserSubscriptions.multireddits) {
+        for (MultiReddit m : multireddits) {
             multis[i] = m.getDisplayName();
             i++;
         }
@@ -1338,6 +1367,10 @@ public class ReorderSubreddits extends BaseActivityAnim {
                     // Handle selection
                     String name = multis[which];
                     MultiReddit r = UserSubscriptions.getMultiredditByDisplayName(name);
+                    // The list can be cleared by a failed sync while this dialog is open.
+                    if (r == null) {
+                        return;
+                    }
 
                     // Construct the new URL format for multireddits
                     String username = Authentication.name;

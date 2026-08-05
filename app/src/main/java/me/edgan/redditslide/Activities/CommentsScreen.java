@@ -9,6 +9,7 @@ import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.view.Window;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -33,6 +34,7 @@ import me.edgan.redditslide.util.CustomViewPager;
 import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.models.Submission;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * This activity is responsible for the view when clicking on a post, showing the post and its
@@ -45,6 +47,7 @@ import net.dean.jraw.models.Submission;
  *
  * <p>Created by ccrama on 9/17/2015.
  */
+@NullMarked
 public class CommentsScreen extends BaseActivityAnim implements SubmissionDisplay {
     public static final String EXTRA_PROFILE = "profile";
     public static final String EXTRA_PAGE = "page";
@@ -56,9 +59,10 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
     public PostLoader subredditPosts;
     int firstPage;
 
+    @SuppressWarnings("NullAway.Init")
     CommentsScreenPagerAdapter comments;
     private String subreddit;
-    private String baseSubreddit;
+    private String baseSubreddit = "";
 
     String multireddit;
     String profile;
@@ -87,7 +91,7 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 14) {
             comments.notifyDataSetChanged();
@@ -129,7 +133,7 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
     }
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         popup =
                 getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE
                         && !SettingValues.fullCommentOverride;
@@ -153,11 +157,11 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
 
         Reddit.setDefaultErrorHandler(this);
 
-        firstPage = getIntent().getExtras().getInt(EXTRA_PAGE, -1);
-        baseSubreddit = getIntent().getExtras().getString(EXTRA_SUBREDDIT);
+        firstPage = getIntent().getIntExtra(EXTRA_PAGE, -1);
+        baseSubreddit = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_SUBREDDIT));
         subreddit = baseSubreddit;
-        multireddit = getIntent().getExtras().getString(EXTRA_MULTIREDDIT);
-        profile = getIntent().getExtras().getString(EXTRA_PROFILE, "");
+        multireddit = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_MULTIREDDIT));
+        profile = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_PROFILE));
         currentPosts = new ArrayList<>();
         if (multireddit != null) {
             subredditPosts = new MultiredditPosts(multireddit, profile);
@@ -224,8 +228,9 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
                             finish();
                         }
                         if (position == firstPage && !popup) {
-                            CommentsScreenPagerAdapter adapter = (CommentsScreenPagerAdapter) pager.getAdapter();
-                            if (adapter.blankPage != null) {
+                            CommentsScreenPagerAdapter adapter =
+                                    (CommentsScreenPagerAdapter) pager.getAdapter();
+                            if (adapter != null && adapter.blankPage != null) {
                                 adapter.blankPage.doOffset(positionOffset);
                             }
                         }
@@ -286,7 +291,9 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
     }
 
     private class CommentsScreenPagerAdapter extends FragmentStatePagerAdapter {
+        @SuppressWarnings("NullAway.Init")
         private CommentPage mCurrentFragment;
+        @SuppressWarnings("NullAway.Init")
         public BlankFragment blankPage;
 
         CommentsScreenPagerAdapter(FragmentManager fm) {

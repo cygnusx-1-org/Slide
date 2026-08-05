@@ -16,14 +16,17 @@ import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.SortingUtil;
 import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.TimePeriod;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Handles the sorting selection logic for subreddits within MainActivity.
  */
+@NullMarked
 public class SubredditSortController {
 
     private final MainActivity activity;
 
+    @SuppressWarnings("NullAway.Init")
     Sorting sorts;
     TimePeriod time = TimePeriod.DAY;
 
@@ -36,7 +39,7 @@ public class SubredditSortController {
         PopupMenu popup =
                 new PopupMenu(activity, activity.findViewById(R.id.anchor), Gravity.RIGHT);
         String id =
-                ((SubmissionsView) (((MainPagerAdapter) activity.pager.getAdapter()).getCurrentFragment()))
+                ((SubmissionsView) (((MainPagerAdapter) java.util.Objects.requireNonNull(activity.pager.getAdapter())).getCurrentFragment()))
                         .id;
 
         final Spannable[] base = SortingUtil.getSortingSpannables(id);
@@ -119,7 +122,7 @@ public class SubredditSortController {
         PopupMenu popup =
                 new PopupMenu(activity, activity.findViewById(R.id.anchor), Gravity.RIGHT);
         String id =
-                ((SubmissionsView) (((MainPagerAdapter) activity.pager.getAdapter()).getCurrentFragment()))
+                ((SubmissionsView) (((MainPagerAdapter) java.util.Objects.requireNonNull(activity.pager.getAdapter())).getCurrentFragment()))
                         .id;
         final Spannable[] base = SortingUtil.getSortingTimesSpannables(id);
         for (Spannable s : base) {
@@ -140,7 +143,7 @@ public class SubredditSortController {
                             case 0:
                                 SortingUtil.setTime(
                                         ((SubmissionsView)
-                                                        (((MainPagerAdapter) activity.pager.getAdapter())
+                                                        (((MainPagerAdapter) java.util.Objects.requireNonNull(activity.pager.getAdapter()))
                                                                 .getCurrentFragment()))
                                                 .id,
                                         TimePeriod.HOUR);
@@ -149,7 +152,7 @@ public class SubredditSortController {
                             case 1:
                                 SortingUtil.setTime(
                                         ((SubmissionsView)
-                                                        (((MainPagerAdapter) activity.pager.getAdapter())
+                                                        (((MainPagerAdapter) java.util.Objects.requireNonNull(activity.pager.getAdapter()))
                                                                 .getCurrentFragment()))
                                                 .id,
                                         TimePeriod.DAY);
@@ -158,7 +161,7 @@ public class SubredditSortController {
                             case 2:
                                 SortingUtil.setTime(
                                         ((SubmissionsView)
-                                                        (((MainPagerAdapter) activity.pager.getAdapter())
+                                                        (((MainPagerAdapter) java.util.Objects.requireNonNull(activity.pager.getAdapter()))
                                                                 .getCurrentFragment()))
                                                 .id,
                                         TimePeriod.WEEK);
@@ -167,7 +170,7 @@ public class SubredditSortController {
                             case 3:
                                 SortingUtil.setTime(
                                         ((SubmissionsView)
-                                                        (((MainPagerAdapter) activity.pager.getAdapter())
+                                                        (((MainPagerAdapter) java.util.Objects.requireNonNull(activity.pager.getAdapter()))
                                                                 .getCurrentFragment()))
                                                 .id,
                                         TimePeriod.MONTH);
@@ -176,7 +179,7 @@ public class SubredditSortController {
                             case 4:
                                 SortingUtil.setTime(
                                         ((SubmissionsView)
-                                                        (((MainPagerAdapter) activity.pager.getAdapter())
+                                                        (((MainPagerAdapter) java.util.Objects.requireNonNull(activity.pager.getAdapter()))
                                                                 .getCurrentFragment()))
                                                 .id,
                                         TimePeriod.YEAR);
@@ -185,7 +188,7 @@ public class SubredditSortController {
                             case 5:
                                 SortingUtil.setTime(
                                         ((SubmissionsView)
-                                                        (((MainPagerAdapter) activity.pager.getAdapter())
+                                                        (((MainPagerAdapter) java.util.Objects.requireNonNull(activity.pager.getAdapter()))
                                                                 .getCurrentFragment()))
                                                 .id,
                                         TimePeriod.ALL);

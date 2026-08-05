@@ -2,6 +2,7 @@ package me.edgan.redditslide.Adapters;
 
 import android.app.Activity;
 import android.os.AsyncTask;
+import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
@@ -14,11 +15,15 @@ import net.dean.jraw.paginators.Paginator;
 
 /** Created by ccrama on 9/17/2015. */
 public class InboxMessages extends GeneralPosts {
+    @SuppressWarnings("NullAway.Init")
     public ArrayList<Message> posts;
     public boolean loading;
+    @SuppressWarnings("NullAway.Init")
     private Paginator<Message> paginator;
+    @SuppressWarnings("NullAway.Init")
     private SwipeRefreshLayout refreshLayout;
     public String where;
+    @SuppressWarnings("NullAway.Init")
     private InboxAdapter adapter;
 
     public InboxMessages(String where) {
@@ -81,7 +86,7 @@ public class InboxMessages extends GeneralPosts {
         }
 
         @Override
-        protected ArrayList<Message> doInBackground(String... subredditPaginators) {
+        protected @Nullable ArrayList<Message> doInBackground(String... subredditPaginators) {
             try {
                 if (reset || paginator == null) {
                     paginator = new InboxPaginator(Authentication.reddit, where);

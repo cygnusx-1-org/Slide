@@ -247,7 +247,8 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
             final ImageView mod = holder.itemView.findViewById(R.id.mod);
             try {
-                if (UserSubscriptions.modOf.contains(comment.getSubredditName())) {
+                if (UserSubscriptions.modOf != null
+                        && UserSubscriptions.modOf.contains(comment.getSubredditName())) {
                     // todo
                     mod.setVisibility(View.GONE);
                 } else {
@@ -795,6 +796,10 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
             @Override
             protected Boolean doInBackground(Void... params) {
+                if (Authentication.reddit == null) {
+                    return false;
+                }
+
                 try {
                     new AccountManager(Authentication.reddit).reply(comment, reason);
                     new ModerationManager(Authentication.reddit).remove(comment, false);

@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.snackbar.Snackbar;
@@ -23,6 +24,7 @@ import me.edgan.redditslide.Activities.Reauthenticate;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Surfaces an app-wide "Reauthenticating…" snackbar while a network token refresh is in flight, and
@@ -36,6 +38,7 @@ import me.edgan.redditslide.Reddit;
  * running {@link #FAILED_DELAY_MS} after starting, the snackbar switches to a failure message with a
  * Retry action.
  */
+@NullMarked
 public class ReauthNotifier {
 
     private ReauthNotifier() {}
@@ -60,7 +63,7 @@ public class ReauthNotifier {
     private static final Handler handler = new Handler(Looper.getMainLooper());
 
     private static WeakReference<Activity> currentActivity = new WeakReference<>(null);
-    private static Snackbar currentSnackbar;
+    @Nullable private static Snackbar currentSnackbar;
     private static long startTime;
 
     // reauthFailed: a reauth finished/timed-out unsuccessfully, so the failure bar is the active

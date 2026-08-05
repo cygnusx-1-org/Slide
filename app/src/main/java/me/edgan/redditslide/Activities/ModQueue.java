@@ -4,15 +4,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-
 import com.google.android.material.tabs.TabLayout;
-
 import me.edgan.redditslide.Fragments.InboxPage;
 import me.edgan.redditslide.Fragments.ModLog;
 import me.edgan.redditslide.Fragments.ModPage;
@@ -21,14 +19,17 @@ import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 9/17/2015. */
+@NullMarked
 public class ModQueue extends BaseActivityAnim {
 
+    @SuppressWarnings("NullAway.Init")
     public ModQueuePagerAdapter adapter;
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         overrideSwipeFromAnywhere();
 
         super.onCreate(savedInstance);
@@ -62,6 +63,7 @@ public class ModQueue extends BaseActivityAnim {
 
     private class ModQueuePagerAdapter extends FragmentStatePagerAdapter {
 
+        @SuppressWarnings("NullAway.Init")
         private Fragment mCurrentFragment;
 
         ModQueuePagerAdapter(FragmentManager fm) {
@@ -112,7 +114,11 @@ public class ModQueue extends BaseActivityAnim {
                 default:
                     f = new ModPage();
                     args.putString("id", "modqueue");
-                    args.putString("subreddit", UserSubscriptions.modOf.get(i - 5));
+                    args.putString(
+                            "subreddit",
+                            UserSubscriptions.modOf == null
+                                    ? ""
+                                    : UserSubscriptions.modOf.get(i - 5));
                     f.setArguments(args);
                     return f;
             }
@@ -137,7 +143,9 @@ public class ModQueue extends BaseActivityAnim {
                 case 4:
                     return getString(R.string.mod_log);
                 default:
-                    return UserSubscriptions.modOf.get(position - 5);
+                    return UserSubscriptions.modOf == null
+                            ? ""
+                            : UserSubscriptions.modOf.get(position - 5);
             }
         }
     }

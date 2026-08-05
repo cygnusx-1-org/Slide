@@ -4,11 +4,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import me.edgan.redditslide.Activities.ModQueue;
 import me.edgan.redditslide.Adapters.ModeratorAdapter;
 import me.edgan.redditslide.Adapters.ModeratorPosts;
@@ -27,7 +26,9 @@ public class ModPage extends Fragment {
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_verticalcontent, container, false);
 
@@ -62,7 +63,7 @@ public class ModPage extends Fragment {
 
         rv.addOnScrollListener(
                 new ToolbarScrollHideHandler(
-                        ((ModQueue) getActivity()).mToolbar,
+                        ((ModQueue) getActivity()).requireToolbar(),
                         (getActivity()).findViewById(R.id.header)));
 
         posts.bindAdapter(adapter, mSwipeRefreshLayout);
@@ -77,7 +78,7 @@ public class ModPage extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = this.getArguments();
         id = bundle.getString("id", "");
