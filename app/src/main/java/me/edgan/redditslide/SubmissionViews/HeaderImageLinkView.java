@@ -104,7 +104,6 @@ public class HeaderImageLinkView extends RelativeLayout {
     private TextView title;
     @Nullable private TextView info;
     public MaxHeightImageView backdrop;
-    private boolean forceThumb;
 
     // Cache the resolved gallery preview, keyed by the data node identity, so re-binds of the same
     // card skip re-traversing the gallery JSON while a refreshed submission (new node) recomputes.
@@ -215,12 +214,11 @@ public class HeaderImageLinkView extends RelativeLayout {
                         || SettingValues.lowResAlways));
 
         JsonNode dataNode = submission.getDataNode();
-        JsonNode spoiler = (dataNode != null) ? dataNode.get("spoiler") : null;
         JsonNode thumbnail =
                 (dataNode != null) ? dataNode.path("thumbnail") : MissingNode.getInstance();
 
-        if (type == ContentType.Type.SELF && SettingValues.hideSelftextLeadImage
-                || SettingValues.noImages && submission.isSelfPost()) {
+        if ((type == ContentType.Type.SELF && SettingValues.hideSelftextLeadImage)
+                || (SettingValues.noImages && submission.isSelfPost())) {
             setVisibility(View.GONE);
             if (wrapArea != null) wrapArea.setVisibility(View.GONE);
             thumbImage2.setVisibility(View.GONE);
@@ -272,7 +270,7 @@ public class HeaderImageLinkView extends RelativeLayout {
                     thumbImage2.setContentDescription(getContext().getString(R.string.btn_play));
                 }
                 thumbUsed = true;
-            } else if (submission.isNsfw() && SettingValues.getIsNSFWEnabled()
+            } else if ((submission.isNsfw() && SettingValues.getIsNSFWEnabled())
                     || (baseSub != null
                             && submission.isNsfw()
                             && SettingValues.hideNSFWCollection
@@ -295,11 +293,11 @@ public class HeaderImageLinkView extends RelativeLayout {
                 handleRedditGalleryType(submission, baseSub, full, forceThumb);
             } else if (type == ContentType.Type.VREDDIT_DIRECT || type == ContentType.Type.VREDDIT_REDIRECT) {
                 handleVRedditType(submission, baseSub, full, forceThumb);
-            } else if (type != ContentType.Type.IMAGE
+            } else if ((type != ContentType.Type.IMAGE
                             && type != ContentType.Type.SELF
-                            && (!thumbnail.isNull()
+                            && !thumbnail.isNull()
                                     && (thumbnailType != Submission.ThumbnailType.URL))
-                    || thumbnail.asText().isEmpty() && !submission.isSelfPost()) {
+                    || (thumbnail.asText().isEmpty() && !submission.isSelfPost())) {
                 setVisibility(View.GONE);
                 if (!full) {
                     thumbImage2.setVisibility(View.VISIBLE);
@@ -323,7 +321,7 @@ public class HeaderImageLinkView extends RelativeLayout {
                     && !thumbnail.asText().isEmpty()) {
                 handleImageType(submission, baseSub, full, forceThumb, loadLq);
             } else if (submission.getThumbnails() != null) {
-                handleThumbnailDisplay(submission, full, forceThumb, loadLq, baseSub, news);
+                handleThumbnailDisplay(submission, full, forceThumb, loadLq, baseSub);
             } else if (!thumbnail.isNull()
                     && submission.getThumbnail() != null
                     && (submission.getThumbnailType() == Submission.ThumbnailType.URL
@@ -758,7 +756,7 @@ public class HeaderImageLinkView extends RelativeLayout {
     }
 
     private void handlePreviewImage(String previewUrl, Submission submission, @Nullable String baseSub, boolean full, boolean forceThumb) {
-        if (!full && !SettingValues.isPicsEnabled(baseSub) || forceThumb) {
+        if ((!full && !SettingValues.isPicsEnabled(baseSub)) || forceThumb) {
             if (!submission.isSelfPost() || full) {
                 setThumbAndWrapVisibility(full, true);
                 loadedUrl = previewUrl;
@@ -885,6 +883,8 @@ public class HeaderImageLinkView extends RelativeLayout {
             // Error) on allocation failure, which must degrade to the async fallback, not crash the
             // bind. UIL's own decoder guards against OOM the same way.
         } catch (Throwable ignored) {
+            // See the note above: any failure, OOM
+            // included, degrades to the async load.
         }
         return null;
     }
@@ -1020,8 +1020,8 @@ public class HeaderImageLinkView extends RelativeLayout {
     }
 
     private void handleThumbnailDisplay(Submission submission, boolean full, boolean forceThumb,
-            boolean loadLq, @Nullable String baseSub, boolean news) {
-        boolean shouldShowThumb = !SettingValues.isPicsEnabled(baseSub) && !full
+            boolean loadLq, @Nullable String baseSub) {
+        boolean shouldShowThumb = (!SettingValues.isPicsEnabled(baseSub) && !full)
                 || forceThumb;
         String url = getSubmissionUrl(submission, loadLq, feedImageWidth(shouldShowThumb));
 
@@ -1255,12 +1255,12 @@ public class HeaderImageLinkView extends RelativeLayout {
 
     private View determineBottomSheetTarget(Submission submission, boolean forceThumb, ContentType.Type type) {
         boolean useThumb = forceThumb
-                || (submission.isNsfw()
-                        && submission.getThumbnailType() == Submission.ThumbnailType.NSFW
-                        || type != ContentType.Type.IMAGE
+                || ((submission.isNsfw()
+                        && submission.getThumbnailType() == Submission.ThumbnailType.NSFW)
+                        || (type != ContentType.Type.IMAGE
                         && type != ContentType.Type.SELF
                         && submission.getDataNode().hasNonNull("thumbnail")
-                        && (submission.getThumbnailType() != Submission.ThumbnailType.URL));
+                        && (submission.getThumbnailType() != Submission.ThumbnailType.URL)));
 
         return useThumb ? thumbImage2 : this;
     }

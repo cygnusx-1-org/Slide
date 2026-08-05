@@ -128,9 +128,9 @@ public class LinkUtil {
         if (!(contextActivity instanceof ReaderMode)
                 && contentType != ContentType.Type.VIDEO  // Skip reader mode for videos
                 && ((SettingValues.readerMode && !SettingValues.readerNight)
-                        || SettingValues.readerMode
+                        || (SettingValues.readerMode
                                 && SettingValues.readerNight
-                                && SettingValues.isNight())) {
+                                && SettingValues.isNight()))) {
             Intent i = new Intent(contextActivity, ReaderMode.class);
             openIntentThemed(i, url, color, contextActivity, adapterPosition, submission);
         } else if (contentType == ContentType.Type.VIDEO && (url.contains("youtube.com") || url.contains("youtu.be"))) {

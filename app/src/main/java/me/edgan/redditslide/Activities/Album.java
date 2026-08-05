@@ -113,7 +113,7 @@ public class Album extends BaseSaveActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void doImageSave(boolean isGif, String contentUrl, int index) {
+    @Override public void doImageSave(boolean isGif, String contentUrl, int index) {
         ImageSaveUtils.doImageSave(this, isGif, contentUrl, index, subreddit, submissionTitle, this::showFirstDialog);
     }
 
@@ -138,7 +138,7 @@ public class Album extends BaseSaveActivity {
 
     public AlbumPagerAdapter album;
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
         overrideSwipeFromAnywhere();
         super.onCreate(savedInstanceState);
         getTheme().applyStyle(new ColorPreferences(this).getDarkThemeSubreddit(ColorPreferences.FONT_STYLE), true);

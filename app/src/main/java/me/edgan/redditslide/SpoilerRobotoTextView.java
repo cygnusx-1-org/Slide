@@ -13,8 +13,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -282,9 +280,6 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
         return html;
     }
 
-    // List to keep track of active GifDrawables to manage their lifecycle
-    private List<GifDrawable> activeGifDrawables = new ArrayList<>();
-
     private final Object spanLock = new Object();
 
     private static class PendingEmoteSpan {
@@ -303,14 +298,9 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
 
     private static class EmoteDrawInfo {
         GifDrawable drawable;
-        int position; // Character position in text
-        float x; // Cached x position
-        float y; // Cached y position
-        boolean isValid;
 
-        EmoteDrawInfo(GifDrawable drawable, int position) {
+        EmoteDrawInfo(GifDrawable drawable) {
             this.drawable = drawable;
-            this.position = position;
         }
     }
 
@@ -381,7 +371,7 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
                     if (span instanceof AnimatedImageSpan) {
                         AnimatedImageSpan animatedSpan = (AnimatedImageSpan) span;
                         animatedSpan.start();
-                        emoteDrawables.add(new EmoteDrawInfo(animatedSpan.getGifDrawable(), pos));
+                        emoteDrawables.add(new EmoteDrawInfo(animatedSpan.getGifDrawable()));
                     }
                 }
 
@@ -508,7 +498,7 @@ public void setEmoteText(@Nullable String text, @Nullable TextView textView) {
             // If this URL comes from external-preview or i.giphy.com, use the inline image loader
             if (request.gifUrl.contains("external-preview.redd.it")
                     || request.gifUrl.contains("i.giphy.com")) {
-                loadGiphyEmote(request, textView, request.start);
+                loadGiphyEmote(request, request.start);
             } else {
                 // …otherwise (e.g. free_emote_pack/snoomoji) leave it as before.
                 loadGifEmote(request, textView, request.start);
@@ -525,7 +515,7 @@ public void setEmoteText(@Nullable String text, @Nullable TextView textView) {
  * and replaces the placeholder ImageSpan (inserted as the object replacement character)
  * with one that uses the downloaded image.
  */
-private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int posCount) {
+private void loadGiphyEmote(EmoteSpanRequest request, int posCount) {
     // Respect the "Don't load any images" data saving setting.
     if (SettingValues.shouldSkipImages(getContext())) {
         return;
@@ -615,7 +605,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                     processedText.append("\uFFFC"); // Object replacement character
 
                     spanRequests.add(
-                            new EmoteSpanRequest(gifUrl, emoteCount, emoteCount + 1, emoteName));
+                            new EmoteSpanRequest(gifUrl, emoteCount, emoteName));
 
                     emoteCount++;
                 }
@@ -703,7 +693,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                                     if (SettingValues.commentEmoteAnimation) {
                                         animatedSpan.start();
                                     }
-                                    emoteDrawables.add(new EmoteDrawInfo(animatedSpan.getGifDrawable(), pos));
+                                    emoteDrawables.add(new EmoteDrawInfo(animatedSpan.getGifDrawable()));
                                     requestLayout();
 
                                 } catch (Exception e) {
@@ -736,7 +726,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
         }
         for (int i = 0; i < emoteUrls.size(); i++) {
             String url = emoteUrls.get(i);
-            loadGifEmote(new EmoteSpanRequest(url, 0, 0, url), this, i);
+            loadGifEmote(new EmoteSpanRequest(url, 0, url), this, i);
         }
     }
 
@@ -744,13 +734,11 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
     private static class EmoteSpanRequest {
         String gifUrl;
         int start;
-        int end;
         String emoteName;
 
-        EmoteSpanRequest(String gifUrl, int start, int end, String emoteName) {
+        EmoteSpanRequest(String gifUrl, int start, String emoteName) {
             this.gifUrl = gifUrl;
             this.start = start;
-            this.end = end;
             this.emoteName = emoteName;
         }
     }
@@ -1026,7 +1014,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                     break;
                 case LINK:
                     if (url.startsWith("https://giphy.com/")) {
-                        openGif(url, subreddit, activity);
+                        openGif(url, subreddit);
                     } else if (activity != null) {
                         LogUtil.v("Opening link");
                         LinkUtil.openUrl(url, Palette.getColor(subreddit), activity);
@@ -1073,7 +1061,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                     break;
                 case VREDDIT_REDIRECT:
                     if (url.contains("reddit.com/link/") && url.contains("/video/")) {
-                        openGif(url, subreddit, activity);
+                        openGif(url, subreddit);
                     } else if (activity != null) {
                         openVReddit(url, subreddit, activity);
                     } else {
@@ -1082,7 +1070,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                     break;
                 case GIF:
                 case VREDDIT_DIRECT:
-                    openGif(url, subreddit, activity);
+                    openGif(url, subreddit);
                     break;
                 case VIDEO:
                     if (!LinkUtil.tryOpenWithVideoPlugin(url)) {
@@ -1150,7 +1138,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, url);
     }
 
-    private void openGif(String url, String subreddit, @Nullable Activity activity) {
+    private void openGif(String url, String subreddit) {
         if (SettingValues.gif) {
             Intent myIntent = new Intent(getContext(), MediaView.class);
             myIntent.putExtra(MediaView.EXTRA_URL, url);
@@ -1631,7 +1619,6 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
     }
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     // Define a cache for thumbnails.
     private LruCache<String, Bitmap> thumbnailCache = new LruCache<>(calculateCacheSize());

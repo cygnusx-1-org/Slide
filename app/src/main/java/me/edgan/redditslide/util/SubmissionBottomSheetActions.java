@@ -812,10 +812,10 @@ final AlertDialog reportDialog =
                     } else {
                         s = Snackbar.make(holder.itemView, R.string.submission_info_unsaved, Snackbar.LENGTH_SHORT);
                         final int getTintColor =
-                                holder.itemView.getTag(holder.itemView.getId()) != null
+                                (holder.itemView.getTag(holder.itemView.getId()) != null
                                                         && holder.itemView
                                                                 .getTag(holder.itemView.getId())
-                                                                .equals("none")
+                                                                .equals("none"))
                                                 || full
                                         ? Palette.getCurrentTintColor(mContext)
                                         : Palette.getWhiteTintColor();
@@ -824,7 +824,8 @@ final AlertDialog reportDialog =
                     }
                     LayoutUtils.showSnackbar(s);
                 } catch (Exception ignored) {
-
+                    // Snackbar needs a view still in a window; the
+                    // save itself already went through.
                 }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -850,11 +851,7 @@ final AlertDialog reportDialog =
                     return categories;
                 } catch (Exception e) {
                     LogUtil.e(e, "SubmissionBottomSheetActions.doInBackground failed");
-                    return new ArrayList<String>() {
-                        {
-                            add("New category");
-                        }
-                    };
+                    return Collections.singletonList("New category");
                     // sub probably has no flairs?
                 }
             }
@@ -1107,7 +1104,8 @@ final AlertDialog reportDialog =
                     Snackbar.make(contextView, R.string.msg_report_sent, Snackbar.LENGTH_SHORT);
                     LayoutUtils.showSnackbar(s);
                 } catch (Exception ignored) {
-
+                    // Snackbar needs a view still in a window; the
+                    // report was already sent.
                 }
             }
         }

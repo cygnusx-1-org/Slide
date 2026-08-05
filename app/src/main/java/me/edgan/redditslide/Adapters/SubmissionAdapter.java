@@ -253,7 +253,8 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                             try {
                                                 a.adapter.notifyDataSetChanged();
                                             } catch (Exception ignored) {
-
+                                                // notifyDataSetChanged during a layout pass throws;
+                                                // the pager rebinds on the next pass anyway.
                                             }
                                         }
                                         a.pager.postDelayed(

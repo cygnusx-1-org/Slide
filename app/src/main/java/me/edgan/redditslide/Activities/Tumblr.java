@@ -132,7 +132,7 @@ public class Tumblr extends BaseSaveActivity {
 
     public TumblrPagerAdapter album;
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
         overrideSwipeFromAnywhere();
         super.onCreate(savedInstanceState);
         getTheme()
@@ -303,7 +303,7 @@ public class Tumblr extends BaseSaveActivity {
         }
     }
 
-    public void doImageSave(boolean isGif, String contentUrl, int index) {
+    @Override public void doImageSave(boolean isGif, String contentUrl, int index) {
         ImageSaveUtils.doImageSave(
                 this,
                 isGif,

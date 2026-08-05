@@ -76,9 +76,6 @@ public class PeekMediaView extends RelativeLayout {
     @SuppressWarnings("NullAway.Init")
     private ProgressBar progress;
 
-    @SuppressWarnings("NullAway.Init")
-    private SubsamplingScaleImageView image;
-
     public PeekMediaView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
@@ -372,7 +369,7 @@ public class PeekMediaView extends RelativeLayout {
         website.getSettings().setUseWideViewPort(true);
         website.setDownloadListener(
                 new DownloadListener() {
-                    public void onDownloadStart(
+                    @Override public void onDownloadStart(
                             String url,
                             String userAgent,
                             String contentDisposition,
@@ -552,7 +549,6 @@ public class PeekMediaView extends RelativeLayout {
                         (PeekViewActivity) getContext(),
                         videoView,
                         progress,
-                        null,
                         false,
                         true,
                         "") {
@@ -580,7 +576,7 @@ public class PeekMediaView extends RelativeLayout {
             final Handler handler = new Handler();
             final Runnable progressBarDelayRunner =
                     new Runnable() {
-                        public void run() {
+                        @Override public void run() {
                             progress.setVisibility(View.VISIBLE);
                         }
                     };
@@ -679,7 +675,6 @@ public class PeekMediaView extends RelativeLayout {
 
     private void init() {
         inflate(getContext(), R.layout.peek_media_view, this);
-        this.image = findViewById(R.id.submission_image);
         this.videoView = findViewById(R.id.gif);
         this.website = findViewById(R.id.website);
         this.progress = findViewById(R.id.progress);

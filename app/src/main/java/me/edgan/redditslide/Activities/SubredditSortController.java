@@ -48,11 +48,11 @@ public class SubredditSortController {
             if (!id.equals("frontpage") && s.toString().equals(activity.getString(R.string.sorting_best))) {
                 continue;
             }
-            MenuItem m = popup.getMenu().add(s);
+            popup.getMenu().add(s);
         }
         popup.setOnMenuItemClickListener(
                 new PopupMenu.OnMenuItemClickListener() {
-                    public boolean onMenuItemClick(MenuItem item) {
+                    @Override public boolean onMenuItemClick(MenuItem item) {
                         int i = 0;
                         for (Spannable s : base) {
                             if (s.equals(item.getTitle())) {
@@ -126,11 +126,11 @@ public class SubredditSortController {
                         .id;
         final Spannable[] base = SortingUtil.getSortingTimesSpannables(id);
         for (Spannable s : base) {
-            MenuItem m = popup.getMenu().add(s);
+            popup.getMenu().add(s);
         }
         popup.setOnMenuItemClickListener(
                 new PopupMenu.OnMenuItemClickListener() {
-                    public boolean onMenuItemClick(MenuItem item) {
+                    @Override public boolean onMenuItemClick(MenuItem item) {
                         LogUtil.v("Chosen is " + item.getOrder());
                         int i = 0;
                         for (Spannable s : base) {

@@ -227,7 +227,8 @@ public class OpenRedditLink {
                                 i.putExtra(CommentsScreenSingle.EXTRA_CONTEXT_NUMBER, Integer.parseInt(contextNumber));
                             }
                         } catch (NumberFormatException ignored) {
-
+                            // A context= parameter that is not a number is left off the
+                            // intent, and the comment screen uses its default.
                         }
                     }
                     break;

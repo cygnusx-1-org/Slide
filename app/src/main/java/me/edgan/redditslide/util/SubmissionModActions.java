@@ -102,7 +102,6 @@ public class SubmissionModActions {
         final Drawable report = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_report, color);
         final Drawable approve = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_thumb_up, color);
         final Drawable nsfw = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_visibility_off, color);
-        final Drawable spoiler = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_remove_circle, color);
         final Drawable pin = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_bookmark_border, color);
         final Drawable lock = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_lock, color);
         final Drawable flair = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_format_quote, color);
@@ -501,7 +500,8 @@ public class SubmissionModActions {
                         showFlairSelectionDialog(mContext, submission, data, flair, holder);
                     }
                 } catch (Exception ignored) {
-
+                    // Flair dialog on a host that finished while the list
+                    // loaded.
                 }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

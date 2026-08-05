@@ -54,7 +54,7 @@ public class AlbumView extends VerticalMediaAdapter {
                                     final Dialog d = builder.create();
                                     gridview.setOnItemClickListener(
                                             new AdapterView.OnItemClickListener() {
-                                                public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                                                @Override public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                                                     final int offset = LayoutUtils.getToolbarOffset(context);
                                                     final RecyclerView.LayoutManager lm =
                                                             context instanceof Album

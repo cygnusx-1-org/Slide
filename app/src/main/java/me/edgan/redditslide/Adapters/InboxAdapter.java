@@ -24,7 +24,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -62,7 +61,6 @@ import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
 import net.dean.jraw.ApiException;
 import net.dean.jraw.managers.InboxManager;
-import net.dean.jraw.models.Captcha;
 import net.dean.jraw.models.Message;
 import net.dean.jraw.models.PrivateMessage;
 
@@ -80,8 +78,6 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         this.mContext = mContext;
         this.listView = listView;
         this.dataSet = dataSet;
-
-        boolean isSame = false;
     }
 
     private boolean errorShown;
@@ -104,10 +100,10 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0 && !dataSet.posts.isEmpty()
-                || position == dataSet.posts.size() + 1
+        if ((position == 0 && !dataSet.posts.isEmpty())
+                || (position == dataSet.posts.size() + 1
                         && dataSet.nomore
-                        && !dataSet.where.equalsIgnoreCase("where")) {
+                        && !dataSet.where.equalsIgnoreCase("where"))) {
             return SPACER;
         } else {
             position -= 1;
@@ -547,9 +543,6 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     private class AsyncReplyTask extends AsyncTask<Void, Void, Void> {
-        @SuppressWarnings("NullAway.Init")
-        String trying;
-
         Message replyTo;
         String text;
 
@@ -560,14 +553,14 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         @Override
         protected Void doInBackground(Void... voids) {
-            sendMessage(null, null);
+            sendMessage();
 
             return null;
         }
 
         boolean sent;
 
-        public void sendMessage(@Nullable Captcha captcha, @Nullable String captchaAttempt) {
+        public void sendMessage() {
             try {
                 new net.dean.jraw.managers.AccountManager(Authentication.reddit)
                         .reply(replyTo, text);

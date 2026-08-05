@@ -108,7 +108,8 @@ public class Inbox extends BaseActivityAnim {
                             LayoutUtils.scrollToTabAfterLayout(tabs, CURRENT_TAB);
                             pager.setCurrentItem(CURRENT_TAB);
                         } catch (Exception e) {
-
+                            // Rebuilding the pager needs a live FragmentManager; a
+                            // finishing Inbox has nothing left to re-tab.
                         }
                     }
                 }
@@ -167,7 +168,8 @@ public class Inbox extends BaseActivityAnim {
                         }
 
                     } catch (Exception ignored) {
-
+                        // Background re-auth: a failure leaves isLoggedIn alone and the
+                        // next call re-tries.
                     }
                     return null;
                 }

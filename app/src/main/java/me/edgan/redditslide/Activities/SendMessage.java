@@ -69,7 +69,7 @@ public class SendMessage extends BaseActivity {
     @Nullable String author;
     private ActivityResultLauncher<PickVisualMediaRequest> editorImageLauncher;
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
         disableSwipeBackLayout();
         super.onCreate(savedInstanceState);
 

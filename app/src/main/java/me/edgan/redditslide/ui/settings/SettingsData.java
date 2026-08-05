@@ -14,7 +14,7 @@ public class SettingsData extends BaseActivityAnim {
 
     private SettingsDataFragment fragment = new SettingsDataFragment(this);
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_datasaving);

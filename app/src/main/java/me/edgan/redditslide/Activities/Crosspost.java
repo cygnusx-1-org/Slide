@@ -96,7 +96,7 @@ public class Crosspost extends BaseActivity {
     @SuppressWarnings("NullAway.Init")
     private Set<String> crosspostableSubs;
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
         disableSwipeBackLayout();
         super.onCreate(savedInstanceState);
         applyColorTheme();

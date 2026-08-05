@@ -62,7 +62,6 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
     private String submissionTitle;
     public RedditGalleryPagerAdapter gallery;
     @Nullable private static String lastContentUrl; // Track URL for retry after permission
-    private int lastIndex = -1; // Track index for retry after permission
 
     private static final String TAG = "RedditGallery";
 
@@ -351,7 +350,7 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
         }
     }
 
-    public void doImageSave(boolean isGif, String contentUrl, int index) {
+    @Override public void doImageSave(boolean isGif, String contentUrl, int index) {
         ImageSaveUtils.doImageSave(
                 this,
                 isGif,
@@ -449,7 +448,6 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
                         host,
                         rootView.findViewById(R.id.gif),
                         loader,
-                        null, // placeholder
                         false, // closeIfNull
                         true, // autostart
                         size,

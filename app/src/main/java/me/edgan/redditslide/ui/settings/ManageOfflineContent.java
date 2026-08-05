@@ -14,7 +14,7 @@ public class ManageOfflineContent extends BaseActivityAnim {
 
     ManageOfflineContentFragment fragment = new ManageOfflineContentFragment(this);
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_manage_history);

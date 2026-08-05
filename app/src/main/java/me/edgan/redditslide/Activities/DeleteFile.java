@@ -62,7 +62,7 @@ public class DeleteFile extends Activity {
                         new String[] {image},
                         null,
                         new MediaScannerConnection.OnScanCompletedListener() {
-                            public void onScanCompleted(String path, Uri uri) {
+                            @Override public void onScanCompleted(String path, Uri uri) {
                                 if (uri != null) {
                                     getContentResolver().delete(uri, null, null);
                                 }

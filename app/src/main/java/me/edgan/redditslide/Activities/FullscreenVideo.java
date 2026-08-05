@@ -31,7 +31,7 @@ public class FullscreenVideo extends FullScreenActivity {
         overridePendingTransition(0, R.anim.fade_out);
     }
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
         overrideRedditSwipeAnywhere();
 
         super.onCreate(savedInstanceState);

@@ -28,6 +28,9 @@ public class ToolboxConfig {
     @JsonAdapter(EmptyStringAsNullTypeAdapter.class)
     @Nullable private RemovalReasons removalReasons;
 
+    // macros and banMacros are unread: they mirror toolbox's wiki schema, which is what this
+    // class is for, and dropping them would make a reader think toolbox does not write them.
+    @SuppressWarnings("UnusedVariable")
     @JsonAdapter(EmptyStringAsNullTypeAdapter.class)
     @Nullable private List<Map<String, String>> macros;
 
@@ -35,6 +38,7 @@ public class ToolboxConfig {
     @JsonAdapter(UsernoteTypeDeserializer.class)
     @Nullable private Map<String, Map<String, String>> usernoteTypes;
 
+    @SuppressWarnings("UnusedVariable")
     @JsonAdapter(EmptyStringAsNullTypeAdapter.class)
     @Nullable private Map<String, String> banMacros;
 

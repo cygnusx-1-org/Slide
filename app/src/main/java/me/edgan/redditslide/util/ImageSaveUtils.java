@@ -56,7 +56,6 @@ public class ImageSaveUtils {
                         contentUrl == null ? "" : contentUrl,
                         subreddit == null ? "" : subreddit,
                         submissionTitle == null ? "" : submissionTitle,
-                        showFirstDialogCallback,
                         index
                 ).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
@@ -86,20 +85,18 @@ public class ImageSaveUtils {
         private final String initialUrl;
         private final String subreddit;
         private final String submissionTitle;
-        private final Runnable showFirstDialogCallback;
         private final int index;
         @Nullable private Exception error = null;
 
-        ResolveAndSaveGifTask(Activity activity, String initialUrl, String subreddit, String submissionTitle, Runnable showFirstDialogCallback) {
-            this(activity, initialUrl, subreddit, submissionTitle, showFirstDialogCallback, -1);
+        ResolveAndSaveGifTask(Activity activity, String initialUrl, String subreddit, String submissionTitle) {
+            this(activity, initialUrl, subreddit, submissionTitle, -1);
         }
 
-        ResolveAndSaveGifTask(Activity activity, String initialUrl, String subreddit, String submissionTitle, Runnable showFirstDialogCallback, int index) {
+        ResolveAndSaveGifTask(Activity activity, String initialUrl, String subreddit, String submissionTitle, int index) {
             this.activity = activity;
             this.initialUrl = initialUrl;
             this.subreddit = subreddit;
             this.submissionTitle = submissionTitle;
-            this.showFirstDialogCallback = showFirstDialogCallback;
             this.index = index;
         }
 
@@ -183,7 +180,9 @@ public class ImageSaveUtils {
                             ? R.string.mediaview_notif_video
                             : R.string.mediaview_notif_title;
                     Toast.makeText(activity, activity.getString(toastMsg), Toast.LENGTH_SHORT).show();
-                } catch (Exception ignored) {} // Ignore if toast fails
+                } catch (Exception ignored) {
+                    // A Toast needs a live host; the save proceeds without it.
+                }
 
                 // Proceed with saving using the resolved URI
                 GifUtils.cacheSaveGif(resolvedUri, activity, subreddit != null ? subreddit : "", submissionTitle != null ? submissionTitle : "", true, index);

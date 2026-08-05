@@ -220,7 +220,7 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             url = url.replace("?ref=search_posts", "");
                             OpenRedditLink.openUrl(mContext, url, true);
                             if (SettingValues.storeHistory) {
-                                if (SettingValues.storeNSFWHistory && submission.isNsfw()
+                                if ((SettingValues.storeNSFWHistory && submission.isNsfw())
                                         || !submission.isNsfw())
                                     HasSeen.addSeen(submission.getFullName());
                             }
@@ -237,7 +237,7 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             String scoreText;
             if (comment.isScoreHidden()) {
                 scoreText =
-                        "[" + mContext.getString(R.string.misc_score_hidden).toUpperCase() + "]";
+                        "[" + mContext.getString(R.string.misc_score_hidden).toUpperCase(Locale.getDefault()) + "]";
             } else {
                 scoreText = String.format(Locale.getDefault(), "%d", comment.getScore());
             }

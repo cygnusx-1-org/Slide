@@ -597,7 +597,8 @@ public class ColorPreferences {
                 return Theme.valueOf(str);
             }
         } catch (Exception ignored) {
-
+            // An unknown theme name falls back to getFontStyle()
+            // below.
         }
         return getFontStyle();
     }
@@ -624,7 +625,8 @@ public class ColorPreferences {
                 return Theme.valueOf(base);
             }
         } catch (Exception ignored) {
-
+            // An unknown theme name falls back to defaultTheme
+            // below.
         }
         return defaultTheme;
     }

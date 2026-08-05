@@ -43,6 +43,8 @@ public class SingleImage {
     @JsonProperty("title")
     @Nullable private String title;
 
+    // Unread, but part of the generated DTO shape and written by setDescription.
+    @SuppressWarnings("UnusedVariable")
     @JsonProperty("description")
     @Nullable private String description;
 

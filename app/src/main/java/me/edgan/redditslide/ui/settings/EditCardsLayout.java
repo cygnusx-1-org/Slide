@@ -64,7 +64,7 @@ public class EditCardsLayout extends BaseActivityAnim {
 
                                 popup.setOnMenuItemClickListener(
                                         new PopupMenu.OnMenuItemClickListener() {
-                                            public boolean onMenuItemClick(MenuItem item) {
+                                            @Override public boolean onMenuItemClick(MenuItem item) {
                                                 int itemId = item.getItemId();
                                                 if (itemId == R.id.center) {
                                                     layout.removeAllViews();
@@ -302,7 +302,7 @@ public class EditCardsLayout extends BaseActivityAnim {
 
                                 popup.setOnMenuItemClickListener(
                                         new PopupMenu.OnMenuItemClickListener() {
-                                            public boolean onMenuItemClick(MenuItem item) {
+                                            @Override public boolean onMenuItemClick(MenuItem item) {
                                                 int itemId = item.getItemId();
                                                 if (itemId == R.id.bigpic) {
                                                     layout.removeAllViews();
@@ -448,7 +448,7 @@ public class EditCardsLayout extends BaseActivityAnim {
 
                                 popup.setOnMenuItemClickListener(
                                         new PopupMenu.OnMenuItemClickListener() {
-                                            public boolean onMenuItemClick(MenuItem item) {
+                                            @Override public boolean onMenuItemClick(MenuItem item) {
                                                 int itemId = item.getItemId();
                                                 if (itemId == R.id.always) {
                                                     SettingValues.actionbarTap = false;
@@ -597,7 +597,7 @@ public class EditCardsLayout extends BaseActivityAnim {
 
                                 popup.setOnMenuItemClickListener(
                                         new PopupMenu.OnMenuItemClickListener() {
-                                            public boolean onMenuItemClick(MenuItem item) {
+                                            @Override public boolean onMenuItemClick(MenuItem item) {
                                                 int itemId = item.getItemId();
                                                 if (itemId == R.id.disabled) {
                                                     SettingValues.smallTag = 0;

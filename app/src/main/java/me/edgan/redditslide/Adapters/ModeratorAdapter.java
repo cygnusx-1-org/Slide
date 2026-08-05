@@ -452,8 +452,6 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         final Drawable profile = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_account_circle, color);
         final Drawable report = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_report, color);
         final Drawable approve = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_thumb_up, color);
-        final Drawable nsfw = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_visibility_off, color);
-        final Drawable pin = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_bookmark_border, color);
         final Drawable distinguish = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_star, color);
         final Drawable remove = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_close, color);
         final Drawable ban = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_gavel, color);

@@ -53,7 +53,6 @@ public class AnimatedImageSpan extends DynamicDrawableSpan {
         Drawable drawable = getDrawable();
         Rect bounds = drawable.getBounds();
 
-        int intrinsicWidth = bounds.width();
         int intrinsicHeight = bounds.height();
 
         int transY = y - intrinsicHeight + 18;

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import me.edgan.redditslide.Autocache.AutoCacheScheduler;
 import me.edgan.redditslide.CommentCacheAsync;
@@ -185,7 +186,7 @@ public class ManageOfflineContentFragment {
                                                 })
                                         .setTitle(R.string.multireddit_selector)
                                         .setPositiveButton(
-                                                context.getString(R.string.btn_add).toUpperCase(),
+                                                context.getString(R.string.btn_add).toUpperCase(Locale.getDefault()),
                                                 (dialog, which) -> {
                                                     Reddit.cachedData
                                                             .edit()

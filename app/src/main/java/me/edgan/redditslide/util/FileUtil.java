@@ -175,9 +175,9 @@ public class FileUtil {
     }
 
     public static String getMimeType(String fileName) {
-        if (fileName.toLowerCase().endsWith(".png")) {
+        if (fileName.toLowerCase(Locale.ENGLISH).endsWith(".png")) {
             return "image/png";
-        } else if (fileName.toLowerCase().endsWith(".gif")) {
+        } else if (fileName.toLowerCase(Locale.ENGLISH).endsWith(".gif")) {
             return "image/gif";
         } else {
             return "image/jpeg";
@@ -196,6 +196,8 @@ public class FileUtil {
             try {
                 in.close();
             } catch (IOException ignored) {
+                // Failing to close the stream we finished reading changes nothing
+                // the caller can act on.
             }
         }
     }

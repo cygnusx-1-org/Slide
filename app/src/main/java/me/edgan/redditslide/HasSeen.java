@@ -55,6 +55,8 @@ public class HasSeen {
             try {
                 seenTimes.put(fullname, Long.valueOf(value));
             } catch (Exception ignored) {
+                // A stored value that is not a timestamp leaves seenTimes without an
+                // entry; the post still counts as seen.
             }
         } else if (m.keyExists(LastComments.commentsKey(s.getFullName()))) {
             // The post itself was never marked seen but its comments were visited (a NSFW post
@@ -70,7 +72,7 @@ public class HasSeen {
         }
         return (hasSeen.contains(fullname)
                 || SynccitRead.visitedIds.contains(fullname)
-                || s.getDataNode().has("visited") && s.getDataNode().path("visited").asBoolean()
+                || (s.getDataNode().has("visited") && s.getDataNode().path("visited").asBoolean())
                 || s.getVote() != VoteDirection.NO_VOTE);
     }
 

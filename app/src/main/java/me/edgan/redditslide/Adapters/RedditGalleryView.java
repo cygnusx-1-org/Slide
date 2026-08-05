@@ -66,7 +66,7 @@ public class RedditGalleryView extends VerticalMediaAdapter {
                             final Dialog d = builder.create();
                             gridview.setOnItemClickListener(
                                     new AdapterView.OnItemClickListener() {
-                                        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                                        @Override public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                                             View imagesView = context.findViewById(R.id.images);
                                             if (context instanceof Album) {
                                                 // This is the older Album activity

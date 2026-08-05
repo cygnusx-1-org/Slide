@@ -376,7 +376,8 @@ public class Authentication {
                                                                                                     false))
                                                                     );
                                                         } catch (Exception ignored) {
-
+                                                            // Re-auth prompt on a context that is finishing; the next call
+                                                            // prompts again.
                                                         }
                                                     }
                                                 });
@@ -480,6 +481,7 @@ public class Authentication {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException ignored) {
+                // Debug-only spin loop: an interrupt just re-checks the toggle.
             }
         }
     }
@@ -607,7 +609,6 @@ public class Authentication {
 
         } catch (Exception e) {
             // TODO fail
-
         }
     }
 }

@@ -111,7 +111,8 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
                         });
             }
         } catch (Exception ignored) {
-
+            // Decor flags are cosmetic and the window is gone on an
+            // activity that is already finishing.
         }
     }
 
@@ -123,6 +124,8 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
                 decorView.setOnSystemUiVisibilityChangeListener(null);
             }
         } catch (Exception ignored) {
+            // As in hideDecor: no window left to restore on a
+            // finishing activity.
         }
     }
 
@@ -134,7 +137,8 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
             try {
                 getOnBackPressedDispatcher().onBackPressed();
             } catch (IllegalStateException ignored) {
-
+                // The activity is already on its way out, which is what
+                // back would have done.
             }
         }
 

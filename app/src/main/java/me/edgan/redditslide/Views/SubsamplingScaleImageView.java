@@ -355,7 +355,7 @@ public class SubsamplingScaleImageView extends View {
         this.handler =
             new Handler(
                 new Handler.Callback() {
-                    public boolean handleMessage(Message message) {
+                    @Override public boolean handleMessage(Message message) {
                         if (message.what == MESSAGE_LONG_CLICK && onLongClickListener != null) {
                             maxTouchCount = 0;
                             SubsamplingScaleImageView.super.setOnLongClickListener(onLongClickListener);

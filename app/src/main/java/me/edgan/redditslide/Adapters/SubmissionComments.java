@@ -310,6 +310,8 @@ public class SubmissionComments {
                 }
                 CommentImageUtil.preloadBlocking(Reddit.getAppContext(), urls);
             } catch (Exception ignored) {
+                // Preloading images is best-effort: on any failure the
+                // images still load when a comment binds.
             }
         }
     }

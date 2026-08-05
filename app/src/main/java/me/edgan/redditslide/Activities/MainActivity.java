@@ -203,9 +203,6 @@ public class MainActivity extends BaseActivity
     private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 1001;
 
     @SuppressWarnings("NullAway.Init")
-    private View rootView;
-
-    @SuppressWarnings("NullAway.Init")
     DrawerController drawerController;
     @SuppressWarnings("NullAway.Init")
     public ToolbarSearchController toolbarSearchController;
@@ -317,9 +314,9 @@ public class MainActivity extends BaseActivity
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)
-                            || drawerLayout != null
-                                    && drawerLayout.isDrawerOpen(GravityCompat.END)) {
+                    if ((drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START))
+                            || (drawerLayout != null
+                                    && drawerLayout.isDrawerOpen(GravityCompat.END))) {
                         drawerLayout.closeDrawers();
                     } else if (commentPager && pager.getCurrentItem() == toOpenComments) {
                         pager.setCurrentItem(pager.getCurrentItem() - 1);
@@ -1077,8 +1074,6 @@ public class MainActivity extends BaseActivity
         sidebarActions = new SidebarActions(this);
         subredditSortController = new SubredditSortController(this);
 
-        rootView = findViewById(android.R.id.content);
-
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
         setSupportActionBar(mToolbar);
@@ -1143,7 +1138,7 @@ public class MainActivity extends BaseActivity
         }
 
         final SharedPreferences seen = getSharedPreferences("SEEN", 0);
-        if (!seen.contains("isCleared") && !seen.getAll().isEmpty()
+        if ((!seen.contains("isCleared") && !seen.getAll().isEmpty())
                 || !Reddit.appRestart.contains("hasCleared")) {
 
             new AsyncTask<Void, Void, Void>() {
@@ -1219,7 +1214,8 @@ public class MainActivity extends BaseActivity
                     networkStateReceiver,
                     new IntentFilter(android.net.ConnectivityManager.CONNECTIVITY_ACTION));
         } catch (Exception e) {
-
+            // Registering the connectivity receiver twice, or on a
+            // finishing activity, is not worth crashing over.
         }
 
     }
@@ -1315,14 +1311,15 @@ public class MainActivity extends BaseActivity
         try {
             unregisterReceiver(networkStateReceiver);
         } catch (Exception ignored) {
-
+            // Not registered (registration above can fail), which is
+            // exactly what unregistering wants.
         }
         dismissProgressDialog();
         Slide.hasStarted = false;
         super.onDestroy();
     }
 
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (event.getAction() != KeyEvent.ACTION_DOWN) return true;
         if (keyCode == KeyEvent.KEYCODE_SEARCH) {
             return onOptionsItemSelected(menu.findItem(R.id.search));
@@ -1860,7 +1857,9 @@ public class MainActivity extends BaseActivity
                 try {
                     setDataSet(subs);
                 } catch (Exception ignored) {
-
+                    // This repeats the unguarded setDataSet three lines up, so anything inherent
+                    // to the call has already thrown by here; what is left is a failure caused by
+                    // the doDrawer() in between, and the tabs are already populated either way.
                 }
                 loader.finish();
                 loader = null;

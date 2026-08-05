@@ -239,6 +239,8 @@ public final class RedditMediaUpload {
                 }
             }
         } catch (Exception ignored) {
+            // A content provider that will not answer leaves the name null, which upload() at line
+            // 65 substitutes with the S3 key.
         }
         return null;
     }

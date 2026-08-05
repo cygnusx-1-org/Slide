@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.zip.DeflaterOutputStream;
@@ -341,7 +342,7 @@ public class Usernotes {
                         notesList.add(context.deserialize(notesArray, Usernote.class));
                     }
                 }
-                result.put(userAndNotes.getKey().toLowerCase(), notesList);
+                result.put(userAndNotes.getKey().toLowerCase(Locale.ENGLISH), notesList);
             }
 
             return result;

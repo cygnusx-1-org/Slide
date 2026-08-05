@@ -210,7 +210,9 @@ public class ReorderSubreddits extends BaseActivityAnim {
             UserSubscriptions.setSubscriptions(new CaseInsensitiveArrayList(subs));
             SettingsThemeFragment.changed = true;
         } catch (Exception e) {
-
+            // onPause with a half-built list: the
+            // stored subscriptions are left as they
+            // were.
         }
         super.onPause();
     }
@@ -803,7 +805,7 @@ public class ReorderSubreddits extends BaseActivityAnim {
                         MultiRedditManager manager = new MultiRedditManager(Authentication.reddit);
 
                         // Use the proper API method from the JRAW library
-                        MultiReddit created = manager.createOrUpdate(
+                        manager.createOrUpdate(
                             new MultiRedditUpdateRequest.Builder(username, displayName)
                                 .description("")
                                 .visibility(MultiReddit.Visibility.PRIVATE)
@@ -945,6 +947,7 @@ public class ReorderSubreddits extends BaseActivityAnim {
                                         DialogUtil.applyCustomBorderToAlertDialog(ReorderSubreddits.this, errorDialog);
                                         errorDialog.show();
                                     } catch (Exception ignored) {
+                                        // Error dialog on a host that finished.
                                     }
                                 }
                             });
@@ -968,6 +971,7 @@ public class ReorderSubreddits extends BaseActivityAnim {
                                         DialogUtil.applyCustomBorderToAlertDialog(ReorderSubreddits.this, searchResultsDialog);
                                         searchResultsDialog.show();
                                     } catch (Exception ignored) {
+                                        // Results dialog on a host that finished.
                                     }
                                 }
                             });

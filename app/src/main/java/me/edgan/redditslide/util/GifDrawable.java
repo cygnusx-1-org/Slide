@@ -17,8 +17,6 @@ public class GifDrawable extends Drawable {
     private int alpha = 255; // Default alpha
     @Nullable private ColorFilter colorFilter;
     private final Paint paint;
-    private boolean isPlaying = false;
-    private int currentFrame = 0;
 
     public GifDrawable(Movie movie, @Nullable Drawable.Callback callback) {
         this.movie = movie;
@@ -85,9 +83,7 @@ public class GifDrawable extends Drawable {
 
     /** Stops the GIF animation. */
     public void stop() {
-        isPlaying = false;
         startTime = 0;
-        currentFrame = 0;
     }
 
     public void seekToFirstFrame() {

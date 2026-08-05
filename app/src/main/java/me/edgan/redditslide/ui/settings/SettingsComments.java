@@ -13,7 +13,7 @@ public class SettingsComments extends BaseActivityAnim {
 
     private SettingsCommentsFragment fragment = new SettingsCommentsFragment(this);
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_comments);

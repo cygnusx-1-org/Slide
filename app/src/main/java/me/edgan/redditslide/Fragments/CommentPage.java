@@ -907,7 +907,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
         return v;
     }
 
-    public boolean onMenuItemClick(MenuItem item) {
+    @Override public boolean onMenuItemClick(MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == R.id.search) {
             if (comments.comments != null && comments.submission != null) {
@@ -991,7 +991,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                 }
                 return true;
         } else if (itemId == R.id.sort) {
-            openPopup(toolbar);
+            openPopup();
             return true;
         } else if (itemId == R.id.content) {
                 {
@@ -1273,7 +1273,8 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
             try {
                 d.dismiss();
             } catch (Exception e) {
-
+                // The progress dialog is already gone, which is the state
+                // this wanted.
             }
             if (baseSub != null) {
                 currentlySubbed = Authentication.isLoggedIn && baseSub.isUserSubscriber();
@@ -2003,6 +2004,8 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                 try {
                     d.dismiss();
                 } catch (Exception ignored) {
+                    // The progress dialog is already gone, which is the state
+                    // this wanted.
                 }
                 return null;
             }
@@ -2071,7 +2074,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                     && !s.getDataNode().path("suggested_sort").asText().equalsIgnoreCase("null")
                     && !SettingValues.hasCommentSort(s.getSubredditName())) {
                 // Only use suggested sort if user hasn't set a custom preference
-                String sorting = s.getDataNode().path("suggested_sort").asText().toUpperCase();
+                String sorting = s.getDataNode().path("suggested_sort").asText().toUpperCase(Locale.ENGLISH);
                 sorting = sorting.replace("İ", "I");
                 commentSorting = CommentSort.valueOf(sorting);
                 Log.d("CommentPage", "Using suggested sort: " + commentSorting.name() + " because no custom preference exists");
@@ -2096,7 +2099,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                 .equalsIgnoreCase("null")
                         && !SettingValues.hasCommentSort(s.getSubredditName())) {
                     // Only use suggested sort if user hasn't set a custom preference
-                    String sorting = s.getDataNode().path("suggested_sort").asText().toUpperCase();
+                    String sorting = s.getDataNode().path("suggested_sort").asText().toUpperCase(Locale.ENGLISH);
                     sorting = sorting.replace("İ", "I");
                     commentSorting = CommentSort.valueOf(sorting);
                     Log.d("CommentPage", "Using suggested sort: " + commentSorting.name() + " because no custom preference exists");
@@ -2195,6 +2198,8 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                     adapter.collapseAll();
                 }
             } catch (Exception ignored) {
+                // Adapter setup on a fragment that detached while the
+                // comments loaded.
             }
 
         } else {
@@ -2334,7 +2339,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
         rv.scrollToPosition(0);
     }
 
-    private void openPopup(View view) {
+    private void openPopup() {
         if (comments.comments != null && !comments.comments.isEmpty()) {
             final DialogInterface.OnClickListener l2 =
                     new DialogInterface.OnClickListener() {
@@ -2504,7 +2509,8 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                     }
                 }
             } catch (Exception ignored) {
-
+                // Header measurement is cosmetic and the view tree may be
+                // gone.
             }
         }
     }
@@ -2578,7 +2584,8 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                         }
                     }
                 } catch (Exception ignored) {
-
+                    // Header measurement is cosmetic and the view tree may be
+                    // gone.
                 }
             }
         }

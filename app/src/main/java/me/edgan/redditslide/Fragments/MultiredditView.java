@@ -469,7 +469,8 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
         try {
             adapter.notifyItemRangeChanged(0, adapter.dataSet.getPosts().size());
         } catch (Exception e) {
-
+            // Range refresh against a list that changed size; the
+            // next bind uses the current data.
         }
     }
 

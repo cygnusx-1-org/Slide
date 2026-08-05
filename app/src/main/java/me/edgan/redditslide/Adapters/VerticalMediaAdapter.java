@@ -340,7 +340,6 @@ abstract class VerticalMediaAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                         main,
                         holder.exoVideoView,
                         holder.loader,
-                        null, // placeholder
                         false, // closeIfNull
                         false, // autostart
                         holder.rootView.findViewById(R.id.size),

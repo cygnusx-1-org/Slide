@@ -1,6 +1,5 @@
 package me.edgan.redditslide;
 
-import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,22 +26,19 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     public StackRemoteViewsFactory(Context context, Intent intent) {
         mContext = context;
-        int mAppWidgetId =
-                intent.getIntExtra(
-                        AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
     }
 
-    public void onCreate() {}
+    @Override public void onCreate() {}
 
-    public void onDestroy() {
+    @Override public void onDestroy() {
         submissions.clear();
     }
 
-    public int getCount() {
+    @Override public int getCount() {
         return submissions.size();
     }
 
-    public RemoteViews getViewAt(int position) {
+    @Override public RemoteViews getViewAt(int position) {
         final RemoteViews rv =
                 new RemoteViews(mContext.getPackageName(), R.layout.submission_widget);
 
@@ -50,53 +46,9 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
             final Submission submission = submissions.get(position);
 
-            String url = "";
-            ContentType.Type type = ContentType.getContentType(submission);
-            if (type == ContentType.Type.IMAGE) {
-                url = submission.getUrl();
-            } else if (submission.getDataNode().has("preview")
-                    && submission
-                            .getDataNode()
-                            .path("preview")
-                            .path("images")
-                            .path(0)
-                            .path("source")
-                            .has("height")
-                    && submission
-                                    .getDataNode()
-                                    .path("preview")
-                                    .path("images")
-                                    .path(0)
-                                    .path("source")
-                                    .path("height")
-                                    .asInt()
-                            > 200) {
-
-                url =
-                        submission
-                                .getDataNode()
-                                .path("preview")
-                                .path("images")
-                                .path(0)
-                                .path("source")
-                                .path("url")
-                                .asText();
-
-            } else if (submission.getThumbnail() != null
-                    && (submission.getThumbnailType() == Submission.ThumbnailType.URL
-                            || submission.getThumbnailType() == Submission.ThumbnailType.NSFW)) {
-                url = submission.getThumbnail();
-            }
-            try {
-
-                // todo rv.setImageViewBitmap(R.id.thumbnail,
-                // Glide.with(mContext).load(url).asBitmap().);
-                rv.setTextViewText(R.id.title, CompatUtil.fromHtml(submission.getTitle()));
-
-            } catch (Exception e) {
-                Log.v(LogUtil.getTag(), e.toString());
-            }
-
+            // No thumbnail: the row picked a preview/thumbnail url here and never drew it — and
+            // submission_widget.xml has no image view to draw it into — so the selection went with
+            // the dead code.
             rv.setTextViewText(R.id.title, CompatUtil.fromHtml(submission.getTitle()));
 
             rv.setTextViewText(R.id.subreddit, submission.getSubredditName());
@@ -117,23 +69,23 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
     }
 
     /** Null tells the framework to use the widget's default loading view. */
-    @Nullable public RemoteViews getLoadingView() {
+    @Override @Nullable public RemoteViews getLoadingView() {
         return null;
     }
 
-    public int getViewTypeCount() {
+    @Override public int getViewTypeCount() {
         return 1;
     }
 
-    public long getItemId(int position) {
+    @Override public long getItemId(int position) {
         return position;
     }
 
-    public boolean hasStableIds() {
+    @Override public boolean hasStableIds() {
         return true;
     }
 
-    public void onDataSetChanged() {
+    @Override public void onDataSetChanged() {
         Log.v(LogUtil.getTag(), "MAKING POSTS");
         if (posts == null) {
             return;

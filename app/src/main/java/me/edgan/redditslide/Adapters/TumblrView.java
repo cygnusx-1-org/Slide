@@ -107,7 +107,7 @@ public class TumblrView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                     final Dialog d = builder.create();
                                     gridview.setOnItemClickListener(
                                             new AdapterView.OnItemClickListener() {
-                                                public void onItemClick(
+                                                @Override public void onItemClick(
                                                         AdapterView<?> parent,
                                                         View v,
                                                         int position,

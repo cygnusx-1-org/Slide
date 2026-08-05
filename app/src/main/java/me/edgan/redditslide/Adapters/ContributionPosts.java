@@ -70,19 +70,12 @@ public class ContributionPosts extends GeneralPosts {
             if (submissions != null && !submissions.isEmpty()) {
                 // new submissions found
 
-                int start = 0;
-                if (posts != null) {
-                    start = posts.size() + 1;
-                }
-
                 if (reset || posts == null) {
                     posts = submissions;
-                    start = -1;
                 } else {
                     posts.addAll(submissions);
                 }
 
-                final int finalStart = start;
                 // update online
                 if (refreshLayout != null) {
                     refreshLayout.setRefreshing(false);

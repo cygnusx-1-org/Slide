@@ -21,7 +21,7 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class SettingsAbout extends BaseActivityAnim {
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_about);

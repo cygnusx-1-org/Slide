@@ -79,8 +79,6 @@ import org.jspecify.annotations.NullMarked;
 public class Submit extends BaseActivity {
 
     private boolean sent;
-    @SuppressWarnings("NullAway.Init")
-    private String trying;
     // The locally-picked image for an image post. The upload to Reddit/Imgur is deferred until
     // submit, so this holds the content Uri in the meantime.
     @SuppressWarnings("NullAway.Init")
@@ -131,11 +129,12 @@ public class Submit extends BaseActivity {
                         .show();
             }
         } catch (Exception e) {
-
+            // Best-effort draft save from onDestroy: the view tree may
+            // already be gone.
         }
     }
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
         disableSwipeBackLayout();
         super.onCreate(savedInstanceState);
 
@@ -421,12 +420,7 @@ public class Submit extends BaseActivity {
         } else if (intent.hasExtra(Intent.EXTRA_STREAM)) {
             final Uri imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
             if (imageUri != null) {
-                handleImageIntent(
-                        new ArrayList<Uri>() {
-                            {
-                                add(imageUri);
-                            }
-                        });
+                handleImageIntent(Collections.singletonList(imageUri));
                 self.setVisibility(View.GONE);
                 image.setVisibility(View.VISIBLE);
                 link.setVisibility(View.GONE);
@@ -570,6 +564,8 @@ public class Submit extends BaseActivity {
                         try {
                             return Authentication.reddit.getSubreddit(subreddit);
                         } catch (Exception ignored) {
+                            // A subreddit that cannot be fetched returns null below, which
+                            // the caller reads as 'unknown sub'.
                         }
                         return null;
                     }

@@ -51,7 +51,8 @@ public class FullScreenActivity extends BaseActivity {
                                 }
                             });
         } catch (Exception e) {
-
+            // The blur this listener was for is commented out,
+            // so there is nothing to recover.
         }
         super.onPostCreate(savedInstanceState);
     }

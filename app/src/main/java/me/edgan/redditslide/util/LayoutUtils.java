@@ -218,8 +218,7 @@ public class LayoutUtils {
     // Should this go here in this class??? I don't think it should but idk where else to put it
     public static int getNumColumns(final int orientation, final Activity activity) {
         final int numColumns;
-        boolean singleColumnMultiWindow = false;
-        singleColumnMultiWindow =
+        final boolean singleColumnMultiWindow =
                 activity.isInMultiWindowMode() && SettingValues.singleColumnMultiWindow;
         if (orientation == Configuration.ORIENTATION_LANDSCAPE && !singleColumnMultiWindow) {
             numColumns = Reddit.dpWidth;

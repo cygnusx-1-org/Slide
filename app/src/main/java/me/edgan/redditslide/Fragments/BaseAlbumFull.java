@@ -108,7 +108,7 @@ public abstract class BaseAlbumFull extends Fragment {
                                     va.setDuration(mDuration);
                                     va.addUpdateListener(
                                             new ValueAnimator.AnimatorUpdateListener() {
-                                                public void onAnimationUpdate(
+                                                @Override public void onAnimationUpdate(
                                                         ValueAnimator animation) {
                                                     Float value =
                                                             (Float) animation.getAnimatedValue();
@@ -129,7 +129,7 @@ public abstract class BaseAlbumFull extends Fragment {
                                     va.setDuration(mDuration);
                                     va.addUpdateListener(
                                             new ValueAnimator.AnimatorUpdateListener() {
-                                                public void onAnimationUpdate(
+                                                @Override public void onAnimationUpdate(
                                                         ValueAnimator animation) {
                                                     Float value =
                                                             (Float) animation.getAnimatedValue();

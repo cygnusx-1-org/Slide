@@ -236,6 +236,8 @@ public final class CommentImageUtil {
                 return loader.loadImageSync(url, decodeSize(), options());
             }
         } catch (Exception ignored) {
+            // A cache read that fails is a miss; null below means
+            // 'load it normally'.
         }
         return null;
     }
@@ -260,6 +262,8 @@ public final class CommentImageUtil {
                         try {
                             recordRatio(url, loader.loadImageSync(url, decodeSize(), opts));
                         } catch (Exception ignored) {
+                            // One preload failing must not kill the pool thread; the
+                            // image loads on bind instead.
                         }
                     });
         }
@@ -357,6 +361,8 @@ public final class CommentImageUtil {
                 view.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(view);
             } catch (Exception ignored) {
+                // Neither the in-app viewer nor an external one would open
+                // the url; there is nothing left to try.
             }
         }
     }

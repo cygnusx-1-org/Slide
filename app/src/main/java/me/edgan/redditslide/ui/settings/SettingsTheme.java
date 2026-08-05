@@ -15,7 +15,7 @@ public class SettingsTheme extends BaseActivityAnim implements RestartActivity {
 
     private SettingsThemeFragment fragment = new SettingsThemeFragment(this);
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_theme);

@@ -266,7 +266,7 @@ public class Website extends BaseActivityAnim {
         v.getSettings().setUseWideViewPort(true);
         v.setDownloadListener(
                 new DownloadListener() {
-                    public void onDownloadStart(
+                    @Override public void onDownloadStart(
                             String url,
                             String userAgent,
                             String contentDisposition,
@@ -321,7 +321,8 @@ public class Website extends BaseActivityAnim {
                     }
                 }
             } catch (Exception ignored) {
-
+                // Title updates are cosmetic; a page that reports a bad url
+                // just keeps the previous title.
             }
         }
 
@@ -401,6 +402,8 @@ public class Website extends BaseActivityAnim {
                     }
                     return true;
                 } catch (URISyntaxException ignored) {
+                    // Not a parseable intent:// url, so there is no fallback to
+                    // follow; the load below continues.
                 }
             }
 

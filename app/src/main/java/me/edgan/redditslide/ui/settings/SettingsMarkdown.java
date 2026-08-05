@@ -14,7 +14,7 @@ public class SettingsMarkdown extends BaseActivityAnim {
 
     private SettingsMarkdownFragment fragment = new SettingsMarkdownFragment(this);
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_markdown);

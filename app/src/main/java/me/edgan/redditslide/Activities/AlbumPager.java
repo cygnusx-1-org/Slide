@@ -152,7 +152,7 @@ public class AlbumPager extends BaseSaveActivity {
 
     public String subreddit = "";
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
         overrideSwipeFromAnywhere();
         super.onCreate(savedInstanceState);
         getTheme()
@@ -228,7 +228,7 @@ public class AlbumPager extends BaseSaveActivity {
                                                 })
                                         );
                             } catch (Exception e) {
-
+                                // Dialog on a host that finished while the album loaded.
                             }
                         }
                     });
@@ -303,7 +303,7 @@ public class AlbumPager extends BaseSaveActivity {
                                                     final Dialog d = b.create();
                                                     gridview.setOnItemClickListener(
                                                             new AdapterView.OnItemClickListener() {
-                                                                public void onItemClick(
+                                                                @Override public void onItemClick(
                                                                         AdapterView<?> parent,
                                                                         View v,
                                                                         int position,
@@ -553,7 +553,6 @@ public class AlbumPager extends BaseSaveActivity {
                             getActivity(),
                             rootView.findViewById(R.id.gif),
                             loader,
-                            null, // placeholder
                             false, // closeIfNull
                             false, // NEVER autostart
                             rootView.findViewById(R.id.size),
@@ -666,7 +665,7 @@ public class AlbumPager extends BaseSaveActivity {
                 this, contentUrl, isGif, () -> doImageSave(isGif, contentUrl, index));
     }
 
-    public void doImageSave(boolean isGif, String contentUrl, int index) {
+    @Override public void doImageSave(boolean isGif, String contentUrl, int index) {
         ImageSaveUtils.doImageSave(
                 this,
                 isGif,

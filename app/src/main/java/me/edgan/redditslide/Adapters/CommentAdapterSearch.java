@@ -117,7 +117,7 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
 
         String scoreText;
         if (comment.isScoreHidden()) {
-            scoreText = "[" + mContext.getString(R.string.misc_score_hidden).toUpperCase() + "]";
+            scoreText = "[" + mContext.getString(R.string.misc_score_hidden).toUpperCase(Locale.getDefault()) + "]";
         } else {
             scoreText = String.format(Locale.getDefault(), "%d", comment.getScore() + offset);
         }
@@ -156,7 +156,7 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
             SpannableStringBuilder pinned =
                     new SpannableStringBuilder(
                             "\u00A0"
-                                    + mContext.getString(R.string.submission_stickied).toUpperCase()
+                                    + mContext.getString(R.string.submission_stickied).toUpperCase(Locale.getDefault())
                                     + "\u00A0");
             pinned.setSpan(
                     new RoundedBackgroundSpan(
@@ -312,7 +312,6 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
         holder.itemView.findViewById(R.id.dot).setVisibility(View.VISIBLE);
 
         if (baseNode.getDepth() - 1 > 0) {
-            View v = holder.itemView.findViewById(R.id.dot);
             int i22 = baseNode.getDepth() - 2;
             if (i22 % 5 == 0) {
                 holder.dot.setBackgroundColor(

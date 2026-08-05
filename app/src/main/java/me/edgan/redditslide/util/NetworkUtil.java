@@ -21,12 +21,12 @@ public class NetworkUtil {
     private NetworkUtil() {}
 
     /**
-     * Uses the provided context to determine the current connectivity status.
+     * The current connectivity status. Takes no context: unless offline mode is forced this is
+     * hard-wired to WIFI, and the forced-offline flag is a global preference.
      *
-     * @param context A context used to retrieve connection information.
      * @return A non-null value defined in {@link Status}.
      */
-    private static Status getConnectivityStatus(final Context context) {
+    private static Status getConnectivityStatus() {
         // Check if in forced offline mode
         if (Reddit.appRestart != null && Reddit.appRestart.getBoolean("forceoffline", false)) {
             return Status.NONE;
@@ -42,7 +42,7 @@ public class NetworkUtil {
     /**
      * Determines the actual connection type from the system, used to distinguish WiFi from
      * metered/mobile connections for data-saving settings. Unlike {@link
-     * #getConnectivityStatus(Context)} this is not overridden to always report WiFi.
+     * #getConnectivityStatus()} this is not overridden to always report WiFi.
      */
     private static Status getRealConnectivityStatus(final Context context) {
         return getConnectivityStatusNew(context);
@@ -86,7 +86,7 @@ public class NetworkUtil {
 
     /**
      * Checks if the network is connected. An application context is said to have connection if
-     * {@link #getConnectivityStatus(Context)} does not equal {@link Status#NONE}.
+     * {@link #getConnectivityStatus()} does not equal {@link Status#NONE}.
      *
      * @param context The context used to retrieve connection information.
      * @return true if the application is connected, false if otherwise.
@@ -101,7 +101,7 @@ public class NetworkUtil {
     }
 
     public static boolean isConnectedNoOverride(final Context context) {
-        return getConnectivityStatus(context) != Status.NONE;
+        return getConnectivityStatus() != Status.NONE;
     }
 
     /**

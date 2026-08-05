@@ -82,7 +82,6 @@ public class ExoVideoView extends RelativeLayout {
     private boolean scrubEnabled = false;
     private boolean muteAttached = false;
     private boolean hqAttached = false;
-    private boolean speedAttached = false;
     private float[] speedOptions = {0.25f, 0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 2.0f};
     private int currentSpeedIndex = 3; // Normal (1.0x) default
     @Nullable private AudioFocusHelper audioFocusHelper;
@@ -1169,7 +1168,7 @@ public class ExoVideoView extends RelativeLayout {
         if (scaleGestureDetector == null) return super.onTouchEvent(event);
 
         // Pass event to scale detector FIRST
-        boolean scaleHandledByDetector = scaleGestureDetector.onTouchEvent(event);
+        scaleGestureDetector.onTouchEvent(event);
         boolean scalingInProgress = scaleGestureDetector.isInProgress();
 
         final int action = event.getActionMasked();

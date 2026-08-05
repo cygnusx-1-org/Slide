@@ -51,7 +51,8 @@ public class AdBlocker {
             buffer.close();
             stream.close();
         } catch (Exception ignored) {
-
+            // Without the domain list nothing is blocked, which is the safe direction: DOMAINS
+            // keeps however many lines were read before the failure, and isAd() answers from those.
         }
     }
 
@@ -70,8 +71,8 @@ public class AdBlocker {
         if (host.isEmpty()) return false;
         int firstPeriod = host.indexOf(".");
         return DOMAINS.contains(host)
-                || firstPeriod + 1 < host.length()
-                        && DOMAINS.contains(host.substring(firstPeriod + 1));
+                || (firstPeriod + 1 < host.length()
+                        && DOMAINS.contains(host.substring(firstPeriod + 1)));
     }
 
     public static WebResourceResponse createEmptyResource() {

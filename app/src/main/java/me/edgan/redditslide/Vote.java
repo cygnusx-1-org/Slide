@@ -67,6 +67,9 @@ public class Vote extends AsyncTask<PublicContribution, Void, Void> {
                                     LayoutUtils.showSnackbar(snackbar);
                                 }
                             } catch (Exception ignored) {
+                                // This bar only ever reports a vote that failed, and it needs a
+                                // view still in a window; a host that went away takes the report
+                                // with it.
                             }
                             c = null;
                             v = null;

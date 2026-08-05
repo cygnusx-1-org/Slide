@@ -110,7 +110,7 @@ public class SubredditWidgetProvider extends AppWidgetProvider {
         return mContext.getSharedPreferences("widget", 0).getInt(id + "_sub_time", 0);
     }
 
-    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+    @Override public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // update each of the app widgets with the remote adapter
         for (int appWidgetId : appWidgetIds) {
             updateFromId(appWidgetId, context, appWidgetManager);

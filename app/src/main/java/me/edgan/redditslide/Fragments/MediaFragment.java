@@ -148,8 +148,8 @@ public class MediaFragment extends BaseMediaFragment {
                 || (submission.isNsfw() && SettingValues.getIsNSFWEnabled())) {
             thumbnailView.setVisibility(View.VISIBLE);
             ((ImageView) thumbnailView).setImageResource(R.drawable.web);
-            addClickFunctions(thumbnailView, slideLayout, rootView, type, getActivity(), submission);
-            addClickFunctions(typeImage, slideLayout, rootView, type, getActivity(), submission);
+            addClickFunctions(thumbnailView, slideLayout, type, getActivity(), submission);
+            addClickFunctions(typeImage, slideLayout, type, getActivity(), submission);
             (rootView.findViewById(R.id.progress)).setVisibility(View.GONE);
 
             if ((submission.isNsfw() && SettingValues.getIsNSFWEnabled())) {
@@ -164,7 +164,7 @@ public class MediaFragment extends BaseMediaFragment {
 
         } else {
             thumbnailView.setVisibility(View.GONE);
-            addClickFunctions(img, slideLayout, rootView, type, getActivity(), submission);
+            addClickFunctions(img, slideLayout, type, getActivity(), submission);
         }
 
         if (!submission.isNsfw() || !SettingValues.getIsNSFWEnabled()) {
@@ -318,7 +318,6 @@ public class MediaFragment extends BaseMediaFragment {
     private static void addClickFunctions(
             final View base,
             final SlidingUpPanelLayout slidingPanel,
-            final View clickingArea,
             final ContentType.Type type,
             final Activity contextActivity,
             final Submission submission) {
@@ -502,7 +501,6 @@ public class MediaFragment extends BaseMediaFragment {
                         getActivity(),
                         videoView,
                         loader,
-                        rootView.findViewById(R.id.placeholder),
                         false,
                         !(getActivity() instanceof Shadowbox)
                                 || ((Shadowbox) (getActivity())).pager.getCurrentItem() == i,
@@ -590,7 +588,6 @@ public class MediaFragment extends BaseMediaFragment {
                         getActivity(),
                         videoView,
                         loader,
-                        rootView.findViewById(R.id.placeholder),
                         false,
                         !(getActivity() instanceof Shadowbox)
                                 || ((Shadowbox) (getActivity())).pager.getCurrentItem() == i,

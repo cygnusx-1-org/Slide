@@ -241,7 +241,8 @@ public class PeekView extends FrameLayout {
 
                 dim.setAlpha(0f);
             } catch (Exception ignored) {
-
+                // Blurry needs a laid-out root view; without it the peek
+                // simply shows unblurred.
             }
         }
 

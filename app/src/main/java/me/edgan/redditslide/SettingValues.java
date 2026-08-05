@@ -370,7 +370,7 @@ public class SettingValues {
         defaultCardView =
                 CreateCardView.CardEnum.valueOf(
                         PrefUtil.getString(settings, "defaultCardViewNew", "LARGE")
-                                .toUpperCase());
+                                .toUpperCase(Locale.ENGLISH));
         middleImage = settings.getBoolean("middleCard", true);
 
         bigPicCropped = settings.getBoolean("bigPicCropped", false);

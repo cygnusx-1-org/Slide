@@ -79,6 +79,7 @@ public class PostMatch {
                     return true;
                 }
             } catch (MalformedURLException ignored) {
+                // A filter entry that is not a URL cannot match any post's domain.
             }
         }
         return false;
@@ -155,11 +156,13 @@ public class PostMatch {
             if (isDomain(domain.toLowerCase(Locale.ENGLISH), SettingValues.domainFilters))
                 return true;
         } catch (MalformedURLException ignored) {
+            // A submission whose domain is not URL-shaped matches no domain
+            // filter; the remaining filters below still apply.
         }
 
         if (!subreddit.equalsIgnoreCase(baseSubreddit)) {
             if (SettingValues.subredditFilterPrefixMatching && subreddit.length() >= 6) {
-                String lowerSubreddit = subreddit.toLowerCase();
+                String lowerSubreddit = subreddit.toLowerCase(Locale.ENGLISH);
                 if (SettingValues.subredditFilters.stream()
                         .anyMatch(filter -> lowerSubreddit.startsWith(filter))) {
                     return true;
@@ -336,6 +339,7 @@ public class PostMatch {
         try {
             domainc = isDomain(domain.toLowerCase(Locale.ENGLISH), SettingValues.domainFilters);
         } catch (MalformedURLException ignored) {
+            // Not URL-shaped, so it matches no domain filter: domainc stays false.
         }
 
         boolean subredditc =

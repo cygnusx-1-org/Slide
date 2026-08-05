@@ -45,6 +45,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -164,6 +165,7 @@ public class Reddit extends Application implements Application.ActivityLifecycle
             final PackageInfo pi = getAppContext().getPackageManager().getPackageInfo(s, 0);
             if (pi != null && pi.applicationInfo.enabled) return true;
         } catch (final Throwable ignored) {
+            // Not installed, which is what the false below reports.
         }
         return false;
     }
@@ -252,7 +254,7 @@ public class Reddit extends Application implements Application.ActivityLifecycle
 
         Thread.setDefaultUncaughtExceptionHandler(
                 new Thread.UncaughtExceptionHandler() {
-                    public void uncaughtException(Thread thread, Throwable t) {
+                    @Override public void uncaughtException(Thread thread, Throwable t) {
                         if (cont.get() != null) {
                             final Context c = cont.get();
                             Writer writer = new StringWriter();
@@ -300,7 +302,7 @@ public class Reddit extends Application implements Application.ActivityLifecycle
                                                                     })
                                                             );
                                                 } catch (Exception ignored) {
-
+                                                    // Dialog on a context that is finishing.
                                                 }
                                             }
                                         });
@@ -334,7 +336,7 @@ public class Reddit extends Application implements Application.ActivityLifecycle
                                                                                     .updateToken(c))
                                                             );
                                                 } catch (Exception ignored) {
-
+                                                    // Dialog on a context that is finishing.
                                                 }
                                             }
                                         });
@@ -363,7 +365,7 @@ public class Reddit extends Application implements Application.ActivityLifecycle
                                                                     })
                                                             );
                                                 } catch (Exception ignored) {
-
+                                                    // Dialog on a context that is finishing.
                                                 }
                                             }
                                         });
@@ -406,6 +408,8 @@ public class Reddit extends Application implements Application.ActivityLifecycle
                                     prefs.edit().putString("stacktrace", stacktrace).apply();
 
                                 } catch (Throwable ignored) {
+                                    // Inside the uncaught-exception handler: saving the stacktrace is
+                                    // best-effort and must not throw on top of the crash it is reporting.
                                 }
 
                                 androidHandler.uncaughtException(thread, t);
@@ -416,7 +420,6 @@ public class Reddit extends Application implements Application.ActivityLifecycle
                     }
                 });
         // END adaptation
-
     }
 
     @Override
@@ -593,35 +596,27 @@ public class Reddit extends Application implements Application.ActivityLifecycle
     public void setupNotificationChannels() {
         // Each triple contains the channel ID, name, and importance level
         List<Triple<String, String, Integer>> notificationTripleList =
-                new ArrayList<Triple<String, String, Integer>>() {
-                    {
-                        add(
-                                Triple.of(
-                                        CHANNEL_IMG,
-                                        "Image downloads",
-                                        NotificationManagerCompat.IMPORTANCE_LOW));
-                        add(
-                                Triple.of(
-                                        CHANNEL_COMMENT_CACHE,
-                                        "Comment caching",
-                                        NotificationManagerCompat.IMPORTANCE_LOW));
-                        add(
-                                Triple.of(
-                                        CHANNEL_MAIL,
-                                        "Reddit mail",
-                                        NotificationManagerCompat.IMPORTANCE_HIGH));
-                        add(
-                                Triple.of(
-                                        CHANNEL_MODMAIL,
-                                        "Reddit modmail",
-                                        NotificationManagerCompat.IMPORTANCE_HIGH));
-                        add(
-                                Triple.of(
-                                        CHANNEL_SUBCHECKING,
-                                        "Submission post checking",
-                                        NotificationManagerCompat.IMPORTANCE_LOW));
-                    }
-                };
+                Arrays.asList(
+                        Triple.of(
+                                CHANNEL_IMG,
+                                "Image downloads",
+                                NotificationManagerCompat.IMPORTANCE_LOW),
+                        Triple.of(
+                                CHANNEL_COMMENT_CACHE,
+                                "Comment caching",
+                                NotificationManagerCompat.IMPORTANCE_LOW),
+                        Triple.of(
+                                CHANNEL_MAIL,
+                                "Reddit mail",
+                                NotificationManagerCompat.IMPORTANCE_HIGH),
+                        Triple.of(
+                                CHANNEL_MODMAIL,
+                                "Reddit modmail",
+                                NotificationManagerCompat.IMPORTANCE_HIGH),
+                        Triple.of(
+                                CHANNEL_SUBCHECKING,
+                                "Submission post checking",
+                                NotificationManagerCompat.IMPORTANCE_LOW));
 
         final NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 

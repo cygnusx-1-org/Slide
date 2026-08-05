@@ -521,7 +521,8 @@ public class CheckForMail extends BroadcastReceiver {
                         subThresholds.put(
                                 split[0].toLowerCase(Locale.ENGLISH), Integer.valueOf(split[1]));
                     } catch (Exception ignored) {
-
+                        // A malformed 'sub:threshold' entry is skipped; the
+                        // rest of the list still loads.
                     }
                 }
                 if (subThresholds.isEmpty()) {

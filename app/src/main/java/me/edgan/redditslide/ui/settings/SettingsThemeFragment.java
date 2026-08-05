@@ -480,16 +480,8 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
                         startSpinner.setEnabled(nightState);
                         endSpinner.setEnabled(nightState);
                         final List<String> timesStart =
-                                new ArrayList<String>() {
-                                    {
-                                        add("6pm");
-                                        add("7pm");
-                                        add("8pm");
-                                        add("9pm");
-                                        add("10pm");
-                                        add("11pm");
-                                    }
-                                };
+                                new ArrayList<>(
+                                        Arrays.asList("6pm", "7pm", "8pm", "9pm", "10pm", "11pm"));
                         nightmodeBinding.startSpinnerLayout.setVisibility(View.VISIBLE);
                         final ArrayAdapter<String> startAdapter =
                                 new ArrayAdapter<>(
@@ -532,21 +524,10 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
                                 });
 
                         final List<String> timesEnd =
-                                new ArrayList<String>() {
-                                    {
-                                        add("12am");
-                                        add("1am");
-                                        add("2am");
-                                        add("3am");
-                                        add("4am");
-                                        add("5am");
-                                        add("6am");
-                                        add("7am");
-                                        add("8am");
-                                        add("9am");
-                                        add("10am");
-                                    }
-                                };
+                                new ArrayList<>(
+                                        Arrays.asList(
+                                                "12am", "1am", "2am", "3am", "4am", "5am", "6am",
+                                                "7am", "8am", "9am", "10am"));
                         nightmodeBinding.endSpinnerLayout.setVisibility(View.VISIBLE);
                         final ArrayAdapter<String> endAdapter =
                                 new ArrayAdapter<>(

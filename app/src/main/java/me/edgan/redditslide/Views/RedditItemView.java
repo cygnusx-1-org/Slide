@@ -394,7 +394,7 @@ public class RedditItemView extends RelativeLayout {
         String scoreText;
         if (comment.isScoreHidden()) {
             scoreText =
-                    "[" + getContext().getString(R.string.misc_score_hidden).toUpperCase() + "]";
+                    "[" + getContext().getString(R.string.misc_score_hidden).toUpperCase(Locale.getDefault()) + "]";
         } else {
             scoreText = String.format(Locale.getDefault(), "%d", comment.getScore());
         }

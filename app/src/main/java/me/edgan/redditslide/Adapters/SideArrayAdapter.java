@@ -148,7 +148,6 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
                             .inflate(R.layout.subforsublist, parent, false);
 
             final String sub;
-            final String base = fitems.get(position);
             final String matched = multiToMatch.get(fitems.get(position));
             if (matched != null && !fitems.get(position).contains("/m/")) {
                 sub = matched;

@@ -589,26 +589,26 @@ public class SwipeBackLayout extends FrameLayout {
             int left = 0, top = 0;
             if ((mTrackingEdge & EDGE_LEFT) != 0) {
                 left =
-                        xvel > 0 || xvel == 0 && mScrollPercent > mScrollThreshold
+                        xvel > 0 || (xvel == 0 && mScrollPercent > mScrollThreshold)
                                 ? childWidth + mShadowLeft.getIntrinsicWidth() + OVERSCROLL_DISTANCE
                                 : 0;
             } else if ((mTrackingEdge & EDGE_RIGHT) != 0) {
                 left =
-                        xvel < 0 || xvel == 0 && mScrollPercent > mScrollThreshold
+                        xvel < 0 || (xvel == 0 && mScrollPercent > mScrollThreshold)
                                 ? -(childWidth
                                         + mShadowLeft.getIntrinsicWidth()
                                         + OVERSCROLL_DISTANCE)
                                 : 0;
             } else if ((mTrackingEdge & EDGE_BOTTOM) != 0) {
                 top =
-                        yvel < 0 || yvel == 0 && mScrollPercent > mScrollThreshold
+                        yvel < 0 || (yvel == 0 && mScrollPercent > mScrollThreshold)
                                 ? -(childHeight
                                         + mShadowBottom.getIntrinsicHeight()
                                         + OVERSCROLL_DISTANCE)
                                 : 0;
             } else if ((mTrackingEdge & EDGE_TOP) != 0) {
                 top =
-                        yvel > 0 || yvel == 0 && mScrollPercent > mScrollThreshold
+                        yvel > 0 || (yvel == 0 && mScrollPercent > mScrollThreshold)
                                 ? childHeight
                                         + mShadowBottom.getIntrinsicHeight()
                                         + OVERSCROLL_DISTANCE

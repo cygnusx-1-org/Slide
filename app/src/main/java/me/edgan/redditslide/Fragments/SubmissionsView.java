@@ -544,7 +544,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                         });
                 mLongPressRunnable =
                         new Runnable() {
-                            public void run() {
+                            @Override public void run() {
                                 fab.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
                                 if (!Reddit.fabClear) {
                                     new MaterialAlertDialogBuilder(getActivity(),

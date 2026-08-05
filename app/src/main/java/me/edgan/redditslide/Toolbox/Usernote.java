@@ -74,6 +74,11 @@ public class Usernote {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(noteText, link, time, mod, warning);
+    }
+
     /**
      * Identify what type of link a usernote points to, if any
      *

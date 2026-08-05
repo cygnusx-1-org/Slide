@@ -23,7 +23,7 @@ public class NetworkStateReceiver extends BroadcastReceiver {
         connected = null;
     }
 
-    public void onReceive(Context context, Intent intent) {
+    @Override public void onReceive(Context context, Intent intent) {
         if (intent.getExtras() == null) return;
         connected = NetworkUtil.isConnected(context);
         notifyStateToAll();

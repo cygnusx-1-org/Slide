@@ -59,6 +59,8 @@ public class TokenRefreshReceiver extends BroadcastReceiver {
                             try {
                                 pending.finish();
                             } catch (Exception ignored) {
+                                // finish() throws if the broadcast already
+                                // completed, which is the state this wanted.
                             }
                         }
                     }

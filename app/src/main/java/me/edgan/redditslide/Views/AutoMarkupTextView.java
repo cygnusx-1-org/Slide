@@ -35,6 +35,5 @@ public class AutoMarkupTextView extends AppCompatTextView {
         LinkifyCompat.addLinks(this, mask);
 
         // todo this setMovementMethod(new CommentMovementMethod());
-
     }
 }

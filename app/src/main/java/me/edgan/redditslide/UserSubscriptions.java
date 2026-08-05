@@ -843,7 +843,9 @@ public class UserSubscriptions {
                     m.unsubscribe(client.getSubreddit(subreddit));
                 }
             } catch (Exception e) {
-
+                // The sub stays subscribed on the server. Every caller (ReorderSubreddits) has
+                // already dropped it locally and said so, so the two diverge until the next
+                // syncSubscriptions; failing loudly here would not undo that.
             }
             return null;
         }

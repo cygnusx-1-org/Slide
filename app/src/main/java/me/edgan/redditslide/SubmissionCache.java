@@ -147,10 +147,8 @@ public class SubmissionCache {
             String subname = json.path("subreddit").asText().toLowerCase(Locale.ENGLISH);
             SpannableStringBuilder subreddit = new SpannableStringBuilder("/r/" + subname + spacer);
 
-            if ((SettingValues.colorSubName
-                            && Palette.getColor(subname) != Palette.getDefaultColor())
-                    || (SettingValues.colorSubName
-                            && Palette.getColor(subname) != Palette.getDefaultColor())) {
+            if (SettingValues.colorSubName
+                    && Palette.getColor(subname) != Palette.getDefaultColor()) {
                 if (!SettingValues.colorEverywhere) {
                     subreddit.setSpan(
                             new ForegroundColorSpan(Palette.getColor(subname)),
@@ -564,7 +562,8 @@ public class SubmissionCache {
             SpannableStringBuilder pinned =
                     new SpannableStringBuilder(
                             "\u00A0"
-                                    + mContext.getString(R.string.submission_stickied).toUpperCase()
+                                    + mContext.getString(R.string.submission_stickied)
+                                            .toUpperCase(Locale.getDefault())
                                     + "\u00A0");
             pinned.setSpan(
                     new RoundedBackgroundSpan(
@@ -637,8 +636,8 @@ public class SubmissionCache {
             titleString.append(pinned);
         }
 
-        if (submission.getSubmissionFlair().getText() != null
-                        && !submission.getSubmissionFlair().getText().isEmpty()
+        if ((submission.getSubmissionFlair().getText() != null
+                        && !submission.getSubmissionFlair().getText().isEmpty())
                 || flairOverride != null
                 || (submission.getSubmissionFlair().getCssClass() != null)) {
             TypedValue typedValue = new TypedValue();

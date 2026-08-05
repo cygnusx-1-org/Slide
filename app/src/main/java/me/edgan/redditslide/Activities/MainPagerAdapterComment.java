@@ -234,7 +234,7 @@ public class MainPagerAdapterComment extends MainPagerAdapter {
         }
     }
 
-    public Fragment getCurrentFragment() {
+    @Override public Fragment getCurrentFragment() {
         return mCurrentFragment;
     }
 

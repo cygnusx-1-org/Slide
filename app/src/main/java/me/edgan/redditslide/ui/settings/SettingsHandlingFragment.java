@@ -16,6 +16,7 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SwitchCompat;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -224,7 +225,7 @@ public class SettingsHandlingFragment implements CompoundButton.OnCheckedChangeL
         for (String s : SettingValues.alwaysExternal) {
             if (!s.isEmpty()
                     && (!Reddit.videoPlugin
-                            || !s.contains("youtube.co") && !s.contains("youtu.be"))) {
+                            || (!s.contains("youtube.co") && !s.contains("youtu.be")))) {
                 final View t =
                         context.getLayoutInflater()
                                 .inflate(R.layout.account_textview, domainListLayout, false);
@@ -253,13 +254,10 @@ public class SettingsHandlingFragment implements CompoundButton.OnCheckedChangeL
 
         private static final BiMap<Integer, Integer> sBiMap =
                 HashBiMap.create(
-                        new HashMap<Integer, Integer>() {
-                            {
-                                put(EXTERNAL.getValue(), EXTERNAL.getIdRes());
-                                put(INTERNAL.getValue(), INTERNAL.getIdRes());
-                                put(CUSTOM_TABS.getValue(), CUSTOM_TABS.getIdRes());
-                            }
-                        });
+                        ImmutableMap.of(
+                                EXTERNAL.getValue(), EXTERNAL.getIdRes(),
+                                INTERNAL.getValue(), INTERNAL.getIdRes(),
+                                CUSTOM_TABS.getValue(), CUSTOM_TABS.getIdRes()));
         private final int mValue;
         @IdRes private final int mIdRes;
 

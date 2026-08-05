@@ -221,6 +221,16 @@ tasks.withType(JavaCompile).configureEach { task ->
         // breaks the build.
         disableAllChecks = true
         check('NullAway', CheckSeverity.ERROR)
+        // Error Prone's own checks, named one by one rather than by dropping disableAllChecks.
+        // That keeps the phase 0 pinning rationale: a future Error Prone release cannot add a
+        // check that breaks this build. Three of the thirteen NULLAWAY.md phase 9 proposed are
+        // deliberately absent — ReferenceEquality, MissingCasesInEnumSwitch and StringSplitter —
+        // see that phase for the measurements behind each.
+        ['ComplexBooleanConstant', 'DoubleBraceInitialization', 'EmptyCatch', 'EqualsHashCode',
+         'IdentityBinaryExpression', 'MissingOverride', 'NarrowingCompoundAssignment',
+         'OperatorPrecedence', 'StringCaseLocaleUsage', 'UnusedVariable'].each {
+            check(it, CheckSeverity.ERROR)
+        }
         // dataBinding and viewBinding are enabled, so generated *Binding classes, R, and
         // BuildConfig compile in the same javac invocation.
         excludedPaths = '.*/build/generated/.*'

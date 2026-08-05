@@ -318,6 +318,8 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             try {
                 listView.setItemAnimator(new AlphaInAnimator());
             } catch (Exception ignored) {
+                // The animator is decoration; a RecyclerView mid-layout
+                // refuses it.
             }
         }
     }
@@ -774,7 +776,6 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 currentLoading =
                                         new AsyncLoadMoreTask(
                                                 finalNextPos,
-                                                holder.getBindingAdapterPosition(),
                                                 holder,
                                                 baseNode.comment.getComment().getFullName(),
                                                 mContext,
@@ -1774,11 +1775,13 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 try {
                     listView.setItemAnimator(new AlphaInAnimator());
                 } catch (Exception ignored) {
+                    // As in setCollapseAnimator: decoration only.
                 }
             }
             notifyItemRangeInserted(i, counter);
         } catch (Exception ignored) {
-
+            // The tree changed under the unhide; the next bind
+            // rebuilds it from the adapter's own data.
         }
     }
 
@@ -2120,7 +2123,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 Handler handler2 = new Handler();
                 handler2.postDelayed(
                         new Runnable() {
-                            public void run() {
+                            @Override public void run() {
                                 ((Activity) mContext)
                                         .runOnUiThread(
                                                 new Runnable() {
@@ -2238,7 +2241,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 .setPositiveButton(R.string.btn_ok, null)
                                 );
                     } catch (Exception ignored) {
-
+                        // Error dialog on a host that is finishing.
                     }
                 } else {
                     try {
@@ -2255,7 +2258,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 .setPositiveButton(R.string.btn_ok, null)
                                 );
                     } catch (Exception ignored) {
-
+                        // Error dialog on a host that is finishing.
                     }
                 }
             } else {

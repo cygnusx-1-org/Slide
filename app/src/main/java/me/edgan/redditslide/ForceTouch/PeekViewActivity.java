@@ -51,13 +51,8 @@ public class PeekViewActivity extends AppCompatActivity {
 
             if (event.getAction() == MotionEvent.ACTION_MOVE) {
                 params.topMargin = (int) -((origY - event.getY()) / 5);
-                if (false && event.getY() < (2 * origY) / 3) {
-                    params.leftMargin = twelve - (int) ((origY - event.getY())) / 2;
-                    params.rightMargin = twelve - (int) ((origY - event.getY())) / 2;
-                } else {
-                    params.leftMargin = twelve;
-                    params.rightMargin = twelve;
-                }
+                params.leftMargin = twelve;
+                params.rightMargin = twelve;
 
                 if (event.getY() < (origY) / 2 && !Reddit.peek) {
                     peekView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);

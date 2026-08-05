@@ -161,9 +161,9 @@ public class SubredditView extends BaseActivity {
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)
-                            || drawerLayout != null
-                                    && drawerLayout.isDrawerOpen(GravityCompat.END)) {
+                    if ((drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START))
+                            || (drawerLayout != null
+                                    && drawerLayout.isDrawerOpen(GravityCompat.END))) {
                         drawerLayout.closeDrawers();
                     } else if (commentPager && pager.getCurrentItem() == 2) {
                         pager.setCurrentItem(pager.getCurrentItem() - 1);
@@ -1109,11 +1109,11 @@ public class SubredditView extends BaseActivity {
                     && s.toString().equals(getString(R.string.sorting_best))) {
                 continue;
             }
-            MenuItem m = popup.getMenu().add(s);
+            popup.getMenu().add(s);
         }
         popup.setOnMenuItemClickListener(
                 new PopupMenu.OnMenuItemClickListener() {
-                    public boolean onMenuItemClick(MenuItem item) {
+                    @Override public boolean onMenuItemClick(MenuItem item) {
                         LogUtil.v("Chosen is " + item.getOrder());
                         int i = 0;
                         for (Spannable s : base) {
@@ -1159,11 +1159,11 @@ public class SubredditView extends BaseActivity {
                 new PopupMenu(SubredditView.this, findViewById(R.id.anchor), Gravity.RIGHT);
         final Spannable[] base = SortingUtil.getSortingTimesSpannables(subreddit);
         for (Spannable s : base) {
-            MenuItem m = popup.getMenu().add(s);
+            popup.getMenu().add(s);
         }
         popup.setOnMenuItemClickListener(
                 new PopupMenu.OnMenuItemClickListener() {
-                    public boolean onMenuItemClick(MenuItem item) {
+                    @Override public boolean onMenuItemClick(MenuItem item) {
                         LogUtil.v("Chosen is " + item.getOrder());
                         int i = 0;
                         for (Spannable s : base) {
@@ -1967,7 +1967,7 @@ public class SubredditView extends BaseActivity {
             return null;
         }
 
-        public Fragment getCurrentFragment() {
+        @Override public Fragment getCurrentFragment() {
             return mCurrentFragment;
         }
 
@@ -2119,7 +2119,7 @@ public class SubredditView extends BaseActivity {
                                                 .show();
                                     }
                                 } catch (Exception ignored) {
-
+                                    // Dialog on a host that is finishing.
                                 }
                             }
                         });

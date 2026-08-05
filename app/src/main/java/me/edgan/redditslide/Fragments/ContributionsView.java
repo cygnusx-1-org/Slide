@@ -83,8 +83,7 @@ public class ContributionsView extends Fragment {
                             id, where, ((Profile) getActivity()).category);
         else posts = new ContributionPosts(id, where);
 
-        // noinspection StringEquality
-        if (where == "hidden") adapter = new ContributionAdapter(getActivity(), posts, rv, true);
+        if (where.equals("hidden")) adapter = new ContributionAdapter(getActivity(), posts, rv, true);
         else adapter = new ContributionAdapter(getActivity(), posts, rv);
         rv.setAdapter(adapter);
 

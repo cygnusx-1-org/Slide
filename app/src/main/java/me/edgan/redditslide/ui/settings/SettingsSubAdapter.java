@@ -137,7 +137,6 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
         }
 
         final boolean multipleSubs = (subreddits.size() > 1);
-        boolean isAlternateLayout;
         int currentColor;
         int currentAccentColor;
 
@@ -179,7 +178,6 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
 
             currentColor = Palette.getDefaultColor();
             currentAccentColor = colorPrefs.getColor("");
-            isAlternateLayout = false;
 
             // If all selected subs have the same settings, display them
             if (sameMainColor) {
@@ -190,7 +188,6 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
             }
         } else { // Is only one selected sub
             currentColor = Palette.getColor(subreddit);
-            isAlternateLayout = SettingValues.prefs.contains(Reddit.PREF_LAYOUT + subreddit);
             currentAccentColor = colorPrefs.getColor(subreddit);
             bigPics.setChecked(SettingValues.isPicsEnabled(subreddit));
             selftext.setChecked(SettingValues.isSelftextEnabled(subreddit));

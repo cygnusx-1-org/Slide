@@ -38,7 +38,8 @@ public class LastComments {
                 }
             }
         } catch (Exception ignored) {
-
+            // A cache row that will not parse abandons this pass — the entries already read stay
+            // in commentsSince, and every submission it did not reach reads as 'no new comments'.
         }
     }
 

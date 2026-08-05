@@ -23,6 +23,8 @@ public class RemovalReasons {
     @SerializedName("logreason")
     private String logReason = "";
 
+    // Kept, unread: this mirrors toolbox's wiki schema, which is what this class is for.
+    @SuppressWarnings("UnusedVariable")
     @SerializedName("bantitle")
     private String banTitle =
             ""; // Is this even used by Toolbox? For mod button bans maybe (not a removal reason

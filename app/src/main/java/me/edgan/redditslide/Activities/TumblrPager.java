@@ -48,6 +48,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Adapters.ImageGridAdapter;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.Fragments.BlankFragment;
@@ -166,7 +167,7 @@ public class TumblrPager extends BaseSaveActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
         overrideSwipeFromAnywhere();
         super.onCreate(savedInstanceState);
         getTheme()
@@ -285,7 +286,7 @@ public class TumblrPager extends BaseSaveActivity {
                                     final Dialog d = builder.create();
                                     gridview.setOnItemClickListener(
                                             new AdapterView.OnItemClickListener() {
-                                                public void onItemClick(
+                                                @Override public void onItemClick(
                                                         AdapterView<?> parent,
                                                         View v,
                                                         int position,
@@ -393,7 +394,6 @@ public class TumblrPager extends BaseSaveActivity {
 
     public static class Gif extends Fragment {
 
-        private int i = 0;
         @SuppressWarnings("NullAway.Init")
         private View gif;
         ViewGroup rootView;
@@ -432,7 +432,7 @@ public class TumblrPager extends BaseSaveActivity {
             final Photo photo = ((TumblrPager) getActivity()).images.get(i);
             final String url = photo == null ? null : photo.getOriginalUrl();
 
-            if (url != null && url.toLowerCase().endsWith(".gif")) {
+            if (url != null && url.toLowerCase(Locale.ENGLISH).endsWith(".gif")) {
                 videoView.setVisibility(View.GONE); // Hide ExoVideoView
                 View playButton = rootView.findViewById(R.id.playbutton);
                 if (playButton != null) {
@@ -640,8 +640,6 @@ public class TumblrPager extends BaseSaveActivity {
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            Bundle bundle = this.getArguments();
-            i = bundle.getInt("page", 0);
         }
     }
 
@@ -651,7 +649,7 @@ public class TumblrPager extends BaseSaveActivity {
                 this, contentUrl, isGif, () -> doImageSave(isGif, contentUrl, index));
     }
 
-    public void doImageSave(boolean isGif, @Nullable String contentUrl, int index) {
+    @Override public void doImageSave(boolean isGif, @Nullable String contentUrl, int index) {
         ImageSaveUtils.doImageSave(
                 this,
                 isGif,
@@ -977,7 +975,6 @@ public class TumblrPager extends BaseSaveActivity {
                         host,
                         rootView.findViewById(R.id.gif), // This is the ExoVideoView
                         loader,
-                        null, // placeholder
                         false, // closeIfNull
                         true, // autostart
                         size,

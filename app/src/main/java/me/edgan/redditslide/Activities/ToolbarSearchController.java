@@ -295,6 +295,6 @@ public class ToolbarSearchController {
                                 }
                             }
                         },
-                        ANIMATION_DURATION + mainActivity.ANIMATE_DURATION_OFFSET);
+                        ANIMATION_DURATION + OFFSET_ANIM);
     }
 }

@@ -14,7 +14,7 @@ public class SettingsFont extends BaseActivityAnim {
 
     private SettingsFontFragment fragment = new SettingsFontFragment(this);
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_font);

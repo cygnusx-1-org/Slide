@@ -72,7 +72,7 @@ public class CommentCacheAsync extends AsyncTask<Void, Void, Void> {
 
     @Override
     public Void doInBackground(Void... params) {
-        if (Authentication.isLoggedIn && Authentication.me == null
+        if ((Authentication.isLoggedIn && Authentication.me == null)
                 || Authentication.reddit == null) {
 
             if (Authentication.reddit == null) {
@@ -195,6 +195,8 @@ public class CommentCacheAsync extends AsyncTask<Void, Void, Void> {
                             }
                         }
                     } catch (Exception ignored) {
+                        // One submission failing to cache must not stop the rest of the
+                        // batch; count still advances so the progress bar completes.
                     }
                     count = count + 1;
                     if (mBuilder != null && mNotifyManager != null) {

@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-import java.util.ArrayList;
+import java.util.Collections;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Autocache.AutoCacheScheduler;
 import me.edgan.redditslide.Fragments.BlankFragment;
@@ -231,17 +231,12 @@ public class CommentsScreenSingle extends BaseActivityAnim {
             try {
                 final Submission s = Authentication.reddit.getSubmission(params[0]);
                 if (SettingValues.storeHistory) {
-                    if (SettingValues.storeNSFWHistory && s.isNsfw() || !s.isNsfw()) {
+                    if ((SettingValues.storeNSFWHistory && s.isNsfw()) || !s.isNsfw()) {
                         HasSeen.addSeen(s.getFullName());
                     }
                     LastComments.setComments(s);
                 }
-                HasSeen.setHasSeenSubmission(
-                        new ArrayList<Submission>() {
-                            {
-                                this.add(s);
-                            }
-                        });
+                HasSeen.setHasSeenSubmission(Collections.singletonList(s));
                 locked = s.isLocked();
                 archived = s.isArchived();
                 contest = s.getDataNode().path("contest_mode").asBoolean();
@@ -268,7 +263,8 @@ public class CommentsScreenSingle extends BaseActivityAnim {
                                 }
                             });
                 } catch (Exception ignored) {
-
+                    // Dialog on a host that finished while the
+                    // submission was being fetched.
                 }
                 return null;
             }

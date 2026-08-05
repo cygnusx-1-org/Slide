@@ -116,7 +116,7 @@ public class ImgurUtils {
             byte[] byt = new byte[1024];
             int i;
 
-            for (long l = 0L; (i = in.read(byt)) != -1; l += i) {
+            while ((i = in.read(byt)) != -1) {
                 buffer.write(byt, 0, i);
             }
 
@@ -137,6 +137,8 @@ public class ImgurUtils {
             try {
                 closeable.close();
             } catch (IOException ex) {
+                // Failing to close a stream we are done with changes nothing the
+                // caller can act on.
             }
         }
     }

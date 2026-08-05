@@ -6,7 +6,7 @@ import android.widget.RemoteViewsService;
 
 /** Created by carlo_000 on 5/4/2016. */
 public class ListViewWidgetService extends RemoteViewsService {
-    public RemoteViewsFactory onGetViewFactory(Intent intent) {
+    @Override public RemoteViewsFactory onGetViewFactory(Intent intent) {
         return new ListViewRemoteViewsFactory(
                 this.getApplicationContext(),
                 intent,

@@ -166,7 +166,7 @@ public class MultiredditOverview extends BaseActivityAnim {
             try {
                 getOnBackPressedDispatcher().onBackPressed();
             } catch (Exception ignored) {
-
+                // Already finishing, which is what back would do.
             }
             return true;
         } else if (itemId == R.id.action_edit) {
@@ -310,7 +310,8 @@ public class MultiredditOverview extends BaseActivityAnim {
             DialogUtil.matchDialogToCardBackground(MultiredditOverview.this, multiDialog);
             multiDialog.show();
         } catch (Exception e) {
-
+            // Dialog on a host that finished while the multi
+            // was loading.
         }
     }
 
@@ -378,11 +379,11 @@ public class MultiredditOverview extends BaseActivityAnim {
             if (s.toString().equals(getString(R.string.sorting_best))) {
                 continue;
             }
-            MenuItem m = popup.getMenu().add(s);
+            popup.getMenu().add(s);
         }
         popup.setOnMenuItemClickListener(
                 new PopupMenu.OnMenuItemClickListener() {
-                    public boolean onMenuItemClick(MenuItem item) {
+                    @Override public boolean onMenuItemClick(MenuItem item) {
                         int i = 0;
                         for (Spannable s : base) {
                             if (s.equals(item.getTitle())) {
@@ -483,11 +484,11 @@ public class MultiredditOverview extends BaseActivityAnim {
                         .toLowerCase(Locale.ENGLISH);
         final Spannable[] base = SortingUtil.getSortingTimesSpannables("multi_" + id);
         for (Spannable s : base) {
-            MenuItem m = popup.getMenu().add(s);
+            popup.getMenu().add(s);
         }
         popup.setOnMenuItemClickListener(
                 new PopupMenu.OnMenuItemClickListener() {
-                    public boolean onMenuItemClick(MenuItem item) {
+                    @Override public boolean onMenuItemClick(MenuItem item) {
                         int i = 0;
                         for (Spannable s : base) {
                             if (s.equals(item.getTitle())) {

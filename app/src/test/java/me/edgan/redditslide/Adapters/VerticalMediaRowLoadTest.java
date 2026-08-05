@@ -277,7 +277,6 @@ public class VerticalMediaRowLoadTest {
                         activity,
                         holder.exoVideoView,
                         holder.loader,
-                        null, // placeholder
                         false, // closeIfNull
                         false, // autostart
                         null, // size

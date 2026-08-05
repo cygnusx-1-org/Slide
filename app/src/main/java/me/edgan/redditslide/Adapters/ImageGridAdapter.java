@@ -124,20 +124,20 @@ public class ImageGridAdapter extends android.widget.BaseAdapter {
         return size == null ? null : size.getUrl();
     }
 
-    public int getCount() {
+    @Override public int getCount() {
         return jsons.size();
     }
 
-    public String getItem(int position) {
+    @Override public String getItem(int position) {
         return jsons.get(position);
     }
 
-    public long getItemId(int position) {
+    @Override public long getItemId(int position) {
         return 0;
     }
 
     // create a new ImageView for each item referenced by the Adapter
-    public View getView(int position, @Nullable View convertView, ViewGroup parent) {
+    @Override public View getView(int position, @Nullable View convertView, ViewGroup parent) {
         ImageView imageView;
         GridView grid = (GridView) parent;
         int size = grid.getColumnWidth();

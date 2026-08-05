@@ -37,7 +37,6 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
     private final MoreCommentViewHolder holder;
-    private final int holderPos;
     private final int dataPos;
     public final String fullname;
 
@@ -52,7 +51,6 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
 
     public AsyncLoadMoreTask(
             int dataPos,
-            int holderPos,
             MoreCommentViewHolder holder,
             String fullname,
             Context context,
@@ -60,7 +58,6 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
             RecyclerView listView,
             ArrayList<CommentObject> currentComments,
             HashMap<String, Integer> keys) {
-        this.holderPos = holderPos;
         this.holder = holder;
         this.dataPos = dataPos;
         this.fullname = fullname;
@@ -248,7 +245,6 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
                                 // Default error messages
                                 String message = mContext.getString(R.string.err_connection_failed_msg);
                                 String title = mContext.getString(R.string.err_title);
-                                Runnable positiveAction = null;
                                 String positiveButtonText = mContext.getString(R.string.btn_ok);
 
                                 // Specific error handling based on stacktrace
@@ -374,6 +370,8 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
             }
             CommentImageUtil.preloadBlocking(Reddit.getAppContext(), urls);
         } catch (Exception ignored) {
+            // Preloading images is best-effort: on any failure the
+            // images still load when a comment binds.
         }
     }
 }

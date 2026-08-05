@@ -531,7 +531,8 @@ public class ImageFlairs {
                     }
                 }
             } catch (NumberFormatException ignored) {
-
+                // A background-position CSS rule that is not numeric gives the empty
+                // Location returned below.
             }
             return new Location();
         }
@@ -550,7 +551,8 @@ public class ImageFlairs {
                             Integer.parseInt(matches.group(2)), Integer.parseInt(matches.group(2)));
                 }
             } catch (NumberFormatException ignored) {
-
+                // A background-size CSS rule that is not numeric gives the empty
+                // Dimensions returned below.
             }
             return new Dimensions();
         }

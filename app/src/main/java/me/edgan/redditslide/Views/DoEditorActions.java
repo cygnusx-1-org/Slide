@@ -670,13 +670,7 @@ public class DoEditorActions {
                                     sStart = editText.getSelectionStart();
                                     sEnd = editText.getSelectionEnd();
                                     handleImageIntent(
-                                            new ArrayList<Uri>() {
-                                                {
-                                                    add(content);
-                                                }
-                                            },
-                                            editText,
-                                            a);
+                                            Collections.singletonList(content), editText, a);
                                 }
                             });
         } catch (Exception e) {
@@ -742,13 +736,7 @@ public class DoEditorActions {
                 final Editable target = e;
                 if (target != null) {
                     handleImageIntent(
-                            new ArrayList<Uri>() {
-                                {
-                                    add(data.getData());
-                                }
-                            },
-                            target,
-                            getContext());
+                            Collections.singletonList(data.getData()), target, getContext());
                 }
 
                 getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();

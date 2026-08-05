@@ -188,7 +188,7 @@ public class Wiki extends BaseActivityAnim implements WikiPage.WikiPageListener 
                                             .setOnDismissListener(dialog -> finish())
                                             );
                                 } catch (Exception ignored) {
-
+                                    // Error dialog on a host that is finishing.
                                 }
                             }
                         });
@@ -218,7 +218,7 @@ public class Wiki extends BaseActivityAnim implements WikiPage.WikiPageListener 
                             .setOnDismissListener(dialog -> finish())
                             );
                 } catch (Exception e) {
-
+                    // Error dialog on a host that is finishing.
                 }
             }
         }

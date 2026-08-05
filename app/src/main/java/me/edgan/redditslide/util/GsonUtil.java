@@ -53,7 +53,7 @@ public final class GsonUtil {
      */
     public static boolean bool(@Nullable JsonElement element, String member, boolean defValue) {
         final JsonElement child = member(element, member);
-        return child != null && child.isJsonPrimitive() ? child.getAsBoolean() : defValue;
+        return (child != null && child.isJsonPrimitive()) ? child.getAsBoolean() : defValue;
     }
 
     /** The raw member, or null when the parent is not an object or has no such member. */

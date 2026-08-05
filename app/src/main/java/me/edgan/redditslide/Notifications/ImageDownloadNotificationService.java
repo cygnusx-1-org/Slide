@@ -128,6 +128,8 @@ public class ImageDownloadNotificationService extends Service {
                                 Toast.LENGTH_SHORT)
                         .show();
             } catch (Exception ignored) {
+                // A Toast needs a live host; the
+                // download proceeds without it.
             }
 
             startNotification();
@@ -196,7 +198,7 @@ public class ImageDownloadNotificationService extends Service {
                                                     if (out != null) {
                                                         FileUtil.copyFile(cachedFile, out);
                                                         out.close();
-                                                        showSuccessNotification(outDocFile.getUri(), loadedImage);
+                                                        showSuccessNotification(loadedImage);
                                                     }
                                                 }
                                             } else {
@@ -212,7 +214,7 @@ public class ImageDownloadNotificationService extends Service {
                                                                 : Bitmap.CompressFormat.JPEG;
                                                         loadedImage.compress(format, 100, out);
                                                         out.close();
-                                                        showSuccessNotification(outDocFile.getUri(), loadedImage);
+                                                        showSuccessNotification(loadedImage);
                                                     }
                                                 }
                                             }
@@ -336,7 +338,7 @@ public class ImageDownloadNotificationService extends Service {
             return validFile.getName();
         }
 
-        private void showSuccessNotification(Uri fileUri, Bitmap thumbnail) {
+        private void showSuccessNotification(Bitmap thumbnail) {
             Notification notif =
                     new NotificationCompat.Builder(getApplicationContext(), Reddit.CHANNEL_IMG)
                             .setContentTitle(getString(R.string.info_photo_saved))
@@ -362,6 +364,9 @@ public class ImageDownloadNotificationService extends Service {
                                 Toast.LENGTH_LONG)
                         .show();
             } catch (Exception ignored) {
+                // A Toast needs a live host. onError has already cancelled the progress
+                // notification rather than replacing it with an error one, so on a dead host the
+                // failure goes unreported — which beats crashing the download service.
             }
         }
 

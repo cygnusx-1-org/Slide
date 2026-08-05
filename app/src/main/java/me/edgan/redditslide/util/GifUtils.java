@@ -204,7 +204,7 @@ public class GifUtils {
 
                 // Combine prefix, unique part from URL, and ensure .gif extension
                 String finalFileName = FileUtil.getValidFileName(fileNamePrefix + uniquePartFromUrl, "", ".gif");
-                if (!finalFileName.toLowerCase().endsWith(".gif")) { // Ensure .gif extension if getValidFileName strips it
+                if (!finalFileName.toLowerCase(Locale.ENGLISH).endsWith(".gif")) { // Ensure .gif extension if getValidFileName strips it
                     finalFileName += ".gif";
                 }
 
@@ -289,6 +289,7 @@ public class GifUtils {
                         : R.string.mediaview_notif_title;
                 Toast.makeText(activity, activity.getString(toastMsg), Toast.LENGTH_SHORT).show();
             } catch (Exception ignored) {
+                // A Toast needs a live host; the save proceeds without it.
             }
         }
 
@@ -578,7 +579,6 @@ public class GifUtils {
         private Activity c;
         private ExoVideoView video;
         @Nullable private ProgressBar progressBar;
-        @Nullable private View placeholder;
         private boolean closeIfNull;
         private boolean autostart;
         @Nullable public String subreddit;
@@ -591,7 +591,6 @@ public class GifUtils {
                 @NonNull Activity c,
                 @NonNull ExoVideoView video,
                 @Nullable ProgressBar p,
-                @Nullable View placeholder,
                 boolean closeIfNull,
                 boolean autostart,
                 @Nullable String subreddit) {
@@ -600,7 +599,6 @@ public class GifUtils {
             this.video = video;
             this.progressBar = p;
             this.closeIfNull = closeIfNull;
-            this.placeholder = placeholder;
             this.autostart = autostart;
         }
 
@@ -608,7 +606,6 @@ public class GifUtils {
                 @NonNull Activity c,
                 @NonNull ExoVideoView video,
                 @Nullable ProgressBar p,
-                @Nullable View placeholder,
                 boolean closeIfNull,
                 boolean autostart,
                 @Nullable TextView size,
@@ -619,7 +616,6 @@ public class GifUtils {
             this.subreddit = subreddit;
             this.progressBar = p;
             this.closeIfNull = closeIfNull;
-            this.placeholder = placeholder;
             this.autostart = autostart;
             this.size = size;
             this.submissionTitle = submissionTitle;
@@ -1071,7 +1067,7 @@ public class GifUtils {
                         String secondURL = new URL(ucon.getHeaderField("location")).toString();
                         if (secondURL.contains("gifdeliverynetwork")) {
                             final String redirected =
-                                    getUrlFromApi(getApiResponse("redgifs", name.toLowerCase()));
+                                    getUrlFromApi(getApiResponse("redgifs", name.toLowerCase(Locale.ENGLISH)));
                             if (redirected != null) {
                                 return Uri.parse(redirected);
                             }
@@ -1107,6 +1103,7 @@ public class GifUtils {
                                                         })
                                                 );
                                     } catch (Exception ignored) {
+                                        // Dialog on a host that finished while the gif resolved.
                                     }
                                 }
                             });
@@ -1158,7 +1155,6 @@ public class GifUtils {
             switch (videoType) {
                 case REDGIFS:
                     String id = url.substring(url.lastIndexOf("/"));
-                    String redgifsUrl = "https://api.redgifs.com/v2/gifs/" + id;
 
                     // No error callback: a null return is the failure, and onPostExecute reports it
                     // through nothingIsComing() on the main thread. onError() cannot be called from
@@ -1255,6 +1251,7 @@ public class GifUtils {
                                                         .setPositiveButton(R.string.btn_ok, (dialog, which) -> c.finish())
                                                         );
                                             } catch (Exception ignored) {
+                                                // Dialog on a host that finished while the gif resolved.
                                             }
                                         }
                                     });
@@ -1436,6 +1433,8 @@ public class GifUtils {
                                 }
                             });
                 } catch (IOException ignored) {
+                    // The size label is cosmetic: a manifest that will not parse just
+                    // leaves it blank.
                 }
             }
         }

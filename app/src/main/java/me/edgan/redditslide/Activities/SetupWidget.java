@@ -190,6 +190,5 @@ public class SetupWidget extends BaseActivity {
         // this intent is essential to show the widget
         // if this intent is not included,you can't show
         // widget on homescreen
-
     }
 }

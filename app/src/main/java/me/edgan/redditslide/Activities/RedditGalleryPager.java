@@ -28,6 +28,7 @@ import androidx.viewpager.widget.ViewPager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Adapters.ImageGridAdapter;
 import me.edgan.redditslide.Fragments.BlankFragment;
 import me.edgan.redditslide.Fragments.SubmissionsView;
@@ -64,7 +65,6 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
     @SuppressWarnings("NullAway.Init")
     private BottomSheet.Builder bottomSheetBuilder;
     @Nullable private String lastContentUrl; // Track URL for retry after permission
-    private int lastIndex = -1; // Track index for retry after permission
 
     private static final String TAG = "RedditGalleryPager";
 
@@ -248,7 +248,7 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
                                 final Dialog d = builder.create();
                                 gridview.setOnItemClickListener(
                                         new AdapterView.OnItemClickListener() {
-                                            public void onItemClick(
+                                            @Override public void onItemClick(
                                                     AdapterView<?> parent,
                                                     View v,
                                                     int position,
@@ -384,7 +384,7 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
         if (!isGif) {
             bottomSheetBuilder.sheet(3, image, getString(R.string.share_image));
         }
-        String lcUrl = contentUrl == null ? "" : contentUrl.toLowerCase();
+        String lcUrl = contentUrl == null ? "" : contentUrl.toLowerCase(Locale.ENGLISH);
         int q = lcUrl.indexOf('?');
         String path = q < 0 ? lcUrl : lcUrl.substring(0, q);
         boolean isVideo = path.endsWith(".mp4") || lcUrl.contains("format=mp4");
@@ -694,7 +694,7 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
         }
     }
 
-    public void doImageSave(boolean isGif, String contentUrl, int index) {
+    @Override public void doImageSave(boolean isGif, String contentUrl, int index) {
         ImageSaveUtils.doImageSave(
                 this,
                 isGif,

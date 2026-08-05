@@ -273,7 +273,7 @@ public class AsyncLoadGifFailureTest {
         }
 
         CountingLoad(final ExoVideoView target) {
-            super(activity, target, bar, null, false, false, size, "pics", "A title");
+            super(activity, target, bar, false, false, size, "pics", "A title");
         }
 
         @Override
@@ -312,7 +312,7 @@ public class AsyncLoadGifFailureTest {
         // so this one super call has to be exempt from the contract it is characterising.
         @SuppressWarnings("NullAway")
         HandingOffLoad(final boolean closeIfNull, final @Nullable Activity host) {
-            super(host, video, bar, null, closeIfNull, false, null, "pics", "A title");
+            super(host, video, bar, closeIfNull, false, null, "pics", "A title");
         }
 
         @Override

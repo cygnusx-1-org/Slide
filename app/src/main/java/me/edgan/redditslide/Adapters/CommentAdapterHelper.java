@@ -44,6 +44,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -614,7 +615,7 @@ final AlertDialog reportDialog =
                         LayoutUtils.showSnackbar(s);
                     }
                 } catch (Exception ignored) {
-
+                    // Snackbar needs a view still in a window.
                 }
             }
         }.execute();
@@ -703,7 +704,7 @@ final AlertDialog reportDialog =
                         LayoutUtils.showSnackbar(s);
                     }
                 } catch (Exception ignored) {
-
+                    // Snackbar needs a view still in a window.
                 }
             }
         }.execute();
@@ -736,11 +737,7 @@ final AlertDialog reportDialog =
                     return categories;
                 } catch (Exception e) {
                     LogUtil.e(e, "CommentAdapterHelper.doInBackground failed");
-                    return new ArrayList<String>() {
-                        {
-                            add("New category");
-                        }
-                    };
+                    return Collections.singletonList("New category");
                 }
             }
 
@@ -907,7 +904,7 @@ final AlertDialog reportDialog =
                         d.dismiss();
                     }
                 } catch (Exception ignored) {
-
+                    // Dialog on a host that is finishing.
                 }
             }
         }.execute();
@@ -930,7 +927,6 @@ final AlertDialog reportDialog =
         Drawable profile = mContext.getResources().getDrawable(R.drawable.ic_account_circle);
         final Drawable report = mContext.getResources().getDrawable(R.drawable.ic_report);
         final Drawable approve = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_thumb_up, color);
-        final Drawable nsfw = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_visibility_off, color);
         final Drawable pin = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_bookmark_border, color);
         final Drawable distinguish = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_star, color);
         final Drawable remove = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_close, color);
@@ -1865,7 +1861,11 @@ final AlertDialog reportDialog =
 
         String scoreText;
         if (comment.isScoreHidden()) {
-            scoreText = "[" + mContext.getString(R.string.misc_score_hidden).toUpperCase() + "]";
+            scoreText =
+                    "["
+                            + mContext.getString(R.string.misc_score_hidden)
+                                    .toUpperCase(Locale.getDefault())
+                            + "]";
         } else {
             scoreText = String.format(Locale.getDefault(), "%d", getScoreText(comment));
         }
@@ -1930,7 +1930,8 @@ final AlertDialog reportDialog =
             SpannableStringBuilder pinned =
                     new SpannableStringBuilder(
                             "\u00A0"
-                                    + mContext.getString(R.string.submission_stickied).toUpperCase()
+                                    + mContext.getString(R.string.submission_stickied)
+                                            .toUpperCase(Locale.getDefault())
                                     + "\u00A0");
             pinned.setSpan(
                     new RoundedBackgroundSpan(

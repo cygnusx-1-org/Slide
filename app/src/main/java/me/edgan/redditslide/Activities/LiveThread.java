@@ -134,7 +134,8 @@ public class LiveThread extends BaseActivityAnim {
                             new LiveThreadManager(Authentication.reddit)
                                     .get(getIntent().getStringExtra(EXTRA_LIVEURL));
                 } catch (Exception e) {
-
+                    // A thread that will not load leaves `thread` null, which
+                    // onPostExecute already treats as the failure case.
                 }
                 return null;
             }

@@ -111,7 +111,6 @@ public class MediaFragmentComment extends BaseMediaFragment {
         addClickFunctions(
                 (rootView.findViewById(R.id.submission_image)),
                 slideLayout,
-                rootView,
                 type,
                 getActivity(),
                 s);
@@ -234,7 +233,6 @@ public class MediaFragmentComment extends BaseMediaFragment {
     private static void addClickFunctions(
             final View base,
             final SlidingUpPanelLayout slidingPanel,
-            final View clickingArea,
             final ContentType.Type type,
             final Activity contextActivity,
             final CommentUrlObject submission) {
@@ -287,7 +285,6 @@ public class MediaFragmentComment extends BaseMediaFragment {
                         getActivity(),
                         videoView,
                         loader,
-                        rootView.findViewById(R.id.placeholder),
                         false,
                         true,
                         sub);

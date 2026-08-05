@@ -1595,7 +1595,8 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                     subs.append("(+").append(split[1]).append(")");
                     subs.append(", ");
                 } catch (Exception ignored) {
-
+                    // A malformed 'sub:threshold' entry is left
+                    // out of the summary.
                 }
             }
         }
@@ -1615,7 +1616,8 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 String[] split = s.split(":");
                 subThresholds.put(split[0].toLowerCase(Locale.ENGLISH), Integer.valueOf(split[1]));
             } catch (Exception ignored) {
-
+                // A malformed 'sub:threshold' entry is left
+                // out of the dialog.
             }
         }
 
@@ -1679,7 +1681,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                         })
                 .setTitle(R.string.sub_post_notifs_title_settings)
                 .setPositiveButton(
-                        context.getString(R.string.btn_add).toUpperCase(),
+                        context.getString(R.string.btn_add).toUpperCase(Locale.getDefault()),
                         (dialog, which) -> showThresholdDialog(toCheck, false)
                 )
                 .setNegativeButton(
@@ -1721,7 +1723,8 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
             try {
                 subs.add(s.split(":")[0].toLowerCase(Locale.ENGLISH));
             } catch (Exception e) {
-
+                // A malformed entry is left out of the
+                // list.
             }
         }
 
@@ -1801,6 +1804,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                                         .setOnDismissListener(null)
                                         );
                             } catch (Exception ignored) {
+                                // Error dialog on a fragment that detached.
                             }
                         });
 

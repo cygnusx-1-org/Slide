@@ -17,7 +17,6 @@ public class ToggleSwipeViewPager extends ViewPager {
     private boolean mEnableSwiping = true;
     private boolean swipeLeftOnly = false;
     private boolean mSwipeDisabledUntilRelease = false;
-    private float mStartDragX;
 
     public ToggleSwipeViewPager(Context context) {
         super(context);

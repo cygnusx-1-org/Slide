@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.webkit.WebViewClientCompat;
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 import me.edgan.redditslide.Activities.Wiki;
 import me.edgan.redditslide.BuildConfig;
 import me.edgan.redditslide.Constants;
@@ -86,11 +87,11 @@ public class WikiPage extends Fragment {
                 new WebViewClientCompat() {
                     @Override
                     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                        if (url.toLowerCase().startsWith(wikiUrl.toLowerCase())
+                        if (url.toLowerCase(Locale.ENGLISH).startsWith(wikiUrl.toLowerCase(Locale.ENGLISH))
                                 && listener != null) {
                             String pagePiece =
-                                    url.toLowerCase()
-                                            .replace(wikiUrl.toLowerCase(), "")
+                                    url.toLowerCase(Locale.ENGLISH)
+                                            .replace(wikiUrl.toLowerCase(Locale.ENGLISH), "")
                                             .split("\\?")[0]
                                             .split("#")[0];
                             listener.embeddedWikiLinkClicked(pagePiece);

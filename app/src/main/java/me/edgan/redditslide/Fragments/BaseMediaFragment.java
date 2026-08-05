@@ -225,7 +225,7 @@ public abstract class BaseMediaFragment extends Fragment {
                                                                             GsonUtil.string(result, "alt", ""))
                                                                     );
                                                         } catch (Exception ignored) {
-
+                                                            // Alt-text dialog on a detached fragment.
                                                         }
                                                         return true;
                                                     }
@@ -352,7 +352,7 @@ public abstract class BaseMediaFragment extends Fragment {
             final Handler handler = new Handler();
             final Runnable progressBarDelayRunner =
                     new Runnable() {
-                        public void run() {
+                        @Override public void run() {
                             bar.setVisibility(View.VISIBLE);
                         }
                     };
@@ -393,7 +393,7 @@ public abstract class BaseMediaFragment extends Fragment {
                                     va.setDuration(mDuration);
                                     va.addUpdateListener(
                                             new ValueAnimator.AnimatorUpdateListener() {
-                                                public void onAnimationUpdate(
+                                                @Override public void onAnimationUpdate(
                                                         ValueAnimator animation) {
                                                     Float value =
                                                             (Float) animation.getAnimatedValue();
@@ -411,7 +411,7 @@ public abstract class BaseMediaFragment extends Fragment {
                                     va.setDuration(mDuration);
                                     va.addUpdateListener(
                                             new ValueAnimator.AnimatorUpdateListener() {
-                                                public void onAnimationUpdate(
+                                                @Override public void onAnimationUpdate(
                                                         ValueAnimator animation) {
                                                     Float value =
                                                             (Float) animation.getAnimatedValue();
@@ -494,7 +494,7 @@ public abstract class BaseMediaFragment extends Fragment {
                                                             va.addUpdateListener(
                                                                     new ValueAnimator
                                                                             .AnimatorUpdateListener() {
-                                                                        public void
+                                                                        @Override public void
                                                                                 onAnimationUpdate(
                                                                                         ValueAnimator
                                                                                                 animation) {
@@ -521,7 +521,7 @@ public abstract class BaseMediaFragment extends Fragment {
                                                             va.addUpdateListener(
                                                                     new ValueAnimator
                                                                             .AnimatorUpdateListener() {
-                                                                        public void
+                                                                        @Override public void
                                                                                 onAnimationUpdate(
                                                                                         ValueAnimator
                                                                                                 animation) {

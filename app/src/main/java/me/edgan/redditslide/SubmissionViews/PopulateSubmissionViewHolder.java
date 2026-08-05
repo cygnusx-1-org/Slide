@@ -163,10 +163,10 @@ public class PopulateSubmissionViewHolder {
                         ContextCompat.getColor(mContext, R.color.md_red_300));
             } else {
                 final int getTintColor =
-                        holder.itemView.getTag(holder.itemView.getId()) != null
+                        (holder.itemView.getTag(holder.itemView.getId()) != null
                                                 && holder.itemView
                                                         .getTag(holder.itemView.getId())
-                                                        .equals("none")
+                                                        .equals("none"))
                                         || full
                                 ? Palette.getCurrentTintColor(mContext)
                                 : Palette.getWhiteTintColor();
@@ -266,10 +266,10 @@ public class PopulateSubmissionViewHolder {
                     upvotebutton.setContentDescription(mContext.getString(R.string.btn_upvoted));
                     holder.score.setTypeface(null, Typeface.BOLD);
                     final int getTintColor =
-                            holder.itemView.getTag(holder.itemView.getId()) != null
+                            (holder.itemView.getTag(holder.itemView.getId()) != null
                                                     && holder.itemView
                                                             .getTag(holder.itemView.getId())
-                                                            .equals("none")
+                                                            .equals("none"))
                                             || full
                                     ? Palette.getCurrentTintColor(mContext)
                                     : Palette.getWhiteTintColor();
@@ -291,10 +291,10 @@ public class PopulateSubmissionViewHolder {
                             mContext.getString(R.string.btn_downvoted));
                     holder.score.setTypeface(null, Typeface.BOLD);
                     final int getTintColor =
-                            holder.itemView.getTag(holder.itemView.getId()) != null
+                            (holder.itemView.getTag(holder.itemView.getId()) != null
                                                     && holder.itemView
                                                             .getTag(holder.itemView.getId())
-                                                            .equals("none")
+                                                            .equals("none"))
                                             || full
                                     ? Palette.getCurrentTintColor(mContext)
                                     : Palette.getWhiteTintColor();
@@ -311,10 +311,10 @@ public class PopulateSubmissionViewHolder {
                     holder.score.setTextColor(holder.comments.getCurrentTextColor());
                     holder.score.setTypeface(null, Typeface.NORMAL);
                     final int getTintColor =
-                            holder.itemView.getTag(holder.itemView.getId()) != null
+                            (holder.itemView.getTag(holder.itemView.getId()) != null
                                                     && holder.itemView
                                                             .getTag(holder.itemView.getId())
-                                                            .equals("none")
+                                                            .equals("none"))
                                             || full
                                     ? Palette.getCurrentTintColor(mContext)
                                     : Palette.getWhiteTintColor();
@@ -336,9 +336,6 @@ public class PopulateSubmissionViewHolder {
         } else {
             holder.score.setText(String.format(Locale.getDefault(), "%d", submissionScore));
         }
-
-        // Save the score so we can use it in the OnClickListeners for the vote buttons
-        final int SUBMISSION_SCORE = submissionScore;
 
         final ImageView hideButton = (ImageView) holder.hide;
 
@@ -362,10 +359,10 @@ public class PopulateSubmissionViewHolder {
                 holder.save.setContentDescription(mContext.getString(R.string.btn_unsave));
             } else {
                 final int getTintColor =
-                        holder.itemView.getTag(holder.itemView.getId()) != null
+                        (holder.itemView.getTag(holder.itemView.getId()) != null
                                                 && holder.itemView
                                                         .getTag(holder.itemView.getId())
-                                                        .equals("none")
+                                                        .equals("none"))
                                         || full
                                 ? Palette.getCurrentTintColor(mContext)
                                 : Palette.getWhiteTintColor();
@@ -381,7 +378,7 @@ public class PopulateSubmissionViewHolder {
                     });
         }
 
-        if (!SettingValues.saveButton && !full || !Authentication.isLoggedIn || !Authentication.didOnline) {
+        if ((!SettingValues.saveButton && !full) || !Authentication.isLoggedIn || !Authentication.didOnline) {
             holder.save.setVisibility(View.GONE);
         }
 
@@ -616,12 +613,12 @@ public class PopulateSubmissionViewHolder {
                                         }
                                     }
                                     final int getTintColor =
-                                            holder.itemView.getTag(holder.itemView.getId()) != null
+                                            (holder.itemView.getTag(holder.itemView.getId()) != null
                                                                     && holder.itemView
                                                                             .getTag(
                                                                                     holder.itemView
                                                                                             .getId())
-                                                                            .equals("none")
+                                                                            .equals("none"))
                                                             || full
                                                     ? Palette.getCurrentTintColor(mContext)
                                                     : Palette.getWhiteTintColor();
@@ -645,12 +642,6 @@ public class PopulateSubmissionViewHolder {
                                                 ContextCompat.getColor(
                                                         mContext, R.color.md_blue_500));
                                         holder.score.setTypeface(null, Typeface.BOLD);
-                                        final int DOWNVOTE_SCORE =
-                                                (SUBMISSION_SCORE == 0)
-                                                        ? 0
-                                                        : SUBMISSION_SCORE
-                                                                - 1; // if a post is at 0 votes,
-                                        // keep it at 0 when downvoting
                                         new Vote(false, points, mContext).execute(submission);
                                         ActionStates.setVoteDirection(
                                                 submission, VoteDirection.DOWNVOTE);
@@ -692,12 +683,12 @@ public class PopulateSubmissionViewHolder {
                                     }
 
                                     final int getTintColor =
-                                            holder.itemView.getTag(holder.itemView.getId()) != null
+                                            (holder.itemView.getTag(holder.itemView.getId()) != null
                                                                     && holder.itemView
                                                                             .getTag(
                                                                                     holder.itemView
                                                                                             .getId())
-                                                                            .equals("none")
+                                                                            .equals("none"))
                                                             || full
                                                     ? Palette.getCurrentTintColor(mContext)
                                                     : Palette.getWhiteTintColor();

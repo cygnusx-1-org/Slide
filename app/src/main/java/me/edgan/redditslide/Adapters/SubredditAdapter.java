@@ -123,7 +123,7 @@ public class SubredditAdapter extends PaginatedListAdapter {
 
             final Runnable r =
                     new Runnable() {
-                        public void run() {
+                        @Override public void run() {
                             notifyItemChanged(
                                     dataSet.posts.size() + 1); // the loading spinner to replaced by
                             // nomoreposts.xml

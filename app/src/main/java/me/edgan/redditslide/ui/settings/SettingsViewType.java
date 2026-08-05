@@ -16,7 +16,7 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class SettingsViewType extends BaseActivityAnim {
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_viewtype);
@@ -45,7 +45,7 @@ public class SettingsViewType extends BaseActivityAnim {
 
                                 popup.setOnMenuItemClickListener(
                                         new PopupMenu.OnMenuItemClickListener() {
-                                            public boolean onMenuItemClick(MenuItem item) {
+                                            @Override public boolean onMenuItemClick(MenuItem item) {
                                                 int itemId = item.getItemId();
                                                 if (itemId == R.id.tabs) {
                                                     SettingValues.single = false;

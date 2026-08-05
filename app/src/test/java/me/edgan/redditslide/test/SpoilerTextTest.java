@@ -2,7 +2,7 @@ package me.edgan.redditslide.test;
 
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import me.edgan.redditslide.SpoilerRobotoTextView;
@@ -20,28 +20,20 @@ public class SpoilerTextTest {
     }
 
     private final List<Object[]> htmlSpoilerTests =
-            new ArrayList<Object[]>() {
-                {
-                    add(new Object[] {"<a href=\"#spoiler\">test</a>", true});
-                    add(new Object[] {"<a href=\"#sp\">test</a>", true});
-                    add(new Object[] {"<a href=\"#s\">test</a>", true});
-                    add(new Object[] {"<a href=\"#not-a-spoiler\">test</a>", false});
-                }
-            };
+            Arrays.asList(
+                    new Object[] {"<a href=\"#spoiler\">test</a>", true},
+                    new Object[] {"<a href=\"#sp\">test</a>", true},
+                    new Object[] {"<a href=\"#s\">test</a>", true},
+                    new Object[] {"<a href=\"#not-a-spoiler\">test</a>", false});
 
     private final List<Object[]> nativeSpoilerTests =
-            new ArrayList<Object[]>() {
-                {
-                    add(new Object[] {"<span class=\"md-spoiler-text\">test</span>", true});
-                    add(
-                            new Object[] {
-                                "<span class=\"md-bold-text md-spoiler-text"
-                                        + " md-italic-text\">test</span>",
-                                true
-                            });
-                    add(new Object[] {"<span class=\"not-a-spoiler\">test</span>", false});
-                }
-            };
+            Arrays.asList(
+                    new Object[] {"<span class=\"md-spoiler-text\">test</span>", true},
+                    new Object[] {
+                        "<span class=\"md-bold-text md-spoiler-text md-italic-text\">test</span>",
+                        true
+                    },
+                    new Object[] {"<span class=\"not-a-spoiler\">test</span>", false});
 
     @Test
     public void htmlSpoilerTest() {

@@ -26,6 +26,7 @@ import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Activities.BaseActivity;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.R;
@@ -84,7 +85,7 @@ public class SettingsActivity extends BaseActivity implements RestartActivity {
         }
     }
 
-    public void restartActivity() {
+    @Override public void restartActivity() {
         Intent i = new Intent(SettingsActivity.this, SettingsActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         i.putExtra("position", scrollY);
@@ -211,7 +212,7 @@ public class SettingsActivity extends BaseActivity implements RestartActivity {
             mSettingsRedditFragment.Bind();
 
             /* Go through each subview and scan it for matching text, non-matches */
-            loopViews(parent, text.toLowerCase(), true, "");
+            loopViews(parent, text.toLowerCase(Locale.getDefault()), true, "");
         }
 
         /* Try to clean up the mess we've made */
@@ -284,7 +285,7 @@ public class SettingsActivity extends BaseActivity implements RestartActivity {
                 }
 
                 // Found matching text!
-                else if (((TextView) child).getText().toString().toLowerCase().contains(text)) {
+                else if (((TextView) child).getText().toString().toLowerCase(Locale.getDefault()).contains(text)) {
                     foundText = true;
                 }
 

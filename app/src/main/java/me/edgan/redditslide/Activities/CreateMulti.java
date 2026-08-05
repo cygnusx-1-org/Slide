@@ -203,7 +203,7 @@ public class CreateMulti extends BaseActivityAnim {
                         })
                 .setTitle(R.string.multireddit_selector)
                 .setPositiveButton(
-                        getString(R.string.btn_add).toUpperCase(),
+                        getString(R.string.btn_add).toUpperCase(Locale.getDefault()),
                         (dialog, which) -> {
                             subs = toCheck;
                             adapter = new CustomAdapter(subs);
@@ -265,7 +265,7 @@ public class CreateMulti extends BaseActivityAnim {
                                             .setOnDismissListener(null)
                                             );
                                 } catch (Exception ignored) {
-
+                                    // Error dialog on a host the user has already left.
                                 }
                             }
                         });

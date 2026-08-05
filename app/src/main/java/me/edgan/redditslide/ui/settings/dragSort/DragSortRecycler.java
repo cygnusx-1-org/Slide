@@ -118,7 +118,7 @@ class DragSortRecycler extends RecyclerView.ItemDecoration
             int itemPos = rv.getChildAdapterPosition(view);
             debugLog("itemPos =" + itemPos);
 
-            if (!canDragOver(itemPos)) {
+            if (!canDragOver()) {
                 return;
             }
 
@@ -373,7 +373,7 @@ class DragSortRecycler extends RecyclerView.ItemDecoration
      * @param position
      * @return True if we can drag the item over this position, False if not.
      */
-    private boolean canDragOver(int position) {
+    private boolean canDragOver() {
         return true;
     }
 

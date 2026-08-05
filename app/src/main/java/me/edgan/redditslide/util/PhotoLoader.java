@@ -517,6 +517,8 @@ public class PhotoLoader {
                         try {
                             loader.loadImageSync(url, size, FEED_PRELOAD_OPTIONS);
                         } catch (Throwable ignored) {
+                            // Warming is best-effort, and Throwable covers the OOM a decode
+                            // can raise; the finally below still counts this url down.
                         } finally {
                             if (counted) {
                                 firstScreen.countDown();
@@ -559,6 +561,7 @@ public class PhotoLoader {
                                 loadImage(c, url, true);
                             }
                         } catch (Throwable ignored) {
+                            // Warming is best-effort: the image loads on bind instead.
                         }
                     }
                 });
@@ -589,6 +592,7 @@ public class PhotoLoader {
                             loadImage(app, url, false);
                         }
                     } catch (Throwable ignored) {
+                        // Warming is best-effort: the image loads on tap instead.
                     }
                 });
     }

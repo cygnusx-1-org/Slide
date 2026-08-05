@@ -312,7 +312,7 @@ public class ViewDragHelper {
     /** Interpolator defining the animation curve for mScroller */
     private static final Interpolator sInterpolator =
             new Interpolator() {
-                public float getInterpolation(float t) {
+                @Override public float getInterpolation(float t) {
                     t -= 1.0f;
                     return t * t * t * t * t + 1.0f;
                 }
@@ -320,7 +320,7 @@ public class ViewDragHelper {
 
     private final Runnable mSetIdleRunnable =
             new Runnable() {
-                public void run() {
+                @Override public void run() {
                     setDragState(STATE_IDLE);
                 }
             };
@@ -720,7 +720,7 @@ public class ViewDragHelper {
 
     private float distanceInfluenceForSnapDuration(float f) {
         f -= 0.5f; // center the values about 0.
-        f *= 0.3f * Math.PI / 2.0f;
+        f = (float) (f * (0.3f * Math.PI / 2.0f));
         return (float) Math.sin(f);
     }
 

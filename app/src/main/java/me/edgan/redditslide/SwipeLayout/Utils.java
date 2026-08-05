@@ -25,6 +25,8 @@ public class Utils {
             method.setAccessible(true);
             method.invoke(activity);
         } catch (Throwable ignored) {
+            // Hidden-API reflection: on a platform that no longer has the
+            // method the activity simply stays translucent.
         }
     }
 
@@ -65,6 +67,8 @@ public class Utils {
             convertToTranslucent.setAccessible(true);
             convertToTranslucent.invoke(activity, null, options);
         } catch (Throwable ignored) {
+            // Hidden-API reflection: on a platform that no longer has the
+            // method the activity simply stays opaque.
         }
     }
 }

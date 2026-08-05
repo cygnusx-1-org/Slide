@@ -179,6 +179,8 @@ public class ReauthNotifier {
             try {
                 l.onReauthComplete();
             } catch (Exception ignored) {
+                // One listener throwing must not stop the others from being
+                // told that re-auth completed.
             }
         }
     }
@@ -318,6 +320,8 @@ public class ReauthNotifier {
             sbView.getViewTreeObserver().addOnGlobalLayoutListener(holder[0]);
             s.show();
         } catch (Exception ignored) {
+            // The bar is an advisory; a host without a usable view just
+            // does not get one.
         }
     }
 
@@ -359,6 +363,8 @@ public class ReauthNotifier {
                 sbView.setLayoutParams(lp);
             }
         } catch (Exception ignored) {
+            // Layout tweaks are cosmetic, and the finally below still
+            // removes the listener.
         } finally {
             sbView.getViewTreeObserver().removeOnGlobalLayoutListener(self);
         }
@@ -404,6 +410,7 @@ public class ReauthNotifier {
                 if (tv != null) tv.setTextColor(font.data);
             }
         } catch (Exception ignored) {
+            // Styling is cosmetic: an unstyled bar is still readable.
         }
     }
 
@@ -414,6 +421,7 @@ public class ReauthNotifier {
             try {
                 currentSnackbar.dismiss();
             } catch (Exception ignored) {
+                // Already dismissed, which is the state this wanted.
             }
             currentSnackbar = null;
         }

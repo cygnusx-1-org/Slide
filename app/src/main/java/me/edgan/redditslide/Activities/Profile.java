@@ -43,6 +43,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -291,6 +292,8 @@ public class Profile extends BaseActivityAnim {
                 trophyCase =
                         new FluentRedditClient(Authentication.reddit).user(params[0]).trophyCase();
             } catch (RuntimeException ignored) {
+                // A user that cannot be fetched leaves account null, which doClick turns into the
+                // profile-error dialog.
             }
             return null;
         }
@@ -571,11 +574,11 @@ public class Profile extends BaseActivityAnim {
         PopupMenu popup = new PopupMenu(Profile.this, findViewById(R.id.anchor), Gravity.RIGHT);
         final Spannable[] base = SortingUtil.getProfileSortingSpannables(profSort);
         for (Spannable s : base) {
-            MenuItem m = popup.getMenu().add(s);
+            popup.getMenu().add(s);
         }
         popup.setOnMenuItemClickListener(
                 new PopupMenu.OnMenuItemClickListener() {
-                    public boolean onMenuItemClick(MenuItem item) {
+                    @Override public boolean onMenuItemClick(MenuItem item) {
                         LogUtil.v("Chosen is " + item.getOrder());
                         int i = 0;
                         for (Spannable s : base) {
@@ -620,11 +623,11 @@ public class Profile extends BaseActivityAnim {
         PopupMenu popup = new PopupMenu(Profile.this, findViewById(R.id.anchor), Gravity.RIGHT);
         final Spannable[] base = SortingUtil.getSortingTimesSpannables(profTime);
         for (Spannable s : base) {
-            MenuItem m = popup.getMenu().add(s);
+            popup.getMenu().add(s);
         }
         popup.setOnMenuItemClickListener(
                 new PopupMenu.OnMenuItemClickListener() {
-                    public boolean onMenuItemClick(MenuItem item) {
+                    @Override public boolean onMenuItemClick(MenuItem item) {
                         LogUtil.v("Chosen is " + item.getOrder());
                         int i = 0;
                         for (Spannable s : base) {
@@ -735,11 +738,7 @@ public class Profile extends BaseActivityAnim {
                         } catch (Exception e) {
                             LogUtil.e(e, "Profile.doInBackground failed");
                             // probably has no categories?
-                            return new ArrayList<String>() {
-                                {
-                                    add(0, "No category");
-                                }
-                            };
+                            return Collections.singletonList("No category");
                         }
                     }
 
@@ -775,7 +774,7 @@ public class Profile extends BaseActivityAnim {
                                 d.dismiss();
                             }
                         } catch (Exception ignored) {
-
+                            // Category dialog on a host that is finishing.
                         }
                     }
                 }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

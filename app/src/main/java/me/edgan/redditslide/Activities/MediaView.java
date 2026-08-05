@@ -51,6 +51,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.Fragments.SubmissionsView;
@@ -185,14 +186,13 @@ public class MediaView extends BaseSaveActivity {
 
         if (!isGif) b.sheet(3, image, getString(R.string.share_image));
         b.sheet(4, save, "Save " + (isGif ? "MP4" : "image"));
-        Drawable folder = getResources().getDrawable(R.drawable.ic_folder);
         if (isGif
                 && !contentUrl.contains(".mp4")
                 && !contentUrl.contains("streamable.com")
                 && !contentUrl.contains("gfycat.com")
                 && !contentUrl.contains("redgifs.com")
                 && !contentUrl.contains("v.redd.it")) {
-            String type = contentUrl.substring(contentUrl.lastIndexOf(".") + 1).toUpperCase();
+            String type = contentUrl.substring(contentUrl.lastIndexOf(".") + 1).toUpperCase(Locale.ENGLISH);
             try {
                 if (type.equals("GIFV") && new URL(contentUrl).getHost().equals("i.imgur.com")) {
                     type = "GIF";
@@ -265,7 +265,7 @@ public class MediaView extends BaseSaveActivity {
         b.show();
     }
 
-    public void doImageSave(boolean isGif, String contentUrl, int index) {
+    @Override public void doImageSave(boolean isGif, String contentUrl, int index) {
         ImageSaveUtils.doImageSave(
                 this,
                 isGif,
@@ -361,7 +361,7 @@ public class MediaView extends BaseSaveActivity {
                                 new String[] {f.getAbsolutePath()},
                                 null,
                                 new MediaScannerConnection.OnScanCompletedListener() {
-                                    public void onScanCompleted(String path, Uri uri) {
+                                    @Override public void onScanCompleted(String path, Uri uri) {
                                         Intent mediaScanIntent =
                                                 FileUtil.getFileIntent(
                                                         f,
@@ -697,8 +697,8 @@ public class MediaView extends BaseSaveActivity {
         // still ends in .gif while the bytes are actually MP4. Decoding those with Movie returns
         // null and the viewer closes instantly, so treat format=mp4 URLs as video and send them
         // to the ExoPlayer branch (getVideoType() already classifies preview.redd.it as DIRECT).
-        final boolean isMp4Transcode = gifUrl.toLowerCase().contains("format=mp4");
-        if (gifPath != null && gifPath.toLowerCase().endsWith(".gif") && !isMp4Transcode) {
+        final boolean isMp4Transcode = gifUrl.toLowerCase(Locale.ENGLISH).contains("format=mp4");
+        if (gifPath != null && gifPath.toLowerCase(Locale.ENGLISH).endsWith(".gif") && !isMp4Transcode) {
             // Handle direct .gif URLs with Movie/GifDrawable
             Log.v(TAG, "Loading direct GIF: " + gifUrl); // Changed to Log.v
             findViewById(R.id.gifarea).setVisibility(View.VISIBLE); // Ensure gifarea is visible for progress bar
@@ -804,7 +804,6 @@ public class MediaView extends BaseSaveActivity {
                             this,
                             videoView,
                             loader,
-                            findViewById(R.id.placeholder),
                             true, // closeIfNull
                             true, // autostart
                             ((TextView) findViewById(R.id.size)),
@@ -919,7 +918,7 @@ public class MediaView extends BaseSaveActivity {
                                                                             GsonUtil.string(result, "alt", ""))
                                                                     );
                                                         } catch (Exception ignored) {
-
+                                                            // Alt-text dialog on a host that is finishing.
                                                         }
                                                         return true;
                                                     }
@@ -1105,7 +1104,7 @@ public class MediaView extends BaseSaveActivity {
             final Handler handler = new Handler();
             final Runnable progressBarDelayRunner =
                     new Runnable() {
-                        public void run() {
+                        @Override public void run() {
                             if (isTornDown()) return;
                             bar.setVisibility(View.VISIBLE);
                         }
@@ -1350,7 +1349,7 @@ public class MediaView extends BaseSaveActivity {
         int mDuration = 250; // in millis
         va.setDuration(mDuration);
         va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            public void onAnimationUpdate(ValueAnimator animation) {
+            @Override public void onAnimationUpdate(ValueAnimator animation) {
                 Float value = (Float) animation.getAnimatedValue();
                 headerView.setAlpha(value);
             }
