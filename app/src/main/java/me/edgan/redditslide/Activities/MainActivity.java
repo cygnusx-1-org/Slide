@@ -1591,7 +1591,12 @@ public class MainActivity extends BaseActivity
             if (adapter != null && mTabLayout != null) {
                 mTabLayout.setSelectedTabIndicatorColor(
                         new ColorPreferences(MainActivity.this).getColor(usedArray.get(current)));
-                mTabLayout.setTabMode(usedArray.size() <= 3 ? TabLayout.MODE_FIXED : TabLayout.MODE_SCROLLABLE);
+                // Do not touch the tab mode here. activity_overview_tabs.xml declares scrollable,
+                // and that is the only mode this layout can render: the ViewStub that inflates it
+                // supplies its own wrap_content width, so MODE_FIXED gives every tab an equal
+                // share of a width measured as if the tabs were content-sized, which is too narrow
+                // for a label like "frontpage" and wraps it onto two lines. Only reloadSubs() ever
+                // changed the mode, so the tabs also stopped matching how they looked at launch.
 
                 // Add safety checks when setting tab text
                 for (int i = 0; i < mTabLayout.getTabCount(); i++) {
