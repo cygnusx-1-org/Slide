@@ -627,20 +627,20 @@ public class PeekMediaView extends RelativeLayout {
                                 new ImageLoadingListener() {
 
                                     @Override
-                                    public void onLoadingStarted(String imageUri, View view) {
+                                    public void onLoadingStarted(@Nullable String imageUri, @Nullable View view) {
                                         imageShown = true;
                                     }
 
                                     @Override
                                     public void onLoadingFailed(
-                                            String imageUri, View view, FailReason failReason) {
+                                            String imageUri, @Nullable View view, FailReason failReason) {
                                         Log.v(LogUtil.getTag(), "PeekMediaView: LOADING FAILED");
                                         imageShown = false;
                                     }
 
                                     @Override
                                     public void onLoadingComplete(
-                                            String imageUri, View view, @Nullable Bitmap loadedImage) {
+                                            @Nullable String imageUri, @Nullable View view, @Nullable Bitmap loadedImage) {
                                         imageShown = true;
 
                                         File f =
@@ -661,7 +661,7 @@ public class PeekMediaView extends RelativeLayout {
                                     }
 
                                     @Override
-                                    public void onLoadingCancelled(String imageUri, View view) {
+                                    public void onLoadingCancelled(String imageUri, @Nullable View view) {
                                         Log.v(LogUtil.getTag(), "PeekMediaView: LOADING CANCELLED");
                                     }
                                 },

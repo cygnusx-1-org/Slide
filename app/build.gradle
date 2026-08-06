@@ -310,10 +310,7 @@ dependencies {
     withGPlayImplementation 'com.google.apis:google-api-services-drive:v3-rev20241206-2.0.0'
 
 /** Custom **/
-    // NULLAWAY-SPIKE: ~/git/JRAW via publishToMavenLocal, standing in for the jitpack coordinate
-    // while phase 10 annotates the fork. Restore the jitpack line once a build is published.
-    implementation 'net.dean.jraw:JRAW:0.9.0'
-    // implementation 'com.github.edgan:JRAW:da624454c6'
+    implementation 'com.github.edgan:JRAW:40c5baef6b'
 
     // Stock commonmark 0.13.0 (Apache-2.0) — shared by Slide's richtext/editor code and
     // Markwon. Replaced the old Haptic-Apps fork (commonmark 0.5.0 + a one-line heading
@@ -376,14 +373,7 @@ dependencies {
     // Image loading, caching, and displaying
     //  NOTE: Replace with Glide/Picasso
     // com.nostra13.universalimageloader:universal-image-loader
-    // NULLAWAY-SPIKE: ~/git/Android-Universal-Image-Loader via publishToMavenLocal, standing in
-    // for the jitpack coordinate while phase 10 annotates the fork. Restore the jitpack line
-    // once a build is published.
-    // The version suffix is not cosmetic: upstream 1.9.5 is on Maven Central under this exact
-    // group and artifact, so a plain 1.9.5 resolves to upstream and silently shadows the local
-    // build. A suffix Central cannot supply is what makes the local artifact the only candidate.
-    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5-na@aar'
-    // implementation 'com.github.edgan:Android-Universal-Image-Loader:644f0269eb@aar'
+    implementation 'com.github.edgan:Android-Universal-Image-Loader:87d700cea3@aar'
 
     // Custom image view for photo galleries and large images
     implementation 'com.github.davemorrissey:subsampling-scale-image-view:173e421fdb'

@@ -461,16 +461,21 @@ public class PopulateSubmissionViewHolder {
                             crossThumbUrl,
                             crossThumb,
                             new SimpleImageLoadingListener() {
+                                // UIL hands back ImageAware.getWrappedView(), which ViewAware
+                                // answers from a WeakReference — null once the row has been
+                                // recycled and the ImageView collected. Nothing to collapse then.
                                 @Override
                                 public void onLoadingComplete(
-                                        String imageUri, View view, @Nullable Bitmap loadedImage) {
+                                        @Nullable String imageUri, @Nullable View view, @Nullable Bitmap loadedImage) {
+                                    if (view == null) return;
                                     view.setVisibility(
                                             loadedImage == null ? View.GONE : View.VISIBLE);
                                 }
 
                                 @Override
                                 public void onLoadingFailed(
-                                        String imageUri, View view, FailReason failReason) {
+                                        String imageUri, @Nullable View view, FailReason failReason) {
+                                    if (view == null) return;
                                     view.setVisibility(View.GONE);
                                 }
                             });

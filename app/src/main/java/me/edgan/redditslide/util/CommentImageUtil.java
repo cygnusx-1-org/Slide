@@ -165,9 +165,12 @@ public final class CommentImageUtil {
                 options(),
                 new SimpleImageLoadingListener() {
                     @Override
-                    public void onLoadingComplete(String uri, View view, @Nullable Bitmap loadedImage) {
+                    public void onLoadingComplete(@Nullable String uri, @Nullable View view, @Nullable Bitmap loadedImage) {
                         if (loadedImage != null && loadedImage.getWidth() > 0) {
-                            recordRatio(uri, loadedImage);
+                            // The captured url, not the callback's uri: UIL echoes the same string
+                            // back but declares it nullable, and the cache-hit path above already
+                            // keys on url.
+                            recordRatio(url, loadedImage);
                             int[] s = boundedSize(loadedImage.getWidth(), loadedImage.getHeight());
                             applySize(imageView, s[0], s[1]);
                         }

@@ -152,7 +152,7 @@ public class ImageDownloadNotificationService extends Service {
                                         .build(),
                                 new SimpleImageLoadingListener() {
                                     @Override
-                                    public void onLoadingComplete(String imageUri, android.view.View view, final @Nullable Bitmap loadedImage) {
+                                    public void onLoadingComplete(@Nullable String imageUri, @Nullable android.view.View view, final @Nullable Bitmap loadedImage) {
                                         if (loadedImage == null) {
                                             // A completed load with no bitmap is how the loader
                                             // reports an unusable uri. There is nothing to write

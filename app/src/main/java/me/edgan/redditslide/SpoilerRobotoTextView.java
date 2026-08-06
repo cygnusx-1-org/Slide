@@ -1545,17 +1545,17 @@ private void loadGiphyEmote(EmoteSpanRequest request, int posCount) {
                     getInlineImageOptions(),
                     new SimpleImageLoadingListener() {
                         @Override
-                        public void onLoadingComplete(String uri, View view, @Nullable Bitmap bitmap) {
+                        public void onLoadingComplete(@Nullable String uri, @Nullable View view, @Nullable Bitmap bitmap) {
                             finishOne(bitmap);
                         }
 
                         @Override
-                        public void onLoadingFailed(String uri, View view, FailReason reason) {
+                        public void onLoadingFailed(String uri, @Nullable View view, FailReason reason) {
                             finishOne(null);
                         }
 
                         @Override
-                        public void onLoadingCancelled(String uri, View view) {
+                        public void onLoadingCancelled(String uri, @Nullable View view) {
                             finishOne(null);
                         }
 

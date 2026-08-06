@@ -439,19 +439,19 @@ public abstract class BaseMediaFragment extends Fragment {
                                 new ImageLoadingListener() {
 
                                     @Override
-                                    public void onLoadingStarted(String imageUri, View view) {
+                                    public void onLoadingStarted(@Nullable String imageUri, @Nullable View view) {
                                         imageShown = true;
                                     }
 
                                     @Override
                                     public void onLoadingFailed(
-                                            String imageUri, View view, FailReason failReason) {
+                                            String imageUri, @Nullable View view, FailReason failReason) {
                                         Log.v(LogUtil.getTag(), getClass().getSimpleName() + ": LOADING FAILED");
                                     }
 
                                     @Override
                                     public void onLoadingComplete(
-                                            String imageUri, View view, @Nullable Bitmap loadedImage) {
+                                            @Nullable String imageUri, @Nullable View view, @Nullable Bitmap loadedImage) {
                                         imageShown = true;
                                         File f = null;
                                         if (getActivity() != null) {
@@ -544,7 +544,7 @@ public abstract class BaseMediaFragment extends Fragment {
                                     }
 
                                     @Override
-                                    public void onLoadingCancelled(String imageUri, View view) {
+                                    public void onLoadingCancelled(String imageUri, @Nullable View view) {
                                         Log.v(LogUtil.getTag(), getClass().getSimpleName() + ": LOADING CANCELLED");
                                     }
                                 },

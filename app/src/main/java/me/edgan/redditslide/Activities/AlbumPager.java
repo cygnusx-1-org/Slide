@@ -1029,7 +1029,7 @@ public class AlbumPager extends BaseSaveActivity {
                 .getImageLoader()
                 .loadImage(url, options, new SimpleImageLoadingListener() {
                     @Override
-                    public void onLoadingComplete(String imageUri, View view, @Nullable Bitmap loadedImage) {
+                    public void onLoadingComplete(@Nullable String imageUri, @Nullable View view, @Nullable Bitmap loadedImage) {
                         // Added null‐check to avoid the "Bitmap must not be null" crash
                         if (loadedImage == null) {
                             // Graceful fallback, e.g. hide progress or show a placeholder

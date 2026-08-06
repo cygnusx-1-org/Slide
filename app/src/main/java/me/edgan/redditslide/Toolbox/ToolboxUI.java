@@ -262,6 +262,14 @@ public class ToolboxUI {
      * Replace toolbox tokens with the appropriate replacements Does NOT include log-related tokens,
      * those must be handled after logging.
      *
+     * <p>Every JRAW getter below is {@code @Nullable} for an absent JSON member, and {@code
+     * String.replace} throws on a null replacement. NullAway cannot see it — {@code String} is
+     * unannotated, so a null argument passes without a word, which is NULLAWAY.md phase 4's second
+     * lesson. The values are substituted into removal-message text and nothing else, so an absent
+     * member degrades to an empty token rather than crashing the removal dialog. That is also why
+     * {@code getUrl()} is coalesced here despite phase 10 excluding it from the mechanical pass:
+     * there it fed a loader, here it is only ever text.
+     *
      * @param reason String to be parsed
      * @param parameter Item being acted upon
      * @return String with replacements made
@@ -269,8 +277,8 @@ public class ToolboxUI {
     public static String replaceTokens(String reason, PublicContribution parameter) {
         if (parameter instanceof Comment) {
             Comment thing = (Comment) parameter;
-            return reason.replace("{subreddit}", thing.getSubredditName())
-                    .replace("{author}", thing.getAuthor())
+            return reason.replace("{subreddit}", MiscUtil.orEmpty(thing.getSubredditName()))
+                    .replace("{author}", MiscUtil.orEmpty(thing.getAuthor()))
                     .replace("{kind}", "comment")
                     .replace("{mod}", Authentication.nameOrEmpty())
                     .replace("{title}", "")
@@ -282,17 +290,17 @@ public class ToolboxUI {
                     .replace("{link}", "undefined");
         } else if (parameter instanceof Submission) {
             Submission thing = (Submission) parameter;
-            return reason.replace("{subreddit}", thing.getSubredditName())
-                    .replace("{author}", thing.getAuthor())
+            return reason.replace("{subreddit}", MiscUtil.orEmpty(thing.getSubredditName()))
+                    .replace("{author}", MiscUtil.orEmpty(thing.getAuthor()))
                     .replace("{kind}", "submission")
                     .replace("{mod}", Authentication.nameOrEmpty())
-                    .replace("{title}", thing.getTitle())
+                    .replace("{title}", MiscUtil.orEmpty(thing.getTitle()))
                     .replace(
                             "{url}",
                             "https://www.reddit.com"
                                     + thing.getDataNode().path("permalink").asText())
-                    .replace("{domain}", thing.getDomain())
-                    .replace("{link}", thing.getUrl());
+                    .replace("{domain}", MiscUtil.orEmpty(thing.getDomain()))
+                    .replace("{link}", MiscUtil.orEmpty(thing.getUrl()));
         } else {
             throw new IllegalArgumentException("Must be passed a submission or comment!");
         }

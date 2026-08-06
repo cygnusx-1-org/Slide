@@ -27,7 +27,7 @@ public class ShareUtil {
                         new SimpleImageLoadingListener() {
                             @Override
                             public void onLoadingComplete(
-                                    String imageUri, View view, @Nullable Bitmap loadedImage) {
+                                    @Nullable String imageUri, @Nullable View view, @Nullable Bitmap loadedImage) {
                                 if (loadedImage == null) {
                                     // Nothing to write out: shareImage compresses the bitmap
                                     // straight into a temp file.

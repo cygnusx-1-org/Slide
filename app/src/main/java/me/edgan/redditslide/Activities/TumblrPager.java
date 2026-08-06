@@ -1026,19 +1026,19 @@ public class TumblrPager extends BaseSaveActivity {
                         new ImageLoadingListener() {
 
                             @Override
-                            public void onLoadingStarted(String imageUri, View view) {
+                            public void onLoadingStarted(@Nullable String imageUri, @Nullable View view) {
                                 size.setVisibility(View.VISIBLE);
                             }
 
                             @Override
                             public void onLoadingFailed(
-                                    String imageUri, View view, FailReason failReason) {
+                                    String imageUri, @Nullable View view, FailReason failReason) {
                                 Log.v("Slide", "TumblrPager: LOADING FAILED");
                             }
 
                             @Override
                             public void onLoadingComplete(
-                                    String imageUri, View view, @Nullable Bitmap loadedImage) {
+                                    @Nullable String imageUri, @Nullable View view, @Nullable Bitmap loadedImage) {
                                 size.setVisibility(View.GONE);
                                 if (loadedImage == null) {
                                     // A completed load with no bitmap: the loader reports an unusable
@@ -1053,7 +1053,7 @@ public class TumblrPager extends BaseSaveActivity {
                             }
 
                             @Override
-                            public void onLoadingCancelled(String imageUri, View view) {
+                            public void onLoadingCancelled(String imageUri, @Nullable View view) {
                                 Log.v("Slide", "TumblrPager: LOADING CANCELLED");
                             }
                         },

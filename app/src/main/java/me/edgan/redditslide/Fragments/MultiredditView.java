@@ -463,7 +463,20 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
     public void updateOfflineError() {}
 
     @Override
-    public void updateError() {}
+    public void updateError() {
+        // Was empty, which left the spinner running forever on a failed load — including the
+        // multiReddit == null path MultiredditPosts.loadMore reports here rather than crashing in.
+        //
+        // Posted rather than called directly: onCreateView queues a setRefreshing(true) on this
+        // same view, and that loadMore path reports synchronously from inside onCreateView, so a
+        // direct setRefreshing(false) would run first and then be undone by the queued runnable.
+        //
+        // Stopping the spinner is all this does, matching SubmissionsView.updateError. Not
+        // adapter.setError(true): that swaps in an ErrorAdapter, and nothing calls undoSetError
+        // for MultiredditPosts the way SubredditPosts does for SubmissionsView, so a later
+        // successful refresh would notify a detached adapter and leave the error screen up.
+        refreshLayout.post(() -> refreshLayout.setRefreshing(false));
+    }
 
     @Override
     public void updateViews() {

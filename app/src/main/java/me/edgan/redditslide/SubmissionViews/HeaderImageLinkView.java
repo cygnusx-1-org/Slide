@@ -127,22 +127,22 @@ public class HeaderImageLinkView extends RelativeLayout {
     private static final ImageLoadingListener TRANSPARENCY_LISTENER =
             new SimpleImageLoadingListener() {
                 @Override
-                public void onLoadingComplete(String imageUri, View view, @Nullable Bitmap loadedBitmap) {
+                public void onLoadingComplete(@Nullable String imageUri, @Nullable View view, @Nullable Bitmap loadedBitmap) {
                     applyTransparencyBackground(view, loadedBitmap);
                 }
 
                 @Override
-                public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                public void onLoadingFailed(String imageUri, @Nullable View view, FailReason failReason) {
                     if (view != null) view.setBackground(null);
                 }
 
                 @Override
-                public void onLoadingCancelled(String imageUri, View view) {
+                public void onLoadingCancelled(String imageUri, @Nullable View view) {
                     if (view != null) view.setBackground(null);
                 }
             };
 
-    private static void applyTransparencyBackground(View view, @Nullable Bitmap bitmap) {
+    private static void applyTransparencyBackground(@Nullable View view, @Nullable Bitmap bitmap) {
         if (view == null) return;
         if (hasMeaningfulTransparency(bitmap)) {
             view.setBackgroundColor(Color.WHITE);
@@ -1096,10 +1096,10 @@ public class HeaderImageLinkView extends RelativeLayout {
 
         ImageLoadingListener detailedListener = new ImageLoadingListener() {
             @Override
-            public void onLoadingStarted(String imageUri, View view) {}
+            public void onLoadingStarted(@Nullable String imageUri, @Nullable View view) {}
 
             @Override
-            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+            public void onLoadingFailed(String imageUri, @Nullable View view, FailReason failReason) {
                 LogUtil.e("UIL (Thumbnail): Loading FAILED for: " + imageUri + ", reason: " + failReason.getType() + ", cause: " + (failReason.getCause() != null ? failReason.getCause().getMessage() : "null"));
                 if (view != null) view.setBackground(null);
                 if (HeaderImageLinkView.this != null) {
@@ -1109,7 +1109,7 @@ public class HeaderImageLinkView extends RelativeLayout {
 
             @Override
             public void onLoadingComplete(
-                    String imageUri, View view, @Nullable android.graphics.Bitmap loadedBitmap) {
+                    @Nullable String imageUri, @Nullable View view, @Nullable android.graphics.Bitmap loadedBitmap) {
                 if (loadedBitmap != null) {
                     if (loadedBitmap.getWidth() == 0 || loadedBitmap.getHeight() == 0) {
                         LogUtil.w("UIL (Thumbnail): Loaded bitmap has zero width or height for " + imageUri);
@@ -1128,7 +1128,7 @@ public class HeaderImageLinkView extends RelativeLayout {
             }
 
             @Override
-            public void onLoadingCancelled(String imageUri, View view) {
+            public void onLoadingCancelled(String imageUri, @Nullable View view) {
                 LogUtil.w("UIL (Thumbnail): Loading CANCELLED for " + imageUri);
                 if (view != null) view.setBackground(null);
                 if (HeaderImageLinkView.this != null) {
@@ -1157,10 +1157,10 @@ public class HeaderImageLinkView extends RelativeLayout {
         loadedUrl = url;
         ImageLoadingListener detailedListener = new ImageLoadingListener() {
             @Override
-            public void onLoadingStarted(String imageUri, View view) {}
+            public void onLoadingStarted(@Nullable String imageUri, @Nullable View view) {}
 
             @Override
-            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+            public void onLoadingFailed(String imageUri, @Nullable View view, FailReason failReason) {
                 LogUtil.e("UIL (FullImage): Loading FAILED for: " + imageUri + ", reason: " + failReason.getType() + ", cause: " + (failReason.getCause() != null ? failReason.getCause().getMessage() : "null"));
                 if (view != null) view.setBackground(null);
                 if (HeaderImageLinkView.this != null) {
@@ -1170,7 +1170,7 @@ public class HeaderImageLinkView extends RelativeLayout {
 
             @Override
             public void onLoadingComplete(
-                    String imageUri, View view, @Nullable android.graphics.Bitmap loadedBitmap) {
+                    @Nullable String imageUri, @Nullable View view, @Nullable android.graphics.Bitmap loadedBitmap) {
                 if (loadedBitmap != null) {
                     if (loadedBitmap.getWidth() == 0 || loadedBitmap.getHeight() == 0) {
                         LogUtil.w("UIL (FullImage): Loaded bitmap has zero width or height for " + imageUri);
@@ -1193,7 +1193,7 @@ public class HeaderImageLinkView extends RelativeLayout {
             }
 
             @Override
-            public void onLoadingCancelled(String imageUri, View view) {
+            public void onLoadingCancelled(String imageUri, @Nullable View view) {
                 LogUtil.w("UIL (FullImage): Loading CANCELLED for " + imageUri);
                 if (view != null) view.setBackground(null);
                 if (HeaderImageLinkView.this != null) {
