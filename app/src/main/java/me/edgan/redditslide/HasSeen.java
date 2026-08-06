@@ -5,6 +5,7 @@ import static me.edgan.redditslide.OpenRedditLink.getRedditLinkType;
 
 import android.net.Uri;
 import android.os.AsyncTask;
+import androidx.annotation.Nullable;
 import com.lusfold.androidkeyvaluestore.KVStore;
 import com.lusfold.androidkeyvaluestore.core.KVManger;
 import java.util.HashMap;
@@ -41,11 +42,29 @@ public class HasSeen {
         }
     }
 
+    /**
+     * Strips the {@code t3_} prefix a fullname carries, or returns null when JRAW had no {@code
+     * name} in the JSON to give. Every store here is keyed on the result, so a null means there is
+     * nothing to record or look up rather than a key spelled "null".
+     */
+    private static @Nullable String seenKey(@Nullable String fullname) {
+        return fullname == null ? null : seenKeyOf(fullname);
+    }
+
+    /** {@link #seenKey} for a fullname already known to be present. */
+    private static String seenKeyOf(String fullname) {
+        return fullname.contains("t3_") ? fullname.substring(3) : fullname;
+    }
+
     private static void historyContains(Contribution s, KVManger m) {
-        String fullname = s.getFullName();
-        if (fullname.contains("t3_")) {
-            fullname = fullname.substring(3);
+        // Both keyings are needed: this table is keyed on the stripped id, while LastComments
+        // keys on the raw t3_ fullname, so the comments lookup below must not be given the
+        // stripped one or it can never match what setComments wrote.
+        final String rawFullname = s.getFullName();
+        if (rawFullname == null) {
+            return;
         }
+        final String fullname = seenKeyOf(rawFullname);
 
         // Key is the KVStore table's primary key, so these exact-match lookups use its index. A
         // LIKE '%fullname%' scan cannot, and read the whole (unbounded) table for every submission.
@@ -58,7 +77,7 @@ public class HasSeen {
                 // A stored value that is not a timestamp leaves seenTimes without an
                 // entry; the post still counts as seen.
             }
-        } else if (m.keyExists(LastComments.commentsKey(s.getFullName()))) {
+        } else if (m.keyExists(LastComments.commentsKey(rawFullname))) {
             // The post itself was never marked seen but its comments were visited (a NSFW post
             // while storeNSFWHistory is off); the old LIKE scan matched that key too.
             hasSeen.add(fullname);
@@ -66,12 +85,12 @@ public class HasSeen {
     }
 
     public static boolean getSeen(Submission s) {
-        String fullname = s.getFullName();
-        if (fullname.contains("t3_")) {
-            fullname = fullname.substring(3);
-        }
-        return (hasSeen.contains(fullname)
-                || SynccitRead.visitedIds.contains(fullname)
+        String fullname = seenKey(s.getFullName());
+        // Without a fullname the two set lookups cannot match, but the node and the vote still
+        // answer the question, so they are left to decide it rather than returning false outright.
+        return ((fullname != null
+                        && (hasSeen.contains(fullname)
+                                || SynccitRead.visitedIds.contains(fullname)))
                 || (s.getDataNode().has("visited") && s.getDataNode().path("visited").asBoolean())
                 || s.getVote() != VoteDirection.NO_VOTE);
     }
@@ -118,9 +137,9 @@ public class HasSeen {
     }
 
     public static long getSeenTime(Submission s) {
-        String fullname = s.getFullName();
-        if (fullname.contains("t3_")) {
-            fullname = fullname.substring(3);
+        String fullname = seenKey(s.getFullName());
+        if (fullname == null) {
+            return 0;
         }
         if (seenTimes.containsKey(fullname)) {
             return seenTimes.get(fullname);
@@ -133,9 +152,10 @@ public class HasSeen {
         }
     }
 
-    public static void addSeen(String fullname) {
-        if (fullname.contains("t3_")) {
-            fullname = fullname.substring(3);
+    public static void addSeen(@Nullable String rawFullname) {
+        String fullname = seenKey(rawFullname);
+        if (fullname == null) {
+            return;
         }
 
         hasSeen.add(fullname);
@@ -153,9 +173,10 @@ public class HasSeen {
         }
     }
 
-    public static void addSeenScrolling(String fullname) {
-        if (fullname.contains("t3_")) {
-            fullname = fullname.substring(3);
+    public static void addSeenScrolling(@Nullable String rawFullname) {
+        String fullname = seenKey(rawFullname);
+        if (fullname == null) {
+            return;
         }
 
         // Called from onScrolled, i.e. many times a second while flinging. Everything below only

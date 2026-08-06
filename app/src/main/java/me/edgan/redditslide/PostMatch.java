@@ -30,7 +30,13 @@ public class PostMatch {
      * @param totalMatch only allow total match, no partial matches
      * @return if the string is contained in the set of strings
      */
-    public static boolean contains(String target, Set<String> strings, boolean totalMatch) {
+    public static boolean contains(
+            @Nullable String target, Set<String> strings, boolean totalMatch) {
+        if (target == null) {
+            // A submission that has no title/body/author at all matches no filter written
+            // against one. Returning false leaves the remaining filters to decide.
+            return false;
+        }
         // filters are always stored lowercase
         if (totalMatch) {
             return strings.contains(target.toLowerCase(Locale.ENGLISH).trim());
@@ -85,7 +91,12 @@ public class PostMatch {
         return false;
     }
 
-    public static boolean openExternal(String url) {
+    public static boolean openExternal(@Nullable String url) {
+        // No url reads the same way as one that will not parse: it matches no always-external
+        // domain, which is what the catch below already answers.
+        if (url == null) {
+            return false;
+        }
         try {
             return isDomain(url.toLowerCase(Locale.ENGLISH), SettingValues.alwaysExternal);
         } catch (MalformedURLException e) {
@@ -153,14 +164,17 @@ public class PostMatch {
         if (contains(s.getAuthor(), SettingValues.userFilters, false)) return true;
 
         try {
-            if (isDomain(domain.toLowerCase(Locale.ENGLISH), SettingValues.domainFilters))
+            // A submission with no url has no domain to match, which reads the same way as a
+            // domain that will not parse — the catch below already covers that case.
+            if (domain != null
+                    && isDomain(domain.toLowerCase(Locale.ENGLISH), SettingValues.domainFilters))
                 return true;
         } catch (MalformedURLException ignored) {
             // A submission whose domain is not URL-shaped matches no domain
             // filter; the remaining filters below still apply.
         }
 
-        if (!subreddit.equalsIgnoreCase(baseSubreddit)) {
+        if (subreddit != null && !subreddit.equalsIgnoreCase(baseSubreddit)) {
             if (SettingValues.subredditFilterPrefixMatching && subreddit.length() >= 6) {
                 String lowerSubreddit = subreddit.toLowerCase(Locale.ENGLISH);
                 if (SettingValues.subredditFilters.stream()
@@ -337,7 +351,12 @@ public class PostMatch {
         boolean bodyc = contains(body, SettingValues.textFilters, false);
 
         try {
-            domainc = isDomain(domain.toLowerCase(Locale.ENGLISH), SettingValues.domainFilters);
+            // No url is the same answer as a url that will not parse: domainc stays false.
+            domainc =
+                    domain != null
+                            && isDomain(
+                                    domain.toLowerCase(Locale.ENGLISH),
+                                    SettingValues.domainFilters);
         } catch (MalformedURLException ignored) {
             // Not URL-shaped, so it matches no domain filter: domainc stays false.
         }

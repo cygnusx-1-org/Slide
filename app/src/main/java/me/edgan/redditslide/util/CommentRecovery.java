@@ -92,14 +92,14 @@ public final class CommentRecovery {
     }
 
     /** Previously recovered markdown body for this fullname, or null if none. */
-    public static @Nullable String getRecovered(String fullName) {
+    public static @Nullable String getRecovered(@Nullable String fullName) {
         if (!hasRecoveries) return null;
         Result r = recovered.get(fullName);
         return r == null ? null : r.body;
     }
 
     /** Previously recovered author for this fullname, or null if none. */
-    public static @Nullable String getRecoveredAuthor(String fullName) {
+    public static @Nullable String getRecoveredAuthor(@Nullable String fullName) {
         if (!hasRecoveries) return null;
         Result r = recovered.get(fullName);
         return r == null ? null : r.author;
@@ -111,7 +111,7 @@ public final class CommentRecovery {
      * #isRemovedOrDeleted} still reports true afterwards, because the placeholder body and author
      * are left in place on the comment itself.
      */
-    public static boolean isRecovered(String fullName) {
+    public static boolean isRecovered(@Nullable String fullName) {
         if (!hasRecoveries) return false;
         Result r = recovered.get(fullName);
         return r != null && !r.isEmpty();
@@ -169,7 +169,9 @@ public final class CommentRecovery {
     }
 
     /** Stores a non-empty {@link #fetch} result in the cache. Call on the main thread. */
-    public static void store(String fullName, Result r) {
+    public static void store(@Nullable String fullName, Result r) {
+        // Nothing can look a recovery up without a fullname to key it on.
+        if (fullName == null) return;
         recovered.put(fullName, r);
         // Volatile publish: written after the put so a reader that sees the flag sees the entry.
         hasRecoveries = true;

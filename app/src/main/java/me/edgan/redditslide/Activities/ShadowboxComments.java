@@ -39,7 +39,8 @@ public class ShadowboxComments extends FullScreenActivity {
             finish();
             return;
         }
-        applyDarkColorTheme(comments.get(0).comment.getComment().getSubredditName());
+        applyDarkColorTheme(
+                MiscUtil.orEmpty(comments.get(0).comment.getComment().getSubredditName()));
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_slide);
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());

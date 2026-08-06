@@ -16,6 +16,7 @@ import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.SubmissionViews.PopulateShadowboxInfo;
 import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.markdown.MarkdownImages;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import net.dean.jraw.models.Submission;
 
@@ -35,19 +36,19 @@ public class SelftextFull extends Fragment {
 
         PopulateShadowboxInfo.doActionbar(s, rootView, getActivity(), true);
 
-        if (!s.getSelftext().isEmpty()) {
+        if (!MiscUtil.orEmpty(s.getSelftext()).isEmpty()) {
             if (SettingValues.markdownNewReddit) {
                 MarkdownImages.renderInto(
                         rootView.findViewById(R.id.firstTextView),
                         rootView.findViewById(R.id.commentOverflow),
-                        s.getSubredditName(),
+                        MiscUtil.orEmpty(s.getSubredditName()),
                         s.getSelftext(),
                         s.getDataNode().path("selftext_html").asText(""),
                         s.getDataNode());
             } else {
                 setViews(
                         s.getDataNode().path("selftext_html").asText(""),
-                        s.getSubredditName(),
+                        MiscUtil.orEmpty(s.getSubredditName()),
                         rootView);
             }
         }

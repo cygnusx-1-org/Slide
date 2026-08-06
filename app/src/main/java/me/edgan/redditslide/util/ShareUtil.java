@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.view.View;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,7 +27,12 @@ public class ShareUtil {
                         new SimpleImageLoadingListener() {
                             @Override
                             public void onLoadingComplete(
-                                    String imageUri, View view, Bitmap loadedImage) {
+                                    String imageUri, View view, @Nullable Bitmap loadedImage) {
+                                if (loadedImage == null) {
+                                    // Nothing to write out: shareImage compresses the bitmap
+                                    // straight into a temp file.
+                                    return;
+                                }
                                 shareImage(loadedImage, context);
                             }
                         });

@@ -760,7 +760,12 @@ public class GifUtils {
          * @param url URL to identify the type of
          * @return The type of video
          */
-        public static VideoType getVideoType(String url) {
+        public static VideoType getVideoType(@Nullable String url) {
+            // A submission with no video url is not a video of any known kind, which is what
+            // OTHER already means for an unrecognised one.
+            if (url == null) {
+                return VideoType.OTHER;
+            }
             String realURL = url.toLowerCase(Locale.ENGLISH);
 
             if (realURL.contains("i.redd.it/gallery/")) {
@@ -795,7 +800,7 @@ public class GifUtils {
          * Returns the best playable video URL from a submission, checking media_metadata,
          * media.reddit_video, and crossposts before falling back to the submission URL.
          */
-        public static String getVideoUrlFromSubmission(Submission s) {
+        public static @Nullable String getVideoUrlFromSubmission(Submission s) {
             JsonNode data = s.getDataNode();
 
             // New format: self posts with video in media_metadata

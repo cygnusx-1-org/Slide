@@ -187,7 +187,7 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
         if (getIntent().hasExtra("fullname")) {
             String fullname = getIntent().getStringExtra("fullname");
             for (int i = 0; i < currentPosts.size(); i++) {
-                if (currentPosts.get(i).getFullName().equals(fullname)) {
+                if (MiscUtil.orEmpty(currentPosts.get(i).getFullName()).equals(fullname)) {
                     if (i != firstPage) firstPage = i;
                     break;
                 }
@@ -243,10 +243,10 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
     }
 
     private void updateSubredditAndSubmission(Submission post) {
-        subreddit = post.getSubredditName();
-        if (post.getSubredditName() == null) {
-            subreddit = "Promoted";
-        }
+        // A submission with no subreddit is a promoted post; that fallback was already here, just
+        // written after the assignment it was meant to cover rather than as part of it.
+        final String postSubreddit = post.getSubredditName();
+        subreddit = postSubreddit == null ? "Promoted" : postSubreddit;
         themeSystemBars(subreddit);
         setRecentBar(subreddit);
     }
@@ -319,8 +319,7 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
         private Fragment createCommentPageFragment(int i) {
             Fragment f = new CommentPage();
             Bundle args = new Bundle();
-            String name = currentPosts.get(i).getFullName();
-            args.putString("id", name.substring(3));
+            args.putString("id", MiscUtil.idFromFullname(currentPosts.get(i).getFullName()));
             args.putBoolean("archived", currentPosts.get(i).isArchived());
             args.putBoolean(
                     "contest",

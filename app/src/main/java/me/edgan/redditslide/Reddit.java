@@ -149,7 +149,7 @@ public class Reddit extends Application implements Application.ActivityLifecycle
         ProcessPhoenix.triggerRebirth(context, new Intent(context, MainActivity.class));
     }
 
-    public static void defaultShareText(String title, String url, Context c) {
+    public static void defaultShareText(@Nullable String title, @Nullable String url, Context c) {
         url = StringEscapeUtils.unescapeHtml4(CompatUtil.fromHtml(url).toString());
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");

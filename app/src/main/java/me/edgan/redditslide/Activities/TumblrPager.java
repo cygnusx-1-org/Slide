@@ -1038,7 +1038,7 @@ public class TumblrPager extends BaseSaveActivity {
 
                             @Override
                             public void onLoadingComplete(
-                                    String imageUri, View view, Bitmap loadedImage) {
+                                    String imageUri, View view, @Nullable Bitmap loadedImage) {
                                 size.setVisibility(View.GONE);
                                 if (loadedImage == null) {
                                     // A completed load with no bitmap: the loader reports an unusable

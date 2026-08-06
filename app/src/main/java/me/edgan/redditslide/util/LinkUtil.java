@@ -117,11 +117,17 @@ public class LinkUtil {
     }
 
     public static void openUrl(
-            @NonNull String url,
+            @Nullable String url,
             int color,
             @NonNull Activity contextActivity,
             @Nullable Integer adapterPosition,
             @Nullable Submission submission) {
+        if (url == null) {
+            // A submission with no url has nothing to open. openExternally logs and returns
+            // rather than firing an ACTION_VIEW at a bare scheme.
+            openExternally(null);
+            return;
+        }
         // Check if it's a video content type first
         ContentType.Type contentType = ContentType.getContentType(url);
 
@@ -190,7 +196,13 @@ public class LinkUtil {
         return uri.normalizeScheme();
     }
 
-    public static boolean tryOpenWithVideoPlugin(@NonNull String url) {
+    public static boolean tryOpenWithVideoPlugin(@Nullable String url) {
+        // Four of the call sites hand this a submission url straight from JRAW. "No url" and
+        // "the plugin did not take it" are the same answer to every caller, which all read
+        // if (!tryOpenWithVideoPlugin(...)) and fall through to normal handling.
+        if (url == null) {
+            return false;
+        }
         if (Reddit.videoPlugin) {
             try {
                 Intent sharingIntent = new Intent(Intent.ACTION_SEND);
@@ -218,7 +230,8 @@ public class LinkUtil {
      * @param color Color to provide to the browser UI if applicable
      * @param contextActivity The current activity
      */
-    public static void openUrl(@NonNull String url, int color, @NonNull Activity contextActivity) {
+    public static void openUrl(
+            @Nullable String url, int color, @NonNull Activity contextActivity) {
         openUrl(url, color, contextActivity, null, null);
     }
 
@@ -228,7 +241,7 @@ public class LinkUtil {
      *
      * @param url URL to open
      */
-    public static void openExternally(String url) {
+    public static void openExternally(@Nullable String url) {
         if (url == null || url.trim().isEmpty()) {
             // formatURL turns an empty string into the bare scheme "http://", which no browser
             // registers for, so ACTION_VIEW throws ActivityNotFoundException rather than opening

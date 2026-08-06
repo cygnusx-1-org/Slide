@@ -517,7 +517,10 @@ public class SubmissionCache {
                                             mContext.getResources()
                                                     .getQuantityString(
                                                             R.plurals.comments,
-                                                            submission.getCommentCount())));
+                                                            submission.getCommentCount() == null
+                                                                    ? 0
+                                                                    : submission
+                                                                            .getCommentCount())));
             s.setSpan(
                     new StyleSpan(Typeface.BOLD), 0, s.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 

@@ -29,6 +29,7 @@ import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Views.MaxHeightImageView;
 import net.dean.jraw.models.Submission;
+import net.dean.jraw.models.Thumbnails;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jspecify.annotations.NullMarked;
 
@@ -130,10 +131,11 @@ public class PhotoLoader {
                 if (thumbnailNode != null
                         && !thumbnailNode.isNull()
                         && !thumbnailNode.asText().isEmpty()) {
+                    final Thumbnails lqThumbnails = usableThumbnails(submission);
                     final boolean lowQ =
                             loadLq
-                                    && submission.getThumbnails() != null
-                                    && submission.getThumbnails().getVariations().length > 0;
+                                    && lqThumbnails != null
+                                    && lqThumbnails.getVariations().length > 0;
                     return lowQ
                             ? getLowQualityUrl(submission)
                             : getHighQualityUrl(submission, maxW);
@@ -146,7 +148,7 @@ public class PhotoLoader {
 
         // handleThumbnailDisplay: thumbnails present but not handled above (e.g. SELF posts, or an
         // IMAGE post with an empty thumbnail field). getSubmissionUrl mirrors that path exactly.
-        if (submission.getThumbnails() != null) {
+        if (usableThumbnails(submission) != null) {
             return getSubmissionUrl(submission, loadLq, maxW);
         }
 
@@ -154,10 +156,28 @@ public class PhotoLoader {
         return getValidThumbnailUrl(dataNode);
     }
 
+    /**
+     * {@code submission.getThumbnails()} wrapped so a non-null return is actually usable.
+     *
+     * <p>JRAW builds it from {@code preview.images[0]} without checking that element exists, and
+     * {@code JsonModel} stores a null node without complaint. An empty {@code images} array —
+     * which {@link #getHighQualityUrl(Submission, int)} already tests for above — therefore yields
+     * a non-null {@code Thumbnails} whose every accessor throws NullPointerException, so a plain
+     * {@code != null} test is not enough on its own.
+     */
+    public static @Nullable Thumbnails usableThumbnails(final Submission submission) {
+        final JsonNode image = submission.getDataNode().path("preview").path("images").path(0);
+        if (image.isMissingNode() || image.isNull()) {
+            return null;
+        }
+        return submission.getThumbnails();
+    }
+
     /** Mirrors HeaderImageLinkView.getSubmissionUrl so the warm matches the displayed URL. */
-    private static String getSubmissionUrl(
+    private static @Nullable String getSubmissionUrl(
             final Submission submission, final boolean loadLq, final int maxWidth) {
-        if (loadLq && submission.getThumbnails().getVariations().length != 0) {
+        final Thumbnails thumbnails = usableThumbnails(submission);
+        if (loadLq && thumbnails != null && thumbnails.getVariations().length != 0) {
             return getLowQualityUrl(submission);
         }
         return getHighQualityUrl(submission, maxWidth);
@@ -279,7 +299,7 @@ public class PhotoLoader {
         return largestBelow.path("url").asText();
     }
 
-    public static String getHighQualityUrl(Submission submission) {
+    public static @Nullable String getHighQualityUrl(Submission submission) {
         // No width bound: the largest sized preview (card / fullscreen behavior).
         return getHighQualityUrl(submission, Integer.MAX_VALUE);
     }
@@ -292,7 +312,7 @@ public class PhotoLoader {
      * small original that would otherwise upscale a tiny rung), else the largest resolution, then the
      * full source, then reddit's own thumbnail field.
      */
-    public static String getHighQualityUrl(Submission submission, int maxWidth) {
+    public static @Nullable String getHighQualityUrl(Submission submission, int maxWidth) {
         if (submission.getDataNode().has("preview")) {
             final JsonNode images = submission.getDataNode().path("preview").path("images");
             final JsonNode image = (images != null && images.size() > 0) ? images.get(0) : null;
@@ -332,25 +352,33 @@ public class PhotoLoader {
                 }
             }
         }
-        if (submission.getThumbnails() != null
-                && submission.getThumbnails().getSource() != null) {
-            String sourceUrl = submission.getThumbnails().getSource().getUrl();
+        final Thumbnails thumbnails = usableThumbnails(submission);
+        if (thumbnails != null && thumbnails.getSource() != null) {
+            String sourceUrl = thumbnails.getSource().getUrl();
             return CompatUtil.fromHtml(
                             sourceUrl.isEmpty() ? submission.getThumbnail() : sourceUrl)
                     .toString();
         } else {
+            // Null rather than "": the callers hand this straight to the image loader, which
+            // treats an empty uri as a completed load and calls onLoadingComplete with a null
+            // bitmap. Every consumer already tests for null and hides the view instead.
             return submission.getThumbnail();
         }
     }
 
-    public static String getLowQualityUrl(Submission submission) {
-        if (ContentType.isImgurImage(submission.getUrl())) {
-            String url = submission.getUrl();
-            return url.substring(0, url.lastIndexOf("."))
+    public static @Nullable String getLowQualityUrl(Submission submission) {
+        final String submissionUrl = submission.getUrl();
+        if (submissionUrl != null && ContentType.isImgurImage(submissionUrl)) {
+            return submissionUrl.substring(0, submissionUrl.lastIndexOf("."))
                     + (SettingValues.lqLow ? "m" : (SettingValues.lqMid ? "l" : "h"))
-                    + url.substring(url.lastIndexOf("."));
+                    + submissionUrl.substring(submissionUrl.lastIndexOf("."));
         }
-        int length = submission.getThumbnails().getVariations().length;
+        final Thumbnails thumbnails = usableThumbnails(submission);
+        if (thumbnails == null) {
+            // No preview block at all, so there is no low-quality variation to pick.
+            return getHighQualityUrl(submission, Integer.MAX_VALUE);
+        }
+        int length = thumbnails.getVariations().length;
         if (SettingValues.lqLow && length >= 3) {
             return getThumbnailVariationUrl(submission, 2);
         } else if (SettingValues.lqMid && length >= 4) {
@@ -358,13 +386,16 @@ public class PhotoLoader {
         } else if (length >= 5) {
             return getThumbnailVariationUrl(submission, length - 1);
         } else {
-            return CompatUtil.fromHtml(submission.getThumbnails().getSource().getUrl()).toString();
+            return CompatUtil.fromHtml(thumbnails.getSource().getUrl()).toString();
         }
     }
 
-    private static String getThumbnailVariationUrl(Submission submission, int index) {
-        return CompatUtil.fromHtml(submission.getThumbnails().getVariations()[index].getUrl())
-                .toString();
+    private static @Nullable String getThumbnailVariationUrl(Submission submission, int index) {
+        final Thumbnails thumbnails = usableThumbnails(submission);
+        if (thumbnails == null) {
+            return null;
+        }
+        return CompatUtil.fromHtml(thumbnails.getVariations()[index].getUrl()).toString();
     }
 
     // Lightweight options for preloading: warm the disk cache without the heavy full-resolution

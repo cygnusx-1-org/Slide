@@ -227,7 +227,7 @@ public class Shadowbox extends FullScreenActivity implements SubmissionDisplay {
                     break;
                 case SELF:
                 case NONE:
-                    f = subredditPosts.getPosts().get(i).getSelftext().isEmpty()
+                    f = MiscUtil.orEmpty(subredditPosts.getPosts().get(i).getSelftext()).isEmpty()
                             ? new TitleFull()
                             : new SelftextFull();
                     break;

@@ -576,7 +576,7 @@ public class ColorPreferences {
         return getFontStyle().baseId;
     }
 
-    public Theme getThemeSubreddit(String s, boolean b) {
+    public Theme getThemeSubreddit(@Nullable String s, boolean b) {
         if (s == null) {
             s = "Promoted";
         }
@@ -639,7 +639,7 @@ public class ColorPreferences {
         edit().remove(subreddit + USER_THEME_DELIMITER + Authentication.name).commit();
     }
 
-    public int getColor(String s) {
+    public int getColor(@Nullable String s) {
         return ContextCompat.getColor(context, getThemeSubreddit(s, true).getColor());
     }
 

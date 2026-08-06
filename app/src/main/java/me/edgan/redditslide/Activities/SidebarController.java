@@ -646,7 +646,7 @@ public class SidebarController {
             mainActivity.findViewById(R.id.sidebar_text).setVisibility(View.VISIBLE);
 
             final String text = subreddit.getDataNode().path("description_html").asText().trim();
-            setViews(text, subreddit.getDisplayName(), this.sidebarBody, this.sidebarOverflow);
+            setViews(text, MiscUtil.orEmpty(subreddit.getDisplayName()), this.sidebarBody, this.sidebarOverflow);
 
             // get all subs that have Notifications enabled
             ArrayList<String> rawSubs = StringUtil.stringToArray(PrefUtil.getString(Reddit.appRestart, CheckForMail.SUBS_TO_GET, ""));
@@ -661,7 +661,7 @@ public class SidebarController {
             }
 
             // whether or not this subreddit was in the keySet
-            boolean isNotified =subThresholds.containsKey(subreddit.getDisplayName().toLowerCase(Locale.ENGLISH));
+            boolean isNotified =subThresholds.containsKey(MiscUtil.orEmpty(subreddit.getDisplayName()).toLowerCase(Locale.ENGLISH));
             ((AppCompatCheckBox) mainActivity.findViewById(R.id.notify_posts_state)).setChecked(isNotified);
         } else {
             this.sidebarBody.setVisibility(View.GONE);
@@ -803,7 +803,8 @@ public class SidebarController {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                             if (isChecked) {
-                                final String sub = subreddit.getDisplayName();
+                                final String sub =
+                                        MiscUtil.orEmpty(subreddit.getDisplayName());
 
                                 if (!sub.equalsIgnoreCase("all")
                                         && !sub.equalsIgnoreCase("frontpage")
@@ -873,7 +874,7 @@ public class SidebarController {
         {
             final TextView subscribe = (TextView) mainActivity.findViewById(R.id.subscribe);
             mainActivity.sidebarActions.currentlySubbed =
-                (!Authentication.isLoggedIn && mainActivity.usedArray.contains(subreddit.getDisplayName().toLowerCase(Locale.ENGLISH)))
+                (!Authentication.isLoggedIn && mainActivity.usedArray.contains(MiscUtil.orEmpty(subreddit.getDisplayName()).toLowerCase(Locale.ENGLISH)))
                 || subreddit.isUserSubscriber();
 
             MiscUtil.doSubscribeButtonText(mainActivity.sidebarActions.currentlySubbed, subscribe);
@@ -1005,11 +1006,11 @@ public class SidebarController {
                     }
                 });
         }
-        if (!subreddit.getPublicDescription().isEmpty()) {
+        if (!MiscUtil.orEmpty(subreddit.getPublicDescription()).isEmpty()) {
             mainActivity.findViewById(R.id.sub_title).setVisibility(View.VISIBLE);
             setViews(
                 subreddit.getDataNode().path("public_description_html").asText(),
-                subreddit.getDisplayName().toLowerCase(Locale.ENGLISH),
+                MiscUtil.orEmpty(subreddit.getDisplayName()).toLowerCase(Locale.ENGLISH),
                 ((SpoilerRobotoTextView) mainActivity.findViewById(R.id.sub_title)), // Keep using findViewById for views not moved
                 (CommentOverflow) mainActivity.findViewById(R.id.sub_title_overflow) // Keep using findViewById for views not moved
             );

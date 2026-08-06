@@ -67,6 +67,7 @@ import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.handler.ToolbarScrollHideHandler;
 import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.PhotoLoader;
 import net.dean.jraw.models.MultiReddit;
 import net.dean.jraw.models.Submission;
@@ -413,7 +414,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                                     // Set the searchMulti for multireddit search
                                     if (UserSubscriptions.multireddits != null) {
                                         for (MultiReddit r : UserSubscriptions.multireddits) {
-                                            if (r.getDisplayName().equalsIgnoreCase(subreddit.substring(3))) {
+                                            if (MiscUtil.orEmpty(r.getDisplayName()).equalsIgnoreCase(subreddit.substring(3))) {
                                                 MultiredditOverview.searchMulti = r;
                                                 break;
                                             }

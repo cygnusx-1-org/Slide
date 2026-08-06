@@ -52,9 +52,11 @@ import me.edgan.redditslide.Views.TransparentTagTextView;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.PhotoLoader;
 import net.dean.jraw.models.Submission;
+import net.dean.jraw.models.Thumbnails;
 import org.apache.commons.text.StringEscapeUtils;
 
 /** Created by carlo_000 on 2/7/2016. */
@@ -125,7 +127,7 @@ public class HeaderImageLinkView extends RelativeLayout {
     private static final ImageLoadingListener TRANSPARENCY_LISTENER =
             new SimpleImageLoadingListener() {
                 @Override
-                public void onLoadingComplete(String imageUri, View view, Bitmap loadedBitmap) {
+                public void onLoadingComplete(String imageUri, View view, @Nullable Bitmap loadedBitmap) {
                     applyTransparencyBackground(view, loadedBitmap);
                 }
 
@@ -140,7 +142,7 @@ public class HeaderImageLinkView extends RelativeLayout {
                 }
             };
 
-    private static void applyTransparencyBackground(View view, Bitmap bitmap) {
+    private static void applyTransparencyBackground(View view, @Nullable Bitmap bitmap) {
         if (view == null) return;
         if (hasMeaningfulTransparency(bitmap)) {
             view.setBackgroundColor(Color.WHITE);
@@ -150,7 +152,7 @@ public class HeaderImageLinkView extends RelativeLayout {
     }
 
     // Sample an 8x8 grid; transparent PNGs (logos, icons) trip this, photos don't.
-    private static boolean hasMeaningfulTransparency(Bitmap bitmap) {
+    private static boolean hasMeaningfulTransparency(@Nullable Bitmap bitmap) {
         if (bitmap == null || !bitmap.hasAlpha()) return false;
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
@@ -320,7 +322,7 @@ public class HeaderImageLinkView extends RelativeLayout {
                     && !thumbnail.isNull()
                     && !thumbnail.asText().isEmpty()) {
                 handleImageType(submission, baseSub, full, forceThumb, loadLq);
-            } else if (submission.getThumbnails() != null) {
+            } else if (PhotoLoader.usableThumbnails(submission) != null) {
                 handleThumbnailDisplay(submission, full, forceThumb, loadLq, baseSub);
             } else if (!thumbnail.isNull()
                     && submission.getThumbnail() != null
@@ -560,7 +562,7 @@ public class HeaderImageLinkView extends RelativeLayout {
         this.type = type;
         if (!lastDone.equals(submission.getFullName())) {
             lq = false;
-            lastDone = submission.getFullName();
+            lastDone = MiscUtil.orEmpty(submission.getFullName());
             backdrop.setImageResource(
                     android.R.color
                             .transparent); // reset the image view in case the placeholder is still
@@ -578,7 +580,7 @@ public class HeaderImageLinkView extends RelativeLayout {
         this.type = type;
         if (!lastDone.equals(submission.getFullName())) {
             lq = false;
-            lastDone = submission.getFullName();
+            lastDone = MiscUtil.orEmpty(submission.getFullName());
             backdrop.setImageResource(
                     android.R.color
                             .transparent); // reset the image view in case the placeholder is still
@@ -890,10 +892,9 @@ public class HeaderImageLinkView extends RelativeLayout {
     }
 
     private void handleImageType(Submission submission, @Nullable String baseSub, boolean full, boolean forceThumb, boolean loadLq) {
+        final Thumbnails lqThumbnails = PhotoLoader.usableThumbnails(submission);
         final boolean lowQ =
-                loadLq
-                        && submission.getThumbnails() != null
-                        && submission.getThumbnails().getVariations().length > 0;
+                loadLq && lqThumbnails != null && lqThumbnails.getVariations().length > 0;
 
         // Record that the feed loaded a low-quality image so a tap can hand MediaView the low-res
         // copy plus an HQ button (SubmissionThumbnailHelper.openImage reads baseView.lq). Reset to
@@ -941,23 +942,27 @@ public class HeaderImageLinkView extends RelativeLayout {
         }
     }
 
-    private String getThumbnailVariationUrl(Submission submission, int index) {
+    private @Nullable String getThumbnailVariationUrl(Submission submission, int index) {
+        final Thumbnails thumbnails = PhotoLoader.usableThumbnails(submission);
+        if (thumbnails == null) {
+            return null;
+        }
         return CompatUtil.fromHtml(
-                submission.getThumbnails().getVariations()[index].getUrl()
+                thumbnails.getVariations()[index].getUrl()
         ).toString(); // unescape url characters
     }
 
     // Delegated to PhotoLoader so the feed card and the preloader use identical URL selection
     // (preventing first-view pop-in from a preload/display cache-key mismatch).
-    private String getLowQualityUrl(Submission submission) {
+    private @Nullable String getLowQualityUrl(Submission submission) {
         return PhotoLoader.getLowQualityUrl(submission);
     }
 
-    private String getHighQualityUrl(Submission submission) {
+    private @Nullable String getHighQualityUrl(Submission submission) {
         return PhotoLoader.getHighQualityUrl(submission);
     }
 
-    private String getHighQualityUrl(Submission submission, int maxWidth) {
+    private @Nullable String getHighQualityUrl(Submission submission, int maxWidth) {
         return PhotoLoader.getHighQualityUrl(submission, maxWidth);
     }
 
@@ -1032,13 +1037,16 @@ public class HeaderImageLinkView extends RelativeLayout {
         }
     }
 
-    private String getSubmissionUrl(Submission submission, boolean loadLq, int maxWidth) {
-        if (loadLq && submission.getThumbnails().getVariations().length != 0) {
+    private @Nullable String getSubmissionUrl(
+            Submission submission, boolean loadLq, int maxWidth) {
+        final Thumbnails thumbnails = PhotoLoader.usableThumbnails(submission);
+        if (loadLq && thumbnails != null && thumbnails.getVariations().length != 0) {
             // Loading a low-quality image: record it so a tap hands MediaView the low-res copy plus
             // an HQ button (baseView.lq, read in SubmissionThumbnailHelper.openImage).
             lq = true;
-            if (ContentType.isImgurImage(submission.getUrl())) {
-                return getImgurLowQualityUrl(submission.getUrl());
+            final String submissionUrl = submission.getUrl();
+            if (submissionUrl != null && ContentType.isImgurImage(submissionUrl)) {
+                return getImgurLowQualityUrl(submissionUrl);
             } else {
                 return getLowQualityVariationUrl(submission);
             }
@@ -1053,8 +1061,12 @@ public class HeaderImageLinkView extends RelativeLayout {
                 + url.substring(url.lastIndexOf("."));
     }
 
-    private String getLowQualityVariationUrl(Submission submission) {
-        int length = submission.getThumbnails().getVariations().length;
+    private @Nullable String getLowQualityVariationUrl(Submission submission) {
+        final Thumbnails thumbnails = PhotoLoader.usableThumbnails(submission);
+        if (thumbnails == null) {
+            return null;
+        }
+        int length = thumbnails.getVariations().length;
         if (SettingValues.lqLow && length >= 3) {
             return getThumbnailVariationUrl(submission, 2);
         } else if (SettingValues.lqMid && length >= 4) {
@@ -1062,11 +1074,11 @@ public class HeaderImageLinkView extends RelativeLayout {
         } else if (length >= 5) {
             return getThumbnailVariationUrl(submission, length - 1);
         } else {
-            return CompatUtil.fromHtml(submission.getThumbnails().getSource().getUrl()).toString();
+            return CompatUtil.fromHtml(thumbnails.getSource().getUrl()).toString();
         }
     }
 
-    private void displayThumbnail(String url, boolean full) {
+    private void displayThumbnail(@Nullable String url, boolean full) {
         if (url == null || PLACEHOLDER_URLS.contains(url)) {
             LogUtil.v("Displaying thumbnail - invalid or placeholder URL: " + url + ", hiding view and thumbImage2.");
             setVisibility(View.GONE); // Hides HeaderImageLinkView
@@ -1096,7 +1108,8 @@ public class HeaderImageLinkView extends RelativeLayout {
             }
 
             @Override
-            public void onLoadingComplete(String imageUri, View view, android.graphics.Bitmap loadedBitmap) {
+            public void onLoadingComplete(
+                    String imageUri, View view, @Nullable android.graphics.Bitmap loadedBitmap) {
                 if (loadedBitmap != null) {
                     if (loadedBitmap.getWidth() == 0 || loadedBitmap.getHeight() == 0) {
                         LogUtil.w("UIL (Thumbnail): Loaded bitmap has zero width or height for " + imageUri);
@@ -1128,7 +1141,7 @@ public class HeaderImageLinkView extends RelativeLayout {
         setVisibility(View.GONE); // This line was already here for thumbnails
     }
 
-    private void displayFullImage(String url, boolean full) {
+    private void displayFullImage(@Nullable String url, boolean full) {
         if (url == null || PLACEHOLDER_URLS.contains(url)) {
             LogUtil.v("Displaying full image - invalid or placeholder URL for backdrop: " + url + ", hiding view.");
             setVisibility(View.GONE);
@@ -1156,7 +1169,8 @@ public class HeaderImageLinkView extends RelativeLayout {
             }
 
             @Override
-            public void onLoadingComplete(String imageUri, View view, android.graphics.Bitmap loadedBitmap) {
+            public void onLoadingComplete(
+                    String imageUri, View view, @Nullable android.graphics.Bitmap loadedBitmap) {
                 if (loadedBitmap != null) {
                     if (loadedBitmap.getWidth() == 0 || loadedBitmap.getHeight() == 0) {
                         LogUtil.w("UIL (FullImage): Loaded bitmap has zero width or height for " + imageUri);

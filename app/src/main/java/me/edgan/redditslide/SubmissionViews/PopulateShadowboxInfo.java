@@ -52,6 +52,7 @@ import me.edgan.redditslide.util.ClipboardUtil;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.TimeUtils;
 import net.dean.jraw.ApiException;
 import net.dean.jraw.managers.AccountManager;
@@ -83,7 +84,7 @@ public class PopulateShadowboxInfo {
             SpannableStringBuilder subreddit =
                     new SpannableStringBuilder(" /r/" + s.getSubredditName() + " ");
 
-            String subname = s.getSubredditName().toLowerCase(Locale.ENGLISH);
+            String subname = MiscUtil.orEmpty(s.getSubredditName()).toLowerCase(Locale.ENGLISH);
             if ((SettingValues.colorSubName
                     && Palette.getColor(subname) != Palette.getDefaultColor())) {
                 subreddit.setSpan(
@@ -158,7 +159,7 @@ public class PopulateShadowboxInfo {
             int authorcolor = Palette.getFontColorUser(s.getAuthor());
 
             if (Authentication.name != null
-                    && s.getAuthor()
+                    && MiscUtil.orEmpty(s.getAuthor())
                             .toLowerCase(Locale.ENGLISH)
                             .equals(Authentication.name.toLowerCase(Locale.ENGLISH))) {
                 author.setSpan(
@@ -209,9 +210,9 @@ public class PopulateShadowboxInfo {
     /** getAuthor() is declared on Submission and Comment separately, not their base class. */
     private static String authorOf(PublicContribution s) {
         if (s instanceof Submission) {
-            return ((Submission) s).getAuthor();
+            return MiscUtil.orEmpty(((Submission) s).getAuthor());
         } else if (s instanceof Comment) {
-            return ((Comment) s).getAuthor();
+            return MiscUtil.orEmpty(((Comment) s).getAuthor());
         } else {
             return "";
         }
@@ -757,7 +758,7 @@ final AlertDialog reportDialog =
                                     case 6:
                                         {
                                             ClipboardUtil.copyToClipboard(
-                                                    mContext, "Link", submission.getUrl());
+                                                    mContext, "Link", MiscUtil.orEmpty(submission.getUrl()));
                                             Toast.makeText(
                                                             mContext,
                                                             R.string.submission_link_copied,

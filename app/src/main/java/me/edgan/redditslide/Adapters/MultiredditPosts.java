@@ -20,6 +20,7 @@ import me.edgan.redditslide.SubmissionCache;
 import me.edgan.redditslide.Synccit.MySynccitReadTask;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.PhotoLoader;
 import net.dean.jraw.models.MultiReddit;
@@ -94,12 +95,12 @@ public class MultiredditPosts implements PostLoader {
 
     /** Display name of the multireddit, or "" when it could not be resolved. */
     public String displayName() {
-        return multiReddit == null ? "" : multiReddit.getDisplayName();
+        return multiReddit == null ? "" : MiscUtil.orEmpty(multiReddit.getDisplayName());
     }
 
     /** Cache key part for a multireddit; empty when it could not be resolved. */
     private static String multiName(final @Nullable MultiReddit multi) {
-        return multi == null ? "" : multi.getDisplayName().toLowerCase(Locale.ENGLISH);
+        return multi == null ? "" : MiscUtil.orEmpty(multi.getDisplayName()).toLowerCase(Locale.ENGLISH);
     }
 
     @Override
@@ -155,7 +156,7 @@ public class MultiredditPosts implements PostLoader {
                 String[] ids = new String[submissions.size()];
                 int i = 0;
                 for (Submission s : submissions) {
-                    ids[i] = s.getId();
+                    ids[i] = MiscUtil.orEmpty(s.getId());
                     i++;
                 }
                 if (!SettingValues.synccitName.isEmpty() && !offline) {
@@ -228,14 +229,15 @@ public class MultiredditPosts implements PostLoader {
                 paginator.setSorting(
                         SettingValues.getSubmissionSort(
                                 "multi_"
-                                        + subredditPaginators[0]
-                                                .getDisplayName()
+                                        + MiscUtil.orEmpty(
+                                                        subredditPaginators[0].getDisplayName())
                                                 .toLowerCase(Locale.ENGLISH)));
                 paginator.setTimePeriod(
                         SettingValues.getSubmissionTimePeriod(
                                 "multi_"
-                                        + subredditPaginators[0]
-                                                .getDisplayName()
+                                        + MiscUtil.orEmpty(
+                                                        subredditPaginators[0]
+                                                                .getDisplayName())
                                                 .toLowerCase(Locale.ENGLISH)));
                 paginator.setLimit(Constants.DEFAULT_PAGINATOR_LIMIT);
             }
@@ -257,7 +259,7 @@ public class MultiredditPosts implements PostLoader {
             }
 
             List<Submission> filteredSubmissions = new ArrayList<>();
-            String multiName = "multi_" + paginator.getMultiReddit().getDisplayName().toLowerCase(Locale.ENGLISH);
+            String multiName = "multi_" + MiscUtil.orEmpty(paginator.getMultiReddit().getDisplayName()).toLowerCase(Locale.ENGLISH);
             for (Submission s : things) {
                 if (!PostMatch.doesMatch(s, multiName, false)) {
                     filteredSubmissions.add(s);

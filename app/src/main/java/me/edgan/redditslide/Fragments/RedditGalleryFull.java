@@ -12,6 +12,7 @@ import me.edgan.redditslide.Activities.GalleryImage;
 import me.edgan.redditslide.Adapters.RedditGalleryView;
 import me.edgan.redditslide.SubmissionViews.PopulateShadowboxInfo;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.models.Submission;
 
 public class RedditGalleryFull extends BaseAlbumFull {
@@ -134,8 +135,8 @@ public class RedditGalleryFull extends BaseAlbumFull {
                         new RedditGalleryView(
                                 getActivity(),
                                 galleryImages,
-                                submission.getSubredditName(),
-                                submission.getTitle()));
+                                MiscUtil.orEmpty(submission.getSubredditName()),
+                                MiscUtil.orEmpty(submission.getTitle())));
     }
 
     @Override

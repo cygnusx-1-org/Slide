@@ -175,21 +175,21 @@ public final class PostRecovery {
     }
 
     /** Previously recovered markdown body for this fullname, or null if none. */
-    public static @Nullable String getRecovered(String fullName) {
+    public static @Nullable String getRecovered(@Nullable String fullName) {
         if (!hasRecoveries) return null;
         Result r = recovered.get(fullName);
         return r == null ? null : r.body;
     }
 
     /** Previously recovered title for this fullname, or null if none. */
-    public static @Nullable String getRecoveredTitle(String fullName) {
+    public static @Nullable String getRecoveredTitle(@Nullable String fullName) {
         if (!hasRecoveries) return null;
         Result r = recovered.get(fullName);
         return r == null ? null : r.title;
     }
 
     /** Previously recovered author for this fullname, or null if none. */
-    public static @Nullable String getRecoveredAuthor(String fullName) {
+    public static @Nullable String getRecoveredAuthor(@Nullable String fullName) {
         if (!hasRecoveries) return null;
         Result r = recovered.get(fullName);
         return r == null ? null : r.author;
@@ -201,7 +201,7 @@ public final class PostRecovery {
      */
     public static String getDisplayAuthor(Submission s) {
         final String recoveredAuthor = getRecoveredAuthor(s.getFullName());
-        return recoveredAuthor == null ? s.getAuthor() : recoveredAuthor;
+        return recoveredAuthor == null ? MiscUtil.orEmpty(s.getAuthor()) : recoveredAuthor;
     }
 
     /**
@@ -210,7 +210,7 @@ public final class PostRecovery {
      * can still report true afterwards (e.g. an admin takedown keeps {@code banned_by} set, and a
      * text recovery leaves the placeholder {@code selftext} in place).
      */
-    public static boolean isRecovered(String fullName) {
+    public static boolean isRecovered(@Nullable String fullName) {
         if (!hasRecoveries) return false;
         Result r = recovered.get(fullName);
         return r != null && !r.isEmpty();

@@ -1217,12 +1217,18 @@ public class SubredditView extends BaseActivity {
     }
 
     private void changeSubscription(Subreddit subreddit, boolean isChecked) {
+        final String displayName = subreddit.getDisplayName();
+        if (displayName == null) {
+            // Nothing to subscribe to or unsubscribe from; an empty name would be stored as a
+            // subscription in its own right.
+            return;
+        }
         if (isChecked) {
             UserSubscriptions.addSubreddit(
-                    subreddit.getDisplayName().toLowerCase(Locale.ENGLISH), SubredditView.this);
+                    displayName.toLowerCase(Locale.ENGLISH), SubredditView.this);
         } else {
             UserSubscriptions.removeSubreddit(
-                    subreddit.getDisplayName().toLowerCase(Locale.ENGLISH), SubredditView.this);
+                    displayName.toLowerCase(Locale.ENGLISH), SubredditView.this);
             pager.setCurrentItem(pager.getCurrentItem() - 1);
             restartTheme();
         }
@@ -1255,7 +1261,7 @@ public class SubredditView extends BaseActivity {
                 final SpoilerRobotoTextView body =
                         (SpoilerRobotoTextView) findViewById(R.id.sidebar_text);
                 CommentOverflow overflow = (CommentOverflow) findViewById(R.id.commentOverflow);
-                setViews(text, subreddit.getDisplayName(), body, overflow);
+                setViews(text, MiscUtil.orEmpty(subreddit.getDisplayName()), body, overflow);
 
                 // get all subs that have Notifications enabled
                 ArrayList<String> rawSubs =
@@ -1275,7 +1281,8 @@ public class SubredditView extends BaseActivity {
                 // whether or not this subreddit was in the keySet
                 boolean isNotified =
                         subThresholds.containsKey(
-                                subreddit.getDisplayName().toLowerCase(Locale.ENGLISH));
+                                MiscUtil.orEmpty(subreddit.getDisplayName())
+                                        .toLowerCase(Locale.ENGLISH));
                 ((AppCompatCheckBox) findViewById(R.id.notify_posts_state)).setChecked(isNotified);
             } else {
                 findViewById(R.id.sidebar_text).setVisibility(View.GONE);
@@ -1465,8 +1472,7 @@ public class SubredditView extends BaseActivity {
                                 ? subreddit.isUserSubscriber()
                                 : UserSubscriptions.getSubscriptions(this)
                                         .contains(
-                                                subreddit
-                                                        .getDisplayName()
+                                                MiscUtil.orEmpty(subreddit.getDisplayName())
                                                         .toLowerCase(Locale.ENGLISH));
                 MiscUtil.doSubscribeButtonText(currentlySubbed, subscribe);
 
@@ -1616,7 +1622,8 @@ public class SubredditView extends BaseActivity {
                             public void onCheckedChanged(
                                     CompoundButton buttonView, boolean isChecked) {
                                 if (isChecked) {
-                                    final String sub = subreddit.getDisplayName();
+                                    final String sub =
+                                            MiscUtil.orEmpty(subreddit.getDisplayName());
 
                                     if (!sub.equalsIgnoreCase("all")
                                             && !sub.equalsIgnoreCase("frontpage")
@@ -1690,11 +1697,12 @@ public class SubredditView extends BaseActivity {
                             }
                         });
             }
-            if (!subreddit.getPublicDescription().isEmpty()) {
+            if (!MiscUtil.orEmpty(subreddit.getPublicDescription()).isEmpty()) {
                 findViewById(R.id.sub_title).setVisibility(View.VISIBLE);
                 setViews(
                         subreddit.getDataNode().path("public_description_html").asText(),
-                        subreddit.getDisplayName().toLowerCase(Locale.ENGLISH),
+                        MiscUtil.orEmpty(subreddit.getDisplayName())
+                                .toLowerCase(Locale.ENGLISH),
                         ((SpoilerRobotoTextView) findViewById(R.id.sub_title)),
                         (CommentOverflow) findViewById(R.id.sub_title_overflow));
             } else {
@@ -1956,7 +1964,9 @@ public class SubredditView extends BaseActivity {
                             .setDuration(180);
                 }
                 pager.setSwipeLeftOnly(true);
-                String subredditName = openingComments.getSubredditName().toLowerCase(Locale.ENGLISH);
+                String subredditName =
+                        MiscUtil.orEmpty(openingComments.getSubredditName())
+                                .toLowerCase(Locale.ENGLISH);
                 themeSystemBars(subredditName);
                 setRecentBar(subredditName);
             }
@@ -2006,8 +2016,9 @@ public class SubredditView extends BaseActivity {
             } else {
                 Fragment f = new CommentPage();
                 Bundle args = new Bundle();
-                String name = openingComments.getFullName();
-                args.putString("id", name.substring(3));
+                String name = MiscUtil.orEmpty(openingComments.getFullName());
+                // The t3_ prefix is what gets stripped; a name too short to carry one has no id.
+                args.putString("id", name.length() >= 3 ? name.substring(3) : "");
                 args.putBoolean("archived", openingComments.isArchived());
                 args.putBoolean(
                         "contest", openingComments.getDataNode().path("contest_mode").asBoolean());
@@ -2034,20 +2045,22 @@ public class SubredditView extends BaseActivity {
                 setResult(RESULT_OK);
                 sub = subreddit;
                 try {
-                    doSubSidebarNoLoad(sub.getDisplayName());
-                    doSubSidebar(sub.getDisplayName());
+                    doSubSidebarNoLoad(MiscUtil.orEmpty(sub.getDisplayName()));
+                    doSubSidebar(MiscUtil.orEmpty(sub.getDisplayName()));
                     doSubOnlyStuff(sub);
                 } catch (NullPointerException e) { // activity has been killed
                     if (!isFinishing()) finish();
                 }
-                SubredditView.this.subreddit = sub.getDisplayName();
+                SubredditView.this.subreddit = MiscUtil.orEmpty(sub.getDisplayName());
 
                 if (subreddit.isNsfw()
                         && SettingValues.storeHistory
                         && SettingValues.storeNSFWHistory) {
-                    UserSubscriptions.addSubToHistory(subreddit.getDisplayName());
+                    UserSubscriptions.addSubToHistory(
+                            MiscUtil.orEmpty(subreddit.getDisplayName()));
                 } else if (SettingValues.storeHistory && !subreddit.isNsfw()) {
-                    UserSubscriptions.addSubToHistory(subreddit.getDisplayName());
+                    UserSubscriptions.addSubToHistory(
+                            MiscUtil.orEmpty(subreddit.getDisplayName()));
                 }
 
                 // Over 18 interstitial for signed out users or those who haven't enabled NSFW

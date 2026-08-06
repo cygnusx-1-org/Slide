@@ -163,7 +163,7 @@ public class SubmissionModActions {
         }
 
         final boolean distinguished = submission.getDistinguishedStatus() == DistinguishedStatus.MODERATOR || submission.getDistinguishedStatus() == DistinguishedStatus.ADMIN;
-        if (submission.getAuthor().equalsIgnoreCase(Authentication.name)) {
+        if (MiscUtil.orEmpty(submission.getAuthor()).equalsIgnoreCase(Authentication.name)) {
             if (distinguished) {
                 b.sheet(5, distinguish, res.getString(R.string.mod_btn_undistinguish));
             } else {
@@ -264,7 +264,7 @@ public class SubmissionModActions {
                             if (SettingValues.removalReasonType
                                             == SettingValues.RemovalReasonType.TOOLBOX.ordinal()
                                     && ToolboxUI.canShowRemoval(
-                                            submission.getSubredditName())) {
+                                            MiscUtil.orEmpty(submission.getSubredditName()))) {
                                 ToolboxUI.showRemoval(
                                         mContext,
                                         submission,
@@ -320,7 +320,7 @@ public class SubmissionModActions {
 
                             break;
                         case 24:
-                            ToolboxUI.showUsernotes(mContext, submission.getAuthor(), submission.getSubredditName(), "l," + submission.getId());
+                            ToolboxUI.showUsernotes(mContext, MiscUtil.orEmpty(submission.getAuthor()), MiscUtil.orEmpty(submission.getSubredditName()), "l," + submission.getId());
 
                             break;
                     }

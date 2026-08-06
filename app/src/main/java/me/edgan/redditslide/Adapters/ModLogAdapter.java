@@ -25,6 +25,7 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.Views.RoundedBackgroundSpan;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.TimeUtils;
 import net.dean.jraw.models.ModAction;
 
@@ -153,7 +154,7 @@ public class ModLogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     author.length(),
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             if (Authentication.name != null
-                    && a.getModerator()
+                    && MiscUtil.orEmpty(a.getModerator())
                             .toLowerCase(Locale.ENGLISH)
                             .equals(Authentication.name.toLowerCase(Locale.ENGLISH))) {
                 author.replace(0, author.length(), " " + a.getModerator() + " ");
@@ -213,7 +214,8 @@ public class ModLogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             holder.body.setText(b);
 
-            String action = a.getAction();
+            // A mod-log entry with no action matches no case; "" falls to the default arm.
+            String action = MiscUtil.orEmpty(a.getAction());
             switch (action) {
                 case "removelink":
                     holder.icon.setImageDrawable(

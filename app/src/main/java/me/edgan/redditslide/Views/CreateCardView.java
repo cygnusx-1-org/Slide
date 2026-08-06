@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import java.util.ArrayList;
 import me.edgan.redditslide.R;
@@ -214,7 +215,8 @@ public class CreateCardView {
         return views;
     }
 
-    public static void colorCard(String sec, View v, String subToMatch, boolean secondary) {
+    public static void colorCard(
+            @Nullable String sec, View v, String subToMatch, boolean secondary) {
         resetColorCard(v);
         if ((SettingValues.colorBack
                         && !SettingValues.colorSubName

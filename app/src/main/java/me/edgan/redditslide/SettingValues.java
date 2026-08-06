@@ -663,7 +663,10 @@ public class SettingValues {
                 .apply();
     }
 
-    public static CommentSort getCommentSorting(String sub) {
+    public static CommentSort getCommentSorting(@Nullable String sub) {
+        // Matches hasCommentSort: with no subreddit there is no per-subreddit override to read,
+        // so this is the same answer as a subreddit that never had one set.
+        if (sub == null) return defaultCommentSorting;
         return CommentSort.valueOf(
                 PrefUtil.getString(
                         prefs,
@@ -774,11 +777,15 @@ public class SettingValues {
                         SortingUtil.timePeriod.name()));
     }
 
-    public static boolean hasSort(String subreddit) {
+    public static boolean hasSort(@Nullable String subreddit) {
+        // No subreddit means no per-subreddit override to find, the same as one that was never
+        // set. Concatenating a null would look for a key spelled "defaultSortnull".
+        if (subreddit == null) return false;
         return prefs.contains("defaultSort" + subreddit.toLowerCase(Locale.ENGLISH));
     }
 
-    public static boolean hasCommentSort(String subreddit) {
+    public static boolean hasCommentSort(@Nullable String subreddit) {
+        if (subreddit == null) return false;
         return prefs.contains("defaultComment" + subreddit.toLowerCase(Locale.ENGLISH));
     }
 

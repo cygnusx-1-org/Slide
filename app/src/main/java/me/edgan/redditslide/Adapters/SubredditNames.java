@@ -14,6 +14,7 @@ import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Subreddit;
 import net.dean.jraw.paginators.Paginator;
@@ -82,7 +83,7 @@ public class SubredditNames {
                 ArrayList<Subreddit> toRemove = new ArrayList<>();
                 for (Subreddit s : submissions) {
                     if (PostMatch.contains(
-                            s.getDisplayName().toLowerCase(Locale.ENGLISH),
+                            MiscUtil.orEmpty(s.getDisplayName()).toLowerCase(Locale.ENGLISH),
                             SettingValues.subredditFilters,
                             true)) toRemove.add(s);
                 }

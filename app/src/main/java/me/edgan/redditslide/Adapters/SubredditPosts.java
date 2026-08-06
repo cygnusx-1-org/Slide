@@ -27,6 +27,7 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionCache;
 import me.edgan.redditslide.Synccit.MySynccitReadTask;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.PhotoLoader;
 import me.edgan.redditslide.util.TimeUtils;
@@ -166,7 +167,7 @@ public class SubredditPosts implements PostLoader {
                 String[] ids = new String[submissions.size()];
                 int i = 0;
                 for (Submission s : submissions) {
-                    ids[i] = s.getId();
+                    ids[i] = MiscUtil.orEmpty(s.getId());
                     i++;
                 }
 
@@ -178,7 +179,7 @@ public class SubredditPosts implements PostLoader {
                 if (subreddit.equals("random")
                         || subreddit.equals("myrandom")
                         || subreddit.equals("randnsfw")) {
-                    subredditRandom = submissions.get(0).getSubredditName();
+                    subredditRandom = MiscUtil.orEmpty(submissions.get(0).getSubredditName());
                 }
 
                 MainActivity.randomoverride = subredditRandom;

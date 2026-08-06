@@ -19,6 +19,7 @@ import me.edgan.redditslide.Views.CatchStaggeredGridLayoutManager;
 import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.SubmissionParser;
 import net.dean.jraw.models.Subreddit;
@@ -66,7 +67,7 @@ public class SubredditAdapter extends PaginatedListAdapter {
             holder.color.setBackgroundResource(R.drawable.circle);
             BlendModeUtil.tintDrawableAsModulate(
                     holder.color.getBackground(),
-                    Palette.getColor(sub.getDisplayName().toLowerCase(Locale.ENGLISH)));
+                    Palette.getColor(MiscUtil.orEmpty(sub.getDisplayName()).toLowerCase(Locale.ENGLISH)));
             holder.itemView.setOnClickListener(
                     new OnSingleClickListener() {
                         @Override
@@ -106,7 +107,7 @@ public class SubredditAdapter extends PaginatedListAdapter {
                 holder.overflow.setVisibility(View.VISIBLE);
                 setViews(
                         description.trim(),
-                        sub.getDisplayName().toLowerCase(Locale.ENGLISH),
+                        MiscUtil.orEmpty(sub.getDisplayName()).toLowerCase(Locale.ENGLISH),
                         holder.body,
                         holder.overflow);
             }

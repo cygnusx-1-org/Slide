@@ -42,6 +42,7 @@ import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.JsonUtil;
 import me.edgan.redditslide.util.LinkUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SubmissionThumbnailHelper;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Thumbnails;
@@ -175,7 +176,7 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             if (main != null) {
                                 BottomSheet.Builder b =
                                         new BottomSheet.Builder(main)
-                                                .title(submission.getUrl())
+                                                .title(MiscUtil.orEmpty(submission.getUrl()))
                                                 .grid();
                                 int[] attrs = new int[] {R.attr.tintColor};
                                 TypedArray ta = main.obtainStyledAttributes(attrs);
@@ -219,7 +220,9 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                                                     "", submission.getUrl(), main);
                                                         } else if (which == R.id.copy_link) {
                                                             LinkUtil.copyUrl(
-                                                                    submission.getUrl(), main);
+                                                                    MiscUtil.orEmpty(
+                                                                            submission.getUrl()),
+                                                                    main);
                                                         }
                                                     }
                                                 })

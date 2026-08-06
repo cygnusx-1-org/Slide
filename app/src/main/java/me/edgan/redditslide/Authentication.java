@@ -85,7 +85,7 @@ public class Authentication {
      * "force commit" comment. It uses {@code apply()} — the write still lands, and it never blocks
      * on disk, which matters because some callers run on the main thread.
      */
-    public static void migrateAccountToTokenForm(String accountName) {
+    public static void migrateAccountToTokenForm(@Nullable String accountName) {
         final Set<String> accounts =
                 PrefUtil.getMutableStringSet(authentication, "accounts", new HashSet<String>());
         if (accounts.contains(accountName)) {

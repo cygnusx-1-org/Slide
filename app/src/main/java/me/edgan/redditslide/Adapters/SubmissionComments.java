@@ -18,6 +18,7 @@ import me.edgan.redditslide.Fragments.CommentPage;
 import me.edgan.redditslide.LastComments;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.util.CommentImageUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import net.dean.jraw.http.RestResponse;
@@ -74,9 +75,9 @@ public class SubmissionComments {
 
         this.refreshLayout = layout;
 
-        if (s.getComments() != null) {
+        CommentNode baseComment = s.getComments();
+        if (baseComment != null) {
             submission = s;
-            CommentNode baseComment = s.getComments();
             comments = new ArrayList<>();
             // Sorted descending, so it can be drained in place instead of copying it into a fresh
             // reverse-ordered TreeMap for every comment in the tree.
@@ -202,7 +203,7 @@ public class SubmissionComments {
         }
 
         commentAdapter.submission =
-                Authentication.reddit.getSubmission(submission.getFullName().substring(3));
+                Authentication.reddit.getSubmission(MiscUtil.idFromFullname(submission.getFullName()));
     }
 
     public class LoadData extends AsyncTask<String, Void, ArrayList<CommentObject>> {
@@ -246,6 +247,10 @@ public class SubmissionComments {
                 JsonNode node = getSubmissionNode(builder.build());
                 submission = SubmissionSerializer.withComments(node, defaultSorting);
                 CommentNode baseComment = submission.getComments();
+                if (baseComment == null) {
+                    // A submission deserialized without a comment tree has nothing to walk.
+                    return new ArrayList<>();
+                }
 
                 /* if (page.o != null)
                 page.o.setCommentAndWrite(submission.getFullName(), node, submission).writeToMemory();*/

@@ -45,7 +45,13 @@ public class Image extends Fragment {
 
                                 @Override
                                 public void onLoadingComplete(
-                                        String imageUri, View view, Bitmap loadedImage) {
+                                        String imageUri, View view, @Nullable Bitmap loadedImage) {
+                                    if (loadedImage == null) {
+                                        // A completed load with no bitmap: the loader reports an
+                                        // unusable uri that way. ImageSource.bitmap throws on a
+                                        // null, so there is nothing to show and nothing to hand it.
+                                        return;
+                                    }
                                     image.setImage(ImageSource.bitmap(loadedImage));
                                 }
                             });

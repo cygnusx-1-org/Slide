@@ -165,7 +165,7 @@ public final class CommentImageUtil {
                 options(),
                 new SimpleImageLoadingListener() {
                     @Override
-                    public void onLoadingComplete(String uri, View view, Bitmap loadedImage) {
+                    public void onLoadingComplete(String uri, View view, @Nullable Bitmap loadedImage) {
                         if (loadedImage != null && loadedImage.getWidth() > 0) {
                             recordRatio(uri, loadedImage);
                             int[] s = boundedSize(loadedImage.getWidth(), loadedImage.getHeight());

@@ -142,7 +142,11 @@ public class ContentType {
      * @param url URL to get ContentType from
      * @return ContentType of the URL
      */
-    public static Type getContentType(String url) {
+    public static Type getContentType(@Nullable String url) {
+        if (url == null) {
+            // No url to classify. NONE is what an unrecognised url already yields.
+            return Type.NONE;
+        }
         if (!url.startsWith("//")
                 && ((url.startsWith("/") && url.length() < 4)
                         || url.startsWith("#spoiler")
@@ -510,7 +514,7 @@ public class ContentType {
         }
     }
 
-    public static boolean isImgurImage(String lqUrl) {
+    public static boolean isImgurImage(@Nullable String lqUrl) {
         try {
             final URI uri = new URI(lqUrl);
             final String host = uri.getHost().toLowerCase(Locale.ENGLISH);
@@ -524,7 +528,7 @@ public class ContentType {
         }
     }
 
-    public static boolean isImgurHash(String lqUrl) {
+    public static boolean isImgurHash(@Nullable String lqUrl) {
         try {
             final URI uri = new URI(lqUrl);
             final String host = uri.getHost().toLowerCase(Locale.ENGLISH);

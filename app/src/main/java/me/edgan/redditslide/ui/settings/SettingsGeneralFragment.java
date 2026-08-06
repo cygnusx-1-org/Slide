@@ -65,6 +65,7 @@ import me.edgan.redditslide.util.ImageLoaderUtils;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialInputDialog;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.PrefUtil;
 import me.edgan.redditslide.util.QrCodeScannerHelper;
@@ -1777,7 +1778,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                     || input.equalsIgnoreCase("friends")
                     || input.equalsIgnoreCase("mod")) {
                 ArrayList<String> singleSub = new ArrayList<>();
-                singleSub.add(subreddit.getDisplayName().toLowerCase(Locale.ENGLISH));
+                singleSub.add(MiscUtil.orEmpty(subreddit.getDisplayName()).toLowerCase(Locale.ENGLISH));
                 showThresholdDialog(singleSub, true);
             }
         }

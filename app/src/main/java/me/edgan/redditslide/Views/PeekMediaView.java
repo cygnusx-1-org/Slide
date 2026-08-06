@@ -640,7 +640,7 @@ public class PeekMediaView extends RelativeLayout {
 
                                     @Override
                                     public void onLoadingComplete(
-                                            String imageUri, View view, Bitmap loadedImage) {
+                                            String imageUri, View view, @Nullable Bitmap loadedImage) {
                                         imageShown = true;
 
                                         File f =
@@ -650,7 +650,10 @@ public class PeekMediaView extends RelativeLayout {
                                                         .get(url);
                                         if (f != null && f.exists()) {
                                             i.loader.setImage(ImageSource.uri(f.getAbsolutePath()));
-                                        } else {
+                                        } else if (loadedImage != null) {
+                                            // A completed load with no bitmap is how the loader
+                                            // reports an unusable uri, and ImageSource.bitmap
+                                            // throws on a null rather than ignoring it.
                                             i.loader.setImage(ImageSource.bitmap(loadedImage));
                                         }
                                         (progress).setVisibility(View.GONE);

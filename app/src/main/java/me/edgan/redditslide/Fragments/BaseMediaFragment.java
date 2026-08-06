@@ -451,7 +451,7 @@ public abstract class BaseMediaFragment extends Fragment {
 
                                     @Override
                                     public void onLoadingComplete(
-                                            String imageUri, View view, Bitmap loadedImage) {
+                                            String imageUri, View view, @Nullable Bitmap loadedImage) {
                                         imageShown = true;
                                         File f = null;
                                         if (getActivity() != null) {
@@ -463,7 +463,10 @@ public abstract class BaseMediaFragment extends Fragment {
                                         }
                                         if (f != null && f.exists()) {
                                             i.loader.setImage(ImageSource.uri(f.getAbsolutePath()));
-                                        } else {
+                                        } else if (loadedImage != null) {
+                                            // A completed load with no bitmap is how the loader
+                                            // reports an unusable uri, and ImageSource.bitmap
+                                            // throws on a null rather than ignoring it.
                                             i.loader.setImage(ImageSource.bitmap(loadedImage));
                                         }
                                         (rootView.findViewById(R.id.progress))

@@ -935,12 +935,15 @@ public class Profile extends BaseActivityAnim {
                                             @Override
                                             public void onClick(View v) {
                                                 LinkUtil.openUrl(
-                                                        LinkUtil.formatURL(t.getAboutUrl())
+                                                        LinkUtil.formatURL(
+                                                                        MiscUtil.orEmpty(
+                                                                                t.getAboutUrl()))
                                                                 .toString(),
                                                         Palette.getColorUser(
                                                                 account == null
                                                                         ? ""
-                                                                        : account.getFullName()),
+                                                                        : MiscUtil.orEmpty(
+                                                                                account.getFullName())),
                                                         Profile.this);
                                             }
                                         });
@@ -1297,7 +1300,12 @@ public class Profile extends BaseActivityAnim {
                                     String.format(
                                             Locale.getDefault(),
                                             "%d",
-                                            account.getCommentKarma() + account.getLinkKarma()));
+                                            (account.getCommentKarma() == null
+                                                            ? 0
+                                                            : account.getCommentKarma())
+                                                    + (account.getLinkKarma() == null
+                                                            ? 0
+                                                            : account.getLinkKarma())));
 
                     final Context contextThemeWrapper = new ContextThemeWrapper(Profile.this,
                             new ColorPreferences(Profile.this).getFontStyle().getBaseId());

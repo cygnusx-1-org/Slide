@@ -99,7 +99,9 @@ public class AsyncNotificationBadge extends AsyncTask<Void, Void, Void> {
                     UserSubscriptions.modOf = null;
                 }
             }
-            count = me.getInboxCount(); // Force reload of the LoggedInAccount object
+            // Force reload of the LoggedInAccount object; an absent inbox_count reads as zero.
+            final Integer inbox = me.getInboxCount();
+            count = inbox == null ? 0 : inbox;
             UserSubscriptions.doFriendsOfMain(activity);
 
         } catch (Exception e) {

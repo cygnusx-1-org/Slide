@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,6 +20,7 @@ import me.edgan.redditslide.Activities.MultiredditOverview;
 import me.edgan.redditslide.Toolbox.Toolbox;
 import me.edgan.redditslide.ui.settings.dragSort.ReorderSubreddits;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.PrefUtil;
 import me.edgan.redditslide.util.StringUtil;
@@ -340,7 +340,7 @@ public class UserSubscriptions {
             try {
                 while (pag.hasNext()) {
                     for (Subreddit s : pag.next()) {
-                        toReturn.add(s.getDisplayName().toLowerCase(Locale.ENGLISH));
+                        toReturn.add(MiscUtil.orEmpty(s.getDisplayName()).toLowerCase(Locale.ENGLISH));
                     }
                 }
                 if (toReturn.isEmpty()
@@ -494,7 +494,7 @@ public class UserSubscriptions {
         try {
             while (pag.hasNext()) {
                 for (Subreddit s : pag.next()) {
-                    finished.add(s.getDisplayName().toLowerCase(Locale.ENGLISH));
+                    finished.add(MiscUtil.orEmpty(s.getDisplayName()).toLowerCase(Locale.ENGLISH));
                 }
             }
             modOf = (finished);
@@ -546,7 +546,7 @@ public class UserSubscriptions {
     public static MultiReddit getMultiredditByDisplayName(String displayName) {
         if (multireddits != null) {
             for (MultiReddit multiReddit : multireddits) {
-                if (multiReddit.getDisplayName().equals(displayName)) {
+                if (MiscUtil.orEmpty(multiReddit.getDisplayName()).equals(displayName)) {
                     return multiReddit;
                 }
             }
@@ -564,7 +564,7 @@ public class UserSubscriptions {
 
         if (public_multireddits.get(profile) != null) {
             for (MultiReddit multiReddit : public_multireddits.get(profile)) {
-                if (multiReddit.getDisplayName().equals(displayName)) {
+                if (MiscUtil.orEmpty(multiReddit.getDisplayName()).equals(displayName)) {
                     return multiReddit;
                 }
             }
@@ -667,8 +667,8 @@ public class UserSubscriptions {
                         PrefUtil.getString(subscriptions, "subhistory", "")
                                 .toLowerCase(Locale.ENGLISH));
         for (Subreddit s : s2) {
-            if (!history.toString().contains(s.getDisplayName().toLowerCase(Locale.ENGLISH))) {
-                history.append(",").append(s.getDisplayName().toLowerCase(Locale.ENGLISH));
+            if (!history.toString().contains(MiscUtil.orEmpty(s.getDisplayName()).toLowerCase(Locale.ENGLISH))) {
+                history.append(",").append(MiscUtil.orEmpty(s.getDisplayName()).toLowerCase(Locale.ENGLISH));
             }
         }
         subscriptions.edit().putString("subhistory", history.toString()).apply();

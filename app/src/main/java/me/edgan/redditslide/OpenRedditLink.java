@@ -84,10 +84,16 @@ public class OpenRedditLink {
 
     // Returns true if link was in fact handled by this method. If false, further action should be
     // taken
-    public static boolean openUrl(Context context, String url, boolean openIfOther) {
+    public static boolean openUrl(Context context, @Nullable String url, boolean openIfOther) {
         boolean np = false;
 
         LogUtil.v("Link is " + url);
+        if (url == null) {
+            // formatRedditUrl(null) returns null, so this is the branch that ran before; hoisting
+            // the test just makes the non-null url visible to everything below.
+            LinkUtil.openExternally(null);
+            return false;
+        }
         Uri uri = formatRedditUrl(url);
 
         if (uri == null) {
@@ -361,7 +367,11 @@ public class OpenRedditLink {
         }).start();
     }
 
-    public static void openUrl(Context c, String submission, String subreddit, String id) {
+    public static void openUrl(
+            Context c,
+            @Nullable String submission,
+            @Nullable String subreddit,
+            @Nullable String id) {
         Intent i = new Intent(c, CommentsScreenSingle.class);
         i.putExtra(CommentsScreenSingle.EXTRA_SUBREDDIT, subreddit);
         i.putExtra(CommentsScreenSingle.EXTRA_CONTEXT, id);

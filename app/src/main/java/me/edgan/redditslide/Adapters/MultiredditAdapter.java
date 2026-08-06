@@ -21,6 +21,7 @@ import me.edgan.redditslide.SubmissionViews.PopulateSubmissionViewHolder;
 import me.edgan.redditslide.Views.CatchStaggeredGridLayoutManager;
 import me.edgan.redditslide.Views.CreateCardView;
 import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.models.Submission;
 
 public class MultiredditAdapter extends PaginatedListAdapter {
@@ -92,7 +93,7 @@ public class MultiredditAdapter extends PaginatedListAdapter {
             final Submission submission = dataSet.posts.get(i);
 
             CreateCardView.colorCard(
-                    submission.getSubredditName().toLowerCase(Locale.ENGLISH),
+                    MiscUtil.orEmpty(submission.getSubredditName()).toLowerCase(Locale.ENGLISH),
                     holder.itemView,
                     "multi_" + dataSet.displayName(),
                     true);

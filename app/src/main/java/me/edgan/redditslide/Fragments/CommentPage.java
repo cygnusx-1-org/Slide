@@ -189,8 +189,10 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
             adapter.notifyDataSetChanged();
             int i = 2;
             for (CommentObject n : comments.comments) {
-                if (n instanceof CommentItem
-                        && n.comment.getComment().getFullName().contains(fullname)) {
+                final String nFullname =
+                        n instanceof CommentItem ? n.comment.getComment().getFullName() : null;
+                if (nFullname != null
+                        && nFullname.contains(fullname)) {
                     if (rv.getLayoutManager() != null) {
                         ((PreCachingLayoutManagerComments) rv.getLayoutManager())
                                 .scrollToPositionWithOffset(i, toolbar.getHeight());
@@ -1145,7 +1147,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                     break;
                                 case NONE:
                                 case SELF:
-                                    if (adapter.submission.getSelftext().isEmpty()) {
+                                    if (MiscUtil.orEmpty(adapter.submission.getSelftext()).isEmpty()) {
                                         Snackbar s =
                                                 Snackbar.make(
                                                         rv,
@@ -1163,7 +1165,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                         .getDataNode()
                                                         .path("selftext_html")
                                                         .asText(),
-                                                adapter.submission.getSubredditName(),
+                                                MiscUtil.orEmpty(adapter.submission.getSubredditName()),
                                                 dialoglayout.findViewById(R.id.firstTextView),
                                                 dialoglayout.findViewById(R.id.commentOverflow));
 
@@ -1278,7 +1280,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
             }
             if (baseSub != null) {
                 currentlySubbed = Authentication.isLoggedIn && baseSub.isUserSubscriber();
-                subreddit = baseSub.getDisplayName();
+                subreddit = MiscUtil.orEmpty(baseSub.getDisplayName());
                 try {
                     View sidebar =
                             getActivity().getLayoutInflater().inflate(R.layout.subinfo, null);
@@ -1487,7 +1489,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                             final SpoilerRobotoTextView body =
                                     sidebar.findViewById(R.id.sidebar_text);
                             CommentOverflow overflow = sidebar.findViewById(R.id.commentOverflow);
-                            setViews(text, baseSub.getDisplayName(), body, overflow);
+                            setViews(text, MiscUtil.orEmpty(baseSub.getDisplayName()), body, overflow);
                         } else {
                             sidebar.findViewById(R.id.sidebar_text).setVisibility(View.GONE);
                         }
@@ -1686,7 +1688,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                             ? baseSub.isUserSubscriber()
                                             : UserSubscriptions.getSubscriptions(getActivity())
                                                     .contains(
-                                                            baseSub.getDisplayName()
+                                                            MiscUtil.orEmpty(baseSub.getDisplayName())
                                                                     .toLowerCase(Locale.ENGLISH));
                             MiscUtil.doSubscribeButtonText(currentlySubbed, subscribe);
 
@@ -1934,11 +1936,11 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                         }
                                     });
                         }
-                        if (!baseSub.getPublicDescription().isEmpty()) {
+                        if (!MiscUtil.orEmpty(baseSub.getPublicDescription()).isEmpty()) {
                             sidebar.findViewById(R.id.sub_title).setVisibility(View.VISIBLE);
                             setViews(
                                     baseSub.getDataNode().path("public_description_html").asText(),
-                                    baseSub.getDisplayName().toLowerCase(Locale.ENGLISH),
+                                    MiscUtil.orEmpty(baseSub.getDisplayName()).toLowerCase(Locale.ENGLISH),
                                     sidebar.findViewById(R.id.sub_title),
                                     sidebar.findViewById(R.id.sub_title_overflow));
                         } else {
@@ -2436,7 +2438,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                         if (matches) {
                             adapter.currentNode = o.comment;
                             adapter.currentSelectedItem =
-                                    o.comment.getComment().getFullName();
+                                    MiscUtil.orEmpty(o.comment.getComment().getFullName());
                         }
                     }
                     break;
@@ -2452,17 +2454,13 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                 case OP:
                     matches =
                             adapter.submission != null
-                                    && o.comment
-                                            .getComment()
-                                            .getAuthor()
+                                    && MiscUtil.orEmpty(o.comment.getComment().getAuthor())
                                             .equals(adapter.submission.getAuthor());
                     break;
                 case YOU:
                     matches =
                             adapter.submission != null
-                                    && o.comment
-                                            .getComment()
-                                            .getAuthor()
+                                    && MiscUtil.orEmpty(o.comment.getComment().getAuthor())
                                             .equals(Authentication.name);
                     break;
                 case LINK:
@@ -2620,7 +2618,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
 
     private void changeSubscription(Subreddit subreddit, boolean isChecked) {
         UserSubscriptions.addSubreddit(
-                subreddit.getDisplayName().toLowerCase(Locale.ENGLISH), getContext());
+                MiscUtil.orEmpty(subreddit.getDisplayName()).toLowerCase(Locale.ENGLISH), getContext());
 
         Snackbar s =
                 Snackbar.make(

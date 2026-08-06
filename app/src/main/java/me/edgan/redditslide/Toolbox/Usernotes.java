@@ -177,7 +177,7 @@ public class Usernotes {
      * @return List of usernotes, or null when the user has none
      */
     @Nullable
-    public List<Usernote> getNotesForUser(String user) {
+    public List<Usernote> getNotesForUser(@Nullable String user) {
         return notes.get(user);
     }
 
@@ -187,7 +187,7 @@ public class Usernotes {
      * @param user User
      * @return (Shortened) usernote text (plus count if additional notes)
      */
-    public String getDisplayNoteForUser(String user) {
+    public String getDisplayNoteForUser(@Nullable String user) {
         final List<Usernote> userNotes = getNotesForUser(user);
         if (userNotes == null || userNotes.isEmpty()) {
             return "";
@@ -206,7 +206,7 @@ public class Usernotes {
      * @return A color int
      */
     @ColorInt
-    public int getDisplayColorForUser(String user) {
+    public int getDisplayColorForUser(@Nullable String user) {
         final List<Usernote> userNotes = getNotesForUser(user);
         if (userNotes != null && !userNotes.isEmpty()) {
             return getColorFromWarningIndex(userNotes.get(0).getWarning());

@@ -24,6 +24,7 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
+import me.edgan.redditslide.util.PhotoLoader;
 import me.edgan.redditslide.util.TimeUtils;
 import net.dean.jraw.RedditClient;
 import net.dean.jraw.models.LoggedInAccount;
@@ -219,7 +220,7 @@ public class ListViewRemoteViewsFactory implements RemoteViewsService.RemoteView
             rv.setTextViewText(R.id.subreddit, data.getSubredditName());
             rv.setTextColor(R.id.subreddit, Palette.getColor(data.getSubredditName()));
             if (SubredditWidgetProvider.getViewType(id, mContext) == 1) {
-                Thumbnails s = data.getThumbnails();
+                Thumbnails s = PhotoLoader.usableThumbnails(data);
                 rv.setViewVisibility(R.id.thumbimage2, View.GONE);
                 if (s != null && s.getVariations() != null && s.getSource() != null) {
                     rv.setImageViewBitmap(
@@ -227,10 +228,7 @@ public class ListViewRemoteViewsFactory implements RemoteViewsService.RemoteView
                             ((Reddit) mContext.getApplicationContext())
                                     .getImageLoader()
                                     .loadImageSync(
-                                            CompatUtil.fromHtml(
-                                                            data.getThumbnails()
-                                                                    .getSource()
-                                                                    .getUrl())
+                                            CompatUtil.fromHtml(s.getSource().getUrl())
                                                     .toString()));
                     rv.setViewVisibility(R.id.bigpic, View.VISIBLE);
                 } else {

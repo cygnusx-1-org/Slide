@@ -192,14 +192,15 @@ public class SettingsSubreddit extends BaseActivityAnim {
                                                                                     .asText()
                                                                                     .isEmpty()
                                                                             && Palette.getColor(
-                                                                                            s.getDisplayName()
+                                                                                            MiscUtil.orEmpty(s.getDisplayName())
                                                                                                     .toLowerCase(
                                                                                                             Locale
                                                                                                                     .ENGLISH))
                                                                                     == Palette
                                                                                             .getDefaultColor()) {
                                                                         Palette.setColor(
-                                                                                s.getDisplayName()
+                                                                                MiscUtil.orEmpty(
+                                                                                                s.getDisplayName())
                                                                                         .toLowerCase(
                                                                                                 Locale
                                                                                                         .ENGLISH),

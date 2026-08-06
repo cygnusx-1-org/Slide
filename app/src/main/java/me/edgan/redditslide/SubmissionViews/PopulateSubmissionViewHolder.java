@@ -63,6 +63,7 @@ import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialInputDialog;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.PostRecovery;
 import me.edgan.redditslide.util.SubmissionBottomSheetActions;
@@ -155,8 +156,15 @@ public class PopulateSubmissionViewHolder {
                 && UserSubscriptions.modOf.contains(
                         submission.getSubredditName().toLowerCase(Locale.ENGLISH))) {
             holder.mod.setVisibility(View.VISIBLE);
-            final Map<String, Integer> reports = submission.getUserReports();
-            final Map<String, String> reports2 = submission.getModeratorReports();
+            // JRAW returns null from these when the JSON carries no user_reports/mod_reports
+            // member, which is what an unreported submission looks like. Everything below only
+            // asks for size() or iterates, so an empty map is the same answer.
+            final Map<String, Integer> rawUserReports = submission.getUserReports();
+            final Map<String, String> rawModReports = submission.getModeratorReports();
+            final Map<String, Integer> reports =
+                    rawUserReports == null ? Collections.emptyMap() : rawUserReports;
+            final Map<String, String> reports2 =
+                    rawModReports == null ? Collections.emptyMap() : rawModReports;
             if (reports.size() + reports2.size() > 0) {
                 BlendModeUtil.tintImageViewAsSrcAtop(
                         (ImageView) holder.mod,
@@ -203,7 +211,8 @@ public class PopulateSubmissionViewHolder {
         // Use this to offset the submission score
         int submissionScore = submission.getScore();
 
-        final int commentCount = submission.getCommentCount();
+        final Integer rawCommentCount = submission.getCommentCount();
+        final int commentCount = rawCommentCount == null ? 0 : rawCommentCount;
         final int more = LastComments.commentsSince(submission);
         holder.comments.setText(
                 String.format(
@@ -211,9 +220,12 @@ public class PopulateSubmissionViewHolder {
                         "%d %s",
                         commentCount,
                         ((more > 0 && SettingValues.commentLastVisit) ? "(+" + more + ")" : "")));
+        // Read once: NullAway cannot narrow a repeated zero-argument call across the ternary,
+        // and the unboxing below is only reachable because this one was non-null.
+        final Double upvoteRatio = submission.getUpvoteRatio();
         String scoreRatio =
-                (SettingValues.upvotePercentage && full && submission.getUpvoteRatio() != null)
-                        ? "(" + (int) (submission.getUpvoteRatio() * 100) + "%)"
+                (SettingValues.upvotePercentage && full && upvoteRatio != null)
+                        ? "(" + (int) (upvoteRatio * 100) + "%)"
                         : "";
 
         if (!scoreRatio.isEmpty()) {
@@ -221,7 +233,7 @@ public class PopulateSubmissionViewHolder {
             percent.setVisibility(View.VISIBLE);
             percent.setText(scoreRatio);
 
-            final double numb = (submission.getUpvoteRatio());
+            final double numb = upvoteRatio == null ? 0 : upvoteRatio;
             if (numb <= .5) {
                 if (numb <= .1) {
                     percent.setTextColor(ContextCompat.getColor(mContext, R.color.md_blue_500));
@@ -451,7 +463,7 @@ public class PopulateSubmissionViewHolder {
                             new SimpleImageLoadingListener() {
                                 @Override
                                 public void onLoadingComplete(
-                                        String imageUri, View view, Bitmap loadedImage) {
+                                        String imageUri, View view, @Nullable Bitmap loadedImage) {
                                     view.setVisibility(
                                             loadedImage == null ? View.GONE : View.VISIBLE);
                                 }
@@ -511,7 +523,7 @@ public class PopulateSubmissionViewHolder {
         if (!full
                 && SettingValues.isSelftextEnabled(baseSub)
                 && submission.isSelfPost()
-                && !submission.getSelftext().isEmpty()
+                && !MiscUtil.orEmpty(submission.getSelftext()).isEmpty()
                 && !submission.isNsfw()
                 && !submission.getDataNode().path("spoiler").asBoolean()
                 && !submission.getDataNode().path("selftext_html").asText("").trim().isEmpty()) {
@@ -547,7 +559,7 @@ public class PopulateSubmissionViewHolder {
 
         if (full) {
             String recoveredText = PostRecovery.getRecovered(submission.getFullName());
-            if (recoveredText != null || !submission.getSelftext().isEmpty()) {
+            if (recoveredText != null || !MiscUtil.orEmpty(submission.getSelftext()).isEmpty()) {
                 int typef = new FontPreferences(mContext).getFontTypeComment().getTypeface();
                 Typeface typeface;
                 if (typef >= 0) {
@@ -575,7 +587,7 @@ public class PopulateSubmissionViewHolder {
                 } else if (SettingValues.markdownNewReddit) {
                     // New Reddit-style: render the raw selftext via Markwon (issue #179).
                     setViewsMarkdown(
-                            submission.getSelftext(),
+                            MiscUtil.orEmpty(submission.getSelftext()),
                             submission.getDataNode().path("selftext_html").asText(""),
                             submission.getDataNode(),
                             selftextSubreddit,
@@ -750,7 +762,7 @@ public class PopulateSubmissionViewHolder {
         if (Authentication.name != null
                 && Authentication.name
                         .toLowerCase(Locale.ENGLISH)
-                        .equals(submission.getAuthor().toLowerCase(Locale.ENGLISH))
+                        .equals(MiscUtil.orEmpty(submission.getAuthor()).toLowerCase(Locale.ENGLISH))
                 && Authentication.didOnline) {
             edit.setVisibility(View.VISIBLE);
             edit.setOnClickListener(
@@ -1465,7 +1477,8 @@ public class PopulateSubmissionViewHolder {
                 }
             case NO_VOTE:
                 if (submission.getVote() == VoteDirection.UPVOTE
-                        && submission.getAuthor().equalsIgnoreCase(Authentication.name)) {
+                        && MiscUtil.orEmpty(submission.getAuthor())
+                                .equalsIgnoreCase(Authentication.name)) {
                     submissionScore--;
                 }
                 break;

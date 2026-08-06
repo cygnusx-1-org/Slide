@@ -84,7 +84,7 @@ public class Toolbox {
      * @return Usernotes, or null if none are loaded for the sub
      */
     @Nullable
-    public static Usernotes getUsernotes(String subreddit) {
+    public static Usernotes getUsernotes(@Nullable String subreddit) {
         return notes.get(subreddit);
     }
 
@@ -111,7 +111,7 @@ public class Toolbox {
      * @return Toolbox config, or null if none is loaded for the sub
      */
     @Nullable
-    public static ToolboxConfig getConfig(String subreddit) {
+    public static ToolboxConfig getConfig(@Nullable String subreddit) {
         return toolboxConfigs.get(subreddit);
     }
 

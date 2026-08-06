@@ -22,7 +22,7 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class SubmissionThumbnailHelper {
 
-    public static void openRedditContent(String url, Context c) {
+    public static void openRedditContent(@Nullable String url, Context c) {
         OpenRedditLink.openUrl(c, url, true);
     }
 

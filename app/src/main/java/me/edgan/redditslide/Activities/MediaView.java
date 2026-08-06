@@ -1199,7 +1199,7 @@ public class MediaView extends BaseSaveActivity {
 
                                     @Override
                                     public void onLoadingComplete(
-                                            String imageUri, View view, Bitmap loadedImage) {
+                                            String imageUri, View view, @Nullable Bitmap loadedImage) {
                                         if (isTornDown()) return;
                                         imageShown = true;
                                         if (size != null) size.setVisibility(View.GONE);
@@ -1211,7 +1211,10 @@ public class MediaView extends BaseSaveActivity {
                                                         .get(url);
                                         if (f != null && f.exists()) {
                                             i.loader.setImage(ImageSource.uri(f.getAbsolutePath()));
-                                        } else {
+                                        } else if (loadedImage != null) {
+                                            // A completed load with no bitmap is how the loader
+                                            // reports an unusable uri, and ImageSource.bitmap
+                                            // throws on a null rather than ignoring it.
                                             i.loader.setImage(ImageSource.bitmap(loadedImage));
                                         }
                                         (findViewById(R.id.progress)).setVisibility(View.GONE);

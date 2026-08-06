@@ -26,6 +26,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.android.material.snackbar.Snackbar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -96,10 +97,13 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             position -= 1;
         }
 
-        if (dataSet.posts.get(position).getFullName().startsWith("t1")) { // IS COMMENT
+        // A contribution with no fullname has no kind prefix to read, so it falls through to the
+        // POST default the same way an unrecognised prefix already does.
+        final String fullName = dataSet.posts.get(position).getFullName();
+        if (fullName != null && fullName.startsWith("t1")) { // IS COMMENT
             return COMMENT;
         }
-        if (dataSet.posts.get(position).getFullName().startsWith("t4")) { // IS MESSAGE
+        if (fullName != null && fullName.startsWith("t4")) { // IS MESSAGE
             return MESSAGE;
         }
         return POST;
@@ -145,7 +149,7 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             final Submission submission = (Submission) dataSet.posts.get(i);
             CreateCardView.resetColorCard(holder.itemView);
             CreateCardView.colorCard(
-                    submission.getSubredditName().toLowerCase(Locale.ENGLISH),
+                    MiscUtil.orEmpty(submission.getSubredditName()).toLowerCase(Locale.ENGLISH),
                     holder.itemView,
                     "no_subreddit",
                     false);
@@ -248,7 +252,8 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             final ImageView mod = holder.itemView.findViewById(R.id.mod);
             try {
                 if (UserSubscriptions.modOf != null
-                        && UserSubscriptions.modOf.contains(comment.getSubredditName())) {
+                        && UserSubscriptions.modOf.contains(
+                                MiscUtil.orEmpty(comment.getSubredditName()))) {
                     // todo
                     mod.setVisibility(View.GONE);
                 } else {
@@ -258,12 +263,21 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 Log.d(LogUtil.getTag(), "Error loading mod " + e.toString());
             }
 
+            final String commentSub = comment.getSubredditName();
             if ((UserSubscriptions.modOf != null)
+                    && commentSub != null
                     && UserSubscriptions.modOf.contains(
-                            comment.getSubredditName().toLowerCase(Locale.ENGLISH))) {
+                            commentSub.toLowerCase(Locale.ENGLISH))) {
                 mod.setVisibility(View.VISIBLE);
-                final Map<String, Integer> reports = comment.getUserReports();
-                final Map<String, String> reports2 = comment.getModeratorReports();
+                // JRAW returns null from these when the JSON carries no user_reports/mod_reports
+                // member at all, which is what an unreported comment looks like. Everything below
+                // only ever asks for size() or iterates, so an empty map is the same answer.
+                final Map<String, Integer> userReports = comment.getUserReports();
+                final Map<String, String> modReports = comment.getModeratorReports();
+                final Map<String, Integer> reports =
+                        userReports == null ? Collections.emptyMap() : userReports;
+                final Map<String, String> reports2 =
+                        modReports == null ? Collections.emptyMap() : modReports;
                 if (reports.size() + reports2.size() > 0) {
                     BlendModeUtil.tintImageViewAsSrcAtop(
                             mod, ContextCompat.getColor(mContext, R.color.md_red_300));
@@ -310,14 +324,14 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                         comment.getDataNode().path("body").asText(),
                         comment.getDataNode().path("body_html").asText(""),
                         comment.getDataNode(),
-                        comment.getSubredditName(),
+                        MiscUtil.orEmpty(comment.getSubredditName()),
                         holder);
             } else {
                 setViews(
                         SubmissionParser.replaceProcessingImgPlaceholders(
                                 comment.getDataNode().path("body_html").asText(""),
                                 comment.getDataNode()),
-                        comment.getSubredditName(),
+                        MiscUtil.orEmpty(comment.getSubredditName()),
                         holder);
             }
 
@@ -499,7 +513,7 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
 
         final boolean distinguished = comment.getDataNode().hasNonNull("distinguished");
-        if (comment.getAuthor().equalsIgnoreCase(Authentication.name)) {
+        if (MiscUtil.orEmpty(comment.getAuthor()).equalsIgnoreCase(Authentication.name)) {
             if (!distinguished) {
                 b.sheet(9, distinguish, mContext.getString(R.string.mod_distinguish));
             } else {
@@ -534,7 +548,8 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                             case 7:
                                 if (SettingValues.removalReasonType
                                                 == SettingValues.RemovalReasonType.TOOLBOX.ordinal()
-                                        && ToolboxUI.canShowRemoval(comment.getSubredditName())) {
+                                        && ToolboxUI.canShowRemoval(
+                                                MiscUtil.orEmpty(comment.getSubredditName()))) {
                                     ToolboxUI.showRemoval(
                                             mContext,
                                             comment,
@@ -578,8 +593,8 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                             case 24:
                                 ToolboxUI.showUsernotes(
                                         mContext,
-                                        comment.getAuthor(),
-                                        comment.getSubredditName(),
+                                        MiscUtil.orEmpty(comment.getAuthor()),
+                                        MiscUtil.orEmpty(comment.getSubredditName()),
                                         "l," + comment.getParentId() + "," + comment.getId());
                                 break;
                             case 25:

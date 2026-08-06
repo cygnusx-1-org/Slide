@@ -2,7 +2,6 @@ package me.edgan.redditslide;
 
 import android.content.Context;
 import androidx.annotation.Nullable;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -19,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.PrefUtil;
 import net.dean.jraw.models.CommentSort;
 import net.dean.jraw.models.Submission;
@@ -115,7 +115,7 @@ public class OfflineSubreddit {
             cache.put(title, this);
             for (Submission sub : new ArrayList<>(submissions)) {
                 fullNames.append(sub.getFullName()).append(",");
-                if (!isStored(sub.getFullName(), c)) {
+                if (!isStored(MiscUtil.orEmpty(sub.getFullName()), c)) {
                     writeSubmissionToStorage(sub, sub.getDataNode(), c);
                 }
             }
@@ -343,7 +343,7 @@ public class OfflineSubreddit {
     public void clearPost(Submission s) {
         Submission toRemove = null;
         for (Submission s2 : submissions) {
-            if (s.getFullName().equals(s2.getFullName())) {
+            if (MiscUtil.orEmpty(s.getFullName()).equals(MiscUtil.orEmpty(s2.getFullName()))) {
                 toRemove = s2;
             }
         }
@@ -381,7 +381,12 @@ public class OfflineSubreddit {
         }
     }
 
-    public static ArrayList<String> getAll(String subreddit) {
+    public static ArrayList<String> getAll(@Nullable String subreddit) {
+        // No subreddit name means no cached keys are prefixed with one, so the scan below would
+        // match nothing anyway.
+        if (subreddit == null) {
+            return new ArrayList<>();
+        }
         subreddit = subreddit.toLowerCase(Locale.ENGLISH);
         ArrayList<String> base = new ArrayList<>();
         for (String s : Reddit.cachedData.getAll().keySet()) {

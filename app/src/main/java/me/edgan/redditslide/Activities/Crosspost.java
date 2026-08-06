@@ -678,7 +678,7 @@ public class Crosspost extends BaseActivity {
                             "reddit.com/r/"
                                     + subreddit
                                     + "/comments/"
-                                    + s.getFullName().substring(3),
+                                    + MiscUtil.idFromFullname(s.getFullName()),
                             true);
                     Crosspost.this.finish();
                 } catch (final ApiException e) {

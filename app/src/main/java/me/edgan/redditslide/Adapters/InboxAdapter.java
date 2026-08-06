@@ -57,6 +57,7 @@ import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
 import net.dean.jraw.ApiException;
@@ -111,7 +112,9 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (position == dataSet.posts.size() && !dataSet.posts.isEmpty() && !dataSet.nomore) {
             return 5;
         }
-        if (dataSet.posts.get(position).getSubject().toLowerCase(Locale.ENGLISH).contains("re:")
+        if (MiscUtil.orEmpty(dataSet.posts.get(position).getSubject())
+                        .toLowerCase(Locale.ENGLISH)
+                        .contains("re:")
                 && dataSet.where.equalsIgnoreCase("messages")) // IS COMMENT IN MESSAGES
         {
             return 2;
@@ -386,7 +389,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                                                 ClipboardUtil.copyToClipboard(
                                                                         mContext,
                                                                         "Message",
-                                                                        comment.getBody());
+                                                                        MiscUtil.orEmpty(comment.getBody()));
                                                                 Toast.makeText(
                                                                                 mContext,
                                                                                 mContext.getString(

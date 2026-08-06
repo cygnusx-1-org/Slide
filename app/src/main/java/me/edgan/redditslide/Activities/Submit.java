@@ -987,7 +987,7 @@ public class Submit extends BaseActivity {
                                 "reddit.com/r/"
                                         + subredditText
                                         + "/comments/"
-                                        + s.getFullName().substring(3),
+                                        + MiscUtil.idFromFullname(s.getFullName()),
                                 true);
                         Submit.this.finish();
                     } catch (final ApiException e) {
@@ -1025,7 +1025,7 @@ public class Submit extends BaseActivity {
                                 "reddit.com/r/"
                                         + subredditText
                                         + "/comments/"
-                                        + s.getFullName().substring(3),
+                                        + MiscUtil.idFromFullname(s.getFullName()),
                                 true);
 
                         Submit.this.finish();
@@ -1109,7 +1109,7 @@ public class Submit extends BaseActivity {
                                 "reddit.com/r/"
                                         + subredditText
                                         + "/comments/"
-                                        + s.getFullName().substring(3),
+                                        + MiscUtil.idFromFullname(s.getFullName()),
                                 true);
 
                         Submit.this.finish();

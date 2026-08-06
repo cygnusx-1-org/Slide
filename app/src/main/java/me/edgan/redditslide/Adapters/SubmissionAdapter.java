@@ -27,6 +27,7 @@ import me.edgan.redditslide.Views.CatchStaggeredGridLayoutManager;
 import me.edgan.redditslide.Views.CreateCardView;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.PhotoLoader;
 import net.dean.jraw.models.Submission;
@@ -208,7 +209,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
             final Submission submission = dataSet.posts.get(i);
             CreateCardView.colorCard(
-                    submission.getSubredditName().toLowerCase(Locale.ENGLISH),
+                    MiscUtil.orEmpty(submission.getSubredditName()).toLowerCase(Locale.ENGLISH),
                     holder.itemView,
                     subreddit,
                     (subreddit.equals("frontpage")

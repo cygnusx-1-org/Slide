@@ -278,7 +278,7 @@ public class ReorderSubreddits extends BaseActivityAnim {
                     }
 
                     for (Subreddit s : subs) {
-                        isSubscribed.put(s.getDisplayName().toLowerCase(Locale.ENGLISH), true);
+                        isSubscribed.put(MiscUtil.orEmpty(s.getDisplayName()).toLowerCase(Locale.ENGLISH), true);
                     }
 
                     if (UserSubscriptions.multireddits == null) {
@@ -905,8 +905,9 @@ public class ReorderSubreddits extends BaseActivityAnim {
     private class AsyncGetSubreddit extends AsyncTask<String, Void, Subreddit> {
         @Override
         public void onPostExecute(Subreddit subreddit) {
-            if (subreddit != null) {
-                doAddSub(subreddit.getDisplayName());
+            final String displayName = subreddit == null ? null : subreddit.getDisplayName();
+            if (displayName != null) {
+                doAddSub(displayName);
             } else if (isSpecial(sub)) {
                 doAddSub(sub);
             }
@@ -1360,7 +1361,7 @@ public class ReorderSubreddits extends BaseActivityAnim {
         final String[] multis = new String[multireddits.size()];
         int i = 0;
         for (MultiReddit m : multireddits) {
-            multis[i] = m.getDisplayName();
+            multis[i] = MiscUtil.orEmpty(m.getDisplayName());
             i++;
         }
 

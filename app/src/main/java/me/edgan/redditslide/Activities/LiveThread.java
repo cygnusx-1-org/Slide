@@ -152,7 +152,7 @@ public class LiveThread extends BaseActivityAnim {
                             );
                 } else {
                     d.dismiss();
-                    setupAppBar(R.id.toolbar, thread.getTitle(), true, false);
+                    setupAppBar(R.id.toolbar, MiscUtil.orEmpty(thread.getTitle()), true, false);
                     (findViewById(R.id.toolbar)).setBackgroundResource(R.color.md_red_300);
                     (findViewById(R.id.header_sub)).setBackgroundResource(R.color.md_red_300);
                     themeSystemBars(
@@ -285,7 +285,7 @@ public class LiveThread extends BaseActivityAnim {
                             + u.getAuthor()
                             + " "
                             + TimeUtils.getTimeAgo(u.getCreated().getTime(), LiveThread.this));
-            if (u.getBody().isEmpty()) {
+            if (MiscUtil.orEmpty(u.getBody()).isEmpty()) {
                 holder.info.setVisibility(View.GONE);
             } else {
                 holder.info.setVisibility(View.VISIBLE);
@@ -305,10 +305,13 @@ public class LiveThread extends BaseActivityAnim {
             holder.imageArea.setVisibility(View.GONE);
             holder.twitterArea.setVisibility(View.GONE);
             holder.twitterArea.stopLoading();
-            if (u.getEmbeds().isEmpty()) {
+            // An embed carrying no url is as good as no embed at all: everything in the branch
+            // below needs a real one, and URI.create throws on a null rather than returning a
+            // Uri that the host tests could reject.
+            final String url = u.getEmbeds().isEmpty() ? null : u.getEmbeds().get(0).getUrl();
+            if (url == null) {
                 holder.go.setVisibility(View.GONE);
             } else {
-                final String url = u.getEmbeds().get(0).getUrl();
                 holder.go.setVisibility(View.VISIBLE);
                 holder.go.setOnClickListener(
                         new View.OnClickListener() {

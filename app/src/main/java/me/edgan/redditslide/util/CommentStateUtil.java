@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -66,7 +67,7 @@ public class CommentStateUtil {
             adapter.hiddenPersons.remove(n.getFullName());
             adapter.unhideAll(baseNode, holder.getBindingAdapterPosition() + 1);
             if (adapter.toCollapse.contains(n.getFullName()) && SettingValues.collapseComments) {
-                adapter.setViews(SubmissionParser.replaceProcessingImgPlaceholders(n.getDataNode().path("body_html").asText(""), n.getDataNode()), adapter.submission.getSubredditName(), holder);
+                adapter.setViews(SubmissionParser.replaceProcessingImgPlaceholders(n.getDataNode().path("body_html").asText(""), n.getDataNode()), MiscUtil.orEmpty(adapter.submission.getSubredditName()), holder);
             }
             CommentAdapterHelper.hideChildrenObject(holder.childrenNumber);
             holder.commentOverflow.setVisibility(View.VISIBLE);
@@ -75,7 +76,7 @@ public class CommentStateUtil {
             adapter.currentlySelected = holder;
             adapter.currentBaseNode = baseNode;
             int color = Palette.getColor(n.getSubredditName());
-            adapter.currentSelectedItem = n.getFullName();
+            adapter.currentSelectedItem = MiscUtil.orEmpty(n.getFullName());
             adapter.currentNode = baseNode;
             LayoutInflater inflater = ((Activity) adapter.mContext).getLayoutInflater();
             adapter.resetMenu(holder.menuArea, false);
@@ -137,10 +138,20 @@ public class CommentStateUtil {
                 Log.d(LogUtil.getTag(), "Error loading mod " + e.toString());
             }
 
-            if (UserSubscriptions.modOf != null && UserSubscriptions.modOf.contains(adapter.submission.getSubredditName().toLowerCase(Locale.ENGLISH))) {
+            final String submissionSub = adapter.submission.getSubredditName();
+            if (UserSubscriptions.modOf != null
+                    && submissionSub != null
+                    && UserSubscriptions.modOf.contains(submissionSub.toLowerCase(Locale.ENGLISH))) {
                 mod.setVisibility(View.VISIBLE);
-                final Map<String, Integer> reports = comment.getUserReports();
-                final Map<String, String> reports2 = comment.getModeratorReports();
+                // JRAW returns null from these when the JSON carries no user_reports/mod_reports
+                // member, which is what an unreported comment looks like. Everything below only
+                // asks for size() or iterates, so an empty map is the same answer.
+                final Map<String, Integer> userReports = comment.getUserReports();
+                final Map<String, String> modReports = comment.getModeratorReports();
+                final Map<String, Integer> reports =
+                        userReports == null ? Collections.emptyMap() : userReports;
+                final Map<String, String> reports2 =
+                        modReports == null ? Collections.emptyMap() : modReports;
                 if (reports.size() + reports2.size() > 0) {
                     BlendModeUtil.tintImageViewAsSrcAtop(mod, ContextCompat.getColor(adapter.mContext, R.color.md_red_300));
                 } else {
@@ -165,7 +176,11 @@ public class CommentStateUtil {
             }
 
             final ImageView edit = baseView.findViewById(R.id.edit);
-            if (Authentication.name != null && Authentication.name.toLowerCase(Locale.ENGLISH).equals(comment.getAuthor().toLowerCase(Locale.ENGLISH)) && Authentication.didOnline) {
+            if (Authentication.name != null
+                    && Authentication.name
+                            .toLowerCase(Locale.ENGLISH)
+                            .equals(MiscUtil.orEmpty(comment.getAuthor()).toLowerCase(Locale.ENGLISH))
+                    && Authentication.didOnline) {
                 edit.setOnClickListener(
                     new OnSingleClickListener() {
                         @Override
@@ -176,8 +191,9 @@ public class CommentStateUtil {
                                 adapter.fm,
                                 baseNode,
                                 baseNode.isTopLevel()
-                                    ? adapter.submission.getSelftext()
-                                    : baseNode.getParent().getComment().getBody(),
+                                    ? MiscUtil.orEmpty(adapter.submission.getSelftext())
+                                    : MiscUtil.orEmpty(
+                                            baseNode.getParent().getComment().getBody()),
                                 holder);
                         }
                     });
@@ -186,7 +202,11 @@ public class CommentStateUtil {
             }
 
             final ImageView delete = baseView.findViewById(R.id.delete);
-            if (Authentication.name != null && Authentication.name.toLowerCase(Locale.ENGLISH).equals(comment.getAuthor().toLowerCase(Locale.ENGLISH)) && Authentication.didOnline) {
+            if (Authentication.name != null
+                    && Authentication.name
+                            .toLowerCase(Locale.ENGLISH)
+                            .equals(MiscUtil.orEmpty(comment.getAuthor()).toLowerCase(Locale.ENGLISH))
+                    && Authentication.didOnline) {
                 delete.setOnClickListener(
                         new OnSingleClickListener() {
                             @Override
@@ -204,7 +224,7 @@ public class CommentStateUtil {
                     && !(comment.getDataNode().has("locked")
                             && comment.getDataNode().path("locked").asBoolean())
                     && !adapter.deleted.contains(n.getFullName())
-                    && !comment.getAuthor().equals("[deleted]")
+                    && !"[deleted]".equals(comment.getAuthor())
                     && Authentication.didOnline) {
                 if (isReplying) {
                     baseView.setVisibility(View.VISIBLE);
@@ -289,7 +309,7 @@ public class CommentStateUtil {
                     replyLine.requestFocus();
                     KeyboardUtil.toggleKeyboard(adapter.mContext, InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
 
-                    adapter.currentlyEditingId = n.getFullName();
+                    adapter.currentlyEditingId = MiscUtil.orEmpty(n.getFullName());
                     replyLine.setText(adapter.backedText);
                     replyLine.addTextChangedListener(
                             new SimpleTextWatcher() {
@@ -428,7 +448,7 @@ public class CommentStateUtil {
                             // time
                             KeyboardUtil.toggleKeyboard(adapter.mContext, InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
 
-                            adapter.currentlyEditingId = n.getFullName();
+                            adapter.currentlyEditingId = MiscUtil.orEmpty(n.getFullName());
                             replyLine.addTextChangedListener(
                                 new SimpleTextWatcher() {
                                     @Override
@@ -503,7 +523,7 @@ public class CommentStateUtil {
                 }
                 if ((adapter.submission.isArchived()
                                 || adapter.deleted.contains(n.getFullName())
-                                || comment.getAuthor().equals("[deleted]"))
+                                || MiscUtil.orEmpty(comment.getAuthor()).equals("[deleted]"))
                         && Authentication.isLoggedIn
                         && Authentication.didOnline
                         && upvote.getVisibility() == View.VISIBLE) {
@@ -511,7 +531,7 @@ public class CommentStateUtil {
                 }
                 if ((adapter.submission.isArchived()
                                 || adapter.deleted.contains(n.getFullName())
-                                || comment.getAuthor().equals("[deleted]"))
+                                || MiscUtil.orEmpty(comment.getAuthor()).equals("[deleted]"))
                         && Authentication.isLoggedIn
                         && Authentication.didOnline
                         && downvote.getVisibility() == View.VISIBLE) {

@@ -803,7 +803,7 @@ public class Login extends BaseActivityAnim {
     private void doSubStrings(ArrayList<Subreddit> subs) {
         subNames = new CaseInsensitiveArrayList();
         for (Subreddit s : subs) {
-            subNames.add(s.getDisplayName().toLowerCase(Locale.ENGLISH));
+            subNames.add(MiscUtil.orEmpty(s.getDisplayName()).toLowerCase(Locale.ENGLISH));
         }
         subNames = UserSubscriptions.sort(subNames);
         if (!subNames.contains("slideforreddit")) {
@@ -844,11 +844,11 @@ public class Login extends BaseActivityAnim {
                                 if (s.getDataNode().has("key_color")
                                         && !s.getDataNode().path("key_color").asText().isEmpty()
                                         && Palette.getColor(
-                                                        s.getDisplayName()
+                                                        MiscUtil.orEmpty(s.getDisplayName())
                                                                 .toLowerCase(Locale.ENGLISH))
                                                 == Palette.getDefaultColor()) {
                                     Palette.setColor(
-                                            s.getDisplayName().toLowerCase(Locale.ENGLISH),
+                                            MiscUtil.orEmpty(s.getDisplayName()).toLowerCase(Locale.ENGLISH),
                                             GetClosestColor.getClosestColor(
                                                     s.getDataNode().path("key_color").asText(),
                                                     Login.this));

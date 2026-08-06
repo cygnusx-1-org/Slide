@@ -102,6 +102,22 @@ import org.apache.commons.text.StringEscapeUtils;
 
 /** Created by Carlos on 8/4/2016. */
 public class CommentAdapterHelper {
+
+    /**
+     * Builds the reddit.com permalink for a comment, or null when either half is missing: the
+     * submission's own permalink, or the comment's fullname, whose {@code t1_} prefix this strips.
+     * The length test also covers a fullname too short to carry that prefix.
+     */
+    private static @Nullable String commentPermalink(
+            Submission submission, Comment comment, String suffix) {
+        final String permalink = submission.getPermalink();
+        final String fullName = comment.getFullName();
+        if (permalink == null || fullName == null || fullName.length() < 3) {
+            return null;
+        }
+        return "https://reddit.com" + permalink + fullName.substring(3) + suffix;
+    }
+
     public static void showOverflowBottomSheet(
             final CommentAdapter adapter,
             final Context mContext,
@@ -195,11 +211,11 @@ public class CommentAdapterHelper {
                                 {
                                     // Go to comment permalink
                                     String s =
-                                            "https://reddit.com"
-                                                    + adapter.submission.getPermalink()
-                                                    + n.getFullName().substring(3)
-                                                    + "?context=3";
-                                    OpenRedditLink.openUrl(mContext, s, true);
+                                            commentPermalink(
+                                                    adapter.submission, n, "?context=3");
+                                    if (s != null) {
+                                        OpenRedditLink.openUrl(mContext, s, true);
+                                    }
                                 }
                                 break;
                             case 50:
@@ -219,10 +235,10 @@ public class CommentAdapterHelper {
                                     Intent i = new Intent(mContext, Website.class);
                                     i.putExtra(
                                             LinkUtil.EXTRA_URL,
-                                            "https://reddit.com"
-                                                    + adapter.submission.getPermalink()
-                                                    + n.getFullName().substring(3)
-                                                    + "?context=3&inapp=false");
+                                            commentPermalink(
+                                                    adapter.submission,
+                                                    n,
+                                                    "?context=3&inapp=false"));
                                     i.putExtra(
                                             LinkUtil.EXTRA_COLOR,
                                             Palette.getColor(n.getSubredditName()));
@@ -417,7 +433,8 @@ final AlertDialog reportDialog =
                                                             mContext,
                                                             "Comment text",
                                                             StringEscapeUtils.unescapeHtml4(
-                                                                    n.getBody()));
+                                                                    MiscUtil.orEmpty(
+                                                                            n.getBody())));
 
                                                     Toast.makeText(
                                                                     mContext,
@@ -434,10 +451,8 @@ final AlertDialog reportDialog =
                                 // Share comment
                                 Reddit.defaultShareText(
                                         adapter.submission.getTitle(),
-                                        "https://reddit.com"
-                                                + adapter.submission.getPermalink()
-                                                + n.getFullName().substring(3)
-                                                + "?context=3",
+                                        commentPermalink(
+                                                adapter.submission, n, "?context=3"),
                                         mContext);
                                 break;
                             case 60:
@@ -497,8 +512,8 @@ final AlertDialog reportDialog =
                                         // row. If it's off-screen, nothing to do — it binds from the
                                         // recovery map when it next appears.
                                         int pos = holder.getBindingAdapterPosition();
-                                        if (!adapter.isCommentAt(pos, n.getFullName())) {
-                                            pos = adapter.visibleAdapterPositionOf(n.getFullName());
+                                        if (!adapter.isCommentAt(pos, MiscUtil.orEmpty(n.getFullName()))) {
+                                            pos = adapter.visibleAdapterPositionOf(MiscUtil.orEmpty(n.getFullName()));
                                         }
                                         if (pos != RecyclerView.NO_POSITION) {
                                             adapter.notifyItemChanged(pos);
@@ -640,7 +655,7 @@ final AlertDialog reportDialog =
                         SubmissionParser.replaceProcessingImgPlaceholders(
                                 parent.getDataNode().path("body_html").asText(""),
                                 parent.getDataNode()),
-                        adapter.submission.getSubredditName(),
+                        MiscUtil.orEmpty(adapter.submission.getSubredditName()),
                         dialoglayout.findViewById(R.id.firstTextView),
                         dialoglayout.findViewById(R.id.commentOverflow));
 
@@ -977,7 +992,8 @@ final AlertDialog reportDialog =
         final boolean stickied =
                 comment.getDataNode().has("stickied")
                         && comment.getDataNode().path("stickied").asBoolean();
-        if (baseNode.isTopLevel() && comment.getAuthor().equalsIgnoreCase(Authentication.name)) {
+        if (baseNode.isTopLevel()
+                && MiscUtil.orEmpty(comment.getAuthor()).equalsIgnoreCase(Authentication.name)) {
             if (!stickied) {
                 b.sheet(4, pin, mContext.getString(R.string.mod_sticky));
             } else {
@@ -986,7 +1002,7 @@ final AlertDialog reportDialog =
         }
 
         final boolean distinguished = comment.getDataNode().hasNonNull("distinguished");
-        if (comment.getAuthor().equalsIgnoreCase(Authentication.name)) {
+        if (MiscUtil.orEmpty(comment.getAuthor()).equalsIgnoreCase(Authentication.name)) {
             if (!distinguished) {
                 b.sheet(9, distinguish, mContext.getString(R.string.mod_distinguish));
             } else {
@@ -1028,7 +1044,7 @@ final AlertDialog reportDialog =
                             case 7:
                                 if (SettingValues.removalReasonType
                                                 == SettingValues.RemovalReasonType.TOOLBOX.ordinal()
-                                        && ToolboxUI.canShowRemoval(comment.getSubredditName())) {
+                                        && ToolboxUI.canShowRemoval(MiscUtil.orEmpty(comment.getSubredditName()))) {
                                     ToolboxUI.showRemoval(
                                             mContext,
                                             comment,
@@ -1081,8 +1097,8 @@ final AlertDialog reportDialog =
                             case 24:
                                 ToolboxUI.showUsernotes(
                                         mContext,
-                                        comment.getAuthor(),
-                                        comment.getSubredditName(),
+                                        MiscUtil.orEmpty(comment.getAuthor()),
+                                        MiscUtil.orEmpty(comment.getSubredditName()),
                                         "l," + comment.getParentId() + "," + comment.getId());
                                 break;
                             case 25:
@@ -1097,9 +1113,9 @@ final AlertDialog reportDialog =
     /** getAuthor()/getSubredditName() are declared per subtype in JRAW, not on the base class. */
     private static String authorOf(PublicContribution s) {
         if (s instanceof Submission) {
-            return ((Submission) s).getAuthor();
+            return MiscUtil.orEmpty(((Submission) s).getAuthor());
         } else if (s instanceof Comment) {
-            return ((Comment) s).getAuthor();
+            return MiscUtil.orEmpty(((Comment) s).getAuthor());
         } else {
             return "";
         }
@@ -1107,9 +1123,9 @@ final AlertDialog reportDialog =
 
     private static String subredditOf(PublicContribution s) {
         if (s instanceof Submission) {
-            return ((Submission) s).getSubredditName();
+            return MiscUtil.orEmpty(((Submission) s).getSubredditName());
         } else if (s instanceof Comment) {
-            return ((Comment) s).getSubredditName();
+            return MiscUtil.orEmpty(((Comment) s).getSubredditName());
         } else {
             return "";
         }
@@ -1736,7 +1752,7 @@ final AlertDialog reportDialog =
      */
     public static String getDisplayAuthor(Comment comment) {
         final String recovered = CommentRecovery.getRecoveredAuthor(comment.getFullName());
-        return recovered == null ? comment.getAuthor() : recovered;
+        return recovered == null ? MiscUtil.orEmpty(comment.getAuthor()) : recovered;
     }
 
     public static void styleAuthorBadge(
@@ -1744,7 +1760,7 @@ final AlertDialog reportDialog =
             SpannableStringBuilder author,
             Comment comment,
             @Nullable Submission submission) {
-        styleAuthorBadge(mContext, author, comment, submission, comment.getAuthor());
+        styleAuthorBadge(mContext, author, comment, submission, MiscUtil.orEmpty(comment.getAuthor()));
     }
 
     /**
@@ -1986,7 +2002,7 @@ final AlertDialog reportDialog =
             titleString.append(pinned);
             titleString.append(" ");
         }
-        if (UserSubscriptions.friends.contains(comment.getAuthor())) {
+        if (UserSubscriptions.friends.contains(MiscUtil.orEmpty(comment.getAuthor()))) {
             SpannableStringBuilder pinned =
                     new SpannableStringBuilder(
                             "\u00A0" + mContext.getString(R.string.profile_friend) + "\u00A0");
@@ -2082,7 +2098,7 @@ final AlertDialog reportDialog =
                 }
             case NO_VOTE:
                 if (comment.getVote() == VoteDirection.UPVOTE
-                        && comment.getAuthor().equalsIgnoreCase(Authentication.name)) {
+                        && MiscUtil.orEmpty(comment.getAuthor()).equalsIgnoreCase(Authentication.name)) {
                     submissionScore--;
                 }
                 break;
@@ -2188,7 +2204,7 @@ final AlertDialog reportDialog =
             try {
                 new AccountManager(Authentication.reddit)
                         .updateContribution(baseNode.getComment(), text);
-                adapter.currentSelectedItem = baseNode.getComment().getFullName();
+                adapter.currentSelectedItem = MiscUtil.orEmpty(baseNode.getComment().getFullName());
                 CommentNode n = baseNode.notifyCommentChanged(Authentication.reddit);
                 adapter.editComment(n, holder);
                 dialog.dismiss();

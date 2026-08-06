@@ -107,6 +107,7 @@ import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialProgressDialog;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkStateReceiver;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
@@ -959,7 +960,7 @@ public class MainActivity extends BaseActivity
                                                                 .equalsIgnoreCase("Announcement")
                                                         && !Reddit.appRestart.contains(
                                                                 "announcement" + s.getFullName())
-                                                        && s.getTitle().contains(version)) {
+                                                        && MiscUtil.orEmpty(s.getTitle()).contains(version)) {
                                                     Reddit.appRestart
                                                             .edit()
                                                             .putBoolean(
@@ -977,7 +978,7 @@ public class MainActivity extends BaseActivity
                                                                 .equalsIgnoreCase("Alpha")
                                                         && !Reddit.appRestart.contains(
                                                                 "announcement" + s.getFullName())
-                                                        && s.getTitle()
+                                                        && MiscUtil.orEmpty(s.getTitle())
                                                                 .contains(
                                                                         BuildConfig.VERSION_NAME)) {
                                                     Reddit.appRestart
@@ -1019,7 +1020,7 @@ public class MainActivity extends BaseActivity
                                                     .apply();
 
                                             String title;
-                                            if (s.getTitle()
+                                            if (MiscUtil.orEmpty(s.getTitle())
                                                     .toLowerCase(Locale.ENGLISH)
                                                     .contains("release")) {
                                                 title = getString(R.string.btn_changelog);
@@ -1029,7 +1030,7 @@ public class MainActivity extends BaseActivity
                                             Snackbar snack =
                                                     Snackbar.make(
                                                                     pager,
-                                                                    s.getTitle(),
+                                                                    MiscUtil.orEmpty(s.getTitle()),
                                                                     Snackbar.LENGTH_INDEFINITE)
                                                             .setAction(
                                                                     title,

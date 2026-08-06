@@ -203,7 +203,7 @@ public class RedditItemView extends RelativeLayout {
         final TextView title = content.findViewById(R.id.title);
         title.setText(name);
 
-        final int currentColor = Palette.getColorUser(name);
+        final int currentColor = Palette.getColorUser(MiscUtil.orEmpty(name));
         title.setBackgroundColor(currentColor);
 
         String info =
@@ -262,17 +262,17 @@ public class RedditItemView extends RelativeLayout {
         if (Authentication.isLoggedIn
                 ? subreddit.isUserSubscriber()
                 : UserSubscriptions.getSubscriptions(getContext())
-                        .contains(subreddit.getDisplayName().toLowerCase(Locale.ENGLISH))) {
+                        .contains(MiscUtil.orEmpty(subreddit.getDisplayName()).toLowerCase(Locale.ENGLISH))) {
             ((AppCompatCheckBox) content.findViewById(R.id.subscribed)).setChecked(true);
         }
         content.findViewById(R.id.header_sub)
                 .setBackgroundColor(Palette.getColor(subreddit.getDisplayName()));
         ((TextView) content.findViewById(R.id.sub_infotitle)).setText(subreddit.getDisplayName());
-        if (!subreddit.getPublicDescription().isEmpty()) {
+        if (!MiscUtil.orEmpty(subreddit.getPublicDescription()).isEmpty()) {
             content.findViewById(R.id.sub_title).setVisibility(View.VISIBLE);
             setViews(
                     subreddit.getDataNode().path("public_description_html").asText(),
-                    subreddit.getDisplayName().toLowerCase(Locale.ENGLISH),
+                    MiscUtil.orEmpty(subreddit.getDisplayName()).toLowerCase(Locale.ENGLISH),
                     content.findViewById(R.id.sub_title),
                     content.findViewById(R.id.sub_title_overflow));
         } else {
@@ -470,7 +470,7 @@ public class RedditItemView extends RelativeLayout {
                 SubmissionParser.replaceProcessingImgPlaceholders(
                         comment.getDataNode().path("body_html").asText(""),
                         comment.getDataNode()),
-                comment.getSubredditName(),
+                MiscUtil.orEmpty(comment.getSubredditName()),
                 holder);
 
         int type = new FontPreferences(getContext()).getFontTypeComment().getTypeface();

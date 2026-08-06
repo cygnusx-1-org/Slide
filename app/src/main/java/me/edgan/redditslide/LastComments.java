@@ -28,6 +28,11 @@ public class LastComments {
         try {
             for (Submission s : submissions) {
                 String fullname = s.getFullName();
+                if (fullname == null) {
+                    // No "name" in the JSON, so there is no key to look up. commentsKey would
+                    // concatenate one reading "commentsnull" and store a count under it.
+                    continue;
+                }
 
                 // Key is the KVStore table's primary key, so this exact-match lookup uses its
                 // index. A LIKE '%comments<fullname>%' scan cannot, and read the whole (unbounded)
@@ -44,17 +49,27 @@ public class LastComments {
     }
 
     public static int commentsSince(Submission s) {
-        if (commentsSince != null && commentsSince.containsKey(s.getFullName()))
-            return s.getCommentCount() - commentsSince.get(s.getFullName());
-        return 0;
+        final Integer count = s.getCommentCount();
+        final Integer since =
+                commentsSince == null ? null : commentsSince.get(s.getFullName());
+        if (count == null || since == null) {
+            // No comment count, or none recorded from a previous visit: nothing new to report.
+            return 0;
+        }
+        return count - since;
     }
 
     public static void setComments(Submission s) {
         if (commentsSince == null) {
             commentsSince = new HashMap<>();
         }
+        String fullname = s.getFullName();
+        if (fullname == null) {
+            // See setCommentsSince: without a fullname there is no key worth writing.
+            return;
+        }
         KVStore.getInstance()
-                .insertOrUpdate(commentsKey(s.getFullName()), String.valueOf(s.getCommentCount()));
-        commentsSince.put(s.getFullName(), s.getCommentCount());
+                .insertOrUpdate(commentsKey(fullname), String.valueOf(s.getCommentCount()));
+        commentsSince.put(fullname, s.getCommentCount());
     }
 }

@@ -329,10 +329,10 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             if (SettingValues.markdownNewReddit) {
                 // New Reddit-style: render the raw markdown body via Markwon (issue #179).
                 setViewsMarkdown(
-                        comment.getBody(),
+                        MiscUtil.orEmpty(comment.getBody()),
                         comment.getDataNode().path("body_html").asText(""),
                         comment.getDataNode(),
-                        comment.getSubredditName(),
+                        MiscUtil.orEmpty(comment.getSubredditName()),
                         holder,
                         hasActiveFilter() ? currentQuery : null);
             } else {
@@ -341,7 +341,7 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         SubmissionParser.replaceProcessingImgPlaceholders(
                                 comment.getDataNode().path("body_html").asText(""),
                                 comment.getDataNode()),
-                        comment.getSubredditName(),
+                        MiscUtil.orEmpty(comment.getSubredditName()),
                         holder,
                         hasActiveFilter() ? currentQuery : null);
             }

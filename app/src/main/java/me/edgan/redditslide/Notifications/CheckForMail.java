@@ -33,6 +33,7 @@ import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.PrefUtil;
 import me.edgan.redditslide.util.StringUtil;
 import net.dean.jraw.models.Message;
@@ -97,7 +98,7 @@ public class CheckForMail extends BroadcastReceiver {
                 String[] messageNames = new String[messages.size()];
                 int counter = 0;
                 for (Message x : messages) {
-                    messageNames[counter] = x.getFullName();
+                    messageNames[counter] = MiscUtil.orEmpty(x.getFullName());
                     counter++;
                 }
 
@@ -553,7 +554,7 @@ public class CheckForMail extends BroadcastReceiver {
                         // maps "I" to "ı" in Turkish and never matches.
                         final Integer threshold =
                                 subThresholds.get(
-                                        subm.getSubredditName().toLowerCase(Locale.ENGLISH));
+                                        MiscUtil.orEmpty(subm.getSubredditName()).toLowerCase(Locale.ENGLISH));
                         if (subm.getCreated().getTime() > lastTime
                                 && threshold != null
                                 && subm.getScore() >= threshold

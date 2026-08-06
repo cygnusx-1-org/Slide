@@ -14,6 +14,7 @@ import me.edgan.redditslide.Fragments.CommentPage;
 import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.StringUtil;
 import org.jspecify.annotations.NullMarked;
 
@@ -65,9 +66,10 @@ public class MainPagerAdapterComment extends MainPagerAdapter {
                                 mainActivity.pager.setSwipeLeftOnly(true);
                                 if (mainActivity.openingComments != null) {
                                     final String sub =
-                                            mainActivity
-                                                    .openingComments
-                                                    .getSubredditName()
+                                            MiscUtil.orEmpty(
+                                                            mainActivity
+                                                                    .openingComments
+                                                                    .getSubredditName())
                                                     .toLowerCase(Locale.ENGLISH);
                                     mainActivity.themeSystemBars(sub);
                                     mainActivity.setRecentBar(sub);
@@ -196,8 +198,9 @@ public class MainPagerAdapterComment extends MainPagerAdapter {
         } else {
             Fragment f = new CommentPage();
             Bundle args = new Bundle();
-            String submissionFullName = mainActivity.openingComments.getFullName();
-            args.putString("id", submissionFullName.substring(3));
+            args.putString(
+                    "id",
+                    MiscUtil.idFromFullname(mainActivity.openingComments.getFullName()));
             args.putBoolean("archived", mainActivity.openingComments.isArchived());
             args.putBoolean(
                     "contest", mainActivity.openingComments.getDataNode().path("contest_mode").asBoolean());

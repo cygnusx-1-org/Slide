@@ -203,7 +203,7 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
                     comment.getTimesPlatinized(),
                     R.drawable.platinum);
         }
-        if (UserSubscriptions.friends.contains(comment.getAuthor())) {
+        if (UserSubscriptions.friends.contains(MiscUtil.orEmpty(comment.getAuthor()))) {
             SpannableStringBuilder pinned =
                     new SpannableStringBuilder(
                             "\u00A0" + mContext.getString(R.string.profile_friend) + "\u00A0");
@@ -276,10 +276,10 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
                     comment.getDataNode().path("body").asText(),
                     comment.getDataNode().path("body_html").asText(""),
                     comment.getDataNode(),
-                    comment.getSubredditName(),
+                    MiscUtil.orEmpty(comment.getSubredditName()),
                     holder);
         } else {
-            setViews(body, comment.getSubredditName(), holder);
+            setViews(body, MiscUtil.orEmpty(comment.getSubredditName()), holder);
         }
 
         holder.childrenNumber.setVisibility(View.GONE);
@@ -435,7 +435,7 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
                     final Comment comment = user.getComment();
                     final String body =
                             StringEscapeUtils.unescapeHtml4(
-                                    comment.getBody().toLowerCase(Locale.ENGLISH));
+                                    MiscUtil.orEmpty(comment.getBody()).toLowerCase(Locale.ENGLISH));
                     final String author =
                             comment.getAuthor() == null
                                     ? ""

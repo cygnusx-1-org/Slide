@@ -36,6 +36,18 @@ public class MiscUtil {
         return value == null ? "" : value;
     }
 
+    /**
+     * The bare id inside a reddit fullname, i.e. {@code t3_abc123} without its kind prefix, or
+     * {@code ""} when there is no fullname or it is too short to carry one.
+     *
+     * <p>Callers build permalinks and API ids out of this. Coalescing the fullname to {@code ""}
+     * first and then calling {@code substring(3)} does not work — it trades an NPE for a
+     * StringIndexOutOfBoundsException, which is why this does the length test itself.
+     */
+    public static String idFromFullname(final @Nullable String fullname) {
+        return fullname == null || fullname.length() < 3 ? "" : fullname.substring(3);
+    }
+
     // Used in SubredditView, MainActivity, and CommentPage (ugly-af code moment)
     public static void doSubscribeButtonText(boolean currentlySubbed, TextView subscribe) {
         if (Authentication.didOnline) {

@@ -616,7 +616,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                 tabs.setupWithViewPager(pager);
                 if (!initialMulti.isEmpty()) {
                     for (int i = 0; i < usedArray.size(); i++) {
-                        if (usedArray.get(i).getDisplayName().equalsIgnoreCase(initialMulti)) {
+                        if (MiscUtil.orEmpty(usedArray.get(i).getDisplayName()).equalsIgnoreCase(initialMulti)) {
                             pager.setCurrentItem(i);
                             break;
                         }
@@ -627,7 +627,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                                 .getColor(usedArray.get(0).getDisplayName()));
                 doDrawerSubs(0);
                 Window window = this.getWindow();
-                int color = Palette.getDarkerColor(usedArray.get(0).getDisplayName());
+                int color = Palette.getDarkerColor(MiscUtil.orEmpty(usedArray.get(0).getDisplayName()));
 
                 if (SettingValues.alwaysBlackStatusbar) {
                     color = Color.BLACK;
@@ -686,7 +686,7 @@ public class MultiredditOverview extends BaseActivityAnim {
         CaseInsensitiveArrayList toSort = new CaseInsensitiveArrayList();
 
         for (MultiSubreddit s : current.getSubreddits()) {
-            toSort.add(s.getDisplayName().toLowerCase(Locale.ENGLISH));
+            toSort.add(MiscUtil.orEmpty(s.getDisplayName()).toLowerCase(Locale.ENGLISH));
         }
 
         for (String sub : UserSubscriptions.sortNoExtras(toSort)) {
@@ -733,7 +733,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                             Window window = getWindow();
                             int color =
                                     Palette.getDarkerColor(
-                                            usedArray.get(position).getDisplayName());
+                                            MiscUtil.orEmpty(usedArray.get(position).getDisplayName()));
 
                             if (SettingValues.alwaysBlackStatusbar) {
                                 color = Color.BLACK;
@@ -789,7 +789,7 @@ public class MultiredditOverview extends BaseActivityAnim {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return usedArray.get(position).getFullName();
+            return MiscUtil.orEmpty(usedArray.get(position).getFullName());
         }
     }
 

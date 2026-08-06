@@ -29,6 +29,7 @@ import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.GifUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.models.Comment;
 
 /** Created by ccrama on 6/2/2015. */
@@ -195,7 +196,7 @@ public class MediaFragmentComment extends BaseMediaFragment {
                     && i >= 0
                     && i < ShadowboxComments.comments.size()) {
                 s = ShadowboxComments.comments.get(i);
-                sub = s.comment.getComment().getSubredditName();
+                sub = MiscUtil.orEmpty(s.comment.getComment().getSubredditName());
                 contentUrl = bundle.getString("contentUrl");
             }
         }

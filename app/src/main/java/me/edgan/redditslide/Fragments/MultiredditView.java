@@ -47,6 +47,7 @@ import me.edgan.redditslide.handler.ToolbarScrollHideHandler;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.MaterialInputDialog;
+import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.models.MultiReddit;
 import net.dean.jraw.models.MultiSubreddit;
 import net.dean.jraw.models.Submission;
@@ -272,7 +273,7 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
 
         if ((multireddits != null) && !multireddits.isEmpty()) {
             refreshLayout.setColorSchemeColors(
-                    Palette.getColors(multireddits.get(id).getDisplayName(), getActivity()));
+                    Palette.getColors(MiscUtil.orEmpty(multireddits.get(id).getDisplayName()), getActivity()));
         }
 
         // If we use 'findViewById(R.id.header).getMeasuredHeight()', 0 is always returned.
@@ -291,7 +292,7 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
                 });
 
         if ((multireddits != null) && !multireddits.isEmpty()) {
-            posts = new MultiredditPosts(multireddits.get(id).getDisplayName(), profile);
+            posts = new MultiredditPosts(MiscUtil.orEmpty(multireddits.get(id).getDisplayName()), profile);
 
             adapter = new MultiredditAdapter(getActivity(), posts, rv, refreshLayout, this);
             rv.setAdapter(adapter);

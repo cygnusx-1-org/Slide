@@ -1545,7 +1545,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, int posCount) {
                     getInlineImageOptions(),
                     new SimpleImageLoadingListener() {
                         @Override
-                        public void onLoadingComplete(String uri, View view, Bitmap bitmap) {
+                        public void onLoadingComplete(String uri, View view, @Nullable Bitmap bitmap) {
                             finishOne(bitmap);
                         }
 

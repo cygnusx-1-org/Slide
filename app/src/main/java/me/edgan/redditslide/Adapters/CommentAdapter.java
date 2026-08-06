@@ -69,6 +69,7 @@ import me.edgan.redditslide.util.DisplayUtil;
 import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.PrefUtil;
 import me.edgan.redditslide.util.SubmissionParser;
@@ -228,8 +229,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 && !currentComments.isEmpty()) {
             int i = 2;
             for (CommentObject n : currentComments) {
-                if (n instanceof CommentItem
-                        && n.comment.getComment().getFullName().contains(currentSelectedItem)) {
+                final String nFullname =
+                        n instanceof CommentItem ? n.comment.getComment().getFullName() : null;
+                if (nFullname != null && nFullname.contains(currentSelectedItem)) {
                     if (listView.getLayoutManager() != null) {
                         ((PreCachingLayoutManagerComments) listView.getLayoutManager())
                                 .scrollToPositionWithOffset(i, mPage.headerHeight);
@@ -337,7 +339,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 && (SettingValues.storeHistory
                         && (!submission.isNsfw() || SettingValues.storeNSFWHistory))) {
             lastSeen = HasSeen.getSeenTime(submission);
-            String fullname = submission.getFullName();
+            String fullname = MiscUtil.orEmpty(submission.getFullName());
             if (fullname.contains("t3_")) {
                 fullname = fullname.substring(3);
             }
@@ -447,15 +449,20 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     // setting; the empty bodyHtml means inline images in the recovered text aren't
                     // drawn (text-only recovery).
                     setViewsMarkdown(
-                            comment, recoveredBody, "", submission.getSubredditName(), holder);
+                            comment,
+                            recoveredBody,
+                            "",
+                            MiscUtil.orEmpty(submission.getSubredditName()),
+                            holder);
                 } else if (SettingValues.markdownNewReddit) {
                     // New Reddit-style: render the raw markdown body via Markwon (issue #179).
-                    setViewsMarkdown(comment, submission.getSubredditName(), holder);
+                    setViewsMarkdown(
+                            comment, MiscUtil.orEmpty(submission.getSubredditName()), holder);
                 } else {
                     final List<String> cachedBlocks = getBlocksCached(comment);
                     setViews(
                             cachedBlocks == null ? new ArrayList<String>() : cachedBlocks,
-                            submission.getSubredditName(),
+                            MiscUtil.orEmpty(submission.getSubredditName()),
                             holder,
                             singleClick,
                             onLongClickListener);
@@ -486,7 +493,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             }
                         }
                     });
-            if (ImageFlairs.isSynced(comment.getSubredditName())
+            if (ImageFlairs.isSynced(MiscUtil.orEmpty(comment.getSubredditName()))
                     && comment.getAuthorFlair() != null
                     && comment.getAuthorFlair().getCssClass() != null
                     && !comment.getAuthorFlair().getCssClass().isEmpty()) {
@@ -495,7 +502,8 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     ImageFlairs.FlairImageLoader loader = ImageFlairs.getFlairImageLoader(mContext);
                     File file =
                             DiskCacheUtils.findInCache(
-                                    comment.getSubredditName().toLowerCase(Locale.ENGLISH)
+                                    MiscUtil.orEmpty(comment.getSubredditName())
+                                                    .toLowerCase(Locale.ENGLISH)
                                             + ":"
                                             + s.toLowerCase(Locale.ENGLISH),
                                     loader.getDiskCache());
@@ -622,8 +630,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 holder.dot.setVisibility(View.GONE);
             }
 
+            final String commentFullname = MiscUtil.orEmpty(comment.getFullName());
             if (currentSelectedItem != null
-                    && comment.getFullName().contains(currentSelectedItem)
+                    && commentFullname.contains(currentSelectedItem)
                     && !currentSelectedItem.isEmpty()
                     && !currentlyEditingId.equals(comment.getFullName())) {
                 doHighlighted(holder, comment, baseNode, false);
@@ -644,8 +653,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             // A recovered comment has real text to show, so the deleted-comment collapse no longer
             // applies to it.
             if (SettingValues.collapseDeletedComments && recoveredBody == null) {
-                if (comment.getBody().startsWith("[removed]")
-                        || comment.getBody().startsWith("[deleted]")) {
+                final String collapseBody = MiscUtil.orEmpty(comment.getBody());
+                if (collapseBody.startsWith("[removed]")
+                        || collapseBody.startsWith("[deleted]")) {
                     holder.firstTextView.setVisibility(View.GONE);
                     holder.commentOverflow.setVisibility(View.GONE);
                 }
@@ -742,8 +752,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             nextPos = getRealPosition(nextPos);
 
             final MoreChildItem baseNode = (MoreChildItem) currentComments.get(nextPos);
+            final Integer moreCount = baseNode.children.getCount();
             if (!baseNode.children.getChildrenIds().isEmpty()
-                    || baseNode.children.getCount() > 0) {
+                    || (moreCount != null && moreCount > 0)) {
                 holder.content.setText(R.string.comment_load_more_number_unknown);
             } else {
                 holder.content.setText(R.string.thread_continue);
@@ -777,7 +788,8 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                         new AsyncLoadMoreTask(
                                                 finalNextPos,
                                                 holder,
-                                                baseNode.comment.getComment().getFullName(),
+                                                MiscUtil.orEmpty(
+                                                        baseNode.comment.getComment().getFullName()),
                                                 mContext,
                                                 CommentAdapter.this,
                                                 listView,
@@ -954,7 +966,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             Comment comment, String subredditName, CommentViewHolder holder) {
         setViewsMarkdown(
                 comment,
-                comment.getBody(),
+                MiscUtil.orEmpty(comment.getBody()),
                 comment.getDataNode().path("body_html").asText(""),
                 subredditName,
                 holder);
@@ -1650,16 +1662,16 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     comment,
                                     recoveredBody,
                                     "",
-                                    submission.getSubredditName(),
+                                    MiscUtil.orEmpty(submission.getSubredditName()),
                                     holder);
                         } else if (SettingValues.markdownNewReddit) {
-                            setViewsMarkdown(comment, submission.getSubredditName(), holder);
+                            setViewsMarkdown(comment, MiscUtil.orEmpty(submission.getSubredditName()), holder);
                         } else {
                             setViews(
                                     SubmissionParser.replaceProcessingImgPlaceholders(
                                             comment.getDataNode().path("body_html").asText(""),
                                             comment.getDataNode()),
-                                    submission.getSubredditName(),
+                                    MiscUtil.orEmpty(submission.getSubredditName()),
                                     holder);
                         }
                     }
@@ -1833,7 +1845,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         invalidatePositionCache();
         for (CommentNode ignored : n.getChildren()) {
 
-            if (!ignored.getComment().getFullName().equals(n.getComment().getFullName())) {
+            if (!MiscUtil.orEmpty(ignored.getComment().getFullName()).equals(MiscUtil.orEmpty(n.getComment().getFullName()))) {
                 boolean parentHidden = parentHidden(ignored);
 
                 if (parentHidden) {
@@ -1877,7 +1889,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public int hideNumber(CommentNode n, int i) {
         invalidatePositionCache();
         for (CommentNode ignored : n.getChildren()) {
-            if (!ignored.getComment().getFullName().equals(n.getComment().getFullName())) {
+            if (!MiscUtil.orEmpty(ignored.getComment().getFullName()).equals(MiscUtil.orEmpty(n.getComment().getFullName()))) {
                 String fullname = ignored.getComment().getFullName();
 
                 if (!hidden.contains(fullname)) {
@@ -1911,18 +1923,18 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public String[] getParents(CommentNode comment) {
         String[] bodies = new String[comment.getDepth() + 1];
-        bodies[0] = comment.getComment().getAuthor();
+        bodies[0] = MiscUtil.orEmpty(comment.getComment().getAuthor());
 
         CommentNode parent = comment.getParent();
         int index = 1;
 
         while (parent != null) {
-            bodies[index] = parent.getComment().getAuthor();
+            bodies[index] = MiscUtil.orEmpty(parent.getComment().getAuthor());
             index++;
             parent = parent.getParent();
         }
 
-        bodies[index - 1] = submission.getAuthor();
+        bodies[index - 1] = MiscUtil.orEmpty(submission.getAuthor());
 
         // Reverse the array so Submission > Author > ... > Current OP
         for (int i = 0; i < bodies.length / 2; i++) {
@@ -2149,7 +2161,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 // Read-only tree walk on the background thread; the matches are collected into a
                 // local list and spliced into currentComments on the UI thread (see onPostExecute).
                 for (CommentNode n : node.walkTree()) {
-                    if (n.getComment().getFullName().contains(params[0])) {
+                    if (MiscUtil.orEmpty(n.getComment().getFullName()).contains(params[0])) {
                         collected.add(new CommentItem(n));
                     }
                 }
@@ -2263,7 +2275,10 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
             } else {
                 if (isSubmission) {
-                    new AsyncForceLoadChild(0, 0, submission.getComments()).execute(s);
+                    final CommentNode rootNode = submission.getComments();
+                    if (rootNode != null) {
+                        new AsyncForceLoadChild(0, 0, rootNode).execute(s);
+                    }
                 } else {
                     new AsyncForceLoadChild(
                                     getRealPosition(holder.getBindingAdapterPosition() - 1),

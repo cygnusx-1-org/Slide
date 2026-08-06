@@ -198,38 +198,43 @@ public class SubmissionBottomSheetActions {
                     case 10:
                         String[] choices;
                         final String flair = submission.getSubmissionFlair().getText() != null ? submission.getSubmissionFlair().getText() : "";
+                        // Read once and coalesce, the same way flair above does: these are filter
+                        // keys, and "" already means "no such attribute to filter on" here.
+                        final String subFilter = MiscUtil.orEmpty(submission.getSubredditName());
+                        final String userFilter = MiscUtil.orEmpty(submission.getAuthor());
+                        final String domainFilter = MiscUtil.orEmpty(submission.getDomain());
 
                         if (flair.isEmpty()) {
                             choices = new String[] {
-                                mContext.getString(R.string.filter_posts_sub, submission.getSubredditName()),
-                                mContext.getString(R.string.filter_posts_user, submission.getAuthor()),
-                                mContext.getString(R.string.filter_posts_urls, submission.getDomain()),
-                                mContext.getString(R.string.filter_open_externally, submission.getDomain())
+                                mContext.getString(R.string.filter_posts_sub, subFilter),
+                                mContext.getString(R.string.filter_posts_user, userFilter),
+                                mContext.getString(R.string.filter_posts_urls, domainFilter),
+                                mContext.getString(R.string.filter_open_externally, domainFilter)
                             };
 
                             chosen = new boolean[] {
-                                SettingValues.subredditFilters.contains(submission.getSubredditName().toLowerCase(Locale.ENGLISH)),
-                                SettingValues.userFilters.contains(submission.getAuthor().toLowerCase(Locale.ENGLISH)),
-                                SettingValues.domainFilters.contains(submission.getDomain().toLowerCase(Locale.ENGLISH)),
-                                SettingValues.alwaysExternal.contains(submission.getDomain().toLowerCase(Locale.ENGLISH)),
+                                SettingValues.subredditFilters.contains(subFilter.toLowerCase(Locale.ENGLISH)),
+                                SettingValues.userFilters.contains(userFilter.toLowerCase(Locale.ENGLISH)),
+                                SettingValues.domainFilters.contains(domainFilter.toLowerCase(Locale.ENGLISH)),
+                                SettingValues.alwaysExternal.contains(domainFilter.toLowerCase(Locale.ENGLISH)),
                                 false // Placeholder for flair filter
                             };
 
                             oldChosen = chosen.clone();
                         } else {
                             choices = new String[] {
-                                mContext.getString(R.string.filter_posts_sub, submission.getSubredditName()),
-                                mContext.getString(R.string.filter_posts_user, submission.getAuthor()),
-                                mContext.getString(R.string.filter_posts_urls, submission.getDomain()),
-                                mContext.getString(R.string.filter_open_externally, submission.getDomain()),
+                                mContext.getString(R.string.filter_posts_sub, subFilter),
+                                mContext.getString(R.string.filter_posts_user, userFilter),
+                                mContext.getString(R.string.filter_posts_urls, domainFilter),
+                                mContext.getString(R.string.filter_open_externally, domainFilter),
                                 mContext.getString(R.string.filter_posts_flair, flair, baseSub)
                             };
 
                             chosen = new boolean[] {
-                                SettingValues.subredditFilters.contains(submission.getSubredditName().toLowerCase(Locale.ENGLISH)),
-                                SettingValues.userFilters.contains(submission.getAuthor().toLowerCase(Locale.ENGLISH)),
-                                SettingValues.domainFilters.contains(submission.getDomain().toLowerCase(Locale.ENGLISH)),
-                                SettingValues.alwaysExternal.contains(submission.getDomain().toLowerCase(Locale.ENGLISH)),
+                                SettingValues.subredditFilters.contains(subFilter.toLowerCase(Locale.ENGLISH)),
+                                SettingValues.userFilters.contains(userFilter.toLowerCase(Locale.ENGLISH)),
+                                SettingValues.domainFilters.contains(domainFilter.toLowerCase(Locale.ENGLISH)),
+                                SettingValues.alwaysExternal.contains(domainFilter.toLowerCase(Locale.ENGLISH)),
                                 SettingValues.flairFilters.contains(baseSub + ":" + flair.toLowerCase(Locale.ENGLISH).trim())
                             };
 
@@ -244,45 +249,45 @@ public class SubmissionBottomSheetActions {
                                 boolean filtered = false;
                                 SharedPreferences.Editor e = SettingValues.prefs.edit();
                                 if (chosen[0] && chosen[0] != oldChosen[0]) {
-                                    SettingValues.subredditFilters.add(submission.getSubredditName().toLowerCase(Locale.ENGLISH).trim());
+                                    SettingValues.subredditFilters.add(subFilter.toLowerCase(Locale.ENGLISH).trim());
                                     filtered = true;
                                     e.putStringSet(SettingValues.PREF_SUBREDDIT_FILTERS, SettingValues.subredditFilters);
                                 } else if (!chosen[0] && chosen[0] != oldChosen[0]) {
-                                    SettingValues.subredditFilters.remove(submission.getSubredditName().toLowerCase(Locale.ENGLISH).trim());
+                                    SettingValues.subredditFilters.remove(subFilter.toLowerCase(Locale.ENGLISH).trim());
                                     filtered = false;
                                     e.putStringSet(SettingValues.PREF_SUBREDDIT_FILTERS, SettingValues.subredditFilters);
                                     e.apply();
                                 }
 
                                 if (chosen[1] && chosen[1] != oldChosen[1]) {
-                                    SettingValues.userFilters.add(submission.getAuthor().toLowerCase(Locale.ENGLISH).trim());
+                                    SettingValues.userFilters.add(userFilter.toLowerCase(Locale.ENGLISH).trim());
                                     filtered = true;
                                     e.putStringSet(SettingValues.PREF_USER_FILTERS, SettingValues.userFilters);
                                 } else if (!chosen[1] && chosen[1] != oldChosen[1]) {
-                                    SettingValues.userFilters.remove(submission.getAuthor().toLowerCase(Locale.ENGLISH).trim());
+                                    SettingValues.userFilters.remove(userFilter.toLowerCase(Locale.ENGLISH).trim());
                                     filtered = false;
                                     e.putStringSet(SettingValues.PREF_USER_FILTERS, SettingValues.userFilters);
                                     e.apply();
                                 }
 
                                 if (chosen[2] && chosen[2] != oldChosen[2]) {
-                                    SettingValues.domainFilters.add(submission.getDomain().toLowerCase(Locale.ENGLISH).trim());
+                                    SettingValues.domainFilters.add(domainFilter.toLowerCase(Locale.ENGLISH).trim());
                                     filtered = true;
                                     e.putStringSet(SettingValues.PREF_DOMAIN_FILTERS, SettingValues.domainFilters);
                                 } else if (!chosen[2] && chosen[2] != oldChosen[2]) {
-                                    SettingValues.domainFilters.remove(submission.getDomain().toLowerCase(Locale.ENGLISH).trim());
+                                    SettingValues.domainFilters.remove(domainFilter.toLowerCase(Locale.ENGLISH).trim());
                                     filtered = false;
                                     e.putStringSet(SettingValues.PREF_DOMAIN_FILTERS, SettingValues.domainFilters);
                                     e.apply();
                                 }
 
                                 if (chosen[3] && chosen[3] != oldChosen[3]) {
-                                    SettingValues.alwaysExternal.add(submission.getDomain().toLowerCase(Locale.ENGLISH).trim());
+                                    SettingValues.alwaysExternal.add(domainFilter.toLowerCase(Locale.ENGLISH).trim());
                                     ContentType.invalidateTypeCache();
                                     e.putStringSet(SettingValues.PREF_ALWAYS_EXTERNAL, SettingValues.alwaysExternal);
                                     e.apply();
                                 } else if (!chosen[3] && chosen[3] != oldChosen[3]) {
-                                    SettingValues.alwaysExternal.remove(submission.getDomain().toLowerCase(Locale.ENGLISH).trim());
+                                    SettingValues.alwaysExternal.remove(domainFilter.toLowerCase(Locale.ENGLISH).trim());
                                     ContentType.invalidateTypeCache();
                                     e.putStringSet(SettingValues.PREF_ALWAYS_EXTERNAL, SettingValues.alwaysExternal);
                                     e.apply();
@@ -468,7 +473,7 @@ public class SubmissionBottomSheetActions {
                                 Snackbar s2 = Snackbar.make(holder.itemView, "Removed from read later", Snackbar.LENGTH_SHORT);
                                 LayoutUtils.showSnackbar(s2);
                             }
-                            OfflineSubreddit.newSubreddit(CommentCacheAsync.SAVED_SUBMISSIONS).deleteFromMemory(submission.getFullName());
+                            OfflineSubreddit.newSubreddit(CommentCacheAsync.SAVED_SUBMISSIONS).deleteFromMemory(MiscUtil.orEmpty(submission.getFullName()));
                         }
 
                         break;
@@ -584,7 +589,7 @@ final AlertDialog reportDialog =
 
                         break;
                     case 6:
-                        ClipboardUtil.copyToClipboard(mContext, "Link", submission.getUrl());
+                        ClipboardUtil.copyToClipboard(mContext, "Link", MiscUtil.orEmpty(submission.getUrl()));
                         Toast.makeText(mContext, R.string.submission_link_copied, Toast.LENGTH_SHORT).show();
 
                         break;

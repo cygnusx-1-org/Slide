@@ -47,6 +47,7 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Views.RoundedBackgroundSpan;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.util.DialogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.ApiException;
 import net.dean.jraw.RedditClient;
 import net.dean.jraw.http.NetworkException;
@@ -449,7 +450,10 @@ public class ToolboxUI {
      * @param user The user to look for
      */
     public static void appendToolboxNote(
-            Context context, SpannableStringBuilder builder, String subreddit, String user) {
+            Context context,
+            SpannableStringBuilder builder,
+            @Nullable String subreddit,
+            @Nullable String user) {
         if (!SettingValues.toolboxEnabled || !Authentication.mod) {
             return;
         }
@@ -681,15 +685,15 @@ public class ToolboxUI {
                 if (thing instanceof Comment) {
                     success &=
                             sendRemovalPM(
-                                    modmail ? ((Comment) thing).getSubredditName() : "",
-                                    ((Comment) thing).getAuthor(),
+                                    modmail ? MiscUtil.orEmpty(((Comment) thing).getSubredditName()) : "",
+                                    MiscUtil.orEmpty(((Comment) thing).getAuthor()),
                                     pmSubject.replace("{loglink}", logResult),
                                     removalString);
                 } else {
                     success &=
                             sendRemovalPM(
-                                    modmail ? ((Submission) thing).getSubredditName() : "",
-                                    ((Submission) thing).getAuthor(),
+                                    modmail ? MiscUtil.orEmpty(((Submission) thing).getSubredditName()) : "",
+                                    MiscUtil.orEmpty(((Submission) thing).getAuthor()),
                                     pmSubject.replace("{loglink}", logResult),
                                     removalString);
                 }
@@ -700,15 +704,15 @@ public class ToolboxUI {
                 if (thing instanceof Comment) {
                     success &=
                             sendRemovalPM(
-                                    modmail ? ((Comment) thing).getSubredditName() : "",
-                                    ((Comment) thing).getAuthor(),
+                                    modmail ? MiscUtil.orEmpty(((Comment) thing).getSubredditName()) : "",
+                                    MiscUtil.orEmpty(((Comment) thing).getAuthor()),
                                     pmSubject.replace("{loglink}", logResult),
                                     removalString);
                 } else {
                     success &=
                             sendRemovalPM(
-                                    modmail ? ((Submission) thing).getSubredditName() : "",
-                                    ((Submission) thing).getAuthor(),
+                                    modmail ? MiscUtil.orEmpty(((Submission) thing).getSubredditName()) : "",
+                                    MiscUtil.orEmpty(((Submission) thing).getAuthor()),
                                     pmSubject.replace("{loglink}", logResult),
                                     removalString);
                 }
