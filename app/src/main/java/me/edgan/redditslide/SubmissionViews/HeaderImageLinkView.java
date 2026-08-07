@@ -100,7 +100,7 @@ public class HeaderImageLinkView extends RelativeLayout {
 
     @Nullable MotionEvent event;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // setBottomSheet, per the note above
     Runnable longClicked;
     float position;
     private TextView title;

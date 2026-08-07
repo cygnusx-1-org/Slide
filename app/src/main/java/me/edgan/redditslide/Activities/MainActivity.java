@@ -36,7 +36,6 @@ import android.view.animation.LinearInterpolator;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
@@ -136,39 +135,40 @@ public class MainActivity extends BaseActivity
     public static boolean datasetChanged;
     public static Map<String, String> multiNameToSubsMap = new HashMap<>();
     public static boolean checkedPopups;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in reloadSubs/setDataSet
     public static String shouldLoad;
     public static boolean isRestart;
     public static int restartPage;
     public final long ANIMATE_DURATION = 250; // duration of animations
     final long ANIMATE_DURATION_OFFSET = 45; // offset for smoothing out the exit animations
     public boolean singleMode;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     public ToggleSwipeViewPager pager;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // updateSubs -> setDataSet assigns this; the offline branch returns first
     public CaseInsensitiveArrayList usedArray;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // updateSubs assigns this; its offline branch now returns instead of falling through
     public DrawerLayout drawerLayout;
-    @SuppressWarnings("NullAway.Init")
-    public View hea;
-    @SuppressWarnings("NullAway.Init")
-    public EditText drawerSearch;
-    @SuppressWarnings("NullAway.Init")
+    // hea, drawerSearch and accountsArea are vestigial: DrawerController owns the
+    // drawer now and declares its own same-named fields, which are the ones actually populated
+    // (DrawerController:75, :73, :71 and the findViewById calls around :98). Nothing assigns these
+    // copies, so they are permanently null -- @Nullable rather than NullAway.Init, which claimed
+    // the opposite. Their readers already guard, except the one this exposed at resetAdapter.
+    @Nullable public View hea;
+    @Nullable public EditText drawerSearch;
+    @SuppressWarnings("NullAway.Init") // onCreate: header = findViewById(R.id.header)
     public View header;
-    @SuppressWarnings("NullAway.Init")
-    public String subToDo;
-    @SuppressWarnings("NullAway.Init")
+    // Nothing assigns subToDo either; MainPagerAdapterComment reads it into a Bundle extra.
+    @Nullable public String subToDo;
+    @SuppressWarnings("NullAway.Init") // updateSubs -> setDataSet assigns this; the offline branch returns first
     public MainPagerAdapter adapter;
     public int toGoto = 0;
     public boolean first = true;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     public TabLayout mTabLayout;
-    @SuppressWarnings("NullAway.Init")
-    public ListView drawerSubList;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // setDataSet / doPageSelectedComments, before any read
     public String selectedSub; // currently selected subreddit
-    @SuppressWarnings("NullAway.Init")
-    public Runnable doImage;
+    // Set by nothing; onActivityResult(3333) posts it only behind a null check.
+    @Nullable public Runnable doImage;
     @Nullable public Intent data;
     public boolean commentPager = false;
     @Nullable public Runnable runAfterLoad;
@@ -177,41 +177,36 @@ public class MainActivity extends BaseActivity
     @SuppressWarnings("NullAway.Init")
     public String tabViewModeTitle;
     public int currentComment;
-    @SuppressWarnings("NullAway.Init")
+    // @Nullable already exempts the field from the initialization check; the suppression it used
+    // to carry beside it was dead.
     @Nullable public Submission openingComments;
     public int toOpenComments = -1;
     public boolean inNightMode;
     boolean changed;
-    @SuppressWarnings("NullAway.Init")
-    String term;
-    @SuppressWarnings("NullAway.Init")
+    @Nullable String term;
+    @SuppressWarnings("NullAway.Init") // assigned by DrawerController
     View headerMain;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onOptionsItemSelected/onPreExecute/updateSubs
     Dialog d;
-    @SuppressWarnings("NullAway.Init")
-    public AsyncTask<View, Void, View> currentFlair;
-    @SuppressWarnings("NullAway.Init")
-    View accountsArea;
-    @SuppressWarnings("NullAway.Init")
-    SideArrayAdapter sideArrayAdapter;
-    @SuppressWarnings("NullAway.Init")
+    @Nullable View accountsArea;
+    // Nothing assigns this either; DrawerController builds and holds the real SideArrayAdapter.
+    @Nullable SideArrayAdapter sideArrayAdapter;
+    @SuppressWarnings("NullAway.Init") // onPrepareOptionsMenu, which the framework runs before use
     Menu menu;
-    @SuppressWarnings("NullAway.Init")
-    AsyncTask caching;
     int back;
     int headerHeight;
     public int reloadItemNumber = -2;
     private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 1001;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     DrawerController drawerController;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     public ToolbarSearchController toolbarSearchController;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     SidebarController sidebarController;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     SidebarActions sidebarActions;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     SubredditSortController subredditSortController;
 
     public DrawerController getDrawerController() {
@@ -1228,7 +1223,7 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     NetworkStateReceiver networkStateReceiver;
 
     @Override
@@ -1547,7 +1542,7 @@ public class MainActivity extends BaseActivity
 
 
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned by SubmissionAdapter, SubredditPosts
     public static String randomoverride;
 
     public void reloadSubs() {
@@ -1641,7 +1636,9 @@ public class MainActivity extends BaseActivity
                             pager.setCurrentItem(usedArray.indexOf(subToDo));
 
                             int color = Palette.getColor(subToDo);
-                            hea.setBackgroundColor(color);
+                            if (hea != null) {
+                                hea.setBackgroundColor(color);
+                            }
                             header.setBackgroundColor(color);
                             if (accountsArea != null) {
                                 accountsArea.setBackgroundColor(Palette.getDarkerColor(color));
@@ -1846,6 +1843,12 @@ public class MainActivity extends BaseActivity
                                     })
                             .setCancelable(false)
                             .show();
+            // Return rather than falling through. Nothing below builds anything useful without a
+            // drawer, and this branch leaves drawerLayout, usedArray and adapter unset -- which is
+            // what a NullAway.Init suppression on them was quietly claiming could not happen. The
+            // dialog is setCancelable(false) and both buttons finish() or restart the activity, so
+            // there is no path from here that wants the rest of this method.
+            return;
         } else {
             drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
             if (!getResources().getBoolean(R.bool.isTablet)) {

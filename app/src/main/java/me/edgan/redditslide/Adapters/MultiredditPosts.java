@@ -40,11 +40,11 @@ public class MultiredditPosts implements PostLoader {
     public boolean offline;
     public boolean loading;
     public String profile;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     private MultiRedditPaginator paginator;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in loadMore
     Context c;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in loadMore
     MultiredditAdapter adapter;
 
     public MultiredditPosts(String multireddit, String profile) {

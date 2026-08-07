@@ -11,14 +11,14 @@ import net.dean.jraw.paginators.ModLogPaginator;
 
 /** Created by ccrama on 9/17/2015. */
 public class ModLogPosts {
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     public ArrayList<ModAction> posts;
     public boolean loading;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in bindAdapter
     private SwipeRefreshLayout refreshLayout;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in bindAdapter
     private ModLogAdapter adapter;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     private ModLogPaginator paginator;
 
     public ModLogPosts() {}

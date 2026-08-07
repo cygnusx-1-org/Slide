@@ -11,17 +11,17 @@ import net.dean.jraw.paginators.ModeratorPaginator;
 
 /** Created by ccrama on 9/17/2015. */
 public class ModeratorPosts {
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     public ArrayList<PublicContribution> posts;
     public boolean loading;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in bindAdapter
     private SwipeRefreshLayout refreshLayout;
     private String where;
 
     private String subreddit;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in bindAdapter
     private ModeratorAdapter adapter;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     private ModeratorPaginator paginator;
 
     public ModeratorPosts(String where, String subreddit) {

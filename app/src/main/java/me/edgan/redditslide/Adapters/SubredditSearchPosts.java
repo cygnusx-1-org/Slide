@@ -27,11 +27,11 @@ public class SubredditSearchPosts extends GeneralPosts {
     private String term;
     private String subreddit = "";
     public boolean loading;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     private Paginator<Submission> paginator;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in bindAdapter
     public SwipeRefreshLayout refreshLayout;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in bindAdapter/loadMore
     private ContributionAdapter adapter;
 
     public Activity parent;
@@ -224,7 +224,7 @@ public class SubredditSearchPosts extends GeneralPosts {
             }
         }
 
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
         Exception error;
     }
 

@@ -56,18 +56,17 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
 
     private static final String EXTRA_PROFILE = "profile";
 
-    // adapter, posts, rv and fab are all bound in onCreateView, before any callback below runs.
-    @SuppressWarnings("NullAway.Init")
-    public MultiredditAdapter adapter;
+    // rv is bound unconditionally in onCreateView; adapter, posts and fab are bound only inside
+    // its `multireddits != null && !multireddits.isEmpty()` branch, so an account with no
+    // multireddits leaves those three null and every callback below has to tolerate it.
+    @Nullable public MultiredditAdapter adapter;
 
-    @SuppressWarnings("NullAway.Init")
-    public MultiredditPosts posts;
+    @Nullable public MultiredditPosts posts;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in createLayoutManager
     public RecyclerView rv;
 
-    @SuppressWarnings("NullAway.Init")
-    public FloatingActionButton fab;
+    @Nullable public FloatingActionButton fab;
     public int diff;
     private SwipeRefreshLayout refreshLayout;
     private int id;
@@ -105,6 +104,7 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                if (posts == null) return;
                                 final ArrayList<String> subs = new ArrayList<>();
                                 if (posts.multiReddit != null) {
                                     for (MultiSubreddit s : posts.multiReddit.getSubreddits()) {
@@ -140,8 +140,10 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
 
                             @Override
                             public void onClick(View v) {
+                                if (posts == null) return;
+                                final MultiredditPosts searchPosts = posts;
                                 // Set the searchMulti for multireddit search
-                                MultiredditOverview.searchMulti = posts.multiReddit;
+                                MultiredditOverview.searchMulti = searchPosts.multiReddit;
 
                                 MaterialInputDialog.Builder builder =
                                         new MaterialInputDialog.Builder(getActivity())
@@ -158,7 +160,9 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
                                                 dialog -> {
                                                     Intent i = new Intent(getActivity(), Search.class);
                                                     i.putExtra(Search.EXTRA_TERM, term);
-                                                    i.putExtra(Search.EXTRA_MULTIREDDIT, posts.displayName());
+                                                    i.putExtra(
+                                                            Search.EXTRA_MULTIREDDIT,
+                                                            searchPosts.displayName());
                                                     startActivity(i);
                                                 });
 
@@ -304,6 +308,10 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
                     new SwipeRefreshLayout.OnRefreshListener() {
                         @Override
                         public void onRefresh() {
+                            if (posts == null || adapter == null) {
+                                refreshLayout.setRefreshing(false);
+                                return;
+                            }
                             posts.loadMore(getActivity(), MultiredditView.this, true, adapter);
 
                             // TODO catch errors
@@ -321,6 +329,7 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
                         @Override
                         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                             super.onScrolled(recyclerView, dx, dy);
+                            if (posts == null || adapter == null) return;
 
                             final RecyclerView.LayoutManager lm = rv.getLayoutManager();
                             if (lm == null) return;
@@ -375,28 +384,31 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
     }
 
     private @Nullable List<Submission> clearSeenPosts(boolean forever) {
-        if (posts.posts != null) {
+        if (posts == null || adapter == null) return null;
+        final MultiredditPosts loadedPosts = posts;
+        final MultiredditAdapter loadedAdapter = adapter;
+        if (loadedPosts.posts != null) {
 
-            List<Submission> originalDataSetPosts = posts.posts;
+            List<Submission> originalDataSetPosts = loadedPosts.posts;
 
             OfflineSubreddit o =
                     OfflineSubreddit.getSubreddit(
-                            "multi_" + posts.displayName().toLowerCase(Locale.ENGLISH),
+                            "multi_" + loadedPosts.displayName().toLowerCase(Locale.ENGLISH),
                             false,
                             getActivity());
-            for (int i = posts.posts.size(); i > -1; i--) {
+            for (int i = loadedPosts.posts.size(); i > -1; i--) {
                 try {
-                    if (HasSeen.getSeen(posts.posts.get(i))) {
+                    if (HasSeen.getSeen(loadedPosts.posts.get(i))) {
                         if (forever) {
-                            Hidden.setHidden(posts.posts.get(i));
+                            Hidden.setHidden(loadedPosts.posts.get(i));
                         }
-                        o.clearPost(posts.posts.get(i));
-                        posts.posts.remove(i);
-                        if (posts.posts.isEmpty()) {
-                            adapter.notifyDataSetChanged();
+                        o.clearPost(loadedPosts.posts.get(i));
+                        loadedPosts.posts.remove(i);
+                        if (loadedPosts.posts.isEmpty()) {
+                            loadedAdapter.notifyDataSetChanged();
                         } else {
                             rv.setItemAnimator(new AlphaInAnimator());
-                            adapter.notifyItemRemoved(i + 1);
+                            loadedAdapter.notifyItemRemoved(i + 1);
                         }
                     }
                 } catch (IndexOutOfBoundsException e) {
@@ -437,17 +449,29 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
 
     @Override
     public void updateSuccess(List<Submission> submissions, final int startIndex) {
-        adapter.context.runOnUiThread(
+        // posts and adapter are only built when the account has at least one multireddit
+        // (onCreateView guards on multireddits being non-empty), so every entry point has to
+        // tolerate their absence rather than assume the feed exists.
+        if (adapter == null || posts == null) {
+            // Posted, not called directly, for the reason updateError() below records: onCreateView
+            // queues a setRefreshing(true) on this same view, so a direct stop would run first and
+            // then be undone by that queued runnable.
+            refreshLayout.post(() -> refreshLayout.setRefreshing(false));
+            return;
+        }
+        final MultiredditAdapter loadedAdapter = adapter;
+        final MultiredditPosts loadedPosts = posts;
+        loadedAdapter.context.runOnUiThread(
                 new Runnable() {
                     @Override
                     public void run() {
                         refreshLayout.setRefreshing(false);
 
                         if (startIndex != -1) {
-                            adapter.notifyItemRangeInserted(
-                                    startIndex + 1, posts.posts.size() - startIndex);
+                            loadedAdapter.notifyItemRangeInserted(
+                                    startIndex + 1, loadedPosts.posts.size() - startIndex);
                         } else {
-                            adapter.notifyDataSetChanged();
+                            loadedAdapter.notifyDataSetChanged();
                         }
                     }
                 });
@@ -455,6 +479,10 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
 
     @Override
     public void updateOffline(List<Submission> submissions, long cacheTime) {
+        if (adapter == null) {
+            refreshLayout.setRefreshing(false);
+            return;
+        }
         adapter.setError(true);
         refreshLayout.setRefreshing(false);
     }
@@ -480,6 +508,7 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
 
     @Override
     public void updateViews() {
+        if (adapter == null) return;
         try {
             adapter.notifyItemRangeChanged(0, adapter.dataSet.getPosts().size());
         } catch (Exception e) {
@@ -490,6 +519,7 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
 
     @Override
     public void onAdapterUpdated() {
+        if (adapter == null) return;
         adapter.notifyDataSetChanged();
     }
 }

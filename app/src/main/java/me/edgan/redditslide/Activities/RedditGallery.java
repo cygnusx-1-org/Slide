@@ -55,10 +55,9 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
     public static final String GALLERY_URLS = "galleryurls";
     private @Nullable List<GalleryImage> images;
     private int adapterPosition;
-    @SuppressWarnings("NullAway.Init")
-    public String url;
+    @Nullable public String url;
     public String subreddit = "";
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     private String submissionTitle;
     public RedditGalleryPagerAdapter gallery;
     @Nullable private static String lastContentUrl; // Track URL for retry after permission
@@ -235,9 +234,9 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
     }
 
     public class RedditGalleryPagerAdapter extends FragmentStatePagerAdapter {
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in getItem/onCreate
         public AlbumFrag gallery;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in getItem
         BlankFragment blankPage;
 
         RedditGalleryPagerAdapter(FragmentManager fm) {
@@ -275,7 +274,7 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
     public static class AlbumFrag extends Fragment {
         private int i = 0;
         View rootView;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in setLastContentUrl
         public RecyclerView recyclerView;
         private void setLastContentUrl(final @Nullable String url) {
             lastContentUrl = url; // Store for potential retry after permission grant

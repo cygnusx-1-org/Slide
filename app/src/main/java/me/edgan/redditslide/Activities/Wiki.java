@@ -36,14 +36,14 @@ public class Wiki extends BaseActivityAnim implements WikiPage.WikiPageListener 
     private TabLayout tabs;
     private ToggleSwipeViewPager pager;
     private String subreddit = "";
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
     private WikiPagerAdapter adapter;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
     private List<String> pages;
     @Nullable private String page;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in createCustomCss
     private static String globalCustomCss;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in createCustomJavaScript
     private static String globalCustomJavaScript;
 
     @Override
@@ -130,7 +130,7 @@ public class Wiki extends BaseActivityAnim implements WikiPage.WikiPageListener 
         return globalCustomJavaScript;
     }
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
     public WikiManager wiki;
 
     @Override

@@ -79,10 +79,8 @@ public class AlbumPager extends BaseSaveActivity {
     private static int adapterPosition;
     public static final String SUBREDDIT = "subreddit";
 
-    @SuppressWarnings("NullAway.Init")
-    ViewPager p;
-    @SuppressWarnings("NullAway.Init")
-    public List<Image> images;
+    @Nullable ViewPager p;
+    @Nullable public List<Image> images;
 
     @Nullable private String lastContentUrl;
     private int lastIndex = -1;
@@ -249,23 +247,27 @@ public class AlbumPager extends BaseSaveActivity {
                         public void run() {
                             findViewById(R.id.progress).setVisibility(View.GONE);
                             images = new ArrayList<>(jsonElements);
+                            // Captured for the nested callbacks below: they run later, so NullAway
+                            // cannot prove the fields are still set by then, and a local can.
+                            final List<Image> loadedImages = images;
 
                             p = (ViewPager) findViewById(R.id.images_horizontal);
+                            final ViewPager loadedPager = p;
                             // Keep two pages loaded on each side (matches RedditGalleryPager) so that
                             // at image X the viewer has already warmed X+1 and X+2 — each offscreen
                             // page's fragment downloads its image eagerly in onCreateView. ViewPager
                             // only instantiates pages in range [0, count), so near the end (X+2 or even
                             // X+1 past the last image) it simply loads fewer pages; the "X+2 doesn't
                             // exist" case needs no explicit guard.
-                            p.setOffscreenPageLimit(2);
+                            loadedPager.setOffscreenPageLimit(2);
 
                             if (getSupportActionBar() != null) {
-                                java.util.Objects.requireNonNull(getSupportActionBar()).setSubtitle(1 + "/" + images.size());
+                                java.util.Objects.requireNonNull(getSupportActionBar()).setSubtitle(1 + "/" + loadedImages.size());
                             }
 
                             AlbumViewPagerAdapter adapter =
                                     new AlbumViewPagerAdapter(getSupportFragmentManager());
-                            p.setAdapter(adapter);
+                            loadedPager.setAdapter(adapter);
 
                             int startPage = 0;
 
@@ -275,7 +277,7 @@ public class AlbumPager extends BaseSaveActivity {
                                 MiscUtil.setupOldSwipeModeBackground(AlbumPager.this, p);
                             }
 
-                            p.setCurrentItem(startPage);
+                            loadedPager.setCurrentItem(startPage);
 
                             // Reset the currently playing position
                             Gif.currentlyPlayingPosition = -1;
@@ -295,7 +297,7 @@ public class AlbumPager extends BaseSaveActivity {
                                                             body.findViewById(R.id.images);
                                                     gridview.setAdapter(
                                                             new ImageGridAdapter(
-                                                                    AlbumPager.this, images));
+                                                                    AlbumPager.this, loadedImages));
 
                                                     final AlertDialog.Builder b =
                                                             new AlertDialog.Builder(AlbumPager.this)
@@ -308,7 +310,7 @@ public class AlbumPager extends BaseSaveActivity {
                                                                         View v,
                                                                         int position,
                                                                         long id) {
-                                                                    p.setCurrentItem(position + 1);
+                                                                    loadedPager.setCurrentItem(position + 1);
                                                                     d.dismiss();
                                                                 }
                                                             });
@@ -331,7 +333,7 @@ public class AlbumPager extends BaseSaveActivity {
                                                                 .setSubtitle(
                                                                         (position)
                                                                                 + "/"
-                                                                                + images.size());
+                                                                                + loadedImages.size());
                                                     }
                                                 }
                                                 if (position == 0 && positionOffset < 0.2) {
@@ -343,7 +345,7 @@ public class AlbumPager extends BaseSaveActivity {
                                                             .setSubtitle(
                                                                     (position + 1)
                                                                             + "/"
-                                                                            + images.size());
+                                                                            + loadedImages.size());
                                                 }
                                             }
                                         }
@@ -398,6 +400,11 @@ public class AlbumPager extends BaseSaveActivity {
                     return new BlankFragment();
                 }
                 i--;
+            }
+            if (images == null) {
+                // The album never loaded; getCount answers 0 on that path, so this is unreachable
+                // in practice and BlankFragment is what the oldSwipeMode branch above already uses.
+                return new BlankFragment();
             }
             Image current = images.get(i);
             Fragment f;
@@ -509,7 +516,8 @@ public class AlbumPager extends BaseSaveActivity {
 
             ImageView speedButton = rootView.findViewById(R.id.speed);
             if (speedButton != null) {
-                if (((AlbumPager) getActivity()).images.get(i).animated()) {
+                final List<Image> albumImages = ((AlbumPager) getActivity()).images;
+                if (albumImages != null && albumImages.get(i).animated()) {
                     speedButton.setVisibility(View.VISIBLE);
                     v.attachSpeedButton(speedButton, getActivity());
                 } else {
@@ -545,7 +553,16 @@ public class AlbumPager extends BaseSaveActivity {
                 });
             }
 
-            final String url = ((AlbumPager) getActivity()).images.get(i).getImageUrl();
+            // Guarded rather than defaulted: an empty url is not a harmless "nothing to show".
+            // AsyncLoadGif builds its Request outside its try block, and okhttp's
+            // Request.Builder.url("") throws IllegalArgumentException, so a default would swap one
+            // crash for another. With no album there is nothing to play, so stop here.
+            final List<Image> albumImages = ((AlbumPager) getActivity()).images;
+            if (albumImages == null) {
+                loader.setVisibility(View.GONE);
+                return rootView;
+            }
+            final String url = albumImages.get(i).getImageUrl();
 
             // Important: Always start with autostart=false
             // We'll control playback manually after load
@@ -713,6 +730,11 @@ public class AlbumPager extends BaseSaveActivity {
     }
 
     public static class ImageFullNoSubmission extends Fragment {
+        /** Whether this album holds exactly one image; false when the album never loaded. */
+        private boolean isSingleImageAlbum() {
+            List<Image> albumImages = ((AlbumPager) getActivity()).images;
+            return albumImages != null && albumImages.size() == 1;
+        }
 
         private int i = 0;
         private int currentRotation = 0; // Track current rotation in degrees (0, 90, 180, 270)
@@ -920,8 +942,7 @@ public class AlbumPager extends BaseSaveActivity {
                                                     rootView,
                                                     ImageFullNoSubmission.this,
                                                     url,
-                                                    ((AlbumPager) getActivity()).images.size()
-                                                            == 1);
+                                                    isSingleImageAlbum());
                                             rootView.findViewById(R.id.hq).setVisibility(View.GONE);
                                         }
                                     });

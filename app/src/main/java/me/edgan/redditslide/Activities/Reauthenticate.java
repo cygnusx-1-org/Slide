@@ -120,7 +120,7 @@ public class Reauthenticate extends BaseActivityAnim {
     private final class UserChallengeTask extends AsyncTask<String, Void, OAuthData> {
         private final OAuthHelper mOAuthHelper;
         private final Credentials mCredentials;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in onPreExecute
         private MaterialProgressDialog mMaterialDialog;
 
         public UserChallengeTask(OAuthHelper oAuthHelper, Credentials credentials) {

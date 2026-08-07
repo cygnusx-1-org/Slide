@@ -53,7 +53,7 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
     private String search = "";
 
     /// ... other methods
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in publishResults
     private List<CommentNode> dataSet;
 
     public CommentAdapterSearch(Context mContext, List<CommentNode> dataSet) {

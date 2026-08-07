@@ -75,10 +75,10 @@ public class ImageDownloadNotificationService extends Service {
     private class PollTask extends AsyncTask<Void, Void, Void> {
         // Both are built by startNotification(), which runs from onPreExecute before any other
         // method on this task can touch them.
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in startNotification
         private NotificationManager mNotifyManager;
 
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in startNotification
         private NotificationCompat.Builder mBuilder;
         private final String actuallyLoaded;
         private final Uri baseUri;

@@ -29,9 +29,9 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class ReaderMode extends BaseActivityAnim {
     private int mSubredditColor;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
     public static String html;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     SpoilerRobotoTextView v;
     private String url = "";
 
@@ -96,9 +96,9 @@ public class ReaderMode extends BaseActivityAnim {
     }
 
     public class AsyncGetArticle extends AsyncTask<Void, Void, Void> {
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in doInBackground
         String articleText;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in doInBackground
         String title;
 
         @Override

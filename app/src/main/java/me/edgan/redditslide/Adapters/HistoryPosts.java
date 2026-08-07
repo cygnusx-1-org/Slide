@@ -19,9 +19,9 @@ import net.dean.jraw.paginators.FullnamesPaginator;
 
 /** Created by ccrama on 9/17/2015. */
 public class HistoryPosts extends GeneralPosts {
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in bindAdapter
     private SwipeRefreshLayout refreshLayout;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in bindAdapter
     private ContributionAdapter adapter;
     public boolean loading;
     String prefix = "";
@@ -42,7 +42,7 @@ public class HistoryPosts extends GeneralPosts {
         new LoadData(reset).execute();
     }
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     FullnamesPaginator paginator;
 
     public class LoadData extends AsyncTask<String, Void, ArrayList<Contribution>> {

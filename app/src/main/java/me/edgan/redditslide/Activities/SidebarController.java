@@ -70,11 +70,10 @@ import org.jspecify.annotations.NullMarked;
 public class SidebarController {
 
     private final MainActivity mainActivity;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onClick
     private Sorting sorts;
     private TimePeriod time = TimePeriod.DAY;
-    @SuppressWarnings("NullAway.Init")
-    private AsyncTask<View, Void, View> currentFlair;
+    @Nullable private AsyncTask<View, Void, View> currentFlair;
     private final SpoilerRobotoTextView sidebarBody; // Moved from MainActivity
     private final CommentOverflow sidebarOverflow; // Moved from MainActivity
     @Nullable private AsyncGetSubredditTask mAsyncGetSubreddit = null; // Moved from MainActivity
@@ -284,7 +283,7 @@ public class SidebarController {
                                         .show()
                                         .getDialog();
                                 new AsyncTask<Void, Void, Void>() {
-                                    @SuppressWarnings("NullAway.Init")
+                                    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
                                     ArrayList<UserRecord> mods;
 
                                     @Override
@@ -345,13 +344,13 @@ public class SidebarController {
                 if (currentFlair != null) currentFlair.cancel(true);
                 currentFlair =
                         new AsyncTask<View, Void, View>() {
-                            @SuppressWarnings("NullAway.Init")
+                            @SuppressWarnings("NullAway.Init") // assigned in doInBackground
                             List<FlairTemplate> flairs;
-                            @SuppressWarnings("NullAway.Init")
+                            @SuppressWarnings("NullAway.Init") // assigned in doInBackground
                             ArrayList<String> flairText;
-                            @SuppressWarnings("NullAway.Init")
+                            @SuppressWarnings("NullAway.Init") // assigned in doInBackground
                             String current;
-                            @SuppressWarnings("NullAway.Init")
+                            @SuppressWarnings("NullAway.Init") // assigned in doInBackground
                             AccountManager m;
 
                             @Override

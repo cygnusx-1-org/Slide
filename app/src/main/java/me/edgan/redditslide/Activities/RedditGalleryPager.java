@@ -60,9 +60,9 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
     private static int adapterPosition;
     public static final String SUBREDDIT = "subreddit";
     ViewPager p;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     public List<GalleryImage> images = new ArrayList<>();
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in showBottomSheetImage
     private BottomSheet.Builder bottomSheetBuilder;
     @Nullable private String lastContentUrl; // Track URL for retry after permission
 

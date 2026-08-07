@@ -47,21 +47,16 @@ public class SendMessage extends BaseActivity {
     public static final String EXTRA_MESSAGE = "message";
     public static final String EXTRA_SUBJECT = "subject";
 
-    @SuppressWarnings("NullAway.Init")
-    public String URL;
     private Boolean reply;
     private @Nullable PrivateMessage previousMessage;
     private EditText subject;
     private EditText to;
-    @SuppressWarnings("NullAway.Init")
-    private String bodytext;
-    @SuppressWarnings("NullAway.Init")
-    private String subjecttext;
-    @SuppressWarnings("NullAway.Init")
-    private String totext;
+    @Nullable private String bodytext;
+    @Nullable private String subjecttext;
+    @Nullable private String totext;
     private EditText body;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute/sendMessage
     private String
             messageSentStatus; // the String to show in the Toast for when the message is sent
     private boolean messageSent = true; // whether or not the message was sent successfully

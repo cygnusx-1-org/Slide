@@ -59,7 +59,7 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
     public PostLoader subredditPosts;
     int firstPage;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     CommentsScreenPagerAdapter comments;
     private String subreddit;
     private String baseSubreddit = "";
@@ -291,9 +291,9 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
     }
 
     private class CommentsScreenPagerAdapter extends FragmentStatePagerAdapter {
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in setPrimaryItem as the pager swaps pages
         private CommentPage mCurrentFragment;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in getItem
         public BlankFragment blankPage;
 
         CommentsScreenPagerAdapter(FragmentManager fm) {

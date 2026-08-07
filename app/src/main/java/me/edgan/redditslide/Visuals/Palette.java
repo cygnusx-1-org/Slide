@@ -43,7 +43,7 @@ public class Palette {
      * @param subreddit The subreddit to base the theme on
      * @return Color-int for the status bar
      */
-    public static int getSubredditStatusBarColor(String subreddit) {
+    public static int getSubredditStatusBarColor(final @Nullable String subreddit) {
         return getDarkerColor(getColor(subreddit));
     }
 

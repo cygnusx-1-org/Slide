@@ -45,13 +45,13 @@ public class FolderChooserDialogCreate extends DialogFragment {
     @SuppressWarnings("NullAway.Init")
     private File parentFolder;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreateDialog/reload
     private File[] parentContents;
 
     private boolean canGoUp = false;
     @Nullable private FolderCallback callback;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreateDialog
     private ArrayAdapter<String> listAdapter;
 
     @Nullable String[] getContentsArray() {

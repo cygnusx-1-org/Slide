@@ -101,8 +101,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Nullable public FragmentManager fm;
     public int clickpos;
     public int currentPos;
-    @SuppressWarnings("NullAway.Init")
-    public CommentViewHolder isHolder;
+    // isClicking is only ever read and set false -- nothing sets it true, so the branch below that
+    // used the deleted `isHolder` field was unreachable. That is the only reason a permanently null
+    // isHolder never crashed there; the holder it wanted is the one already in scope.
     public boolean isClicking;
     public HashMap<String, Integer> keys = new HashMap<>();
     public ArrayList<CommentObject> currentComments;
@@ -116,7 +117,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public ArrayList<String> toCollapse;
     public String backedText = "";
     public String currentlyEditingId = "";
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onSingleClick, the header click listener
     public SubmissionViewHolder submissionViewHolder;
     long lastSeen = 0;
     public ArrayList<String> approved = new ArrayList<>();
@@ -1316,7 +1317,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mAnimator.start();
     }
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in collapseAndHide/collapseAndRemove/doShowMenu
     ValueAnimator mAnimator;
 
     public void expand(final View l) { // Made public (was private)
@@ -1645,7 +1646,10 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             if (isClicking) {
                 isClicking = false;
                 resetMenu(holder.menuArea, true);
-                isHolder.itemView.findViewById(R.id.menu).setVisibility(View.GONE);
+                View menu = holder.itemView.findViewById(R.id.menu);
+                if (menu != null) {
+                    menu.setVisibility(View.GONE);
+                }
             } else {
                 if (hiddenPersons.contains(comment.getFullName())) {
                     hiddenPersons.remove(comment.getFullName());
@@ -2212,9 +2216,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public class ReplyTaskComment extends AsyncTask<String, Void, String> {
         public Contribution sub;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in AsyncForceLoadChild/run
         CommentNode node;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in onSingleClick, the header click listener/onBindViewHolder/run
         CommentViewHolder holder;
         boolean isSubmission;
         String profileName;

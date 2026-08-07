@@ -94,11 +94,10 @@ public class Profile extends BaseActivityAnim {
     public static final String EXTRA_HISTORY = "history";
     private String name = "";
     @Nullable private Account account;
-    @SuppressWarnings("NullAway.Init")
-    private List<Trophy> trophyCase;
+    @Nullable private List<Trophy> trophyCase;
     private ViewPager pager;
     private TabLayout tabs;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in setDataSet
     private String[] usedArray;
     public boolean isSavedView;
 
@@ -109,17 +108,17 @@ public class Profile extends BaseActivityAnim {
 
     private boolean friend;
     private boolean following;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreateOptionsMenu
     private MenuItem sortItem;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreateOptionsMenu
     private MenuItem categoryItem;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreateOptionsMenu
     private MenuItem searchItem;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onMenuItemClick/setDataSet
     private ProfilePagerAdapter pagerAdapter;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate/onMenuItemClick
     public static Sorting profSort;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate/onMenuItemClick
     public static TimePeriod profTime;
 
     // Search state
@@ -673,10 +672,8 @@ public class Profile extends BaseActivityAnim {
         popup.show();
     }
 
-    @SuppressWarnings("NullAway.Init")
+    // @Nullable already exempts this from the initialization check; the suppression was dead.
     @Nullable public String category;
-    @SuppressWarnings("NullAway.Init")
-    public String subreddit;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -712,7 +709,7 @@ public class Profile extends BaseActivityAnim {
             getOnBackPressedDispatcher().onBackPressed();
         } else if (itemId == R.id.category) {
             new AsyncTask<Void, Void, List<String>>() {
-                    @SuppressWarnings("NullAway.Init")
+                    @SuppressWarnings("NullAway.Init") // assigned in onPreExecute
                     Dialog d;
 
                     @Override

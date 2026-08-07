@@ -30,7 +30,7 @@ public class Shortcut extends BaseActivity {
         doShortcut();
     }
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doShortcut
     View header;
 
     public void doShortcut() {

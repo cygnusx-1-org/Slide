@@ -44,14 +44,15 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class BaseActivity extends PeekViewActivity implements SwipeBackActivityBase {
     @Nullable public Toolbar mToolbar;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     protected SwipeBackActivityHelper mHelper;
     protected boolean overrideRedditSwipeAnywhere = false;
     protected boolean enableSwipeBackLayout = true;
     protected boolean overrideSwipeFromAnywhere = false;
     protected boolean verticalExit = false;
-    @SuppressWarnings("NullAway.Init")
-    protected GifUtils.AsyncLoadGif currentGif;
+    // Nothing assigns this -- no subclass sets it either, though it is protected. Both readers
+    // (onResume, onPause) already null-check it, so @Nullable states what is actually true.
+    @Nullable protected GifUtils.AsyncLoadGif currentGif;
 
     /**
      * Subclasses that want their content to draw behind the system bars (full-bleed media
@@ -612,7 +613,7 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
      *
      * @param subreddit The subreddit to base the color on.
      */
-    public void themeSystemBars(String subreddit) {
+    public void themeSystemBars(@Nullable String subreddit) {
         int color = Palette.getSubredditStatusBarColor(subreddit);
         LogUtil.v(
                 "StatusBarColor: themeSystemBars(subreddit=\""
@@ -667,7 +668,7 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
      *
      * @param subreddit Name of the subreddit
      */
-    public void setRecentBar(String subreddit) {
+    public void setRecentBar(@Nullable String subreddit) {
         setRecentBar(subreddit, Palette.getColor(subreddit));
     }
 

@@ -22,9 +22,9 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class MainPagerAdapterComment extends MainPagerAdapter {
     public int size;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned by SubmissionAdapter
     public Fragment storedFragment;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doSetPrimary
     CommentPage mCurrentComments;
     MainActivity mainActivity;
 

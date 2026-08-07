@@ -35,11 +35,11 @@ public class SubredditNames {
     public boolean stillShow;
     public boolean loading;
     public SubredditListView parent;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     private Paginator<Subreddit> paginator;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     private SubredditPaginator trendingPaginator;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     private LinkedHashSet<String> trendingSeen;
     Context c;
 

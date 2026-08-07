@@ -27,8 +27,6 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class Discover extends BaseActivityAnim {
 
-    @SuppressWarnings("NullAway.Init")
-    public DiscoverPagerAdapter adapter;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

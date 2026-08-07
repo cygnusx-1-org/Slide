@@ -42,10 +42,10 @@ public class Usernotes {
     private UsernotesConstants constants;
 
     @SerializedName("blob")
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in Usernotes/blobToJson
     private Map<String, List<Usernote>> notes;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in Usernotes/setSubreddit
     private transient String subreddit;
 
     public Usernotes() {
@@ -421,12 +421,12 @@ public class Usernotes {
         // Both are set either by the two-argument constructor or by GSON, which
         // Usernotes.isUsable() then checks arrived before the page is kept.
         @SerializedName("users")
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in UsernotesConstants/addMod
         private String[] mods; // String array of mods. Usernote mod is index in this
 
         // An untyped note is stored as a null entry here, which createNote matches on.
         @SerializedName("warnings")
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // UsernotesConstants/GSON assigns this, per the note above
         private @Nullable String[] types; // String array of used type names corresponding to types in the
 
         // config/defaults. Usernote warning is index in this

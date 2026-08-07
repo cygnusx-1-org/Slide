@@ -29,7 +29,7 @@ public class ContributionPostsSaved extends ContributionPosts {
         this.category = category;
     }
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     UserSavedPaginator paginator;
 
     @Override

@@ -26,8 +26,6 @@ public class SubredditSortController {
 
     private final MainActivity activity;
 
-    @SuppressWarnings("NullAway.Init")
-    Sorting sorts;
     TimePeriod time = TimePeriod.DAY;
 
 

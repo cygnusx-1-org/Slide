@@ -79,10 +79,10 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
     @SuppressWarnings("NullAway.Init")
     public SubredditPosts posts;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onConfigurationChanged
     public RecyclerView rv;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doAdapter
     public SubmissionAdapter adapter;
     public String id;
     public boolean main;

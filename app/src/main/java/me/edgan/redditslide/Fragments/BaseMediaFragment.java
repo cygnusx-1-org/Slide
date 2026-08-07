@@ -63,13 +63,13 @@ public abstract class BaseMediaFragment extends Fragment {
     protected float previous;
     protected boolean hidden;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // the subclass (MediaFragment / MediaFragmentComment) assigns this in onCreateView
     protected OkHttpClient client;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // the subclass (MediaFragment / MediaFragmentComment) assigns this in onCreateView
     protected Gson gson;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // the subclass (MediaFragment / MediaFragmentComment) assigns this in onCreateView
     protected String imgurKey;
 
     /** Plays a gif/mp4 from a direct media url; the two fragments route this differently. */

@@ -66,7 +66,7 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class Crosspost extends BaseActivity {
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned by LinkUtil
     public static Submission toCrosspost;
     private SwitchCompat inboxReplies;
 
@@ -84,16 +84,16 @@ public class Crosspost extends BaseActivity {
     @Nullable private CrosspostBlockReason blockReason;
     private boolean lastSubredditExists = true;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in runSubredditCheck
     AsyncTask<Void, Void, Subreddit> tchange;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in fetchFlairRequirement
     AsyncTask<Void, Void, Boolean> tFlairRequired;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in fetchCrosspostableSubs
     AsyncTask<Void, Void, Set<String>> tCrosspostable;
     private final Handler subredditDebounce = new Handler(Looper.getMainLooper());
     @Nullable private Runnable subredditDebounceRunnable;
     private String lastCheckedSubreddit = "";
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     private Set<String> crosspostableSubs;
 
     @Override public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -619,7 +619,7 @@ public class Crosspost extends BaseActivity {
         // doInBackground() runs on a worker thread and must not touch Views directly.
         @SuppressWarnings("NullAway.Init")
         private String subreddit;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in onPostExecute/onPreExecute
         private String title;
         private boolean sendReplies;
 

@@ -24,11 +24,11 @@ public class ContributionPosts extends GeneralPosts {
     protected final String where;
     protected final String subreddit;
     public boolean loading;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     private UserContributionPaginator paginator;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in bindAdapter
     protected SwipeRefreshLayout refreshLayout;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in bindAdapter
     protected ContributionAdapter adapter;
     @Nullable protected OnLoadCompleteListener loadCompleteListener;
 

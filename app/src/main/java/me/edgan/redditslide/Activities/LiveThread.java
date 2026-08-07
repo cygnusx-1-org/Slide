@@ -66,7 +66,7 @@ import org.jspecify.annotations.NullMarked;
 public class LiveThread extends BaseActivityAnim {
 
     public static final String EXTRA_LIVEURL = "liveurl";
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
     public net.dean.jraw.models.LiveThread thread;
 
     @Override
@@ -92,8 +92,6 @@ public class LiveThread extends BaseActivityAnim {
 
     public RecyclerView baseRecycler;
 
-    @SuppressWarnings("NullAway.Init")
-    public String term;
 
     @Override
     public void onDestroy() {
@@ -113,7 +111,7 @@ public class LiveThread extends BaseActivityAnim {
         baseRecycler = (RecyclerView) findViewById(R.id.content_view);
         baseRecycler.setLayoutManager(new LinearLayoutManager(LiveThread.this));
         new AsyncTask<Void, Void, Void>() {
-            @SuppressWarnings("NullAway.Init")
+            @SuppressWarnings("NullAway.Init") // assigned in onPreExecute
             MaterialProgressDialog d;
 
             @Override
@@ -167,9 +165,9 @@ public class LiveThread extends BaseActivityAnim {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
     ArrayList<LiveUpdate> updates;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
     LiveThreadPaginator paginator;
 
     public void doPaginator() {
@@ -353,8 +351,7 @@ public class LiveThread extends BaseActivityAnim {
             private Gson gson;
             String url;
             private WebView view;
-            @SuppressWarnings("NullAway.Init")
-            TwitterObject twitter;
+            @Nullable TwitterObject twitter;
 
             public LoadTwitter(@NonNull WebView view, @NonNull String url) {
                 this.view = view;

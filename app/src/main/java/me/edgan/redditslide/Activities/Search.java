@@ -52,10 +52,10 @@ public class Search extends BaseActivityAnim {
     private int totalItemCount;
     private int visibleItemCount;
     private int pastVisiblesItems;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in the run() posted from onCreate
     private ContributionAdapter adapter;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate/onOptionsItemSelected
     private String where;
     private String subreddit = "";
     //    private String site;
@@ -64,7 +64,7 @@ public class Search extends BaseActivityAnim {
     //    private boolean nsfw;
     //    private String author;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in the run() posted from onCreate
     private SubredditSearchPosts posts;
 
     @Override
@@ -175,7 +175,7 @@ public class Search extends BaseActivityAnim {
                 );
     }
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onClick/onCreate
     public TimePeriod time;
 
     @Override
@@ -222,7 +222,7 @@ public class Search extends BaseActivityAnim {
     }
 
     public boolean multireddit;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     RecyclerView rv;
 
     @Override

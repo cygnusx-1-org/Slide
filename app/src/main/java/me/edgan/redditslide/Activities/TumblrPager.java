@@ -96,11 +96,9 @@ public class TumblrPager extends BaseSaveActivity {
     @Nullable private String lastContentUrl;
     private int lastIndex = -1;
 
-    @SuppressWarnings("NullAway.Init")
-    ViewPager p;
+    @Nullable ViewPager p;
 
-    @SuppressWarnings("NullAway.Init")
-    public List<Photo> images;
+    @Nullable public List<Photo> images;
     public String subreddit = "";
 
     private static final String TAG = "TumblrPager";
@@ -149,7 +147,7 @@ public class TumblrPager extends BaseSaveActivity {
             }
         }
 
-        if (id == R.id.download) {
+        if (id == R.id.download && images != null) {
             int index = 0;
             for (final Photo elem : images) {
                 // A photo whose JSON carried no original_size — or that Jackson left null for a null
@@ -230,17 +228,21 @@ public class TumblrPager extends BaseSaveActivity {
             }
             findViewById(R.id.progress).setVisibility(View.GONE);
             images = new ArrayList<>(jsonElements);
+            // Captured for the nested callbacks below: they run later, so NullAway cannot prove
+            // the fields are still set by then, and a local can.
+            final List<Photo> loadedImages = images;
 
             p = (ViewPager) findViewById(R.id.images_horizontal);
+            final ViewPager loadedPager = p;
 
             if (getSupportActionBar() != null) {
-                java.util.Objects.requireNonNull(getSupportActionBar()).setSubtitle(1 + "/" + images.size());
+                java.util.Objects.requireNonNull(getSupportActionBar()).setSubtitle(1 + "/" + loadedImages.size());
             }
 
             TumblrViewPagerAdapter adapter = new TumblrViewPagerAdapter(getSupportFragmentManager());
-            p.setAdapter(adapter);
+            loadedPager.setAdapter(adapter);
 
-            MiscUtil.setupOldSwipeModeBackground(TumblrPager.this, p);
+            MiscUtil.setupOldSwipeModeBackground(TumblrPager.this, loadedPager);
 
             int startPage = 0;
 
@@ -248,24 +250,24 @@ public class TumblrPager extends BaseSaveActivity {
                 startPage = 1;
             }
 
-            p.setCurrentItem(startPage);
+            loadedPager.setCurrentItem(startPage);
 
             p.post(
                     new Runnable() {
                         @Override
                         public void run() {
-                            if (images == null || images.isEmpty()) {
+                            if (loadedImages == null || loadedImages.isEmpty()) {
                                 // Don't attempt to load any positions if there are no images
                                 return;
                             }
 
                             // If there is more than one position, load both position 0 and 1.
                             if (adapter.getCount() > 1) {
-                                adapter.instantiateItem(p, 0);
-                                adapter.instantiateItem(p, 1);
+                                adapter.instantiateItem(loadedPager, 0);
+                                adapter.instantiateItem(loadedPager, 1);
                             } else {
                                 // Otherwise, only load position 0.
-                                adapter.instantiateItem(p, 0);
+                                adapter.instantiateItem(loadedPager, 0);
                             }
                         }
                     });
@@ -279,7 +281,7 @@ public class TumblrPager extends BaseSaveActivity {
                                     View body = l.inflate(R.layout.album_grid_dialog, null, false);
                                     GridView gridview = body.findViewById(R.id.images);
                                     gridview.setAdapter(
-                                            new ImageGridAdapter(TumblrPager.this, images, true));
+                                            new ImageGridAdapter(TumblrPager.this, loadedImages, true));
 
                                     final AlertDialog.Builder builder =
                                             new AlertDialog.Builder(TumblrPager.this).setView(body);
@@ -291,7 +293,7 @@ public class TumblrPager extends BaseSaveActivity {
                                                         View v,
                                                         int position,
                                                         long id) {
-                                                    p.setCurrentItem(position + 1);
+                                                    loadedPager.setCurrentItem(position + 1);
                                                     d.dismiss();
                                                 }
                                             });
@@ -299,7 +301,7 @@ public class TumblrPager extends BaseSaveActivity {
                                     d.show();
                                 }
                             });
-            p.addOnPageChangeListener(
+            loadedPager.addOnPageChangeListener(
                     new ViewPager.SimpleOnPageChangeListener() {
                         @Override
                         public void onPageScrolled(
@@ -308,7 +310,7 @@ public class TumblrPager extends BaseSaveActivity {
                                 if (position != 0) {
                                     if (getSupportActionBar() != null) {
                                         java.util.Objects.requireNonNull(getSupportActionBar())
-                                                .setSubtitle((position) + "/" + images.size());
+                                                .setSubtitle((position) + "/" + loadedImages.size());
                                     }
                                 }
                                 if (position == 0 && positionOffset < 0.2) {
@@ -317,7 +319,7 @@ public class TumblrPager extends BaseSaveActivity {
                             } else {
                                 if (getSupportActionBar() != null) {
                                     java.util.Objects.requireNonNull(getSupportActionBar())
-                                            .setSubtitle((position + 1) + "/" + images.size());
+                                            .setSubtitle((position + 1) + "/" + loadedImages.size());
                                 }
                             }
                         }
@@ -355,6 +357,12 @@ public class TumblrPager extends BaseSaveActivity {
                 i--;
             }
 
+            if (images == null) {
+                // The album never loaded. getCount already answers 0 on that path, so this is
+                // unreachable in practice; BlankFragment is what the oldSwipeMode branch above
+                // already uses for a page with nothing to show.
+                return new BlankFragment();
+            }
             Photo current = images.get(i);
 
             // A photo with no original_size — or no photo at all, which Jackson leaves for a null
@@ -394,8 +402,7 @@ public class TumblrPager extends BaseSaveActivity {
 
     public static class Gif extends Fragment {
 
-        @SuppressWarnings("NullAway.Init")
-        private View gif;
+        @Nullable private View gif;
         ViewGroup rootView;
         ProgressBar loader;
 
@@ -405,14 +412,18 @@ public class TumblrPager extends BaseSaveActivity {
             if (this.isVisible()) {
                 if (!isVisibleToUser) // If we are becoming invisible, then...
                 {
-                    ((ExoVideoView) gif).pause();
-                    gif.setVisibility(View.GONE);
+                    if (gif != null) {
+                        ((ExoVideoView) gif).pause();
+                        gif.setVisibility(View.GONE);
+                    }
                 }
 
                 if (isVisibleToUser) // If we are becoming visible, then...
                 {
-                    ((ExoVideoView) gif).play();
-                    gif.setVisibility(View.VISIBLE);
+                    if (gif != null) {
+                        ((ExoVideoView) gif).play();
+                        gif.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         }
@@ -429,7 +440,8 @@ public class TumblrPager extends BaseSaveActivity {
             loader = rootView.findViewById(R.id.gifprogress);
             final View videoView = rootView.findViewById(R.id.gif); // This is an ExoVideoView
 
-            final Photo photo = ((TumblrPager) getActivity()).images.get(i);
+            final List<Photo> albumImages = ((TumblrPager) getActivity()).images;
+            final Photo photo = albumImages == null ? null : albumImages.get(i);
             final String url = photo == null ? null : photo.getOriginalUrl();
 
             if (url != null && url.toLowerCase(Locale.ENGLISH).endsWith(".gif")) {
@@ -686,7 +698,8 @@ public class TumblrPager extends BaseSaveActivity {
             final ViewGroup rootView =
                     (ViewGroup) inflater.inflate(R.layout.album_image_pager, container, false);
 
-            final Photo current = ((TumblrPager) getActivity()).images.get(i);
+            final List<Photo> albumPhotos = ((TumblrPager) getActivity()).images;
+            final Photo current = albumPhotos == null ? null : albumPhotos.get(i);
             final String url = current == null ? null : current.getOriginalUrl();
             final List<PhotoSize> altSizes = current == null ? null : current.getAltSizes();
             boolean lq = false;

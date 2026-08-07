@@ -20,7 +20,7 @@ public class GifCache {
     public static long discCacheSize = 100000000L; // 100mb
 
     // Populated by init() from Reddit.onCreate, before anything can reach the cache.
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in init
     public static DiskCache discCache;
 
     public static void init(Context c) {

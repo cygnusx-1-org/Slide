@@ -29,10 +29,10 @@ public class SortingUtil {
     @SuppressWarnings("NullAway.Init")
     public static Sorting defaultSorting;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // Reddit.onCreate assigns this (Reddit.java:525)
     public static Sorting frontpageSorting;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // Reddit.onCreate assigns this (Reddit.java:526)
     public static TimePeriod timePeriod;
 
     public static Integer getSortingId(Sorting sort) {

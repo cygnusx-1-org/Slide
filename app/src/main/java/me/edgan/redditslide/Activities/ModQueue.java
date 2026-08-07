@@ -25,8 +25,6 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class ModQueue extends BaseActivityAnim {
 
-    @SuppressWarnings("NullAway.Init")
-    public ModQueuePagerAdapter adapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstance) {
@@ -63,7 +61,7 @@ public class ModQueue extends BaseActivityAnim {
 
     private class ModQueuePagerAdapter extends FragmentStatePagerAdapter {
 
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in setPrimaryItem as the pager swaps pages
         private Fragment mCurrentFragment;
 
         ModQueuePagerAdapter(FragmentManager fm) {

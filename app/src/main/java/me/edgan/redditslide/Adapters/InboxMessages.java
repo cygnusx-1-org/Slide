@@ -15,15 +15,15 @@ import net.dean.jraw.paginators.Paginator;
 
 /** Created by ccrama on 9/17/2015. */
 public class InboxMessages extends GeneralPosts {
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     public ArrayList<Message> posts;
     public boolean loading;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in run
     private Paginator<Message> paginator;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in bindAdapter
     private SwipeRefreshLayout refreshLayout;
     public String where;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in bindAdapter
     private InboxAdapter adapter;
 
     public InboxMessages(String where) {

@@ -30,11 +30,11 @@ public class Gallery extends FullScreenActivity implements SubmissionDisplay {
     public static final String EXTRA_PAGE = "page";
     public static final String EXTRA_SUBREDDIT = "subreddit";
     public static final String EXTRA_MULTIREDDIT = "multireddit";
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     public PostLoader subredditPosts;
     public String subreddit = "";
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     public ArrayList<Submission> baseSubs;
 
     @Override
@@ -128,12 +128,12 @@ public class Gallery extends FullScreenActivity implements SubmissionDisplay {
                 });
     }
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     GalleryView recyclerAdapter;
     public int pastVisiblesItems;
     public int visibleItemCount;
     public int totalItemCount;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     RecyclerView rv;
 
     @Override

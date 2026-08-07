@@ -70,10 +70,10 @@ public class PeekMediaView extends RelativeLayout {
     @SuppressWarnings("NullAway.Init")
     private ExoVideoView videoView;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in init
     public WebView website;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in init
     private ProgressBar progress;
 
     public PeekMediaView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {

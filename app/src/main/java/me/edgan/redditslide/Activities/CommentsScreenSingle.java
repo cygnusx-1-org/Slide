@@ -42,16 +42,16 @@ import org.jspecify.annotations.NullMarked;
  */
 @NullMarked
 public class CommentsScreenSingle extends BaseActivityAnim {
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in setupAdapter
     CommentsScreenSinglePagerAdapter comments;
     boolean np;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in setupAdapter
     private ViewPager pager;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate/onPostExecute
     private String subreddit;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doInBackground/onCreate/processNameAndHistory
     private String name;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     private String context;
     private int contextNumber;
     private Boolean doneTranslucent = false;
@@ -272,9 +272,9 @@ public class CommentsScreenSingle extends BaseActivityAnim {
     }
 
     private class CommentsScreenSinglePagerAdapter extends FragmentStatePagerAdapter {
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in setPrimaryItem as the pager swaps pages
         private Fragment mCurrentFragment;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in getItem
         public BlankFragment blankPage;
 
         CommentsScreenSinglePagerAdapter(FragmentManager fm) {

@@ -47,8 +47,7 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class Tumblr extends BaseSaveActivity {
     public static final String EXTRA_URL = "url";
-    @SuppressWarnings("NullAway.Init")
-    private List<Photo> images;
+    @Nullable private List<Photo> images;
     public static final String SUBREDDIT = "subreddit";
     private int adapterPosition;
     public String subreddit = "";
@@ -98,7 +97,7 @@ public class Tumblr extends BaseSaveActivity {
         if (id == R.id.external) {
             LinkUtil.openExternally(url);
         }
-        if (id == R.id.download) {
+        if (id == R.id.download && images != null) {
             int index = 0;
             for (final Photo elem : images) {
                 // A photo whose JSON carried no original_size — or that Jackson left null for a null
@@ -116,8 +115,7 @@ public class Tumblr extends BaseSaveActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("NullAway.Init")
-    public String url;
+    @Nullable public String url;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -185,9 +183,9 @@ public class Tumblr extends BaseSaveActivity {
     }
 
     public static class TumblrPagerAdapter extends FragmentStatePagerAdapter {
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in getItem/onCreate
         public AlbumFrag album;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in getItem
         public BlankFragment blankPage;
 
         public TumblrPagerAdapter(FragmentManager fm) {

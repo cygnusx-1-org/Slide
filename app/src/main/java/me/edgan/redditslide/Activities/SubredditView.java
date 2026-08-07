@@ -102,19 +102,17 @@ public class SubredditView extends BaseActivity {
     public static final String EXTRA_SUBREDDIT = "subreddit";
     public boolean canSubmit = true;
     public String subreddit = "";
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // SubmissionAdapter assigns this before the comments page opens
     public Submission openingComments;
     public int currentComment;
     public SubredditPagerAdapter adapter;
-    @SuppressWarnings("NullAway.Init")
-    public String term;
+    @Nullable public String term;
     public ToggleSwipeViewPager pager;
     public boolean singleMode;
     public boolean commentPager;
     public boolean loaded;
     View header;
-    @SuppressWarnings("NullAway.Init")
-    Subreddit sub;
+    @Nullable Subreddit sub;
     private DrawerLayout drawerLayout;
     private boolean currentlySubbed = false;
 
@@ -478,7 +476,7 @@ public class SubredditView extends BaseActivity {
             final AccountManager m,
             final View dialoglayout) {
         new AsyncTask<Void, Void, Boolean>() {
-            @SuppressWarnings("NullAway.Init")
+            @SuppressWarnings("NullAway.Init") // assigned in doInBackground
             String current;
 
             @Override
@@ -758,7 +756,7 @@ public class SubredditView extends BaseActivity {
                                                     .show()
                                                     .getDialog();
                                     new AsyncTask<Void, Void, Void>() {
-                                        @SuppressWarnings("NullAway.Init")
+                                        @SuppressWarnings("NullAway.Init") // assigned in doInBackground
                                         ArrayList<UserRecord> mods;
 
                                         @Override
@@ -832,13 +830,13 @@ public class SubredditView extends BaseActivity {
             dialoglayout.findViewById(R.id.flair).setVisibility(View.GONE);
             if (Authentication.didOnline && Authentication.isLoggedIn) {
                 new AsyncTask<View, Void, View>() {
-                    @SuppressWarnings("NullAway.Init")
+                    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
                     List<FlairTemplate> flairs;
-                    @SuppressWarnings("NullAway.Init")
+                    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
                     ArrayList<String> flairText;
-                    @SuppressWarnings("NullAway.Init")
+                    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
                     String current;
-                    @SuppressWarnings("NullAway.Init")
+                    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
                     AccountManager m;
 
                     @Override
@@ -1042,7 +1040,7 @@ public class SubredditView extends BaseActivity {
     }
 
     TimePeriod time = TimePeriod.DAY;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onClick
     Sorting sorts;
 
     private void askTimePeriod(final Sorting sort, final String sub, final View dialoglayout) {
@@ -1788,9 +1786,9 @@ public class SubredditView extends BaseActivity {
     }
 
     public class SubredditPagerAdapter extends FragmentStatePagerAdapter {
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in doSetPrimary
         private SubmissionsView mCurrentFragment;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in getItem
         private BlankFragment blankPage;
 
         public SubredditPagerAdapter(FragmentManager fm) {
@@ -1895,11 +1893,11 @@ public class SubredditView extends BaseActivity {
 
     public class SubredditPagerAdapterComment extends SubredditPagerAdapter {
         public int size = 2;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned by SubmissionAdapter
         public Fragment storedFragment;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in getItem
         BlankFragment blankPage;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in doSetPrimary
         private SubmissionsView mCurrentFragment;
         int currentItem = 0;
 

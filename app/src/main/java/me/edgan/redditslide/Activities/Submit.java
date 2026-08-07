@@ -101,22 +101,21 @@ public class Submit extends BaseActivity {
 
     private static final int FLAIR_REQUIRED_COLOR = Color.parseColor("#FF9800");
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in runSubredditCheck
     AsyncTask<Void, Void, Subreddit> tchange;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in fetchFlairRequirement
     AsyncTask<Void, Void, Boolean> tFlairRequired;
     private final Handler subredditDebounce = new Handler(Looper.getMainLooper());
     @Nullable private Runnable subredditDebounceRunnable;
     private String lastCheckedSubreddit = "";
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in showFlairChooser
     private OkHttpClient client;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in showFlairChooser
     private Gson gson;
     private ActivityResultLauncher<PickVisualMediaRequest> submitImageLauncher;
     private ActivityResultLauncher<PickVisualMediaRequest> editorImageLauncher;
     private ActivityResultLauncher<PickVisualMediaRequest> galleryImageLauncher;
-    @SuppressWarnings("NullAway.Init")
-    private MaterialProgressDialog galleryProgress;
+    @Nullable private MaterialProgressDialog galleryProgress;
 
     @Override
     public void onDestroy() {
@@ -341,7 +340,7 @@ public class Submit extends BaseActivity {
                             @Override
                             public void onClick(View v) {
                                 new AsyncTask<String, Void, String>() {
-                                    @SuppressWarnings("NullAway.Init")
+                                    @SuppressWarnings("NullAway.Init") // assigned in onPreExecute/showFlairChooser
                                     Dialog d;
 
                                     @Override
@@ -466,8 +465,7 @@ public class Submit extends BaseActivity {
                         .show()
                         .getDialog();
         new AsyncTask<Void, Void, JsonArray>() {
-            @SuppressWarnings("NullAway.Init")
-            ArrayList<JsonObject> flairs;
+            @Nullable ArrayList<JsonObject> flairs;
 
             @Override
             protected @Nullable JsonArray doInBackground(Void... params) {
@@ -878,23 +876,23 @@ public class Submit extends BaseActivity {
         private boolean linkVisible;
         private boolean imageVisible;
         private boolean galleryVisible;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in onPreExecute
         private String bodyText;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in onCreate/onPreExecute/runSubredditCheck
         private String subredditText;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in onPreExecute
         private String titleText;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in onPreExecute
         private String urlText;
         private boolean sendReplies;
         private boolean imageReddit;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in onClick/onPreExecute
         private Uri imageUri;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in onPreExecute
         private java.util.ArrayList<Uri> galleryUris;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in onPreExecute
         private java.util.ArrayList<String> galleryCaptions;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in onPreExecute
         private java.util.List<me.edgan.redditslide.markdown.UploadedImage> uploadedImages;
 
         @Override

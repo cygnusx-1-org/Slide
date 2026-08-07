@@ -22,7 +22,7 @@ public class LocalSavedPosts extends GeneralPosts {
     @SuppressWarnings("NullAway.Init") // bound by bindAdapter before any load
     private SwipeRefreshLayout refreshLayout;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in bindAdapter
     private ContributionAdapter adapter;
     public boolean loading;
 

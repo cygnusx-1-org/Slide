@@ -97,16 +97,16 @@ public class Reddit extends Application implements Application.ActivityLifecycle
     public static long enter_animation_time = enter_animation_time_original;
     public static final int enter_animation_time_multiplier = 1;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doMainStuff/onActivityResumed
     public static Authentication authentication;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doMainStuff
     public static SharedPreferences colors;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doMainStuff
     public static SharedPreferences appRestart;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doMainStuff
     public static SharedPreferences tags;
 
     public static int dpWidth;
@@ -120,7 +120,7 @@ public class Reddit extends Application implements Application.ActivityLifecycle
     public static boolean fabClear;
     public static int currentPosition;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doMainStuff
     public static SharedPreferences cachedData;
     public static final boolean noGapps = true; // for testing
     public static boolean overrideLanguage;
@@ -131,7 +131,7 @@ public class Reddit extends Application implements Application.ActivityLifecycle
     /** Built on first use by getImageLoader, and rebuilt whenever it has been de-initialised. */
     @Nullable public ImageLoader defaultImageLoader;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doMainStuff/onActivityResumed
     public static OkHttpClient client;
 
     public static boolean canUseNightModeAuto = false;

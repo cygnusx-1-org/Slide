@@ -52,17 +52,17 @@ public class SubmissionComments {
     public final SwipeRefreshLayout refreshLayout;
     private final String fullName;
     private final CommentPage page;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     public ArrayList<CommentObject> comments;
     public HashMap<String, String> commentOPs = new HashMap<>();
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute/reloadSubmission
     public Submission submission;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in SubmissionComments
     private String context;
     private CommentSort defaultSorting = CommentSort.CONFIDENCE;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in loadMore/loadMoreReply
     private CommentAdapter adapter;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in loadMore/loadMoreReply/setSorting
     public LoadData mLoadData;
     public boolean online = true;
     int contextNumber = 5;

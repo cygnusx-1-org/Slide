@@ -23,6 +23,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.SwitchCompat;
@@ -67,15 +68,14 @@ import org.jspecify.annotations.NullMarked;
 public class DrawerController {
 
     private final MainActivity mainActivity;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doDrawer
     ListView drawerSubList;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in setDrawerSubList
     EditText drawerSearch;
-    @SuppressWarnings("NullAway.Init")
-    View hea;
-    @SuppressWarnings("NullAway.Init")
+    @Nullable View hea;
+    @SuppressWarnings("NullAway.Init") // assigned in onDrawerClosed
     View accountsArea;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in setDrawerSubList
     SideArrayAdapter sideArrayAdapter;
     HashMap<String, String> accounts = new HashMap<>();
 

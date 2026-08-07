@@ -32,7 +32,7 @@ public class ImageLoaderUtils {
     @SuppressWarnings("NullAway.Init")
     public static ImageLoaderUnescape imageLoader;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in initImageLoader
     public static DisplayImageOptions options;
 
     private ImageLoaderUtils() {}

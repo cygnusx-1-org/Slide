@@ -52,8 +52,7 @@ import org.jspecify.annotations.NullMarked;
 public class Album extends BaseSaveActivity {
     public static final String EXTRA_URL = "url";
     public static final String SUBREDDIT = "subreddit";
-    @SuppressWarnings("NullAway.Init")
-    private List<Image> images;
+    @Nullable private List<Image> images;
     private int adapterPosition;
 
     private static final String TAG = "Album";
@@ -102,7 +101,7 @@ public class Album extends BaseSaveActivity {
         if (id == R.id.external) {
             LinkUtil.openExternally(url);
         }
-        if (id == R.id.download) {
+        if (id == R.id.download && images != null) {
             int index = 0;
             for (final Image elem : images) {
                 doImageSave(false, elem.getImageUrl(), index);
@@ -117,10 +116,9 @@ public class Album extends BaseSaveActivity {
         ImageSaveUtils.doImageSave(this, isGif, contentUrl, index, subreddit, submissionTitle, this::showFirstDialog);
     }
 
-    @SuppressWarnings("NullAway.Init")
-    public String url;
+    @Nullable public String url;
     public String subreddit = "";
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     public String submissionTitle;
 
     @Override
@@ -188,9 +186,9 @@ public class Album extends BaseSaveActivity {
     }
 
     public static class AlbumPagerAdapter extends FragmentStatePagerAdapter {
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in getItem
         public BlankFragment blankPage;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in getItem/onCreate
         public AlbumFrag album;
 
         public AlbumPagerAdapter(FragmentManager fm) {

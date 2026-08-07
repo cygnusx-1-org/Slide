@@ -25,7 +25,7 @@ public class UploadImgur extends AsyncTask<Uri, Integer, JSONObject> {
     @SuppressWarnings("NullAway.Init")
     public Context c;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // the anonymous subclass assigns this in onPreExecute, before doInBackground
     public MaterialProgressDialog dialog;
 
     /**

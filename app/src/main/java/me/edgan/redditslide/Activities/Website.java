@@ -44,16 +44,16 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class Website extends BaseActivityAnim {
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     WebView v;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     String url;
     int subredditColor;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     MyWebViewClient client;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     AdBlockWebViewClient webClient;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     ProgressBar p;
 
     private static String getDomainName(String url) {
@@ -362,11 +362,9 @@ public class Website extends BaseActivityAnim {
         }
     }
 
-    @SuppressWarnings("NullAway.Init")
-    public static ArrayList<String> triedURLS;
+    @Nullable public static ArrayList<String> triedURLS;
 
-    @SuppressWarnings("NullAway.Init")
-    public String currentURL;
+    @Nullable public String currentURL;
 
     // Method adapted from http://www.hidroh.com/2016/05/19/hacking-up-ad-blocker-android/
     public class AdBlockWebViewClient extends WebViewClientCompat {

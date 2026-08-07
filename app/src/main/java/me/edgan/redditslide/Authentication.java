@@ -56,7 +56,7 @@ public class Authentication {
     // DoEditorActions have always tested it for null.
     @Nullable public static String name;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // Reddit.onCreate assigns this (Reddit.java:236)
     public static SharedPreferences authentication;
 
     @Nullable public static String refresh;

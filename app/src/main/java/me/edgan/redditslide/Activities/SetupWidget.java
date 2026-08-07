@@ -57,7 +57,7 @@ public class SetupWidget extends BaseActivity {
                             AppWidgetManager.INVALID_APPWIDGET_ID);
     }
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doShortcut
     View header;
 
     public void doShortcut() {
@@ -90,8 +90,10 @@ public class SetupWidget extends BaseActivity {
                         });
     }
 
-    @SuppressWarnings("NullAway.Init")
-    public String name;
+    // Nothing assigns this. startWidget() passes it to setSubFromid, where a null removes the
+    // "<id>_sub" key rather than storing one -- a pre-existing defect, recorded here rather
+    // than asserted away with a suppression that claims something populates it.
+    @Nullable public String name;
 
     /**
      * This method right now displays the widget and starts a Service to fetch remote data from

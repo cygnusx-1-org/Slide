@@ -20,7 +20,7 @@ public abstract class BaseSaveActivity extends FullScreenActivity {
     // Fields that child activities will need for image saving
     @SuppressWarnings("NullAway.Init")
     protected String subreddit;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // the subclass assigns this (MediaView, and the album activities) before any save
     public String submissionTitle;
     public static final String EXTRA_SUBMISSION_TITLE = ImageDownloadNotificationService.EXTRA_SUBMISSION_TITLE;
 

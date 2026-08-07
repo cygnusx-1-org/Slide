@@ -77,16 +77,16 @@ import org.jspecify.annotations.NullMarked;
 /** Created by ccrama on 5/27/2015. */
 @NullMarked
 public class Login extends BaseActivityAnim {
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     Credentials credentials;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     Dialog d;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doSubStrings
     CaseInsensitiveArrayList subNames;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     String authorizationUrl;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     OAuthHelper oAuthHelper;
     /** The CSRF state JRAW embedded in the authorize URL, validated on the redirect. */
     @Nullable String expectedState;
@@ -865,7 +865,7 @@ public class Login extends BaseActivityAnim {
         private static final String LOGIN_TAG = "Log into Reddit";
         private final OAuthHelper mOAuthHelper;
         private final Credentials mCredentials;
-        @SuppressWarnings("NullAway.Init")
+        @SuppressWarnings("NullAway.Init") // assigned in onPreExecute
         private MaterialProgressDialog mMaterialDialog;
         /** Classified reason the exchange failed, used to pick the dialog message; null on success. */
         @Nullable private OAuthLoginHelper.FailureType failureType;

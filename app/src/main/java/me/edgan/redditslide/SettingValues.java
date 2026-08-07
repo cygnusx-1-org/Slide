@@ -174,16 +174,16 @@ public class SettingValues {
     @SuppressWarnings("NullAway.Init")
     public static CreateCardView.CardEnum defaultCardView;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in setAllValues
     public static Sorting defaultSorting;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in setAllValues
     public static Sorting frontpageSorting;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in setAllValues
     public static TimePeriod timePeriod;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in setAllValues
     public static CommentSort defaultCommentSorting;
     public static boolean middleImage;
     // volatile: read from the background feed-preload thread (PhotoLoader.feedDecodeSize) as well as
@@ -191,13 +191,13 @@ public class SettingValues {
     public static volatile boolean bigPicEnabled;
     public static boolean bigPicCropped;
     public static boolean bigPicLetterboxed;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in setAllValues
     public static ColorMatchingMode colorMatchingMode;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in setAllValues
     public static ColorIndicator colorIndicator;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in setAllValues
     public static SharedPreferences prefs;
     public static boolean expandedToolbar;
     public static boolean single;

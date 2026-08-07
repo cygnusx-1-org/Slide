@@ -82,7 +82,11 @@ public class SubredditWidgetProvider extends AppWidgetProvider {
         return mContext.getSharedPreferences("widget", 0).getInt(id + "_sub_view", 0);
     }
 
-    public static void setSubFromid(int id, String sub, Context mContext) {
+    /**
+     * @param sub the subreddit to store; a null <b>removes</b> the key rather than storing
+     *     one, which is SharedPreferences' documented behaviour for a null value.
+     */
+    public static void setSubFromid(int id, @Nullable String sub, Context mContext) {
         mContext.getSharedPreferences("widget", 0).edit().putString(id + "_sub", sub).apply();
     }
 

@@ -99,10 +99,9 @@ public class MediaView extends BaseSaveActivity {
     public static final String EXTRA_SHARE_URL = "urlShare";
     public static final String EXTRA_OPEN_COMMENTS_DIRECT = "open_comments_direct";
 
-    @SuppressWarnings("NullAway.Init")
-    public static String fileLoc;
+    @Nullable public static String fileLoc;
     public String subreddit = "";
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     private String submissionTitle;
     private int index;
     public static boolean didLoadGif;
@@ -110,22 +109,20 @@ public class MediaView extends BaseSaveActivity {
     public float previous;
     public boolean hidden;
     public boolean imageShown;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in displayImage/doLoadImage/onCreate
     public String actuallyLoaded;
     public boolean isGif;
     private int currentRotation = 0; // Track current rotation in degrees
     private int currentGifRotation = 0; // Track current rotation for direct GIFs
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
     private NotificationManager mNotifyManager;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
     private NotificationCompat.Builder mBuilder;
     private long stopPosition;
-    @SuppressWarnings("NullAway.Init")
-    private GifUtils.AsyncLoadGif gif;
+    @Nullable private GifUtils.AsyncLoadGif gif;
     private String contentUrl = "";
-    @SuppressWarnings("NullAway.Init")
-    private ExoVideoView videoView;
+    @Nullable private ExoVideoView videoView;
     private Gson gson;
     private String imgurKey;
     @Nullable private String lastContentUrl;

@@ -249,6 +249,12 @@ tasks.withType(JavaCompile).configureEach { task ->
         option('NullAway:HandleTestAssertionLibraries', 'true')
     }
     // Error Prone forces a forked javac on JDK 16+; this box has no swap, so cap the child JVM.
+    // javac defaults both of these to 100 and truncates silently. Two NULLAWAY.md phases were
+    // planned from a count that had been capped at exactly 100 (phase 9 from warnings, phase 12
+    // from errors), so raise them here rather than remembering to do it while measuring. This is a
+    // javac option, not an Error Prone one: it belongs in compilerArgs, and errorproneArgs is
+    // silently ignored for it.
+    options.compilerArgs.addAll(['-Xmaxerrs', '1000', '-Xmaxwarns', '1000'])
     options.forkOptions.memoryMaximumSize = '2g'
 }
 

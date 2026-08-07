@@ -38,7 +38,7 @@ import org.jspecify.annotations.NullMarked;
 
 @NullMarked
 public class MainPagerAdapter extends FragmentStatePagerAdapter {
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doSetPrimary
     protected SubmissionsView mCurrentFragment;
     private MainActivity mainActivity;
 

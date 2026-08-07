@@ -32,12 +32,12 @@ public class SubredditListView extends Fragment {
     @SuppressWarnings("NullAway.Init")
     public SubredditNames posts;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // onCreateView assigns this (line 59) before any callback below runs
     public RecyclerView rv;
     private int visibleItemCount;
     private int pastVisiblesItems;
     private int totalItemCount;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in the run() posted from onCreateView
     public SubredditAdapter adapter;
     public String where;
     private SwipeRefreshLayout mSwipeRefreshLayout;

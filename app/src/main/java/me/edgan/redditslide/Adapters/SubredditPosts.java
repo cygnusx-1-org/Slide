@@ -46,16 +46,16 @@ import net.dean.jraw.paginators.SubredditPaginator;
 public class SubredditPosts implements PostLoader {
     public List<Submission> posts;
     public String subreddit;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     public String subredditRandom;
     public boolean nomore = false;
     public boolean offline;
     public boolean forced;
     public boolean loading;
     public boolean error;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in getNextFiltered/onPostExecute
     private Paginator paginator;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // set in doInBackground
     public OfflineSubreddit cached;
     Context c;
     boolean force18;
@@ -85,7 +85,7 @@ public class SubredditPosts implements PostLoader {
         loadMore(context, display, reset);
     }
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doMainActivityOffline/onPostExecute
     public ArrayList<String> all;
 
     @Override
@@ -101,7 +101,7 @@ public class SubredditPosts implements PostLoader {
     boolean authedOnce = false;
     boolean usedOffline;
     public long currentid;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // LoadData's constructor assigns this
     public SubmissionDisplay displayer;
 
     /** Asynchronous task for loading data */
@@ -368,8 +368,7 @@ public class SubredditPosts implements PostLoader {
         }
 
         int retryCount = 0;
-        @SuppressWarnings("NullAway.Init")
-        Exception error;
+        @Nullable Exception error;
     }
 
     public void doMainActivityOffline(final Context c, final SubmissionDisplay displayer) {

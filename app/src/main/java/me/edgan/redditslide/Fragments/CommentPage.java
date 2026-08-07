@@ -141,12 +141,15 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
     private int page;
     // comments and adapter are both built in onCreateView, before any of the callbacks below
     // can run.
+    // onCreateView calls doAdapter() unconditionally, which assigns this on every branch -- except the catch(IndexOutOfBoundsException) that returns early. See NULLAWAY.md phase 12.
     @SuppressWarnings("NullAway.Init")
     private SubmissionComments comments;
 
     private boolean single;
 
-    @SuppressWarnings("NullAway.Init")
+    // onCreateView -> doAdapter assigns this, but only inside the suggested-sort branches; the file already null-checks it at doAdapter itself. See NULLAWAY.md phase 12.
+
+    @SuppressWarnings("NullAway.Init") // assigned in doAdapter/doData
     public CommentAdapter adapter;
     private String fullname;
 

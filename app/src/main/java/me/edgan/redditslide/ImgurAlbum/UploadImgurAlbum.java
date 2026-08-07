@@ -32,7 +32,7 @@ public class UploadImgurAlbum extends AsyncTask<Uri, Integer, String> {
     public int totalCount;
     public int uploadCount;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // the anonymous subclass assigns this in onPreExecute, before doInBackground
     public MaterialProgressDialog dialog;
 
     /**

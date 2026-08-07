@@ -25,7 +25,6 @@ import java.io.IOException;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.Views.CanvasView;
-import me.edgan.redditslide.Views.DoEditorActions;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.FileUtil;
@@ -37,14 +36,11 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class Draw extends BaseActivity {
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // DoEditorActions assigns Draw.uri before starting this activity
     public static Uri uri;
-    @SuppressWarnings("NullAway.Init")
-    public static DoEditorActions editor;
     CanvasView drawView;
     View color;
-    @SuppressWarnings("NullAway.Init")
-    Bitmap bitmap;
+    @Nullable Bitmap bitmap;
     boolean enabled;
     private final ActivityResultLauncher<CropImageContractOptions> cropImageLauncher =
             registerForActivityResult(new CropImageContract(), this::cropImageResult);

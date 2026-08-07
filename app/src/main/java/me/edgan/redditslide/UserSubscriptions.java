@@ -106,10 +106,10 @@ public class UserSubscriptions {
     @SuppressWarnings("NullAway.Init")
     public static SharedPreferences subscriptions;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // Reddit.onCreate assigns this
     public static SharedPreferences multiNameToSubs;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // Reddit.onCreate assigns this
     public static SharedPreferences pinned;
 
     public static void setSubNameToProperties(String name, String descrption) {

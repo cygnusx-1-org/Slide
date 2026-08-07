@@ -75,18 +75,17 @@ public class ReorderSubreddits extends BaseActivityAnim {
     @SuppressWarnings("NullAway.Init")
     private CaseInsensitiveArrayList subs;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // onPostExecute assigns this; the other four sites are re-assignments
     private CustomAdapter adapter;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in doShowSubs
     private RecyclerView recyclerView;
 
-    @SuppressWarnings("NullAway.Init")
-    private String input;
+    @Nullable private String input;
 
     public static final String MULTI_REDDIT = "/m/";
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in onCreateOptionsMenu
     MenuItem subscribe;
 
     @Override
