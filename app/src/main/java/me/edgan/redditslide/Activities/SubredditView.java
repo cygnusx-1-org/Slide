@@ -2042,12 +2042,16 @@ public class SubredditView extends BaseActivity {
             if (subreddit != null) {
                 setResult(RESULT_OK);
                 sub = subreddit;
-                try {
+                // The three calls below touch views that are gone once the activity has been
+                // destroyed, which used to surface as an NPE answered with finish(). Testing the
+                // lifecycle directly makes the same decision before the damage, and keeps the
+                // rest of onPostExecute running exactly as the catch did.
+                if (isFinishing() || isDestroyed()) {
+                    if (!isFinishing()) finish();
+                } else {
                     doSubSidebarNoLoad(MiscUtil.orEmpty(sub.getDisplayName()));
                     doSubSidebar(MiscUtil.orEmpty(sub.getDisplayName()));
                     doSubOnlyStuff(sub);
-                } catch (NullPointerException e) { // activity has been killed
-                    if (!isFinishing()) finish();
                 }
                 SubredditView.this.subreddit = MiscUtil.orEmpty(sub.getDisplayName());
 

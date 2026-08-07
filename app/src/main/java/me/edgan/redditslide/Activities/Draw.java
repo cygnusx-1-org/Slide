@@ -78,6 +78,13 @@ public class Draw extends BaseActivity {
             getOnBackPressedDispatcher().onBackPressed();
         }
         if (id == R.id.done && enabled) {
+            // CanvasView.getBitmap() wraps getDrawingCache(), which is null until the view has
+            // been measured and drawn -- Bitmap.createBitmap(null) then threw the NPE the catch
+            // below swallowed. Decide before opening a file rather than after.
+            final Bitmap drawn = drawView.getBitmap();
+            if (drawn == null) {
+                return super.onOptionsItemSelected(item);
+            }
             File image; // image to share
             // check to see if the cache/shared_images directory is present
             final File imagesDir =
@@ -98,7 +105,7 @@ public class Draw extends BaseActivity {
                     // convert image to png
                     out = new FileOutputStream(image);
                     Bitmap.createBitmap(
-                                    drawView.getBitmap(),
+                                    drawn,
                                     0,
                                     (int) drawView.height,
                                     (int) drawView.right,
@@ -119,7 +126,7 @@ public class Draw extends BaseActivity {
                         finish();
                     }
                 }
-            } catch (IOException | NullPointerException e) {
+            } catch (IOException e) {
                 LogUtil.e(e, "Draw.onOptionsItemSelected failed");
                 // todo error Toast.makeText(this, getString(R.string.err_share_image),
                 // Toast.LENGTH_LONG).show();

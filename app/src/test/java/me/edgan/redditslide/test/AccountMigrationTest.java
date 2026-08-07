@@ -40,7 +40,7 @@ public class AccountMigrationTest {
     private static final String KEY = "accounts";
 
     private SharedPreferences prefs;
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings("NullAway.Init") // assigned in setUp, which JUnit runs before every test
     private SharedPreferences originalAuthentication;
 
     @Nullable private String originalRefresh;

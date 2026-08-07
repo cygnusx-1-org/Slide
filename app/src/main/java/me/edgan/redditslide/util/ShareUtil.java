@@ -91,7 +91,7 @@ public class ShareUtil {
                     }
                 }
             }
-        } catch (IOException | NullPointerException e) {
+        } catch (IOException e) {
             LogUtil.e(e, "ShareUtil.shareImage failed");
             Toast.makeText(context, context.getString(R.string.err_share_image), Toast.LENGTH_LONG)
                     .show();

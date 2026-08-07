@@ -6,7 +6,6 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Spannable;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -567,80 +566,81 @@ public class MultiredditOverview extends BaseActivityAnim {
     }
 
     private void setDataSet(List<MultiReddit> data) {
-        try {
-            usedArray = data;
+        usedArray = data;
 
-            if (usedArray.isEmpty()) {
-                buildDialog();
+        if (usedArray.isEmpty()) {
+            buildDialog();
+        } else {
+
+            if (adapter == null) {
+                adapter = new MultiredditOverviewPagerAdapter(getSupportFragmentManager());
             } else {
-
-                if (adapter == null) {
-                    adapter = new MultiredditOverviewPagerAdapter(getSupportFragmentManager());
-                } else {
-                    adapter.notifyDataSetChanged();
-                }
-                pager.setAdapter(adapter);
-                pager.setOffscreenPageLimit(1);
-                tabs.setupWithViewPager(pager);
-                if (!initialMulti.isEmpty()) {
-                    for (int i = 0; i < usedArray.size(); i++) {
-                        if (MiscUtil.orEmpty(usedArray.get(i).getDisplayName()).equalsIgnoreCase(initialMulti)) {
-                            pager.setCurrentItem(i);
-                            break;
-                        }
+                adapter.notifyDataSetChanged();
+            }
+            pager.setAdapter(adapter);
+            pager.setOffscreenPageLimit(1);
+            tabs.setupWithViewPager(pager);
+            if (!initialMulti.isEmpty()) {
+                for (int i = 0; i < usedArray.size(); i++) {
+                    if (MiscUtil.orEmpty(usedArray.get(i).getDisplayName()).equalsIgnoreCase(initialMulti)) {
+                        pager.setCurrentItem(i);
+                        break;
                     }
                 }
-                tabs.setSelectedTabIndicatorColor(
-                        new ColorPreferences(MultiredditOverview.this)
-                                .getColor(usedArray.get(0).getDisplayName()));
-                doDrawerSubs(0);
-                Window window = this.getWindow();
-                int color = Palette.getDarkerColor(MiscUtil.orEmpty(usedArray.get(0).getDisplayName()));
+            }
+            tabs.setSelectedTabIndicatorColor(
+                    new ColorPreferences(MultiredditOverview.this)
+                            .getColor(usedArray.get(0).getDisplayName()));
+            doDrawerSubs(0);
+            Window window = this.getWindow();
+            int color = Palette.getDarkerColor(MiscUtil.orEmpty(usedArray.get(0).getDisplayName()));
 
-                if (SettingValues.alwaysBlackStatusbar) {
-                    color = Color.BLACK;
-                }
+            if (SettingValues.alwaysBlackStatusbar) {
+                color = Color.BLACK;
+            }
 
-                window.setStatusBarColor(color);
-                final View header = findViewById(R.id.header);
-                tabs.addOnTabSelectedListener(
-                        new TabLayout.ViewPagerOnTabSelectedListener(pager) {
-                            @Override
-                            public void onTabReselected(TabLayout.Tab tab) {
-                                super.onTabReselected(tab);
-                                int pastVisiblesItems = 0;
-                                int[] firstVisibleItems =
-                                        ((CatchStaggeredGridLayoutManager)
-                                                        java.util.Objects.requireNonNull(
-                                                                currentMultiView()
-                                                                        .rv.getLayoutManager()))
-                                                .findFirstVisibleItemPositions(null);
-                                if (firstVisibleItems != null && firstVisibleItems.length > 0) {
-                                    for (int firstVisibleItem : firstVisibleItems) {
-                                        pastVisiblesItems = firstVisibleItem;
-                                    }
-                                }
-                                if (pastVisiblesItems > 8) {
-                                    currentMultiView()
-                                            .rv.scrollToPosition(0);
-                                    if (header != null) {
-                                        header.animate()
-                                                .translationY(header.getHeight())
-                                                .setInterpolator(new LinearInterpolator())
-                                                .setDuration(0);
-                                    }
-                                } else {
-                                    currentMultiView()
-                                            .rv.smoothScrollToPosition(0);
+            window.setStatusBarColor(color);
+            final View header = findViewById(R.id.header);
+            tabs.addOnTabSelectedListener(
+                    new TabLayout.ViewPagerOnTabSelectedListener(pager) {
+                        @Override
+                        public void onTabReselected(TabLayout.Tab tab) {
+                            super.onTabReselected(tab);
+                            int pastVisiblesItems = 0;
+                            int[] firstVisibleItems =
+                                    ((CatchStaggeredGridLayoutManager)
+                                                    java.util.Objects.requireNonNull(
+                                                            currentMultiView()
+                                                                    .rv.getLayoutManager()))
+                                            .findFirstVisibleItemPositions(null);
+                            if (firstVisibleItems != null && firstVisibleItems.length > 0) {
+                                for (int firstVisibleItem : firstVisibleItems) {
+                                    pastVisiblesItems = firstVisibleItem;
                                 }
                             }
-                        });
-                findViewById(R.id.header)
-                        .setBackgroundColor(Palette.getColor(usedArray.get(0).getDisplayName()));
+                            if (pastVisiblesItems > 8) {
+                                currentMultiView()
+                                        .rv.scrollToPosition(0);
+                                if (header != null) {
+                                    header.animate()
+                                            .translationY(header.getHeight())
+                                            .setInterpolator(new LinearInterpolator())
+                                            .setDuration(0);
+                                }
+                            } else {
+                                currentMultiView()
+                                        .rv.smoothScrollToPosition(0);
+                            }
+                        }
+                    });
+            // The only unguarded null left in this method: findViewById answers null when the
+            // header is not in the inflated layout. That used to reach a catch announcing "cannot
+            // load multis" -- the wrong message for a missing view, and the multis themselves are
+            // already on screen by this point. Reuses the `header` looked up above, which the tab
+            // listener already treats as nullable.
+            if (header != null) {
+                header.setBackgroundColor(Palette.getColor(usedArray.get(0).getDisplayName()));
             }
-        } catch (NullPointerException e) {
-            buildDialog(true);
-            Log.e(LogUtil.getTag(), "Cannot load multis:\n" + e);
         }
     }
 

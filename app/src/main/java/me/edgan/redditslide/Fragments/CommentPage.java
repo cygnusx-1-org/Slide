@@ -1284,9 +1284,18 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
             if (baseSub != null) {
                 currentlySubbed = Authentication.isLoggedIn && baseSub.isUserSubscriber();
                 subreddit = MiscUtil.orEmpty(baseSub.getDisplayName());
-                try {
+                // Detached: no inflater and no window to show the sidebar dialog in. This is the
+                // "activity has been killed" case the empty catch at the end of this block used to
+                // swallow -- decided once, up front, instead of caught 709 lines later. Every other
+                // dereference inside is sidebar.findViewById on a layout this method just
+                // inflated, so a null there is a missing id in R.layout.subinfo, not a runtime state.
+                final androidx.fragment.app.FragmentActivity sidebarActivity = getActivity();
+                if (sidebarActivity == null) {
+                    return;
+                }
+                {
                     View sidebar =
-                            getActivity().getLayoutInflater().inflate(R.layout.subinfo, null);
+                            sidebarActivity.getLayoutInflater().inflate(R.layout.subinfo, null);
                     {
                         sidebar.findViewById(R.id.loader).setVisibility(View.GONE);
                         sidebar.findViewById(R.id.sidebar_text).setVisibility(View.GONE);
@@ -1987,13 +1996,12 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                     }
 
                     final AlertDialog sidebarDialog =
-                            new AlertDialog.Builder(getContext())
+                            new AlertDialog.Builder(sidebarActivity)
                                     .setPositiveButton(R.string.btn_close, null)
                                     .setView(sidebar)
                                     .create();
-                    DialogUtil.matchDialogToCardBackground(getContext(), sidebarDialog);
+                    DialogUtil.matchDialogToCardBackground(sidebarActivity, sidebarDialog);
                     sidebarDialog.show();
-                } catch (NullPointerException e) { // activity has been killed
                 }
             }
         }

@@ -3,7 +3,6 @@ package me.edgan.redditslide.Adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,58 +84,50 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
     Map<String, String> multiToMatch;
 
     private void hideSearchbarUI() {
-        try {
-            AutoCompleteTextView toolbarSearchField = (AutoCompleteTextView) ((MainActivity) getContext()).findViewById(R.id.toolbar_search);
-            if (toolbarSearchField != null) {
-                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        // The swallowed NullPointerException came from findViewById, not from the context: this
+        // adapter's constructor takes a MainActivity, so getContext() is always one. Each lookup
+        // below answers null once the activity's content view is torn down, or when the
+        // toolbar-search layout is not inflated at all -- and then there is no search bar to hide.
+        final MainActivity activity = (MainActivity) getContext();
+        final AutoCompleteTextView toolbarSearchField =
+                (AutoCompleteTextView) activity.findViewById(R.id.toolbar_search);
+        final CardView suggestions =
+                (CardView) activity.findViewById(R.id.toolbar_search_suggestions);
+        final ImageView closeSearch =
+                (ImageView) activity.findViewById(R.id.close_search_toolbar);
+        // Hiding the keyboard is gated on the search field alone, as it was before: the other two
+        // views are only needed by the visibility block below.
+        if (toolbarSearchField != null) {
+            final InputMethodManager imm =
+                    (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
                 imm.hideSoftInputFromWindow(toolbarSearchField.getWindowToken(), 0);
             }
+        }
+        if (toolbarSearchField == null || suggestions == null || closeSearch == null) {
+            return;
+        }
 
-            // Hide the toolbar search UI without an animation because we're starting a new activity
-            if ((SettingValues.subredditSearchMethod == Constants.SUBREDDIT_SEARCH_METHOD_TOOLBAR
-                            || SettingValues.subredditSearchMethod
-                                    == Constants.SUBREDDIT_SEARCH_METHOD_BOTH)
-                    && ((MainActivity) getContext())
-                                    .findViewById(R.id.toolbar_search)
-                                    .getVisibility()
-                            == View.VISIBLE) {
-                ((MainActivity) getContext())
-                        .findViewById(R.id.toolbar_search_suggestions)
-                        .setVisibility(View.GONE);
-                ((MainActivity) getContext())
-                        .findViewById(R.id.toolbar_search)
-                        .setVisibility(View.GONE);
-                ((MainActivity) getContext())
-                        .findViewById(R.id.close_search_toolbar)
-                        .setVisibility(View.GONE);
+        // Hide the toolbar search UI without an animation because we're starting a new activity
+        if ((SettingValues.subredditSearchMethod == Constants.SUBREDDIT_SEARCH_METHOD_TOOLBAR
+                        || SettingValues.subredditSearchMethod
+                                == Constants.SUBREDDIT_SEARCH_METHOD_BOTH)
+                && toolbarSearchField.getVisibility() == View.VISIBLE) {
+            suggestions.setVisibility(View.GONE);
+            toolbarSearchField.setVisibility(View.GONE);
+            closeSearch.setVisibility(View.GONE);
 
-                // Play the exit animations of the search toolbar UI to avoid the animations failing
-                // to animate upon the next time
-                // the search toolbar UI is called. Set animation to 0 because the UI is already
-                // hidden.
-                ((MainActivity) getContext()).toolbarSearchController
-                        .exitAnimationsForToolbarSearch(
-                                0,
-                                ((CardView)
-                                        ((MainActivity) getContext())
-                                                .findViewById(R.id.toolbar_search_suggestions)),
-                                ((AutoCompleteTextView)
-                                        ((MainActivity) getContext())
-                                                .findViewById(R.id.toolbar_search)),
-                                ((ImageView)
-                                        ((MainActivity) getContext())
-                                                .findViewById(R.id.close_search_toolbar)));
-                final androidx.appcompat.app.ActionBar actionBar =
-                        ((MainActivity) getContext()).getSupportActionBar();
-                if (actionBar != null) {
-                    actionBar.setTitle(
-                            SettingValues.single
-                                    ? ((MainActivity) getContext()).selectedSub
-                                    : ((MainActivity) getContext()).tabViewModeTitle);
-                }
+            // Play the exit animations of the search toolbar UI to avoid the animations failing
+            // to animate upon the next time
+            // the search toolbar UI is called. Set animation to 0 because the UI is already
+            // hidden.
+            activity.toolbarSearchController.exitAnimationsForToolbarSearch(
+                    0, suggestions, toolbarSearchField, closeSearch);
+            final androidx.appcompat.app.ActionBar actionBar = activity.getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setTitle(
+                        SettingValues.single ? activity.selectedSub : activity.tabViewModeTitle);
             }
-        } catch (NullPointerException npe) {
-            Log.e(getClass().getName(), String.valueOf(npe.getMessage()));
         }
     }
 
