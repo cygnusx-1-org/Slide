@@ -25,11 +25,13 @@ import androidx.appcompat.widget.ActionMenuView;
 import androidx.appcompat.widget.Toolbar;
 import java.util.ArrayList;
 import me.edgan.redditslide.util.BlendModeUtil;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Helper class that iterates through Toolbar views, and sets dynamically icons and texts color
  * Created by chomi3 on 2015-01-19.
  */
+@NullMarked
 public class ToolbarColorizeHelper {
 
     private ToolbarColorizeHelper() {}

@@ -7,6 +7,7 @@ import android.util.TypedValue;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.edgan.redditslide.R;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Drop-in replacement for the abandoned {@code com.sothree:AndroidSlidingUpPanel} library, backed
@@ -26,6 +28,7 @@ import me.edgan.redditslide.R;
  * panel) with {@code COLLAPSED}/{@code EXPANDED} states, a configurable peek height and a slide
  * listener. The first child is the content; the second child becomes the bottom sheet.
  */
+@NullMarked
 public class SlidingUpPanelLayout extends CoordinatorLayout {
 
     public enum PanelState {
@@ -54,8 +57,8 @@ public class SlidingUpPanelLayout extends CoordinatorLayout {
                 View panel, PanelState previousState, PanelState newState) {}
     }
 
-    private BottomSheetBehavior<View> behavior;
-    private View panelView;
+    @Nullable private BottomSheetBehavior<View> behavior;
+    @Nullable private View panelView;
     private int peekHeightPx;
     private float shadowElevationPx;
     private PanelState lastState = PanelState.COLLAPSED;
@@ -65,11 +68,12 @@ public class SlidingUpPanelLayout extends CoordinatorLayout {
         this(context, null);
     }
 
-    public SlidingUpPanelLayout(@NonNull Context context, AttributeSet attrs) {
+    public SlidingUpPanelLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public SlidingUpPanelLayout(@NonNull Context context, AttributeSet attrs, int defStyleAttr) {
+    public SlidingUpPanelLayout(
+            @NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         // Default peek of 48dp matches every layout that uses this view.
         peekHeightPx =

@@ -3,6 +3,7 @@ package me.edgan.redditslide.util;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.util.Log;
@@ -10,12 +11,15 @@ import android.util.Log;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import me.edgan.redditslide.Views.SubsamplingScaleImageView;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Helper class containing drawing logic extracted from SubsamplingScaleImageView.
  */
+@NullMarked
 public class SubsamplingScaleImageViewDrawHelper {
 
     private static final String TAG = SubsamplingScaleImageViewDrawHelper.class.getSimpleName();
@@ -44,13 +48,19 @@ public class SubsamplingScaleImageViewDrawHelper {
         view.preDraw();
 
         // If animating scale, calculate current scale and center with easing equations
-        if (view.anim != null && view.anim.vFocusStart != null) {
+        // AnimationBuilder.start is the only writer of these and sets all three together, so the
+        // existing vFocusStart guard covers vFocusEnd and sCenterEnd as well.
+        if (view.anim != null
+                && view.anim.vFocusStart != null
+                && view.anim.vFocusEnd != null
+                && view.anim.sCenterEnd != null) {
+            final PointF vTranslate = Objects.requireNonNull(view.vTranslate);
             // Store current values so we can send an event if they change
             float scaleBefore = view.scale;
             if (view.vTranslateBefore == null) {
                 view.vTranslateBefore = new PointF(0, 0);
             }
-            view.vTranslateBefore.set(view.vTranslate);
+            view.vTranslateBefore.set(vTranslate);
 
             long scaleElapsed = System.currentTimeMillis() - view.anim.time;
             boolean finished = scaleElapsed > view.anim.duration;
@@ -62,8 +72,8 @@ public class SubsamplingScaleImageViewDrawHelper {
             float vFocusNowY = view.ease(view.anim.easing, scaleElapsed, view.anim.vFocusStart.y, view.anim.vFocusEnd.y - view.anim.vFocusStart.y, view.anim.duration);
 
             // Find out where the focal point is at this scale and adjust its position to follow the animation path
-            view.vTranslate.x -= SubsamplingScaleImageViewStateHelper.sourceToViewX(view, view.anim.sCenterEnd.x) - vFocusNowX;
-            view.vTranslate.y -= SubsamplingScaleImageViewStateHelper.sourceToViewY(view, view.anim.sCenterEnd.y) - vFocusNowY;
+            vTranslate.x -= SubsamplingScaleImageViewStateHelper.sourceToViewX(view, view.anim.sCenterEnd.x) - vFocusNowX;
+            vTranslate.y -= SubsamplingScaleImageViewStateHelper.sourceToViewY(view, view.anim.sCenterEnd.y) - vFocusNowY;
 
             // For translate anims, showing the image non-centered is never allowed, for scaling anims it is during the animation.
             view.fitToBounds(finished || (view.anim.scaleStart == view.anim.scaleEnd));
@@ -179,10 +189,10 @@ public class SubsamplingScaleImageViewDrawHelper {
                             view.matrix.setPolyToPoly(view.srcArray, 0, view.dstArray, 0, 4);
                             canvas.drawBitmap(tile.bitmap, view.matrix, view.bitmapPaint);
 
-                            if (view.debug) {
+                            if (view.debug && view.debugLinePaint != null) {
                                 canvas.drawRect(tile.vRect, view.debugLinePaint);
                             }
-                        } else if (tile.loading && view.debug) {
+                        } else if (tile.loading && view.debug && view.debugTextPaint != null) {
                             canvas.drawText(
                                     "LOADING",
                                     tile.vRect.left + px(view, 5),
@@ -190,7 +200,7 @@ public class SubsamplingScaleImageViewDrawHelper {
                                     view.debugTextPaint);
                         }
 
-                        if (tile.visible && view.debug) {
+                        if (tile.visible && view.debug && view.debugTextPaint != null) {
                             canvas.drawText(
                                 "ISS "
                                     + tile.sampleSize
@@ -225,7 +235,8 @@ public class SubsamplingScaleImageViewDrawHelper {
             view.matrix.reset();
             view.matrix.postScale(xScale, yScale);
             view.matrix.postRotate(SubsamplingScaleImageViewStateHelper.getRequiredRotation(view));
-            view.matrix.postTranslate(view.vTranslate.x, view.vTranslate.y);
+            final PointF bitmapVTranslate = Objects.requireNonNull(view.vTranslate);
+            view.matrix.postTranslate(bitmapVTranslate.x, bitmapVTranslate.y);
 
             if (SubsamplingScaleImageViewStateHelper.getRequiredRotation(view) == SubsamplingScaleImageView.ORIENTATION_180) {
                 view.matrix.postTranslate(view.scale * view.sWidth, view.scale * view.sHeight);
@@ -251,6 +262,11 @@ public class SubsamplingScaleImageViewDrawHelper {
         }
 
         if (view.debug) {
+            // createPaints, called at the top of this method, creates both debug paints whenever
+            // view.debug is set.
+            final Paint debugTextPaint = Objects.requireNonNull(view.debugTextPaint);
+            final Paint debugLinePaint = Objects.requireNonNull(view.debugLinePaint);
+            final PointF debugVTranslate = Objects.requireNonNull(view.vTranslate);
             canvas.drawText(
                 "Scale: "
                     + String.format(Locale.ENGLISH, "%.2f", view.scale)
@@ -261,54 +277,57 @@ public class SubsamplingScaleImageViewDrawHelper {
                     + ")",
                 px(view, 5),
                 px(view, 15),
-                view.debugTextPaint);
+                debugTextPaint);
             canvas.drawText(
                 "Translate: "
-                    + String.format(Locale.ENGLISH, "%.2f", view.vTranslate.x)
+                    + String.format(Locale.ENGLISH, "%.2f", debugVTranslate.x)
                     + ":"
-                    + String.format(Locale.ENGLISH, "%.2f", view.vTranslate.y),
+                    + String.format(Locale.ENGLISH, "%.2f", debugVTranslate.y),
                 px(view, 5),
                 px(view, 30),
-                view.debugTextPaint);
+                debugTextPaint);
             PointF center = view.getCenter();
-            // noinspection ConstantConditions
-            canvas.drawText(
-                "Source center: "
-                    + String.format(Locale.ENGLISH, "%.2f", center.x)
-                    + ":"
-                    + String.format(Locale.ENGLISH, "%.2f", center.y),
-                px(view, 5),
-                px(view, 45),
-                view.debugTextPaint);
-            if (view.anim != null) {
+            if (center != null) {
+                canvas.drawText(
+                    "Source center: "
+                        + String.format(Locale.ENGLISH, "%.2f", center.x)
+                        + ":"
+                        + String.format(Locale.ENGLISH, "%.2f", center.y),
+                    px(view, 5),
+                    px(view, 45),
+                    debugTextPaint);
+            }
+            if (view.anim != null
+                    && view.anim.sCenterStart != null
+                    && view.anim.sCenterEndRequested != null
+                    && view.anim.sCenterEnd != null) {
                 PointF vCenterStart = SubsamplingScaleImageViewStateHelper.sourceToViewCoord(view, view.anim.sCenterStart);
                 PointF vCenterEndRequested = SubsamplingScaleImageViewStateHelper.sourceToViewCoord(view, view.anim.sCenterEndRequested);
                 PointF vCenterEnd = SubsamplingScaleImageViewStateHelper.sourceToViewCoord(view, view.anim.sCenterEnd);
-                // noinspection ConstantConditions
-                canvas.drawCircle(vCenterStart.x, vCenterStart.y, px(view, 10), view.debugLinePaint);
-                view.debugLinePaint.setColor(Color.RED);
-                // noinspection ConstantConditions
-                canvas.drawCircle(
-                        vCenterEndRequested.x, vCenterEndRequested.y, px(view, 20), view.debugLinePaint);
-                view.debugLinePaint.setColor(Color.BLUE);
-                // noinspection ConstantConditions
-                canvas.drawCircle(vCenterEnd.x, vCenterEnd.y, px(view, 25), view.debugLinePaint);
-                view.debugLinePaint.setColor(Color.CYAN);
-                canvas.drawCircle(view.getWidth() / 2.0f, view.getHeight() / 2.0f, px(view, 30), view.debugLinePaint);
+                if (vCenterStart != null && vCenterEndRequested != null && vCenterEnd != null) {
+                    canvas.drawCircle(vCenterStart.x, vCenterStart.y, px(view, 10), debugLinePaint);
+                    debugLinePaint.setColor(Color.RED);
+                    canvas.drawCircle(
+                            vCenterEndRequested.x, vCenterEndRequested.y, px(view, 20), debugLinePaint);
+                    debugLinePaint.setColor(Color.BLUE);
+                    canvas.drawCircle(vCenterEnd.x, vCenterEnd.y, px(view, 25), debugLinePaint);
+                }
+                debugLinePaint.setColor(Color.CYAN);
+                canvas.drawCircle(view.getWidth() / 2.0f, view.getHeight() / 2.0f, px(view, 30), debugLinePaint);
             }
             if (view.vCenterStart != null) {
-                view.debugLinePaint.setColor(Color.RED);
-                canvas.drawCircle(view.vCenterStart.x, view.vCenterStart.y, px(view, 20), view.debugLinePaint);
+                debugLinePaint.setColor(Color.RED);
+                canvas.drawCircle(view.vCenterStart.x, view.vCenterStart.y, px(view, 20), debugLinePaint);
             }
             if (view.quickScaleSCenter != null) {
-                view.debugLinePaint.setColor(Color.BLUE);
-                canvas.drawCircle(SubsamplingScaleImageViewStateHelper.sourceToViewX(view, view.quickScaleSCenter.x), SubsamplingScaleImageViewStateHelper.sourceToViewY(view, view.quickScaleSCenter.y), px(view, 35), view.debugLinePaint);
+                debugLinePaint.setColor(Color.BLUE);
+                canvas.drawCircle(SubsamplingScaleImageViewStateHelper.sourceToViewX(view, view.quickScaleSCenter.x), SubsamplingScaleImageViewStateHelper.sourceToViewY(view, view.quickScaleSCenter.y), px(view, 35), debugLinePaint);
             }
             if (view.quickScaleVStart != null && view.isQuickScaling) {
-                view.debugLinePaint.setColor(Color.CYAN);
-                canvas.drawCircle(view.quickScaleVStart.x, view.quickScaleVStart.y, px(view, 30), view.debugLinePaint);
+                debugLinePaint.setColor(Color.CYAN);
+                canvas.drawCircle(view.quickScaleVStart.x, view.quickScaleVStart.y, px(view, 30), debugLinePaint);
             }
-            view.debugLinePaint.setColor(Color.MAGENTA);
+            debugLinePaint.setColor(Color.MAGENTA);
         }
     }
 /** For debug overlays. Scale pixel value according to screen density. */

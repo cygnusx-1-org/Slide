@@ -7,8 +7,10 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 
 import java.util.Locale;
+import org.jspecify.annotations.NullMarked;
 
 /** Gen */
+@NullMarked
 public class NavigationUtils {
     public static int getStatusBarHeight(Context context) {
         int result = 0;

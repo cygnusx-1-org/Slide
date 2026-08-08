@@ -10,10 +10,15 @@ import android.view.ViewParent;
 import android.webkit.WebView;
 import android.widget.OverScroller;
 
+import androidx.annotation.Nullable;
 import androidx.core.view.NestedScrollingChild;
 import androidx.core.view.NestedScrollingChildHelper;
 import androidx.core.view.NestedScrollingParent;
 import androidx.core.view.ViewCompat;
+
+import java.util.Objects;
+
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Copyright (c) Tuenti Technologies. All rights reserved.
@@ -21,6 +26,7 @@ import androidx.core.view.ViewCompat;
  * <p>WebView compatible with CoordinatorLayout. The implementation based on NestedScrollView of
  * design library
  */
+@NullMarked
 public class NestedWebView extends WebView implements NestedScrollingChild, NestedScrollingParent {
 
     private static final int INVALID_POINTER = -1;
@@ -32,7 +38,7 @@ public class NestedWebView extends WebView implements NestedScrollingChild, Nest
     private int mLastMotionY;
     private NestedScrollingChildHelper mChildHelper;
     private boolean mIsBeingDragged = false;
-    private VelocityTracker mVelocityTracker;
+    @Nullable private VelocityTracker mVelocityTracker;
     private int mTouchSlop;
     private int mActivePointerId = INVALID_POINTER;
     private int mNestedYOffset;
@@ -44,11 +50,11 @@ public class NestedWebView extends WebView implements NestedScrollingChild, Nest
         this(context, null);
     }
 
-    public NestedWebView(Context context, AttributeSet attrs) {
+    public NestedWebView(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, android.R.attr.webViewStyle);
     }
 
-    public NestedWebView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public NestedWebView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setOverScrollMode(WebView.OVER_SCROLL_NEVER);
         initScrollView();
@@ -97,7 +103,7 @@ public class NestedWebView extends WebView implements NestedScrollingChild, Nest
                         mIsBeingDragged = true;
                         mLastMotionY = y;
                         initVelocityTrackerIfNotExists();
-                        mVelocityTracker.addMovement(ev);
+                        Objects.requireNonNull(mVelocityTracker).addMovement(ev);
                         mNestedYOffset = 0;
                         final ViewParent parent = getParent();
                         if (parent != null) {
@@ -113,7 +119,7 @@ public class NestedWebView extends WebView implements NestedScrollingChild, Nest
                     mActivePointerId = ev.getPointerId(0);
 
                     initOrResetVelocityTracker();
-                    mVelocityTracker.addMovement(ev);
+                    Objects.requireNonNull(mVelocityTracker).addMovement(ev);
 
                     mScroller.computeScrollOffset();
                     mIsBeingDragged = !mScroller.isFinished();
@@ -212,7 +218,9 @@ public class NestedWebView extends WebView implements NestedScrollingChild, Nest
                 break;
             case MotionEvent.ACTION_UP:
                 if (mIsBeingDragged) {
-                    final VelocityTracker velocityTracker = mVelocityTracker;
+                    // Non-null whenever mIsBeingDragged is: every path that sets the flag runs
+                    // initVelocityTrackerIfNotExists first, and endDrag clears both together.
+                    final VelocityTracker velocityTracker = Objects.requireNonNull(mVelocityTracker);
                     velocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
                     int initialVelocity = (int) velocityTracker.getYVelocity(mActivePointerId);
 
@@ -368,13 +376,14 @@ public class NestedWebView extends WebView implements NestedScrollingChild, Nest
             int dyConsumed,
             int dxUnconsumed,
             int dyUnconsumed,
-            int[] offsetInWindow) {
+            @Nullable int[] offsetInWindow) {
         return mChildHelper.dispatchNestedScroll(
                 dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow);
     }
 
     @Override
-    public boolean dispatchNestedPreScroll(int dx, int dy, int[] consumed, int[] offsetInWindow) {
+    public boolean dispatchNestedPreScroll(
+            int dx, int dy, @Nullable int[] consumed, @Nullable int[] offsetInWindow) {
         return mChildHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow);
     }
 

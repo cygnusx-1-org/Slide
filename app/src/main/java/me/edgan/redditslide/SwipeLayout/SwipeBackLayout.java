@@ -11,10 +11,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import me.edgan.redditslide.R;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class SwipeBackLayout extends FrameLayout {
     /** Minimum velocity that will be detected as a fling */
     private static final int MIN_FLING_VELOCITY = 400; // dips per second
@@ -66,10 +69,14 @@ public class SwipeBackLayout extends FrameLayout {
     /** Threshold of scroll, we will close the activity, when scrollPercent over this value; */
     private float mScrollThreshold = DEFAULT_SCROLL_THRESHOLD;
 
+    // Set by attachToActivity, which SwipeBackActivityHelper.onPostCreate calls from the
+    // activity's own onPostCreate. Nothing below runs before the layout is attached.
+    @SuppressWarnings("NullAway.Init")
     private Activity mActivity;
 
     private boolean mEnable = true;
 
+    @SuppressWarnings("NullAway.Init") // set by attachToActivity, same as mActivity
     private View mContentView;
 
     private ViewDragHelper mDragHelper;
@@ -81,14 +88,18 @@ public class SwipeBackLayout extends FrameLayout {
     private int mContentTop;
 
     /** The set of listeners to be sent events through. */
-    private List<SwipeListener> mListeners;
+    @Nullable private List<SwipeListener> mListeners;
 
+    @SuppressWarnings("NullAway.Init") // one of the four setShadow calls in the constructor
     private Drawable mShadowLeft;
 
+    @SuppressWarnings("NullAway.Init") // one of the four setShadow calls in the constructor
     private Drawable mShadowRight;
 
+    @SuppressWarnings("NullAway.Init") // one of the four setShadow calls in the constructor
     private Drawable mShadowBottom;
 
+    @SuppressWarnings("NullAway.Init") // one of the four setShadow calls in the constructor
     private Drawable mShadowTop;
 
     private float mScrimOpacity;
@@ -106,11 +117,11 @@ public class SwipeBackLayout extends FrameLayout {
         this(context, null);
     }
 
-    public SwipeBackLayout(Context context, AttributeSet attrs) {
+    public SwipeBackLayout(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, R.attr.SwipeBackLayoutStyle);
     }
 
-    public SwipeBackLayout(Context context, AttributeSet attrs, int defStyle) {
+    public SwipeBackLayout(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs);
         mDragHelper = ViewDragHelper.create(this, new ViewDragCallback());
 

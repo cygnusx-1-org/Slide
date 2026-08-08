@@ -2,7 +2,10 @@ package me.edgan.redditslide.util;
 
 import android.graphics.PointF;
 import android.view.MotionEvent;
+
 import androidx.annotation.NonNull;
+
+import java.util.Objects;
 
 import me.edgan.redditslide.Views.SubsamplingScaleImageView;
 import org.jspecify.annotations.NullMarked;
@@ -25,6 +28,14 @@ public class TouchEventUtil {
     @SuppressWarnings("deprecation")
     public static boolean handleTouchEventInternal(@NonNull SubsamplingScaleImageView view, @NonNull MotionEvent event) {
         int touchCount = event.getPointerCount();
+
+        // Preconditions established by SubsamplingScaleImageView.onTouchEvent, the only caller: it
+        // returns early unless vTranslate is set, and creates vTranslateStart and vCenterStart just
+        // above the call. fitToBounds mutates vTranslate in place, so these locals stay current.
+        final PointF vTranslate = Objects.requireNonNull(view.vTranslate);
+        final PointF vTranslateStart = Objects.requireNonNull(view.vTranslateStart);
+        final PointF vCenterStart = Objects.requireNonNull(view.vCenterStart);
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_POINTER_1_DOWN:
@@ -39,8 +50,8 @@ public class TouchEventUtil {
                         float distance = distance(event.getX(0), event.getX(1), event.getY(0), event.getY(1));
                         view.scaleStart = view.scale;
                         view.vDistStart = distance;
-                        view.vTranslateStart.set(view.vTranslate.x, view.vTranslate.y);
-                        view.vCenterStart.set((event.getX(0) + event.getX(1)) / 2, (event.getY(0) + event.getY(1)) / 2);
+                        vTranslateStart.set(vTranslate.x, vTranslate.y);
+                        vCenterStart.set((event.getX(0) + event.getX(1)) / 2, (event.getY(0) + event.getY(1)) / 2);
                     } else {
                         // Abort all gestures on second touch
                         view.maxTouchCount = 0;
@@ -49,8 +60,8 @@ public class TouchEventUtil {
                     view.handler.removeMessages(SubsamplingScaleImageView.MESSAGE_LONG_CLICK);
                 } else if (!view.isQuickScaling) {
                     // Start one-finger pan
-                    view.vTranslateStart.set(view.vTranslate.x, view.vTranslate.y);
-                    view.vCenterStart.set(event.getX(), event.getY());
+                    vTranslateStart.set(vTranslate.x, vTranslate.y);
+                    vCenterStart.set(event.getX(), event.getY());
 
                     // Start long click timer
                     view.handler.sendEmptyMessageDelayed(SubsamplingScaleImageView.MESSAGE_LONG_CLICK, 600);
@@ -68,7 +79,7 @@ public class TouchEventUtil {
                         float vCenterEndY = (event.getY(0) + event.getY(1)) / 2;
 
                         if (view.zoomEnabled && (
-                            distance(view.vCenterStart.x, vCenterEndX, view.vCenterStart.y, vCenterEndY) > 5
+                            distance(vCenterStart.x, vCenterEndX, vCenterStart.y, vCenterEndY) > 5
                             || Math.abs(vDistEnd - view.vDistStart) > 5
                             || view.isPanning)) {
                             view.isZooming = true;
@@ -82,34 +93,34 @@ public class TouchEventUtil {
                                 // Minimum scale reached so don't pan. Adjust start settings so any expand will zoom in.
                                 view.vDistStart = vDistEnd;
                                 view.scaleStart = SubsamplingScaleImageViewStateHelper.minScale(view);
-                                view.vCenterStart.set(vCenterEndX, vCenterEndY);
-                                view.vTranslateStart.set(view.vTranslate);
+                                vCenterStart.set(vCenterEndX, vCenterEndY);
+                                vTranslateStart.set(vTranslate);
                             } else if (view.panEnabled) {
                                 // Translate to place the source image coordinate that was at the center of the pinch at the start at the center of the pinch now, to give simultaneous pan + zoom.
-                                float vLeftStart = view.vCenterStart.x - view.vTranslateStart.x;
-                                float vTopStart = view.vCenterStart.y - view.vTranslateStart.y;
+                                float vLeftStart = vCenterStart.x - vTranslateStart.x;
+                                float vTopStart = vCenterStart.y - vTranslateStart.y;
                                 float vLeftNow = vLeftStart * (view.scale / view.scaleStart);
                                 float vTopNow = vTopStart * (view.scale / view.scaleStart);
-                                view.vTranslate.x = vCenterEndX - vLeftNow;
-                                view.vTranslate.y = vCenterEndY - vTopNow;
+                                vTranslate.x = vCenterEndX - vLeftNow;
+                                vTranslate.y = vCenterEndY - vTopNow;
                                 if ((previousScale * SubsamplingScaleImageViewStateHelper.sHeight(view) < view.getHeight()
                                                 && view.scale * SubsamplingScaleImageViewStateHelper.sHeight(view) >= view.getHeight())
                                         || (previousScale * SubsamplingScaleImageViewStateHelper.sWidth(view) < view.getWidth()
                                                 && view.scale * SubsamplingScaleImageViewStateHelper.sWidth(view) >= view.getWidth())) {
                                     view.fitToBounds(true);
-                                    view.vCenterStart.set(vCenterEndX, vCenterEndY);
-                                    view.vTranslateStart.set(view.vTranslate);
+                                    vCenterStart.set(vCenterEndX, vCenterEndY);
+                                    vTranslateStart.set(vTranslate);
                                     view.scaleStart = view.scale;
                                     view.vDistStart = vDistEnd;
                                 }
                             } else if (view.sRequestedCenter != null) {
                                 // With a center specified from code, zoom around that point.
-                                view.vTranslate.x = (view.getWidth() / 2.0f) - (view.scale * view.sRequestedCenter.x);
-                                view.vTranslate.y = (view.getHeight() / 2.0f) - (view.scale * view.sRequestedCenter.y);
+                                vTranslate.x = (view.getWidth() / 2.0f) - (view.scale * view.sRequestedCenter.x);
+                                vTranslate.y = (view.getHeight() / 2.0f) - (view.scale * view.sRequestedCenter.y);
                             } else {
                                 // With no requested center, scale around the image center.
-                                view.vTranslate.x = (view.getWidth() / 2.0f) - (view.scale * (SubsamplingScaleImageViewStateHelper.sWidth(view) / 2.0f));
-                                view.vTranslate.y = (view.getHeight() / 2.0f) - (view.scale * (SubsamplingScaleImageViewStateHelper.sHeight(view) / 2.0f));
+                                vTranslate.x = (view.getWidth() / 2.0f) - (view.scale * (SubsamplingScaleImageViewStateHelper.sWidth(view) / 2.0f));
+                                vTranslate.y = (view.getHeight() / 2.0f) - (view.scale * (SubsamplingScaleImageViewStateHelper.sHeight(view) / 2.0f));
                             }
 
                             view.fitToBounds(true);
@@ -118,14 +129,19 @@ public class TouchEventUtil {
                     } else if (view.isQuickScaling) {
                         // One finger zoom
                         // Stole Google's Magical Formula™ to make sure it feels the exact same
-                        float dist = Math.abs(view.quickScaleVStart.y - event.getY()) * 2 + view.quickScaleThreshold;
+                        // Set together with isQuickScaling by ImageViewGestureListener.
+                        final PointF quickScaleVStart = Objects.requireNonNull(view.quickScaleVStart);
+                        final PointF quickScaleVLastPoint =
+                                Objects.requireNonNull(view.quickScaleVLastPoint);
+                        final PointF quickScaleSCenter = Objects.requireNonNull(view.quickScaleSCenter);
+                        float dist = Math.abs(quickScaleVStart.y - event.getY()) * 2 + view.quickScaleThreshold;
 
                         if (view.quickScaleLastDistance == -1f) {
                             view.quickScaleLastDistance = dist;
                         }
 
-                        boolean isUpwards = event.getY() > view.quickScaleVLastPoint.y;
-                        view.quickScaleVLastPoint.set(0, event.getY());
+                        boolean isUpwards = event.getY() > quickScaleVLastPoint.y;
+                        quickScaleVLastPoint.set(0, event.getY());
 
                         float spanDiff = Math.abs(1 - (dist / view.quickScaleLastDistance)) * 0.5f;
 
@@ -142,12 +158,12 @@ public class TouchEventUtil {
                             view.scale = Math.max(SubsamplingScaleImageViewStateHelper.minScale(view), Math.min(view.maxScale, view.scale * multiplier));
 
                             if (view.panEnabled) {
-                                float vLeftStart = view.vCenterStart.x - view.vTranslateStart.x;
-                                float vTopStart = view.vCenterStart.y - view.vTranslateStart.y;
+                                float vLeftStart = vCenterStart.x - vTranslateStart.x;
+                                float vTopStart = vCenterStart.y - vTranslateStart.y;
                                 float vLeftNow = vLeftStart * (view.scale / view.scaleStart);
                                 float vTopNow = vTopStart * (view.scale / view.scaleStart);
-                                view.vTranslate.x = view.vCenterStart.x - vLeftNow;
-                                view.vTranslate.y = view.vCenterStart.y - vTopNow;
+                                vTranslate.x = vCenterStart.x - vLeftNow;
+                                vTranslate.y = vCenterStart.y - vTopNow;
 
                                 if ((previousScale * SubsamplingScaleImageViewStateHelper.sHeight(view) < view.getHeight()
                                                 && view.scale * SubsamplingScaleImageViewStateHelper.sHeight(view) >= view.getHeight())
@@ -156,22 +172,22 @@ public class TouchEventUtil {
                                     view.fitToBounds(true);
                                     PointF quickScaleVCenter =
                                             SubsamplingScaleImageViewStateHelper.sourceToViewCoord(
-                                                    view, view.quickScaleSCenter);
+                                                    view, quickScaleSCenter);
                                     if (quickScaleVCenter != null) {
-                                        view.vCenterStart.set(quickScaleVCenter);
+                                        vCenterStart.set(quickScaleVCenter);
                                     }
-                                    view.vTranslateStart.set(view.vTranslate);
+                                    vTranslateStart.set(vTranslate);
                                     view.scaleStart = view.scale;
                                     dist = 0;
                                 }
                             } else if (view.sRequestedCenter != null) {
                                 // With a center specified from code, zoom around that point.
-                                view.vTranslate.x = (view.getWidth() / 2.0f) - (view.scale * view.sRequestedCenter.x);
-                                view.vTranslate.y = (view.getHeight() / 2.0f) - (view.scale * view.sRequestedCenter.y);
+                                vTranslate.x = (view.getWidth() / 2.0f) - (view.scale * view.sRequestedCenter.x);
+                                vTranslate.y = (view.getHeight() / 2.0f) - (view.scale * view.sRequestedCenter.y);
                             } else {
                                 // With no requested center, scale around the image center.
-                                view.vTranslate.x = (view.getWidth() / 2.0f) - (view.scale * (SubsamplingScaleImageViewStateHelper.sWidth(view) / 2.0f));
-                                view.vTranslate.y = (view.getHeight() / 2.0f) - (view.scale * (SubsamplingScaleImageViewStateHelper.sHeight(view) / 2.0f));
+                                vTranslate.x = (view.getWidth() / 2.0f) - (view.scale * (SubsamplingScaleImageViewStateHelper.sWidth(view) / 2.0f));
+                                vTranslate.y = (view.getHeight() / 2.0f) - (view.scale * (SubsamplingScaleImageViewStateHelper.sHeight(view) / 2.0f));
                             }
                         }
 
@@ -183,25 +199,25 @@ public class TouchEventUtil {
                         consumed = true;
                     } else if (!view.isZooming) {
                         // One finger pan - translate the image. We do this calculation even with pan disabled so click and long click behaviour is preserved.
-                        float dx = Math.abs(event.getX() - view.vCenterStart.x);
-                        float dy = Math.abs(event.getY() - view.vCenterStart.y);
+                        float dx = Math.abs(event.getX() - vCenterStart.x);
+                        float dy = Math.abs(event.getY() - vCenterStart.y);
 
                         // On the Samsung S6 long click event does not work, because the dx > 5 usually true
                         float offset = view.density * 5;
 
                         if (dx > offset || dy > offset || view.isPanning) {
                             consumed = true;
-                            view.vTranslate.x = view.vTranslateStart.x + (event.getX() - view.vCenterStart.x);
-                            view.vTranslate.y = view.vTranslateStart.y + (event.getY() - view.vCenterStart.y);
+                            vTranslate.x = vTranslateStart.x + (event.getX() - vCenterStart.x);
+                            vTranslate.y = vTranslateStart.y + (event.getY() - vCenterStart.y);
 
-                            float lastX = view.vTranslate.x;
-                            float lastY = view.vTranslate.y;
+                            float lastX = vTranslate.x;
+                            float lastY = vTranslate.y;
                             view.fitToBounds(true);
-                            boolean atXEdge = lastX != view.vTranslate.x;
-                            boolean atYEdge = lastY != view.vTranslate.y;
+                            boolean atXEdge = lastX != vTranslate.x;
+                            boolean atYEdge = lastY != vTranslate.y;
                             boolean edgeXSwipe = atXEdge && dx > dy && !view.isPanning;
                             boolean edgeYSwipe = atYEdge && dy > dx && !view.isPanning;
-                            boolean yPan = lastY == view.vTranslate.y && dy > offset * 3;
+                            boolean yPan = lastY == vTranslate.y && dy > offset * 3;
 
                             if (!edgeXSwipe && !edgeYSwipe && (!atXEdge || !atYEdge || yPan || view.isPanning)) {
                                 view.isPanning = true;
@@ -214,8 +230,8 @@ public class TouchEventUtil {
                             }
 
                             if (!view.panEnabled) {
-                                view.vTranslate.x = view.vTranslateStart.x;
-                                view.vTranslate.y = view.vTranslateStart.y;
+                                vTranslate.x = vTranslateStart.x;
+                                vTranslate.y = vTranslateStart.y;
                                 view.requestDisallowInterceptTouchEvent(false);
                             }
 
@@ -238,8 +254,9 @@ public class TouchEventUtil {
 
                 if (view.isQuickScaling) {
                     view.isQuickScaling = false;
-                    if (!view.quickScaleMoved) {
-                        view.doubleTapZoom(view.quickScaleSCenter, view.vCenterStart);
+                    // Set together with isQuickScaling by ImageViewGestureListener.
+                    if (!view.quickScaleMoved && view.quickScaleSCenter != null) {
+                        view.doubleTapZoom(view.quickScaleSCenter, vCenterStart);
                     }
                 }
 
@@ -247,11 +264,11 @@ public class TouchEventUtil {
                     if (view.isZooming && touchCount == 2) {
                         // Convert from zoom to pan with remaining touch
                         view.isPanning = true;
-                        view.vTranslateStart.set(view.vTranslate.x, view.vTranslate.y);
+                        vTranslateStart.set(vTranslate.x, vTranslate.y);
                         if (event.getActionIndex() == 1) {
-                            view.vCenterStart.set(event.getX(0), event.getY(0));
+                            vCenterStart.set(event.getX(0), event.getY(0));
                         } else {
-                            view.vCenterStart.set(event.getX(1), event.getY(1));
+                            vCenterStart.set(event.getX(1), event.getY(1));
                         }
                     }
                     if (touchCount < 3) {

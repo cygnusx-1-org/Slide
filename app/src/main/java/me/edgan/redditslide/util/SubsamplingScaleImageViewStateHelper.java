@@ -8,11 +8,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import me.edgan.redditslide.Views.SubsamplingScaleImageView;
 import me.edgan.redditslide.Views.SubsamplingScaleImageView.ScaleAndTranslate;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Helper class containing static methods extracted from SubsamplingScaleImageView
  * for managing state, coordinate transformations, and calculating derived properties.
  */
+@NullMarked
 public class SubsamplingScaleImageViewStateHelper {
 
     /** Convert screen to source x coordinate. */

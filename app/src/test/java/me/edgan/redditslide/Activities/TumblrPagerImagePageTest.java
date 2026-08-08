@@ -71,6 +71,10 @@ public class TumblrPagerImagePageTest {
         assertEquals(View.GONE, page.findViewById(R.id.size).getVisibility());
     }
 
+    // Deliberately violates ImageSource.bitmap's @NonNull contract, which is the whole point of
+    // the characterization — so NullAway has to be told to allow this one call. ImageSource became
+    // @NullMarked in phase 15, so the marked call sites can no longer reach this at all.
+    @SuppressWarnings("NullAway")
     @Test(expected = NullPointerException.class)
     public void aNullBitmapIsWhatTheCompletionHandlerMustNeverHandOn() {
         // The mechanism the guard above exists for, pinned rather than described in a comment: the

@@ -3,29 +3,32 @@ package me.edgan.redditslide.Views;
 import android.graphics.PointF;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import me.edgan.redditslide.util.SubsamplingScaleImageViewDrawHelper;
 import me.edgan.redditslide.util.SubsamplingScaleImageViewStateHelper;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Builder class used to set additional options for a scale animation. Create an instance using
  * {@link SubsamplingScaleImageView#animateScale(float)}, then set your options and call {@link #start()}.
  */
+@NullMarked
 public final class AnimationBuilder {
 
     private static final String TAG = AnimationBuilder.class.getSimpleName();
 
     private final SubsamplingScaleImageView view;
     private final float targetScale;
-    private final PointF targetSCenter;
-    private final PointF vFocus;
+    @Nullable private final PointF targetSCenter;
+    @Nullable private final PointF vFocus;
     private long duration = 500;
     private int easing = SubsamplingScaleImageView.EASE_IN_OUT_QUAD;
     private int origin = SubsamplingScaleImageView.ORIGIN_ANIM;
     private boolean interruptible = true;
     private boolean panLimited = true;
-    private SubsamplingScaleImageView.OnAnimationEventListener listener;
+    @Nullable private SubsamplingScaleImageView.OnAnimationEventListener listener;
 
     // Reference static constants via class
     private static final List<Integer> VALID_EASING_STYLES =  Arrays.asList(SubsamplingScaleImageView.EASE_IN_OUT_QUAD, SubsamplingScaleImageView.EASE_OUT_QUAD);
@@ -139,6 +142,14 @@ public final class AnimationBuilder {
 
     /** Starts the animation. */
     public void start() {
+        final PointF targetSCenterSource = this.targetSCenter;
+        if (targetSCenterSource == null) {
+            // getCenter() answers null until the view is ready, so there is nothing to animate
+            // towards. Checked before the interrupt notification below, so an existing animation is
+            // not told it was replaced by one that never starts.
+            return;
+        }
+
         if (view.anim != null && view.anim.listener != null) {
             try {
                 view.anim.listener.onInterruptedByNewAnim();
@@ -150,13 +161,22 @@ public final class AnimationBuilder {
         int vxCenter = view.getPaddingLeft() + (view.getWidth() - view.getPaddingRight() - view.getPaddingLeft()) / 2;
         int vyCenter = view.getPaddingTop() + (view.getHeight() - view.getPaddingBottom() - view.getPaddingTop()) / 2;
         float targetScale = SubsamplingScaleImageViewStateHelper.limitedScale(view, this.targetScale);
-        PointF targetSCenter = panLimited ? SubsamplingScaleImageViewStateHelper.limitedSCenter(view, this.targetSCenter.x, this.targetSCenter.y, targetScale, new PointF()): this.targetSCenter;
+        PointF targetSCenter =
+                panLimited
+                        ? SubsamplingScaleImageViewStateHelper.limitedSCenter(
+                                view,
+                                targetSCenterSource.x,
+                                targetSCenterSource.y,
+                                targetScale,
+                                new PointF())
+                        : targetSCenterSource;
         view.anim = new SubsamplingScaleImageView.Anim();
         view.anim.scaleStart = view.scale;
         view.anim.scaleEnd = targetScale;
         view.anim.time = System.currentTimeMillis();
         view.anim.sCenterEndRequested = targetSCenter;
-        view.anim.sCenterStart = view.getCenter();
+        final PointF sCenterStart = view.getCenter();
+        view.anim.sCenterStart = sCenterStart;
         view.anim.sCenterEnd = targetSCenter;
         view.anim.vFocusStart = SubsamplingScaleImageViewStateHelper.sourceToViewCoord(view, targetSCenter);
         view.anim.vFocusEnd = new PointF(vxCenter, vyCenter);
@@ -167,10 +187,10 @@ public final class AnimationBuilder {
         view.anim.time = System.currentTimeMillis();
         view.anim.listener = listener;
 
-        if (vFocus != null) {
+        if (vFocus != null && sCenterStart != null) {
             // Calculate where translation will be at the end of the anim
-            float vTranslateXEnd = vFocus.x - (targetScale * view.anim.sCenterStart.x);
-            float vTranslateYEnd = vFocus.y - (targetScale * view.anim.sCenterStart.y);
+            float vTranslateXEnd = vFocus.x - (targetScale * sCenterStart.x);
+            float vTranslateYEnd = vFocus.y - (targetScale * sCenterStart.y);
             SubsamplingScaleImageView.ScaleAndTranslate satEnd = new SubsamplingScaleImageView.ScaleAndTranslate(targetScale, new PointF(vTranslateXEnd, vTranslateYEnd));
             // Fit the end translation into bounds
             SubsamplingScaleImageViewDrawHelper.fitToBounds(view, true, satEnd);

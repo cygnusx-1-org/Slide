@@ -389,7 +389,10 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
     @Override
     public View findViewById(int id) {
         View v = super.findViewById(id);
-        if (v == null && mHelper != null) return mHelper.findViewById(id);
+        if (v == null && mHelper != null) {
+            View fromHelper = mHelper.findViewById(id);
+            if (fromHelper != null) return fromHelper;
+        }
         return v;
     }
 

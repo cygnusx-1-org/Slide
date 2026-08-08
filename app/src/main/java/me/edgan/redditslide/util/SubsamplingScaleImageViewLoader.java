@@ -13,24 +13,28 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.exifinterface.media.ExifInterface;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 import com.davemorrissey.labs.subscaleview.ImageViewState;
 import com.davemorrissey.labs.subscaleview.decoder.ImageRegionDecoder;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import me.edgan.redditslide.Views.FallbackImageRegionDecoder;
 import me.edgan.redditslide.Views.ImageSource;
 import me.edgan.redditslide.Views.SubsamplingScaleImageView;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Helper class for SubsamplingScaleImageView responsible for
  * image loading, initialization, and related callbacks.
  */
+@NullMarked
 public class SubsamplingScaleImageViewLoader {
 
     private final SubsamplingScaleImageView view;
-    public ImageSource savedImageSource;
+    @Nullable public ImageSource savedImageSource;
 
     public SubsamplingScaleImageViewLoader(@NonNull SubsamplingScaleImageView view) {
         this.view = view;
@@ -328,7 +332,7 @@ public class SubsamplingScaleImageViewLoader {
      * @param imageSource Image source.
      * @param state State to be restored. Nullable.
      */
-    public final void setImage(@NonNull ImageSource imageSource, ImageViewState state) {
+    public final void setImage(@NonNull ImageSource imageSource, @Nullable ImageViewState state) {
         setImage(imageSource, null, state);
     }
 
@@ -344,7 +348,7 @@ public class SubsamplingScaleImageViewLoader {
      * @param previewSource Optional source for a preview image to be displayed and allow
      *     interaction while the full size image loads.
      */
-    public final void setImage(@NonNull ImageSource imageSource, ImageSource previewSource) {
+    public final void setImage(@NonNull ImageSource imageSource, @Nullable ImageSource previewSource) {
         setImage(imageSource, previewSource, null);
     }
 
@@ -365,7 +369,9 @@ public class SubsamplingScaleImageViewLoader {
      * @param state State to be restored. Nullable.
      */
     public final void setImage(
-            @NonNull ImageSource imageSource, ImageSource previewSource, ImageViewState state) {
+            @NonNull ImageSource imageSource,
+            @Nullable ImageSource previewSource,
+            @Nullable ImageViewState state) {
         // noinspection ConstantConditions
         view.setAlpha(0);
 
@@ -400,7 +406,9 @@ public class SubsamplingScaleImageViewLoader {
                 if (uri == null && previewSource.getResource() != null) {
                     uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + view.getContext().getPackageName() + "/" + previewSource.getResource());
                 }
-                SubsamplingScaleImageView.BitmapLoadTask task = new SubsamplingScaleImageView.BitmapLoadTask(view, view.getContext(), view.bitmapDecoderFactory, uri, true); // bitmapDecoderFactory is public
+                // ImageSource sets exactly one of bitmap, uri and resource, and the bitmap branch
+                // is the one above, so one of the two reads here answered.
+                SubsamplingScaleImageView.BitmapLoadTask task = new SubsamplingScaleImageView.BitmapLoadTask(view, view.getContext(), view.bitmapDecoderFactory, Objects.requireNonNull(uri), true); // bitmapDecoderFactory is public
                 view.execute(task);
             }
         }
@@ -433,22 +441,30 @@ public class SubsamplingScaleImageViewLoader {
         doLoader(this.savedImageSource, useFallbackDecoder);
     }
 
-    public void doLoader(ImageSource imageSource, boolean useFallbackDecoder) {
+    public void doLoader(@Nullable ImageSource imageSource, boolean useFallbackDecoder) {
+        if (imageSource == null) {
+            // Nothing has been loaded yet, so there is no source to fall back to.
+            return;
+        }
+
+        // setImage assigns view.uri before it reaches here, on every path that loads anything.
+        final Uri uri = Objects.requireNonNull(view.uri);
+
         if (imageSource.getTile() || view.sRegion != null) {
 
             // Load the bitmap using tile decoding.
             if (useFallbackDecoder) {
                 view.setRegionDecoderClass(FallbackImageRegionDecoder.class); // Assuming this method remains public or becomes public
-                TilesInitTask task = new TilesInitTask(view, view.getContext(), view.regionDecoderFactory, view.uri); // regionDecoderFactory and uri are public
+                TilesInitTask task = new TilesInitTask(view, view.getContext(), view.regionDecoderFactory, uri); // regionDecoderFactory and uri are public
                 view.execute(task);
             } else {
                 this.savedImageSource = imageSource;
-                TilesInitTask task = new TilesInitTask(view, view.getContext(), view.regionDecoderFactory, view.uri); // regionDecoderFactory and uri are public
+                TilesInitTask task = new TilesInitTask(view, view.getContext(), view.regionDecoderFactory, uri); // regionDecoderFactory and uri are public
                 view.execute(task);
             }
         } else {
             // Load the bitmap as a single image.
-            SubsamplingScaleImageView.BitmapLoadTask task = new SubsamplingScaleImageView.BitmapLoadTask(view, view.getContext(), view.bitmapDecoderFactory, view.uri, false); // bitmapDecoderFactory and uri are public
+            SubsamplingScaleImageView.BitmapLoadTask task = new SubsamplingScaleImageView.BitmapLoadTask(view, view.getContext(), view.bitmapDecoderFactory, uri, false); // bitmapDecoderFactory and uri are public
             view.execute(task);
         }
     }
@@ -474,6 +490,11 @@ public class SubsamplingScaleImageViewLoader {
     public synchronized void initialiseBaseLayer(@NonNull Point maxTileDimensions) {
         view.debug("initialiseBaseLayer maxTileDimensions=%dx%d", maxTileDimensions.x, maxTileDimensions.y);
 
+        // Both callers reach here only with a decoder and a uri in place: the draw path gates on
+        // view.decoder != null, and onTilesInited assigns both before calling.
+        final ImageRegionDecoder decoder = Objects.requireNonNull(view.decoder);
+        final Uri uri = Objects.requireNonNull(view.uri);
+
         view.satTemp = new SubsamplingScaleImageView.ScaleAndTranslate(0f, new PointF(0, 0)); // satTemp is public
         SubsamplingScaleImageViewDrawHelper.fitToBounds(view, true, view.satTemp);
 
@@ -489,18 +510,20 @@ public class SubsamplingScaleImageViewLoader {
                 && SubsamplingScaleImageViewStateHelper.sHeight(view) < maxTileDimensions.y) { // sRegion is public
             // Whole image is required at native resolution, and is smaller than the canvas max
             // bitmap size. Use BitmapDecoder for better image support.
-            view.decoder.recycle(); // decoder is public
+            decoder.recycle();
             view.decoder = null;
-            SubsamplingScaleImageView.BitmapLoadTask task = new SubsamplingScaleImageView.BitmapLoadTask(view, view.getContext(), view.bitmapDecoderFactory, view.uri, false); // bitmapDecoderFactory and uri are public
+            SubsamplingScaleImageView.BitmapLoadTask task = new SubsamplingScaleImageView.BitmapLoadTask(view, view.getContext(), view.bitmapDecoderFactory, uri, false); // bitmapDecoderFactory is public
             view.execute(task);
         } else {
             view.initialiseTileMap(maxTileDimensions); // initialiseTileMap is public
 
-            List<SubsamplingScaleImageView.Tile> baseGrid = view.tileMap.get(view.fullImageSampleSize); // tileMap and fullImageSampleSize are public
+            List<SubsamplingScaleImageView.Tile> baseGrid = Objects.requireNonNull(view.tileMap).get(view.fullImageSampleSize); // tileMap and fullImageSampleSize are public
 
-            for (SubsamplingScaleImageView.Tile baseTile : baseGrid) {
-                SubsamplingScaleImageView.TileLoadTask task = new SubsamplingScaleImageView.TileLoadTask(view, view.decoder, baseTile); // TileLoadTask needs to be public
-                view.execute(task);
+            if (baseGrid != null) {
+                for (SubsamplingScaleImageView.Tile baseTile : baseGrid) {
+                    SubsamplingScaleImageView.TileLoadTask task = new SubsamplingScaleImageView.TileLoadTask(view, decoder, baseTile); // TileLoadTask needs to be public
+                    view.execute(task);
+                }
             }
 
             view.refreshRequiredTiles(true); // refreshRequiredTiles is public

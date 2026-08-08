@@ -36,6 +36,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import me.edgan.redditslide.Authentication;
@@ -55,24 +56,29 @@ import net.dean.jraw.managers.MultiRedditManager;
 import net.dean.jraw.models.MultiReddit;
 import net.dean.jraw.models.MultiSubreddit;
 import net.dean.jraw.models.Subreddit;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /** This class handles creation of Multireddits. */
+@NullMarked
 public class CreateMulti extends BaseActivityAnim {
 
     private ArrayList<String> subs;
     private CustomAdapter adapter;
     private EditText title;
     private RecyclerView recyclerView;
-    private String input;
-    private String old;
+    private String input = "";
+    @Nullable private String old;
     public static final String EXTRA_MULTI = "multi";
 
     // Shows a dialog with all Subscribed subreddits and allows the user to select which ones to
     // include in the Multireddit
-    private String[] all;
+    // Holes: showSelectDialog's first loop skips special subreddits, so the entries it does not
+    // write stay null until the toArray call further down that method compacts them out.
+    private @Nullable String[] all = new String[0];
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         overrideSwipeFromAnywhere();
 
         super.onCreate(savedInstanceState);
@@ -95,8 +101,8 @@ public class CreateMulti extends BaseActivityAnim {
         title = (EditText) findViewById(R.id.name);
 
         subs = new ArrayList<>();
-        if (getIntent().hasExtra(EXTRA_MULTI)) {
-            final String multi = getIntent().getExtras().getString(EXTRA_MULTI);
+        final String multi = getIntent().getStringExtra(EXTRA_MULTI);
+        if (multi != null) {
             old = multi;
             title.setText(multi.replace("%20", " "));
             UserSubscriptions.getMultireddits(
@@ -104,9 +110,12 @@ public class CreateMulti extends BaseActivityAnim {
                         @Override
                         public void onComplete(List<MultiReddit> multis) {
                             for (MultiReddit multiReddit : multis) {
-                                if (multiReddit.getDisplayName().equals(multi)) {
+                                if (multi.equals(multiReddit.getDisplayName())) {
                                     for (MultiSubreddit sub : multiReddit.getSubreddits()) {
-                                        subs.add(sub.getDisplayName().toLowerCase(Locale.ENGLISH));
+                                        final String name = sub.getDisplayName();
+                                        if (name != null) {
+                                            subs.add(name.toLowerCase(Locale.ENGLISH));
+                                        }
                                     }
                                 }
                             }
@@ -233,7 +242,7 @@ public class CreateMulti extends BaseActivityAnim {
 
     private class AsyncGetSubreddit extends AsyncTask<String, Void, Subreddit> {
         @Override
-        public void onPostExecute(Subreddit subreddit) {
+        public void onPostExecute(@Nullable Subreddit subreddit) {
             if (subreddit != null
                     || input.equalsIgnoreCase("friends")
                     || input.equalsIgnoreCase("mod")) {
@@ -244,10 +253,10 @@ public class CreateMulti extends BaseActivityAnim {
         }
 
         @Override
-        protected Subreddit doInBackground(final String... params) {
+        protected @Nullable Subreddit doInBackground(final String... params) {
             try {
                 if (subs.contains(params[0])) return null;
-                return Authentication.reddit.getSubreddit(params[0]);
+                return Objects.requireNonNull(Authentication.reddit).getSubreddit(params[0]);
             } catch (Exception e) {
                 runOnUiThread(
                         new Runnable() {
@@ -341,6 +350,7 @@ public class CreateMulti extends BaseActivityAnim {
     public class SaveMulti extends AsyncTask<Void, Void, Void> {
         // Snapshot of the title field, read on the UI thread; doInBackground()
         // runs on a worker thread and must not touch Views directly.
+        @SuppressWarnings("NullAway.Init") // assigned in onPreExecute, before doInBackground runs
         private String titleText;
 
         @Override

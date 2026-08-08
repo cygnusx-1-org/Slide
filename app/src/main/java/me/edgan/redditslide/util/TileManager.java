@@ -8,10 +8,12 @@ import java.util.List;
 import java.util.Map;
 import me.edgan.redditslide.Views.SubsamplingScaleImageView;
 import me.edgan.redditslide.Views.SubsamplingScaleImageView.Tile;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Helper class for managing tiles in SubsamplingScaleImageView.
  */
+@NullMarked
 public class TileManager {
 
     /**

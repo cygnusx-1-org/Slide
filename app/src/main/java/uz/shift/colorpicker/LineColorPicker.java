@@ -13,8 +13,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import me.edgan.redditslide.R;
+import androidx.annotation.Nullable;
 
+import java.util.Objects;
+
+import me.edgan.redditslide.R;
+import org.jspecify.annotations.NullMarked;
+
+@NullMarked
 public class LineColorPicker extends View {
 
     int[] colors;
@@ -23,7 +29,7 @@ public class LineColorPicker extends View {
     private Paint paint;
     private Rect rect = new Rect();
     private int selectedColor;
-    private OnColorChangedListener onColorChanged;
+    @Nullable private OnColorChangedListener onColorChanged;
     private int cellSize;
     private int mOrientation;
     private boolean isClick = false;
@@ -233,7 +239,10 @@ public class LineColorPicker extends View {
     @Override
     protected Parcelable onSaveInstanceState() {
         // begin boilerplate code that allows parent classes to save state
-        Parcelable superState = super.onSaveInstanceState();
+        // View.onSaveInstanceState() is declared @Nullable but returns BaseSavedState.EMPTY_STATE
+        // when it has nothing to save, and AbsSavedState's constructor throws on a null superState,
+        // so a null here would already have crashed one line down.
+        Parcelable superState = Objects.requireNonNull(super.onSaveInstanceState());
 
         SavedState ss = new SavedState(superState);
         // end

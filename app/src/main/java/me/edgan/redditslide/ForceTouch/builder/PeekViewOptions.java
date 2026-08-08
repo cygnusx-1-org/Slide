@@ -3,7 +3,9 @@ package me.edgan.redditslide.ForceTouch.builder;
 import android.graphics.Color;
 
 import androidx.annotation.FloatRange;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class PeekViewOptions {
 
     @FloatRange(from = .1, to = .9)

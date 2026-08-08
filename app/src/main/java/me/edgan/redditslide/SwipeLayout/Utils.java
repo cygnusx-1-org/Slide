@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 
 import java.lang.reflect.Method;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by Chaojun Wang on 6/9/14. */
+@NullMarked
 public class Utils {
     private Utils() {}
 

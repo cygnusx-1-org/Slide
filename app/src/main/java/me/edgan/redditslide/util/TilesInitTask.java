@@ -6,22 +6,26 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.davemorrissey.labs.subscaleview.decoder.DecoderFactory;
 import com.davemorrissey.labs.subscaleview.decoder.ImageRegionDecoder;
 
 import java.lang.ref.WeakReference;
 
 import me.edgan.redditslide.Views.SubsamplingScaleImageView;
+import org.jspecify.annotations.NullMarked;
 
 /** Async task used to get image details without blocking the UI thread. */
+@NullMarked
 public class TilesInitTask extends AsyncTask<Void, Void, int[]> {
     private static final String TAG = TilesInitTask.class.getSimpleName();
     private final WeakReference<SubsamplingScaleImageView> viewRef;
     private final WeakReference<Context> contextRef;
     private final WeakReference<DecoderFactory<? extends ImageRegionDecoder>> decoderFactoryRef;
     private final Uri source;
-    private ImageRegionDecoder decoder;
-    private Exception exception;
+    @Nullable private ImageRegionDecoder decoder;
+    @Nullable private Exception exception;
 
     public TilesInitTask(SubsamplingScaleImageView view, Context context, DecoderFactory<? extends ImageRegionDecoder> decoderFactory, Uri source) {
         this.viewRef = new WeakReference<>(view);
@@ -31,7 +35,7 @@ public class TilesInitTask extends AsyncTask<Void, Void, int[]> {
     }
 
     @Override
-    protected int[] doInBackground(Void... params) {
+    @Nullable protected int[] doInBackground(Void... params) {
         try {
             String sourceUri = source.toString();
             Context context = contextRef.get();
@@ -75,15 +79,16 @@ public class TilesInitTask extends AsyncTask<Void, Void, int[]> {
     }
 
     @Override
-    protected void onPostExecute(int[] xyo) {
-        if (xyo != null) {
-            final SubsamplingScaleImageView view = viewRef.get();
-            if (view != null) {
-                if (decoder != null && xyo != null && xyo.length == 3) {
-                    view.loader.onTilesInited(decoder, xyo[0], xyo[1], xyo[2]);
-                } else if (exception != null && view.onImageEventListener != null) {
-                    view.onImageEventListener.onImageLoadError(exception);
-                }
+    protected void onPostExecute(@Nullable int[] xyo) {
+        // No outer xyo != null test: doInBackground returns null on exactly the paths that set
+        // exception, so wrapping this in one made the error arm unreachable and swallowed every
+        // tile-init failure. Same shape as BitmapLoadTask.onPostExecute.
+        final SubsamplingScaleImageView view = viewRef.get();
+        if (view != null) {
+            if (decoder != null && xyo != null && xyo.length == 3) {
+                view.loader.onTilesInited(decoder, xyo[0], xyo[1], xyo[2]);
+            } else if (exception != null && view.onImageEventListener != null) {
+                view.onImageEventListener.onImageLoadError(exception);
             }
         }
     }

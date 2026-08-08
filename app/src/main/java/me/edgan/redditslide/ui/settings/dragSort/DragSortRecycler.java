@@ -35,7 +35,9 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import me.edgan.redditslide.R;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 class DragSortRecycler extends RecyclerView.ItemDecoration
         implements RecyclerView.OnItemTouchListener {
 
@@ -57,13 +59,16 @@ class DragSortRecycler extends RecyclerView.ItemDecoration
     private int fingerOffsetInViewY;
     private float autoScrollWindow = 0.1f;
     private float autoScrollSpeed = 0.5f;
-    private BitmapDrawable floatingItem;
-    private Rect floatingItemStatingBounds;
-    private Rect floatingItemBounds;
+    @Nullable private BitmapDrawable floatingItem;
+    // Replaced wholesale by createFloatingBitmap when a drag starts; every read is inside a
+    // floatingItem != null or selectedDragItemPos != -1 branch, so the empty placeholder is
+    // never the one measured.
+    private Rect floatingItemStatingBounds = new Rect();
+    private Rect floatingItemBounds = new Rect();
     private float floatingItemAlpha = 0.5f;
     private int floatingItemBgColor = 0;
     private int viewHandleId = -1;
-    private OnItemMovedListener moveInterface;
+    @Nullable private OnItemMovedListener moveInterface;
     private boolean isDragging;
     @Nullable private OnDragStateChangedListener dragStateChangedListener;
 
@@ -172,7 +177,12 @@ class DragSortRecycler extends RecyclerView.ItemDecoration
      * think that could miss items?..
      */
     private int getNewPosition(RecyclerView rv) {
-        int itemsOnScreen = rv.getLayoutManager().getChildCount();
+        final RecyclerView.LayoutManager layoutManager = rv.getLayoutManager();
+        if (layoutManager == null) {
+            // Nothing on screen to compare against, so the item has not moved.
+            return selectedDragItemPos;
+        }
+        int itemsOnScreen = layoutManager.getChildCount();
 
         float floatMiddleY = floatingItemBounds.top + floatingItemBounds.height() / 2.0f;
 
@@ -181,9 +191,9 @@ class DragSortRecycler extends RecyclerView.ItemDecoration
         for (int n = 0; n < itemsOnScreen; n++) // Scan though items on screen, however they may not
         { // be in order!
 
-            View view = rv.getLayoutManager().getChildAt(n);
+            View view = layoutManager.getChildAt(n);
 
-            if (view.getVisibility() != View.VISIBLE) continue;
+            if (view == null || view.getVisibility() != View.VISIBLE) continue;
 
             int itemPos = rv.getChildAdapterPosition(view);
 

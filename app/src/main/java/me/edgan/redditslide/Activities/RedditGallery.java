@@ -309,7 +309,7 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
                 galleryActivity.mToolbar = rootView.requireViewById(R.id.toolbar);
                 galleryActivity.mToolbar.setTitle(R.string.type_gallery);
                 ToolbarColorizeHelper.colorizeToolbar(
-                        galleryActivity.mToolbar, Color.WHITE, getActivity());
+                        galleryActivity.mToolbar, Color.WHITE, galleryActivity);
                 galleryActivity.setSupportActionBar(galleryActivity.mToolbar);
                 java.util.Objects.requireNonNull(galleryActivity.getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
                 galleryActivity.mToolbar.setPopupTheme(

@@ -25,11 +25,15 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import org.jspecify.annotations.NullMarked;
 
 /** This class defines fields and methods for drawing. */
+@NullMarked
 public class CanvasView extends View {
 
     // Enumeration for Mode
@@ -50,8 +54,7 @@ public class CanvasView extends View {
         QUBIC_BEZIER
     }
 
-    private Canvas canvas = null;
-    private Bitmap bitmap = null;
+    @Nullable private Bitmap bitmap = null;
 
     private List<Path> pathLists = new ArrayList<Path>();
     private List<Paint> paintLists = new ArrayList<Paint>();
@@ -77,7 +80,7 @@ public class CanvasView extends View {
     private int opacity = 255;
     private float blur = 0F;
     private Paint.Cap lineCap = Paint.Cap.ROUND;
-    private PathEffect drawPathEffect = null;
+    @Nullable private PathEffect drawPathEffect = null;
 
     // for Text
     private String text = "";
@@ -255,7 +258,10 @@ public class CanvasView extends View {
         // Line break automatically
         float textLength = paintForMeasureText.measureText(this.text);
         float lengthOfChar = textLength / (float) this.text.length();
-        float restWidth = this.canvas.getWidth() - textX; // text-align : right
+        // The canvas being drawn into. This read used to go through a field that onDraw only
+        // assigned after calling drawText, so it was null on the first draw — reached whenever
+        // text was set before the first draw. Nothing else read that field.
+        float restWidth = canvas.getWidth() - textX; // text-align : right
         int numChars =
                 (lengthOfChar <= 0)
                         ? 1
@@ -454,7 +460,6 @@ public class CanvasView extends View {
         }
 
         this.drawText(canvas);
-        this.canvas = canvas;
     }
 
     /**
@@ -787,7 +792,7 @@ public class CanvasView extends View {
      *
      * @return drawPathEffect
      */
-    public PathEffect getDrawPathEffect() {
+    @Nullable public PathEffect getDrawPathEffect() {
         return drawPathEffect;
     }
 
@@ -796,7 +801,7 @@ public class CanvasView extends View {
      *
      * @param drawPathEffect
      */
-    public void setDrawPathEffect(PathEffect drawPathEffect) {
+    public void setDrawPathEffect(@Nullable PathEffect drawPathEffect) {
         this.drawPathEffect = drawPathEffect;
     }
 
@@ -843,25 +848,34 @@ public class CanvasView extends View {
     /**
      * This method gets current canvas as bitmap.
      *
-     * @return This is returned as bitmap.
+     * @return This is returned as bitmap, or null before the view has been measured and drawn.
      */
-    public Bitmap getBitmap() {
+    @Nullable public Bitmap getBitmap() {
         this.setDrawingCacheEnabled(false);
         this.setDrawingCacheEnabled(true);
 
-        return Bitmap.createBitmap(this.getDrawingCache());
+        // getDrawingCache() is null until the view has been measured and drawn, and
+        // Bitmap.createBitmap(null) throws rather than returning null. Activities/Draw already
+        // tests this result for null and gives up on the share; returning null is what makes that
+        // test able to fire.
+        final Bitmap cache = this.getDrawingCache();
+
+        return cache == null ? null : Bitmap.createBitmap(cache);
     }
 
     /**
      * This method gets current canvas as scaled bitmap.
      *
-     * @return This is returned as scaled bitmap.
+     * @return This is returned as scaled bitmap, or null before the view has been measured and
+     *     drawn.
      */
-    public Bitmap getScaleBitmap(int w, int h) {
+    @Nullable public Bitmap getScaleBitmap(int w, int h) {
         this.setDrawingCacheEnabled(false);
         this.setDrawingCacheEnabled(true);
 
-        return Bitmap.createScaledBitmap(this.getDrawingCache(), w, h, true);
+        final Bitmap cache = this.getDrawingCache();
+
+        return cache == null ? null : Bitmap.createScaledBitmap(cache, w, h, true);
     }
 
     /**
@@ -904,18 +918,22 @@ public class CanvasView extends View {
      *
      * @param format
      * @param quality
-     * @return This is returned as byte array of bitmap.
+     * @return This is returned as byte array of bitmap, or null before the view has been measured
+     *     and drawn.
      */
-    public byte[] getBitmapAsByteArray(CompressFormat format, int quality) {
-        return getBitmapAsByteArray(this.getBitmap(), format, quality);
+    @Nullable public byte[] getBitmapAsByteArray(CompressFormat format, int quality) {
+        final Bitmap drawn = this.getBitmap();
+
+        return drawn == null ? null : getBitmapAsByteArray(drawn, format, quality);
     }
 
     /**
      * This method gets the bitmap as byte array. Bitmap format is PNG, and quality is 100.
      *
-     * @return This is returned as byte array of bitmap.
+     * @return This is returned as byte array of bitmap, or null before the view has been measured
+     *     and drawn.
      */
-    public byte[] getBitmapAsByteArray() {
+    @Nullable public byte[] getBitmapAsByteArray() {
         return this.getBitmapAsByteArray(CompressFormat.PNG, 100);
     }
 }

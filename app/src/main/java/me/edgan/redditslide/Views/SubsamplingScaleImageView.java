@@ -39,6 +39,7 @@ import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -48,6 +49,7 @@ import me.edgan.redditslide.util.SubsamplingScaleImageViewLoader;
 import me.edgan.redditslide.util.SubsamplingScaleImageViewStateHelper;
 import me.edgan.redditslide.util.TileManager;
 import me.edgan.redditslide.util.TouchEventUtil;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Displays an image subsampled as necessary to avoid loading too much image data into memory. After
@@ -67,6 +69,7 @@ import me.edgan.redditslide.util.TouchEventUtil;
  * <p><a href="https://github.com/davemorrissey/subsampling-scale-image-view">View project on
  * GitHub</a>
  */
+@NullMarked
 @SuppressWarnings("unused")
 public class SubsamplingScaleImageView extends View {
 
@@ -185,7 +188,7 @@ public class SubsamplingScaleImageView extends View {
     public static final int ORIGIN_DOUBLE_TAP_ZOOM = 4;
 
     // Bitmap (preview or full image)
-    public Bitmap bitmap;
+    @Nullable public Bitmap bitmap;
 
     // Whether the bitmap is a preview image
     public boolean bitmapIsPreview;
@@ -194,13 +197,13 @@ public class SubsamplingScaleImageView extends View {
     public boolean bitmapIsCached;
 
     // Uri of full size image
-    public Uri uri;
+    @Nullable public Uri uri;
 
     // Sample size used to display the whole image when fully zoomed out
     public int fullImageSampleSize;
 
     // Map of zoom level to tile grid
-    public Map<Integer, List<Tile>> tileMap;
+    @Nullable public Map<Integer, List<Tile>> tileMap;
 
     // Overlay tile boundaries and other info
     public boolean debug;
@@ -249,21 +252,21 @@ public class SubsamplingScaleImageView extends View {
     public float scaleStart;
 
     // Screen coordinate of top-left corner of source image
-    public PointF vTranslate;
-    public PointF vTranslateStart;
-    public PointF vTranslateBefore;
+    @Nullable public PointF vTranslate;
+    @Nullable public PointF vTranslateStart;
+    @Nullable public PointF vTranslateBefore;
 
     // Source coordinate to center on, used when new position is set externally before view is ready
-    public Float pendingScale;
-    public PointF sPendingCenter;
-    public PointF sRequestedCenter;
+    @Nullable public Float pendingScale;
+    @Nullable public PointF sPendingCenter;
+    @Nullable public PointF sRequestedCenter;
 
     // Source image dimensions and orientation - dimensions relate to the unrotated image
     public int sWidth;
     public int sHeight;
     public int sOrientation;
-    public Rect sRegion;
-    public Rect pRegion;
+    @Nullable public Rect sRegion;
+    @Nullable public Rect pRegion;
 
     // Is two-finger zooming in progress
     public boolean isZooming;
@@ -275,11 +278,11 @@ public class SubsamplingScaleImageView extends View {
     public int maxTouchCount;
 
     // Fling detector
-    public GestureDetector detector;
-    public GestureDetector singleDetector;
+    @Nullable public GestureDetector detector;
+    @Nullable public GestureDetector singleDetector;
 
     // Tile and image decoding
-    public ImageRegionDecoder decoder;
+    @Nullable public ImageRegionDecoder decoder;
     public final ReadWriteLock decoderLock = new ReentrantReadWriteLock(true);
     public DecoderFactory<? extends ImageDecoder> bitmapDecoderFactory =
             new CompatDecoderFactory<ImageDecoder>(SkiaImageDecoder.class, SettingValues.highColorspaceImages ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565);
@@ -287,19 +290,19 @@ public class SubsamplingScaleImageView extends View {
             new CompatDecoderFactory<ImageRegionDecoder>(SkiaImageRegionDecoder.class, SettingValues.highColorspaceImages ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565);
 
     // Debug values
-    public PointF vCenterStart;
+    @Nullable public PointF vCenterStart;
     public float vDistStart;
 
     // Current quickscale state
     public final float quickScaleThreshold;
     public float quickScaleLastDistance;
     public boolean quickScaleMoved;
-    public PointF quickScaleVLastPoint;
-    public PointF quickScaleSCenter;
-    public PointF quickScaleVStart;
+    @Nullable public PointF quickScaleVLastPoint;
+    @Nullable public PointF quickScaleSCenter;
+    @Nullable public PointF quickScaleVStart;
 
     // Scale and center animation tracking
-    public Anim anim;
+    @Nullable public Anim anim;
 
     // Whether a ready notification has been sent to subclasses
     public boolean readySent;
@@ -307,29 +310,29 @@ public class SubsamplingScaleImageView extends View {
     public boolean imageLoadedSent;
 
     // Event listener
-    public OnImageEventListener onImageEventListener;
+    @Nullable public OnImageEventListener onImageEventListener;
 
     // Scale and center listener
-    private OnStateChangedListener onStateChangedListener;
+    @Nullable private OnStateChangedListener onStateChangedListener;
 
     // Long click listener
-    private OnLongClickListener onLongClickListener;
+    @Nullable private OnLongClickListener onLongClickListener;
 
     // Long click handler
     public final Handler handler;
     public static final int MESSAGE_LONG_CLICK = 1;
 
     // Paint objects created once and reused for efficiency
-    public Paint bitmapPaint;
-    public Paint debugPaint;
-    public Paint debugTextPaint;
-    public Paint debugLinePaint;
-    public Paint tileBgPaint;
+    @Nullable public Paint bitmapPaint;
+    @Nullable public Paint debugPaint;
+    @Nullable public Paint debugTextPaint;
+    @Nullable public Paint debugLinePaint;
+    @Nullable public Paint tileBgPaint;
 
     // Volatile fields used to reduce object creation
-    public ScaleAndTranslate satTemp;
-    public Matrix matrix;
-    public RectF sRect;
+    @Nullable public ScaleAndTranslate satTemp;
+    @Nullable public Matrix matrix;
+    @Nullable public RectF sRect;
     public float[] srcArray = new float[8];
     public float[] dstArray = new float[8];
 
@@ -337,12 +340,12 @@ public class SubsamplingScaleImageView extends View {
     public final float density;
 
     // A global preference for bitmap format, available to decoder classes that respect it
-    private static Bitmap.Config preferredBitmapConfig;
+    @Nullable private static Bitmap.Config preferredBitmapConfig;
 
     // Loader helper instance
     public SubsamplingScaleImageViewLoader loader;
 
-    public SubsamplingScaleImageView(Context context, AttributeSet attr) {
+    public SubsamplingScaleImageView(Context context, @Nullable AttributeSet attr) {
         super(context, attr);
         this.loader = new SubsamplingScaleImageViewLoader(this); // Initialize loader
         density = getResources().getDisplayMetrics().density;
@@ -416,7 +419,7 @@ public class SubsamplingScaleImageView extends View {
      *
      * @return the preferred bitmap configuration, or null if none has been set.
      */
-    public static Bitmap.Config getPreferredBitmapConfig() {
+    @Nullable public static Bitmap.Config getPreferredBitmapConfig() {
         return preferredBitmapConfig;
     }
 
@@ -831,7 +834,7 @@ public class SubsamplingScaleImageView extends View {
         private final WeakReference<SubsamplingScaleImageView> viewRef;
         private final WeakReference<ImageRegionDecoder> decoderRef;
         private final WeakReference<Tile> tileRef;
-        private Exception exception;
+        @Nullable private Exception exception;
 
         public TileLoadTask(SubsamplingScaleImageView view, ImageRegionDecoder decoder, Tile tile) {
             this.viewRef = new WeakReference<>(view);
@@ -841,7 +844,7 @@ public class SubsamplingScaleImageView extends View {
         }
 
         @Override
-        protected Bitmap doInBackground(Void... params) {
+        @Nullable protected Bitmap doInBackground(Void... params) {
             try {
                 SubsamplingScaleImageView view = viewRef.get();
                 ImageRegionDecoder decoder = decoderRef.get();
@@ -901,8 +904,8 @@ public class SubsamplingScaleImageView extends View {
         private final WeakReference<DecoderFactory<? extends ImageDecoder>> decoderFactoryRef;
         private final Uri source;
         private final boolean preview;
-        private Bitmap bitmap;
-        private Exception exception;
+        @Nullable private Bitmap bitmap;
+        @Nullable private Exception exception;
 
         public BitmapLoadTask(SubsamplingScaleImageView view, Context context, DecoderFactory<? extends ImageDecoder> decoderFactory, Uri source, boolean preview) {
             this.viewRef = new WeakReference<>(view);
@@ -913,7 +916,7 @@ public class SubsamplingScaleImageView extends View {
         }
 
         @Override
-        protected Integer doInBackground(Void... params) {
+        @Nullable protected Integer doInBackground(Void... params) {
             try {
                 String sourceUri = source.toString();
                 Context context = contextRef.get();
@@ -969,31 +972,36 @@ public class SubsamplingScaleImageView extends View {
         asyncTask.executeOnExecutor(executor);
     }
     public static class Tile {
-        public Rect sRect;
+        // All three Rects are replaced by TileManager immediately after construction, before the
+        // tile is added to any grid; these placeholders are never the ones measured.
+        public Rect sRect = new Rect();
         public int sampleSize;
-        public Bitmap bitmap;
+        @Nullable public Bitmap bitmap;
         public boolean loading;
         public boolean visible;
 
         // Volatile fields instantiated once then updated before use to reduce GC.
-        public Rect vRect;
-        public Rect fileSRect;
+        public Rect vRect = new Rect();
+        public Rect fileSRect = new Rect();
     }
 
     public static class Anim {
         public float scaleStart; // Scale at start of anim
         public float scaleEnd; // Scale at end of anim (target)
-        public PointF sCenterStart; // Source center point at start
-        public PointF sCenterEnd; // Source center point at end, adjusted for pan limits
-        public PointF sCenterEndRequested; // Source center point that was requested, without adjustment
-        public PointF vFocusStart; // View point that was double tapped
-        public PointF vFocusEnd; // Where the view focal point should be moved to during the anim
+        // getCenter() and sourceToViewCoord() both answer null before the view is ready, and
+        // AnimationBuilder.start assigns them straight across.
+        @Nullable public PointF sCenterStart; // Source center point at start
+        @Nullable public PointF sCenterEnd; // Source center point at end, adjusted for pan limits
+        @Nullable public PointF
+                sCenterEndRequested; // Source center point that was requested, without adjustment
+        @Nullable public PointF vFocusStart; // View point that was double tapped
+        @Nullable public PointF vFocusEnd; // Where the view focal point should be moved to during the anim
         public long duration = 500; // How long the anim takes
         public boolean interruptible = true; // Whether the anim can be interrupted by a touch
         public int easing = EASE_IN_OUT_QUAD; // Easing style
         public int origin = ORIGIN_ANIM; // Animation origin (API, double tap or fling)
         public long time = System.currentTimeMillis(); // Start time
-        public OnAnimationEventListener listener; // Event listener
+        @Nullable public OnAnimationEventListener listener; // Event listener
     }
 
     public static class ScaleAndTranslate {
@@ -1214,7 +1222,11 @@ public class SubsamplingScaleImageView extends View {
      * @param vTarget target object for results. Re-use for efficiency.
      */
     public final void getPanRemaining(RectF vTarget) {
-        if (!isReady()) {
+        // isReady() only reports readySent, and loader.reset(false) — setOrientation and
+        // setMinimumTileDpi both take that path — clears vTranslate while leaving readySent set.
+        // The next draw recreates it in preDraw; until then there is no pan to report.
+        final PointF vTranslate = this.vTranslate;
+        if (!isReady() || vTranslate == null) {
             return;
         }
 
@@ -1511,8 +1523,11 @@ public class SubsamplingScaleImageView extends View {
     @Nullable
     public final ImageViewState getState() {
         if (vTranslate != null && sWidth > 0 && sHeight > 0) {
-            // noinspection ConstantConditions
-            return new ImageViewState(getScale(), SubsamplingScaleImageViewStateHelper.getCenter(this), getOrientation());
+            // getCenter answers null only when vTranslate is null, which the guard above rules out.
+            return new ImageViewState(
+                    getScale(),
+                    Objects.requireNonNull(SubsamplingScaleImageViewStateHelper.getCenter(this)),
+                    getOrientation());
         }
 
         return null;
@@ -1707,7 +1722,7 @@ public class SubsamplingScaleImageView extends View {
 
     /** {@inheritDoc} */
     @Override
-    public void setOnLongClickListener(OnLongClickListener onLongClickListener) {
+    public void setOnLongClickListener(@Nullable OnLongClickListener onLongClickListener) {
         this.onLongClickListener = onLongClickListener;
     }
 
@@ -1736,8 +1751,16 @@ public class SubsamplingScaleImageView extends View {
             onStateChangedListener.onScaleChanged(scale, origin);
         }
 
-        if (onStateChangedListener != null && !vTranslate.equals(oldVTranslate)) {
-            onStateChangedListener.onCenterChanged(SubsamplingScaleImageViewStateHelper.getCenter(this), origin);
+        final PointF vTranslate = this.vTranslate;
+        if (onStateChangedListener != null
+                && vTranslate != null
+                && !vTranslate.equals(oldVTranslate)) {
+            // Read rather than asserted: onScaleChanged above is an arbitrary listener, and one
+            // that reloads the image clears vTranslate, which is what makes getCenter answer null.
+            final PointF center = SubsamplingScaleImageViewStateHelper.getCenter(this);
+            if (center != null) {
+                onStateChangedListener.onCenterChanged(center, origin);
+            }
         }
     }
 

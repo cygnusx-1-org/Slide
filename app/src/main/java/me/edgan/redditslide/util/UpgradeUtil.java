@@ -24,7 +24,9 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import me.edgan.redditslide.SettingValues;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class UpgradeUtil {
     // Increment for each needed change
     private static final int VERSION = 2;
@@ -49,7 +51,7 @@ public class UpgradeUtil {
 
         if (CURRENT < 1) {
             SharedPreferences prefs = context.getSharedPreferences("SETTINGS", 0);
-            String domains = prefs.getString(SettingValues.PREF_ALWAYS_EXTERNAL, "");
+            String domains = PrefUtil.getString(prefs, SettingValues.PREF_ALWAYS_EXTERNAL, "");
 
             domains =
                     domains.replaceFirst("(?<=^|,)youtube.co(?=$|,)", "youtube.com")
@@ -62,13 +64,13 @@ public class UpgradeUtil {
         if (CURRENT < 2) {
             SharedPreferences prefs = context.getSharedPreferences("SETTINGS", 0);
             SharedPreferences.Editor prefsEditor = prefs.edit();
-            String titleFilterStr = prefs.getString(SettingValues.PREF_TITLE_FILTERS, "");
-            String textFilterStr = prefs.getString(SettingValues.PREF_TEXT_FILTERS, "");
-            String flairFilterStr = prefs.getString(SettingValues.PREF_FLAIR_FILTERS, "");
-            String subredditFilterStr = prefs.getString(SettingValues.PREF_SUBREDDIT_FILTERS, "");
-            String domainFilterStr = prefs.getString(SettingValues.PREF_DOMAIN_FILTERS, "");
-            String usersFilterStr = prefs.getString(SettingValues.PREF_USER_FILTERS, "");
-            String alwaysExternalStr = prefs.getString(SettingValues.PREF_ALWAYS_EXTERNAL, "");
+            String titleFilterStr = PrefUtil.getString(prefs, SettingValues.PREF_TITLE_FILTERS, "");
+            String textFilterStr = PrefUtil.getString(prefs, SettingValues.PREF_TEXT_FILTERS, "");
+            String flairFilterStr = PrefUtil.getString(prefs, SettingValues.PREF_FLAIR_FILTERS, "");
+            String subredditFilterStr = PrefUtil.getString(prefs, SettingValues.PREF_SUBREDDIT_FILTERS, "");
+            String domainFilterStr = PrefUtil.getString(prefs, SettingValues.PREF_DOMAIN_FILTERS, "");
+            String usersFilterStr = PrefUtil.getString(prefs, SettingValues.PREF_USER_FILTERS, "");
+            String alwaysExternalStr = PrefUtil.getString(prefs, SettingValues.PREF_ALWAYS_EXTERNAL, "");
 
             prefsEditor.remove(SettingValues.PREF_TITLE_FILTERS);
             prefsEditor.remove(SettingValues.PREF_TEXT_FILTERS);
