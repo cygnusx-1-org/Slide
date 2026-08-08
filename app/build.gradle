@@ -235,9 +235,15 @@ tasks.withType(JavaCompile).configureEach { task ->
         // BuildConfig compile in the same javac invocation.
         excludedPaths = '.*/build/generated/.*'
         option('NullAway:OnlyNullMarked', 'true')
-        // Checks array components. Its generics checking needs TYPE_USE annotations and this
-        // codebase uses androidx's declaration-only @Nullable, so that half is inert here.
-        // See NULLAWAY.md phase 7.
+        // Checks array components, which is the half of it this codebase can use. Its generics
+        // checking needs TYPE_USE annotations *and* a @NullMarked generic class, and phase 16
+        // measured that the second requirement is the binding one: a type argument written on an
+        // unannotated generic is accepted and then ignored, so List<@Nullable X> costs
+        // assignment-compatibility churn at every override and buys no dereference checking at
+        // all. The generics this app instantiates are java.util.*, so that half stays inert
+        // whatever annotation dialect the 289 files use. The four generic classes declared
+        // in-tree ARE checked, and would need `T extends @Nullable Object` to accept a nullable
+        // type argument at all. See NULLAWAY.md phases 7 and 16.
         option('NullAway:JSpecifyMode', 'true')
         // Honor @Nullable found on unannotated third-party code: getIntent().getExtras() and
         // Intent.getAction() are caught this way, and so is most of androidx —

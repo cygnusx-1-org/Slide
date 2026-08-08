@@ -283,7 +283,7 @@ public final class CommentImageUtil {
         return (cached != null && cached > 0) ? cached : 0;
     }
 
-    private static void recordRatio(String url, Bitmap bitmap) {
+    private static void recordRatio(String url, @Nullable Bitmap bitmap) {
         if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
             RATIO_CACHE.put(url, (double) bitmap.getHeight() / bitmap.getWidth());
         }
