@@ -39,11 +39,11 @@ public class ModQueue extends BaseActivityAnim {
 
         setupAppBar(R.id.toolbar, R.string.drawer_moderation, true, true);
 
-        TabLayout tabs = (TabLayout) findViewById(R.id.sliding_tabs);
+        TabLayout tabs = (TabLayout) requireViewById(R.id.sliding_tabs);
         tabs.setTabMode(TabLayout.MODE_SCROLLABLE);
         tabs.setSelectedTabIndicatorColor(new ColorPreferences(ModQueue.this).getColor("no sub"));
-        final View header = findViewById(R.id.header);
-        ViewPager pager = (ViewPager) findViewById(R.id.content_view);
+        final View header = requireViewById(R.id.header);
+        ViewPager pager = (ViewPager) requireViewById(R.id.content_view);
         pager.addOnPageChangeListener(
                 new ViewPager.SimpleOnPageChangeListener() {
                     @Override
@@ -54,7 +54,7 @@ public class ModQueue extends BaseActivityAnim {
                                 .setDuration(180);
                     }
                 });
-        findViewById(R.id.header).setBackgroundColor(Palette.getDefaultColor());
+        requireViewById(R.id.header).setBackgroundColor(Palette.getDefaultColor());
         pager.setAdapter(new ModQueuePagerAdapter(getSupportFragmentManager()));
         tabs.setupWithViewPager(pager);
     }

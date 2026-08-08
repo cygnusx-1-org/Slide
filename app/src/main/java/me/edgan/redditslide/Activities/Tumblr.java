@@ -81,7 +81,7 @@ public class Tumblr extends BaseSaveActivity {
             finish();
         }
         if (id == R.id.grid) {
-            requireToolbar().findViewById(R.id.grid).callOnClick();
+            requireToolbar().requireViewById(R.id.grid).callOnClick();
         }
         if (id == R.id.comments) {
             String submissionPermalink = getIntent().getStringExtra(MediaView.SUBMISSION_URL);
@@ -144,7 +144,7 @@ public class Tumblr extends BaseSaveActivity {
         // Keep the screen on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        final ViewPager pager = (ViewPager) findViewById(R.id.images);
+        final ViewPager pager = (ViewPager) requireViewById(R.id.images);
 
         album = new TumblrPagerAdapter(getSupportFragmentManager());
         pager.setAdapter(album);
@@ -231,25 +231,25 @@ public class Tumblr extends BaseSaveActivity {
             rootView = inflater.inflate(R.layout.fragment_verticalalbum, container, false);
 
             final PreCachingLayoutManager mLayoutManager =
-                    new PreCachingLayoutManager(getActivity());
-            recyclerView = rootView.findViewById(R.id.images);
+                    new PreCachingLayoutManager(requireActivity());
+            recyclerView = rootView.requireViewById(R.id.images);
             recyclerView.setLayoutManager(mLayoutManager);
-            ((Tumblr) getActivity()).url =
-                    MiscUtil.orEmpty(getActivity().getIntent().getStringExtra(EXTRA_URL));
+            ((Tumblr) requireActivity()).url =
+                    MiscUtil.orEmpty(requireActivity().getIntent().getStringExtra(EXTRA_URL));
 
-            new LoadIntoRecycler(((Tumblr) getActivity()).url, getActivity())
+            new LoadIntoRecycler(((Tumblr) requireActivity()).url, requireActivity())
                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            ((Tumblr) getActivity()).mToolbar = rootView.findViewById(R.id.toolbar);
-            ((Tumblr) getActivity()).requireToolbar().setTitle(R.string.type_tumblr);
+            ((Tumblr) requireActivity()).mToolbar = rootView.requireViewById(R.id.toolbar);
+            ((Tumblr) requireActivity()).requireToolbar().setTitle(R.string.type_tumblr);
             ToolbarColorizeHelper.colorizeToolbar(
-                    ((Tumblr) getActivity()).requireToolbar(), Color.WHITE, (getActivity()));
-            ((Tumblr) getActivity()).setSupportActionBar(((Tumblr) getActivity()).requireToolbar());
-            java.util.Objects.requireNonNull(((Tumblr) getActivity()).getSupportActionBar())
+                    ((Tumblr) requireActivity()).requireToolbar(), Color.WHITE, (requireActivity()));
+            ((Tumblr) requireActivity()).setSupportActionBar(((Tumblr) requireActivity()).requireToolbar());
+            java.util.Objects.requireNonNull(((Tumblr) requireActivity()).getSupportActionBar())
                     .setDisplayHomeAsUpEnabled(true);
 
-            ((Tumblr) getActivity())
+            ((Tumblr) requireActivity())
                     .mToolbar.setPopupTheme(
-                            new ColorPreferences(getActivity())
+                            new ColorPreferences(requireActivity())
                                     .getDarkThemeSubreddit(ColorPreferences.FONT_STYLE));
             return rootView;
         }
@@ -286,7 +286,7 @@ public class Tumblr extends BaseSaveActivity {
                     return false;
                 }
                 if (getActivity() != null) {
-                    getActivity().findViewById(R.id.progress).setVisibility(View.GONE);
+                    getActivity().requireViewById(R.id.progress).setVisibility(View.GONE);
                     ((Tumblr) getActivity()).images = new ArrayList<>(jsonElements);
                     TumblrView adapter =
                             new TumblrView(

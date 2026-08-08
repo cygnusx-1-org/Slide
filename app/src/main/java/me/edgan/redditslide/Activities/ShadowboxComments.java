@@ -45,7 +45,7 @@ public class ShadowboxComments extends FullScreenActivity {
         setContentView(R.layout.activity_slide);
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
-        ViewPager pager = (ViewPager) findViewById(R.id.content_view);
+        ViewPager pager = (ViewPager) requireViewById(R.id.content_view);
         pager.setAdapter(new ShadowboxCommentsPagerAdapter(getSupportFragmentManager()));
     }
 

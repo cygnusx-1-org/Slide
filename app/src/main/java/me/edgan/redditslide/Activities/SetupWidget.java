@@ -69,7 +69,7 @@ public class SetupWidget extends BaseActivity {
         setupAppBar(R.id.toolbar, R.string.widget_creation_title, true, true);
         header = getLayoutInflater().inflate(R.layout.widget_header, null);
 
-        ListView list = (ListView) findViewById(R.id.subs);
+        ListView list = (ListView) requireViewById(R.id.subs);
         final ArrayList<String> sorted =
                 UserSubscriptions.getSubscriptionsForShortcut(SetupWidget.this);
         final SubChooseAdapter adapter =
@@ -78,8 +78,8 @@ public class SetupWidget extends BaseActivity {
         list.addHeaderView(header);
         list.setAdapter(adapter);
 
-        (header.findViewById(R.id.sort)).clearFocus();
-        ((EditText) header.findViewById(R.id.sort))
+        (header.requireViewById(R.id.sort)).clearFocus();
+        ((EditText) header.requireViewById(R.id.sort))
                 .addTextChangedListener(
                         new SimpleTextWatcher() {
                             @Override
@@ -109,7 +109,7 @@ public class SetupWidget extends BaseActivity {
                         SubredditWidgetProvider.setSubFromid(appWidgetId, name, SetupWidget.this);
                         int theme = 0;
                         int themeId =
-                                ((RadioGroup) header.findViewById(R.id.theme))
+                                ((RadioGroup) header.requireViewById(R.id.theme))
                                         .getCheckedRadioButtonId();
                         if (themeId == R.id.dark) {
                             theme = 1;
@@ -118,7 +118,7 @@ public class SetupWidget extends BaseActivity {
                         }
                         int view = 0;
                         int typeId =
-                                ((RadioGroup) header.findViewById(R.id.type))
+                                ((RadioGroup) header.requireViewById(R.id.type))
                                         .getCheckedRadioButtonId();
                         if (typeId == R.id.big) {
                             view = 1;

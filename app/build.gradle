@@ -240,10 +240,29 @@ tasks.withType(JavaCompile).configureEach { task ->
         // See NULLAWAY.md phase 7.
         option('NullAway:JSpecifyMode', 'true')
         // Honor @Nullable found on unannotated third-party code: getIntent().getExtras() and
-        // Intent.getAction() are caught this way. It reaches less than it looks — getActivity(),
-        // getContext() and findViewById() are @Nullable in the stubs and are NOT honored, by this
-        // option or by a library model. Measured in NULLAWAY.md phases 7 and 8.
+        // Intent.getAction() are caught this way, and so is most of androidx —
+        // Fragment.getTag(), getView(), getParentFragment() and getHost() all fire.
         option('NullAway:AcknowledgeRestrictiveAnnotations', 'true')
+        // NullAway ships DefaultLibraryModels.NONNULL_RETURNS, which declares a handful of
+        // pervasive Android accessors non-null and so overrides both the option above and any
+        // model of ours. That, not "androidx is out of reach", is why phases 0, 7 and 8 could not
+        // reach Fragment.getActivity()/getContext(). Dropping the two entries makes their real
+        // androidx @Nullable visible and put 285 call sites under the checker; see NULLAWAY.md
+        // phase 14.
+        //
+        // The key is class + bare method name. A signature ("getActivity()") silently matches
+        // nothing, which is how this option first read as broken.
+        //
+        // findViewById is deliberately NOT listed. Activity.findViewById and View.findViewById
+        // carry no nullability annotation at all — AOSP says so in a source comment — so skipping
+        // their model changes nothing. Those sites are source changes or nothing.
+        //
+        // Fragment.getArguments is the obvious next entry and costs 23 findings; the other six
+        // models measured alongside it (ViewGroup.getChildAt, the three getDrawable overloads,
+        // TextInputLayout.getEditText, View.getResources) cost zero. See NULLAWAY.md phase 14.
+        option('NullAway:IgnoreLibraryModelsFor',
+                'androidx.fragment.app.Fragment.getActivity'
+                        + ',androidx.fragment.app.Fragment.getContext')
         // Read assertNotNull(x) / assertThat(x).isNotNull() as null checks. Only meaningful in
         // the unit-test compiles, but harmless in the others.
         option('NullAway:HandleTestAssertionLibraries', 'true')

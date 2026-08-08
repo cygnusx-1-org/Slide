@@ -249,7 +249,7 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             titleString.append(time);
             titleString.append(spacer);
 
-            final ImageView mod = holder.itemView.findViewById(R.id.mod);
+            final ImageView mod = holder.itemView.requireViewById(R.id.mod);
             try {
                 if (UserSubscriptions.modOf != null
                         && UserSubscriptions.modOf.contains(
@@ -394,11 +394,11 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (firstHold instanceof SpacerViewHolder) {
             firstHold
                     .itemView
-                    .findViewById(R.id.height)
+                    .requireViewById(R.id.height)
                     .setLayoutParams(
                             new LinearLayout.LayoutParams(
                                     firstHold.itemView.getWidth(),
-                                    mContext.findViewById(R.id.header).getHeight()));
+                                    mContext.requireViewById(R.id.header).getHeight()));
         }
     }
 

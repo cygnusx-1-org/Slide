@@ -255,13 +255,13 @@ public class Tutorial extends AppCompatActivity {
                 @Nullable Bundle savedInstanceState) {
             welcomeBinding = FragmentWelcomeBinding.inflate(inflater, container, false);
             welcomeBinding.welcomeGetStarted.setOnClickListener(
-                    v1 -> ((Tutorial) getActivity()).binding.tutorialViewPager.setCurrentItem(1));
+                    v1 -> ((Tutorial) requireActivity()).binding.tutorialViewPager.setCurrentItem(1));
 
             // Add click listener for restore button
             welcomeBinding.welcomeRestore.setOnClickListener(v -> {
                 Intent intent = new Intent(getActivity(), SettingsBackup.class);
                 startActivity(intent);
-                getActivity().finish();
+                requireActivity().finish();
             });
 
             // Keep the bottom buttons above the navigation bar under edge-to-edge (Android 15+).
@@ -291,38 +291,38 @@ public class Tutorial extends AppCompatActivity {
                 @NonNull LayoutInflater inflater,
                 final @Nullable ViewGroup container,
                 @Nullable Bundle savedInstanceState) {
-            ((Tutorial) getActivity()).back =
-                    new ColorPreferences(getContext()).getFontStyle().getThemeType();
+            ((Tutorial) requireActivity()).back =
+                    new ColorPreferences(requireContext()).getFontStyle().getThemeType();
 
             personalizeBinding = FragmentPersonalizeBinding.inflate(inflater, container, false);
 
             final int getFontColor =
-                    getActivity()
+                    requireActivity()
                             .getResources()
-                            .getColor(new ColorPreferences(getContext()).getFontStyle().getColor());
+                            .getColor(new ColorPreferences(requireContext()).getFontStyle().getColor());
             BlendModeUtil.tintImageViewAsSrcAtop(
                     personalizeBinding.secondaryColorPreview, getFontColor);
             BlendModeUtil.tintImageViewAsSrcAtop(
                     personalizeBinding.primaryColorPreview, Palette.getDefaultColor());
             personalizeBinding.header.setBackgroundColor(Palette.getDefaultColor());
-            final Window window = getActivity().getWindow();
+            final Window window = requireActivity().getWindow();
             window.setStatusBarColor(Palette.getDarkerColor(Palette.getDefaultColor()));
 
             personalizeBinding.primaryColor.setOnClickListener(
                     v -> {
                         final ChoosemainBinding choosemainBinding =
-                                ChoosemainBinding.inflate(getActivity().getLayoutInflater());
+                                ChoosemainBinding.inflate(requireActivity().getLayoutInflater());
 
                         choosemainBinding.title.setBackgroundColor(Palette.getDefaultColor());
 
                         choosemainBinding.picker.setColors(
-                                ColorPreferences.getBaseColors(getContext()));
+                                ColorPreferences.getBaseColors(requireContext()));
                         for (final int i : choosemainBinding.picker.getColors()) {
-                            for (final int i2 : ColorPreferences.getColors(getContext(), i)) {
+                            for (final int i2 : ColorPreferences.getColors(requireContext(), i)) {
                                 if (i2 == Palette.getDefaultColor()) {
                                     choosemainBinding.picker.setSelectedColor(i);
                                     choosemainBinding.picker2.setColors(
-                                            ColorPreferences.getColors(getContext(), i));
+                                            ColorPreferences.getColors(requireContext(), i));
                                     choosemainBinding.picker2.setSelectedColor(i2);
                                     break;
                                 }
@@ -332,7 +332,7 @@ public class Tutorial extends AppCompatActivity {
                         choosemainBinding.picker.setOnColorChangedListener(
                                 c -> {
                                     choosemainBinding.picker2.setColors(
-                                            ColorPreferences.getColors(getContext(), c));
+                                            ColorPreferences.getColors(requireContext(), c));
                                     choosemainBinding.picker2.setSelectedColor(c);
                                 });
 
@@ -368,7 +368,7 @@ public class Tutorial extends AppCompatActivity {
                                     finishDialogLayout();
                                 });
 
-                        showTrackedDialog(new AlertDialog.Builder(getContext())
+                        showTrackedDialog(new AlertDialog.Builder(requireContext())
                                 .setView(choosemainBinding.getRoot())
                                 );
                     });
@@ -376,7 +376,7 @@ public class Tutorial extends AppCompatActivity {
             personalizeBinding.secondaryColor.setOnClickListener(
                     v -> {
                         final ChooseaccentBinding accentBinding =
-                                ChooseaccentBinding.inflate(getActivity().getLayoutInflater());
+                                ChooseaccentBinding.inflate(requireActivity().getLayoutInflater());
 
                         accentBinding.title.setBackgroundColor(Palette.getDefaultColor());
 
@@ -388,7 +388,7 @@ public class Tutorial extends AppCompatActivity {
                         for (final ColorPreferences.Theme type : ColorPreferences.Theme.values()) {
                             if (type.getThemeType()
                                     == ColorPreferences.ColorThemeOptions.AMOLED.getValue()) {
-                                arrs[i] = ContextCompat.getColor(getActivity(), type.getColor());
+                                arrs[i] = ContextCompat.getColor(requireActivity(), type.getColor());
 
                                 i++;
                             }
@@ -396,7 +396,7 @@ public class Tutorial extends AppCompatActivity {
 
                         accentBinding.picker3.setColors(arrs);
                         accentBinding.picker3.setSelectedColor(
-                                new ColorPreferences(getActivity()).getColor(""));
+                                new ColorPreferences(requireActivity()).getColor(""));
 
                         accentBinding.ok.setOnClickListener(
                                 v12 -> {
@@ -427,7 +427,7 @@ public class Tutorial extends AppCompatActivity {
                                     finishDialogLayout();
                                 });
 
-                        showTrackedDialog(new AlertDialog.Builder(getActivity())
+                        showTrackedDialog(new AlertDialog.Builder(requireActivity())
                                 .setView(accentBinding.getRoot())
                                 );
                     });
@@ -435,7 +435,7 @@ public class Tutorial extends AppCompatActivity {
             personalizeBinding.baseColor.setOnClickListener(
                     v -> {
                         final ChoosethemesmallBinding themesmallBinding =
-                                ChoosethemesmallBinding.inflate(getActivity().getLayoutInflater());
+                                ChoosethemesmallBinding.inflate(requireActivity().getLayoutInflater());
                         final View themesmallBindingRoot = themesmallBinding.getRoot();
 
                         themesmallBinding.title.setBackgroundColor(Palette.getDefaultColor());
@@ -480,7 +480,7 @@ public class Tutorial extends AppCompatActivity {
                                             });
                         }
 
-                        showTrackedDialog(new AlertDialog.Builder(getActivity())
+                        showTrackedDialog(new AlertDialog.Builder(requireActivity())
                                 .setView(themesmallBindingRoot)
                                 );
                     });
@@ -492,7 +492,7 @@ public class Tutorial extends AppCompatActivity {
                 overlayView.setAlpha(1.0f); // Fully opaque black
 
                 // Add overlay to root window
-                ViewGroup rootView = (ViewGroup) getActivity().getWindow().getDecorView().getRootView();
+                ViewGroup rootView = (ViewGroup) requireActivity().getWindow().getDecorView().getRootView();
                 rootView.addView(overlayView, new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT));
@@ -500,7 +500,7 @@ public class Tutorial extends AppCompatActivity {
                 // Complete tutorial and restart app. The app ships with a default Reddit client ID,
                 // so there is no need to prompt for one here.
                 Reddit.colors.edit().putString("Tutorial", "S").commit();
-                Reddit.forceRestart(getActivity(), false);
+                Reddit.forceRestart(requireActivity(), false);
             });
 
             // Keep the Done button above the navigation bar under edge-to-edge (Android 15+). It

@@ -209,7 +209,7 @@ public class PeekMediaView extends RelativeLayout {
                     displayImage(first.getImageUrl());
                 }
                 if (images.size() > 1) {
-                    GridView grid = findViewById(R.id.grid_area);
+                    GridView grid = requireViewById(R.id.grid_area);
                     grid.setNumColumns(5);
                     grid.setVisibility(VISIBLE);
                     grid.setAdapter(new ImageGridAdapter(getContext(), images));
@@ -262,7 +262,7 @@ public class PeekMediaView extends RelativeLayout {
                     displayImage(firstUrl);
                 }
                 if (tumblrImages.size() > 1) {
-                    GridView grid = findViewById(R.id.grid_area);
+                    GridView grid = requireViewById(R.id.grid_area);
                     grid.setNumColumns(5);
                     grid.setVisibility(VISIBLE);
                     grid.setAdapter(new ImageGridAdapter(getContext(), tumblrImages, true));
@@ -385,7 +385,7 @@ public class PeekMediaView extends RelativeLayout {
     }
 
     private void doLoadReddit(String url) {
-        RedditItemView v = findViewById(R.id.reddit_item);
+        RedditItemView v = requireViewById(R.id.reddit_item);
         v.loadUrl(this, url, progress);
     }
 
@@ -539,10 +539,10 @@ public class PeekMediaView extends RelativeLayout {
     @Nullable String actuallyLoaded;
 
     public void doLoadGif(final String dat) {
-        videoView = findViewById(R.id.gif);
+        videoView = requireViewById(R.id.gif);
         videoView.clearFocus();
-        findViewById(R.id.gifarea).setVisibility(View.VISIBLE);
-        findViewById(R.id.submission_image).setVisibility(View.GONE);
+        requireViewById(R.id.gifarea).setVisibility(View.VISIBLE);
+        requireViewById(R.id.submission_image).setVisibility(View.GONE);
         progress.setVisibility(View.VISIBLE);
         gif =
                 new GifUtils.AsyncLoadGif(
@@ -566,7 +566,7 @@ public class PeekMediaView extends RelativeLayout {
 
         if (!imageShown) {
             actuallyLoaded = url;
-            final SubsamplingScaleImageView i = findViewById(R.id.submission_image);
+            final SubsamplingScaleImageView i = requireViewById(R.id.submission_image);
 
             i.setMinimumDpi(70);
             i.setMinimumTileDpi(240);
@@ -678,9 +678,9 @@ public class PeekMediaView extends RelativeLayout {
 
     private void init() {
         inflate(getContext(), R.layout.peek_media_view, this);
-        this.videoView = findViewById(R.id.gif);
-        this.website = findViewById(R.id.website);
-        this.progress = findViewById(R.id.progress);
+        this.videoView = requireViewById(R.id.gif);
+        this.website = requireViewById(R.id.website);
+        this.progress = requireViewById(R.id.progress);
     }
 
     public void setUrlWithSubmission(String url, Submission submission) {

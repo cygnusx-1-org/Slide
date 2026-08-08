@@ -421,12 +421,12 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             firstHolder.itemView.setLayoutParams(
                     new LinearLayout.LayoutParams(
                             firstHolder.itemView.getWidth(),
-                            mContext.findViewById(R.id.header).getHeight()));
+                            mContext.requireViewById(R.id.header).getHeight()));
             if (listView.getLayoutManager() instanceof CatchStaggeredGridLayoutManager) {
                 CatchStaggeredGridLayoutManager.LayoutParams layoutParams =
                         new CatchStaggeredGridLayoutManager.LayoutParams(
                                 ViewGroup.LayoutParams.MATCH_PARENT,
-                                mContext.findViewById(R.id.header).getHeight());
+                                mContext.requireViewById(R.id.header).getHeight());
                 layoutParams.setFullSpan(true);
                 firstHolder.itemView.setLayoutParams(layoutParams);
             }

@@ -37,8 +37,8 @@ public class CommentSearch extends BaseActivityAnim {
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
 
-        final EditText search = (EditText) findViewById(R.id.search);
-        RecyclerView rv = (RecyclerView) findViewById(R.id.vertical_content);
+        final EditText search = (EditText) requireViewById(R.id.search);
+        RecyclerView rv = (RecyclerView) requireViewById(R.id.vertical_content);
         final PreCachingLayoutManager mLayoutManager = new PreCachingLayoutManager(this);
         rv.setLayoutManager(mLayoutManager);
         ArrayList<CommentNode> comments = new ArrayList<>();

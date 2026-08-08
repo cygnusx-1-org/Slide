@@ -53,8 +53,8 @@ public class SidebarLayout extends DrawerLayout {
      */
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        View sidebarScrollView = findViewById(R.id.sidebar_scroll);
-        View commentOverflow = findViewById(R.id.commentOverflow);
+        View sidebarScrollView = requireViewById(R.id.sidebar_scroll);
+        View commentOverflow = requireViewById(R.id.commentOverflow);
         int yOffset = sidebarScrollView.getScrollY();
         for (View view : scrollableViews) {
             Rect rect = new Rect();

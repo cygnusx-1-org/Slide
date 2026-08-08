@@ -169,7 +169,7 @@ public class PeekView extends FrameLayout {
     }
 
     public void doScroll(MotionEvent event) {
-        ((PeekMediaView) content.findViewById(R.id.peek)).doScroll(event);
+        ((PeekMediaView) content.requireViewById(R.id.peek)).doScroll(event);
     }
 
     private void init(

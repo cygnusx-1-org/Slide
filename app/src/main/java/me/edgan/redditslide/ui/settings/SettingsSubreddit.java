@@ -70,12 +70,12 @@ public class SettingsSubreddit extends BaseActivityAnim {
 
         setupAppBar(R.id.toolbar, R.string.title_subreddit_settings, true, true);
 
-        recycler = ((RecyclerView) findViewById(R.id.subslist));
+        recycler = ((RecyclerView) requireViewById(R.id.subslist));
         recycler.setLayoutManager(new LinearLayoutManager(this));
 
         reloadSubList();
 
-        findViewById(R.id.reset)
+        requireViewById(R.id.reset)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -102,7 +102,7 @@ public class SettingsSubreddit extends BaseActivityAnim {
                                         );
                             }
                         });
-        findViewById(R.id.post_floating_action_button)
+        requireViewById(R.id.post_floating_action_button)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -146,7 +146,7 @@ public class SettingsSubreddit extends BaseActivityAnim {
                                         .show();
                             }
                         });
-        findViewById(R.id.color)
+        requireViewById(R.id.color)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -290,7 +290,7 @@ public class SettingsSubreddit extends BaseActivityAnim {
         mSettingsSubAdapter = new SettingsSubAdapter(this, changedSubs);
         recycler.setAdapter(mSettingsSubAdapter);
         final FloatingActionButton fab =
-                (FloatingActionButton) findViewById(R.id.post_floating_action_button);
+                (FloatingActionButton) requireViewById(R.id.post_floating_action_button);
         recycler.addOnScrollListener(
                 new RecyclerView.OnScrollListener() {
                     @Override

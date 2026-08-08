@@ -91,7 +91,7 @@ public class CommentStateUtil {
                     final int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
                     final int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
                     baseView.measure(widthSpec, heightSpec);
-                    View l2 = baseView.findViewById(R.id.replyArea) == null ? baseView.findViewById(R.id.innerSend) : baseView.findViewById(R.id.replyArea);
+                    View l2 = baseView.findViewById(R.id.replyArea) == null ? baseView.requireViewById(R.id.innerSend) : baseView.findViewById(R.id.replyArea);
                     final int widthSpec2 = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
                     final int heightSpec2 = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
                     l2.measure(widthSpec2, heightSpec2);
@@ -105,18 +105,18 @@ public class CommentStateUtil {
             params.setMargins(0, 0, 0, 0);
             holder.itemView.setLayoutParams(params);
 
-            View reply = baseView.findViewById(R.id.reply);
-            View send = baseView.findViewById(R.id.send);
+            View reply = baseView.requireViewById(R.id.reply);
+            View send = baseView.requireViewById(R.id.send);
 
-            final View menu = baseView.findViewById(R.id.menu);
+            final View menu = baseView.requireViewById(R.id.menu);
             final View replyArea = baseView.findViewById(R.id.replyArea);
 
-            final View more = baseView.findViewById(R.id.more);
-            final ImageView upvote = baseView.findViewById(R.id.upvote);
-            final ImageView downvote = baseView.findViewById(R.id.downvote);
-            View discard = baseView.findViewById(R.id.discard);
-            final EditText replyLine = baseView.findViewById(R.id.replyLine);
-            final ImageView mod = baseView.findViewById(R.id.mod);
+            final View more = baseView.requireViewById(R.id.more);
+            final ImageView upvote = baseView.requireViewById(R.id.upvote);
+            final ImageView downvote = baseView.requireViewById(R.id.downvote);
+            View discard = baseView.requireViewById(R.id.discard);
+            final EditText replyLine = baseView.requireViewById(R.id.replyLine);
+            final ImageView mod = baseView.requireViewById(R.id.mod);
 
             final Comment comment = baseNode.getComment();
             if (ActionStates.getVoteDirection(comment) == VoteDirection.UPVOTE) {
@@ -175,7 +175,7 @@ public class CommentStateUtil {
                 mod.setVisibility(View.GONE);
             }
 
-            final ImageView edit = baseView.findViewById(R.id.edit);
+            final ImageView edit = baseView.requireViewById(R.id.edit);
             if (Authentication.name != null
                     && Authentication.name
                             .toLowerCase(Locale.ENGLISH)
@@ -201,7 +201,7 @@ public class CommentStateUtil {
                 edit.setVisibility(View.GONE);
             }
 
-            final ImageView delete = baseView.findViewById(R.id.delete);
+            final ImageView delete = baseView.requireViewById(R.id.delete);
             if (Authentication.name != null
                     && Authentication.name
                             .toLowerCase(Locale.ENGLISH)
@@ -237,7 +237,7 @@ public class CommentStateUtil {
 
                     View l2 =
                             baseView.findViewById(R.id.replyArea) == null
-                                    ? baseView.findViewById(R.id.innerSend)
+                                    ? baseView.requireViewById(R.id.innerSend)
                                     : baseView.findViewById(R.id.replyArea);
                     final int widthSpec2 =
                             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
@@ -270,7 +270,7 @@ public class CommentStateUtil {
                                     }
                                 }
                             });
-                    final TextView profile = baseView.findViewById(R.id.profile);
+                    final TextView profile = baseView.requireViewById(R.id.profile);
                     adapter.changedProfile = Authentication.name;
                     profile.setText("/u/" + adapter.changedProfile);
                     profile.setOnClickListener(
@@ -329,20 +329,20 @@ public class CommentStateUtil {
                             // If the base theme is Light or Sepia, tint the Editor actions to be white
                             if (SettingValues.currentTheme == 1
                                     || SettingValues.currentTheme == 5) {
-                                final ImageView saveDraft = (ImageView) replyArea.findViewById(R.id.savedraft);
-                                final ImageView draft = (ImageView) replyArea.findViewById(R.id.draft);
-                                final ImageView imagerep = (ImageView) replyArea.findViewById(R.id.imagerep);
-                                final ImageView link = (ImageView) replyArea.findViewById(R.id.link);
-                                final ImageView bold = (ImageView) replyArea.findViewById(R.id.bold);
-                                final ImageView italics = (ImageView) replyArea.findViewById(R.id.italics);
-                                final ImageView bulletlist = (ImageView) replyArea.findViewById(R.id.bulletlist);
-                                final ImageView numlist = (ImageView) replyArea.findViewById(R.id.numlist);
-                                final ImageView draw = (ImageView) replyArea.findViewById(R.id.draw);
-                                final ImageView quote = (ImageView) replyArea.findViewById(R.id.quote);
-                                final ImageView size = (ImageView) replyArea.findViewById(R.id.size);
-                                final ImageView strike = (ImageView) replyArea.findViewById(R.id.strike);
-                                final ImageView author = (ImageView) replyArea.findViewById(R.id.author);
-                                final ImageView spoiler = (ImageView) replyArea.findViewById(R.id.spoiler);
+                                final ImageView saveDraft = (ImageView) replyArea.requireViewById(R.id.savedraft);
+                                final ImageView draft = (ImageView) replyArea.requireViewById(R.id.draft);
+                                final ImageView imagerep = (ImageView) replyArea.requireViewById(R.id.imagerep);
+                                final ImageView link = (ImageView) replyArea.requireViewById(R.id.link);
+                                final ImageView bold = (ImageView) replyArea.requireViewById(R.id.bold);
+                                final ImageView italics = (ImageView) replyArea.requireViewById(R.id.italics);
+                                final ImageView bulletlist = (ImageView) replyArea.requireViewById(R.id.bulletlist);
+                                final ImageView numlist = (ImageView) replyArea.requireViewById(R.id.numlist);
+                                final ImageView draw = (ImageView) replyArea.requireViewById(R.id.draw);
+                                final ImageView quote = (ImageView) replyArea.requireViewById(R.id.quote);
+                                final ImageView size = (ImageView) replyArea.requireViewById(R.id.size);
+                                final ImageView strike = (ImageView) replyArea.requireViewById(R.id.strike);
+                                final ImageView author = (ImageView) replyArea.requireViewById(R.id.author);
+                                final ImageView spoiler = (ImageView) replyArea.requireViewById(R.id.spoiler);
                                 final List<ImageView> imageViewSet =
                                     Arrays.asList(
                                         saveDraft,
@@ -394,7 +394,7 @@ public class CommentStateUtil {
                                         }
                                     }
                                 });
-                            final TextView profile = baseView.findViewById(R.id.profile);
+                            final TextView profile = baseView.requireViewById(R.id.profile);
                             adapter.changedProfile = Authentication.name; // Static field access
                             profile.setText("/u/" + adapter.changedProfile);
                             profile.setOnClickListener(
@@ -594,7 +594,7 @@ public class CommentStateUtil {
             }
 
             holder.itemView
-                .findViewById(R.id.background)
+                .requireViewById(R.id.background)
                 .setBackgroundColor(Color.argb(50, Color.red(color), Color.green(color), Color.blue(color)));
         }
     }

@@ -30,11 +30,11 @@ public class SettingsAbout extends BaseActivityAnim {
 
         setupAppBar(R.id.toolbar, R.string.settings_title_about, true, true);
 
-        View privacy = findViewById(R.id.privacy);
-        View report = findViewById(R.id.report);
-        View libs = findViewById(R.id.libs);
-        View changelog = findViewById(R.id.changelog);
-        final TextView version = (TextView) findViewById(R.id.version);
+        View privacy = requireViewById(R.id.privacy);
+        View report = requireViewById(R.id.report);
+        View libs = requireViewById(R.id.libs);
+        View changelog = requireViewById(R.id.changelog);
+        final TextView version = (TextView) requireViewById(R.id.version);
 
         version.setText("Slide v" + BuildConfig.VERSION_NAME);
 
@@ -85,7 +85,7 @@ public class SettingsAbout extends BaseActivityAnim {
                         LinkUtil.openExternally("https://github.com/edgan/Slide/issues");
                     }
                 });
-        findViewById(R.id.sub)
+        requireViewById(R.id.sub)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -96,7 +96,7 @@ public class SettingsAbout extends BaseActivityAnim {
                                         true);
                             }
                         });
-        findViewById(R.id.rate)
+        requireViewById(R.id.rate)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override

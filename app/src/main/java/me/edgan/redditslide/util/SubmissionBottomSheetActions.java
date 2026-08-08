@@ -496,10 +496,10 @@ final AlertDialog reportDialog =
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                            RadioGroup reasonGroup = reportView.findViewById(R.id.report_reasons);
+                                            RadioGroup reasonGroup = reportView.requireViewById(R.id.report_reasons);
                                             String reportReason;
                                             if (reasonGroup.getCheckedRadioButtonId() == R.id.report_other) {
-                                                reportReason = ((EditText) reportView.findViewById(R.id.input_report_reason)).getText().toString();
+                                                reportReason = ((EditText) reportView.requireViewById(R.id.input_report_reason)).getText().toString();
                                             } else {
                                                 reportReason = ((RadioButton) reasonGroup.findViewById(reasonGroup.getCheckedRadioButtonId())).getText().toString();
                                             }
@@ -509,16 +509,16 @@ final AlertDialog reportDialog =
                                     }
                                 ).create();
 
-                        final RadioGroup reasonGroup = reportView.findViewById(R.id.report_reasons);
+                        final RadioGroup reasonGroup = reportView.requireViewById(R.id.report_reasons);
 
                         reasonGroup.setOnCheckedChangeListener(
                             new RadioGroup.OnCheckedChangeListener() {
                                 @Override
                                 public void onCheckedChanged(RadioGroup group, int checkedId) {
                                     if (checkedId == R.id.report_other) {
-                                        reportView.findViewById(R.id.input_report_reason).setVisibility(View.VISIBLE);
+                                        reportView.requireViewById(R.id.input_report_reason).setVisibility(View.VISIBLE);
                                     } else {
-                                        reportView.findViewById(R.id.input_report_reason).setVisibility(View.GONE);
+                                        reportView.requireViewById(R.id.input_report_reason).setVisibility(View.GONE);
                                     }
                                 }
                             }
@@ -542,7 +542,7 @@ final AlertDialog reportDialog =
 
                             @Override
                             protected void onPostExecute(@Nullable Ruleset rules) {
-                                reportView.findViewById(R.id.report_loading).setVisibility(View.GONE);
+                                reportView.requireViewById(R.id.report_loading).setVisibility(View.GONE);
                                 if (rules == null) {
                                     // Could not load rules (offline); leave the dialog as-is
                                     return;

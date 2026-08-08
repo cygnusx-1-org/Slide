@@ -251,9 +251,9 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
         doScoreText(holder, comment, 0);
 
         if (baseNode.isTopLevel()) {
-            holder.itemView.findViewById(R.id.next).setVisibility(View.VISIBLE);
+            holder.itemView.requireViewById(R.id.next).setVisibility(View.VISIBLE);
         } else {
-            holder.itemView.findViewById(R.id.next).setVisibility(View.GONE);
+            holder.itemView.requireViewById(R.id.next).setVisibility(View.GONE);
         }
 
         String body = SubmissionParser.replaceProcessingImgPlaceholders(
@@ -309,7 +309,7 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
                     }
                 });
 
-        holder.itemView.findViewById(R.id.dot).setVisibility(View.VISIBLE);
+        holder.itemView.requireViewById(R.id.dot).setVisibility(View.VISIBLE);
 
         if (baseNode.getDepth() - 1 > 0) {
             int i22 = baseNode.getDepth() - 2;
@@ -332,7 +332,7 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
                 holder.dot.setBackgroundColor(ContextCompat.getColor(mContext, R.color.md_red_500));
             }
         } else {
-            holder.itemView.findViewById(R.id.dot).setVisibility(View.GONE);
+            holder.itemView.requireViewById(R.id.dot).setVisibility(View.GONE);
         }
     }
 

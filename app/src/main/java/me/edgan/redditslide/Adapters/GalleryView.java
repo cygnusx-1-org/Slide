@@ -413,9 +413,9 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         public AlbumViewHolder(View itemView) {
             super(itemView);
-            comments = itemView.findViewById(R.id.comments);
-            image = itemView.findViewById(R.id.image);
-            type = itemView.findViewById(R.id.type);
+            comments = itemView.requireViewById(R.id.comments);
+            image = itemView.requireViewById(R.id.image);
+            type = itemView.requireViewById(R.id.type);
         }
     }
 }

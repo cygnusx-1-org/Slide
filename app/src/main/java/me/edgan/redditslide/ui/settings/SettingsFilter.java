@@ -50,7 +50,7 @@ public class SettingsFilter extends BaseActivityAnim {
         setupRow(R.id.flair_row, FilterType.FLAIR);
 
         // Add switch for subreddit content filters till restart
-        Switch filtersTillRestart = (Switch) findViewById(R.id.subreddit_filters_till_restart);
+        Switch filtersTillRestart = (Switch) requireViewById(R.id.subreddit_filters_till_restart);
         filtersTillRestart.setChecked(SettingValues.subredditFiltersTillRestart);
         filtersTillRestart.setOnCheckedChangeListener((buttonView, isChecked) -> {
             SettingValues.subredditFiltersTillRestart = isChecked;
@@ -60,7 +60,7 @@ public class SettingsFilter extends BaseActivityAnim {
         });
 
         // Add switch for subreddit filter prefix matching
-        Switch filterPrefixMatching = (Switch) findViewById(R.id.subreddit_filter_prefix_matching);
+        Switch filterPrefixMatching = (Switch) requireViewById(R.id.subreddit_filter_prefix_matching);
         filterPrefixMatching.setChecked(SettingValues.subredditFilterPrefixMatching);
         filterPrefixMatching.setOnCheckedChangeListener((buttonView, isChecked) -> {
             SettingValues.subredditFilterPrefixMatching = isChecked;
@@ -70,7 +70,7 @@ public class SettingsFilter extends BaseActivityAnim {
         });
 
         // Add dropdown for how old a post must be before it is filtered
-        Spinner filterOldPostsDays = (Spinner) findViewById(R.id.filter_old_posts_days);
+        Spinner filterOldPostsDays = (Spinner) requireViewById(R.id.filter_old_posts_days);
         String[] dayLabels = new String[FILTER_OLD_POSTS_DAY_OPTIONS.length];
         int selectedIndex = -1;
         for (int i = 0; i < FILTER_OLD_POSTS_DAY_OPTIONS.length; i++) {
@@ -125,7 +125,7 @@ public class SettingsFilter extends BaseActivityAnim {
                 });
 
         // Add switch for filtering old posts
-        Switch filterOldPosts = (Switch) findViewById(R.id.filter_old_posts);
+        Switch filterOldPosts = (Switch) requireViewById(R.id.filter_old_posts);
         filterOldPosts.setChecked(SettingValues.filterOldPosts);
         // The day count only matters while filtering is enabled
         filterOldPostsDays.setEnabled(SettingValues.filterOldPosts);

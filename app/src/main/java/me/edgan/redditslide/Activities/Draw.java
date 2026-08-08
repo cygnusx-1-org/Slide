@@ -54,15 +54,15 @@ public class Draw extends BaseActivity {
         setContentView(R.layout.activity_draw);
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
-        drawView = (CanvasView) findViewById(R.id.paintView);
+        drawView = (CanvasView) requireViewById(R.id.paintView);
         drawView.setBaseColor(Color.parseColor("#303030"));
-        color = findViewById(R.id.color);
+        color = requireViewById(R.id.color);
         CropImageOptions cropImageOptions = new CropImageOptions();
         cropImageOptions.guidelines = CropImageView.Guidelines.ON;
         final CropImageContractOptions options =
                 new CropImageContractOptions(uri, cropImageOptions);
         cropImageLauncher.launch(options);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        setSupportActionBar((Toolbar) requireViewById(R.id.toolbar));
         setupAppBar(R.id.toolbar, "", true, Color.parseColor("#212121"), R.id.toolbar);
     }
 

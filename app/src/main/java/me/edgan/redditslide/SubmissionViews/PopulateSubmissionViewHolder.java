@@ -148,7 +148,7 @@ public class PopulateSubmissionViewHolder {
         // finds it, which is the right no-op for a card that is not in any feed.
         final List<T> postList = posts != null ? posts : new ArrayList<T>();
         PostRecovery.reapplyRecoveredLink(submission);
-        holder.itemView.findViewById(R.id.vote).setVisibility(View.GONE);
+        holder.itemView.requireViewById(R.id.vote).setVisibility(View.GONE);
 
         if (!offline
                 && UserSubscriptions.modOf != null
@@ -229,7 +229,7 @@ public class PopulateSubmissionViewHolder {
                         : "";
 
         if (!scoreRatio.isEmpty()) {
-            TextView percent = holder.itemView.findViewById(R.id.percent);
+            TextView percent = holder.itemView.requireViewById(R.id.percent);
             percent.setVisibility(View.VISIBLE);
             percent.setText(scoreRatio);
 
@@ -422,7 +422,7 @@ public class PopulateSubmissionViewHolder {
 
         if (full) {
             SubmissionClickActions.addClickFunctions(
-                    holder.itemView.findViewById(R.id.wraparea),
+                    holder.itemView.requireViewById(R.id.wraparea),
                     type,
                     mContext,
                     submission,
@@ -431,7 +431,7 @@ public class PopulateSubmissionViewHolder {
         }
 
         if (full) {
-            holder.leadImage.setWrapArea(holder.itemView.findViewById(R.id.wraparea));
+            holder.leadImage.setWrapArea(holder.itemView.requireViewById(R.id.wraparea));
         }
 
         if (full
@@ -439,11 +439,11 @@ public class PopulateSubmissionViewHolder {
                         && submission.getDataNode().has("crosspost_parent_list")
                         && submission.getDataNode().get("crosspost_parent_list") != null
                         && submission.getDataNode().get("crosspost_parent_list").get(0) != null)) {
-            holder.itemView.findViewById(R.id.crosspost).setVisibility(View.VISIBLE);
-            ((TextView) holder.itemView.findViewById(R.id.crossinfo))
+            holder.itemView.requireViewById(R.id.crosspost).setVisibility(View.VISIBLE);
+            ((TextView) holder.itemView.requireViewById(R.id.crossinfo))
                     .setText(SubmissionCache.getCrosspostLine(submission, mContext));
             final ImageView crossThumb =
-                    (ImageView) holder.itemView.findViewById(R.id.crossthumb);
+                    (ImageView) holder.itemView.requireViewById(R.id.crossthumb);
             // The crosspost parent may not carry a "thumbnail" field at all, so guard the node
             // before reading it — .asText() on a null node would NPE.
             final JsonNode crossThumbNode =
@@ -480,7 +480,7 @@ public class PopulateSubmissionViewHolder {
                                 }
                             });
             holder.itemView
-                    .findViewById(R.id.crosspost)
+                    .requireViewById(R.id.crosspost)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
@@ -516,7 +516,7 @@ public class PopulateSubmissionViewHolder {
                             if (SettingValues.actionbarTap && !full) {
                                 CreateCardView.toggleActionbar(holder.itemView);
                             } else {
-                                holder.itemView.findViewById(R.id.menu).callOnClick();
+                                holder.itemView.requireViewById(R.id.menu).callOnClick();
                             }
                         }
                         return true;
@@ -603,9 +603,9 @@ public class PopulateSubmissionViewHolder {
                             selftextSubreddit,
                             holder);
                 }
-                holder.itemView.findViewById(R.id.body_area).setVisibility(View.VISIBLE);
+                holder.itemView.requireViewById(R.id.body_area).setVisibility(View.VISIBLE);
             } else {
-                holder.itemView.findViewById(R.id.body_area).setVisibility(View.GONE);
+                holder.itemView.requireViewById(R.id.body_area).setVisibility(View.GONE);
             }
         }
 
@@ -941,7 +941,7 @@ public class PopulateSubmissionViewHolder {
 
                                                                         d.show();
                                                                         dialoglayout
-                                                                                .findViewById(
+                                                                                .requireViewById(
                                                                                         R.id.cancel)
                                                                                 .setOnClickListener(
                                                                                         new View
@@ -957,7 +957,7 @@ public class PopulateSubmissionViewHolder {
                                                                                             }
                                                                                         });
                                                                         dialoglayout
-                                                                                .findViewById(
+                                                                                .requireViewById(
                                                                                         R.id.submit)
                                                                                 .setOnClickListener(
                                                                                         new View

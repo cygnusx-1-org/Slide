@@ -40,7 +40,7 @@ public class FullscreenVideo extends FullScreenActivity {
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
         String data = getIntent().getStringExtra(EXTRA_HTML);
-        v = (WebView) findViewById(R.id.webgif);
+        v = (WebView) requireViewById(R.id.webgif);
 
         Window window = this.getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);

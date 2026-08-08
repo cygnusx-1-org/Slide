@@ -22,16 +22,16 @@ public class SettingsHistoryFragment {
 
     public void Bind() {
         final SwitchCompat storeHistorySwitch =
-                context.findViewById(R.id.settings_history_storehistory);
+                context.requireViewById(R.id.settings_history_storehistory);
         final SwitchCompat storeNsfwHistorySwitch =
-                context.findViewById(R.id.settings_history_storensfw);
+                context.requireViewById(R.id.settings_history_storensfw);
         final SwitchCompat scrollSeenSwitch =
-                context.findViewById(R.id.settings_history_scrollseen);
+                context.requireViewById(R.id.settings_history_scrollseen);
 
         final RelativeLayout clearPostsLayout =
-                context.findViewById(R.id.settings_history_clearposts);
+                context.requireViewById(R.id.settings_history_clearposts);
         final RelativeLayout clearSubsLayout =
-                context.findViewById(R.id.settings_history_clearsubs);
+                context.requireViewById(R.id.settings_history_clearsubs);
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // * Save history */

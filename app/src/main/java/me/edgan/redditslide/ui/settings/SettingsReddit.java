@@ -24,7 +24,7 @@ public class SettingsReddit extends BaseActivityAnim {
 
         setupAppBar(R.id.toolbar, R.string.settings_reddit_prefs, true, true);
 
-        ((ViewGroup) findViewById(R.id.settings_reddit))
+        ((ViewGroup) requireViewById(R.id.settings_reddit))
                 .addView(
                         getLayoutInflater().inflate(R.layout.activity_settings_reddit_child, null));
 

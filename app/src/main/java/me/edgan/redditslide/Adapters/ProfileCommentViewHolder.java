@@ -21,12 +21,12 @@ public class ProfileCommentViewHolder extends RecyclerView.ViewHolder {
 
     public ProfileCommentViewHolder(View v) {
         super(v);
-        title = v.findViewById(R.id.title);
-        user = v.findViewById(R.id.user);
-        score = v.findViewById(R.id.score);
-        time = v.findViewById(R.id.time);
-        gild = v.findViewById(R.id.gildtext);
-        content = v.findViewById(R.id.content);
-        overflow = v.findViewById(R.id.commentOverflow);
+        title = v.requireViewById(R.id.title);
+        user = v.requireViewById(R.id.user);
+        score = v.requireViewById(R.id.score);
+        time = v.requireViewById(R.id.time);
+        gild = v.requireViewById(R.id.gildtext);
+        content = v.requireViewById(R.id.content);
+        overflow = v.requireViewById(R.id.commentOverflow);
     }
 }

@@ -41,17 +41,17 @@ public class HistoryView extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_verticalcontent, container, false);
 
-        rv = v.findViewById(R.id.vertical_content);
+        rv = v.requireViewById(R.id.vertical_content);
 
-        final PreCachingLayoutManager mLayoutManager = new PreCachingLayoutManager(getContext());
+        final PreCachingLayoutManager mLayoutManager = new PreCachingLayoutManager(requireContext());
 
         rv.setLayoutManager(mLayoutManager);
         rv.setItemViewCacheSize(2);
-        v.findViewById(R.id.post_floating_action_button).setVisibility(View.GONE);
+        v.requireViewById(R.id.post_floating_action_button).setVisibility(View.GONE);
         swipeRefreshLayout = v.findViewById(R.id.activity_main_swipe_refresh_layout);
         final SwipeRefreshLayout mSwipeRefreshLayout = swipeRefreshLayout;
 
-        mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors("default", getActivity()));
+        mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors("default", requireActivity()));
 
         // If we use 'findViewById(R.id.header).getMeasuredHeight()', 0 is always returned.
         // So, we estimate the height of the header in dp
@@ -69,7 +69,7 @@ public class HistoryView extends Fragment {
                 });
 
         posts = createPosts();
-        adapter = new ContributionAdapter(getActivity(), posts, rv);
+        adapter = new ContributionAdapter(requireActivity(), posts, rv);
         rv.setAdapter(adapter);
 
         posts.bindAdapter(adapter, mSwipeRefreshLayout);
@@ -86,8 +86,8 @@ public class HistoryView extends Fragment {
                 });
         rv.addOnScrollListener(
                 new ToolbarScrollHideHandler(
-                        getActivity().findViewById(R.id.toolbar),
-                        getActivity().findViewById(R.id.header)) {
+                        requireActivity().requireViewById(R.id.toolbar),
+                        requireActivity().requireViewById(R.id.header)) {
                     @Override
                     public void onScrollStateChanged(
                             @NonNull RecyclerView recyclerView, int newState) {

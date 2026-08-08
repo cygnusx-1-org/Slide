@@ -80,7 +80,7 @@ public class SubChooseAdapter extends ArrayAdapter<String> {
             convertView =
                     LayoutInflater.from(getContext())
                             .inflate(R.layout.subforsublist, parent, false);
-            viewHolderItem = new ViewHolderItem(convertView.findViewById(R.id.name));
+            viewHolderItem = new ViewHolderItem(convertView.requireViewById(R.id.name));
             convertView.setTag(viewHolderItem);
         } else {
             viewHolderItem = (ViewHolderItem) convertView.getTag();
@@ -90,7 +90,7 @@ public class SubChooseAdapter extends ArrayAdapter<String> {
 
         final String subreddit = fitems.get(position);
 
-        final View colorView = convertView.findViewById(R.id.color);
+        final View colorView = convertView.requireViewById(R.id.color);
         colorView.setBackgroundResource(R.drawable.circle);
         BlendModeUtil.tintDrawableAsModulate(
                 colorView.getBackground(), Palette.getColor(subreddit));

@@ -95,9 +95,9 @@ public class MaterialProgressDialog {
         public MaterialProgressDialog build() {
             final View view =
                     LayoutInflater.from(context).inflate(R.layout.dialog_progress, null);
-            final ProgressBar circular = view.findViewById(R.id.progress_bar);
-            final ProgressBar horizontal = view.findViewById(R.id.progress_bar_horizontal);
-            final TextView text = view.findViewById(R.id.progress_text);
+            final ProgressBar circular = view.requireViewById(R.id.progress_bar);
+            final ProgressBar horizontal = view.requireViewById(R.id.progress_bar_horizontal);
+            final TextView text = view.requireViewById(R.id.progress_text);
 
             if (indeterminate) {
                 horizontal.setVisibility(View.GONE);

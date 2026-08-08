@@ -69,8 +69,8 @@ import net.dean.jraw.models.VoteDirection;
 public class PopulateShadowboxInfo {
     public static void doActionbar(
             final Submission s, final View rootView, final Activity c, boolean extras) {
-        TextView title = rootView.findViewById(R.id.title);
-        TextView desc = rootView.findViewById(R.id.desc);
+        TextView title = rootView.requireViewById(R.id.title);
+        TextView desc = rootView.requireViewById(R.id.desc);
         String distingush = "";
         if (s != null) {
             if (s.getDistinguishedStatus() == DistinguishedStatus.MODERATOR) distingush = "[M]";
@@ -106,14 +106,14 @@ public class PopulateShadowboxInfo {
             titleString.append(TimeUtils.getTimeAgo(s.getCreated().getTime(), c));
 
             desc.setText(titleString);
-            ((TextView) rootView.findViewById(R.id.comments))
+            ((TextView) rootView.requireViewById(R.id.comments))
                     .setText(String.format(Locale.getDefault(), "%d", s.getCommentCount()));
-            ((TextView) rootView.findViewById(R.id.score))
+            ((TextView) rootView.requireViewById(R.id.score))
                     .setText(String.format(Locale.getDefault(), "%d", s.getScore()));
 
             if (extras) {
                 bindVoteAndSaveActions(s, rootView, c);
-                rootView.findViewById(R.id.menu)
+                rootView.requireViewById(R.id.menu)
                         .setOnClickListener(
                                 new View.OnClickListener() {
                                     @Override
@@ -128,8 +128,8 @@ public class PopulateShadowboxInfo {
     public static void doActionbar(
             final CommentNode node, final View rootView, final Activity c, boolean extras) {
         final Comment s = node.getComment();
-        TitleTextView title = rootView.findViewById(R.id.title);
-        TextView desc = rootView.findViewById(R.id.desc);
+        TitleTextView title = rootView.requireViewById(R.id.title);
+        TextView desc = rootView.requireViewById(R.id.desc);
         String distingush = "";
         if (s != null) {
             if (s.getDistinguishedStatus() == DistinguishedStatus.MODERATOR) distingush = "[M]";
@@ -191,7 +191,7 @@ public class PopulateShadowboxInfo {
             titleString.append(TimeUtils.getTimeAgo(s.getCreated().getTime(), c));
 
             desc.setText(titleString);
-            ((TextView) rootView.findViewById(R.id.score))
+            ((TextView) rootView.requireViewById(R.id.score))
                     .setText(String.format(Locale.getDefault(), "%d", s.getScore()));
 
             if (extras) {
@@ -220,8 +220,8 @@ public class PopulateShadowboxInfo {
 
     private static void bindVoteAndSaveActions(
             final PublicContribution s, final View rootView, final Activity c) {
-        final ImageView downvotebutton = rootView.findViewById(R.id.downvote);
-        final ImageView upvotebutton = rootView.findViewById(R.id.upvote);
+        final ImageView downvotebutton = rootView.requireViewById(R.id.downvote);
+        final ImageView upvotebutton = rootView.requireViewById(R.id.upvote);
 
         if (s.isArchived()) {
             downvotebutton.setVisibility(View.GONE);
@@ -235,15 +235,15 @@ public class PopulateShadowboxInfo {
             switch (ActionStates.getVoteDirection(s)) {
                 case UPVOTE:
                     {
-                        ((TextView) rootView.findViewById(R.id.score))
+                        ((TextView) rootView.requireViewById(R.id.score))
                                 .setTextColor(
                                         ContextCompat.getColor(c, R.color.md_orange_500));
                         BlendModeUtil.tintImageViewAsSrcAtop(
                                 upvotebutton,
                                 ContextCompat.getColor(c, R.color.md_orange_500));
-                        ((TextView) rootView.findViewById(R.id.score))
+                        ((TextView) rootView.requireViewById(R.id.score))
                                 .setTypeface(null, Typeface.BOLD);
-                        ((TextView) rootView.findViewById(R.id.score))
+                        ((TextView) rootView.requireViewById(R.id.score))
                                 .setText(
                                         String.format(
                                                 Locale.getDefault(),
@@ -260,15 +260,15 @@ public class PopulateShadowboxInfo {
                     }
                 case DOWNVOTE:
                     {
-                        ((TextView) rootView.findViewById(R.id.score))
+                        ((TextView) rootView.requireViewById(R.id.score))
                                 .setTextColor(
                                         ContextCompat.getColor(c, R.color.md_blue_500));
                         BlendModeUtil.tintImageViewAsSrcAtop(
                                 downvotebutton,
                                 ContextCompat.getColor(c, R.color.md_blue_500));
-                        ((TextView) rootView.findViewById(R.id.score))
+                        ((TextView) rootView.requireViewById(R.id.score))
                                 .setTypeface(null, Typeface.BOLD);
-                        ((TextView) rootView.findViewById(R.id.score))
+                        ((TextView) rootView.requireViewById(R.id.score))
                                 .setText(
                                         String.format(
                                                 Locale.getDefault(),
@@ -285,15 +285,15 @@ public class PopulateShadowboxInfo {
                     }
                 case NO_VOTE:
                     {
-                        ((TextView) rootView.findViewById(R.id.score))
+                        ((TextView) rootView.requireViewById(R.id.score))
                                 .setTextColor(
-                                        ((TextView) rootView.findViewById(R.id.comments))
+                                        ((TextView) rootView.requireViewById(R.id.comments))
                                                 .getCurrentTextColor());
-                        ((TextView) rootView.findViewById(R.id.score))
+                        ((TextView) rootView.requireViewById(R.id.score))
                                 .setText(
                                         String.format(
                                                 Locale.getDefault(), "%d", s.getScore()));
-                        ((TextView) rootView.findViewById(R.id.score))
+                        ((TextView) rootView.requireViewById(R.id.score))
                                 .setTypeface(null, Typeface.NORMAL);
                         final List<ImageView> imageViewSet =
                                 Arrays.asList(downvotebutton, upvotebutton);
@@ -302,7 +302,7 @@ public class PopulateShadowboxInfo {
                     }
             }
         }
-        final ImageView save = (ImageView) rootView.findViewById(R.id.save);
+        final ImageView save = (ImageView) rootView.requireViewById(R.id.save);
         if (Authentication.isLoggedIn && Authentication.didOnline) {
             if (ActionStates.isSaved(s)) {
                 BlendModeUtil.tintImageViewAsSrcAtop(
@@ -338,7 +338,7 @@ public class PopulateShadowboxInfo {
                                 @Override
                                 protected void onPostExecute(Void aVoid) {
                                     ((SlidingUpPanelLayout)
-                                                    rootView.findViewById(
+                                                    rootView.requireViewById(
                                                             R.id.sliding_layout))
                                             .setPanelState(
                                                     SlidingUpPanelLayout.PanelState
@@ -646,7 +646,7 @@ final AlertDialog reportDialog =
                                                         .create();
                                         final RadioGroup reasonGroup =
                                                 reportView
-                                                        .findViewById(R.id.report_reasons);
+                                                        .requireViewById(R.id.report_reasons);
 
                                         reasonGroup.setOnCheckedChangeListener(
                                                 new RadioGroup.OnCheckedChangeListener() {
@@ -688,7 +688,7 @@ final AlertDialog reportDialog =
                                             @Override
                                             protected void onPostExecute(Ruleset rules) {
                                                 reportView
-                                                        .findViewById(R.id.report_loading)
+                                                        .requireViewById(R.id.report_loading)
                                                         .setVisibility(View.GONE);
                                                 if (rules == null) {
                                                     // Could not load rules (offline); leave the dialog as-is

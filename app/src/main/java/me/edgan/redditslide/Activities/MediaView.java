@@ -438,7 +438,7 @@ public class MediaView extends BaseSaveActivity {
                             public void onClick(View v2) {
                                 if (findViewById(R.id.gifheader).getVisibility() == View.GONE) {
                                     AnimatorUtil.animateIn(findViewById(R.id.gifheader), 56);
-                                    AnimatorUtil.fadeOut(findViewById(R.id.black));
+                                    AnimatorUtil.fadeOut(requireViewById(R.id.black));
                                     getWindow().getDecorView().setSystemUiVisibility(0);
                                 } else {
                                     finish();
@@ -504,7 +504,7 @@ public class MediaView extends BaseSaveActivity {
             final String submissionPermalink = getIntent().getStringExtra(SUBMISSION_URL);
             final boolean openCommentsDirect =
                     getIntent().getBooleanExtra(EXTRA_OPEN_COMMENTS_DIRECT, false);
-            findViewById(R.id.comments)
+            requireViewById(R.id.comments)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
@@ -522,7 +522,7 @@ public class MediaView extends BaseSaveActivity {
                                 }
                             });
         } else {
-            findViewById(R.id.comments).setVisibility(View.GONE);
+            requireViewById(R.id.comments).setVisibility(View.GONE);
         }
         if (getIntent().hasExtra(SUBREDDIT)) {
             subreddit = MiscUtil.orEmpty(getIntent().getStringExtra(SUBREDDIT));
@@ -531,7 +531,7 @@ public class MediaView extends BaseSaveActivity {
             submissionTitle = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_SUBMISSION_TITLE));
         }
         index = getIntent().getIntExtra("index", -1);
-        findViewById(R.id.mute).setVisibility(View.GONE);
+        requireViewById(R.id.mute).setVisibility(View.GONE);
 
         if (getIntent().hasExtra(EXTRA_LQ)) {
             String lqUrl = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_DISPLAY_URL));
@@ -539,14 +539,14 @@ public class MediaView extends BaseSaveActivity {
             // Reveal the rotate buttons for the low-res image, same as doLoadImage does — otherwise
             // rotation is unavailable until HQ is tapped.
             showImageControls();
-            findViewById(R.id.hq)
+            requireViewById(R.id.hq)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     imageShown = false;
                                     doLoad(contentUrl);
-                                    findViewById(R.id.hq).setVisibility(View.GONE);
+                                    requireViewById(R.id.hq).setVisibility(View.GONE);
                                 }
                             });
         } else if (ContentType.isImgurImage(contentUrl)
@@ -561,21 +561,21 @@ public class MediaView extends BaseSaveActivity {
 
             displayImage(url);
             showImageControls();
-            findViewById(R.id.hq)
+            requireViewById(R.id.hq)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     imageShown = false;
                                     doLoad(contentUrl);
-                                    findViewById(R.id.hq).setVisibility(View.GONE);
+                                    requireViewById(R.id.hq).setVisibility(View.GONE);
                                 }
                             });
         } else {
             if (!firstUrl.isEmpty()
                     && contentUrl != null
                     && ContentType.displayImage(ContentType.getContentType(contentUrl))) {
-                ((ProgressBar) findViewById(R.id.progress)).setIndeterminate(true);
+                ((ProgressBar) requireViewById(R.id.progress)).setIndeterminate(true);
                 if (ContentType.isImgurHash(firstUrl)) {
                     displayImage(firstUrl + ".png");
                 } else {
@@ -583,13 +583,13 @@ public class MediaView extends BaseSaveActivity {
                 }
             } else if (firstUrl.isEmpty()) {
                 imageShown = false;
-                ((ProgressBar) findViewById(R.id.progress)).setIndeterminate(true);
+                ((ProgressBar) requireViewById(R.id.progress)).setIndeterminate(true);
             }
-            findViewById(R.id.hq).setVisibility(View.GONE);
+            requireViewById(R.id.hq).setVisibility(View.GONE);
             doLoad(contentUrl);
         }
 
-        findViewById(R.id.more)
+        requireViewById(R.id.more)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -597,7 +597,7 @@ public class MediaView extends BaseSaveActivity {
                                 showBottomSheetImage();
                             }
                         });
-        findViewById(R.id.save)
+        requireViewById(R.id.save)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -608,10 +608,10 @@ public class MediaView extends BaseSaveActivity {
                             }
                         });
         if (!SettingValues.imageDownloadButton) {
-            findViewById(R.id.save).setVisibility(View.INVISIBLE);
+            requireViewById(R.id.save).setVisibility(View.INVISIBLE);
         }
 
-        findViewById(R.id.rotate_right)
+        requireViewById(R.id.rotate_right)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -626,7 +626,7 @@ public class MediaView extends BaseSaveActivity {
                             }
                         });
 
-        findViewById(R.id.rotate_left)
+        requireViewById(R.id.rotate_left)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -680,8 +680,8 @@ public class MediaView extends BaseSaveActivity {
     public void doLoadGif(final String dat) {
         isGif = true;
         // Show rotate buttons for videos/GIFs
-        findViewById(R.id.rotate_right).setVisibility(View.VISIBLE);
-        findViewById(R.id.rotate_left).setVisibility(View.VISIBLE);
+        requireViewById(R.id.rotate_right).setVisibility(View.VISIBLE);
+        requireViewById(R.id.rotate_left).setVisibility(View.VISIBLE);
         final ProgressBar loader = (ProgressBar) findViewById(R.id.gifprogress);
         final String gifUrl = GifUtils.AsyncLoadGif.formatUrl(dat); // Corrected static call
 
@@ -698,7 +698,7 @@ public class MediaView extends BaseSaveActivity {
         if (gifPath != null && gifPath.toLowerCase(Locale.ENGLISH).endsWith(".gif") && !isMp4Transcode) {
             // Handle direct .gif URLs with Movie/GifDrawable
             Log.v(TAG, "Loading direct GIF: " + gifUrl); // Changed to Log.v
-            findViewById(R.id.gifarea).setVisibility(View.VISIBLE); // Ensure gifarea is visible for progress bar
+            requireViewById(R.id.gifarea).setVisibility(View.VISIBLE); // Ensure gifarea is visible for progress bar
             findViewById(R.id.submission_image).setVisibility(View.GONE);
             if (videoView != null) videoView.setVisibility(View.GONE); // Hide ExoVideoView
             directGifViewer.setVisibility(View.VISIBLE); // Show our ImageView
@@ -775,22 +775,22 @@ public class MediaView extends BaseSaveActivity {
             // it pages between items or scrolls a list.
             videoView.setScrubEnabled(true);
 
-            findViewById(R.id.black)
+            requireViewById(R.id.black)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     if (findViewById(R.id.gifheader).getVisibility() == View.GONE) {
                                         AnimatorUtil.animateIn(findViewById(R.id.gifheader), 56);
-                                        AnimatorUtil.fadeOut(findViewById(R.id.black));
+                                        AnimatorUtil.fadeOut(requireViewById(R.id.black));
                                     }
                                 }
                             });
             videoView.clearFocus();
-            findViewById(R.id.gifarea).setVisibility(View.VISIBLE);
+            requireViewById(R.id.gifarea).setVisibility(View.VISIBLE);
             findViewById(R.id.submission_image).setVisibility(View.GONE);
             loader.setVisibility(View.VISIBLE); // Progress bar for AsyncLoadGif
-            findViewById(R.id.progress).setVisibility(View.GONE); // Main progress bar for images
+            requireViewById(R.id.progress).setVisibility(View.GONE); // Main progress bar for images
 
             // Ensure this.gif (AsyncLoadGif) is not mixed up with activeGifDrawable (GifDrawable)
             if (this.gif != null) { // Cancel previous AsyncLoadGif if any
@@ -803,20 +803,20 @@ public class MediaView extends BaseSaveActivity {
                             loader,
                             true, // closeIfNull
                             true, // autostart
-                            ((TextView) findViewById(R.id.size)),
+                            ((TextView) requireViewById(R.id.size)),
                             subreddit,
                             submissionTitle);
             // Show and attach speed button for GIFs (relevant for ExoVideoView)
             ImageView speedBtn = (ImageView) findViewById(R.id.speed);
             if (speedBtn != null) speedBtn.setVisibility(View.VISIBLE);
-            videoView.attachMuteButton((ImageView) findViewById(R.id.mute));
-            videoView.attachHqButton((ImageView) findViewById(R.id.hq));
+            videoView.attachMuteButton((ImageView) requireViewById(R.id.mute));
+            videoView.attachHqButton((ImageView) requireViewById(R.id.hq));
             videoView.attachSpeedButton(speedBtn, this);
             this.gif.execute(gifUrl); // Use the formatted gifUrl
         }
 
         // Common setup for both paths (direct GIF or ExoVideoView GIF)
-        findViewById(R.id.more)
+        requireViewById(R.id.more)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -968,9 +968,9 @@ public class MediaView extends BaseSaveActivity {
     // Hide the gif loader bar and reveal the rotate buttons for a shown image. Shared by the direct
     // image load (doLoadImage) and the low-res LQ paths so rotation works on any displayed image.
     private void showImageControls() {
-        findViewById(R.id.gifprogress).setVisibility(View.GONE);
-        findViewById(R.id.rotate_right).setVisibility(View.VISIBLE);
-        findViewById(R.id.rotate_left).setVisibility(View.VISIBLE);
+        requireViewById(R.id.gifprogress).setVisibility(View.GONE);
+        requireViewById(R.id.rotate_right).setVisibility(View.VISIBLE);
+        requireViewById(R.id.rotate_left).setVisibility(View.VISIBLE);
     }
 
     // True once the activity is going away. Async image callbacks (UIL listeners, delayed runnables,
@@ -1008,8 +1008,8 @@ public class MediaView extends BaseSaveActivity {
             final boolean spinnerShown =
                     !contentUrl.equals(getIntent().getStringExtra(EXTRA_DISPLAY_URL));
             if (spinnerShown) {
-                findViewById(R.id.progress).setVisibility(View.VISIBLE);
-                ((ProgressBar) findViewById(R.id.progress)).setIndeterminate(true);
+                requireViewById(R.id.progress).setVisibility(View.VISIBLE);
+                ((ProgressBar) requireViewById(R.id.progress)).setIndeterminate(true);
             }
 
             final String finalUrl2 = contentUrl;
@@ -1069,7 +1069,7 @@ public class MediaView extends BaseSaveActivity {
                     // belongs to that download's own determinate bar — hiding it here would blank the
                     // progress mid-download.
                     if (spinnerShown) {
-                        findViewById(R.id.progress).setVisibility(View.GONE);
+                        requireViewById(R.id.progress).setVisibility(View.GONE);
                     }
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -1094,7 +1094,7 @@ public class MediaView extends BaseSaveActivity {
 
             i.setMinimumDpi(70);
             i.setMinimumTileDpi(240);
-            final ProgressBar bar = (ProgressBar) findViewById(R.id.progress);
+            final ProgressBar bar = (ProgressBar) requireViewById(R.id.progress);
             bar.setIndeterminate(false);
             bar.setProgress(0);
 
@@ -1129,7 +1129,7 @@ public class MediaView extends BaseSaveActivity {
                 } catch (Exception e) {
                     imageShown = false;
                 }
-                (findViewById(R.id.progress)).setVisibility(View.GONE);
+                (requireViewById(R.id.progress)).setVisibility(View.GONE);
                 handler.removeCallbacks(progressBarDelayRunner);
 
                 previous = i.scale;
@@ -1191,7 +1191,7 @@ public class MediaView extends BaseSaveActivity {
                                         // longer hides it when the image was handed to us as the
                                         // display URL (spinnerShown == false).
                                         handler.removeCallbacks(progressBarDelayRunner);
-                                        (findViewById(R.id.progress)).setVisibility(View.GONE);
+                                        (requireViewById(R.id.progress)).setVisibility(View.GONE);
                                     }
 
                                     @Override
@@ -1214,7 +1214,7 @@ public class MediaView extends BaseSaveActivity {
                                             // throws on a null rather than ignoring it.
                                             i.loader.setImage(ImageSource.bitmap(loadedImage));
                                         }
-                                        (findViewById(R.id.progress)).setVisibility(View.GONE);
+                                        (requireViewById(R.id.progress)).setVisibility(View.GONE);
                                         handler.removeCallbacks(progressBarDelayRunner);
 
                                         previous = i.scale;

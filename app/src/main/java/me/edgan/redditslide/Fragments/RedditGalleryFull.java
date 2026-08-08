@@ -94,7 +94,7 @@ public class RedditGalleryFull extends BaseAlbumFull {
         if (s == null) {
             return;
         }
-        PopulateShadowboxInfo.doActionbar(s, rootView, getActivity(), true);
+        PopulateShadowboxInfo.doActionbar(s, rootView, requireActivity(), true);
     }
 
     /**
@@ -133,7 +133,7 @@ public class RedditGalleryFull extends BaseAlbumFull {
         ((RecyclerView) list)
                 .setAdapter(
                         new RedditGalleryView(
-                                getActivity(),
+                                requireActivity(),
                                 galleryImages,
                                 MiscUtil.orEmpty(submission.getSubredditName()),
                                 MiscUtil.orEmpty(submission.getTitle())));

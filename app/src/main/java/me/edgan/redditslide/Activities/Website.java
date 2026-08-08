@@ -208,12 +208,12 @@ public class Website extends BaseActivityAnim {
         url = extras.getString(LinkUtil.EXTRA_URL, "");
         subredditColor = extras.getInt(LinkUtil.EXTRA_COLOR, Palette.getDefaultColor());
 
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        setSupportActionBar((Toolbar) requireViewById(R.id.toolbar));
         setupAppBar(R.id.toolbar, "", true, subredditColor, R.id.appbar);
         requireToolbar().setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
 
-        p = (ProgressBar) findViewById(R.id.progress);
-        v = (WebView) findViewById(R.id.web);
+        p = (ProgressBar) requireViewById(R.id.progress);
+        v = (WebView) requireViewById(R.id.web);
 
         client = new MyWebViewClient();
         webClient = new AdBlockWebViewClient();
@@ -330,7 +330,7 @@ public class Website extends BaseActivityAnim {
         public void onShowCustomView(View view, CustomViewCallback callback) {
             this.fullscreenCallback = callback;
 
-            findViewById(R.id.appbar).setVisibility(View.INVISIBLE);
+            requireViewById(R.id.appbar).setVisibility(View.INVISIBLE);
 
             WindowManager.LayoutParams attributes = getWindow().getAttributes();
             attributes.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
@@ -338,13 +338,13 @@ public class Website extends BaseActivityAnim {
             getWindow().setAttributes(attributes);
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
-            FrameLayout fullscreenViewFrame = (FrameLayout) findViewById(R.id.web_fullscreen);
+            FrameLayout fullscreenViewFrame = (FrameLayout) requireViewById(R.id.web_fullscreen);
             fullscreenViewFrame.addView(view);
         }
 
         @Override
         public void onHideCustomView() {
-            FrameLayout fullscreenViewFrame = (FrameLayout) findViewById(R.id.web_fullscreen);
+            FrameLayout fullscreenViewFrame = (FrameLayout) requireViewById(R.id.web_fullscreen);
             fullscreenViewFrame.removeAllViews();
 
             WindowManager.LayoutParams attributes = getWindow().getAttributes();
@@ -353,7 +353,7 @@ public class Website extends BaseActivityAnim {
             getWindow().setAttributes(attributes);
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
 
-            findViewById(R.id.appbar).setVisibility(View.VISIBLE);
+            requireViewById(R.id.appbar).setVisibility(View.VISIBLE);
 
             if (this.fullscreenCallback != null) {
                 this.fullscreenCallback.onCustomViewHidden();

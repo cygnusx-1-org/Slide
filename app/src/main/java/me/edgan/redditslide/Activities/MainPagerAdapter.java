@@ -138,7 +138,7 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
                                                     == Constants.SUBREDDIT_SEARCH_METHOD_TOOLBAR
                                             || SettingValues.subredditSearchMethod
                                                     == Constants.SUBREDDIT_SEARCH_METHOD_BOTH)
-                                    && mainActivity.findViewById(R.id.toolbar_search).getVisibility()
+                                    && mainActivity.requireViewById(R.id.toolbar_search).getVisibility()
                                             == View.VISIBLE) {
                                 new Handler()
                                         .postDelayed(

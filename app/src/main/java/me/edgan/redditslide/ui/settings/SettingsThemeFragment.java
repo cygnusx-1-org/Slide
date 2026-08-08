@@ -59,19 +59,19 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
 
     public void Bind() {
         final RelativeLayout colorTintModeLayout =
-                (RelativeLayout) context.findViewById(R.id.settings_theme_colorTintMode);
+                (RelativeLayout) context.requireViewById(R.id.settings_theme_colorTintMode);
         final TextView currentTintTextView =
-                (TextView) context.findViewById(R.id.settings_theme_tint_current);
+                (TextView) context.requireViewById(R.id.settings_theme_tint_current);
         final SwitchCompat tintEverywhereSwitch =
-                (SwitchCompat) context.findViewById(R.id.settings_theme_tint_everywhere);
+                (SwitchCompat) context.requireViewById(R.id.settings_theme_tint_everywhere);
         final SwitchCompat colorNavbarSwitch =
-                (SwitchCompat) context.findViewById(R.id.settings_theme_colorNavbar);
+                (SwitchCompat) context.requireViewById(R.id.settings_theme_colorNavbar);
         final SwitchCompat alwaysBlackStatusbarSwitch =
-                (SwitchCompat) context.findViewById(R.id.settings_theme_alwaysBlackStatusbar);
+                (SwitchCompat) context.requireViewById(R.id.settings_theme_alwaysBlackStatusbar);
         final SwitchCompat colorIconSwitch =
-                (SwitchCompat) context.findViewById(R.id.settings_theme_colorAppIcon);
+                (SwitchCompat) context.requireViewById(R.id.settings_theme_colorAppIcon);
         final SwitchCompat dialogColoredBorderSwitch =
-                (SwitchCompat) context.findViewById(R.id.settings_theme_dialog_colored_border);
+                (SwitchCompat) context.requireViewById(R.id.settings_theme_dialog_colored_border);
 
         back = new ColorPreferences(context).getFontStyle().getThemeType();
 
@@ -211,7 +211,7 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
 
     private void setupSettingsThemePrimary() {
         final LinearLayout mainTheme =
-                (LinearLayout) context.findViewById(R.id.settings_theme_main);
+                (LinearLayout) context.requireViewById(R.id.settings_theme_main);
         mainTheme.setOnClickListener(
                 v -> {
                     final ChoosemainBinding choosemainBinding =
@@ -249,7 +249,7 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
                                 SettingsThemeFragment.changed = true;
                                 title.setBackgroundColor(colorPicker2.getColor());
                                 final Toolbar toolbar =
-                                        (Toolbar) context.findViewById(R.id.toolbar);
+                                        (Toolbar) context.requireViewById(R.id.toolbar);
                                 if (toolbar != null)
                                     toolbar.setBackgroundColor(colorPicker2.getColor());
 
@@ -293,7 +293,7 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
 
     private void setupSettingsThemeAccent() {
         final LinearLayout accentLayout =
-                (LinearLayout) context.findViewById(R.id.settings_theme_accent);
+                (LinearLayout) context.requireViewById(R.id.settings_theme_accent);
         accentLayout.setOnClickListener(
                 v -> {
                     final ChooseaccentBinding chooseaccentBinding =
@@ -348,7 +348,7 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
 
     void setupSettingsThemeBase() {
         final LinearLayout themeBase =
-                (LinearLayout) context.findViewById(R.id.settings_theme_base);
+                (LinearLayout) context.requireViewById(R.id.settings_theme_base);
         themeBase.setOnClickListener(
                 v -> {
                     final ChoosethemesmallBinding choosethemesmallBinding =
@@ -394,7 +394,7 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
 
     private void setupSettingsThemeNight() {
         final LinearLayout nightMode =
-                (LinearLayout) context.findViewById(R.id.settings_theme_night);
+                (LinearLayout) context.requireViewById(R.id.settings_theme_night);
         nightMode.setOnClickListener(
                 new OnSingleClickListener() {
                     @Override

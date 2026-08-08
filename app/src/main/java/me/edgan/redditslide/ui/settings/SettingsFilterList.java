@@ -131,9 +131,9 @@ public class SettingsFilterList extends BaseActivityAnim {
 
         setupAppBar(R.id.toolbar, type.titleRes, true, true);
 
-        input = (EditText) findViewById(R.id.filter_input);
-        count = (TextView) findViewById(R.id.filter_count);
-        list = (LinearLayout) findViewById(R.id.filterlist);
+        input = (EditText) requireViewById(R.id.filter_input);
+        count = (TextView) requireViewById(R.id.filter_count);
+        list = (LinearLayout) requireViewById(R.id.filterlist);
 
         input.setHint(type.hintRes);
         if (type.isDomain) {
@@ -209,8 +209,8 @@ public class SettingsFilterList extends BaseActivityAnim {
             final View t =
                     getLayoutInflater().inflate(R.layout.account_textview, list, false);
 
-            ((TextView) t.findViewById(R.id.name)).setText(type.isFlair ? formatFlair(s) : s);
-            t.findViewById(R.id.remove)
+            ((TextView) t.requireViewById(R.id.name)).setText(type.isFlair ? formatFlair(s) : s);
+            t.requireViewById(R.id.remove)
                     .setOnClickListener(
                             v -> {
                                 filters.remove(s);

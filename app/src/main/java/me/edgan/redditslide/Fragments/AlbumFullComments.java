@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import me.edgan.redditslide.Activities.ShadowboxComments;
@@ -25,7 +26,7 @@ public class AlbumFullComments extends BaseAlbumFull {
     @Override
     protected void bindActionbar() {
         if (s != null) {
-            PopulateShadowboxInfo.doActionbar(s.comment, rootView, getActivity(), true);
+            PopulateShadowboxInfo.doActionbar(s.comment, rootView, requireActivity(), true);
         }
     }
 
@@ -36,7 +37,9 @@ public class AlbumFullComments extends BaseAlbumFull {
 
     @Override
     protected void openComments() {
-        if (s == null) {
+        // Reached from a click listener, which can outlive attachment.
+        final FragmentActivity activity = getActivity();
+        if (s == null || activity == null) {
             return;
         }
         final Comment c = s.comment.getComment();
@@ -54,12 +57,12 @@ public class AlbumFullComments extends BaseAlbumFull {
                         + "/nothing/"
                         + c.getId()
                         + "?context=3";
-        OpenRedditLink.openUrl(getActivity(), url, true);
+        OpenRedditLink.openUrl(activity, url, true);
     }
 
     @Override
     protected void loadAlbum(String url) {
-        new LoadIntoRecycler(url, getActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new LoadIntoRecycler(url, requireActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public class LoadIntoRecycler extends AlbumUtils.GetAlbumWithCallback {
@@ -100,7 +103,7 @@ public class AlbumFullComments extends BaseAlbumFull {
         // The backing list is static; after process death it comes back null/empty while
         // the fragment is recreated with its old page argument.
         if (ShadowboxComments.comments == null || ShadowboxComments.comments.size() <= page) {
-            getActivity().finish();
+            requireActivity().finish();
         } else {
             s = ShadowboxComments.comments.get(page);
         }

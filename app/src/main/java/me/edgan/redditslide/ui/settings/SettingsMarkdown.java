@@ -23,7 +23,7 @@ public class SettingsMarkdown extends BaseActivityAnim {
 
         setupAppBar(R.id.toolbar, R.string.settings_title_markdown, true, true);
 
-        ((ViewGroup) findViewById(R.id.settings_markdown))
+        ((ViewGroup) requireViewById(R.id.settings_markdown))
                 .addView(
                         getLayoutInflater()
                                 .inflate(R.layout.activity_settings_markdown_child, null));

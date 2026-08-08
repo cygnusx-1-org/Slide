@@ -88,7 +88,7 @@ public class DoEditorActions {
             final @Nullable String oldComment,
             @Nullable final String[] authors,
             @Nullable final ActivityResultLauncher<PickVisualMediaRequest> imageLauncher) {
-        baseView.findViewById(R.id.bold)
+        baseView.requireViewById(R.id.bold)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -140,7 +140,7 @@ public class DoEditorActions {
             }
         }
 
-        baseView.findViewById(R.id.italics)
+        baseView.requireViewById(R.id.italics)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -162,7 +162,7 @@ public class DoEditorActions {
                             }
                         });
 
-        baseView.findViewById(R.id.strike)
+        baseView.requireViewById(R.id.strike)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -184,7 +184,7 @@ public class DoEditorActions {
                             }
                         });
 
-        baseView.findViewById(R.id.spoiler)
+        baseView.requireViewById(R.id.spoiler)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -206,7 +206,7 @@ public class DoEditorActions {
                             }
                         });
 
-        baseView.findViewById(R.id.savedraft)
+        baseView.requireViewById(R.id.savedraft)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -214,7 +214,7 @@ public class DoEditorActions {
                                 Drafts.addDraft(editText.getText().toString());
                                 Snackbar s =
                                         Snackbar.make(
-                                                baseView.findViewById(R.id.savedraft),
+                                                baseView.requireViewById(R.id.savedraft),
                                                 "Draft saved",
                                                 Snackbar.LENGTH_SHORT);
                                 View view = s.getView();
@@ -233,7 +233,7 @@ public class DoEditorActions {
                                 LayoutUtils.showSnackbar(s);
                             }
                         });
-        baseView.findViewById(R.id.draft)
+        baseView.requireViewById(R.id.draft)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -333,7 +333,7 @@ public class DoEditorActions {
                                 }
                             }
                         });
-        final View imageButton = baseView.findViewById(R.id.imagerep);
+        final View imageButton = baseView.requireViewById(R.id.imagerep);
         imageButtons.put(editText, imageButton);
         // Reset the button state for reused editors: comments are limited to one inline Reddit
         // image, so the button is disabled once one has been added.
@@ -359,7 +359,7 @@ public class DoEditorActions {
                                 launchImagePicker(editText, a, imageLauncher);
                             });
                 });
-        baseView.findViewById(R.id.draw)
+        baseView.requireViewById(R.id.draw)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -375,7 +375,7 @@ public class DoEditorActions {
                 insertBefore("^", editText);
             }
         });*/
-        baseView.findViewById(R.id.size)
+        baseView.requireViewById(R.id.size)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -384,7 +384,7 @@ public class DoEditorActions {
                             }
                         });
 
-        baseView.findViewById(R.id.quote)
+        baseView.requireViewById(R.id.quote)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -449,7 +449,7 @@ public class DoEditorActions {
                             }
                         });
 
-        baseView.findViewById(R.id.bulletlist)
+        baseView.requireViewById(R.id.bulletlist)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -476,7 +476,7 @@ public class DoEditorActions {
                             }
                         });
 
-        baseView.findViewById(R.id.numlist)
+        baseView.requireViewById(R.id.numlist)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -503,7 +503,7 @@ public class DoEditorActions {
                             }
                         });
 
-        baseView.findViewById(R.id.preview)
+        baseView.requireViewById(R.id.preview)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -512,7 +512,7 @@ public class DoEditorActions {
                                 final View dialoglayout =
                                         inflater.inflate(R.layout.parent_comment_dialog, null);
                                 final SpoilerRobotoTextView firstTextView =
-                                        dialoglayout.findViewById(R.id.firstTextView);
+                                        dialoglayout.requireViewById(R.id.firstTextView);
 
                                 // Preview through whichever renderer the post/comment will actually
                                 // use, so the preview matches the result (issue #179). The Markwon
@@ -539,14 +539,14 @@ public class DoEditorActions {
                                             html,
                                             "NO sub",
                                             firstTextView,
-                                            dialoglayout.findViewById(R.id.commentOverflow));
+                                            dialoglayout.requireViewById(R.id.commentOverflow));
                                 }
 
                                 DialogUtil.showWithCardBackground(new AlertDialog.Builder(a).setView(dialoglayout));
                             }
                         });
 
-        baseView.findViewById(R.id.link)
+        baseView.requireViewById(R.id.link)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -637,12 +637,12 @@ public class DoEditorActions {
 
                                 // Tint the hint text if the base theme is Sepia
                                 if (SettingValues.currentTheme == 5) {
-                                    ((EditText) layout.findViewById(R.id.url_box))
+                                    ((EditText) layout.requireViewById(R.id.url_box))
                                             .setHintTextColor(
                                                     ContextCompat.getColor(
                                                             layout.getContext(),
                                                             R.color.md_grey_600));
-                                    ((EditText) layout.findViewById(R.id.text_box))
+                                    ((EditText) layout.requireViewById(R.id.text_box))
                                             .setHintTextColor(
                                                     ContextCompat.getColor(
                                                             layout.getContext(),
@@ -651,7 +651,7 @@ public class DoEditorActions {
 
                                 // use the selected text as the text for the link
                                 if (!selectedText.isEmpty()) {
-                                    ((EditText) layout.findViewById(R.id.text_box))
+                                    ((EditText) layout.requireViewById(R.id.text_box))
                                             .setText(selectedText);
                                 }
 
@@ -736,10 +736,10 @@ public class DoEditorActions {
                 final Editable target = e;
                 if (target != null) {
                     handleImageIntent(
-                            Collections.singletonList(data.getData()), target, getContext());
+                            Collections.singletonList(data.getData()), target, requireContext());
                 }
 
-                getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+                requireActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
             }
         }
     }

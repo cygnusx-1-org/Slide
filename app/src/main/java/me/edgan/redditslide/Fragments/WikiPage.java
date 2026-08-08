@@ -1,5 +1,6 @@
 package me.edgan.redditslide.Fragments;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -44,8 +45,8 @@ public class WikiPage extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        ref = view.findViewById(R.id.ref);
-        webView = view.findViewById(R.id.wiki_web_view);
+        ref = view.requireViewById(R.id.ref);
+        webView = view.requireViewById(R.id.wiki_web_view);
 
         setUpRefresh();
         setUpWebView();
@@ -61,7 +62,7 @@ public class WikiPage extends Fragment {
     }
 
     private void setUpRefresh() {
-        ref.setColorSchemeColors(Palette.getColors(subreddit, getActivity()));
+        ref.setColorSchemeColors(Palette.getColors(subreddit, requireActivity()));
 
         // If we use 'findViewById(R.id.header).getMeasuredHeight()', 0 is always returned.
         // So, we estimate the height of the header in dp
@@ -96,7 +97,13 @@ public class WikiPage extends Fragment {
                                             .split("#")[0];
                             listener.embeddedWikiLinkClicked(pagePiece);
                         } else {
-                            OpenRedditLink.openUrl(getContext(), url, true);
+                            // A navigation can be delivered after the page detaches; with no
+                            // context there is nothing to open the link with. Still return true,
+                            // so the detached WebView does not load it itself either.
+                            final Context context = getContext();
+                            if (context != null) {
+                                OpenRedditLink.openUrl(context, url, true);
+                            }
                         }
                         return true;
                     }
@@ -105,7 +112,7 @@ public class WikiPage extends Fragment {
                     public void onPageFinished(WebView webView, String url) {
                         super.onPageFinished(webView, url);
                         if (getView() != null) {
-                            getView().findViewById(R.id.wiki_web_view).setVisibility(View.VISIBLE);
+                            getView().requireViewById(R.id.wiki_web_view).setVisibility(View.VISIBLE);
                             ref.setRefreshing(false);
                             ref.setEnabled(false);
                         }

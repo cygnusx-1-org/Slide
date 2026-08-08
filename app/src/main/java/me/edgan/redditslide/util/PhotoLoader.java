@@ -643,9 +643,14 @@ public class PhotoLoader {
      * position to list index by {@code headerOffset} (the number of non-post rows before index 0, e.g.
      * a header/spacer). {@code warmed} dedupes across repeated settles; items that aren't Submissions
      * (e.g. comments in a profile list) are skipped.
+     *
+     * <p>{@code context} is nullable because every caller is a feed fragment passing
+     * {@code getContext()} from a scroll or content-change callback, which can fire after the
+     * fragment has detached. Warming has nothing to do in that case, which is what the guard below
+     * already did before the declaration admitted it.
      */
     public static void warmVisibleTapTargets(
-            final Context context,
+            final @Nullable Context context,
             final RecyclerView rv,
             final @Nullable List<?> posts,
             final int headerOffset,

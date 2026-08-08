@@ -35,7 +35,7 @@ public class SubredditSortController {
 
     public void openPopup() {
         PopupMenu popup =
-                new PopupMenu(activity, activity.findViewById(R.id.anchor), Gravity.RIGHT);
+                new PopupMenu(activity, activity.requireViewById(R.id.anchor), Gravity.RIGHT);
         String id =
                 ((SubmissionsView) (((MainPagerAdapter) java.util.Objects.requireNonNull(activity.pager.getAdapter())).getCurrentFragment()))
                         .id;
@@ -118,7 +118,7 @@ public class SubredditSortController {
 
     public void openPopupTime() {
         PopupMenu popup =
-                new PopupMenu(activity, activity.findViewById(R.id.anchor), Gravity.RIGHT);
+                new PopupMenu(activity, activity.requireViewById(R.id.anchor), Gravity.RIGHT);
         String id =
                 ((SubmissionsView) (((MainPagerAdapter) java.util.Objects.requireNonNull(activity.pager.getAdapter())).getCurrentFragment()))
                         .id;
@@ -228,7 +228,7 @@ public class SubredditSortController {
                         SettingValues.setSubSorting(sort, time, sub);
                         SortingUtil.setSorting(sub, sort);
                         SortingUtil.setTime(sub, time);
-                        final TextView sortTextView = dialoglayout.findViewById(R.id.sort);
+                        final TextView sortTextView = dialoglayout.requireViewById(R.id.sort);
                         if (SettingValues.hasSort(sub)) {
                             Sorting sortingis = SettingValues.getBaseSubmissionSort(sub);
                             sortTextView.setText(

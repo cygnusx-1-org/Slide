@@ -46,48 +46,48 @@ public class SettingsFontFragment {
 
     public void Bind() {
         final SwitchCompat fontEnlargeLinksSwitch =
-                context.findViewById(R.id.settings_font_enlarge_links);
-        final SwitchCompat fontLinkTypeSwitch = context.findViewById(R.id.settings_font_linktype);
+                context.requireViewById(R.id.settings_font_enlarge_links);
+        final SwitchCompat fontLinkTypeSwitch = context.requireViewById(R.id.settings_font_linktype);
 
         final LinearLayout fontCommentFontSizeLayout =
-                context.findViewById(R.id.settings_font_commentfontsize);
-        final TextView fontCommentFontView = context.findViewById(R.id.settings_font_commentFont);
+                context.requireViewById(R.id.settings_font_commentfontsize);
+        final TextView fontCommentFontView = context.requireViewById(R.id.settings_font_commentFont);
 
         final RobotoRadioButton fontCommentStyleRegularButton =
-                context.findViewById(R.id.settings_font_creg);
+                context.requireViewById(R.id.settings_font_creg);
         final RobotoRadioButton fontCommentStyleSlabButton =
-                context.findViewById(R.id.settings_font_cslab);
+                context.requireViewById(R.id.settings_font_cslab);
         final RobotoRadioButton fontCommentStyleCondensedButton =
-                context.findViewById(R.id.settings_font_ccond);
+                context.requireViewById(R.id.settings_font_ccond);
         final RobotoRadioButton fontCommentStyleLightButton =
-                context.findViewById(R.id.settings_font_clight);
+                context.requireViewById(R.id.settings_font_clight);
         final RobotoRadioButton fontCommentStyleSystemButton =
-                context.findViewById(R.id.settings_font_cnone);
+                context.requireViewById(R.id.settings_font_cnone);
 
         final LinearLayout fontPostFontSizeLayout =
-                context.findViewById(R.id.settings_font_postfontsize);
-        final TextView fontPostFontView = context.findViewById(R.id.settings_font_postFont);
+                context.requireViewById(R.id.settings_font_postfontsize);
+        final TextView fontPostFontView = context.requireViewById(R.id.settings_font_postFont);
 
         final RobotoRadioButton fontPostStyleRegularButton =
-                context.findViewById(R.id.settings_font_sreg);
+                context.requireViewById(R.id.settings_font_sreg);
         final RobotoRadioButton fontPostStyleBoldButton =
-                context.findViewById(R.id.settings_font_sbold);
+                context.requireViewById(R.id.settings_font_sbold);
         final RobotoRadioButton fontPostStyleMediumButton =
-                context.findViewById(R.id.settings_font_smed);
+                context.requireViewById(R.id.settings_font_smed);
         final RobotoRadioButton fontPostStyleLightButton =
-                context.findViewById(R.id.settings_font_slight);
+                context.requireViewById(R.id.settings_font_slight);
         final RobotoRadioButton fontPostStyleSlabButton =
-                context.findViewById(R.id.settings_font_sslab);
+                context.requireViewById(R.id.settings_font_sslab);
         final RobotoRadioButton fontPostStyleSlabLightButton =
-                context.findViewById(R.id.settings_font_sslabl);
+                context.requireViewById(R.id.settings_font_sslabl);
         final RobotoRadioButton fontPostStyleCondensedButton =
-                context.findViewById(R.id.settings_font_scond);
+                context.requireViewById(R.id.settings_font_scond);
         final RobotoRadioButton fontPostStyleCondensedLightButton =
-                context.findViewById(R.id.settings_font_scondl);
+                context.requireViewById(R.id.settings_font_scondl);
         final RobotoRadioButton fontPostStyleCondensedBoldButton =
-                context.findViewById(R.id.settings_font_scondb);
+                context.requireViewById(R.id.settings_font_scondb);
         final RobotoRadioButton fontPostStyleSystemButton =
-                context.findViewById(R.id.settings_font_snone);
+                context.requireViewById(R.id.settings_font_snone);
 
         final FontPreferences newFontPrefs = new FontPreferences(context);
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

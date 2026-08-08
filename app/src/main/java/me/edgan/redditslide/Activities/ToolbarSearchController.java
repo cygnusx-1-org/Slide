@@ -56,7 +56,7 @@ public class ToolbarSearchController {
                     }
                 }
 
-                final ListView TOOLBAR_SEARCH_SUGGEST_LIST = (ListView) mainActivity.findViewById(R.id.toolbar_search_suggestions_list);
+                final ListView TOOLBAR_SEARCH_SUGGEST_LIST = (ListView) mainActivity.requireViewById(R.id.toolbar_search_suggestions_list);
                 final ArrayList<String> subs_copy = new ArrayList<>(mainActivity.usedArray);
                 final SideArrayAdapter TOOLBAR_SEARCH_SUGGEST_ADAPTER =
                         new SideArrayAdapter(mainActivity, subs_copy, UserSubscriptions.getAllSubreddits(mainActivity), TOOLBAR_SEARCH_SUGGEST_LIST);
@@ -70,9 +70,9 @@ public class ToolbarSearchController {
                             new View.OnLongClickListener() {
                                 @Override
                                 public boolean onLongClick(View v) {
-                                    final AutoCompleteTextView GO_TO_SUB_FIELD = (AutoCompleteTextView) mainActivity.findViewById(R.id.toolbar_search);
-                                    final ImageView CLOSE_BUTTON = (ImageView) mainActivity.findViewById(R.id.close_search_toolbar);
-                                    final CardView SUGGESTIONS_BACKGROUND = (CardView) mainActivity.findViewById(R.id.toolbar_search_suggestions);
+                                    final AutoCompleteTextView GO_TO_SUB_FIELD = (AutoCompleteTextView) mainActivity.requireViewById(R.id.toolbar_search);
+                                    final ImageView CLOSE_BUTTON = (ImageView) mainActivity.requireViewById(R.id.close_search_toolbar);
+                                    final CardView SUGGESTIONS_BACKGROUND = (CardView) mainActivity.requireViewById(R.id.toolbar_search_suggestions);
 
                                     // if the view mode is set to Subreddit Tabs, save the title ("Slide" or "Slide (debug)")
                                     final CharSequence actionBarTitle =

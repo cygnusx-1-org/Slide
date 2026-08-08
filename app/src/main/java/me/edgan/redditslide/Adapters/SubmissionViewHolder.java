@@ -18,7 +18,6 @@ public class SubmissionViewHolder extends RecyclerView.ViewHolder {
     public final TextView contentURL;
     public final TextView score;
     public final TextView comments;
-    public final TextView info;
     public final View menu;
     public final View mod;
     public final View hide;
@@ -36,8 +35,18 @@ public class SubmissionViewHolder extends RecyclerView.ViewHolder {
 
     public SubmissionViewHolder(View v) {
         super(v);
+        // Deliberately findViewById, not requireViewById. This holder is bound to five layouts and
+        // none of them defines all eighteen ids: the four feed cards (submission_list,
+        // submission_largecard, submission_largecard_middle, submission_list_desktop) have no
+        // contenttitle/contenturl/firstTextView/commentOverflow, and submission_fullscreen has no
+        // hide/secondMenu/body. Seven of these fields are therefore null about half the time.
+        //
+        // That is not a bug: PopulateSubmissionViewHolder's `full` flag already picks the matching
+        // branch for whichever layout is in the holder, so the null half is never dereferenced.
+        // The invariant just lives in a boolean instead of in the types — annotating the seven
+        // @Nullable compiles to 14 findings, every one inside a branch `full` already selected.
+        // See NULLAWAY.md phase 14.
         title = v.findViewById(R.id.title);
-        info = v.findViewById(R.id.information);
         hide = v.findViewById(R.id.hide);
         menu = v.findViewById(R.id.menu);
         mod = v.findViewById(R.id.mod);

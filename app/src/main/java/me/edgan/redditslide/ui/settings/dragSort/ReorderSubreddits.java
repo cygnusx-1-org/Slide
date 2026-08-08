@@ -109,7 +109,7 @@ public class ReorderSubreddits extends BaseActivityAnim {
             done = 0;
                 // Inflate the custom progress layout
                 View progressView = getLayoutInflater().inflate(R.layout.dialog_progress, null);
-                TextView progressText = progressView.findViewById(R.id.progress_text);
+                TextView progressText = progressView.requireViewById(R.id.progress_text);
                 progressText.setText(R.string.misc_please_wait);
 
                 // Create the dialog using MaterialAlertDialogBuilder
@@ -312,7 +312,7 @@ public class ReorderSubreddits extends BaseActivityAnim {
                 protected void onPreExecute() {
                     // Inflate the custom progress layout
                     View progressView = getLayoutInflater().inflate(R.layout.dialog_progress, null);
-                    TextView progressText = progressView.findViewById(R.id.progress_text);
+                    TextView progressText = progressView.requireViewById(R.id.progress_text);
                     progressText.setText(R.string.misc_please_wait);
 
                     d = new MaterialAlertDialogBuilder(ReorderSubreddits.this)
@@ -333,7 +333,7 @@ public class ReorderSubreddits extends BaseActivityAnim {
 
     public void doShowSubs() {
         subs = new CaseInsensitiveArrayList(UserSubscriptions.getSubscriptions(this));
-        recyclerView = (RecyclerView) findViewById(R.id.subslist);
+        recyclerView = (RecyclerView) requireViewById(R.id.subslist);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(null);
 
@@ -377,7 +377,7 @@ public class ReorderSubreddits extends BaseActivityAnim {
 
         {
             final FabOption collectionFab =
-                    (FabOption) findViewById(R.id.sort_fabOption_collection);
+                    (FabOption) requireViewById(R.id.sort_fabOption_collection);
             collectionFab.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -398,14 +398,14 @@ public class ReorderSubreddits extends BaseActivityAnim {
                     });
         }
         {
-            final FabOption subFab = (FabOption) findViewById(R.id.sort_fabOption_sub);
+            final FabOption subFab = (FabOption) requireViewById(R.id.sort_fabOption_sub);
             subFab.setOnClickListener(
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             // Create a custom layout with EditText for input
                             View dialogView = getLayoutInflater().inflate(R.layout.dialog_edit_text, null);
-                            EditText editText = dialogView.findViewById(R.id.dialog_edit_text);
+                            EditText editText = dialogView.requireViewById(R.id.dialog_edit_text);
                             editText.setHint(getString(R.string.reorder_subreddit_name));
 
                             // Create and show the dialog
@@ -462,7 +462,7 @@ public class ReorderSubreddits extends BaseActivityAnim {
                     });
         }
         {
-            final FabOption domainFab = (FabOption) findViewById(R.id.sort_fabOption_domain);
+            final FabOption domainFab = (FabOption) requireViewById(R.id.sort_fabOption_domain);
             domainFab.setOnClickListener(
                     new View.OnClickListener() {
                         @Override
@@ -470,7 +470,7 @@ public class ReorderSubreddits extends BaseActivityAnim {
                             int maxLength = 253;
                             // Create custom layout with EditText for domain input
                             View dialogView = getLayoutInflater().inflate(R.layout.dialog_edit_text, null);
-                            EditText editText = dialogView.findViewById(R.id.dialog_edit_text);
+                            EditText editText = dialogView.requireViewById(R.id.dialog_edit_text);
                             editText.setHint(getString(R.string.reorder_domain_placeholder));
 
                             // Create and show the dialog
@@ -669,7 +669,7 @@ public class ReorderSubreddits extends BaseActivityAnim {
         // Create a custom layout with EditText
         LayoutInflater inflater = LayoutInflater.from(this);
         View dialogView = inflater.inflate(R.layout.dialog_edit_text, null);
-        EditText editText = dialogView.findViewById(R.id.dialog_edit_text);
+        EditText editText = dialogView.requireViewById(R.id.dialog_edit_text);
         editText.setHint(R.string.multireddit_name_hint);
 
         // Set max length to match Reddit's limitations (50 characters)
@@ -781,7 +781,7 @@ public class ReorderSubreddits extends BaseActivityAnim {
 
             // Inflate the custom progress layout
             View progressView = getLayoutInflater().inflate(R.layout.dialog_progress, null);
-            TextView progressText = progressView.findViewById(R.id.progress_text);
+            TextView progressText = progressView.requireViewById(R.id.progress_text);
             progressText.setText(R.string.multireddit_progress_message);
 
             // Create the dialog using MaterialAlertDialogBuilder
@@ -1155,13 +1155,13 @@ public class ReorderSubreddits extends BaseActivityAnim {
                                 isSubscribed.put(origPos.toLowerCase(Locale.ENGLISH), isChecked);
                             }
                         });
-                final View colorView = holder.itemView.findViewById(R.id.color);
+                final View colorView = holder.itemView.requireViewById(R.id.color);
                 colorView.setBackgroundResource(R.drawable.circle);
                 BlendModeUtil.tintDrawableAsModulate(colorView.getBackground(), Palette.getColor(origPos));
                 if (UserSubscriptions.getPinned().contains(origPos)) {
-                    holder.itemView.findViewById(R.id.pinned).setVisibility(View.VISIBLE);
+                    holder.itemView.requireViewById(R.id.pinned).setVisibility(View.VISIBLE);
                 } else {
-                    holder.itemView.findViewById(R.id.pinned).setVisibility(View.GONE);
+                    holder.itemView.requireViewById(R.id.pinned).setVisibility(View.GONE);
                 }
                 holder.itemView.setOnLongClickListener(
                         new View.OnLongClickListener() {
@@ -1248,15 +1248,15 @@ public class ReorderSubreddits extends BaseActivityAnim {
 
             public ViewHolder(View itemView) {
                 super(itemView);
-                text = itemView.findViewById(R.id.name);
-                check = itemView.findViewById(R.id.isSubscribed);
+                text = itemView.requireViewById(R.id.name);
+                check = itemView.requireViewById(R.id.isSubscribed);
             }
         }
 
         public class SpacerViewHolder extends RecyclerView.ViewHolder {
             public SpacerViewHolder(View itemView) {
                 super(itemView);
-                itemView.findViewById(R.id.height)
+                itemView.requireViewById(R.id.height)
                     .setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DisplayUtil.dpToPxVertical(88)));
             }
         }

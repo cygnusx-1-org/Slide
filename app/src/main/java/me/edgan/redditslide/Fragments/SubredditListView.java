@@ -56,16 +56,16 @@ public class SubredditListView extends Fragment {
                 LayoutInflater.from(contextThemeWrapper)
                         .inflate(R.layout.fragment_verticalcontent, container, false);
 
-        rv = v.findViewById(R.id.vertical_content);
+        rv = v.requireViewById(R.id.vertical_content);
         final RecyclerView.LayoutManager mLayoutManager =
-                new PreCachingLayoutManager(getActivity());
+                new PreCachingLayoutManager(requireActivity());
 
         rv.setLayoutManager(mLayoutManager);
         rv.setItemAnimator(
                 new SlideUpAlphaAnimator().withInterpolator(new LinearOutSlowInInterpolator()));
 
         mSwipeRefreshLayout = v.findViewById(R.id.activity_main_swipe_refresh_layout);
-        mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors("no sub", getContext()));
+        mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors("no sub", requireContext()));
 
         // If we use 'findViewById(R.id.header).getMeasuredHeight()', 0 is always returned.
         // So, we estimate the height of the header in dp
@@ -74,7 +74,7 @@ public class SubredditListView extends Fragment {
                 Constants.TAB_HEADER_VIEW_OFFSET - Constants.PTR_OFFSET_TOP,
                 Constants.TAB_HEADER_VIEW_OFFSET + Constants.PTR_OFFSET_BOTTOM);
 
-        v.findViewById(R.id.post_floating_action_button).setVisibility(View.GONE);
+        v.requireViewById(R.id.post_floating_action_button).setVisibility(View.GONE);
         doAdapter();
 
         return v;
@@ -91,15 +91,15 @@ public class SubredditListView extends Fragment {
                     }
                 });
 
-        posts = new SubredditNames(where, getContext(), SubredditListView.this);
-        adapter = new SubredditAdapter(getActivity(), posts, rv, this);
+        posts = new SubredditNames(where, requireContext(), SubredditListView.this);
+        adapter = new SubredditAdapter(requireActivity(), posts, rv, this);
         rv.setAdapter(adapter);
         posts.loadMore(mSwipeRefreshLayout.getContext(), true, where);
         mSwipeRefreshLayout.setOnRefreshListener(this::refresh);
         rv.addOnScrollListener(
                 new ToolbarScrollHideHandler(
-                        ((BaseActivity) getActivity()).requireToolbar(),
-                        getActivity().findViewById(R.id.header)) {
+                        ((BaseActivity) requireActivity()).requireToolbar(),
+                        requireActivity().requireViewById(R.id.header)) {
 
                     @Override
                     public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {

@@ -24,7 +24,7 @@ public class SettingsTheme extends BaseActivityAnim implements RestartActivity {
 
         setupAppBar(R.id.toolbar, R.string.title_edit_theme, true, true);
 
-        ((ViewGroup) findViewById(R.id.settings_theme))
+        ((ViewGroup) requireViewById(R.id.settings_theme))
                 .addView(getLayoutInflater().inflate(R.layout.activity_settings_theme_child, null));
 
         fragment.Bind();

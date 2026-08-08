@@ -93,15 +93,15 @@ public class SendMessage extends BaseActivity {
 
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
-        final Toolbar b = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar b = (Toolbar) requireViewById(R.id.toolbar);
         final String name;
         reply = getIntent() != null && getIntent().hasExtra(EXTRA_REPLY);
-        subject = (EditText) findViewById(R.id.subject);
-        to = (EditText) findViewById(R.id.to);
-        body = (EditText) findViewById(R.id.body);
-        View oldMSG = findViewById(R.id.oldMSG);
+        subject = (EditText) requireViewById(R.id.subject);
+        to = (EditText) requireViewById(R.id.to);
+        body = (EditText) requireViewById(R.id.body);
+        View oldMSG = requireViewById(R.id.oldMSG);
 
-        final TextView sendingAs = (TextView) findViewById(R.id.sendas);
+        final TextView sendingAs = (TextView) requireViewById(R.id.sendas);
         sendingAs.setText("Sending as /u/" + Authentication.name);
         author = Authentication.name;
         sendingAs.setOnClickListener(
@@ -192,7 +192,7 @@ public class SendMessage extends BaseActivity {
             sendingAs.setVisibility(View.GONE);
         }
 
-        findViewById(R.id.send)
+        requireViewById(R.id.send)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -200,14 +200,14 @@ public class SendMessage extends BaseActivity {
                                 bodytext = body.getText().toString();
                                 totext = to.getText().toString();
                                 subjecttext = subject.getText().toString();
-                                ((FloatingActionButton) findViewById(R.id.send)).hide();
+                                ((FloatingActionButton) requireViewById(R.id.send)).hide();
 
                                 new AsyncDo(null, null).execute();
                             }
                         });
         DoEditorActions.doActions(
-                ((EditText) findViewById(R.id.body)),
-                findViewById(R.id.area),
+                ((EditText) requireViewById(R.id.body)),
+                requireViewById(R.id.area),
                 getSupportFragmentManager(),
                 SendMessage.this,
                 previousMessage == null ? null : previousMessage.getBody(),
@@ -283,7 +283,7 @@ public class SendMessage extends BaseActivity {
             // If the error wasn't that the user doesn't exist, show a generic failure message
             if (messageSentStatus == null) {
                 messageSentStatus = getString(R.string.msg_sent_failure);
-                ((FloatingActionButton) findViewById(R.id.send)).show();
+                ((FloatingActionButton) requireViewById(R.id.send)).show();
             }
 
             final String MESSAGE_SENT =
@@ -295,7 +295,7 @@ public class SendMessage extends BaseActivity {
             if (messageSent) {
                 finish();
             } else {
-                ((FloatingActionButton) findViewById(R.id.send)).show();
+                ((FloatingActionButton) requireViewById(R.id.send)).show();
                 messageSent = true;
             }
         }

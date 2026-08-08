@@ -202,7 +202,7 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
         } else {
             updateSubredditAndSubmission(currentPosts.get(firstPage));
 
-            final CustomViewPager pager = (CustomViewPager) findViewById(R.id.content_view);
+            final CustomViewPager pager = (CustomViewPager) requireViewById(R.id.content_view);
             // final ViewPager pager = (ViewPager) findViewById(R.id.content_view);
 
             comments = new CommentsScreenPagerAdapter(getSupportFragmentManager());

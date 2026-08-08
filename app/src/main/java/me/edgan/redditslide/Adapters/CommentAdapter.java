@@ -151,7 +151,10 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             RecyclerView listView,
             @Nullable Submission submission,
             @Nullable FragmentManager fm) {
-        this.mContext = mContext.getContext();
+        // requireContext rather than a guard: an adapter with no Context cannot be built at all,
+        // and every construction site is either CommentPage.onCreateView or an activity calling
+        // doAdapter() on the pager's current fragment — both attached. See NULLAWAY.md phase 14.
+        this.mContext = mContext.requireContext();
         mPage = mContext;
         this.listView = listView;
         this.dataSet = dataSet;
@@ -535,9 +538,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             // Show padding on top
             if (baseNode.isTopLevel()) {
-                holder.itemView.findViewById(R.id.next).setVisibility(View.VISIBLE);
-            } else if (holder.itemView.findViewById(R.id.next).getVisibility() == View.VISIBLE) {
-                holder.itemView.findViewById(R.id.next).setVisibility(View.GONE);
+                holder.itemView.requireViewById(R.id.next).setVisibility(View.VISIBLE);
+            } else if (holder.itemView.requireViewById(R.id.next).getVisibility() == View.VISIBLE) {
+                holder.itemView.requireViewById(R.id.next).setVisibility(View.GONE);
             }
 
             // Should be collapsed?
@@ -687,11 +690,11 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             this);
             if (Authentication.isLoggedIn && Authentication.didOnline) {
                 if (submission.isArchived() || submission.isLocked()) {
-                    firstHolder.itemView.findViewById(R.id.reply).setVisibility(View.GONE);
+                    firstHolder.itemView.requireViewById(R.id.reply).setVisibility(View.GONE);
                 } else {
                     firstHolder
                             .itemView
-                            .findViewById(R.id.reply)
+                            .requireViewById(R.id.reply)
                             .setOnClickListener(
                                     new OnSingleClickListener() {
                                         @Override
@@ -701,14 +704,14 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     });
                     firstHolder
                             .itemView
-                            .findViewById(R.id.discard)
+                            .requireViewById(R.id.discard)
                             .setOnClickListener(
                                     new OnSingleClickListener() {
                                         @Override
                                         public void onSingleClick(View v) {
                                             firstHolder
                                                     .itemView
-                                                    .findViewById(R.id.innerSend)
+                                                    .requireViewById(R.id.innerSend)
                                                     .setVisibility(View.GONE);
                                             currentlyEditing = null;
                                             editingPosition = -1;
@@ -731,13 +734,13 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     });
                 }
             } else {
-                firstHolder.itemView.findViewById(R.id.innerSend).setVisibility(View.GONE);
-                firstHolder.itemView.findViewById(R.id.reply).setVisibility(View.GONE);
+                firstHolder.itemView.requireViewById(R.id.innerSend).setVisibility(View.GONE);
+                firstHolder.itemView.requireViewById(R.id.reply).setVisibility(View.GONE);
             }
 
             firstHolder
                     .itemView
-                    .findViewById(R.id.more)
+                    .requireViewById(R.id.more)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -810,7 +813,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             // Make a space the size of the toolbar minus 1 so there isn't a gap
             firstHolder
                     .itemView
-                    .findViewById(R.id.height)
+                    .requireViewById(R.id.height)
                     .setLayoutParams(
                             new LinearLayout.LayoutParams(
                                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -824,7 +827,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public @Nullable String changedProfile;
 
     private void doReplySubmission(RecyclerView.ViewHolder submissionViewHolder) {
-        final View replyArea = submissionViewHolder.itemView.findViewById(R.id.innerSend);
+        final View replyArea = submissionViewHolder.itemView.requireViewById(R.id.innerSend);
         if (replyArea.getVisibility() == View.GONE) {
             expandSubmissionReply(replyArea);
             EditText replyLine = submissionViewHolder.itemView.findViewById(R.id.replyLine);
@@ -838,7 +841,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             currentlyEditing = submissionViewHolder.itemView.findViewById(R.id.replyLine);
 
-            final TextView profile = submissionViewHolder.itemView.findViewById(R.id.profile);
+            final TextView profile = submissionViewHolder.itemView.requireViewById(R.id.profile);
             changedProfile = Authentication.name;
             profile.setText("/u/" + changedProfile);
             profile.setOnClickListener(
@@ -910,7 +913,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             submissionViewHolder
                     .itemView
-                    .findViewById(R.id.send)
+                    .requireViewById(R.id.send)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -1329,7 +1332,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         View l2 =
                 l.findViewById(R.id.replyArea) == null
-                        ? l.findViewById(R.id.innerSend)
+                        ? l.requireViewById(R.id.innerSend)
                         : l.findViewById(R.id.replyArea);
         final int widthSpec2 = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
         final int heightSpec2 = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
@@ -1350,7 +1353,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         View l2 =
                 l.findViewById(R.id.replyArea) == null
-                        ? l.findViewById(R.id.innerSend)
+                        ? l.requireViewById(R.id.innerSend)
                         : l.findViewById(R.id.replyArea);
         final int widthSpec2 = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
         final int heightSpec2 = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
@@ -1495,7 +1498,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         params.setMargins(width, 0, 0, 0);
         holder.itemView.setLayoutParams(params);
 
-        holder.itemView.findViewById(R.id.background).setBackgroundColor(color);
+        holder.itemView.requireViewById(R.id.background).setBackgroundColor(color);
     }
 
     public void setCommentStateUnhighlighted(
@@ -1555,7 +1558,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             Resources.Theme theme = mContext.getTheme();
             theme.resolveAttribute(R.attr.card_background, typedValue, true);
             int color = typedValue.data;
-            holder.itemView.findViewById(R.id.background).setBackgroundColor(color);
+            holder.itemView.requireViewById(R.id.background).setBackgroundColor(color);
         }
     }
 

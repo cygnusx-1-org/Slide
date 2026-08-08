@@ -35,16 +35,16 @@ public class SettingsSynccit extends BaseActivityAnim {
 
         setupAppBar(R.id.toolbar, R.string.settings_synccit, true, true);
 
-        name = (EditText) findViewById(R.id.name);
-        auth = (EditText) findViewById(R.id.auth);
+        name = (EditText) requireViewById(R.id.name);
+        auth = (EditText) requireViewById(R.id.auth);
 
         name.setText(SettingValues.synccitName);
         auth.setText(SettingValues.synccitAuth);
 
         if (SettingValues.synccitAuth.isEmpty()) {
-            (findViewById(R.id.remove)).setEnabled(false);
+            (requireViewById(R.id.remove)).setEnabled(false);
         }
-        findViewById(R.id.remove)
+        requireViewById(R.id.remove)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -79,7 +79,7 @@ public class SettingsSynccit extends BaseActivityAnim {
                             }
                         });
 
-        findViewById(R.id.save)
+        requireViewById(R.id.save)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override

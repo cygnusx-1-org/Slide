@@ -81,15 +81,15 @@ public class SidebarController {
     public SidebarController(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
         // Initialize views moved from MainActivity
-        this.sidebarBody = (SpoilerRobotoTextView) mainActivity.findViewById(R.id.sidebar_text);
-        this.sidebarOverflow = (CommentOverflow) mainActivity.findViewById(R.id.commentOverflow);
+        this.sidebarBody = (SpoilerRobotoTextView) mainActivity.requireViewById(R.id.sidebar_text);
+        this.sidebarOverflow = (CommentOverflow) mainActivity.requireViewById(R.id.commentOverflow);
     }
 
     public void doSubSidebar(final String subreddit) {
         if (this.mAsyncGetSubreddit != null) {
             this.mAsyncGetSubreddit.cancel(true);
         }
-        mainActivity.findViewById(R.id.loader).setVisibility(View.VISIBLE);
+        mainActivity.requireViewById(R.id.loader).setVisibility(View.VISIBLE);
 
         mainActivity.invalidateOptionsMenu();
 
@@ -107,9 +107,9 @@ public class SidebarController {
             this.mAsyncGetSubreddit = new AsyncGetSubredditTask(this);
             this.mAsyncGetSubreddit.execute(subreddit);
 
-            final View dialoglayout = mainActivity.findViewById(R.id.sidebarsub);
+            final View dialoglayout = mainActivity.requireViewById(R.id.sidebarsub);
             {
-                View submit = (dialoglayout.findViewById(R.id.submit));
+                View submit = (dialoglayout.requireViewById(R.id.submit));
 
                 if (!Authentication.isLoggedIn || !Authentication.didOnline) {
                     submit.setVisibility(View.GONE);
@@ -133,7 +133,7 @@ public class SidebarController {
             }
 
             dialoglayout
-                .findViewById(R.id.wiki)
+                .requireViewById(R.id.wiki)
                 .setOnClickListener(
                     new View.OnClickListener() {
                         @Override
@@ -145,7 +145,7 @@ public class SidebarController {
                     }
                 );
             dialoglayout
-                .findViewById(R.id.syncflair)
+                .requireViewById(R.id.syncflair)
                 .setOnClickListener(
                     new View.OnClickListener() {
                         @Override
@@ -155,7 +155,7 @@ public class SidebarController {
                     }
                 );
             dialoglayout
-                .findViewById(R.id.submit)
+                .requireViewById(R.id.submit)
                 .setOnClickListener(
                     new View.OnClickListener() {
                         @Override
@@ -169,7 +169,7 @@ public class SidebarController {
                     }
                 );
 
-            final TextView sort = dialoglayout.findViewById(R.id.sort);
+            final TextView sort = dialoglayout.requireViewById(R.id.sort);
             Sorting sortingis = Sorting.HOT;
             if (SettingValues.hasSort(subreddit)) {
                 sortingis = SettingValues.getBaseSubmissionSort(subreddit);
@@ -183,7 +183,7 @@ public class SidebarController {
             }
             final int sortid = SortingUtil.getSortingId(sortingis);
             dialoglayout
-                .findViewById(R.id.sorting)
+                .requireViewById(R.id.sorting)
                 .setOnClickListener(
                     new View.OnClickListener() {
                         @Override
@@ -235,7 +235,7 @@ public class SidebarController {
                                     (dialog, which) -> {
                                         SettingValues.prefs.edit().remove("defaultSort" + subreddit.toLowerCase(Locale.ENGLISH)).apply();
                                         SettingValues.prefs.edit().remove("defaultTime" + subreddit.toLowerCase(Locale.ENGLISH)).apply();
-                                        final TextView sort1 = dialoglayout.findViewById(R.id.sort);
+                                        final TextView sort1 = dialoglayout.requireViewById(R.id.sort);
 
                                         if (SettingValues.hasSort(subreddit)) {
                                             Sorting sortingis1 = SettingValues.getBaseSubmissionSort(subreddit);
@@ -254,7 +254,7 @@ public class SidebarController {
                 );
 
             dialoglayout
-                    .findViewById(R.id.theme)
+                    .requireViewById(R.id.theme)
                     .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -269,7 +269,7 @@ public class SidebarController {
                             }
                         });
             dialoglayout
-                .findViewById(R.id.mods)
+                .requireViewById(R.id.mods)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -338,7 +338,7 @@ public class SidebarController {
                             }
                         });
 
-            dialoglayout.findViewById(R.id.flair).setVisibility(View.GONE);
+            dialoglayout.requireViewById(R.id.flair).setVisibility(View.GONE);
 
             if (Authentication.didOnline && Authentication.isLoggedIn) {
                 if (currentFlair != null) currentFlair.cancel(true);
@@ -392,7 +392,7 @@ public class SidebarController {
                                     flair.setVisibility(View.VISIBLE);
 
                                     if (current != null) {
-                                        ((TextView) dialoglayout.findViewById(R.id.flair_text))
+                                        ((TextView) dialoglayout.requireViewById(R.id.flair_text))
                                                 .setText(mainActivity.getString(R.string.sidebar_flair, current));
                                     }
 
@@ -452,7 +452,7 @@ public class SidebarController {
                                                                                             Snackbar s;
                                                                                             if (done) {
                                                                                                 if (current != null) {
-                                                                                                    ((TextView) dialoglayout.findViewById(R.id.flair_text))
+                                                                                                    ((TextView) dialoglayout.requireViewById(R.id.flair_text))
                                                                                                         .setText(mainActivity.getString(R.string.sidebar_flair, current));
                                                                                                 }
 
@@ -502,7 +502,7 @@ public class SidebarController {
                                                                             if (done) {
                                                                                 if (current != null) {
                                                                                     ((TextView) dialoglayout
-                                                                                        .findViewById(R.id.flair_text))
+                                                                                        .requireViewById(R.id.flair_text))
                                                                                         .setText(mainActivity.getString(R.string.sidebar_flair,current));
                                                                                 }
                                                                                 s = Snackbar.make(
@@ -531,7 +531,7 @@ public class SidebarController {
                                 }
                             }
                         };
-                currentFlair.execute((View) dialoglayout.findViewById(R.id.flair));
+                currentFlair.execute((View) dialoglayout.requireViewById(R.id.flair));
             }
         } else {
             if (mainActivity.drawerLayout != null) {
@@ -569,7 +569,7 @@ public class SidebarController {
                     SettingValues.setSubSorting(sort, time, sub);
                     SortingUtil.setSorting(sub, sort);
                     SortingUtil.setTime(sub, time);
-                    final TextView sortTextView = dialoglayout.findViewById(R.id.sort);
+                    final TextView sortTextView = dialoglayout.requireViewById(R.id.sort);
                     if (SettingValues.hasSort(sub)) {
                         Sorting sortingis = SettingValues.getBaseSubmissionSort(sub);
                         sortTextView.setText(
@@ -594,7 +594,7 @@ public class SidebarController {
             this.mAsyncGetSubreddit.cancel(true);
         }
 
-        mainActivity.findViewById(R.id.loader).setVisibility(View.GONE);
+        mainActivity.requireViewById(R.id.loader).setVisibility(View.GONE);
 
         mainActivity.invalidateOptionsMenu();
 
@@ -610,22 +610,22 @@ public class SidebarController {
             }
 
             this.sidebarBody.setVisibility(View.GONE);
-            mainActivity.findViewById(R.id.sub_title).setVisibility(View.GONE);
-            mainActivity.findViewById(R.id.subscribers).setVisibility(View.GONE);
-            mainActivity.findViewById(R.id.active_users).setVisibility(View.GONE);
+            mainActivity.requireViewById(R.id.sub_title).setVisibility(View.GONE);
+            mainActivity.requireViewById(R.id.subscribers).setVisibility(View.GONE);
+            mainActivity.requireViewById(R.id.active_users).setVisibility(View.GONE);
 
-            mainActivity.findViewById(R.id.header_sub).setBackgroundColor(Palette.getColor(subreddit));
-            ((TextView) mainActivity.findViewById(R.id.sub_infotitle)).setText(subreddit);
+            mainActivity.requireViewById(R.id.header_sub).setBackgroundColor(Palette.getColor(subreddit));
+            ((TextView) mainActivity.requireViewById(R.id.sub_infotitle)).setText(subreddit);
 
             // Sidebar buttons should use subreddit's accent color
             int subColor = new ColorPreferences(mainActivity).getColor(subreddit);
-            ((TextView) mainActivity.findViewById(R.id.theme_text)).setTextColor(subColor);
-            ((TextView) mainActivity.findViewById(R.id.wiki_text)).setTextColor(subColor);
-            ((TextView) mainActivity.findViewById(R.id.post_text)).setTextColor(subColor);
-            ((TextView) mainActivity.findViewById(R.id.mods_text)).setTextColor(subColor);
-            ((TextView) mainActivity.findViewById(R.id.flair_text)).setTextColor(subColor);
-            ((TextView) mainActivity.drawerLayout.findViewById(R.id.sorting).findViewById(R.id.sort)).setTextColor(subColor);
-            ((TextView) mainActivity.findViewById(R.id.sync)).setTextColor(subColor);
+            ((TextView) mainActivity.requireViewById(R.id.theme_text)).setTextColor(subColor);
+            ((TextView) mainActivity.requireViewById(R.id.wiki_text)).setTextColor(subColor);
+            ((TextView) mainActivity.requireViewById(R.id.post_text)).setTextColor(subColor);
+            ((TextView) mainActivity.requireViewById(R.id.mods_text)).setTextColor(subColor);
+            ((TextView) mainActivity.requireViewById(R.id.flair_text)).setTextColor(subColor);
+            ((TextView) mainActivity.drawerLayout.requireViewById(R.id.sorting).requireViewById(R.id.sort)).setTextColor(subColor);
+            ((TextView) mainActivity.requireViewById(R.id.sync)).setTextColor(subColor);
 
         } else {
             if (mainActivity.drawerLayout != null) {
@@ -635,14 +635,14 @@ public class SidebarController {
     }
 
     public void doSubOnlyStuff(final Subreddit subreddit) {
-        mainActivity.findViewById(R.id.loader).setVisibility(View.GONE);
+        mainActivity.requireViewById(R.id.loader).setVisibility(View.GONE);
         if (subreddit.getSubredditType() != null) {
             mainActivity.canSubmit = !subreddit.getSubredditType().equals("RESTRICTED");
         } else {
             mainActivity.canSubmit = true;
         }
         if (subreddit.getSidebar() != null && !subreddit.getSidebar().isEmpty()) {
-            mainActivity.findViewById(R.id.sidebar_text).setVisibility(View.VISIBLE);
+            mainActivity.requireViewById(R.id.sidebar_text).setVisibility(View.VISIBLE);
 
             final String text = subreddit.getDataNode().path("description_html").asText().trim();
             setViews(text, MiscUtil.orEmpty(subreddit.getDisplayName()), this.sidebarBody, this.sidebarOverflow);
@@ -661,12 +661,12 @@ public class SidebarController {
 
             // whether or not this subreddit was in the keySet
             boolean isNotified =subThresholds.containsKey(MiscUtil.orEmpty(subreddit.getDisplayName()).toLowerCase(Locale.ENGLISH));
-            ((AppCompatCheckBox) mainActivity.findViewById(R.id.notify_posts_state)).setChecked(isNotified);
+            ((AppCompatCheckBox) mainActivity.requireViewById(R.id.notify_posts_state)).setChecked(isNotified);
         } else {
             this.sidebarBody.setVisibility(View.GONE);
         }
         {
-            View collection = mainActivity.findViewById(R.id.collection);
+            View collection = mainActivity.requireViewById(R.id.collection);
             if (Authentication.isLoggedIn) {
                 collection.setOnClickListener(
                     new View.OnClickListener() {
@@ -794,7 +794,7 @@ public class SidebarController {
         }
         {
             final AppCompatCheckBox notifyStateCheckBox =
-                    (AppCompatCheckBox) mainActivity.findViewById(R.id.notify_posts_state);
+                    (AppCompatCheckBox) mainActivity.requireViewById(R.id.notify_posts_state);
             assert notifyStateCheckBox != null;
 
             notifyStateCheckBox.setOnCheckedChangeListener(
@@ -871,7 +871,7 @@ public class SidebarController {
                     });
         }
         {
-            final TextView subscribe = (TextView) mainActivity.findViewById(R.id.subscribe);
+            final TextView subscribe = (TextView) mainActivity.requireViewById(R.id.subscribe);
             mainActivity.sidebarActions.currentlySubbed =
                 (!Authentication.isLoggedIn && mainActivity.usedArray.contains(MiscUtil.orEmpty(subreddit.getDisplayName()).toLowerCase(Locale.ENGLISH)))
                 || subreddit.isUserSubscriber();
@@ -1006,44 +1006,44 @@ public class SidebarController {
                 });
         }
         if (!MiscUtil.orEmpty(subreddit.getPublicDescription()).isEmpty()) {
-            mainActivity.findViewById(R.id.sub_title).setVisibility(View.VISIBLE);
+            mainActivity.requireViewById(R.id.sub_title).setVisibility(View.VISIBLE);
             setViews(
                 subreddit.getDataNode().path("public_description_html").asText(),
                 MiscUtil.orEmpty(subreddit.getDisplayName()).toLowerCase(Locale.ENGLISH),
-                ((SpoilerRobotoTextView) mainActivity.findViewById(R.id.sub_title)), // Keep using findViewById for views not moved
-                (CommentOverflow) mainActivity.findViewById(R.id.sub_title_overflow) // Keep using findViewById for views not moved
+                ((SpoilerRobotoTextView) mainActivity.requireViewById(R.id.sub_title)), // Keep using findViewById for views not moved
+                (CommentOverflow) mainActivity.requireViewById(R.id.sub_title_overflow) // Keep using findViewById for views not moved
             );
         } else {
-            mainActivity.findViewById(R.id.sub_title).setVisibility(View.GONE);
+            mainActivity.requireViewById(R.id.sub_title).setVisibility(View.GONE);
         }
-        ((ImageView) mainActivity.findViewById(R.id.subimage)).setImageResource(0);
+        ((ImageView) mainActivity.requireViewById(R.id.subimage)).setImageResource(0);
         if (subreddit.getDataNode().has("icon_img") && !subreddit.getDataNode().path("icon_img").asText().isEmpty()) {
-            mainActivity.findViewById(R.id.subimage).setVisibility(View.VISIBLE);
+            mainActivity.requireViewById(R.id.subimage).setVisibility(View.VISIBLE);
             ((Reddit) mainActivity.getApplication())
                 .getImageLoader()
                 .displayImage(
                     subreddit.getDataNode().path("icon_img").asText(),
-                    (ImageView) mainActivity.findViewById(R.id.subimage)
+                    (ImageView) mainActivity.requireViewById(R.id.subimage)
                 );
         } else {
-            mainActivity.findViewById(R.id.subimage).setVisibility(View.GONE);
+            mainActivity.requireViewById(R.id.subimage).setVisibility(View.GONE);
         }
         String bannerImage = subreddit.getBannerImage();
         if (bannerImage != null && !bannerImage.isEmpty()) {
-            mainActivity.findViewById(R.id.sub_banner).setVisibility(View.VISIBLE);
+            mainActivity.requireViewById(R.id.sub_banner).setVisibility(View.VISIBLE);
             ((Reddit) mainActivity.getApplication())
                 .getImageLoader()
-                .displayImage(bannerImage, (ImageView) mainActivity.findViewById(R.id.sub_banner));
+                .displayImage(bannerImage, (ImageView) mainActivity.requireViewById(R.id.sub_banner));
         } else {
-            mainActivity.findViewById(R.id.sub_banner).setVisibility(View.GONE);
+            mainActivity.requireViewById(R.id.sub_banner).setVisibility(View.GONE);
         }
-        ((TextView) mainActivity.findViewById(R.id.subscribers))
+        ((TextView) mainActivity.requireViewById(R.id.subscribers))
             .setText(mainActivity.getString(R.string.subreddit_subscribers_string,subreddit.getLocalizedSubscriberCount()));
-        mainActivity.findViewById(R.id.subscribers).setVisibility(View.VISIBLE);
+        mainActivity.requireViewById(R.id.subscribers).setVisibility(View.VISIBLE);
 
-        ((TextView) mainActivity.findViewById(R.id.active_users))
+        ((TextView) mainActivity.requireViewById(R.id.active_users))
             .setText(mainActivity.getString(R.string.subreddit_active_users_string_new, subreddit.getLocalizedAccountsActive()));
-        mainActivity.findViewById(R.id.active_users).setVisibility(View.VISIBLE);
+        mainActivity.requireViewById(R.id.active_users).setVisibility(View.VISIBLE);
     }
 
     private void setViews(
@@ -1075,7 +1075,7 @@ public class SidebarController {
             } else {
                 commentOverflow.setViews(blocks.subList(startIndex, blocks.size()), subredditName);
             }
-            SidebarLayout sidebar = (SidebarLayout) mainActivity.findViewById(R.id.drawer_layout);
+            SidebarLayout sidebar = (SidebarLayout) mainActivity.requireViewById(R.id.drawer_layout);
             for (int i = 0; i < commentOverflow.getChildCount(); i++) {
                 View maybeScrollable = commentOverflow.getChildAt(i);
                 if (maybeScrollable instanceof HorizontalScrollView) {

@@ -24,7 +24,7 @@ public class TumblrFull extends BaseAlbumFull {
         if (s == null) {
             return;
         }
-        PopulateShadowboxInfo.doActionbar(s, rootView, getActivity(), true);
+        PopulateShadowboxInfo.doActionbar(s, rootView, requireActivity(), true);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class TumblrFull extends BaseAlbumFull {
 
     @Override
     protected void loadAlbum(String url) {
-        new LoadIntoRecycler(url, getActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new LoadIntoRecycler(url, requireActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public class LoadIntoRecycler extends TumblrUtils.GetTumblrPostWithCallback {

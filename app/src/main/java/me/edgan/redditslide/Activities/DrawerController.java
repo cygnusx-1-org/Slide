@@ -85,7 +85,7 @@ public class DrawerController {
     }
 
     public void doDrawer() {
-        drawerSubList = (ListView) mainActivity.findViewById(R.id.drawerlistview);
+        drawerSubList = (ListView) mainActivity.requireViewById(R.id.drawerlistview);
         drawerSubList.setDividerHeight(0);
         drawerSubList.setDescendantFocusability(ListView.FOCUS_BEFORE_DESCENDANTS);
         final LayoutInflater inflater = mainActivity.getLayoutInflater();
@@ -95,11 +95,11 @@ public class DrawerController {
 
             header = inflater.inflate(R.layout.drawer_loggedin, drawerSubList, false);
             mainActivity.headerMain = header;
-            hea = header.findViewById(R.id.back);
+            hea = header.requireViewById(R.id.back);
 
             drawerSubList.addHeaderView(header, null, false);
-            ((TextView) header.findViewById(R.id.name)).setText(Authentication.name);
-            header.findViewById(R.id.multi)
+            ((TextView) header.requireViewById(R.id.name)).setText(Authentication.name);
+            header.requireViewById(R.id.multi)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -110,7 +110,7 @@ public class DrawerController {
                                     }
                                 }
                             });
-            header.findViewById(R.id.multi).setOnLongClickListener(new View.OnLongClickListener() {
+            header.requireViewById(R.id.multi).setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
                     showUsernameDialog(true);
@@ -118,7 +118,7 @@ public class DrawerController {
                 }
             });
 
-            header.findViewById(R.id.discover)
+            header.requireViewById(R.id.discover)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -128,7 +128,7 @@ public class DrawerController {
                                 }
                             });
 
-            header.findViewById(R.id.prof_click)
+            header.requireViewById(R.id.prof_click)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -138,7 +138,7 @@ public class DrawerController {
                                     mainActivity.startActivity(inte);
                                 }
                             });
-            header.findViewById(R.id.saved)
+            header.requireViewById(R.id.saved)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -149,7 +149,7 @@ public class DrawerController {
                                     mainActivity.startActivity(inte);
                                 }
                             });
-            header.findViewById(R.id.local_saved)
+            header.requireViewById(R.id.local_saved)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -159,7 +159,7 @@ public class DrawerController {
                                     mainActivity.startActivity(inte);
                                 }
                             });
-            header.findViewById(R.id.later)
+            header.requireViewById(R.id.later)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -169,7 +169,7 @@ public class DrawerController {
                                     mainActivity.startActivity(inte);
                                 }
                             });
-            header.findViewById(R.id.history)
+            header.requireViewById(R.id.history)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -180,7 +180,7 @@ public class DrawerController {
                                     mainActivity.startActivity(inte);
                                 }
                             });
-            header.findViewById(R.id.commented)
+            header.requireViewById(R.id.commented)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -191,7 +191,7 @@ public class DrawerController {
                                     mainActivity.startActivity(inte);
                                 }
                             });
-            header.findViewById(R.id.submitted)
+            header.requireViewById(R.id.submitted)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -202,7 +202,7 @@ public class DrawerController {
                                     mainActivity.startActivity(inte);
                                 }
                             });
-            header.findViewById(R.id.upvoted)
+            header.requireViewById(R.id.upvoted)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -218,15 +218,15 @@ public class DrawerController {
              * If the user is a known mod, show the "Moderation" drawer item quickly to stop the UI
              * from jumping
              */
-            header.findViewById(R.id.mod).setVisibility(View.GONE);
+            header.requireViewById(R.id.mod).setVisibility(View.GONE);
             if (Authentication.mod && UserSubscriptions.modOf != null && !UserSubscriptions.modOf.isEmpty()) {
-                header.findViewById(R.id.mod).setVisibility(View.VISIBLE);
+                header.requireViewById(R.id.mod).setVisibility(View.VISIBLE);
             }
 
             // update notification badge
             final LinearLayout profStuff = header.findViewById(R.id.accountsarea);
             profStuff.setVisibility(View.GONE);
-            mainActivity.findViewById(R.id.back)
+            mainActivity.requireViewById(R.id.back)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
@@ -234,11 +234,11 @@ public class DrawerController {
                                     if (profStuff.getVisibility() == View.GONE) {
                                         expand(profStuff);
                                         header.setContentDescription(mainActivity.getResources().getString(R.string.btn_collapse));
-                                        AnimatorUtil.flipAnimator(false, header.findViewById(R.id.headerflip)).start();
+                                        AnimatorUtil.flipAnimator(false, header.requireViewById(R.id.headerflip)).start();
                                     } else {
                                         collapse(profStuff);
                                         header.setContentDescription(mainActivity.getResources().getString(R.string.btn_expand));
-                                        AnimatorUtil.flipAnimator(true, header.findViewById(R.id.headerflip)).start();
+                                        AnimatorUtil.flipAnimator(true, header.requireViewById(R.id.headerflip)).start();
                                     }
                                 }
                             });
@@ -256,9 +256,9 @@ public class DrawerController {
             for (final String accName : keys) {
                 LogUtil.v(accName);
                 final View t = mainActivity.getLayoutInflater().inflate(R.layout.account_textview_white, accountList, false);
-                ((TextView) t.findViewById(R.id.name)).setText(accName);
-                LogUtil.v("Adding click to " + ((TextView) t.findViewById(R.id.name)).getText());
-                t.findViewById(R.id.remove)
+                ((TextView) t.requireViewById(R.id.name)).setText(accName);
+                LogUtil.v("Adding click to " + ((TextView) t.requireViewById(R.id.name)).getText());
+                t.requireViewById(R.id.remove)
                         .setOnClickListener(
                                 new View.OnClickListener() {
                                     @Override
@@ -355,7 +355,7 @@ public class DrawerController {
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                String accName = ((TextView) t.findViewById(R.id.name)).getText().toString();
+                                String accName = ((TextView) t.requireViewById(R.id.name)).getText().toString();
                                 LogUtil.v("Found name is " + accName);
 
                                 if (!accName.equalsIgnoreCase(Authentication.name)) {
@@ -388,25 +388,25 @@ public class DrawerController {
                 accountList.addView(t);
             }
 
-            header.findViewById(R.id.godown)
+            header.requireViewById(R.id.godown)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    LinearLayout body = header.findViewById(R.id.expand_profile);
+                                    LinearLayout body = header.requireViewById(R.id.expand_profile);
                                     if (body.getVisibility() == View.GONE) {
                                         expand(body);
                                         AnimatorUtil.flipAnimator(false, view).start();
-                                        view.findViewById(R.id.godown).setContentDescription(mainActivity.getResources().getString(R.string.btn_collapse));
+                                        view.requireViewById(R.id.godown).setContentDescription(mainActivity.getResources().getString(R.string.btn_collapse));
                                     } else {
                                         collapse(body);
                                         AnimatorUtil.flipAnimator(true, view).start();
-                                        view.findViewById(R.id.godown).setContentDescription(mainActivity.getResources().getString(R.string.btn_expand));
+                                        view.requireViewById(R.id.godown).setContentDescription(mainActivity.getResources().getString(R.string.btn_expand));
                                     }
                                 }
                             });
 
-            header.findViewById(R.id.guest_mode)
+            header.requireViewById(R.id.guest_mode)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -423,7 +423,7 @@ public class DrawerController {
                                 }
                             });
 
-            header.findViewById(R.id.add)
+            header.requireViewById(R.id.add)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -432,7 +432,7 @@ public class DrawerController {
                                     mainActivity.startActivity(inte);
                                 }
                             });
-            header.findViewById(R.id.offline)
+            header.requireViewById(R.id.offline)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -444,7 +444,7 @@ public class DrawerController {
                                     Reddit.forceRestart(mainActivity, false);
                                 }
                             });
-            header.findViewById(R.id.inbox)
+            header.requireViewById(R.id.inbox)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -464,23 +464,23 @@ public class DrawerController {
             header = inflater.inflate(R.layout.drawer_loggedout, drawerSubList, false);
             drawerSubList.addHeaderView(header, null, false);
             mainActivity.headerMain = header;
-            hea = header.findViewById(R.id.back);
+            hea = header.requireViewById(R.id.back);
 
             final LinearLayout profStuff = header.findViewById(R.id.accountsarea);
             profStuff.setVisibility(View.GONE);
-            mainActivity.findViewById(R.id.back)
+            mainActivity.requireViewById(R.id.back)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     if (profStuff.getVisibility() == View.GONE) {
                                         expand(profStuff);
-                                        AnimatorUtil.flipAnimator(false, header.findViewById(R.id.headerflip)).start();
-                                        header.findViewById(R.id.headerflip).setContentDescription(mainActivity.getResources().getString(R.string.btn_collapse));
+                                        AnimatorUtil.flipAnimator(false, header.requireViewById(R.id.headerflip)).start();
+                                        header.requireViewById(R.id.headerflip).setContentDescription(mainActivity.getResources().getString(R.string.btn_collapse));
                                     } else {
                                         collapse(profStuff);
-                                        AnimatorUtil.flipAnimator(true, header.findViewById(R.id.headerflip)).start();
-                                        header.findViewById(R.id.headerflip).setContentDescription(mainActivity.getResources().getString(R.string.btn_expand));
+                                        AnimatorUtil.flipAnimator(true, header.requireViewById(R.id.headerflip)).start();
+                                        header.requireViewById(R.id.headerflip).setContentDescription(mainActivity.getResources().getString(R.string.btn_expand));
                                     }
                                 }
                             });
@@ -500,8 +500,8 @@ public class DrawerController {
             for (final String accName : keys) {
                 LogUtil.v(accName);
                 final View t = mainActivity.getLayoutInflater().inflate(R.layout.account_textview_white, accountList, false);
-                ((TextView) t.findViewById(R.id.name)).setText(accName);
-                t.findViewById(R.id.remove)
+                ((TextView) t.requireViewById(R.id.name)).setText(accName);
+                t.requireViewById(R.id.remove)
                         .setOnClickListener(
                                 new View.OnClickListener() {
                                     @Override
@@ -608,7 +608,7 @@ public class DrawerController {
                 accountList.addView(t);
             }
 
-            header.findViewById(R.id.add)
+            header.requireViewById(R.id.add)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -617,7 +617,7 @@ public class DrawerController {
                                     mainActivity.startActivity(inte);
                                 }
                             });
-            header.findViewById(R.id.offline)
+            header.requireViewById(R.id.offline)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -631,7 +631,7 @@ public class DrawerController {
                             });
             mainActivity.headerMain = header;
 
-            header.findViewById(R.id.multi)
+            header.requireViewById(R.id.multi)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
@@ -666,9 +666,9 @@ public class DrawerController {
             header = inflater.inflate(R.layout.drawer_offline, drawerSubList, false);
             mainActivity.headerMain = header;
             drawerSubList.addHeaderView(header, null, false);
-            hea = header.findViewById(R.id.back);
+            hea = header.requireViewById(R.id.back);
 
-            header.findViewById(R.id.online)
+            header.requireViewById(R.id.online)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -679,26 +679,26 @@ public class DrawerController {
                             });
         }
 
-        final LinearLayout expandSettings = header.findViewById(R.id.expand_settings);
-        header.findViewById(R.id.godown_settings)
+        final LinearLayout expandSettings = header.requireViewById(R.id.expand_settings);
+        header.requireViewById(R.id.godown_settings)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 if (expandSettings.getVisibility() == View.GONE) {
                                     expand(expandSettings);
-                                    header.findViewById(R.id.godown_settings).setContentDescription(mainActivity.getResources().getString(R.string.btn_collapse));
+                                    header.requireViewById(R.id.godown_settings).setContentDescription(mainActivity.getResources().getString(R.string.btn_collapse));
                                     AnimatorUtil.flipAnimator(false, v).start();
                                 } else {
                                     collapse(expandSettings);
-                                    header.findViewById(R.id.godown_settings).setContentDescription(mainActivity.getResources().getString(R.string.btn_expand));
+                                    header.requireViewById(R.id.godown_settings).setContentDescription(mainActivity.getResources().getString(R.string.btn_expand));
                                     AnimatorUtil.flipAnimator(true, v).start();
                                 }
                             }
                         });
 
         { // Set up quick setting toggles
-            final SwitchCompat toggleNightMode = expandSettings.findViewById(R.id.toggle_night_mode);
+            final SwitchCompat toggleNightMode = expandSettings.requireViewById(R.id.toggle_night_mode);
             toggleNightMode.setVisibility(View.VISIBLE);
             toggleNightMode.setChecked(mainActivity.inNightMode);
             toggleNightMode.setOnCheckedChangeListener(
@@ -710,7 +710,7 @@ public class DrawerController {
                         }
                     });
 
-            final SwitchCompat toggleImmersiveMode = expandSettings.findViewById(R.id.toggle_immersive_mode);
+            final SwitchCompat toggleImmersiveMode = expandSettings.requireViewById(R.id.toggle_immersive_mode);
             toggleImmersiveMode.setChecked(SettingValues.immersiveMode);
             toggleImmersiveMode.setOnCheckedChangeListener(
                     new CompoundButton.OnCheckedChangeListener() {
@@ -730,7 +730,7 @@ public class DrawerController {
                         }
                     });
 
-            final SwitchCompat toggleNSFW = expandSettings.findViewById(R.id.toggle_nsfw);
+            final SwitchCompat toggleNSFW = expandSettings.requireViewById(R.id.toggle_nsfw);
             toggleNSFW.setChecked(SettingValues.showNSFWContent);
             toggleNSFW.setOnCheckedChangeListener(
                     new CompoundButton.OnCheckedChangeListener() {
@@ -745,7 +745,7 @@ public class DrawerController {
                         }
                     });
 
-            final SwitchCompat toggleRightThumbnails = expandSettings.findViewById(R.id.toggle_right_thumbnails);
+            final SwitchCompat toggleRightThumbnails = expandSettings.requireViewById(R.id.toggle_right_thumbnails);
             toggleRightThumbnails.setChecked(SettingValues.switchThumb);
             toggleRightThumbnails.setOnCheckedChangeListener(
                     new CompoundButton.OnCheckedChangeListener() {
@@ -760,7 +760,7 @@ public class DrawerController {
                         }
                     });
 
-            final SwitchCompat toggleReaderMode = expandSettings.findViewById(R.id.toggle_reader_mode);
+            final SwitchCompat toggleReaderMode = expandSettings.requireViewById(R.id.toggle_reader_mode);
             toggleReaderMode.setChecked(SettingValues.readerMode);
             toggleReaderMode.setOnCheckedChangeListener(
                     new CompoundButton.OnCheckedChangeListener() {
@@ -775,7 +775,7 @@ public class DrawerController {
                     });
         }
 
-        header.findViewById(R.id.manage)
+        header.requireViewById(R.id.manage)
                 .setOnClickListener(
                         new OnSingleClickListener() {
                             @Override
@@ -785,10 +785,10 @@ public class DrawerController {
                             }
                         });
         if (Authentication.didOnline) {
-            View support = header.findViewById(R.id.support);
+            View support = header.requireViewById(R.id.support);
 
             support.setVisibility(View.GONE);
-            header.findViewById(R.id.prof)
+            header.requireViewById(R.id.prof)
                 .setOnClickListener(new OnSingleClickListener() {
                     @Override
                     public void onSingleClick(View view) {
@@ -798,7 +798,7 @@ public class DrawerController {
 
         }
 
-        header.findViewById(R.id.settings)
+        header.requireViewById(R.id.settings)
                 .setOnClickListener(
                         new OnSingleClickListener() {
                             @Override
@@ -811,7 +811,7 @@ public class DrawerController {
                             }
                         });
 
-        final Toolbar toolbar = (Toolbar) mainActivity.findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) mainActivity.requireViewById(R.id.toolbar);
 
         final androidx.appcompat.app.ActionBarDrawerToggle actionBarDrawerToggle =
                 new androidx.appcompat.app.ActionBarDrawerToggle(mainActivity, mainActivity.drawerLayout, toolbar, R.string.btn_open, R.string.btn_close) {
@@ -864,7 +864,7 @@ public class DrawerController {
         mainActivity.drawerLayout.addDrawerListener(actionBarDrawerToggle);
 
         actionBarDrawerToggle.syncState();
-        header.findViewById(R.id.back).setBackgroundColor(Palette.getColor("alsdkfjasld"));
+        header.requireViewById(R.id.back).setBackgroundColor(Palette.getColor("alsdkfjasld"));
         accountsArea = header.findViewById(R.id.accountsarea);
 
         if (accountsArea != null) {
@@ -905,7 +905,7 @@ public class DrawerController {
             drawerSubList.setFocusable(false);
 
             mainActivity.headerMain
-                .findViewById(R.id.close_search_drawer)
+                .requireViewById(R.id.close_search_drawer)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -979,7 +979,7 @@ public class DrawerController {
                         }
                     });
 
-            final View close = mainActivity.findViewById(R.id.close_search_drawer);
+            final View close = mainActivity.requireViewById(R.id.close_search_drawer);
             close.setVisibility(View.GONE);
 
             drawerSearch.addTextChangedListener(

@@ -14,11 +14,14 @@ import com.uber.nullaway.LibraryModels;
  * cannot change. For one we fork, the annotations belong in the fork, where they are checkable
  * against the implementation and cannot silently stop matching when a method is renamed.
  *
- * <p><b>Scope, measured rather than assumed</b> (NULLAWAY.md phase 8). A model reaches an ordinary
- * dependency jar but <b>not</b> {@code android.*} or {@code androidx.*}: with one model declaring
- * all three {@code @Nullable}, a probe dereferencing a JRAW getter failed the compile while
- * {@code Fragment.getActivity()} and {@code View.findViewById()} passed. Those call sites cannot be
- * reached from here, nor by {@code AcknowledgeRestrictiveAnnotations}.
+ * <p><b>Scope, measured rather than assumed</b> (NULLAWAY.md phase 8, corrected by phase 14). A
+ * model does reach {@code android.*} and {@code androidx.*} — but it cannot override NullAway's
+ * <i>own</i> {@code DefaultLibraryModels.NONNULL_RETURNS}, which already declares
+ * {@code Fragment.getActivity()}, {@code getContext()}, {@code getArguments()} and both
+ * {@code findViewById} overloads non-null. That is why phase 8's probe passed on those while the
+ * JRAW getter beside them failed. The way past it is {@code NullAway:IgnoreLibraryModelsFor} in
+ * {@code app/build.gradle}, not an entry here; {@code findViewById} stays unreachable regardless,
+ * because AOSP gives it no nullability annotation to fall back to.
  *
  * <p>What this carries is Jackson and GSON, which return null for an absent key and which nobody
  * here can change. Apache Commons was measured alongside them in phase 8 and is modelled through

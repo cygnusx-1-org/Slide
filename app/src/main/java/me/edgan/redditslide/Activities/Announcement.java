@@ -41,11 +41,11 @@ public class Announcement extends BaseActivity {
         setContentView(R.layout.submission_dialog);
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
-        SpoilerRobotoTextView spoilerRobotoTextView = (SpoilerRobotoTextView) findViewById(R.id.submission_dialog_firstTextView);
-        CommentOverflow commentOverflow = (CommentOverflow) findViewById(R.id.submission_dialog_commentOverflow);
-        TitleTextView titleTextView = (TitleTextView) findViewById(R.id.submission_dialog_title);
-        AppCompatButton okBtn = (AppCompatButton) findViewById(R.id.submission_dialog_ok);
-        AppCompatButton commentsBtn = (AppCompatButton) findViewById(R.id.submission_dialog_comments);
+        SpoilerRobotoTextView spoilerRobotoTextView = (SpoilerRobotoTextView) requireViewById(R.id.submission_dialog_firstTextView);
+        CommentOverflow commentOverflow = (CommentOverflow) requireViewById(R.id.submission_dialog_commentOverflow);
+        TitleTextView titleTextView = (TitleTextView) requireViewById(R.id.submission_dialog_title);
+        AppCompatButton okBtn = (AppCompatButton) requireViewById(R.id.submission_dialog_ok);
+        AppCompatButton commentsBtn = (AppCompatButton) requireViewById(R.id.submission_dialog_comments);
 
         setViews(
                 PrefUtil.getString(Reddit.appRestart, "page", ""),
@@ -89,7 +89,7 @@ public class Announcement extends BaseActivity {
                 commentOverflow.setViews(blocks.subList(startIndex, blocks.size()), subredditName);
             }
             SidebarLayout sidebar =
-                    (SidebarLayout) findViewById(R.id.submission_dialog_drawerLayout);
+                    (SidebarLayout) requireViewById(R.id.submission_dialog_drawerLayout);
             for (int i = 0; i < commentOverflow.getChildCount(); i++) {
                 View maybeScrollable = commentOverflow.getChildAt(i);
                 if (maybeScrollable instanceof HorizontalScrollView) {

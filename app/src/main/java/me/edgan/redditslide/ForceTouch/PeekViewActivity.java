@@ -45,7 +45,7 @@ public class PeekViewActivity extends AppCompatActivity {
         } else if (peekView != null) {
             // peekView.doScroll(event);
             peekView.highlightMenu(event);
-            View peek = peekView.content.findViewById(R.id.peek);
+            View peek = peekView.content.requireViewById(R.id.peek);
             RelativeLayout.LayoutParams params =
                     (RelativeLayout.LayoutParams) peek.getLayoutParams();
 

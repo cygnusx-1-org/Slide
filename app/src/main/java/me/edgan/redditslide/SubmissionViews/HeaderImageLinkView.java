@@ -345,11 +345,11 @@ public class HeaderImageLinkView extends RelativeLayout {
             setupTitleAndBottomSheet(submission, full, forceThumb, type);
 
             if (SettingValues.smallTag != 0 && !full && !news) {
-                title = findViewById(R.id.tag);
-                findViewById(R.id.tag).setVisibility(View.VISIBLE);
+                title = requireViewById(R.id.tag);
+                requireViewById(R.id.tag).setVisibility(View.VISIBLE);
                 info = null;
             } else {
-                findViewById(R.id.tag).setVisibility(View.GONE);
+                requireViewById(R.id.tag).setVisibility(View.GONE);
                 title.setVisibility(View.VISIBLE);
                 if (info != null) info.setVisibility(View.VISIBLE);
             }
@@ -417,11 +417,11 @@ public class HeaderImageLinkView extends RelativeLayout {
                         new SimpleOnPeek() {
                             @Override
                             public void onInflated(final PeekView peekView, final View rootView) {
-                                TextView text = rootView.findViewById(R.id.title);
+                                TextView text = rootView.requireViewById(R.id.title);
                                 text.setText(url);
                                 text.setTextColor(Color.WHITE);
 
-                                ((PeekMediaView) rootView.findViewById(R.id.peek))
+                                ((PeekMediaView) rootView.requireViewById(R.id.peek))
                                         .setUrlWithSubmission(url, submission);
 
                                         peekView.addButton(
@@ -440,7 +440,7 @@ public class HeaderImageLinkView extends RelativeLayout {
                                                     @Override
                                                     public void onButtonUp() {
                                                         ((View) getParent())
-                                                                .findViewById(R.id.upvote)
+                                                                .requireViewById(R.id.upvote)
                                                                 .callOnClick();
                                                     }
                                                 });
@@ -450,7 +450,7 @@ public class HeaderImageLinkView extends RelativeLayout {
                                                     @Override
                                                     public void onRemove() {
                                                         ((PeekMediaView)
-                                                                        rootView.findViewById(
+                                                                        rootView.requireViewById(
                                                                                 R.id.peek))
                                                                 .doClose();
                                                     }
@@ -545,8 +545,8 @@ public class HeaderImageLinkView extends RelativeLayout {
                         if (SettingValues.storeHistory && !full) {
                             if (!submission.isNsfw() || SettingValues.storeNSFWHistory) {
                                 HasSeen.addSeen(submission.getFullName());
-                                ((View) getParent()).findViewById(R.id.title).setAlpha(0.54f);
-                                ((View) getParent()).findViewById(R.id.body).setAlpha(0.54f);
+                                ((View) getParent()).requireViewById(R.id.title).setAlpha(0.54f);
+                                ((View) getParent()).requireViewById(R.id.body).setAlpha(0.54f);
                             }
                         }
                         onLinkLongClick(submission.getUrl(), event, submission);
@@ -598,13 +598,13 @@ public class HeaderImageLinkView extends RelativeLayout {
 
     public void setWrapArea(View v) {
         wrapArea = v;
-        secondTitle = v.findViewById(R.id.contenttitle);
-        secondSubTitle = v.findViewById(R.id.contenturl);
+        secondTitle = v.requireViewById(R.id.contenttitle);
+        secondSubTitle = v.requireViewById(R.id.contenturl);
     }
 
     private void init() {
         inflate(getContext(), R.layout.header_image_title_view, this);
-        this.title = findViewById(R.id.textimage);
+        this.title = requireViewById(R.id.textimage);
         this.info = findViewById(R.id.subtextimage);
         this.backdrop = findViewById(R.id.leadimage);
         // Universal Image Loader reads the ImageView's maxHeight (the view's layout height is
@@ -1263,7 +1263,7 @@ public class HeaderImageLinkView extends RelativeLayout {
     }
 
     private void setupDefaultTitleAndInfo() {
-        title = findViewById(R.id.textimage);
+        title = requireViewById(R.id.textimage);
         info = findViewById(R.id.subtextimage);
     }
 

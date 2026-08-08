@@ -23,7 +23,7 @@ public class SettingsDebug extends BaseActivityAnim {
 
         setupAppBar(R.id.toolbar, R.string.settings_title_debug, true, true);
 
-        ((ViewGroup) findViewById(R.id.settings_debug))
+        ((ViewGroup) requireViewById(R.id.settings_debug))
                 .addView(
                         getLayoutInflater().inflate(R.layout.activity_settings_debug_child, null));
 

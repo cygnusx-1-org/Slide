@@ -491,11 +491,11 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (viewHolder instanceof SpacerViewHolder) {
             viewHolder
                     .itemView
-                    .findViewById(R.id.height)
+                    .requireViewById(R.id.height)
                     .setLayoutParams(
                             new LinearLayout.LayoutParams(
                                     viewHolder.itemView.getWidth(),
-                                    ((Activity) mContext).findViewById(R.id.header).getHeight()));
+                                    ((Activity) mContext).requireViewById(R.id.header).getHeight()));
         }
     }
 
@@ -504,7 +504,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         final View dialoglayout = inflater.inflate(R.layout.edit_comment, null);
 
-        final EditText e = dialoglayout.findViewById(R.id.entry);
+        final EditText e = dialoglayout.requireViewById(R.id.entry);
 
         DoEditorActions.doActions(
                 e,
@@ -523,7 +523,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         DialogUtil.matchDialogToCardBackground(d);
         d.show();
         dialoglayout
-                .findViewById(R.id.cancel)
+                .requireViewById(R.id.cancel)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -532,7 +532,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                             }
                         });
         dialoglayout
-                .findViewById(R.id.submit)
+                .requireViewById(R.id.submit)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override

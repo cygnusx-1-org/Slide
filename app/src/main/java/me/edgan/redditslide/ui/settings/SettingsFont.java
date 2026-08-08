@@ -23,7 +23,7 @@ public class SettingsFont extends BaseActivityAnim {
 
         setupAppBar(R.id.toolbar, R.string.settings_title_font, true, true);
 
-        ((ViewGroup) findViewById(R.id.settings_font))
+        ((ViewGroup) requireViewById(R.id.settings_font))
                 .addView(getLayoutInflater().inflate(R.layout.activity_settings_font_child, null));
 
         fragment.Bind();

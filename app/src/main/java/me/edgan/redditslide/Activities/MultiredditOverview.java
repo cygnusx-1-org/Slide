@@ -247,7 +247,7 @@ public class MultiredditOverview extends BaseActivityAnim {
             openPopup();
             return true;
         } else if (itemId == R.id.subs) {
-            ((DrawerLayout) findViewById(R.id.drawer_layout)).openDrawer(Gravity.RIGHT);
+            ((DrawerLayout) requireViewById(R.id.drawer_layout)).openDrawer(Gravity.RIGHT);
             return true;
         } else if (itemId == R.id.gallery) {
             if (currentFragment != null && posts != null && !posts.isEmpty()) {
@@ -327,10 +327,10 @@ public class MultiredditOverview extends BaseActivityAnim {
         setupAppBar(R.id.toolbar, R.string.title_multireddits, true, false);
 
         findViewById(R.id.header).setBackgroundColor(Palette.getDefaultColor());
-        tabs = (TabLayout) findViewById(R.id.sliding_tabs);
+        tabs = (TabLayout) requireViewById(R.id.sliding_tabs);
         tabs.setTabMode(TabLayout.MODE_SCROLLABLE);
 
-        pager = (ViewPager) findViewById(R.id.content_view);
+        pager = (ViewPager) requireViewById(R.id.content_view);
         requireToolbar().setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
 
         profile = "";
@@ -397,7 +397,7 @@ public class MultiredditOverview extends BaseActivityAnim {
 
     public void openPopup() {
         PopupMenu popup =
-                new PopupMenu(MultiredditOverview.this, findViewById(R.id.anchor), Gravity.RIGHT);
+                new PopupMenu(MultiredditOverview.this, requireViewById(R.id.anchor), Gravity.RIGHT);
         String id =
                 currentMultiName();
         final Spannable[] base = SortingUtil.getSortingSpannables("multi_" + id);
@@ -476,7 +476,7 @@ public class MultiredditOverview extends BaseActivityAnim {
 
     public void openPopupTime() {
         PopupMenu popup =
-                new PopupMenu(MultiredditOverview.this, findViewById(R.id.anchor), Gravity.RIGHT);
+                new PopupMenu(MultiredditOverview.this, requireViewById(R.id.anchor), Gravity.RIGHT);
         String id =
                 currentMultiName();
         final Spannable[] base = SortingUtil.getSortingTimesSpannables("multi_" + id);
@@ -646,7 +646,7 @@ public class MultiredditOverview extends BaseActivityAnim {
 
     public void doDrawerSubs(int position) {
         MultiReddit current = usedArray.get(position);
-        LinearLayout l = (LinearLayout) findViewById(R.id.sidebar_scroll);
+        LinearLayout l = (LinearLayout) requireViewById(R.id.sidebar_scroll);
         l.removeAllViews();
 
         CaseInsensitiveArrayList toSort = new CaseInsensitiveArrayList();
@@ -659,10 +659,10 @@ public class MultiredditOverview extends BaseActivityAnim {
             final View convertView = getLayoutInflater().inflate(R.layout.subforsublist, l, false);
 
             final String subreddit = sub;
-            final TextView t = convertView.findViewById(R.id.name);
+            final TextView t = convertView.requireViewById(R.id.name);
             t.setText(subreddit);
 
-            final View colorView = convertView.findViewById(R.id.color);
+            final View colorView = convertView.requireViewById(R.id.color);
             colorView.setBackgroundResource(R.drawable.circle);
             BlendModeUtil.tintDrawableAsModulate(
                     colorView.getBackground(), Palette.getColor(subreddit));

@@ -150,7 +150,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             View v =
                     LayoutInflater.from(viewGroup.getContext())
                             .inflate(R.layout.errorloadingcontent, viewGroup, false);
-            v.findViewById(R.id.retry)
+            v.requireViewById(R.id.retry)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -403,7 +403,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
         }
         if (holder2 instanceof SpacerViewHolder) {
-            View header = (context).findViewById(R.id.header);
+            View header = (context).requireViewById(R.id.header);
 
             int height = header.getHeight();
 
@@ -411,7 +411,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 header.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
                 height = header.getMeasuredHeight();
                 holder2.itemView
-                        .findViewById(R.id.height)
+                        .requireViewById(R.id.height)
                         .setLayoutParams(
                                 new LinearLayout.LayoutParams(holder2.itemView.getWidth(), height));
 
@@ -424,7 +424,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
             } else {
                 holder2.itemView
-                        .findViewById(R.id.height)
+                        .requireViewById(R.id.height)
                         .setLayoutParams(
                                 new LinearLayout.LayoutParams(holder2.itemView.getWidth(), height));
                 if (listView.getLayoutManager() instanceof CatchStaggeredGridLayoutManager) {

@@ -39,17 +39,17 @@ public class LocalSavedView extends Fragment {
             @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_verticalcontent, container, false);
 
-        final RecyclerView rv = v.findViewById(R.id.vertical_content);
+        final RecyclerView rv = v.requireViewById(R.id.vertical_content);
         recyclerView = rv;
 
-        final PreCachingLayoutManager mLayoutManager = new PreCachingLayoutManager(getContext());
+        final PreCachingLayoutManager mLayoutManager = new PreCachingLayoutManager(requireContext());
 
         rv.setLayoutManager(mLayoutManager);
-        v.findViewById(R.id.post_floating_action_button).setVisibility(View.GONE);
+        v.requireViewById(R.id.post_floating_action_button).setVisibility(View.GONE);
         final SwipeRefreshLayout mSwipeRefreshLayout =
-                v.findViewById(R.id.activity_main_swipe_refresh_layout);
+                v.requireViewById(R.id.activity_main_swipe_refresh_layout);
 
-        mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors("default", getActivity()));
+        mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors("default", requireActivity()));
 
         // If we use 'findViewById(R.id.header).getMeasuredHeight()', 0 is always returned.
         // So, we estimate the height of the header in dp. The standalone activity (PostLocalSaved)
@@ -73,7 +73,7 @@ public class LocalSavedView extends Fragment {
                 });
 
         posts = new LocalSavedPosts();
-        adapter = new ContributionAdapter(getActivity(), posts, rv);
+        adapter = new ContributionAdapter(requireActivity(), posts, rv);
         rv.setAdapter(adapter);
 
         posts.bindAdapter(adapter, mSwipeRefreshLayout);
@@ -87,8 +87,8 @@ public class LocalSavedView extends Fragment {
                 });
         rv.addOnScrollListener(
                 new ToolbarScrollHideHandler(
-                        getActivity().findViewById(R.id.toolbar),
-                        getActivity().findViewById(R.id.header)) {
+                        requireActivity().requireViewById(R.id.toolbar),
+                        requireActivity().requireViewById(R.id.header)) {
                     @Override
                     public void onScrollStateChanged(
                             @NonNull RecyclerView recyclerView, int newState) {

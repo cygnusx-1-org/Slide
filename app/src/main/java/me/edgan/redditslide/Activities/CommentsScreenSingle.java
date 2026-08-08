@@ -114,7 +114,7 @@ public class CommentsScreenSingle extends BaseActivityAnim {
             TypedValue typedValue = new TypedValue();
             getTheme().resolveAttribute(R.attr.activity_background, typedValue, true);
             int color = typedValue.data;
-            findViewById(R.id.content_view).setBackgroundColor(color);
+            requireViewById(R.id.content_view).setBackgroundColor(color);
         } else {
             setupAdapter();
         }
@@ -181,7 +181,7 @@ public class CommentsScreenSingle extends BaseActivityAnim {
         themeSystemBars(subreddit);
         setRecentBar(subreddit);
 
-        pager = (ViewPager) findViewById(R.id.content_view);
+        pager = (ViewPager) requireViewById(R.id.content_view);
         comments = new CommentsScreenSinglePagerAdapter(getSupportFragmentManager());
         pager.setAdapter(comments);
         pager.setCurrentItem(1);

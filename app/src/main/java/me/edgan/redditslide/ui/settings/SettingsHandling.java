@@ -25,7 +25,7 @@ public class SettingsHandling extends BaseActivityAnim {
 
         setupAppBar(R.id.toolbar, R.string.settings_link_handling, true, true);
 
-        ((ViewGroup) findViewById(R.id.settings_handling))
+        ((ViewGroup) requireViewById(R.id.settings_handling))
                 .addView(
                         getLayoutInflater()
                                 .inflate(R.layout.activity_settings_handling_child, null));

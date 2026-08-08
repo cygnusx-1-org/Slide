@@ -75,12 +75,12 @@ public class Related extends BaseActivityAnim {
         assert mToolbar != null; // it won't be, trust me
         requireToolbar().setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
 
-        final RecyclerView rv = ((RecyclerView) findViewById(R.id.vertical_content));
+        final RecyclerView rv = ((RecyclerView) requireViewById(R.id.vertical_content));
         final PreCachingLayoutManager mLayoutManager = new PreCachingLayoutManager(this);
         rv.setLayoutManager(mLayoutManager);
 
         rv.addOnScrollListener(
-                new ToolbarScrollHideHandler(requireToolbar(), findViewById(R.id.header)) {
+                new ToolbarScrollHideHandler(requireToolbar(), requireViewById(R.id.header)) {
                     @Override
                     public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                         super.onScrolled(recyclerView, dx, dy);
@@ -109,7 +109,7 @@ public class Related extends BaseActivityAnim {
                     }
                 });
         final SwipeRefreshLayout mSwipeRefreshLayout =
-                (SwipeRefreshLayout) findViewById(R.id.activity_main_swipe_refresh_layout);
+                (SwipeRefreshLayout) requireViewById(R.id.activity_main_swipe_refresh_layout);
 
         mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors("", this));
 

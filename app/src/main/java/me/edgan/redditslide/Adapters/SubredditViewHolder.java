@@ -20,11 +20,11 @@ public class SubredditViewHolder extends RecyclerView.ViewHolder {
 
     public SubredditViewHolder(View v) {
         super(v);
-        color = v.findViewById(R.id.color);
-        name = v.findViewById(R.id.name);
-        subscribers = v.findViewById(R.id.subscribers);
-        subbed = v.findViewById(R.id.subbed);
-        body = v.findViewById(R.id.body);
-        overflow = v.findViewById(R.id.overflow);
+        color = v.requireViewById(R.id.color);
+        name = v.requireViewById(R.id.name);
+        subscribers = v.requireViewById(R.id.subscribers);
+        subbed = v.requireViewById(R.id.subbed);
+        body = v.requireViewById(R.id.body);
+        overflow = v.requireViewById(R.id.overflow);
     }
 }

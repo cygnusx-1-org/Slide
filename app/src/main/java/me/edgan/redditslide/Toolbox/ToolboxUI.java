@@ -104,21 +104,21 @@ public class ToolboxUI {
         final View dialogContent =
                 LayoutInflater.from(context).inflate(R.layout.toolbox_removal_dialog, null);
 
-        final CheckBox headerToggle = dialogContent.findViewById(R.id.toolbox_header_toggle);
-        final TextView headerText = dialogContent.findViewById(R.id.toolbox_header_text);
-        final LinearLayout reasonsList = dialogContent.findViewById(R.id.toolbox_reasons_list);
-        final CheckBox footerToggle = dialogContent.findViewById(R.id.toolbox_footer_toggle);
-        final TextView footerText = dialogContent.findViewById(R.id.toolbox_footer_text);
-        final RadioGroup actions = dialogContent.findViewById(R.id.toolbox_action);
-        final CheckBox actionSticky = dialogContent.findViewById(R.id.sticky_comment);
-        final CheckBox actionModmail = dialogContent.findViewById(R.id.pm_modmail);
-        final CheckBox actionLock = dialogContent.findViewById(R.id.lock);
-        final EditText logReason = dialogContent.findViewById(R.id.toolbox_log_reason);
+        final CheckBox headerToggle = dialogContent.requireViewById(R.id.toolbox_header_toggle);
+        final TextView headerText = dialogContent.requireViewById(R.id.toolbox_header_text);
+        final LinearLayout reasonsList = dialogContent.requireViewById(R.id.toolbox_reasons_list);
+        final CheckBox footerToggle = dialogContent.requireViewById(R.id.toolbox_footer_toggle);
+        final TextView footerText = dialogContent.requireViewById(R.id.toolbox_footer_text);
+        final RadioGroup actions = dialogContent.requireViewById(R.id.toolbox_action);
+        final CheckBox actionSticky = dialogContent.requireViewById(R.id.sticky_comment);
+        final CheckBox actionModmail = dialogContent.requireViewById(R.id.pm_modmail);
+        final CheckBox actionLock = dialogContent.requireViewById(R.id.lock);
+        final EditText logReason = dialogContent.requireViewById(R.id.toolbox_log_reason);
 
         // Check if removal should be logged and set related views
         final boolean log = !removalReasons.getLogSub().isEmpty();
         if (log) {
-            dialogContent.findViewById(R.id.none).setVisibility(View.VISIBLE);
+            dialogContent.requireViewById(R.id.none).setVisibility(View.VISIBLE);
             if (removalReasons.getLogTitle().contains("{reason}")) {
                 logReason.setVisibility(View.VISIBLE);
                 logReason.setText(removalReasons.getLogReason());
@@ -163,15 +163,15 @@ public class ToolboxUI {
         // Set default states of checkboxes/radiobuttons
         if (SettingValues.toolboxMessageType
                 == SettingValues.ToolboxRemovalMessageType.COMMENT.ordinal()) {
-            ((RadioButton) actions.findViewById(R.id.comment)).setChecked(true);
+            ((RadioButton) actions.requireViewById(R.id.comment)).setChecked(true);
         } else if (SettingValues.toolboxMessageType
                 == SettingValues.ToolboxRemovalMessageType.PM.ordinal()) {
-            ((RadioButton) actions.findViewById(R.id.pm)).setChecked(true);
+            ((RadioButton) actions.requireViewById(R.id.pm)).setChecked(true);
         } else if (SettingValues.toolboxMessageType
                 == SettingValues.ToolboxRemovalMessageType.BOTH.ordinal()) {
-            ((RadioButton) actions.findViewById(R.id.both)).setChecked(true);
+            ((RadioButton) actions.requireViewById(R.id.both)).setChecked(true);
         } else {
-            ((RadioButton) actions.findViewById(R.id.none)).setChecked(true);
+            ((RadioButton) actions.requireViewById(R.id.none)).setChecked(true);
         }
         actionSticky.setChecked(SettingValues.toolboxSticky);
         actionModmail.setChecked(SettingValues.toolboxModmail);
@@ -551,10 +551,10 @@ public class ToolboxUI {
             // adapter's own getCount, so the backing list always has an entry here.
             final UsernoteListItem item = Objects.requireNonNull(getItem(position));
 
-            TextView authorDatetime = view.findViewById(R.id.usernote_author_datetime);
+            TextView authorDatetime = view.requireViewById(R.id.usernote_author_datetime);
             authorDatetime.setText(item.getAuthorDatetime());
 
-            TextView noteText = view.findViewById(R.id.usernote_note_text);
+            TextView noteText = view.requireViewById(R.id.usernote_note_text);
             noteText.setText(item.getNoteText());
 
             view.setOnClickListener(
@@ -567,7 +567,7 @@ public class ToolboxUI {
                         }
                     });
 
-            view.findViewById(R.id.delete)
+            view.requireViewById(R.id.delete)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override

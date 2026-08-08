@@ -76,7 +76,7 @@ public class LiveThread extends BaseActivityAnim {
             getOnBackPressedDispatcher().onBackPressed();
             return true;
         } else if (itemId == R.id.info) {
-            ((DrawerLayout) findViewById(R.id.drawer_layout)).openDrawer(Gravity.RIGHT);
+            ((DrawerLayout) requireViewById(R.id.drawer_layout)).openDrawer(Gravity.RIGHT);
             return true;
         } else {
             return false;
@@ -108,7 +108,7 @@ public class LiveThread extends BaseActivityAnim {
         setContentView(R.layout.activity_livethread);
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
-        baseRecycler = (RecyclerView) findViewById(R.id.content_view);
+        baseRecycler = (RecyclerView) requireViewById(R.id.content_view);
         baseRecycler.setLayoutManager(new LinearLayoutManager(LiveThread.this));
         new AsyncTask<Void, Void, Void>() {
             @SuppressWarnings("NullAway.Init") // assigned in onPreExecute
@@ -151,8 +151,8 @@ public class LiveThread extends BaseActivityAnim {
                 } else {
                     d.dismiss();
                     setupAppBar(R.id.toolbar, MiscUtil.orEmpty(thread.getTitle()), true, false);
-                    (findViewById(R.id.toolbar)).setBackgroundResource(R.color.md_red_300);
-                    (findViewById(R.id.header_sub)).setBackgroundResource(R.color.md_red_300);
+                    (requireViewById(R.id.toolbar)).setBackgroundResource(R.color.md_red_300);
+                    (requireViewById(R.id.header_sub)).setBackgroundResource(R.color.md_red_300);
                     themeSystemBars(
                             Palette.getDarkerColor(ContextCompat.getColor(LiveThread.this, R.color.md_red_300)));
                     setRecentBar(
@@ -412,11 +412,11 @@ public class LiveThread extends BaseActivityAnim {
 
             public ItemHolder(View itemView) {
                 super(itemView);
-                title = itemView.findViewById(R.id.title);
-                info = itemView.findViewById(R.id.body);
-                go = itemView.findViewById(R.id.go);
-                imageArea = itemView.findViewById(R.id.image_area);
-                twitterArea = itemView.findViewById(R.id.twitter_area);
+                title = itemView.requireViewById(R.id.title);
+                info = itemView.requireViewById(R.id.body);
+                go = itemView.requireViewById(R.id.go);
+                imageArea = itemView.requireViewById(R.id.image_area);
+                twitterArea = itemView.requireViewById(R.id.twitter_area);
                 twitterArea.setWebChromeClient(new WebChromeClient());
                 twitterArea.getSettings().setJavaScriptEnabled(true);
                 twitterArea.setBackgroundColor(Color.TRANSPARENT);
@@ -426,30 +426,30 @@ public class LiveThread extends BaseActivityAnim {
     }
 
     public void doLiveSidebar() {
-        findViewById(R.id.loader).setVisibility(View.GONE);
+        requireViewById(R.id.loader).setVisibility(View.GONE);
 
-        final View dialoglayout = findViewById(R.id.sidebarsub);
+        final View dialoglayout = requireViewById(R.id.sidebarsub);
 
-        dialoglayout.findViewById(R.id.sub_stuff).setVisibility(View.GONE);
+        dialoglayout.requireViewById(R.id.sub_stuff).setVisibility(View.GONE);
 
-        ((TextView) dialoglayout.findViewById(R.id.sub_infotitle))
+        ((TextView) dialoglayout.requireViewById(R.id.sub_infotitle))
                 .setText((thread.getState() ? "LIVE: " : "") + thread.getTitle());
-        ((TextView) dialoglayout.findViewById(R.id.active_users))
+        ((TextView) dialoglayout.requireViewById(R.id.active_users))
                 .setText(thread.getLocalizedViewerCount() + " viewing");
-        ((TextView) dialoglayout.findViewById(R.id.active_users))
+        ((TextView) dialoglayout.requireViewById(R.id.active_users))
                 .setText(thread.getLocalizedViewerCount());
 
         {
             final String text = thread.getDataNode().path("resources_html").asText();
             final SpoilerRobotoTextView body =
-                    (SpoilerRobotoTextView) findViewById(R.id.sidebar_text);
-            CommentOverflow overflow = (CommentOverflow) findViewById(R.id.commentOverflow);
+                    (SpoilerRobotoTextView) requireViewById(R.id.sidebar_text);
+            CommentOverflow overflow = (CommentOverflow) requireViewById(R.id.commentOverflow);
             setViews(text, "none", body, overflow);
         }
         {
             final String text = thread.getDataNode().path("description_html").asText();
-            final SpoilerRobotoTextView body = (SpoilerRobotoTextView) findViewById(R.id.sub_title);
-            CommentOverflow overflow = (CommentOverflow) findViewById(R.id.sub_title_overflow);
+            final SpoilerRobotoTextView body = (SpoilerRobotoTextView) requireViewById(R.id.sub_title);
+            CommentOverflow overflow = (CommentOverflow) requireViewById(R.id.sub_title_overflow);
             setViews(text, "none", body, overflow);
         }
     }
@@ -482,7 +482,7 @@ public class LiveThread extends BaseActivityAnim {
             } else {
                 commentOverflow.setViews(blocks.subList(startIndex, blocks.size()), subreddit);
             }
-            SidebarLayout sidebar = (SidebarLayout) findViewById(R.id.drawer_layout);
+            SidebarLayout sidebar = (SidebarLayout) requireViewById(R.id.drawer_layout);
             for (int i = 0; i < commentOverflow.getChildCount(); i++) {
                 View maybeScrollable = commentOverflow.getChildAt(i);
                 if (maybeScrollable instanceof HorizontalScrollView) {

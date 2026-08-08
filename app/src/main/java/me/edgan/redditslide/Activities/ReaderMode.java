@@ -50,17 +50,17 @@ public class ReaderMode extends BaseActivityAnim {
         }
         mSubredditColor = extras.getInt(LinkUtil.EXTRA_COLOR, Palette.getDefaultColor());
 
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        setSupportActionBar((Toolbar) requireViewById(R.id.toolbar));
         setupAppBar(R.id.toolbar, "", true, mSubredditColor, R.id.appbar);
 
         if (getIntent().hasExtra("url")) {
             url = MiscUtil.orEmpty(getIntent().getStringExtra(LinkUtil.EXTRA_URL));
-            ((Toolbar) findViewById(R.id.toolbar)).setTitle(url);
+            ((Toolbar) requireViewById(R.id.toolbar)).setTitle(url);
         }
 
-        v = (SpoilerRobotoTextView) findViewById(R.id.body);
+        v = (SpoilerRobotoTextView) requireViewById(R.id.body);
         final SwipeRefreshLayout mSwipeRefreshLayout =
-                ((SwipeRefreshLayout) ReaderMode.this.findViewById(R.id.refresh));
+                ((SwipeRefreshLayout) ReaderMode.this.requireViewById(R.id.refresh));
         mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors("", this));
 
         // If we use 'findViewById(R.id.header).getMeasuredHeight()', 0 is always returned.
@@ -84,13 +84,13 @@ public class ReaderMode extends BaseActivityAnim {
     private void display(String title, String web) {
         v.setTextHtml(web, "nosub");
         if (title != null && !title.isEmpty()) {
-            ((Toolbar) findViewById(R.id.toolbar)).setTitle(title);
+            ((Toolbar) requireViewById(R.id.toolbar)).setTitle(title);
         } else {
             int index = v.getText().toString().indexOf("\n");
             if (index < 0) {
                 index = 0;
             }
-            ((Toolbar) findViewById(R.id.toolbar))
+            ((Toolbar) requireViewById(R.id.toolbar))
                     .setTitle(v.getText().toString().substring(0, index));
         }
     }
@@ -129,8 +129,8 @@ public class ReaderMode extends BaseActivityAnim {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            ((SwipeRefreshLayout) ReaderMode.this.findViewById(R.id.refresh)).setRefreshing(false);
-            ReaderMode.this.findViewById(R.id.refresh).setEnabled(false);
+            ((SwipeRefreshLayout) ReaderMode.this.requireViewById(R.id.refresh)).setRefreshing(false);
+            ReaderMode.this.requireViewById(R.id.refresh).setEnabled(false);
 
             if (articleText != null) {
                 display(title, articleText);
@@ -177,7 +177,7 @@ public class ReaderMode extends BaseActivityAnim {
             return true;
         } else if (itemId == R.id.share) {
             Reddit.defaultShareText(
-                    ((Toolbar) findViewById(R.id.toolbar)).getTitle().toString(),
+                    ((Toolbar) requireViewById(R.id.toolbar)).getTitle().toString(),
                     url,
                     ReaderMode.this);
 

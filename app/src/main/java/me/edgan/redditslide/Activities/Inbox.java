@@ -187,12 +187,12 @@ public class Inbox extends BaseActivityAnim {
         setupAppBar(R.id.toolbar, R.string.title_inbox, true, true);
         requireToolbar().setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
 
-        tabs = (TabLayout) findViewById(R.id.sliding_tabs);
+        tabs = (TabLayout) requireViewById(R.id.sliding_tabs);
         tabs.setTabMode(TabLayout.MODE_SCROLLABLE);
         tabs.setSelectedTabIndicatorColor(new ColorPreferences(Inbox.this).getColor("no sub"));
 
-        pager = (ViewPager) findViewById(R.id.content_view);
-        findViewById(R.id.header).setBackgroundColor(Palette.getDefaultColor());
+        pager = (ViewPager) requireViewById(R.id.content_view);
+        requireViewById(R.id.header).setBackgroundColor(Palette.getDefaultColor());
         adapter = new InboxPagerAdapter(getSupportFragmentManager());
         pager.setAdapter(adapter);
 
@@ -206,7 +206,7 @@ public class Inbox extends BaseActivityAnim {
                 new ViewPager.SimpleOnPageChangeListener() {
                     @Override
                     public void onPageSelected(int position) {
-                        findViewById(R.id.header)
+                        requireViewById(R.id.header)
                                 .animate()
                                 .translationY(0)
                                 .setInterpolator(new LinearInterpolator())

@@ -165,10 +165,10 @@ public class MultiredditAdapter extends PaginatedListAdapter {
             }
         }
         if (holder2 instanceof SpacerViewHolder) {
-            final int height = (context).findViewById(R.id.header).getHeight();
+            final int height = (context).requireViewById(R.id.header).getHeight();
 
             holder2.itemView
-                    .findViewById(R.id.height)
+                    .requireViewById(R.id.height)
                     .setLayoutParams(
                             new LinearLayout.LayoutParams(holder2.itemView.getWidth(), height));
             if (listView.getLayoutManager() instanceof CatchStaggeredGridLayoutManager) {

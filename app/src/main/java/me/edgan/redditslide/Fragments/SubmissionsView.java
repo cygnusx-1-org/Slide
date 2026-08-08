@@ -30,6 +30,7 @@ import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -117,7 +118,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
             return;
         }
 
-        final int newSpan = LayoutUtils.getNumColumns(currentOrientation, getActivity());
+        final int newSpan = LayoutUtils.getNumColumns(currentOrientation, requireActivity());
         final int paddingTop = rv.getPaddingTop();
 
         // Pick the anchor: the topmost partially-visible child (smallest top among children
@@ -223,9 +224,9 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                         .inflate(R.layout.fragment_verticalcontent, container, false);
 
         if (getActivity() instanceof MainActivity) {
-            v.findViewById(R.id.back).setBackgroundResource(0);
+            v.requireViewById(R.id.back).setBackgroundResource(0);
         }
-        rv = v.findViewById(R.id.vertical_content);
+        rv = v.requireViewById(R.id.vertical_content);
 
         // Initial-display sweep: warm visible cards' tap targets once the first page is laid out,
         // before any scroll, so a card already on screen is prefetched without needing a scroll. The
@@ -243,10 +244,10 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
         final RecyclerView.LayoutManager mLayoutManager =
                 createLayoutManager(
                         LayoutUtils.getNumColumns(
-                                getResources().getConfiguration().orientation, getActivity()));
+                                getResources().getConfiguration().orientation, requireActivity()));
 
         if (!(getActivity() instanceof SubredditView)) {
-            v.findViewById(R.id.back).setBackground(null);
+            v.requireViewById(R.id.back).setBackground(null);
         }
         rv.setLayoutManager(mLayoutManager);
         rv.setItemAnimator(
@@ -254,7 +255,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
         mLayoutManager.scrollToPosition(0);
 
         mSwipeRefreshLayout = v.findViewById(R.id.activity_main_swipe_refresh_layout);
-        mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors(id, getContext()));
+        mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors(id, requireContext()));
 
         /**
          * If using List view mode, we need to remove the start margin from the SwipeRefreshLayout.
@@ -297,9 +298,14 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                // A detached fragment has no host here; there is nothing to act on.
+                                final FragmentActivity activity = getActivity();
+                                if (activity == null) {
+                                    return;
+                                }
                                 Intent inte = new Intent(getActivity(), Submit.class);
                                 inte.putExtra(Submit.EXTRA_SUBREDDIT, id);
-                                getActivity().startActivity(inte);
+                                activity.startActivity(inte);
                             }
                         });
             } else if (SettingValues.fabType == Constants.FAB_SEARCH) {
@@ -311,7 +317,12 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
 
                             @Override
                             public void onClick(View v) {
-                                FrameLayout frameLayout = new FrameLayout(getActivity());
+                                // A detached fragment has no host here; there is nothing to act on.
+                                final FragmentActivity activity = getActivity();
+                                if (activity == null) {
+                                    return;
+                                }
+                                FrameLayout frameLayout = new FrameLayout(activity);
                                 int padding = getResources().getDimensionPixelSize(R.dimen.activity_vertical_margin);
 
                                 // Calculate fixed dimensions for the dialog
@@ -320,14 +331,14 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                                 int dialogWidth = Math.min((int)(screenWidth * 0.95), 1080);
 
                                 // Use fixed width container with WRAP_CONTENT height
-                                FrameLayout fixedWidthContainer = new FrameLayout(getActivity());
+                                FrameLayout fixedWidthContainer = new FrameLayout(activity);
                                 fixedWidthContainer.setLayoutParams(new FrameLayout.LayoutParams(
                                     dialogWidth - (padding * 2),
                                     ViewGroup.LayoutParams.WRAP_CONTENT
                                 ));
 
                                 // Create and configure TextInputLayout
-                                TextInputLayout inputLayout = new TextInputLayout(getActivity());
+                                TextInputLayout inputLayout = new TextInputLayout(activity);
                                 inputLayout.setLayoutParams(new FrameLayout.LayoutParams(
                                     ViewGroup.LayoutParams.MATCH_PARENT,
                                     ViewGroup.LayoutParams.WRAP_CONTENT
@@ -345,7 +356,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
 
                                 // Set theme colors
                                 TypedValue typedValue = new TypedValue();
-                                getActivity().getTheme().resolveAttribute(R.attr.fontColor, typedValue, true);
+                                activity.getTheme().resolveAttribute(R.attr.fontColor, typedValue, true);
                                 int textColor = typedValue.data;
                                 int hintColor = ColorUtils.setAlphaComponent(textColor, 138);
 
@@ -362,8 +373,8 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                                 frameLayout.addView(fixedWidthContainer);
                                 frameLayout.setPadding(padding, padding/2, padding, 0);
 
-                                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(),
-                                        new ColorPreferences(getActivity()).getThemeSubreddit(id))
+                                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity,
+                                        new ColorPreferences(activity).getThemeSubreddit(id))
                                     .setTitle(R.string.search_title)
                                     .setView(frameLayout)
                                     .setBackgroundInsetStart(padding)
@@ -488,7 +499,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                                 }
 
                                 // Set colors for buttons and text
-                                int accentColor = new ColorPreferences(getActivity()).getColor(id);
+                                int accentColor = new ColorPreferences(activity).getColor(id);
                                 dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(accentColor);
                                 dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setTextColor(accentColor);
                             }
@@ -500,9 +511,14 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                // A detached fragment has no host here; there is nothing to act on.
+                                final FragmentActivity activity = getActivity();
+                                if (activity == null) {
+                                    return;
+                                }
                                 if (!Reddit.fabClear) {
-                                    new MaterialAlertDialogBuilder(getActivity(),
-                                            new ColorPreferences(getActivity()).getDarkThemeSubreddit(id))
+                                    new MaterialAlertDialogBuilder(activity,
+                                            new ColorPreferences(activity).getDarkThemeSubreddit(id))
                                             .setTitle(R.string.settings_fabclear)
                                             .setMessage(R.string.settings_fabclear_msg)
                                             .setPositiveButton(R.string.btn_ok, (dialog, which) -> {
@@ -546,10 +562,15 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                 mLongPressRunnable =
                         new Runnable() {
                             @Override public void run() {
+                                // A detached fragment has no host here; there is nothing to act on.
+                                final FragmentActivity activity = getActivity();
+                                if (activity == null) {
+                                    return;
+                                }
                                 fab.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
                                 if (!Reddit.fabClear) {
-                                    new MaterialAlertDialogBuilder(getActivity(),
-                                            new ColorPreferences(getActivity()).getDarkThemeSubreddit(id))
+                                    new MaterialAlertDialogBuilder(activity,
+                                            new ColorPreferences(activity).getDarkThemeSubreddit(id))
                                             .setTitle(R.string.settings_fabclear)
                                             .setMessage(R.string.settings_fabclear_msg)
                                             .setPositiveButton(R.string.btn_ok, (dialog, which) -> {
@@ -586,7 +607,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
         }
         if (fab != null) fab.show();
 
-        header = getActivity().findViewById(R.id.header);
+        header = requireActivity().requireViewById(R.id.header);
 
         resetScroll();
 
@@ -619,8 +640,8 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                     });
         }
 
-        posts = new SubredditPosts(id, getContext());
-        adapter = new SubmissionAdapter(getActivity(), posts, rv, id, this);
+        posts = new SubredditPosts(id, requireContext());
+        adapter = new SubmissionAdapter(requireActivity(), posts, rv, id, this);
         adapter.setHasStableIds(true);
 
         // Force layout manager to recalculate spans before setting adapter
@@ -629,7 +650,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
         }
 
         rv.setAdapter(adapter);
-        posts.loadMore(getActivity(), this, true);
+        posts.loadMore(requireActivity(), this, true);
         mSwipeRefreshLayout.setOnRefreshListener(this::refresh);
     }
 
@@ -639,8 +660,8 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                     mSwipeRefreshLayout.setRefreshing(true);
                 });
 
-        posts = new SubredditPosts(id, getContext(), force18);
-        adapter = new SubmissionAdapter(getActivity(), posts, rv, id, this);
+        posts = new SubredditPosts(id, requireContext(), force18);
+        adapter = new SubmissionAdapter(requireActivity(), posts, rv, id, this);
         adapter.setHasStableIds(true);
 
         // Force layout manager to recalculate spans before setting adapter
@@ -649,7 +670,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
         }
 
         rv.setAdapter(adapter);
-        posts.loadMore(getActivity(), this, true);
+        posts.loadMore(requireActivity(), this, true);
         mSwipeRefreshLayout.setOnRefreshListener(this::refresh);
     }
 
@@ -866,7 +887,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
         if (toolbarScroll == null) {
             toolbarScroll =
                     new ToolbarScrollHideHandler(
-                            ((BaseActivity) getActivity()).requireToolbar(),
+                            ((BaseActivity) requireActivity()).requireToolbar(),
                             java.util.Objects.requireNonNull(header)) {
                         @Override
                         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -1022,18 +1043,17 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
 
                             // If the toolbar search is open, and the user scrolls in the Main
                             // view--close the search UI
-                            if (getActivity() instanceof MainActivity
+                            // instanceof already answers false for a detached page; the
+                            // local is what lets the checker see that too.
+                            final FragmentActivity host = getActivity();
+                            if (host instanceof MainActivity
                                     && (SettingValues.subredditSearchMethod
                                                     == Constants.SUBREDDIT_SEARCH_METHOD_TOOLBAR
                                             || SettingValues.subredditSearchMethod
                                                     == Constants.SUBREDDIT_SEARCH_METHOD_BOTH)
-                                    && ((MainActivity) getContext())
-                                                    .findViewById(R.id.toolbar_search)
-                                                    .getVisibility()
+                                    && host.requireViewById(R.id.toolbar_search).getVisibility()
                                             == View.VISIBLE) {
-                                ((MainActivity) getContext())
-                                        .findViewById(R.id.close_search_toolbar)
-                                        .performClick();
+                                host.requireViewById(R.id.close_search_toolbar).performClick();
                             }
                         }
                     };

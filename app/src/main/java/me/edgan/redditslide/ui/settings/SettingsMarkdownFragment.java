@@ -19,7 +19,7 @@ public class SettingsMarkdownFragment {
 
     public void Bind() {
         final SwitchCompat newRedditSwitch =
-                context.findViewById(R.id.settings_markdown_newReddit);
+                context.requireViewById(R.id.settings_markdown_newReddit);
         newRedditSwitch.setChecked(SettingValues.markdownNewReddit);
         newRedditSwitch.setOnCheckedChangeListener(
                 (buttonView, isChecked) -> {

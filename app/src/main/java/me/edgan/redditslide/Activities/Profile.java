@@ -151,9 +151,9 @@ public class Profile extends BaseActivityAnim {
             searchActiveTab = savedInstance.getInt("searchActiveTab", -1);
         }
 
-        findViewById(R.id.header).setBackgroundColor(Palette.getColorUser(name));
+        requireViewById(R.id.header).setBackgroundColor(Palette.getColorUser(name));
 
-        tabs = (TabLayout) findViewById(R.id.sliding_tabs);
+        tabs = (TabLayout) requireViewById(R.id.sliding_tabs);
         tabs.setTabMode(TabLayout.MODE_SCROLLABLE);
         tabs.setSelectedTabIndicatorColor(new ColorPreferences(Profile.this).getColor("no sub"));
 
@@ -188,7 +188,7 @@ public class Profile extends BaseActivityAnim {
                     @Override
                     public void onPageSelected(int position) {
                         isSavedView = position == 6;
-                        findViewById(R.id.header)
+                        requireViewById(R.id.header)
                                 .animate()
                                 .translationY(0)
                                 .setInterpolator(new LinearInterpolator())
@@ -570,7 +570,7 @@ public class Profile extends BaseActivityAnim {
     }
 
     public void openPopup() {
-        PopupMenu popup = new PopupMenu(Profile.this, findViewById(R.id.anchor), Gravity.RIGHT);
+        PopupMenu popup = new PopupMenu(Profile.this, requireViewById(R.id.anchor), Gravity.RIGHT);
         final Spannable[] base = SortingUtil.getProfileSortingSpannables(profSort);
         for (Spannable s : base) {
             popup.getMenu().add(s);
@@ -619,7 +619,7 @@ public class Profile extends BaseActivityAnim {
     }
 
     public void openPopupTime() {
-        PopupMenu popup = new PopupMenu(Profile.this, findViewById(R.id.anchor), Gravity.RIGHT);
+        PopupMenu popup = new PopupMenu(Profile.this, requireViewById(R.id.anchor), Gravity.RIGHT);
         final Spannable[] base = SortingUtil.getSortingTimesSpannables(profTime);
         for (Spannable s : base) {
             popup.getMenu().add(s);
@@ -779,7 +779,7 @@ public class Profile extends BaseActivityAnim {
             if (account != null && trophyCase != null) {
                     LayoutInflater inflater = getLayoutInflater();
                     final View dialoglayout = inflater.inflate(R.layout.colorprofile, null);
-                    final TextView title = dialoglayout.findViewById(R.id.title);
+                    final TextView title = dialoglayout.requireViewById(R.id.title);
                     title.setText(name);
 
                     if (account.getDataNode().has("is_employee")
@@ -795,7 +795,7 @@ public class Profile extends BaseActivityAnim {
                     }
 
                     dialoglayout
-                            .findViewById(R.id.share)
+                            .requireViewById(R.id.share)
                             .setOnClickListener(
                                     new View.OnClickListener() {
                                         @Override
@@ -821,7 +821,7 @@ public class Profile extends BaseActivityAnim {
                         info.append("Gold expires on " + new SimpleDateFormat("dd/MM/yy").format(c.getTime()));
                     }*/
 
-                    ((TextView) dialoglayout.findViewById(R.id.moreinfo)).setText(info);
+                    ((TextView) dialoglayout.requireViewById(R.id.moreinfo)).setText(info);
 
                     String tag = UserTags.getUserTag(name);
                     if (tag.isEmpty()) {
@@ -830,11 +830,11 @@ public class Profile extends BaseActivityAnim {
                         tag = getString(R.string.profile_tag_user_existing, tag);
                     }
 
-                    ((TextView) dialoglayout.findViewById(R.id.tagged)).setText(tag);
-                    LinearLayout l = dialoglayout.findViewById(R.id.trophies_inner);
+                    ((TextView) dialoglayout.requireViewById(R.id.tagged)).setText(tag);
+                    LinearLayout l = dialoglayout.requireViewById(R.id.trophies_inner);
 
                     dialoglayout
-                            .findViewById(R.id.tag)
+                            .requireViewById(R.id.tag)
                             .setOnClickListener(
                                     new View.OnClickListener() {
                                         @Override
@@ -914,7 +914,7 @@ public class Profile extends BaseActivityAnim {
                                     });
 
                     if (trophyCase.isEmpty()) {
-                        dialoglayout.findViewById(R.id.trophies).setVisibility(View.GONE);
+                        dialoglayout.requireViewById(R.id.trophies).setVisibility(View.GONE);
                     } else {
                         for (final Trophy t : trophyCase) {
                             View view = getLayoutInflater().inflate(R.layout.trophy, null);
@@ -922,8 +922,8 @@ public class Profile extends BaseActivityAnim {
                                     .getImageLoader()
                                     .displayImage(
                                             t.getIcon(),
-                                            ((ImageView) view.findViewById(R.id.image)));
-                            ((TextView) view.findViewById(R.id.trophyTitle))
+                                            ((ImageView) view.requireViewById(R.id.image)));
+                            ((TextView) view.requireViewById(R.id.trophyTitle))
                                     .setText(t.getFullName());
                             if (t.getAboutUrl() != null
                                     && !t.getAboutUrl().equalsIgnoreCase("null")) {
@@ -950,7 +950,7 @@ public class Profile extends BaseActivityAnim {
                     }
                     if (Authentication.isLoggedIn) {
                         dialoglayout
-                                .findViewById(R.id.pm)
+                                .requireViewById(R.id.pm)
                                 .setOnClickListener(
                                         new View.OnClickListener() {
                                             @Override
@@ -964,14 +964,14 @@ public class Profile extends BaseActivityAnim {
 
                         friend = account.isFriend();
                         if (friend) {
-                            ((TextView) dialoglayout.findViewById(R.id.friend))
+                            ((TextView) dialoglayout.requireViewById(R.id.friend))
                                     .setText(R.string.profile_remove_friend);
                         } else {
-                            ((TextView) dialoglayout.findViewById(R.id.friend))
+                            ((TextView) dialoglayout.requireViewById(R.id.friend))
                                     .setText(R.string.profile_add_friend);
                         }
                         dialoglayout
-                                .findViewById(R.id.friend_body)
+                                .requireViewById(R.id.friend_body)
                                 .setOnClickListener(
                                         new View.OnClickListener() {
                                             @Override
@@ -1028,10 +1028,10 @@ public class Profile extends BaseActivityAnim {
                                             }
                                         });
 
-                        final TextView blockButton = (TextView) dialoglayout.findViewById(R.id.block);
+                        final TextView blockButton = (TextView) dialoglayout.requireViewById(R.id.block);
                         updateBlockButtonState(blockButton);
                         dialoglayout
-                                .findViewById(R.id.block_body)
+                                .requireViewById(R.id.block_body)
                                 .setOnClickListener(
                                         new View.OnClickListener() {
                                             @Override
@@ -1044,13 +1044,13 @@ public class Profile extends BaseActivityAnim {
                         // and add it to the subreddit list, like any other subreddit.
                         final String userSub = "u_" + name.toLowerCase(Locale.ENGLISH);
                         following = UserSubscriptions.getSubscriptions(Profile.this).contains(userSub);
-                        ((TextView) dialoglayout.findViewById(R.id.follow))
+                        ((TextView) dialoglayout.requireViewById(R.id.follow))
                                 .setText(
                                         following
                                                 ? R.string.profile_unfollow_user
                                                 : R.string.profile_follow_user);
                         dialoglayout
-                                .findViewById(R.id.follow_body)
+                                .requireViewById(R.id.follow_body)
                                 .setOnClickListener(
                                         new View.OnClickListener() {
                                             @Override
@@ -1098,7 +1098,7 @@ public class Profile extends BaseActivityAnim {
                                                             following = true;
                                                         }
                                                         ((TextView)
-                                                                        dialoglayout.findViewById(
+                                                                        dialoglayout.requireViewById(
                                                                                 R.id.follow))
                                                                 .setText(
                                                                         following
@@ -1121,12 +1121,12 @@ public class Profile extends BaseActivityAnim {
                                             }
                                         });
                     } else {
-                        dialoglayout.findViewById(R.id.pm).setVisibility(View.GONE);
-                        dialoglayout.findViewById(R.id.follow_body).setVisibility(View.GONE);
+                        dialoglayout.requireViewById(R.id.pm).setVisibility(View.GONE);
+                        dialoglayout.requireViewById(R.id.follow_body).setVisibility(View.GONE);
                     }
 
                     dialoglayout
-                            .findViewById(R.id.multi_body)
+                            .requireViewById(R.id.multi_body)
                             .setOnClickListener(
                                     new View.OnClickListener() {
                                         @Override
@@ -1140,12 +1140,12 @@ public class Profile extends BaseActivityAnim {
                                         }
                                     });
 
-                    final View body = dialoglayout.findViewById(R.id.body2);
+                    final View body = dialoglayout.requireViewById(R.id.body2);
                     body.setVisibility(View.INVISIBLE);
 
-                    final View center = dialoglayout.findViewById(R.id.colorExpandFrom);
+                    final View center = dialoglayout.requireViewById(R.id.colorExpandFrom);
                     dialoglayout
-                            .findViewById(R.id.color)
+                            .requireViewById(R.id.color)
                             .setOnClickListener(
                                     new View.OnClickListener() {
                                         @Override
@@ -1169,8 +1169,8 @@ public class Profile extends BaseActivityAnim {
                                         }
                                     });
 
-                    LineColorPicker colorPicker = dialoglayout.findViewById(R.id.picker);
-                    final LineColorPicker colorPicker2 = dialoglayout.findViewById(R.id.picker2);
+                    LineColorPicker colorPicker = dialoglayout.requireViewById(R.id.picker);
+                    final LineColorPicker colorPicker2 = dialoglayout.requireViewById(R.id.picker2);
 
                     colorPicker.setColors(ColorPreferences.getBaseColors(Profile.this));
 
@@ -1201,7 +1201,7 @@ public class Profile extends BaseActivityAnim {
                             new OnColorChangedListener() {
                                 @Override
                                 public void onColorChanged(int i) {
-                                    findViewById(R.id.header)
+                                    requireViewById(R.id.header)
                                             .setBackgroundColor(colorPicker2.getColor());
                                     if (mToolbar != null)
                                         mToolbar.setBackgroundColor(colorPicker2.getColor());
@@ -1218,7 +1218,7 @@ public class Profile extends BaseActivityAnim {
                             });
 
                     {
-                        TextView dialogButton = dialoglayout.findViewById(R.id.ok);
+                        TextView dialogButton = dialoglayout.requireViewById(R.id.ok);
 
                         // if button is clicked, close the custom dialog
                         dialogButton.setOnClickListener(
@@ -1248,7 +1248,7 @@ public class Profile extends BaseActivityAnim {
                                 });
                     }
                     {
-                        final TextView dialogButton = dialoglayout.findViewById(R.id.reset);
+                        final TextView dialogButton = dialoglayout.requireViewById(R.id.reset);
 
                         // if button is clicked, close the custom dialog
                         dialogButton.setOnClickListener(
@@ -1284,15 +1284,15 @@ public class Profile extends BaseActivityAnim {
                                 });
                     }
 
-                    ((TextView) dialoglayout.findViewById(R.id.commentkarma))
+                    ((TextView) dialoglayout.requireViewById(R.id.commentkarma))
                             .setText(
                                     String.format(
                                             Locale.getDefault(), "%d", account.getCommentKarma()));
-                    ((TextView) dialoglayout.findViewById(R.id.linkkarma))
+                    ((TextView) dialoglayout.requireViewById(R.id.linkkarma))
                             .setText(
                                     String.format(
                                             Locale.getDefault(), "%d", account.getLinkKarma()));
-                    ((TextView) dialoglayout.findViewById(R.id.totalKarma))
+                    ((TextView) dialoglayout.requireViewById(R.id.totalKarma))
                             .setText(
                                     String.format(
                                             Locale.getDefault(),
@@ -1310,7 +1310,7 @@ public class Profile extends BaseActivityAnim {
                     new MaterialAlertDialogBuilder(contextThemeWrapper)
                             .setOnDismissListener(
                                     dialogInterface -> {
-                                        findViewById(R.id.header).setBackgroundColor(currentColor);
+                                        requireViewById(R.id.header).setBackgroundColor(currentColor);
                                         if (mToolbar != null)
                                             mToolbar.setBackgroundColor(currentColor);
                                         Window window = getWindow();
@@ -1469,7 +1469,7 @@ public class Profile extends BaseActivityAnim {
         }
 
         // Show feedback
-        LayoutUtils.showSnackbar(Snackbar.make(findViewById(R.id.header), R.string.profile_search_cleared,
+        LayoutUtils.showSnackbar(Snackbar.make(requireViewById(R.id.header), R.string.profile_search_cleared,
                 Snackbar.LENGTH_SHORT));
     }
 

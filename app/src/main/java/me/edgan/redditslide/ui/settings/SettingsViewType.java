@@ -26,7 +26,7 @@ public class SettingsViewType extends BaseActivityAnim {
         setupAppBar(R.id.toolbar, R.string.settings_view_type, true, true);
 
         // View type multi choice
-        ((TextView) findViewById(R.id.currentViewType))
+        ((TextView) requireViewById(R.id.currentViewType))
                 .setText(
                         SettingValues.single
                                 ? (SettingValues.commentPager
@@ -34,7 +34,7 @@ public class SettingsViewType extends BaseActivityAnim {
                                         : getString(R.string.view_type_none))
                                 : getString(R.string.view_type_tabs));
 
-        findViewById(R.id.viewtype)
+        requireViewById(R.id.viewtype)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -83,7 +83,7 @@ public class SettingsViewType extends BaseActivityAnim {
                                                                     true)
                                                             .apply();
                                                 }
-                                                ((TextView) findViewById(R.id.currentViewType))
+                                                ((TextView) requireViewById(R.id.currentViewType))
                                                         .setText(
                                                                 SettingValues.single
                                                                         ? (SettingValues

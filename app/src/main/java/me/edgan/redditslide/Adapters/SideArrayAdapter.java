@@ -90,11 +90,11 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
         // toolbar-search layout is not inflated at all -- and then there is no search bar to hide.
         final MainActivity activity = (MainActivity) getContext();
         final AutoCompleteTextView toolbarSearchField =
-                (AutoCompleteTextView) activity.findViewById(R.id.toolbar_search);
+                (AutoCompleteTextView) activity.requireViewById(R.id.toolbar_search);
         final CardView suggestions =
-                (CardView) activity.findViewById(R.id.toolbar_search_suggestions);
+                (CardView) activity.requireViewById(R.id.toolbar_search_suggestions);
         final ImageView closeSearch =
-                (ImageView) activity.findViewById(R.id.close_search_toolbar);
+                (ImageView) activity.requireViewById(R.id.close_search_toolbar);
         // Hiding the keyboard is gated on the search field alone, as it was before: the other two
         // views are only needed by the visibility block below.
         if (toolbarSearchField != null) {
@@ -145,7 +145,7 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
             } else {
                 sub = fitems.get(position);
             }
-            final TextView t = convertView.findViewById(R.id.name);
+            final TextView t = convertView.requireViewById(R.id.name);
             t.setText(sub);
 
             if (height == 0) {
@@ -172,7 +172,7 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
                                             getContext().getString(R.string.search_goto) + " ",
                                             ""));
 
-            final View colorView = convertView.findViewById(R.id.color);
+            final View colorView = convertView.requireViewById(R.id.color);
             colorView.setBackgroundResource(R.drawable.circle);
             BlendModeUtil.tintDrawableAsModulate(
                     colorView.getBackground(), Palette.getColor(subreddit));
@@ -295,7 +295,7 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
                     });
         } else {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.spacer, parent, false);
-            ViewGroup.LayoutParams params = convertView.findViewById(R.id.height).getLayoutParams();
+            ViewGroup.LayoutParams params = convertView.requireViewById(R.id.height).getLayoutParams();
             if ((fitems.size() * height) < parentL.getHeight()
                     && (SettingValues.subredditSearchMethod
                                     == Constants.SUBREDDIT_SEARCH_METHOD_DRAWER

@@ -23,7 +23,7 @@ public class SettingsData extends BaseActivityAnim {
 
         setupAppBar(R.id.toolbar, R.string.settings_data, true, true);
 
-        ((ViewGroup) findViewById(R.id.settings_datasaving))
+        ((ViewGroup) requireViewById(R.id.settings_datasaving))
                 .addView(
                         getLayoutInflater()
                                 .inflate(R.layout.activity_settings_datasaving_child, null));

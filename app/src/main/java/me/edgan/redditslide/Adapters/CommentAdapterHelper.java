@@ -299,7 +299,7 @@ final AlertDialog reportDialog =
 
                                 final RadioGroup reasonGroup =
                                         reportView
-                                                .findViewById(R.id.report_reasons);
+                                                .requireViewById(R.id.report_reasons);
 
                                 reasonGroup.setOnCheckedChangeListener(
                                         new RadioGroup.OnCheckedChangeListener() {
@@ -308,11 +308,11 @@ final AlertDialog reportDialog =
                                                     RadioGroup group, int checkedId) {
                                                 if (checkedId == R.id.report_other)
                                                     reportView
-                                                            .findViewById(R.id.input_report_reason)
+                                                            .requireViewById(R.id.input_report_reason)
                                                             .setVisibility(View.VISIBLE);
                                                 else
                                                     reportView
-                                                            .findViewById(R.id.input_report_reason)
+                                                            .requireViewById(R.id.input_report_reason)
                                                             .setVisibility(View.GONE);
                                             }
                                         });
@@ -338,7 +338,7 @@ final AlertDialog reportDialog =
                                     @Override
                                     protected void onPostExecute(Ruleset rules) {
                                         reportView
-                                                .findViewById(R.id.report_loading)
+                                                .requireViewById(R.id.report_loading)
                                                 .setVisibility(View.GONE);
                                         if (rules == null) {
                                             // Could not load rules (offline); leave the dialog as-is
@@ -656,8 +656,8 @@ final AlertDialog reportDialog =
                                 parent.getDataNode().path("body_html").asText(""),
                                 parent.getDataNode()),
                         MiscUtil.orEmpty(adapter.submission.getSubredditName()),
-                        dialoglayout.findViewById(R.id.firstTextView),
-                        dialoglayout.findViewById(R.id.commentOverflow));
+                        dialoglayout.requireViewById(R.id.firstTextView),
+                        dialoglayout.requireViewById(R.id.commentOverflow));
 
                 DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext).setView(dialoglayout));
                 break;
@@ -2138,7 +2138,7 @@ final AlertDialog reportDialog =
         DialogUtil.matchDialogToCardBackground(d);
         d.show();
         dialoglayout
-                .findViewById(R.id.cancel)
+                .requireViewById(R.id.cancel)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -2147,7 +2147,7 @@ final AlertDialog reportDialog =
                             }
                         });
         dialoglayout
-                .findViewById(R.id.submit)
+                .requireViewById(R.id.submit)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override

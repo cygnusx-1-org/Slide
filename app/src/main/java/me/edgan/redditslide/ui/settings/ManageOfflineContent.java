@@ -23,7 +23,7 @@ public class ManageOfflineContent extends BaseActivityAnim {
 
         setupAppBar(R.id.toolbar, R.string.manage_offline_content, true, true);
 
-        ((ViewGroup) findViewById(R.id.manage_history))
+        ((ViewGroup) requireViewById(R.id.manage_history))
                 .addView(getLayoutInflater().inflate(R.layout.activity_manage_history_child, null));
 
         fragment.Bind();

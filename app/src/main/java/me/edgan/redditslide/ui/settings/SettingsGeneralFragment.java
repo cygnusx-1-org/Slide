@@ -94,9 +94,9 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
     }
 
     public static void setupNotificationSettings(View dialoglayout, final Activity context) {
-        final SeekBar landscape = dialoglayout.findViewById(R.id.landscape);
-        final CheckBox checkBox = dialoglayout.findViewById(R.id.load);
-        final CheckBox sound = dialoglayout.findViewById(R.id.sound);
+        final SeekBar landscape = dialoglayout.requireViewById(R.id.landscape);
+        final CheckBox checkBox = dialoglayout.requireViewById(R.id.load);
+        final CheckBox sound = dialoglayout.requireViewById(R.id.sound);
         final TextView notifCurrentView =
                 context.findViewById(R.id.settings_general_notifications_current);
 
@@ -182,7 +182,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                     }
                 });
 
-        dialoglayout.findViewById(R.id.title).setBackgroundColor(Palette.getDefaultColor());
+        dialoglayout.requireViewById(R.id.title).setBackgroundColor(Palette.getDefaultColor());
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(context).setView(dialoglayout);
         final Dialog dialog = builder.create();
@@ -211,7 +211,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 });
 
         dialoglayout
-                .findViewById(R.id.save)
+                .requireViewById(R.id.save)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -348,7 +348,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
         final TextView frontpageSortingCurrentView =
                 context.findViewById(R.id.settings_general_sorting_current_frontpage);
 
-        context.findViewById(R.id.settings_general_drawer_items)
+        context.requireViewById(R.id.settings_general_drawer_items)
                 .setOnClickListener(v -> DrawerItemsDialog.show(context));
 
         {
@@ -980,7 +980,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
         }
 
         final TextView currentBackButtonTitle =
-                context.findViewById(R.id.settings_general_back_button_behavior_current);
+                context.requireViewById(R.id.settings_general_back_button_behavior_current);
         if (SettingValues.backButtonBehavior == BackButtonBehaviorOptions.ConfirmExit.getValue()) {
             currentBackButtonTitle.setText(
                     context.getString(R.string.back_button_behavior_confirm_exit));
@@ -997,7 +997,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
         }
 
         final RelativeLayout currentBackButtonLayout =
-                context.findViewById(R.id.settings_general_back_button_behavior);
+                context.requireViewById(R.id.settings_general_back_button_behavior);
         currentBackButtonLayout.setOnClickListener(
                 v -> {
                     final PopupMenu popup = new PopupMenu(context, v);
@@ -1346,9 +1346,9 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
         }
 
         // * Client id override
-        RelativeLayout clientId = context.findViewById(R.id.settings_general_client_id);
+        RelativeLayout clientId = context.requireViewById(R.id.settings_general_client_id);
         final TextView currentClientId =
-                context.findViewById(R.id.settings_general_client_id_current);
+                context.requireViewById(R.id.settings_general_client_id_current);
 
         // Update current value display
         String savedClientId =
@@ -1364,9 +1364,9 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                 });
 
         // * Redirect URI override
-        RelativeLayout redirectUri = context.findViewById(R.id.settings_general_redirect_uri);
+        RelativeLayout redirectUri = context.requireViewById(R.id.settings_general_redirect_uri);
         final TextView currentRedirectUri =
-                context.findViewById(R.id.settings_general_redirect_uri_current);
+                context.requireViewById(R.id.settings_general_redirect_uri_current);
 
         String savedRedirectUri =
                 PrefUtil.getString(
@@ -1378,9 +1378,9 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
         redirectUri.setOnClickListener(v -> showRedirectUriDialog());
 
         // * User agent override
-        RelativeLayout userAgentLayout = context.findViewById(R.id.settings_general_user_agent);
+        RelativeLayout userAgentLayout = context.requireViewById(R.id.settings_general_user_agent);
         final TextView currentUserAgent =
-                context.findViewById(R.id.settings_general_user_agent_current);
+                context.requireViewById(R.id.settings_general_user_agent_current);
 
         String savedUserAgent =
                 PrefUtil.getString(
@@ -1879,7 +1879,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
         // Add horizontal layout to main container
         dialogContainer.addView(inputLayout);
 
-        final TextView currentClientIdView = context.findViewById(R.id.settings_general_client_id_current);
+        final TextView currentClientIdView = context.requireViewById(R.id.settings_general_client_id_current);
 
         final AlertDialog clientIdDialog = new MaterialAlertDialogBuilder(contextThemeWrapper)
                 .setTitle(R.string.reddit_client_id)
@@ -1949,7 +1949,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
         int paddingPx = (int)(16 * context.getResources().getDisplayMetrics().density);
         input.setPadding(paddingPx, input.getPaddingTop(), paddingPx, input.getPaddingBottom());
 
-        final TextView currentView = context.findViewById(R.id.settings_general_redirect_uri_current);
+        final TextView currentView = context.requireViewById(R.id.settings_general_redirect_uri_current);
 
         new MaterialAlertDialogBuilder(contextThemeWrapper)
                 .setTitle(R.string.reddit_redirect_uri_override)
@@ -2014,7 +2014,7 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
         int paddingPx = (int)(16 * context.getResources().getDisplayMetrics().density);
         input.setPadding(paddingPx, input.getPaddingTop(), paddingPx, input.getPaddingBottom());
 
-        final TextView currentView = context.findViewById(R.id.settings_general_user_agent_current);
+        final TextView currentView = context.requireViewById(R.id.settings_general_user_agent_current);
 
         new MaterialAlertDialogBuilder(contextThemeWrapper)
                 .setTitle(R.string.reddit_user_agent_override)

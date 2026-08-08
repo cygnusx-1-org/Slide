@@ -75,7 +75,7 @@ public class Shadowbox extends FullScreenActivity implements SubmissionDisplay {
         count = subredditPosts.getPosts().size();
         Log.d("Shadowbox", "Loaded " + count + " posts from cache, didOnline=" + Authentication.didOnline);
 
-        pager = (ViewPager) findViewById(R.id.content_view);
+        pager = (ViewPager) requireViewById(R.id.content_view);
         submissionsPager = new ShadowboxPagerAdapter(getSupportFragmentManager());
         pager.setAdapter(submissionsPager);
         pager.setCurrentItem(firstPage);

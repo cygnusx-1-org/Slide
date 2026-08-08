@@ -31,7 +31,7 @@ public class PostReadLater extends BaseActivityAnim {
         setupAppBar(R.id.toolbar, this.getString(R.string.read_later), true, true);
         requireToolbar().setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
 
-        ViewPager pager = (ViewPager) findViewById(R.id.content_view);
+        ViewPager pager = (ViewPager) requireViewById(R.id.content_view);
         pager.setAdapter(new ReadLaterPagerAdapter(getSupportFragmentManager()));
     }
 

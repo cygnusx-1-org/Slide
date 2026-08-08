@@ -195,11 +195,11 @@ public class SubredditView extends BaseActivity {
         setContentView(R.layout.activity_singlesubreddit);
         setupSubredditAppBar(R.id.toolbar, subreddit, true, subreddit);
 
-        header = findViewById(R.id.header);
+        header = requireViewById(R.id.header);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         setResult(3);
         requireToolbar().setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
-        pager = (ToggleSwipeViewPager) findViewById(R.id.content_view);
+        pager = (ToggleSwipeViewPager) requireViewById(R.id.content_view);
         singleMode = SettingValues.single;
         commentPager = false;
         if (singleMode) commentPager = SettingValues.commentPager;
@@ -341,7 +341,7 @@ public class SubredditView extends BaseActivity {
             if (subreddit.equalsIgnoreCase("friends")) {
                 Snackbar s =
                         Snackbar.make(
-                                findViewById(R.id.anchor),
+                                requireViewById(R.id.anchor),
                                 getString(R.string.friends_sort_error),
                                 Snackbar.LENGTH_SHORT);
                 LayoutUtils.showSnackbar(s);
@@ -502,7 +502,7 @@ public class SubredditView extends BaseActivity {
                 Snackbar s;
                 if (done) {
                     if (current != null) {
-                        ((TextView) dialoglayout.findViewById(R.id.flair_text))
+                        ((TextView) dialoglayout.requireViewById(R.id.flair_text))
                                 .setText(getString(R.string.sidebar_flair, current));
                     }
                     s =
@@ -525,7 +525,7 @@ public class SubredditView extends BaseActivity {
     }
 
     public void doSubSidebar(final String subOverride) {
-        findViewById(R.id.loader).setVisibility(View.VISIBLE);
+        requireViewById(R.id.loader).setVisibility(View.VISIBLE);
 
         invalidateOptionsMenu();
 
@@ -545,9 +545,9 @@ public class SubredditView extends BaseActivity {
             }
             loaded = true;
 
-            final View dialoglayout = findViewById(R.id.sidebarsub);
+            final View dialoglayout = requireViewById(R.id.sidebarsub);
             {
-                View submit = (dialoglayout.findViewById(R.id.submit));
+                View submit = (dialoglayout.requireViewById(R.id.submit));
 
                 if (!Authentication.isLoggedIn || !Authentication.didOnline) {
                     submit.setVisibility(View.GONE);
@@ -570,7 +570,7 @@ public class SubredditView extends BaseActivity {
             }
 
             dialoglayout
-                    .findViewById(R.id.wiki)
+                    .requireViewById(R.id.wiki)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
@@ -581,7 +581,7 @@ public class SubredditView extends BaseActivity {
                                 }
                             });
             dialoglayout
-                    .findViewById(R.id.syncflair)
+                    .requireViewById(R.id.syncflair)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
@@ -590,7 +590,7 @@ public class SubredditView extends BaseActivity {
                                 }
                             });
             dialoglayout
-                    .findViewById(R.id.submit)
+                    .requireViewById(R.id.submit)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
@@ -604,7 +604,7 @@ public class SubredditView extends BaseActivity {
                                 }
                             });
 
-            final TextView sort = dialoglayout.findViewById(R.id.sort);
+            final TextView sort = dialoglayout.requireViewById(R.id.sort);
             Sorting sortingis = Sorting.HOT;
             if (SettingValues.hasSort(subreddit)) {
                 sortingis = SettingValues.getBaseSubmissionSort(subreddit);
@@ -618,7 +618,7 @@ public class SubredditView extends BaseActivity {
             }
             final int sortid = SortingUtil.getSortingId(sortingis);
             dialoglayout
-                    .findViewById(R.id.sorting)
+                    .requireViewById(R.id.sorting)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
@@ -697,7 +697,7 @@ public class SubredditView extends BaseActivity {
                                                                         .remove("defaultTime"
                                                                                 + subreddit.toLowerCase(Locale.ENGLISH))
                                                                         .apply();
-                                                                final TextView sort1 = dialoglayout.findViewById(R.id.sort);
+                                                                final TextView sort1 = dialoglayout.requireViewById(R.id.sort);
                                                                 if (SettingValues.hasSort(subreddit)) {
                                                                     Sorting sortingis1 = SettingValues.getBaseSubmissionSort(subreddit);
                                                                     sort1.setText(sortingis1.name()
@@ -718,7 +718,7 @@ public class SubredditView extends BaseActivity {
                             });
 
             dialoglayout
-                    .findViewById(R.id.theme)
+                    .requireViewById(R.id.theme)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
@@ -742,7 +742,7 @@ public class SubredditView extends BaseActivity {
                                 }
                             });
             dialoglayout
-                    .findViewById(R.id.mods)
+                    .requireViewById(R.id.mods)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
@@ -827,7 +827,7 @@ public class SubredditView extends BaseActivity {
                                     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                                 }
                             });
-            dialoglayout.findViewById(R.id.flair).setVisibility(View.GONE);
+            dialoglayout.requireViewById(R.id.flair).setVisibility(View.GONE);
             if (Authentication.didOnline && Authentication.isLoggedIn) {
                 new AsyncTask<View, Void, View>() {
                     @SuppressWarnings("NullAway.Init") // assigned in doInBackground
@@ -876,7 +876,7 @@ public class SubredditView extends BaseActivity {
                                 && !flairText.isEmpty()) {
                             flair.setVisibility(View.VISIBLE);
                             if (current != null) {
-                                ((TextView) dialoglayout.findViewById(R.id.flair_text))
+                                ((TextView) dialoglayout.requireViewById(R.id.flair_text))
                                         .setText(getString(R.string.sidebar_flair, current));
                             }
                             flair.setOnClickListener(
@@ -946,7 +946,7 @@ public class SubredditView extends BaseActivity {
                                     });
                         }
                     }
-                }.execute((View) dialoglayout.findViewById(R.id.flair));
+                }.execute((View) dialoglayout.requireViewById(R.id.flair));
             }
         } else {
             if (drawerLayout != null) {
@@ -957,7 +957,7 @@ public class SubredditView extends BaseActivity {
     }
 
     public void doSubSidebarNoLoad(final String subOverride) {
-        findViewById(R.id.loader).setVisibility(View.GONE);
+        requireViewById(R.id.loader).setVisibility(View.GONE);
 
         invalidateOptionsMenu();
 
@@ -972,23 +972,23 @@ public class SubredditView extends BaseActivity {
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.END);
             }
 
-            findViewById(R.id.sidebar_text).setVisibility(View.GONE);
-            findViewById(R.id.sub_title).setVisibility(View.GONE);
-            findViewById(R.id.subscribers).setVisibility(View.GONE);
-            findViewById(R.id.active_users).setVisibility(View.GONE);
+            requireViewById(R.id.sidebar_text).setVisibility(View.GONE);
+            requireViewById(R.id.sub_title).setVisibility(View.GONE);
+            requireViewById(R.id.subscribers).setVisibility(View.GONE);
+            requireViewById(R.id.active_users).setVisibility(View.GONE);
 
-            findViewById(R.id.header_sub).setBackgroundColor(Palette.getColor(subOverride));
-            ((TextView) findViewById(R.id.sub_infotitle)).setText(subOverride);
+            requireViewById(R.id.header_sub).setBackgroundColor(Palette.getColor(subOverride));
+            ((TextView) requireViewById(R.id.sub_infotitle)).setText(subOverride);
 
             // Sidebar buttons should use subOverride's accent color
             int subColor = new ColorPreferences(this).getColor(subOverride);
-            ((TextView) findViewById(R.id.theme_text)).setTextColor(subColor);
-            ((TextView) findViewById(R.id.wiki_text)).setTextColor(subColor);
-            ((TextView) findViewById(R.id.post_text)).setTextColor(subColor);
-            ((TextView) findViewById(R.id.mods_text)).setTextColor(subColor);
-            ((TextView) findViewById(R.id.flair_text)).setTextColor(subColor);
-            ((TextView) findViewById(R.id.sorting).findViewById(R.id.sort)).setTextColor(subColor);
-            ((TextView) findViewById(R.id.sync)).setTextColor(subColor);
+            ((TextView) requireViewById(R.id.theme_text)).setTextColor(subColor);
+            ((TextView) requireViewById(R.id.wiki_text)).setTextColor(subColor);
+            ((TextView) requireViewById(R.id.post_text)).setTextColor(subColor);
+            ((TextView) requireViewById(R.id.mods_text)).setTextColor(subColor);
+            ((TextView) requireViewById(R.id.flair_text)).setTextColor(subColor);
+            ((TextView) requireViewById(R.id.sorting).requireViewById(R.id.sort)).setTextColor(subColor);
+            ((TextView) requireViewById(R.id.sync)).setTextColor(subColor);
 
         } else {
             if (drawerLayout != null) {
@@ -1072,7 +1072,7 @@ public class SubredditView extends BaseActivity {
                         SettingValues.setSubSorting(sort, time, sub);
                         SortingUtil.setSorting(sub, sort);
                         SortingUtil.setTime(sub, time);
-                        final TextView sort = dialoglayout.findViewById(R.id.sort);
+                        final TextView sort = dialoglayout.requireViewById(R.id.sort);
                         Sorting sortingis =
                                 SettingValues.getBaseSubmissionSort(
                                         "Default sorting: " + subreddit);
@@ -1099,7 +1099,7 @@ public class SubredditView extends BaseActivity {
 
     public void openPopup() {
         PopupMenu popup =
-                new PopupMenu(SubredditView.this, findViewById(R.id.anchor), Gravity.RIGHT);
+                new PopupMenu(SubredditView.this, requireViewById(R.id.anchor), Gravity.RIGHT);
         final Spannable[] base = SortingUtil.getSortingSpannables(subreddit);
         for (Spannable s : base) {
             // Do not add option for "Best" in any subreddit except for the frontpage.
@@ -1154,7 +1154,7 @@ public class SubredditView extends BaseActivity {
 
     public void openPopupTime() {
         PopupMenu popup =
-                new PopupMenu(SubredditView.this, findViewById(R.id.anchor), Gravity.RIGHT);
+                new PopupMenu(SubredditView.this, requireViewById(R.id.anchor), Gravity.RIGHT);
         final Spannable[] base = SortingUtil.getSortingTimesSpannables(subreddit);
         for (Spannable s : base) {
             popup.getMenu().add(s);
@@ -1242,7 +1242,7 @@ public class SubredditView extends BaseActivity {
 
     private void doSubOnlyStuff(final Subreddit subreddit) {
         if (!isFinishing()) {
-            findViewById(R.id.loader).setVisibility(View.GONE);
+            requireViewById(R.id.loader).setVisibility(View.GONE);
             if (subreddit.getDataNode().has("subreddit_type")
                     && !subreddit.getDataNode().path("subreddit_type").isNull()) {
                 canSubmit =
@@ -1253,12 +1253,12 @@ public class SubredditView extends BaseActivity {
                                 .equalsIgnoreCase("RESTRICTED");
             }
             if (subreddit.getSidebar() != null && !subreddit.getSidebar().isEmpty()) {
-                findViewById(R.id.sidebar_text).setVisibility(View.VISIBLE);
+                requireViewById(R.id.sidebar_text).setVisibility(View.VISIBLE);
 
                 final String text = subreddit.getDataNode().path("description_html").asText().trim();
                 final SpoilerRobotoTextView body =
-                        (SpoilerRobotoTextView) findViewById(R.id.sidebar_text);
-                CommentOverflow overflow = (CommentOverflow) findViewById(R.id.commentOverflow);
+                        (SpoilerRobotoTextView) requireViewById(R.id.sidebar_text);
+                CommentOverflow overflow = (CommentOverflow) requireViewById(R.id.commentOverflow);
                 setViews(text, MiscUtil.orEmpty(subreddit.getDisplayName()), body, overflow);
 
                 // get all subs that have Notifications enabled
@@ -1281,11 +1281,11 @@ public class SubredditView extends BaseActivity {
                         subThresholds.containsKey(
                                 MiscUtil.orEmpty(subreddit.getDisplayName())
                                         .toLowerCase(Locale.ENGLISH));
-                ((AppCompatCheckBox) findViewById(R.id.notify_posts_state)).setChecked(isNotified);
+                ((AppCompatCheckBox) requireViewById(R.id.notify_posts_state)).setChecked(isNotified);
             } else {
-                findViewById(R.id.sidebar_text).setVisibility(View.GONE);
+                requireViewById(R.id.sidebar_text).setVisibility(View.GONE);
             }
-            View collection = findViewById(R.id.collection);
+            View collection = requireViewById(R.id.collection);
             if (Authentication.isLoggedIn) {
                 collection.setOnClickListener(
                         new View.OnClickListener() {
@@ -1696,15 +1696,15 @@ public class SubredditView extends BaseActivity {
                         });
             }
             if (!MiscUtil.orEmpty(subreddit.getPublicDescription()).isEmpty()) {
-                findViewById(R.id.sub_title).setVisibility(View.VISIBLE);
+                requireViewById(R.id.sub_title).setVisibility(View.VISIBLE);
                 setViews(
                         subreddit.getDataNode().path("public_description_html").asText(),
                         MiscUtil.orEmpty(subreddit.getDisplayName())
                                 .toLowerCase(Locale.ENGLISH),
-                        ((SpoilerRobotoTextView) findViewById(R.id.sub_title)),
-                        (CommentOverflow) findViewById(R.id.sub_title_overflow));
+                        ((SpoilerRobotoTextView) requireViewById(R.id.sub_title)),
+                        (CommentOverflow) requireViewById(R.id.sub_title_overflow));
             } else {
-                findViewById(R.id.sub_title).setVisibility(View.GONE);
+                requireViewById(R.id.sub_title).setVisibility(View.GONE);
             }
             if (subreddit.getDataNode().has("icon_img")
                     && !subreddit.getDataNode().path("icon_img").asText().isEmpty()) {
@@ -1712,32 +1712,32 @@ public class SubredditView extends BaseActivity {
                         .getImageLoader()
                         .displayImage(
                                 subreddit.getDataNode().path("icon_img").asText(),
-                                (ImageView) findViewById(R.id.subimage));
+                                (ImageView) requireViewById(R.id.subimage));
             } else {
-                findViewById(R.id.subimage).setVisibility(View.GONE);
+                requireViewById(R.id.subimage).setVisibility(View.GONE);
             }
             String bannerImage = subreddit.getBannerImage();
             if (bannerImage != null && !bannerImage.isEmpty()) {
-                findViewById(R.id.sub_banner).setVisibility(View.VISIBLE);
+                requireViewById(R.id.sub_banner).setVisibility(View.VISIBLE);
                 ((Reddit) getApplication())
                         .getImageLoader()
-                        .displayImage(bannerImage, (ImageView) findViewById(R.id.sub_banner));
+                        .displayImage(bannerImage, (ImageView) requireViewById(R.id.sub_banner));
             } else {
-                findViewById(R.id.sub_banner).setVisibility(View.GONE);
+                requireViewById(R.id.sub_banner).setVisibility(View.GONE);
             }
-            ((TextView) findViewById(R.id.subscribers))
+            ((TextView) requireViewById(R.id.subscribers))
                     .setText(
                             getString(
                                     R.string.subreddit_subscribers_string,
                                     subreddit.getLocalizedSubscriberCount()));
-            findViewById(R.id.subscribers).setVisibility(View.VISIBLE);
+            requireViewById(R.id.subscribers).setVisibility(View.VISIBLE);
 
-            ((TextView) findViewById(R.id.active_users))
+            ((TextView) requireViewById(R.id.active_users))
                     .setText(
                             getString(
                                     R.string.subreddit_active_users_string_new,
                                     subreddit.getLocalizedAccountsActive()));
-            findViewById(R.id.active_users).setVisibility(View.VISIBLE);
+            requireViewById(R.id.active_users).setVisibility(View.VISIBLE);
         }
     }
 
@@ -1773,7 +1773,7 @@ public class SubredditView extends BaseActivity {
             } else {
                 commentOverflow.setViews(blocks.subList(startIndex, blocks.size()), subreddit);
             }
-            SidebarLayout sidebar = (SidebarLayout) findViewById(R.id.drawer_layout);
+            SidebarLayout sidebar = (SidebarLayout) requireViewById(R.id.drawer_layout);
             for (int i = 0; i < commentOverflow.getChildCount(); i++) {
                 View maybeScrollable = commentOverflow.getChildAt(i);
                 if (maybeScrollable instanceof HorizontalScrollView) {

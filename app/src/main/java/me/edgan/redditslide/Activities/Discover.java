@@ -74,24 +74,24 @@ public class Discover extends BaseActivityAnim {
         setContentView(R.layout.activity_multireddits);
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
-        ((DrawerLayout) findViewById(R.id.drawer_layout))
+        ((DrawerLayout) requireViewById(R.id.drawer_layout))
                 .setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         setupAppBar(R.id.toolbar, R.string.discover_title, true, false);
         requireToolbar().setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
 
-        findViewById(R.id.header).setBackgroundColor(Palette.getDefaultColor());
-        TabLayout tabs = (TabLayout) findViewById(R.id.sliding_tabs);
+        requireViewById(R.id.header).setBackgroundColor(Palette.getDefaultColor());
+        TabLayout tabs = (TabLayout) requireViewById(R.id.sliding_tabs);
         tabs.setTabMode(TabLayout.MODE_FIXED);
         tabs.setSelectedTabIndicatorColor(new ColorPreferences(Discover.this).getColor("no sub"));
 
-        ViewPager pager = (ViewPager) findViewById(R.id.content_view);
+        ViewPager pager = (ViewPager) requireViewById(R.id.content_view);
         pager.setAdapter(new DiscoverPagerAdapter(getSupportFragmentManager()));
         tabs.setupWithViewPager(pager);
         pager.addOnPageChangeListener(
                 new ViewPager.SimpleOnPageChangeListener() {
                     @Override
                     public void onPageSelected(int position) {
-                        findViewById(R.id.header)
+                        requireViewById(R.id.header)
                                 .animate()
                                 .translationY(0)
                                 .setInterpolator(new LinearInterpolator())

@@ -35,8 +35,8 @@ public class FilterContentUtil {
         customDialogView.addView(filterContent);
 
         // Get references to the list views
-        final ListView regularListView = filterContent.findViewById(R.id.regular_content_list);
-        final ListView nsfwListView = filterContent.findViewById(R.id.nsfw_content_list);
+        final ListView regularListView = filterContent.requireViewById(R.id.regular_content_list);
+        final ListView nsfwListView = filterContent.requireViewById(R.id.nsfw_content_list);
 
         // Create a wrapper class to hold the lists reference that can be modified
         class ListsHolder {

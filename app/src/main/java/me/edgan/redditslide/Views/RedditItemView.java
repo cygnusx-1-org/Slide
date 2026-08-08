@@ -200,7 +200,7 @@ public class RedditItemView extends RelativeLayout {
 
     private void doUser(Account account, View content) {
         String name = account.getFullName();
-        final TextView title = content.findViewById(R.id.title);
+        final TextView title = content.requireViewById(R.id.title);
         title.setText(name);
 
         final int currentColor = Palette.getColorUser(MiscUtil.orEmpty(name));
@@ -213,11 +213,11 @@ public class RedditItemView extends RelativeLayout {
                                 TimeUtils.getTimeSince(
                                         account.getCreated().getTime(), getContext()));
 
-        ((TextView) content.findViewById(R.id.moreinfo)).setText(info);
+        ((TextView) content.requireViewById(R.id.moreinfo)).setText(info);
 
-        ((TextView) content.findViewById(R.id.commentkarma))
+        ((TextView) content.requireViewById(R.id.commentkarma))
                 .setText(String.format(Locale.getDefault(), "%d", account.getCommentKarma()));
-        ((TextView) content.findViewById(R.id.linkkarma))
+        ((TextView) content.requireViewById(R.id.linkkarma))
                 .setText(String.format(Locale.getDefault(), "%d", account.getLinkKarma()));
     }
 
@@ -263,20 +263,20 @@ public class RedditItemView extends RelativeLayout {
                 ? subreddit.isUserSubscriber()
                 : UserSubscriptions.getSubscriptions(getContext())
                         .contains(MiscUtil.orEmpty(subreddit.getDisplayName()).toLowerCase(Locale.ENGLISH))) {
-            ((AppCompatCheckBox) content.findViewById(R.id.subscribed)).setChecked(true);
+            ((AppCompatCheckBox) content.requireViewById(R.id.subscribed)).setChecked(true);
         }
-        content.findViewById(R.id.header_sub)
+        content.requireViewById(R.id.header_sub)
                 .setBackgroundColor(Palette.getColor(subreddit.getDisplayName()));
-        ((TextView) content.findViewById(R.id.sub_infotitle)).setText(subreddit.getDisplayName());
+        ((TextView) content.requireViewById(R.id.sub_infotitle)).setText(subreddit.getDisplayName());
         if (!MiscUtil.orEmpty(subreddit.getPublicDescription()).isEmpty()) {
-            content.findViewById(R.id.sub_title).setVisibility(View.VISIBLE);
+            content.requireViewById(R.id.sub_title).setVisibility(View.VISIBLE);
             setViews(
                     subreddit.getDataNode().path("public_description_html").asText(),
                     MiscUtil.orEmpty(subreddit.getDisplayName()).toLowerCase(Locale.ENGLISH),
-                    content.findViewById(R.id.sub_title),
-                    content.findViewById(R.id.sub_title_overflow));
+                    content.requireViewById(R.id.sub_title),
+                    content.requireViewById(R.id.sub_title_overflow));
         } else {
-            content.findViewById(R.id.sub_title).setVisibility(View.GONE);
+            content.requireViewById(R.id.sub_title).setVisibility(View.GONE);
         }
         if (subreddit.getDataNode().has("icon_img")
                 && !subreddit.getDataNode().path("icon_img").asText().isEmpty()) {
@@ -284,9 +284,9 @@ public class RedditItemView extends RelativeLayout {
                     .getImageLoader()
                     .displayImage(
                             subreddit.getDataNode().path("icon_img").asText(),
-                            (ImageView) content.findViewById(R.id.subimage));
+                            (ImageView) content.requireViewById(R.id.subimage));
         } else {
-            content.findViewById(R.id.subimage).setVisibility(View.GONE);
+            content.requireViewById(R.id.subimage).setVisibility(View.GONE);
         }
         if (findViewById(R.id.sub_banner) != null) {
             String bannerImage = subreddit.getBannerImage();
@@ -299,21 +299,21 @@ public class RedditItemView extends RelativeLayout {
                 findViewById(R.id.sub_banner).setVisibility(View.GONE);
             }
         }
-        ((TextView) content.findViewById(R.id.subscribers))
+        ((TextView) content.requireViewById(R.id.subscribers))
                 .setText(
                         getContext()
                                 .getString(
                                         R.string.subreddit_subscribers_string,
                                         subreddit.getLocalizedSubscriberCount()));
-        content.findViewById(R.id.subscribers).setVisibility(View.VISIBLE);
+        content.requireViewById(R.id.subscribers).setVisibility(View.VISIBLE);
 
-        ((TextView) content.findViewById(R.id.active_users))
+        ((TextView) content.requireViewById(R.id.active_users))
                 .setText(
                         getContext()
                                 .getString(
                                         R.string.subreddit_active_users_string_new,
                                         subreddit.getLocalizedAccountsActive()));
-        content.findViewById(R.id.active_users).setVisibility(View.VISIBLE);
+        content.requireViewById(R.id.active_users).setVisibility(View.VISIBLE);
     }
 
     public class AsyncLoadComment extends AsyncTask<Void, Void, Comment> {
@@ -572,11 +572,21 @@ public class RedditItemView extends RelativeLayout {
             } else {
                 commentOverflow.setViews(blocks.subList(startIndex, blocks.size()), subreddit);
             }
-            SidebarLayout sidebar = findViewById(R.id.drawer_layout);
-            for (int i = 0; i < commentOverflow.getChildCount(); i++) {
-                View maybeScrollable = commentOverflow.getChildAt(i);
-                if (maybeScrollable instanceof HorizontalScrollView) {
-                    sidebar.addScrollable(maybeScrollable);
+            // The four other copies of this loop live in activities, where R.id.drawer_layout is
+            // the SidebarLayout at the root of the content view. Here the receiver is this
+            // RedditItemView, so the lookup only searches its own subtree — peek_media_view.xml,
+            // which has no drawer_layout at all. The result was always null and addScrollable
+            // NPE'd on any peeked body containing a table or code block. Registering a scrollable
+            // only matters so a drawer does not steal the horizontal swipe, and the peek overlay
+            // has no drawer, so there is nothing to register with.
+            final View root = findViewById(R.id.drawer_layout);
+            if (root instanceof SidebarLayout) {
+                final SidebarLayout sidebar = (SidebarLayout) root;
+                for (int i = 0; i < commentOverflow.getChildCount(); i++) {
+                    View maybeScrollable = commentOverflow.getChildAt(i);
+                    if (maybeScrollable instanceof HorizontalScrollView) {
+                        sidebar.addScrollable(maybeScrollable);
+                    }
                 }
             }
         } else {

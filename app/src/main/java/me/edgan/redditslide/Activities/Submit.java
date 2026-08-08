@@ -145,7 +145,7 @@ public class Submit extends BaseActivity {
                                 handleImageIntent(Collections.singletonList(uri));
                                 KeyboardUtil.hideKeyboard(
                                         Submit.this,
-                                        findViewById(R.id.bodytext).getWindowToken(),
+                                        requireViewById(R.id.bodytext).getWindowToken(),
                                         0);
                             }
                         });
@@ -187,18 +187,18 @@ public class Submit extends BaseActivity {
 
         setupAppBar(R.id.toolbar, R.string.title_submit_post, true, true);
 
-        inboxReplies = (SwitchCompat) findViewById(R.id.replies);
+        inboxReplies = (SwitchCompat) requireViewById(R.id.replies);
 
         Intent intent = getIntent();
         final String subreddit = intent.getStringExtra(EXTRA_SUBREDDIT);
         final String initialBody = intent.getStringExtra(EXTRA_BODY);
 
-        self = findViewById(R.id.selftext);
+        self = requireViewById(R.id.selftext);
         final AutoCompleteTextView subredditText =
-                ((AutoCompleteTextView) findViewById(R.id.subreddittext));
-        image = findViewById(R.id.image);
-        link = findViewById(R.id.url);
-        gallery = findViewById(R.id.gallery);
+                ((AutoCompleteTextView) requireViewById(R.id.subreddittext));
+        image = requireViewById(R.id.image);
+        link = requireViewById(R.id.url);
+        gallery = requireViewById(R.id.gallery);
 
         image.setVisibility(View.GONE);
         link.setVisibility(View.GONE);
@@ -214,7 +214,7 @@ public class Submit extends BaseActivity {
             subredditText.setText(subreddit);
         }
         if (initialBody != null) {
-            ((ImageInsertEditText) self.findViewById(R.id.bodytext)).setText(initialBody);
+            ((ImageInsertEditText) self.requireViewById(R.id.bodytext)).setText(initialBody);
         }
         ArrayAdapter adapter =
                 new ArrayAdapter(
@@ -235,7 +235,7 @@ public class Submit extends BaseActivity {
                         if (tFlairRequired != null) {
                             tFlairRequired.cancel(true);
                         }
-                        findViewById(R.id.submittext).setVisibility(View.GONE);
+                        requireViewById(R.id.submittext).setVisibility(View.GONE);
                         isFlairRequired = false;
                         selectedFlairID = null;
                         selectedFlairText = null;
@@ -249,7 +249,7 @@ public class Submit extends BaseActivity {
                 new View.OnFocusChangeListener() {
                     @Override
                     public void onFocusChange(View v, boolean hasFocus) {
-                        findViewById(R.id.submittext).setVisibility(View.GONE);
+                        requireViewById(R.id.submittext).setVisibility(View.GONE);
                         if (!hasFocus) {
                             runSubredditCheck(subredditText.getText().toString());
                         }
@@ -267,7 +267,7 @@ public class Submit extends BaseActivity {
             runSubredditCheck(initialSub);
         }
 
-        findViewById(R.id.selftextradio)
+        requireViewById(R.id.selftextradio)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -280,7 +280,7 @@ public class Submit extends BaseActivity {
                                 updateSubmitEnabled();
                             }
                         });
-        findViewById(R.id.imageradio)
+        requireViewById(R.id.imageradio)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -292,7 +292,7 @@ public class Submit extends BaseActivity {
                                 updateSubmitEnabled();
                             }
                         });
-        findViewById(R.id.galleryradio)
+        requireViewById(R.id.galleryradio)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -304,7 +304,7 @@ public class Submit extends BaseActivity {
                                 updateSubmitEnabled();
                             }
                         });
-        findViewById(R.id.linkradio)
+        requireViewById(R.id.linkradio)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -316,7 +316,7 @@ public class Submit extends BaseActivity {
                                 updateSubmitEnabled();
                             }
                         });
-        findViewById(R.id.selGallery)
+        requireViewById(R.id.selGallery)
                 .setOnClickListener(
                         v ->
                                 galleryImageLauncher.launch(
@@ -325,7 +325,7 @@ public class Submit extends BaseActivity {
                                                         ActivityResultContracts.PickVisualMedia
                                                                 .ImageOnly.INSTANCE)
                                                 .build()));
-        findViewById(R.id.flair)
+        requireViewById(R.id.flair)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -334,7 +334,7 @@ public class Submit extends BaseActivity {
                             }
                         });
 
-        findViewById(R.id.suggest)
+        requireViewById(R.id.suggest)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -367,7 +367,7 @@ public class Submit extends BaseActivity {
                                     @Override
                                     protected void onPostExecute(String s) {
                                         if (s != null) {
-                                            ((EditText) findViewById(R.id.titletext)).setText(s);
+                                            ((EditText) requireViewById(R.id.titletext)).setText(s);
                                             d.dismiss();
                                         } else {
                                             d.dismiss();
@@ -378,12 +378,12 @@ public class Submit extends BaseActivity {
                                         }
                                     }
                                 }.execute(
-                                        ((EditText) findViewById(R.id.urltext))
+                                        ((EditText) requireViewById(R.id.urltext))
                                                 .getText()
                                                 .toString());
                             }
                         });
-        findViewById(R.id.selImage)
+        requireViewById(R.id.selImage)
                 .setOnClickListener(
                         v -> {
                             submitImageLauncher.launch(
@@ -394,8 +394,8 @@ public class Submit extends BaseActivity {
                                             .build());
                         });
         DoEditorActions.doActions(
-                ((EditText) findViewById(R.id.bodytext)),
-                findViewById(R.id.selftext),
+                ((EditText) requireViewById(R.id.bodytext)),
+                requireViewById(R.id.selftext),
                 getSupportFragmentManager(),
                 Submit.this,
                 null,
@@ -405,16 +405,16 @@ public class Submit extends BaseActivity {
                 && !intent.getBooleanExtra(EXTRA_IS_SELF, false)) {
             String data = MiscUtil.orEmpty(intent.getStringExtra(Intent.EXTRA_TEXT));
             if (data.contains("\n")) {
-                ((EditText) findViewById(R.id.titletext))
+                ((EditText) requireViewById(R.id.titletext))
                         .setText(data.substring(0, data.indexOf("\n")));
-                ((EditText) findViewById(R.id.urltext)).setText(data.substring(data.indexOf("\n")));
+                ((EditText) requireViewById(R.id.urltext)).setText(data.substring(data.indexOf("\n")));
             } else {
-                ((EditText) findViewById(R.id.urltext)).setText(data);
+                ((EditText) requireViewById(R.id.urltext)).setText(data);
             }
             self.setVisibility(View.GONE);
             image.setVisibility(View.GONE);
             link.setVisibility(View.VISIBLE);
-            ((RadioButton) findViewById(R.id.linkradio)).setChecked(true);
+            ((RadioButton) requireViewById(R.id.linkradio)).setChecked(true);
 
         } else if (intent.hasExtra(Intent.EXTRA_STREAM)) {
             final Uri imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
@@ -423,15 +423,15 @@ public class Submit extends BaseActivity {
                 self.setVisibility(View.GONE);
                 image.setVisibility(View.VISIBLE);
                 link.setVisibility(View.GONE);
-                ((RadioButton) findViewById(R.id.imageradio)).setChecked(true);
+                ((RadioButton) requireViewById(R.id.imageradio)).setChecked(true);
             }
         }
         if (!MiscUtil.orEmpty(intent.getStringExtra(Intent.EXTRA_SUBJECT)).isEmpty()) {
             String data = MiscUtil.orEmpty(intent.getStringExtra(Intent.EXTRA_SUBJECT));
-            ((EditText) findViewById(R.id.titletext)).setText(data);
+            ((EditText) requireViewById(R.id.titletext)).setText(data);
         }
         updateSubmitEnabled();
-        findViewById(R.id.send)
+        requireViewById(R.id.send)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -444,7 +444,7 @@ public class Submit extends BaseActivity {
                                             .show();
                                     return;
                                 }
-                                ((FloatingActionButton) findViewById(R.id.send)).hide();
+                                ((FloatingActionButton) requireViewById(R.id.send)).hide();
                                 new AsyncDo().execute();
                             }
                         });
@@ -454,7 +454,7 @@ public class Submit extends BaseActivity {
         client = Reddit.client;
         gson = new Gson();
 
-        String subreddit = ((EditText) findViewById(R.id.subreddittext)).getText().toString();
+        String subreddit = ((EditText) requireViewById(R.id.subreddittext)).getText().toString();
 
         final Dialog d =
                 new MaterialProgressDialog.Builder(Submit.this)
@@ -550,7 +550,7 @@ public class Submit extends BaseActivity {
             tchange.cancel(true);
         }
         final AutoCompleteTextView subredditText =
-                (AutoCompleteTextView) findViewById(R.id.subreddittext);
+                (AutoCompleteTextView) requireViewById(R.id.subreddittext);
         tchange =
                 new AsyncTask<Void, Void, Subreddit>() {
                     @Override
@@ -573,13 +573,13 @@ public class Submit extends BaseActivity {
                         if (s != null) {
                             String text = s.getDataNode().path("submit_text_html").asText();
                             if (text != null && !text.isEmpty() && !text.equals("null")) {
-                                findViewById(R.id.submittext).setVisibility(View.VISIBLE);
+                                requireViewById(R.id.submittext).setVisibility(View.VISIBLE);
                                 setViews(
                                         text,
                                         subreddit,
                                         (SpoilerRobotoTextView)
-                                                findViewById(R.id.submittext),
-                                        (CommentOverflow) findViewById(R.id.commentOverflow));
+                                                requireViewById(R.id.submittext),
+                                        (CommentOverflow) requireViewById(R.id.commentOverflow));
                             }
                             if (s.getSubredditType().equals("RESTRICTED")) {
                                 subredditText.setText("");
@@ -593,7 +593,7 @@ public class Submit extends BaseActivity {
                             }
                             fetchFlairRequirement(subreddit);
                         } else {
-                            findViewById(R.id.submittext).setVisibility(View.GONE);
+                            requireViewById(R.id.submittext).setVisibility(View.GONE);
                         }
                     }
                 };
@@ -720,11 +720,11 @@ public class Submit extends BaseActivity {
         // Just select the image; the actual upload (to Reddit or Imgur) is deferred until submit.
         selectedImageUri = uris.get(0);
 
-        ImageView preview = (ImageView) findViewById(R.id.imagepost);
+        ImageView preview = (ImageView) requireViewById(R.id.imagepost);
         preview.setVisibility(View.VISIBLE);
         preview.setImageURI(selectedImageUri);
 
-        ((TextView) findViewById(R.id.selImage)).setText(R.string.submit_change_img);
+        ((TextView) requireViewById(R.id.selImage)).setText(R.string.submit_change_img);
 
         updateSubmitEnabled();
     }
@@ -752,7 +752,7 @@ public class Submit extends BaseActivity {
 
     /** Adds one thumbnail + caption + remove row for a gallery image. */
     private void addGalleryRow(Uri uri) {
-        LinearLayout items = (LinearLayout) findViewById(R.id.galleryItems);
+        LinearLayout items = (LinearLayout) requireViewById(R.id.galleryItems);
         float density = Resources.getSystem().getDisplayMetrics().density;
         int size = (int) (64 * density);
         int margin = (int) (8 * density);
@@ -815,7 +815,7 @@ public class Submit extends BaseActivity {
     }
 
     private void updateGalleryCount() {
-        TextView count = (TextView) findViewById(R.id.galleryCount);
+        TextView count = (TextView) requireViewById(R.id.galleryCount);
         if (selectedGalleryUris.isEmpty()) {
             count.setVisibility(View.GONE);
         } else {
@@ -901,23 +901,23 @@ public class Submit extends BaseActivity {
             linkVisible = link.getVisibility() == View.VISIBLE;
             imageVisible = image.getVisibility() == View.VISIBLE;
             galleryVisible = gallery.getVisibility() == View.VISIBLE;
-            imageReddit = ((RadioButton) findViewById(R.id.imageHostReddit)).isChecked();
+            imageReddit = ((RadioButton) requireViewById(R.id.imageHostReddit)).isChecked();
             imageUri = selectedImageUri;
             galleryUris = new java.util.ArrayList<>(selectedGalleryUris);
             galleryCaptions = new java.util.ArrayList<>();
             for (EditText field : galleryCaptionFields) {
                 galleryCaptions.add(field.getText().toString().trim());
             }
-            bodyText = ((EditText) findViewById(R.id.bodytext)).getText().toString();
+            bodyText = ((EditText) requireViewById(R.id.bodytext)).getText().toString();
             uploadedImages =
                     me.edgan.redditslide.util.RedditImageUploads.consume(
-                            (EditText) findViewById(R.id.bodytext));
+                            (EditText) requireViewById(R.id.bodytext));
             subredditText =
-                    ((AutoCompleteTextView) findViewById(R.id.subreddittext))
+                    ((AutoCompleteTextView) requireViewById(R.id.subreddittext))
                             .getText()
                             .toString();
-            titleText = ((EditText) findViewById(R.id.titletext)).getText().toString();
-            urlText = ((EditText) findViewById(R.id.urltext)).getText().toString();
+            titleText = ((EditText) requireViewById(R.id.titletext)).getText().toString();
+            urlText = ((EditText) requireViewById(R.id.urltext)).getText().toString();
             sendReplies = inboxReplies.isChecked();
         }
 
@@ -1205,9 +1205,9 @@ public class Submit extends BaseActivity {
                 .setPositiveButton(
                         R.string.btn_yes,
                         (dialogInterface, i) ->
-                                ((FloatingActionButton) findViewById(R.id.send)).show())
+                                ((FloatingActionButton) requireViewById(R.id.send)).show())
                 .setOnDismissListener(
-                        dialog -> ((FloatingActionButton) findViewById(R.id.send)).show())
+                        dialog -> ((FloatingActionButton) requireViewById(R.id.send)).show())
                 );
     }
 }

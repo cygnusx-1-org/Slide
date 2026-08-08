@@ -46,7 +46,7 @@ public class AlbumView extends VerticalMediaAdapter {
                                 public void onClick(View v) {
                                     LayoutInflater l = context.getLayoutInflater();
                                     View body = l.inflate(R.layout.album_grid_dialog, null, false);
-                                    GridView gridview = body.findViewById(R.id.images);
+                                    GridView gridview = body.requireViewById(R.id.images);
                                     gridview.setAdapter(new ImageGridAdapter(context, users));
 
                                     final AlertDialog.Builder builder =
@@ -59,7 +59,7 @@ public class AlbumView extends VerticalMediaAdapter {
                                                     final RecyclerView.LayoutManager lm =
                                                             context instanceof Album
                                                                     ? ((Album) context).album.album.recyclerView.getLayoutManager()
-                                                                    : ((RecyclerView) context.findViewById(R.id.images)).getLayoutManager();
+                                                                    : ((RecyclerView) context.requireViewById(R.id.images)).getLayoutManager();
                                                     if (lm != null) {
                                                         ((LinearLayoutManager) lm)
                                                                 .scrollToPositionWithOffset(position + 1, offset);

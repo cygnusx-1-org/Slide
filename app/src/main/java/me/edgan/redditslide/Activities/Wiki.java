@@ -69,12 +69,12 @@ public class Wiki extends BaseActivityAnim implements WikiPage.WikiPageListener 
         } else {
             page = "index";
         }
-        tabs = (TabLayout) findViewById(R.id.sliding_tabs);
+        tabs = (TabLayout) requireViewById(R.id.sliding_tabs);
         tabs.setTabMode(TabLayout.MODE_SCROLLABLE);
         tabs.setSelectedTabIndicatorColor(new ColorPreferences(Wiki.this).getColor("no sub"));
 
-        pager = (ToggleSwipeViewPager) findViewById(R.id.content_view);
-        findViewById(R.id.header).setBackgroundColor(Palette.getColor(subreddit));
+        pager = (ToggleSwipeViewPager) requireViewById(R.id.content_view);
+        requireViewById(R.id.header).setBackgroundColor(Palette.getColor(subreddit));
 
         new AsyncGetWiki().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }

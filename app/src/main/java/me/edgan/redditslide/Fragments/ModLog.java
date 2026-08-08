@@ -30,16 +30,16 @@ public class ModLog extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_verticalcontent, container, false);
 
-        RecyclerView rv = v.findViewById(R.id.vertical_content);
-        final PreCachingLayoutManager mLayoutManager = new PreCachingLayoutManager(getActivity());
+        RecyclerView rv = v.requireViewById(R.id.vertical_content);
+        final PreCachingLayoutManager mLayoutManager = new PreCachingLayoutManager(requireActivity());
         rv.setLayoutManager(mLayoutManager);
 
-        v.findViewById(R.id.post_floating_action_button).setVisibility(View.GONE);
+        v.requireViewById(R.id.post_floating_action_button).setVisibility(View.GONE);
 
         final SwipeRefreshLayout mSwipeRefreshLayout =
-                v.findViewById(R.id.activity_main_swipe_refresh_layout);
+                v.requireViewById(R.id.activity_main_swipe_refresh_layout);
 
-        mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors("mod", getActivity()));
+        mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors("mod", requireActivity()));
 
         // If we use 'findViewById(R.id.header).getMeasuredHeight()', 0 is always returned.
         // So, we estimate the height of the header in dp
@@ -56,13 +56,13 @@ public class ModLog extends Fragment {
                     }
                 });
         posts = new ModLogPosts();
-        adapter = new ModLogAdapter(getActivity(), posts, rv);
+        adapter = new ModLogAdapter(requireActivity(), posts, rv);
         rv.setAdapter(adapter);
 
         rv.addOnScrollListener(
                 new ToolbarScrollHideHandler(
-                        ((ModQueue) getActivity()).requireToolbar(),
-                        (getActivity()).findViewById(R.id.header)));
+                        ((ModQueue) requireActivity()).requireToolbar(),
+                        (requireActivity()).requireViewById(R.id.header)));
 
         posts.bindAdapter(adapter, mSwipeRefreshLayout);
         mSwipeRefreshLayout.setOnRefreshListener(

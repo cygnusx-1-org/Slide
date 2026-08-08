@@ -28,24 +28,24 @@ public class SettingsModerationFragment {
 
     public void Bind() {
         final RelativeLayout removalReasonsLayout =
-                context.findViewById(R.id.settings_moderation_removal_reasons);
+                context.requireViewById(R.id.settings_moderation_removal_reasons);
         final TextView removalReasonsCurrentView =
-                context.findViewById(R.id.settings_moderation_removal_reasons_current);
+                context.requireViewById(R.id.settings_moderation_removal_reasons_current);
 
         final SwitchCompat enableToolboxSwitch =
-                context.findViewById(R.id.settings_moderation_toolbox_enabled);
+                context.requireViewById(R.id.settings_moderation_toolbox_enabled);
         final RelativeLayout removalMessageLayout =
-                context.findViewById(R.id.settings_moderation_toolbox_message);
+                context.requireViewById(R.id.settings_moderation_toolbox_message);
         final TextView removalMessageCurrentView =
-                context.findViewById(R.id.settings_moderation_toolbox_message_current);
+                context.requireViewById(R.id.settings_moderation_toolbox_message_current);
         final SwitchCompat sendMsgAsSubredditSwitch =
-                context.findViewById(R.id.settings_moderation_toolbox_sendMsgAsSubreddit);
+                context.requireViewById(R.id.settings_moderation_toolbox_sendMsgAsSubreddit);
         final SwitchCompat stickyMessageSwitch =
-                context.findViewById(R.id.settings_moderation_toolbox_sticky);
+                context.requireViewById(R.id.settings_moderation_toolbox_sticky);
         final SwitchCompat lockAfterRemovalSwitch =
-                context.findViewById(R.id.settings_moderation_toolbox_lock);
+                context.requireViewById(R.id.settings_moderation_toolbox_lock);
         final RelativeLayout refreshLayout =
-                context.findViewById(R.id.settings_moderation_toolbox_refresh);
+                context.requireViewById(R.id.settings_moderation_toolbox_refresh);
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // * General (Moderation) */

@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.recyclerview.widget.RecyclerView;
@@ -85,7 +86,7 @@ public class Album extends BaseSaveActivity {
             finish();
         }
         if (id == R.id.grid) {
-            requireToolbar().findViewById(R.id.grid).callOnClick();
+            requireToolbar().requireViewById(R.id.grid).callOnClick();
         }
         if (id == R.id.comments) {
             String submissionPermalink = getIntent().getStringExtra(MediaView.SUBMISSION_URL);
@@ -153,7 +154,7 @@ public class Album extends BaseSaveActivity {
             this.submissionTitle = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_SUBMISSION_TITLE));
         }
 
-        final ViewPager pager = (ViewPager) findViewById(R.id.images);
+        final ViewPager pager = (ViewPager) requireViewById(R.id.images);
 
         album = new AlbumPagerAdapter(getSupportFragmentManager());
         pager.setAdapter(album);
@@ -233,21 +234,21 @@ public class Album extends BaseSaveActivity {
             @Nullable Bundle savedInstanceState) {
             rootView = inflater.inflate(R.layout.fragment_verticalalbum, container, false);
 
-            final PreCachingLayoutManager mLayoutManager = new PreCachingLayoutManager(getActivity());
-            recyclerView = rootView.findViewById(R.id.images);
+            final PreCachingLayoutManager mLayoutManager = new PreCachingLayoutManager(requireActivity());
+            recyclerView = rootView.requireViewById(R.id.images);
             recyclerView.setLayoutManager(mLayoutManager);
-            ((Album) getActivity()).url =
-                    MiscUtil.orEmpty(getActivity().getIntent().getStringExtra(EXTRA_URL));
+            ((Album) requireActivity()).url =
+                    MiscUtil.orEmpty(requireActivity().getIntent().getStringExtra(EXTRA_URL));
 
-            new LoadIntoRecycler(((Album) getActivity()).url, getActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            ((Album) getActivity()).mToolbar = rootView.findViewById(R.id.toolbar);
-            ((Album) getActivity()).requireToolbar().setTitle(R.string.type_album);
-            ToolbarColorizeHelper.colorizeToolbar(((Album) getActivity()).requireToolbar(), Color.WHITE, (getActivity()));
-            ((Album) getActivity()).setSupportActionBar(((Album) getActivity()).requireToolbar());
-            java.util.Objects.requireNonNull(((Album) getActivity()).getSupportActionBar())
+            new LoadIntoRecycler(((Album) requireActivity()).url, requireActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            ((Album) requireActivity()).mToolbar = rootView.requireViewById(R.id.toolbar);
+            ((Album) requireActivity()).requireToolbar().setTitle(R.string.type_album);
+            ToolbarColorizeHelper.colorizeToolbar(((Album) requireActivity()).requireToolbar(), Color.WHITE, (requireActivity()));
+            ((Album) requireActivity()).setSupportActionBar(((Album) requireActivity()).requireToolbar());
+            java.util.Objects.requireNonNull(((Album) requireActivity()).getSupportActionBar())
                     .setDisplayHomeAsUpEnabled(true);
 
-            ((Album) getActivity()).requireToolbar().setPopupTheme(new ColorPreferences(getActivity()).getDarkThemeSubreddit(ColorPreferences.FONT_STYLE));
+            ((Album) requireActivity()).requireToolbar().setPopupTheme(new ColorPreferences(requireActivity()).getDarkThemeSubreddit(ColorPreferences.FONT_STYLE));
             return rootView;
         }
 
@@ -267,11 +268,16 @@ public class Album extends BaseSaveActivity {
                         new Runnable() {
                             @Override
                             public void run() {
+                                // A detached fragment has no host here; there is nothing to act on.
+                                final FragmentActivity activity = getActivity();
+                                if (activity == null) {
+                                    return;
+                                }
                                 try {
-                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(getActivity())
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(activity)
                                         .setTitle(R.string.error_album_not_found)
                                         .setMessage(R.string.error_album_not_found_text)
-                                        .setNegativeButton(R.string.btn_no, (dialog, which) -> getActivity().finish())
+                                        .setNegativeButton(R.string.btn_no, (dialog, which) -> activity.finish())
                                         .setCancelable(false)
                                         .setPositiveButton(
                                             R.string.btn_yes,
@@ -279,7 +285,7 @@ public class Album extends BaseSaveActivity {
                                                 Intent i = new Intent(getActivity(), Website.class);
                                                 i.putExtra(LinkUtil.EXTRA_URL, url);
                                                 startActivity(i);
-                                                getActivity().finish();
+                                                activity.finish();
                                             })
                                         );
                                 } catch (Exception e) {
@@ -299,7 +305,7 @@ public class Album extends BaseSaveActivity {
                     return false;
                 }
                 if (getActivity() != null) {
-                    getActivity().findViewById(R.id.progress).setVisibility(View.GONE);
+                    getActivity().requireViewById(R.id.progress).setVisibility(View.GONE);
                     Album albumActivity = (Album) getActivity();
                     albumActivity.images = new ArrayList<>(jsonElements);
                     AlbumView adapter = new AlbumView(

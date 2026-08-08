@@ -320,8 +320,8 @@ public class MainActivity extends BaseActivity
                                             == Constants.SUBREDDIT_SEARCH_METHOD_TOOLBAR
                                     || SettingValues.subredditSearchMethod
                                             == Constants.SUBREDDIT_SEARCH_METHOD_BOTH)
-                            && findViewById(R.id.toolbar_search).getVisibility() == View.VISIBLE) {
-                        findViewById(R.id.close_search_toolbar)
+                            && requireViewById(R.id.toolbar_search).getVisibility() == View.VISIBLE) {
+                        requireViewById(R.id.close_search_toolbar)
                                 .performClick(); // close GO_TO_SUB_FIELD
                     } else if (SettingValues.backButtonBehavior
                             == Constants.BackButtonBehaviorOptions.OpenDrawer.getValue()) {
@@ -390,8 +390,8 @@ public class MainActivity extends BaseActivity
         }
 
         // Upon leaving MainActivity--hide the toolbar search if it is visible
-        if (findViewById(R.id.toolbar_search).getVisibility() == View.VISIBLE) {
-            findViewById(R.id.close_search_toolbar).performClick();
+        if (requireViewById(R.id.toolbar_search).getVisibility() == View.VISIBLE) {
+            requireViewById(R.id.close_search_toolbar).performClick();
         }
     }
 
@@ -604,7 +604,7 @@ public class MainActivity extends BaseActivity
                 {
                     LayoutInflater inflater = getLayoutInflater();
                     final View dialoglayout = inflater.inflate(R.layout.choosethemesmall, null);
-                    final TextView title = dialoglayout.findViewById(R.id.title);
+                    final TextView title = dialoglayout.requireViewById(R.id.title);
                     title.setBackgroundColor(Palette.getDefaultColor());
 
                     final AlertDialog.Builder builder =
@@ -612,7 +612,7 @@ public class MainActivity extends BaseActivity
                     final Dialog d = DialogUtil.showWithCardBackground(builder);
                     back = new ColorPreferences(MainActivity.this).getFontStyle().getThemeType();
                     if (SettingValues.isNight()) {
-                        dialoglayout.findViewById(R.id.nightmsg).setVisibility(View.VISIBLE);
+                        dialoglayout.requireViewById(R.id.nightmsg).setVisibility(View.VISIBLE);
                     }
 
                     for (final Pair<Integer, Integer> pair : ColorPreferences.themePairList) {
@@ -656,7 +656,7 @@ public class MainActivity extends BaseActivity
             if (subreddit.equalsIgnoreCase("friends")) {
                 Snackbar s =
                         Snackbar.make(
-                                findViewById(R.id.anchor),
+                                requireViewById(R.id.anchor),
                                 getString(R.string.friends_sort_error),
                                 Snackbar.LENGTH_SHORT);
                 LayoutUtils.showSnackbar(s);
@@ -1070,7 +1070,7 @@ public class MainActivity extends BaseActivity
         sidebarActions = new SidebarActions(this);
         subredditSortController = new SubredditSortController(this);
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar = (Toolbar) requireViewById(R.id.toolbar);
         mToolbar.setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
         setSupportActionBar(mToolbar);
 
@@ -1109,7 +1109,7 @@ public class MainActivity extends BaseActivity
 
         // Inflate tabs if single mode is disabled
         if (!singleMode) {
-            mTabLayout = (TabLayout) ((ViewStub) findViewById(R.id.stub_tabs)).inflate();
+            mTabLayout = (TabLayout) ((ViewStub) requireViewById(R.id.stub_tabs)).inflate();
         }
 
         // Disable swiping if single mode is enabled
@@ -1243,7 +1243,7 @@ public class MainActivity extends BaseActivity
         }
 
         if (inNightMode != SettingValues.isNight()) {
-            ((SwitchCompat) drawerLayout.findViewById(R.id.toggle_night_mode))
+            ((SwitchCompat) drawerLayout.requireViewById(R.id.toggle_night_mode))
                     .setChecked(SettingValues.isNight());
             restartTheme();
         }
@@ -1280,17 +1280,27 @@ public class MainActivity extends BaseActivity
             if (SettingsGeneralFragment.searchChanged) {
                 drawerController.setDrawerSubList();
 
+                // Not requireViewById: R.id.drawer_divider lives in the drawer header
+                // (drawer_loggedin/loggedout/offline), which DrawerController adds to the sub list
+                // rather than the content view, so it is absent until that has run.
+                // ToolbarSearchController null-checks the same lookup on this same activity in four
+                // places, which is the contract to match here.
+                final View drawerDivider = findViewById(R.id.drawer_divider);
                 if (SettingValues.subredditSearchMethod
                         == Constants.SUBREDDIT_SEARCH_METHOD_DRAWER) {
                     requireToolbar().setOnLongClickListener(
                             null); // remove the long click listener from the toolbar
-                    findViewById(R.id.drawer_divider).setVisibility(View.GONE);
+                    if (drawerDivider != null) {
+                        drawerDivider.setVisibility(View.GONE);
+                    }
                 } else if (SettingValues.subredditSearchMethod
                         == Constants.SUBREDDIT_SEARCH_METHOD_TOOLBAR) {
                     toolbarSearchController.setupSubredditSearchToolbar();
                 } else if (SettingValues.subredditSearchMethod
                         == Constants.SUBREDDIT_SEARCH_METHOD_BOTH) {
-                    findViewById(R.id.drawer_divider).setVisibility(View.GONE);
+                    if (drawerDivider != null) {
+                        drawerDivider.setVisibility(View.GONE);
+                    }
                     toolbarSearchController.setupSubredditSearchToolbar();
                     drawerController.setDrawerSubList();
                 }
@@ -1824,7 +1834,7 @@ public class MainActivity extends BaseActivity
 
     public void updateSubs(ArrayList<String> subs) {
         if (subs.isEmpty() && !NetworkUtil.isConnected(this)) {
-            findViewById(R.id.toolbar).setVisibility(View.GONE);
+            requireViewById(R.id.toolbar).setVisibility(View.GONE);
             d =
                     new MaterialAlertDialogBuilder(
                                     new ContextThemeWrapper(

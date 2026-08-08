@@ -90,8 +90,11 @@ public class FolderChooserDialogCreate extends DialogFragment {
     }
 
     private Context themedContext() {
+        // Both callers are building this dialog's own view, which cannot be done without a
+        // host at all; requireActivity states that rather than inventing a fallback theme.
+        final FragmentActivity activity = requireActivity();
         return new ContextThemeWrapper(
-                getActivity(), new ColorPreferences(getActivity()).getFontStyle().getBaseId());
+                activity, new ColorPreferences(activity).getFontStyle().getBaseId());
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -99,7 +102,7 @@ public class FolderChooserDialogCreate extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         if (ActivityCompat.checkSelfPermission(
-                        getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                        requireActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             return new MaterialAlertDialogBuilder(themedContext())
                     .setTitle(R.string.md_error_label)
@@ -172,7 +175,12 @@ public class FolderChooserDialogCreate extends DialogFragment {
     }
 
     private void createNewFolder() {
-        new MaterialInputDialog.Builder(getActivity())
+        // A detached fragment has no host here; there is nothing to act on.
+        final FragmentActivity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+        new MaterialInputDialog.Builder(activity)
                 .title(getBuilder().newFolderButton)
                 .input(null, null, null)
                 .positiveText(android.R.string.ok)

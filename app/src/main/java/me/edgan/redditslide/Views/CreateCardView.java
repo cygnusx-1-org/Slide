@@ -50,7 +50,7 @@ public class CreateCardView {
                                 .inflate(R.layout.submission_list, viewGroup, false);
 
                 // if the radius is set to 0 on KitKat--it crashes.
-                ((CardView) v.findViewById(R.id.card)).setRadius(0f);
+                ((CardView) v.requireViewById(R.id.card)).setRadius(0f);
                 break;
             case DESKTOP:
                 v =
@@ -58,11 +58,11 @@ public class CreateCardView {
                                 .inflate(R.layout.submission_list_desktop, viewGroup, false);
 
                 // if the radius is set to 0 on KitKat--it crashes.
-                ((CardView) v.findViewById(R.id.card)).setRadius(0f);
+                ((CardView) v.requireViewById(R.id.card)).setRadius(0f);
                 break;
         }
 
-        View thumbImage = v.findViewById(R.id.thumbimage2);
+        View thumbImage = v.requireViewById(R.id.thumbimage2);
         /**
          * If the user wants small thumbnails, revert the list style to the "old" list view. The
          * "old" thumbnails were (70dp x 70dp). Adjusts the paddingTop of the innerrelative, and
@@ -87,7 +87,7 @@ public class CreateCardView {
                 final int EIGHT_DP_X = DisplayUtil.dpToPxHorizontal(8);
                 ((RelativeLayout.LayoutParams) thumbImage.getLayoutParams())
                         .setMargins(EIGHT_DP_X * 2, EIGHT_DP_Y, EIGHT_DP_X, EIGHT_DP_Y);
-                v.findViewById(R.id.innerrelative).setPadding(0, EIGHT_DP_Y, 0, 0);
+                v.requireViewById(R.id.innerrelative).setPadding(0, EIGHT_DP_Y, 0, 0);
             }
         }
 
@@ -109,7 +109,7 @@ public class CreateCardView {
 
         TypedValue background = new TypedValue();
         v.getContext().getTheme().resolveAttribute(R.attr.card_background, background, true);
-        ((CardView) v.findViewById(R.id.card)).setCardBackgroundColor(background.data);
+        ((CardView) v.requireViewById(R.id.card)).setCardBackgroundColor(background.data);
         if (!SettingValues.actionbarVisible) {
             for (View v2 : tinted.tintactionbar) {
                 v2.setVisibility(View.GONE);
@@ -226,7 +226,7 @@ public class CreateCardView {
                                 && !SettingValues.colorSubName
                                 && Palette.getColor(sec) != Palette.getDefaultColor()))) {
             if (secondary || !SettingValues.colorEverywhere) {
-                ((CardView) v.findViewById(R.id.card))
+                ((CardView) v.requireViewById(R.id.card))
                         .setCardBackgroundColor(Palette.getColor(sec));
                 v.setTag(v.getId(), "color");
                 TintViews tinted = getTintViews(v);
@@ -349,7 +349,7 @@ public class CreateCardView {
     public static void toggleActionbar(View v) {
         if (!SettingValues.actionbarVisible) {
 
-            ValueAnimator a = AnimatorUtil.flipAnimatorIfNonNull(v.findViewById(R.id.upvote).getVisibility() == View.VISIBLE, v.findViewById(R.id.secondMenu));
+            ValueAnimator a = AnimatorUtil.flipAnimatorIfNonNull(v.requireViewById(R.id.upvote).getVisibility() == View.VISIBLE, v.requireViewById(R.id.secondMenu));
 
             if (a != null) a.start();
 
@@ -385,42 +385,42 @@ public class CreateCardView {
 
     private static void doHideObjects(final View v) {
         if (SettingValues.smallTag == 1) {
-            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) v.findViewById(R.id.tag).getLayoutParams();
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) v.requireViewById(R.id.tag).getLayoutParams();
             layoutParams.addRule(RelativeLayout.ALIGN_TOP, R.id.leadimage);
             layoutParams.addRule(RelativeLayout.ALIGN_RIGHT, R.id.leadimage);
             layoutParams.removeRule(RelativeLayout.ALIGN_BOTTOM);
             layoutParams.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            v.findViewById(R.id.tag).setLayoutParams(layoutParams);
-            ((RelativeLayout.LayoutParams) v.findViewById(R.id.tag).getLayoutParams()).setMargins(DisplayUtil.dpToPxVertical(10), DisplayUtil.dpToPxVertical(10), DisplayUtil.dpToPxVertical(10), DisplayUtil.dpToPxVertical(10));
-            v.findViewById(R.id.base).setVisibility(View.GONE);
-            v.findViewById(R.id.tag).setVisibility(View.VISIBLE);
+            v.requireViewById(R.id.tag).setLayoutParams(layoutParams);
+            ((RelativeLayout.LayoutParams) v.requireViewById(R.id.tag).getLayoutParams()).setMargins(DisplayUtil.dpToPxVertical(10), DisplayUtil.dpToPxVertical(10), DisplayUtil.dpToPxVertical(10), DisplayUtil.dpToPxVertical(10));
+            v.requireViewById(R.id.base).setVisibility(View.GONE);
+            v.requireViewById(R.id.tag).setVisibility(View.VISIBLE);
         } else if (SettingValues.smallTag == 2) {
-            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) v.findViewById(R.id.tag).getLayoutParams();
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) v.requireViewById(R.id.tag).getLayoutParams();
             layoutParams.addRule(RelativeLayout.ALIGN_BOTTOM, R.id.leadimage);
             layoutParams.addRule(RelativeLayout.ALIGN_RIGHT, R.id.leadimage);
             layoutParams.removeRule(RelativeLayout.ALIGN_TOP);
             layoutParams.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            v.findViewById(R.id.tag).setLayoutParams(layoutParams);
-            ((RelativeLayout.LayoutParams) v.findViewById(R.id.tag).getLayoutParams()).setMargins(DisplayUtil.dpToPxVertical(10), DisplayUtil.dpToPxVertical(10), DisplayUtil.dpToPxVertical(10), DisplayUtil.dpToPxVertical(10));
-            v.findViewById(R.id.base).setVisibility(View.GONE);
-            v.findViewById(R.id.tag).setVisibility(View.VISIBLE);
+            v.requireViewById(R.id.tag).setLayoutParams(layoutParams);
+            ((RelativeLayout.LayoutParams) v.requireViewById(R.id.tag).getLayoutParams()).setMargins(DisplayUtil.dpToPxVertical(10), DisplayUtil.dpToPxVertical(10), DisplayUtil.dpToPxVertical(10), DisplayUtil.dpToPxVertical(10));
+            v.requireViewById(R.id.base).setVisibility(View.GONE);
+            v.requireViewById(R.id.tag).setVisibility(View.VISIBLE);
         } else {
-            v.findViewById(R.id.tag).setVisibility(View.GONE);
+            v.requireViewById(R.id.tag).setVisibility(View.GONE);
         }
         if (SettingValues.bigPicLetterboxed) {
-            ((ImageView) v.findViewById(R.id.leadimage)).setMaxHeight(900);
-            ((ImageView) v.findViewById(R.id.leadimage))
+            ((ImageView) v.requireViewById(R.id.leadimage)).setMaxHeight(900);
+            ((ImageView) v.requireViewById(R.id.leadimage))
                     .setScaleType(ImageView.ScaleType.FIT_CENTER);
         } else if (SettingValues.bigPicCropped) {
-            ((ImageView) v.findViewById(R.id.leadimage)).setMaxHeight(900);
-            ((ImageView) v.findViewById(R.id.leadimage))
+            ((ImageView) v.requireViewById(R.id.leadimage)).setMaxHeight(900);
+            ((ImageView) v.requireViewById(R.id.leadimage))
                     .setScaleType(ImageView.ScaleType.CENTER_CROP);
         }
         if (!SettingValues.actionbarVisible && !SettingValues.actionbarTap) {
             for (View v2 : getViewsByTag((ViewGroup) v, "tintactionbar")) {
                 v2.setVisibility(View.GONE);
             }
-            v.findViewById(R.id.secondMenu)
+            v.requireViewById(R.id.secondMenu)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
@@ -429,7 +429,7 @@ public class CreateCardView {
                                 }
                             });
         } else {
-            v.findViewById(R.id.secondMenu).setVisibility(View.GONE);
+            v.requireViewById(R.id.secondMenu).setVisibility(View.GONE);
             if (SettingValues.actionbarTap) {
                 for (View v2 : getViewsByTag((ViewGroup) v, "tintactionbar")) {
                     v2.setVisibility(View.GONE);
@@ -447,9 +447,9 @@ public class CreateCardView {
         if (SettingValues.switchThumb) {
             RelativeLayout.LayoutParams picParams =
                     (RelativeLayout.LayoutParams)
-                            v.findViewById(R.id.thumbimage2).getLayoutParams();
+                            v.requireViewById(R.id.thumbimage2).getLayoutParams();
             RelativeLayout.LayoutParams layoutParams =
-                    (RelativeLayout.LayoutParams) v.findViewById(R.id.inside).getLayoutParams();
+                    (RelativeLayout.LayoutParams) v.requireViewById(R.id.inside).getLayoutParams();
 
             if (!SettingValues.actionbarVisible && !SettingValues.actionbarTap) {
                 picParams.addRule(RelativeLayout.LEFT_OF, R.id.secondMenu);
@@ -467,10 +467,10 @@ public class CreateCardView {
             layoutParams.removeRule(RelativeLayout.RIGHT_OF);
         }
         if (!SettingValues.bigPicEnabled) {
-            v.findViewById(R.id.thumbimage2).setVisibility(View.VISIBLE);
-            v.findViewById(R.id.headerimage).setVisibility(View.GONE);
+            v.requireViewById(R.id.thumbimage2).setVisibility(View.VISIBLE);
+            v.requireViewById(R.id.headerimage).setVisibility(View.GONE);
         } else if (SettingValues.bigPicEnabled) {
-            v.findViewById(R.id.thumbimage2).setVisibility(View.GONE);
+            v.requireViewById(R.id.thumbimage2).setVisibility(View.GONE);
         }
     }
 

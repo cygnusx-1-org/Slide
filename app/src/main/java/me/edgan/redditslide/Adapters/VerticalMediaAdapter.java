@@ -224,7 +224,7 @@ abstract class VerticalMediaAdapter extends RecyclerView.Adapter<RecyclerView.Vi
      */
     private void bindSpacer(final RecyclerView.ViewHolder holder) {
         // Returns itemView itself: @id/height is on spacer.xml's root, so this is never null.
-        final View spacer = holder.itemView.findViewById(R.id.height);
+        final View spacer = holder.itemView.requireViewById(R.id.height);
         spacer.setLayoutParams(
                 new RecyclerView.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
@@ -342,7 +342,7 @@ abstract class VerticalMediaAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                         holder.loader,
                         false, // closeIfNull
                         false, // autostart
-                        holder.rootView.findViewById(R.id.size),
+                        holder.rootView.requireViewById(R.id.size),
                         subreddit,
                         submissionTitle) {
                     @Override
@@ -444,9 +444,9 @@ abstract class VerticalMediaAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
         StaticViewHolder(final View itemView) {
             super(itemView);
-            text = itemView.findViewById(R.id.imagetitle);
-            body = itemView.findViewById(R.id.imageCaption);
-            image = itemView.findViewById(R.id.image);
+            text = itemView.requireViewById(R.id.imagetitle);
+            body = itemView.requireViewById(R.id.imageCaption);
+            image = itemView.requireViewById(R.id.image);
         }
     }
 
@@ -496,13 +496,13 @@ abstract class VerticalMediaAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         AnimatedViewHolder(final View itemView) {
             super(itemView);
             this.rootView = itemView;
-            this.loader = itemView.findViewById(R.id.gifprogress);
+            this.loader = itemView.requireViewById(R.id.gifprogress);
             this.exoVideoView = itemView.findViewById(R.id.gif);
             // A list row: tapping opens MediaView, so the transport controls are never used.
             this.exoVideoView.markVerticalListRow();
             this.gifHeader = itemView.findViewById(R.id.gifheader);
             this.playButton = itemView.findViewById(R.id.playbutton);
-            this.caption = itemView.findViewById(R.id.galleryCaption);
+            this.caption = itemView.requireViewById(R.id.galleryCaption);
 
             // Solid background so the reserved area around the video is not transparent.
             itemView.setBackgroundColor(Color.BLACK);

@@ -69,7 +69,7 @@ public abstract class BaseAlbumFull extends Fragment {
         rootView = inflater.inflate(R.layout.submission_albumcard, container, false);
         bindActionbar();
 
-        list = rootView.findViewById(R.id.images);
+        list = rootView.requireViewById(R.id.images);
 
         // The pager destroys the view of a page it has scrolled away from and rebuilds it on return,
         // keeping the fragment. The new @id/base starts at full alpha, so a stale flag here would
@@ -102,7 +102,7 @@ public abstract class BaseAlbumFull extends Fragment {
 
                                     if (va != null && va.isRunning()) va.cancel();
 
-                                    final View base = rootView.findViewById(R.id.base);
+                                    final View base = rootView.requireViewById(R.id.base);
                                     va = ValueAnimator.ofFloat(1.0f, 0.2f);
                                     int mDuration = 250; // in millis
                                     va.setDuration(mDuration);
@@ -119,7 +119,7 @@ public abstract class BaseAlbumFull extends Fragment {
                                     va.start();
 
                                 } else if (hidden && dy <= 0) {
-                                    final View base = rootView.findViewById(R.id.base);
+                                    final View base = rootView.requireViewById(R.id.base);
 
                                     if (va != null && va.isRunning()) va.cancel();
 
@@ -146,11 +146,11 @@ public abstract class BaseAlbumFull extends Fragment {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ((SlidingUpPanelLayout) rootView.findViewById(R.id.sliding_layout))
+                        ((SlidingUpPanelLayout) rootView.requireViewById(R.id.sliding_layout))
                                 .setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
                     }
                 };
-        rootView.findViewById(R.id.base).setOnClickListener(openClick);
+        rootView.requireViewById(R.id.base).setOnClickListener(openClick);
         // On every layout of the title, not once: these activities declare configChanges for
         // orientation, so rotating does not recreate them, and the title reflows to a different
         // height at the new width. A one-shot measurement left both the collapsed panel and the
@@ -160,14 +160,14 @@ public abstract class BaseAlbumFull extends Fragment {
         // view the pager rebuilds. Its targets have to be its own view's, and so does the height it
         // remembers — a shared one would let a stale listener record its write against the new view
         // and make that view skip its own, which is the very thing this is guarding against.
-        final SlidingUpPanelLayout panelLayout = rootView.findViewById(R.id.sliding_layout);
+        final SlidingUpPanelLayout panelLayout = rootView.requireViewById(R.id.sliding_layout);
         final RecyclerView panelList = (RecyclerView) list;
         final int[] applied = {0};
-        rootView.findViewById(R.id.title)
+        rootView.requireViewById(R.id.title)
                 .addOnLayoutChangeListener(
                         (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
                                 applyPanelHeight(panelLayout, panelList, applied, bottom - top));
-        ((SlidingUpPanelLayout) rootView.findViewById(R.id.sliding_layout))
+        ((SlidingUpPanelLayout) rootView.requireViewById(R.id.sliding_layout))
                 .addPanelSlideListener(
                         new SlidingUpPanelLayout.SimplePanelSlideListener() {
                             @Override
@@ -176,7 +176,7 @@ public abstract class BaseAlbumFull extends Fragment {
                                     SlidingUpPanelLayout.PanelState previousState,
                                     SlidingUpPanelLayout.PanelState newState) {
                                 if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
-                                    rootView.findViewById(R.id.base)
+                                    rootView.requireViewById(R.id.base)
                                             .setOnClickListener(
                                                     new View.OnClickListener() {
                                                         @Override
@@ -185,7 +185,7 @@ public abstract class BaseAlbumFull extends Fragment {
                                                         }
                                                     });
                                 } else {
-                                    rootView.findViewById(R.id.base).setOnClickListener(openClick);
+                                    rootView.requireViewById(R.id.base).setOnClickListener(openClick);
                                 }
                             }
                         });
@@ -225,25 +225,33 @@ public abstract class BaseAlbumFull extends Fragment {
 
     /** Shadowbox-hosted subclasses: resolve this page's submission, finishing if it is gone. */
     protected @Nullable Submission submissionForShadowboxPage() {
+        // Detached: there is no host to read posts from and nothing to finish. The method already
+        // answers null for "this page has no submission", which is what every caller handles.
+        final Shadowbox shadowbox = (Shadowbox) getActivity();
+        if (shadowbox == null) {
+            return null;
+        }
         Bundle bundle = this.getArguments();
-        if (((Shadowbox) getActivity()).subredditPosts == null
-                || ((Shadowbox) getActivity()).subredditPosts.getPosts().size()
-                        <= bundle.getInt("page", 0)) {
-            getActivity().finish();
+        if (shadowbox.subredditPosts == null
+                || shadowbox.subredditPosts.getPosts().size() <= bundle.getInt("page", 0)) {
+            shadowbox.finish();
             return null;
         } else {
-            return ((Shadowbox) getActivity())
-                    .subredditPosts
-                    .getPosts()
-                    .get(bundle.getInt("page", 0));
+            return shadowbox.subredditPosts.getPosts().get(bundle.getInt("page", 0));
         }
     }
 
     /** Shadowbox-hosted subclasses: open the comments screen for the given shadowbox page. */
     protected void openShadowboxComments(int page) {
-        Intent i2 = new Intent(getActivity(), CommentsScreen.class);
+        // Reached from a click listener, which can outlive attachment; with no host there is
+        // nothing to start the comments screen from.
+        final Shadowbox shadowbox = (Shadowbox) getActivity();
+        if (shadowbox == null) {
+            return;
+        }
+        Intent i2 = new Intent(shadowbox, CommentsScreen.class);
         i2.putExtra(CommentsScreen.EXTRA_PAGE, page);
-        i2.putExtra(CommentsScreen.EXTRA_SUBREDDIT, ((Shadowbox) getActivity()).subreddit);
-        (getActivity()).startActivity(i2);
+        i2.putExtra(CommentsScreen.EXTRA_SUBREDDIT, shadowbox.subreddit);
+        shadowbox.startActivity(i2);
     }
 }

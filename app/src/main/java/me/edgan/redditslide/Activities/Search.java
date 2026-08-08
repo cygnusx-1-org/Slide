@@ -308,7 +308,7 @@ public class Search extends BaseActivityAnim {
                                 + " › "
                                 + StringUtils.capitalize(time.name().toLowerCase(Locale.ENGLISH)));
 
-        rv = ((RecyclerView) findViewById(R.id.vertical_content));
+        rv = ((RecyclerView) requireViewById(R.id.vertical_content));
         final RecyclerView.LayoutManager mLayoutManager =
                 createLayoutManager(
                         LayoutUtils.getNumColumns(
@@ -316,7 +316,7 @@ public class Search extends BaseActivityAnim {
         rv.setLayoutManager(mLayoutManager);
 
         rv.addOnScrollListener(
-                new ToolbarScrollHideHandler(requireToolbar(), findViewById(R.id.header)) {
+                new ToolbarScrollHideHandler(requireToolbar(), requireViewById(R.id.header)) {
                     @Override
                     public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                         super.onScrolled(recyclerView, dx, dy);
@@ -346,7 +346,7 @@ public class Search extends BaseActivityAnim {
                     }
                 });
         final SwipeRefreshLayout mSwipeRefreshLayout =
-                (SwipeRefreshLayout) findViewById(R.id.activity_main_swipe_refresh_layout);
+                (SwipeRefreshLayout) requireViewById(R.id.activity_main_swipe_refresh_layout);
 
         mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors(subreddit, this));
 

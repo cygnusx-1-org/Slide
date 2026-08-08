@@ -98,7 +98,7 @@ public class AnimatorUtil {
 
     public static void setFlashAnimation(final View vBig, final View from, final int color) {
         // get the center for the clipping circle
-        final View v = vBig.findViewById(R.id.vote);
+        final View v = vBig.requireViewById(R.id.vote);
         v.post(
                 () -> {
                     v.setBackgroundColor(color);

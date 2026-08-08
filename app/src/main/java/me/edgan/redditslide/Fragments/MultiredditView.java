@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -89,11 +90,11 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
 
         View v = inflater.inflate(R.layout.fragment_verticalcontent, container, false);
 
-        rv = v.findViewById(R.id.vertical_content);
+        rv = v.requireViewById(R.id.vertical_content);
         final RecyclerView.LayoutManager mLayoutManager =
                 createLayoutManager(
                         LayoutUtils.getNumColumns(
-                                getResources().getConfiguration().orientation, getActivity()));
+                                getResources().getConfiguration().orientation, requireActivity()));
 
         rv.setLayoutManager(mLayoutManager);
         if (SettingValues.fab) {
@@ -104,6 +105,11 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                // A detached fragment has no host here; there is nothing to act on.
+                                final FragmentActivity activity = getActivity();
+                                if (activity == null) {
+                                    return;
+                                }
                                 if (posts == null) return;
                                 final ArrayList<String> subs = new ArrayList<>();
                                 if (posts.multiReddit != null) {
@@ -114,7 +120,7 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
                                 final Context contextThemeWrapper =
                                         new ContextThemeWrapper(
                                                 getActivity(),
-                                                new ColorPreferences(getActivity())
+                                                new ColorPreferences(activity)
                                                         .getFontStyle()
                                                         .getBaseId());
                                 new MaterialAlertDialogBuilder(contextThemeWrapper)
@@ -140,13 +146,18 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
 
                             @Override
                             public void onClick(View v) {
+                                // A detached fragment has no host here; there is nothing to act on.
+                                final FragmentActivity activity = getActivity();
+                                if (activity == null) {
+                                    return;
+                                }
                                 if (posts == null) return;
                                 final MultiredditPosts searchPosts = posts;
                                 // Set the searchMulti for multireddit search
                                 MultiredditOverview.searchMulti = searchPosts.multiReddit;
 
                                 MaterialInputDialog.Builder builder =
-                                        new MaterialInputDialog.Builder(getActivity())
+                                        new MaterialInputDialog.Builder(activity)
                                                 .title(R.string.search_title)
                                                 .input(
                                                         getString(R.string.search_msg),
@@ -175,8 +186,13 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                // A detached fragment has no host here; there is nothing to act on.
+                                final FragmentActivity activity = getActivity();
+                                if (activity == null) {
+                                    return;
+                                }
                                 if (!Reddit.fabClear) {
-                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(getActivity())
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(activity)
                                             .setTitle(R.string.settings_fabclear)
                                             .setMessage(R.string.settings_fabclear_msg)
                                             .setPositiveButton(
@@ -202,8 +218,13 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
                         new View.OnLongClickListener() {
                             @Override
                             public boolean onLongClick(View v) {
+                                // A detached fragment has no host here; there is nothing to act on.
+                                final FragmentActivity activity = getActivity();
+                                if (activity == null) {
+                                    return false;
+                                }
                                 if (!Reddit.fabClear) {
-                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(getActivity())
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(activity)
                                             .setTitle(R.string.settings_fabclear)
                                             .setMessage(R.string.settings_fabclear_msg)
                                             .setPositiveButton(
@@ -250,7 +271,7 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
         } else {
             v.findViewById(R.id.post_floating_action_button).setVisibility(View.GONE);
         }
-        refreshLayout = v.findViewById(R.id.activity_main_swipe_refresh_layout);
+        refreshLayout = v.requireViewById(R.id.activity_main_swipe_refresh_layout);
 
         /**
          * If using List view mode, we need to remove the start margin from the SwipeRefreshLayout.
@@ -277,7 +298,7 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
 
         if ((multireddits != null) && !multireddits.isEmpty()) {
             refreshLayout.setColorSchemeColors(
-                    Palette.getColors(MiscUtil.orEmpty(multireddits.get(id).getDisplayName()), getActivity()));
+                    Palette.getColors(MiscUtil.orEmpty(multireddits.get(id).getDisplayName()), requireActivity()));
         }
 
         // If we use 'findViewById(R.id.header).getMeasuredHeight()', 0 is always returned.
@@ -298,21 +319,25 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
         if ((multireddits != null) && !multireddits.isEmpty()) {
             posts = new MultiredditPosts(MiscUtil.orEmpty(multireddits.get(id).getDisplayName()), profile);
 
-            adapter = new MultiredditAdapter(getActivity(), posts, rv, refreshLayout, this);
+            adapter = new MultiredditAdapter(requireActivity(), posts, rv, refreshLayout, this);
             rv.setAdapter(adapter);
             rv.setItemAnimator(
                     new SlideUpAlphaAnimator().withInterpolator(new LinearOutSlowInInterpolator()));
-            posts.loadMore(getActivity(), this, true, adapter);
+            posts.loadMore(requireActivity(), this, true, adapter);
 
             refreshLayout.setOnRefreshListener(
                     new SwipeRefreshLayout.OnRefreshListener() {
                         @Override
                         public void onRefresh() {
-                            if (posts == null || adapter == null) {
+                            // Folded into the existing branch rather than returning above it: that
+                            // branch stops the spinner, and a detached page that skipped it left
+                            // pull-to-refresh spinning forever.
+                            final FragmentActivity activity = getActivity();
+                            if (activity == null || posts == null || adapter == null) {
                                 refreshLayout.setRefreshing(false);
                                 return;
                             }
-                            posts.loadMore(getActivity(), MultiredditView.this, true, adapter);
+                            posts.loadMore(activity, MultiredditView.this, true, adapter);
 
                             // TODO catch errors
                         }
@@ -324,11 +349,15 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
 
             rv.addOnScrollListener(
                     new ToolbarScrollHideHandler(
-                            (getActivity()).findViewById(R.id.toolbar),
-                            getActivity().findViewById(R.id.header)) {
+                            (requireActivity()).requireViewById(R.id.toolbar),
+                            requireActivity().requireViewById(R.id.header)) {
                         @Override
                         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                             super.onScrolled(recyclerView, dx, dy);
+                            // Below super, not above it: the toolbar hide/show it drives needs no
+                            // host, and only the loadMore at the bottom of this method does.
+                            final FragmentActivity activity = getActivity();
+                            if (activity == null) return;
                             if (posts == null || adapter == null) return;
 
                             final RecyclerView.LayoutManager lm = rv.getLayoutManager();
@@ -359,7 +388,7 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
                                         && !posts.nomore) {
                                     posts.loading = true;
                                     posts.loadMore(
-                                            getActivity(), MultiredditView.this, false, adapter);
+                                            activity, MultiredditView.this, false, adapter);
                                 }
                             }
                             if (recyclerView.getScrollState()
@@ -444,7 +473,7 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
             return;
         }
 
-        mLayoutManager.setSpanCount(LayoutUtils.getNumColumns(currentOrientation, getActivity()));
+        mLayoutManager.setSpanCount(LayoutUtils.getNumColumns(currentOrientation, requireActivity()));
     }
 
     @Override

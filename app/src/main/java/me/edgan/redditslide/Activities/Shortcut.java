@@ -40,7 +40,7 @@ public class Shortcut extends BaseActivity {
 
         setupAppBar(R.id.toolbar, R.string.shortcut_creation_title, true, true);
         header = getLayoutInflater().inflate(R.layout.shortcut_header, null);
-        ListView list = (ListView) findViewById(R.id.subs);
+        ListView list = (ListView) requireViewById(R.id.subs);
 
         list.addHeaderView(header);
 
@@ -50,8 +50,8 @@ public class Shortcut extends BaseActivity {
                 new SubChooseAdapter(this, sorted, UserSubscriptions.getAllSubreddits(this));
         list.setAdapter(adapter);
 
-        (header.findViewById(R.id.sort)).clearFocus();
-        ((EditText) header.findViewById(R.id.sort))
+        (header.requireViewById(R.id.sort)).clearFocus();
+        ((EditText) header.requireViewById(R.id.sort))
                 .addTextChangedListener(
                         new SimpleTextWatcher() {
                             @Override

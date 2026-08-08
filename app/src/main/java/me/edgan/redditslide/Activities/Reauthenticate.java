@@ -89,7 +89,7 @@ public class Reauthenticate extends BaseActivityAnim {
         Log.v(LogUtil.getTag(), "Auth URL: " + authorizationUrl);
         final CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.removeAllCookies(null);
-        final WebView webView = (WebView) findViewById(R.id.web);
+        final WebView webView = (WebView) requireViewById(R.id.web);
 
         webView.loadUrl(authorizationUrl);
         webView.setWebChromeClient(

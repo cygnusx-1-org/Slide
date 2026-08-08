@@ -34,7 +34,7 @@ public class SettingsGeneral extends BaseActivityAnim implements StorageUtil.Dir
 
         setupAppBar(R.id.toolbar, R.string.settings_title_general, true, true);
 
-        ((ViewGroup) findViewById(R.id.settings_general))
+        ((ViewGroup) requireViewById(R.id.settings_general))
                 .addView(
                         getLayoutInflater()
                                 .inflate(R.layout.activity_settings_general_child, null));

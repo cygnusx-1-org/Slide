@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import me.edgan.redditslide.Reddit;
@@ -91,7 +92,11 @@ public class NetworkUtil {
      * @param context The context used to retrieve connection information.
      * @return true if the application is connected, false if otherwise.
      */
-    public static boolean isConnected(final Context context) {
+    /**
+     * {@code context} is unused and may be null: callers include fragments passing
+     * {@code getActivity()} from a constructor that can run while detached.
+     */
+    public static boolean isConnected(final @Nullable Context context) {
         // Check if in forced offline mode
         if (Reddit.appRestart != null && Reddit.appRestart.getBoolean("forceoffline", false)) {
             return false;

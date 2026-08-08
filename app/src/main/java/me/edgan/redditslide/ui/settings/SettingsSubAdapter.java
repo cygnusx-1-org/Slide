@@ -56,7 +56,7 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
         t.setText(objects.get(position));
 
         final String subreddit = objects.get(position);
-        final View colorView = convertView.findViewById(R.id.color);
+        final View colorView = convertView.requireViewById(R.id.color);
         colorView.setBackgroundResource(R.drawable.circle);
         BlendModeUtil.tintDrawableAsModulate(
                 colorView.getBackground(), Palette.getColor(subreddit));
@@ -64,7 +64,7 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
         final String DELETE_SUB_SETTINGS_TITLE =
                 (subreddit.contains("/m/")) ? subreddit : ("/r/" + subreddit);
         convertView
-                .findViewById(R.id.remove)
+                .requireViewById(R.id.remove)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -101,7 +101,7 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
                             }
                         });
         convertView
-                .findViewById(R.id.edit)
+                .requireViewById(R.id.edit)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -144,8 +144,8 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
         // The list is non-empty (guarded above); every use below is inside a !multipleSubs
         // branch, so this is the single sub being edited and never a marker for "multiple".
         final String subreddit = subreddits.get(0);
-        final SwitchCompat bigPics = dialoglayout.findViewById(R.id.bigpics);
-        final SwitchCompat selftext = dialoglayout.findViewById(R.id.selftext);
+        final SwitchCompat bigPics = dialoglayout.requireViewById(R.id.bigpics);
+        final SwitchCompat selftext = dialoglayout.requireViewById(R.id.selftext);
 
         // Selected multiple subreddits
         if (multipleSubs) {
@@ -193,7 +193,7 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
             selftext.setChecked(SettingValues.isSelftextEnabled(subreddit));
         }
 
-        final TextView title = dialoglayout.findViewById(R.id.title);
+        final TextView title = dialoglayout.requireViewById(R.id.title);
         title.setBackgroundColor(currentColor);
 
         if (multipleSubs) {
@@ -226,10 +226,10 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
 
         {
             // Primary color pickers
-            final LineColorPicker colorPickerPrimary = dialoglayout.findViewById(R.id.picker);
+            final LineColorPicker colorPickerPrimary = dialoglayout.requireViewById(R.id.picker);
             // shades of primary colors
             final LineColorPicker colorPickerPrimaryShades =
-                    dialoglayout.findViewById(R.id.picker2);
+                    dialoglayout.requireViewById(R.id.picker2);
 
             colorPickerPrimary.setColors(ColorPreferences.getBaseColors(context));
 
@@ -271,7 +271,7 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
                     });
 
             // Accent color picker
-            final LineColorPicker colorPickerAcc = dialoglayout.findViewById(R.id.picker3);
+            final LineColorPicker colorPickerAcc = dialoglayout.requireViewById(R.id.picker3);
 
             {
                 // Get all possible accent colors (for day theme)

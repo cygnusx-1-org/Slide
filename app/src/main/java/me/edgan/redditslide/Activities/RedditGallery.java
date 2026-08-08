@@ -98,7 +98,7 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
             finish();
             return true;
         } else if (id == R.id.grid) {
-            requireToolbar().findViewById(R.id.grid).callOnClick();
+            requireToolbar().requireViewById(R.id.grid).callOnClick();
             return true;
         } else if (id == R.id.comments) {
             String submissionPermalink = getIntent().getStringExtra(MediaView.SUBMISSION_URL);
@@ -191,7 +191,7 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
             LogUtil.e("Gallery Images is null!");
         }
 
-        final ViewPager pager = (ViewPager) findViewById(R.id.images);
+        final ViewPager pager = (ViewPager) requireViewById(R.id.images);
         gallery = new RedditGalleryPagerAdapter(getSupportFragmentManager());
         pager.setAdapter(gallery);
         pager.setCurrentItem(1);
@@ -286,7 +286,7 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
             rootView = inflater.inflate(R.layout.fragment_verticalalbum, container, false);
-            final List<GalleryImage> hostImages = ((RedditGallery) getActivity()).images;
+            final List<GalleryImage> hostImages = ((RedditGallery) requireActivity()).images;
             if (hostImages == null) {
                 return rootView;
             }
@@ -296,30 +296,30 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
             this.setLastContentUrl(url);
 
             final PreCachingLayoutManager mLayoutManager =
-                    new PreCachingLayoutManager(getActivity());
-            recyclerView = rootView.findViewById(R.id.images);
+                    new PreCachingLayoutManager(requireActivity());
+            recyclerView = rootView.requireViewById(R.id.images);
             recyclerView.setLayoutManager(mLayoutManager);
             final RedditGallery galleryActivity = (RedditGallery) getActivity();
             if (galleryActivity != null) {
                 galleryActivity.images =
                         (ArrayList<GalleryImage>)
-                                getActivity()
+                                requireActivity()
                                         .getIntent()
                                         .getSerializableExtra(RedditGallery.GALLERY_URLS);
-                galleryActivity.mToolbar = rootView.findViewById(R.id.toolbar);
+                galleryActivity.mToolbar = rootView.requireViewById(R.id.toolbar);
                 galleryActivity.mToolbar.setTitle(R.string.type_gallery);
                 ToolbarColorizeHelper.colorizeToolbar(
                         galleryActivity.mToolbar, Color.WHITE, getActivity());
                 galleryActivity.setSupportActionBar(galleryActivity.mToolbar);
                 java.util.Objects.requireNonNull(galleryActivity.getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
                 galleryActivity.mToolbar.setPopupTheme(
-                        new ColorPreferences(getActivity())
+                        new ColorPreferences(requireActivity())
                                 .getDarkThemeSubreddit(ColorPreferences.FONT_STYLE));
                 rootView.post(
                         new Runnable() {
                             @Override
                             public void run() {
-                                rootView.findViewById(R.id.progress).setVisibility(View.GONE);
+                                rootView.requireViewById(R.id.progress).setVisibility(View.GONE);
 
                                 // Fix animated content URLs by replacing animated GIFs with their original URL
                                 final List<GalleryImage> activityImages = galleryActivity.images;
@@ -433,8 +433,8 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
             final @Nullable String url,
             final @Nullable String subreddit,
             final @Nullable String submissionTitle) {
-        final ProgressBar loader = rootView.findViewById(R.id.gifprogress);
-        final TextView size = rootView.findViewById(R.id.size);
+        final ProgressBar loader = rootView.requireViewById(R.id.gifprogress);
+        final TextView size = rootView.requireViewById(R.id.size);
         if (url == null) {
             LogUtil.e("RedditGallery: no url for this gallery entry");
             // Both are visible in submission_gifcard_album.xml and only ever hidden by a load
@@ -471,7 +471,8 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
         }
 
         // Override this in subclasses to provide appropriate parent
-        protected GalleryParent getGalleryParent() {
+        protected @Nullable GalleryParent getGalleryParent() {
+            // Null once the page has detached; the only caller already tests for it.
             return (RedditGallery) getActivity();
         }
 
@@ -533,7 +534,7 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
                     // Use GifUtils to handle MP4 or GIF
                     loadVideo(
                             rootView,
-                            getActivity(),
+                            requireActivity(),
                             url,
                             galleryParent.getGallerySubreddit(),
                             galleryParent.getGallerySubmissionTitle());
@@ -543,31 +544,31 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
                     // handed.
                     if (url != null) {
                         // The "more" (overflow) button
-                        rootView.findViewById(R.id.more).setOnClickListener(
+                        rootView.requireViewById(R.id.more).setOnClickListener(
                                 v -> galleryParent.showGalleryBottomSheet(url, true, position)
                         );
 
                         // The "save" button
-                        rootView.findViewById(R.id.save).setOnClickListener(
+                        rootView.requireViewById(R.id.save).setOnClickListener(
                                 v -> galleryParent.saveGalleryMedia(true, url, position)
                         );
 
                         // Hide the save button if user preference is off
                         if (!me.edgan.redditslide.SettingValues.imageDownloadButton) {
-                            rootView.findViewById(R.id.save).setVisibility(View.INVISIBLE);
+                            rootView.requireViewById(R.id.save).setVisibility(View.INVISIBLE);
                         }
                     } else {
-                        rootView.findViewById(R.id.more).setVisibility(View.GONE);
-                        rootView.findViewById(R.id.save).setVisibility(View.GONE);
+                        rootView.requireViewById(R.id.more).setVisibility(View.GONE);
+                        rootView.requireViewById(R.id.save).setVisibility(View.GONE);
                     }
-                    rootView.findViewById(R.id.mute).setVisibility(View.GONE);
-                    rootView.findViewById(R.id.hq).setVisibility(View.GONE);
+                    rootView.requireViewById(R.id.mute).setVisibility(View.GONE);
+                    rootView.requireViewById(R.id.hq).setVisibility(View.GONE);
 
                     ImageView speedButton = rootView.findViewById(R.id.speed);
                     if (speedButton != null) {
                         if (current != null && current.isAnimated()) {
                             speedButton.setVisibility(View.VISIBLE);
-                            exoVideoView.attachSpeedButton(speedButton, getActivity());
+                            exoVideoView.attachSpeedButton(speedButton, requireActivity());
                         } else {
                             speedButton.setVisibility(View.GONE);
                         }
@@ -586,27 +587,27 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
                     // Add comment button logic
                     View comments = rootView.findViewById(R.id.comments);
                     if (comments != null) {
-                        if (getActivity().getIntent().hasExtra(MediaView.SUBMISSION_URL)) {
+                        if (requireActivity().getIntent().hasExtra(MediaView.SUBMISSION_URL)) {
                             final String submissionPermalink =
-                                    getActivity()
+                                    requireActivity()
                                             .getIntent()
                                             .getStringExtra(MediaView.SUBMISSION_URL);
                             final boolean openCommentsDirect =
-                                    getActivity()
+                                    requireActivity()
                                             .getIntent()
                                             .getBooleanExtra(
                                                     MediaView.EXTRA_OPEN_COMMENTS_DIRECT, false);
                             comments.setOnClickListener(v -> {
                                 if (openCommentsDirect && submissionPermalink != null) {
                                     OpenRedditLink.openUrl(
-                                            getActivity(),
+                                            requireActivity(),
                                             "https://reddit.com" + submissionPermalink,
                                             false);
-                                    getActivity().finish();
+                                    requireActivity().finish();
                                 } else {
-                                    getActivity().finish();
+                                    requireActivity().finish();
                                     SubmissionsView.datachanged(
-                                            getAdapterPositionFromActivity(getActivity()));
+                                            getAdapterPositionFromActivity(requireActivity()));
                                 }
                             });
                         } else {

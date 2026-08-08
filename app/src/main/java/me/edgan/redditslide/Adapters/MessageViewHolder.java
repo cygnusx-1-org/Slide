@@ -20,12 +20,12 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
 
     public MessageViewHolder(View v) {
         super(v);
-        title = v.findViewById(R.id.title);
+        title = v.requireViewById(R.id.title);
         title.setMaxLines(1);
         title.setEllipsize(TextUtils.TruncateAt.END);
-        content = v.findViewById(R.id.content);
-        time = v.findViewById(R.id.time);
-        commentOverflow = v.findViewById(R.id.commentOverflow);
-        user = v.findViewById(R.id.user);
+        content = v.requireViewById(R.id.content);
+        time = v.requireViewById(R.id.time);
+        commentOverflow = v.requireViewById(R.id.commentOverflow);
+        user = v.requireViewById(R.id.user);
     }
 }

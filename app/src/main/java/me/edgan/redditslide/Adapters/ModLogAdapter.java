@@ -93,8 +93,8 @@ public class ModLogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         public ModLogViewHolder(View itemView) {
             super(itemView);
-            body = itemView.findViewById(R.id.body);
-            icon = itemView.findViewById(R.id.action);
+            body = itemView.requireViewById(R.id.body);
+            icon = itemView.requireViewById(R.id.action);
         }
     }
 
@@ -279,11 +279,11 @@ public class ModLogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (firstHold instanceof SpacerViewHolder) {
             firstHold
                     .itemView
-                    .findViewById(R.id.height)
+                    .requireViewById(R.id.height)
                     .setLayoutParams(
                             new LinearLayout.LayoutParams(
                                     firstHold.itemView.getWidth(),
-                                    mContext.findViewById(R.id.header).getHeight()));
+                                    mContext.requireViewById(R.id.header).getHeight()));
         }
     }
 

@@ -88,7 +88,7 @@ public class Gallery extends FullScreenActivity implements SubmissionDisplay {
             subredditPosts.getPosts().add(s);
         }
 
-        rv = (RecyclerView) findViewById(R.id.content_view);
+        rv = (RecyclerView) requireViewById(R.id.content_view);
         recyclerAdapter = new GalleryView(this, baseSubs, subreddit);
         RecyclerView.LayoutManager layoutManager =
                 createLayoutManager(

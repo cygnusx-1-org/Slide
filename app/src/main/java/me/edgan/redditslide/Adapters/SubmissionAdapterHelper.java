@@ -56,15 +56,15 @@ public class SubmissionAdapterHelper {
             final RecyclerView listView) {
         LayoutInflater inflater = mContext.getLayoutInflater();
         final View dialoglayout = inflater.inflate(R.layout.postmenu, null);
-        final TextView title = dialoglayout.findViewById(R.id.title);
+        final TextView title = dialoglayout.requireViewById(R.id.title);
         title.setText(titleText);
 
-        ((TextView) dialoglayout.findViewById(R.id.userpopup))
+        ((TextView) dialoglayout.requireViewById(R.id.userpopup))
                 .setText("/u/" + submission.getAuthor());
-        ((TextView) dialoglayout.findViewById(R.id.subpopup))
+        ((TextView) dialoglayout.requireViewById(R.id.subpopup))
                 .setText("/r/" + submission.getSubredditName());
         dialoglayout
-                .findViewById(R.id.sidebar)
+                .requireViewById(R.id.sidebar)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -78,7 +78,7 @@ public class SubmissionAdapterHelper {
                         });
 
         dialoglayout
-                .findViewById(R.id.wiki)
+                .requireViewById(R.id.wiki)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -94,19 +94,19 @@ public class SubmissionAdapterHelper {
                         });
 
         dialoglayout
-                .findViewById(R.id.save)
+                .requireViewById(R.id.save)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 if (submission.isSaved()) {
                                     ((TextView)
-                                                    dialoglayout.findViewById(
+                                                    dialoglayout.requireViewById(
                                                             R.id.savedtext))
                                             .setText(R.string.submission_save);
                                 } else {
                                     ((TextView)
-                                                    dialoglayout.findViewById(
+                                                    dialoglayout.requireViewById(
                                                             R.id.savedtext))
                                             .setText(
                                                     R.string
@@ -116,13 +116,13 @@ public class SubmissionAdapterHelper {
                                         .execute(submission);
                             }
                         });
-        dialoglayout.findViewById(R.id.copy).setVisibility(View.GONE);
+        dialoglayout.requireViewById(R.id.copy).setVisibility(View.GONE);
         if (submission.isSaved()) {
-            ((TextView) dialoglayout.findViewById(R.id.savedtext))
+            ((TextView) dialoglayout.requireViewById(R.id.savedtext))
                     .setText(R.string.submission_post_saved);
         }
         dialoglayout
-                .findViewById(R.id.gild)
+                .requireViewById(R.id.gild)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -136,7 +136,7 @@ public class SubmissionAdapterHelper {
                             }
                         });
         dialoglayout
-                .findViewById(R.id.share)
+                .requireViewById(R.id.share)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -209,8 +209,8 @@ public class SubmissionAdapterHelper {
                             }
                         });
         if (!Authentication.isLoggedIn || !Authentication.didOnline) {
-            dialoglayout.findViewById(R.id.save).setVisibility(View.GONE);
-            dialoglayout.findViewById(R.id.gild).setVisibility(View.GONE);
+            dialoglayout.requireViewById(R.id.save).setVisibility(View.GONE);
+            dialoglayout.requireViewById(R.id.gild).setVisibility(View.GONE);
         }
         title.setBackgroundColor(
                 Palette.getColor(submission.getSubredditName()));
@@ -219,7 +219,7 @@ public class SubmissionAdapterHelper {
                 new AlertDialog.Builder(mContext).setView(dialoglayout);
         final Dialog d = DialogUtil.showWithCardBackground(builder);
         dialoglayout
-                .findViewById(R.id.hide)
+                .requireViewById(R.id.hide)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override

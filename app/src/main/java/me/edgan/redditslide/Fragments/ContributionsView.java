@@ -48,19 +48,19 @@ public class ContributionsView extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_verticalcontent, container, false);
 
-        recyclerView = v.findViewById(R.id.vertical_content);
+        recyclerView = v.requireViewById(R.id.vertical_content);
         searchOverlay = v.findViewById(R.id.search_loading_overlay);
         final RecyclerView rv = recyclerView;
 
-        final PreCachingLayoutManager mLayoutManager = new PreCachingLayoutManager(getContext());
+        final PreCachingLayoutManager mLayoutManager = new PreCachingLayoutManager(requireContext());
 
         rv.setLayoutManager(mLayoutManager);
         rv.setItemViewCacheSize(2);
-        v.findViewById(R.id.post_floating_action_button).setVisibility(View.GONE);
+        v.requireViewById(R.id.post_floating_action_button).setVisibility(View.GONE);
         swipeRefreshLayout = v.findViewById(R.id.activity_main_swipe_refresh_layout);
         final SwipeRefreshLayout mSwipeRefreshLayout = swipeRefreshLayout;
 
-        mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors(id, getActivity()));
+        mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors(id, requireActivity()));
 
         // If we use 'findViewById(R.id.header).getMeasuredHeight()', 0 is always returned.
         // So, we estimate the height of the header in dp
@@ -83,8 +83,8 @@ public class ContributionsView extends Fragment {
                             id, where, ((Profile) getActivity()).category);
         else posts = new ContributionPosts(id, where);
 
-        if (where.equals("hidden")) adapter = new ContributionAdapter(getActivity(), posts, rv, true);
-        else adapter = new ContributionAdapter(getActivity(), posts, rv);
+        if (where.equals("hidden")) adapter = new ContributionAdapter(requireActivity(), posts, rv, true);
+        else adapter = new ContributionAdapter(requireActivity(), posts, rv);
         rv.setAdapter(adapter);
 
         posts.bindAdapter(adapter, mSwipeRefreshLayout);
@@ -106,8 +106,8 @@ public class ContributionsView extends Fragment {
                 });
         rv.addOnScrollListener(
                 new ToolbarScrollHideHandler(
-                        getActivity().findViewById(R.id.toolbar),
-                        getActivity().findViewById(R.id.header)) {
+                        requireActivity().requireViewById(R.id.toolbar),
+                        requireActivity().requireViewById(R.id.header)) {
                     @Override
                     public void onScrollStateChanged(
                             @NonNull RecyclerView recyclerView, int newState) {

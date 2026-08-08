@@ -43,7 +43,7 @@ public class ManageOfflineContentFragment {
 
     public void Bind() {
         if (!NetworkUtil.isConnected(context)) SettingsThemeFragment.changed = true;
-        context.findViewById(R.id.manage_history_clear_all)
+        context.requireViewById(R.id.manage_history_clear_all)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -64,7 +64,7 @@ public class ManageOfflineContentFragment {
                             }
                         });
         if (NetworkUtil.isConnectedNoOverride(context)) {
-            context.findViewById(R.id.manage_history_sync_now)
+            context.requireViewById(R.id.manage_history_sync_now)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
@@ -77,10 +77,10 @@ public class ManageOfflineContentFragment {
                                 }
                             });
         } else {
-            context.findViewById(R.id.manage_history_sync_now).setVisibility(View.GONE);
+            context.requireViewById(R.id.manage_history_sync_now).setVisibility(View.GONE);
         }
         {
-            SwitchCompat single = context.findViewById(R.id.manage_history_wifi);
+            SwitchCompat single = context.requireViewById(R.id.manage_history_wifi);
 
             single.setChecked(Reddit.cachedData.getBoolean("wifiOnly", false));
             single.setOnCheckedChangeListener(
@@ -96,7 +96,7 @@ public class ManageOfflineContentFragment {
         final List<String> commentDepths = ImmutableList.of("2", "4", "6", "8", "10");
         final String[] commentDepthArray = new String[commentDepths.size()];
 
-        context.findViewById(R.id.manage_history_comments_depth)
+        context.requireViewById(R.id.manage_history_comments_depth)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -123,7 +123,7 @@ public class ManageOfflineContentFragment {
         final List<String> commentCounts = ImmutableList.of("20", "40", "60", "80", "100");
         final String[] commentCountArray = new String[commentCounts.size()];
 
-        context.findViewById(R.id.manage_history_comments_count)
+        context.requireViewById(R.id.manage_history_comments_count)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -147,7 +147,7 @@ public class ManageOfflineContentFragment {
                             }
                         });
 
-        context.findViewById(R.id.manage_history_autocache)
+        context.requireViewById(R.id.manage_history_autocache)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -201,7 +201,7 @@ public class ManageOfflineContentFragment {
                             }
                         });
         updateTime();
-        context.findViewById(R.id.manage_history_autocache_time_touch)
+        context.requireViewById(R.id.manage_history_autocache_time_touch)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -300,8 +300,8 @@ public class ManageOfflineContentFragment {
                                             context.findViewById(R.id.manage_history_domainlist),
                                             false);
 
-                    ((TextView) t.findViewById(R.id.name)).setText(name);
-                    t.findViewById(R.id.remove)
+                    ((TextView) t.requireViewById(R.id.name)).setText(name);
+                    t.requireViewById(R.id.remove)
                             .setOnClickListener(
                                     new View.OnClickListener() {
                                         @Override

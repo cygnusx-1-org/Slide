@@ -2,6 +2,7 @@ package me.edgan.redditslide.Fragments;
 
 
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -15,6 +16,7 @@ import android.widget.ProgressBar;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -118,6 +120,11 @@ public abstract class BaseMediaFragment extends Fragment {
     }
 
     public void doLoadImgur(@Nullable String url) {
+        // A detached fragment has no host here; there is nothing to act on.
+        final FragmentActivity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
         if (url == null) {
             return;
         }
@@ -128,7 +135,7 @@ public abstract class BaseMediaFragment extends Fragment {
         final String finalUrl = url;
         String hash = url.substring(url.lastIndexOf("/"));
 
-        if (NetworkUtil.isConnected(getActivity())) {
+        if (NetworkUtil.isConnected(activity)) {
 
             if (hash.startsWith("/")) hash = hash.substring(1);
             final String apiUrl = "https://api.imgur.com/3/image/" + hash;
@@ -177,6 +184,11 @@ public abstract class BaseMediaFragment extends Fragment {
     }
 
     public void doLoadXKCD(@Nullable String url) {
+        // A detached fragment has no host here; there is nothing to act on.
+        final Context context = getContext();
+        if (context == null) {
+            return;
+        }
         if (url == null) {
             return;
         }
@@ -185,7 +197,7 @@ public abstract class BaseMediaFragment extends Fragment {
             url = url + "/";
         }
 
-        if (NetworkUtil.isConnected(getContext())) {
+        if (NetworkUtil.isConnected(context)) {
             final String apiUrl = url + "info.0.json";
             LogUtil.v(apiUrl);
 
@@ -198,6 +210,11 @@ public abstract class BaseMediaFragment extends Fragment {
 
                 @Override
                 protected void onPostExecute(final @Nullable JsonObject result) {
+                    // A detached fragment has no host here; there is nothing to act on.
+                    final Context context = getContext();
+                    if (context == null) {
+                        return;
+                    }
                     if (getActivity() == null || rootView == null) {
                         return; // response arrived after the fragment was torn down
                     }
@@ -217,8 +234,13 @@ public abstract class BaseMediaFragment extends Fragment {
                                                 new View.OnLongClickListener() {
                                                     @Override
                                                     public boolean onLongClick(View v) {
+                                                        // A detached fragment has no host here; there is nothing to act on.
+                                                        final Context context = getContext();
+                                                        if (context == null) {
+                                                            return false;
+                                                        }
                                                         try {
-                                                            DialogUtil.showWithCardBackground(new AlertDialog.Builder(getContext())
+                                                            DialogUtil.showWithCardBackground(new AlertDialog.Builder(context)
                                                                     .setTitle(
                                                                             GsonUtil.string(result, "safe_title", ""))
                                                                     .setMessage(
@@ -233,13 +255,13 @@ public abstract class BaseMediaFragment extends Fragment {
                             } else {
                                 Intent i = new Intent(getContext(), Website.class);
                                 i.putExtra(LinkUtil.EXTRA_URL, finalUrl);
-                                getContext().startActivity(i);
+                                context.startActivity(i);
                             }
                         } catch (Exception e2) {
                             LogUtil.e(e2, getClass().getSimpleName() + ".onLongClick failed");
                             Intent i = new Intent(getContext(), Website.class);
                             i.putExtra(LinkUtil.EXTRA_URL, finalUrl);
-                            getContext().startActivity(i);
+                            context.startActivity(i);
                         }
                     }
                 }
@@ -255,7 +277,7 @@ public abstract class BaseMediaFragment extends Fragment {
             contentUrl = contentUrl + ".png";
         }
 
-        rootView.findViewById(R.id.gifprogress).setVisibility(View.GONE);
+        rootView.requireViewById(R.id.gifprogress).setVisibility(View.GONE);
 
         if (contentUrl != null && contentUrl.contains("m.imgur.com")) {
             contentUrl = contentUrl.replace("m.imgur.com", "i.imgur.com");
@@ -269,8 +291,8 @@ public abstract class BaseMediaFragment extends Fragment {
                 && !contentUrl.contains(
                         "imgur.com"))) { // we can assume redditmedia and imgur links are to direct
             // images and not websites
-            rootView.findViewById(R.id.progress).setVisibility(View.VISIBLE);
-            ((ProgressBar) rootView.findViewById(R.id.progress)).setIndeterminate(true);
+            rootView.requireViewById(R.id.progress).setVisibility(View.VISIBLE);
+            ((ProgressBar) rootView.requireViewById(R.id.progress)).setIndeterminate(true);
 
             final String finalUrl2 = contentUrl;
             new AsyncTask<Void, Void, Void>() {
@@ -286,6 +308,11 @@ public abstract class BaseMediaFragment extends Fragment {
                                             new Runnable() {
                                                 @Override
                                                 public void run() {
+                                                    // A detached fragment has no host here; there is nothing to act on.
+                                                    final FragmentActivity activity = getActivity();
+                                                    if (activity == null) {
+                                                        return;
+                                                    }
                                                     if (!imageShown
                                                             && !Strings.isNullOrEmpty(type)
                                                             && type.startsWith("image/")) {
@@ -307,7 +334,7 @@ public abstract class BaseMediaFragment extends Fragment {
                                                                         getActivity(),
                                                                         Website.class);
                                                         i.putExtra(LinkUtil.EXTRA_URL, finalUrl2);
-                                                        getActivity().startActivity(i);
+                                                        activity.startActivity(i);
                                                     }
                                                 }
                                             });
@@ -321,7 +348,7 @@ public abstract class BaseMediaFragment extends Fragment {
 
                 @Override
                 protected void onPostExecute(Void aVoid) {
-                    rootView.findViewById(R.id.progress).setVisibility(View.GONE);
+                    rootView.requireViewById(R.id.progress).setVisibility(View.GONE);
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
@@ -340,11 +367,11 @@ public abstract class BaseMediaFragment extends Fragment {
 
         if (!imageShown) {
             actuallyLoaded = url;
-            final SubsamplingScaleImageView i = rootView.findViewById(R.id.submission_image);
+            final SubsamplingScaleImageView i = rootView.requireViewById(R.id.submission_image);
 
             i.setMinimumDpi(70);
             i.setMinimumTileDpi(240);
-            final ProgressBar bar = rootView.findViewById(R.id.progress);
+            final ProgressBar bar = rootView.requireViewById(R.id.progress);
             bar.setIndeterminate(false);
             LogUtil.v("Displaying image " + url);
             bar.setProgress(0);
@@ -375,7 +402,7 @@ public abstract class BaseMediaFragment extends Fragment {
                 } catch (Exception e) {
                     // todo  i.setImage(ImageSource.bitmap(loadedImage));
                 }
-                (rootView.findViewById(R.id.progress)).setVisibility(View.GONE);
+                (rootView.requireViewById(R.id.progress)).setVisibility(View.GONE);
                 handler.removeCallbacks(progressBarDelayRunner);
 
                 previous = i.scale;
@@ -386,7 +413,7 @@ public abstract class BaseMediaFragment extends Fragment {
                             public void onScaleChanged(float newScale, int origin) {
                                 if (newScale > previous && !hidden && newScale > base) {
                                     hidden = true;
-                                    final View base = rootView.findViewById(R.id.base);
+                                    final View base = rootView.requireViewById(R.id.base);
 
                                     ValueAnimator va = ValueAnimator.ofFloat(1.0f, 0.2f);
                                     int mDuration = 250; // in millis
@@ -404,7 +431,7 @@ public abstract class BaseMediaFragment extends Fragment {
                                     // hide
                                 } else if (newScale <= previous && hidden) {
                                     hidden = false;
-                                    final View base = rootView.findViewById(R.id.base);
+                                    final View base = rootView.requireViewById(R.id.base);
 
                                     ValueAnimator va = ValueAnimator.ofFloat(0.2f, 1.0f);
                                     int mDuration = 250; // in millis
@@ -469,7 +496,7 @@ public abstract class BaseMediaFragment extends Fragment {
                                             // throws on a null rather than ignoring it.
                                             i.loader.setImage(ImageSource.bitmap(loadedImage));
                                         }
-                                        (rootView.findViewById(R.id.progress))
+                                        (rootView.requireViewById(R.id.progress))
                                                 .setVisibility(View.GONE);
                                         handler.removeCallbacks(progressBarDelayRunner);
 
@@ -486,7 +513,7 @@ public abstract class BaseMediaFragment extends Fragment {
                                                                 && newScale > base) {
                                                             hidden = true;
                                                             final View base =
-                                                                    rootView.findViewById(
+                                                                    rootView.requireViewById(
                                                                             R.id.base);
 
                                                             ValueAnimator va =
@@ -513,7 +540,7 @@ public abstract class BaseMediaFragment extends Fragment {
                                                         } else if (newScale <= previous && hidden) {
                                                             hidden = false;
                                                             final View base =
-                                                                    rootView.findViewById(
+                                                                    rootView.requireViewById(
                                                                             R.id.base);
 
                                                             ValueAnimator va =
@@ -552,7 +579,7 @@ public abstract class BaseMediaFragment extends Fragment {
                                     @Override
                                     public void onProgressUpdate(
                                             String imageUri, View view, int current, int total) {
-                                        ((ProgressBar) rootView.findViewById(R.id.progress))
+                                        ((ProgressBar) rootView.requireViewById(R.id.progress))
                                                 .setProgress(Math.round(100.0f * current / total));
                                     }
                                 });

@@ -19,7 +19,7 @@ public class BlankFragment extends Fragment {
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.blank_fragment, container, false);
-        v2 = v.findViewById(R.id.back);
+        v2 = v.requireViewById(R.id.back);
         realBack = v;
         return v;
     }
