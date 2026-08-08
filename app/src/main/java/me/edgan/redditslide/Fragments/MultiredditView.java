@@ -456,7 +456,7 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle bundle = this.getArguments();
+        Bundle bundle = requireArguments();
         id = bundle.getInt("id", 0);
         profile = bundle.getString(EXTRA_PROFILE, "");
     }

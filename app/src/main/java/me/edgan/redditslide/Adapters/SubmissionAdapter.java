@@ -162,7 +162,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             return new SubmissionFooterViewHolder(v);
         } else {
             View v = CreateCardView.CreateView(viewGroup);
-            return new SubmissionViewHolder(v);
+            return new CardSubmissionViewHolder(v);
         }
     }
 
@@ -204,8 +204,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         int i = pos != 0 ? pos - 1 : pos;
 
-        if (holder2 instanceof SubmissionViewHolder) {
-            final SubmissionViewHolder holder = (SubmissionViewHolder) holder2;
+        if (holder2 instanceof CardSubmissionViewHolder holder) {
 
             final Submission submission = dataSet.posts.get(i);
             CreateCardView.colorCard(

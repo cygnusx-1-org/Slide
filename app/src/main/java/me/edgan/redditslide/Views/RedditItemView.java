@@ -24,8 +24,8 @@ import com.devspark.robototextview.RobotoTypefaces;
 import java.util.List;
 import java.util.Locale;
 import me.edgan.redditslide.ActionStates;
+import me.edgan.redditslide.Adapters.CardSubmissionViewHolder;
 import me.edgan.redditslide.Adapters.ProfileCommentViewHolder;
-import me.edgan.redditslide.Adapters.SubmissionViewHolder;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.ForceTouch.PeekViewActivity;
 import me.edgan.redditslide.OpenRedditLink;
@@ -518,7 +518,7 @@ public class RedditItemView extends RelativeLayout {
     }
 
     public void doSubmission(Submission submission, View content) {
-        final SubmissionViewHolder holder = new SubmissionViewHolder(content);
+        final CardSubmissionViewHolder holder = new CardSubmissionViewHolder(content);
         CreateCardView.resetColorCard(holder.itemView);
         if (submission.getSubredditName() != null) {
             CreateCardView.colorCard(

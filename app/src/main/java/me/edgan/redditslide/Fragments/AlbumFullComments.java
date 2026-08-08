@@ -99,7 +99,7 @@ public class AlbumFullComments extends BaseAlbumFull {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        int page = this.getArguments().getInt("page", 0);
+        int page = requireArguments().getInt("page", 0);
         // The backing list is static; after process death it comes back null/empty while
         // the fragment is recreated with its old page argument.
         if (ShadowboxComments.comments == null || ShadowboxComments.comments.size() <= page) {

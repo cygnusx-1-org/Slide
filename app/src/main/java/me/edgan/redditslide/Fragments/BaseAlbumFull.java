@@ -231,7 +231,7 @@ public abstract class BaseAlbumFull extends Fragment {
         if (shadowbox == null) {
             return null;
         }
-        Bundle bundle = this.getArguments();
+        Bundle bundle = requireArguments();
         if (shadowbox.subredditPosts == null
                 || shadowbox.subredditPosts.getPosts().size() <= bundle.getInt("page", 0)) {
             shadowbox.finish();

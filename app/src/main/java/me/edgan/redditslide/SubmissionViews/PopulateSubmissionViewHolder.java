@@ -35,7 +35,9 @@ import java.util.Locale;
 import java.util.Map;
 import me.edgan.redditslide.ActionStates;
 import me.edgan.redditslide.Activities.MainActivity;
+import me.edgan.redditslide.Adapters.CardSubmissionViewHolder;
 import me.edgan.redditslide.Adapters.CommentAdapter;
+import me.edgan.redditslide.Adapters.FullSubmissionViewHolder;
 import me.edgan.redditslide.Adapters.SubmissionViewHolder;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.ContentType;
@@ -349,7 +351,10 @@ public class PopulateSubmissionViewHolder {
             holder.score.setText(String.format(Locale.getDefault(), "%d", submissionScore));
         }
 
-        final ImageView hideButton = (ImageView) holder.hide;
+        // submission_fullscreen has no hide button, which is what the old `holder.hide != null`
+        // test was really asking. The type says it now.
+        final ImageView hideButton =
+                holder instanceof CardSubmissionViewHolder cardHolder ? cardHolder.hide : null;
 
         if (hideButton != null) {
             if (SettingValues.hideButton && Authentication.isLoggedIn) {
@@ -414,10 +419,10 @@ public class PopulateSubmissionViewHolder {
                                     : Color.TRANSPARENT);
         }
 
-        SubmissionClickActions.addClickFunctions(holder.leadImage, type, mContext, submission, holder, full);
+        SubmissionClickActions.addClickFunctions(holder.leadImage, type, mContext, submission, holder);
 
         if (thumbImage2 != null) {
-            SubmissionClickActions.addClickFunctions(thumbImage2, type, mContext, submission, holder, full);
+            SubmissionClickActions.addClickFunctions(thumbImage2, type, mContext, submission, holder);
         }
 
         if (full) {
@@ -426,8 +431,7 @@ public class PopulateSubmissionViewHolder {
                     type,
                     mContext,
                     submission,
-                    holder,
-                    full);
+                    holder);
         }
 
         if (full) {
@@ -525,44 +529,50 @@ public class PopulateSubmissionViewHolder {
 
         SubmissionModActions.doText(holder, submission, mContext, baseSub, full);
 
-        if (!full
-                && SettingValues.isSelftextEnabled(baseSub)
-                && submission.isSelfPost()
-                && !MiscUtil.orEmpty(submission.getSelftext()).isEmpty()
-                && !submission.isNsfw()
-                && !submission.getDataNode().path("spoiler").asBoolean()
-                && !submission.getDataNode().path("selftext_html").asText("").trim().isEmpty()) {
-            holder.body.setVisibility(View.VISIBLE);
-            int typef = new FontPreferences(mContext).getFontTypeComment().getTypeface();
-            Typeface typeface;
-            if (typef >= 0) {
-                typeface = RobotoTypefaces.obtainTypeface(mContext, typef);
-            } else {
-                typeface = Typeface.DEFAULT;
-            }
-            holder.body.setTypeface(typeface);
+        // `!full` and `instanceof CardSubmissionViewHolder` are the same test — every !full holder
+        // is built from one of the four card layouts — but only the second one lets the compiler
+        // see that `body` exists.
+        if (holder instanceof CardSubmissionViewHolder cardHolder) {
+            if (SettingValues.isSelftextEnabled(baseSub)
+                    && submission.isSelfPost()
+                    && !MiscUtil.orEmpty(submission.getSelftext()).isEmpty()
+                    && !submission.isNsfw()
+                    && !submission.getDataNode().path("spoiler").asBoolean()
+                    && !submission.getDataNode().path("selftext_html").asText("").trim().isEmpty()) {
+                cardHolder.body.setVisibility(View.VISIBLE);
+                int typef = new FontPreferences(mContext).getFontTypeComment().getTypeface();
+                Typeface typeface;
+                if (typef >= 0) {
+                    typeface = RobotoTypefaces.obtainTypeface(mContext, typef);
+                } else {
+                    typeface = Typeface.DEFAULT;
+                }
+                cardHolder.body.setTypeface(typeface);
 
-            holder.body.setTextHtml(SubmissionCache.getSelftextPreview(submission), "none ");
-            holder.body.setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            holder.itemView.callOnClick();
-                        }
-                    });
-            holder.body.setOnLongClickListener(
-                    new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View v) {
-                            holder.menu.callOnClick();
-                            return true;
-                        }
-                    });
-        } else if (!full) {
-            holder.body.setVisibility(View.GONE);
+                cardHolder.body.setTextHtml(SubmissionCache.getSelftextPreview(submission), "none ");
+                cardHolder.body.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                holder.itemView.callOnClick();
+                            }
+                        });
+                cardHolder.body.setOnLongClickListener(
+                        new View.OnLongClickListener() {
+                            @Override
+                            public boolean onLongClick(View v) {
+                                holder.menu.callOnClick();
+                                return true;
+                            }
+                        });
+            } else {
+                cardHolder.body.setVisibility(View.GONE);
+            }
         }
 
-        if (full) {
+        // The mirror of the block above: `full` means submission_fullscreen, the only layout with
+        // firstTextView and commentOverflow.
+        if (holder instanceof FullSubmissionViewHolder fullHolder) {
             String recoveredText = PostRecovery.getRecovered(submission.getFullName());
             if (recoveredText != null || !MiscUtil.orEmpty(submission.getSelftext()).isEmpty()) {
                 int typef = new FontPreferences(mContext).getFontTypeComment().getTypeface();
@@ -572,7 +582,7 @@ public class PopulateSubmissionViewHolder {
                 } else {
                     typeface = Typeface.DEFAULT;
                 }
-                holder.firstTextView.setTypeface(typeface);
+                fullHolder.firstTextView.setTypeface(typeface);
 
                 String selftextSubreddit =
                         submission.getSubredditName() == null
@@ -588,7 +598,7 @@ public class PopulateSubmissionViewHolder {
                             "",
                             submission.getDataNode(),
                             selftextSubreddit,
-                            holder);
+                            fullHolder);
                 } else if (SettingValues.markdownNewReddit) {
                     // New Reddit-style: render the raw selftext via Markwon (issue #179).
                     setViewsMarkdown(
@@ -596,12 +606,12 @@ public class PopulateSubmissionViewHolder {
                             submission.getDataNode().path("selftext_html").asText(""),
                             submission.getDataNode(),
                             selftextSubreddit,
-                            holder);
+                            fullHolder);
                 } else {
                     setViews(
                             submission.getDataNode().path("selftext_html").asText(""),
                             selftextSubreddit,
-                            holder);
+                            fullHolder);
                 }
                 holder.itemView.requireViewById(R.id.body_area).setVisibility(View.VISIBLE);
             } else {
@@ -619,13 +629,15 @@ public class PopulateSubmissionViewHolder {
                             new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    if (SettingValues.storeHistory && !full) {
+                                    if (SettingValues.storeHistory
+                                            && holder instanceof CardSubmissionViewHolder
+                                                    cardHolder) {
                                         if (!submission.isNsfw()
                                                 || SettingValues.storeNSFWHistory) {
                                             HasSeen.addSeen(submission.getFullName());
                                             if (mContext instanceof MainActivity) {
                                                 holder.title.setAlpha(0.54f);
-                                                holder.body.setAlpha(0.54f);
+                                                cardHolder.body.setAlpha(0.54f);
                                             }
                                         }
                                     }
@@ -688,13 +700,15 @@ public class PopulateSubmissionViewHolder {
                             new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    if (SettingValues.storeHistory && !full) {
+                                    if (SettingValues.storeHistory
+                                            && holder instanceof CardSubmissionViewHolder
+                                                    cardHolder) {
                                         if (!submission.isNsfw()
                                                 || SettingValues.storeNSFWHistory) {
                                             HasSeen.addSeen(submission.getFullName());
                                             if (mContext instanceof MainActivity) {
                                                 holder.title.setAlpha(0.54f);
-                                                holder.body.setAlpha(0.54f);
+                                                cardHolder.body.setAlpha(0.54f);
                                             }
                                         }
                                     }
@@ -1123,39 +1137,31 @@ public class PopulateSubmissionViewHolder {
                                                                                                                                                                 R
                                                                                                                                                                         .string
                                                                                                                                                                         .content_deleted));
-                                                                                                                                if (holder.firstTextView
-                                                                                                                                        != null) {
-                                                                                                                                    holder
+                                                                                                                                if (holder
+                                                                                                                                        instanceof
+                                                                                                                                        FullSubmissionViewHolder
+                                                                                                                                        fullHolder) {
+                                                                                                                                    fullHolder
                                                                                                                                             .firstTextView
                                                                                                                                             .setText(
                                                                                                                                                     R
                                                                                                                                                             .string
                                                                                                                                                             .content_deleted);
-                                                                                                                                    holder
+                                                                                                                                    fullHolder
                                                                                                                                             .commentOverflow
                                                                                                                                             .setVisibility(
                                                                                                                                                     View
                                                                                                                                                             .GONE);
-                                                                                                                                } else {
-                                                                                                                                    if (holder
-                                                                                                                                                    .itemView
-                                                                                                                                                    .findViewById(
-                                                                                                                                                            R
-                                                                                                                                                                    .id
-                                                                                                                                                                    .body)
-                                                                                                                                            != null) {
-                                                                                                                                        ((TextView)
-                                                                                                                                                        holder
-                                                                                                                                                                .itemView
-                                                                                                                                                                .findViewById(
-                                                                                                                                                                        R
-                                                                                                                                                                                .id
-                                                                                                                                                                                .body))
-                                                                                                                                                .setText(
-                                                                                                                                                        R
-                                                                                                                                                                .string
-                                                                                                                                                                .content_deleted);
-                                                                                                                                    }
+                                                                                                                                } else if (holder
+                                                                                                                                        instanceof
+                                                                                                                                        CardSubmissionViewHolder
+                                                                                                                                        cardHolder) {
+                                                                                                                                    cardHolder
+                                                                                                                                            .body
+                                                                                                                                            .setText(
+                                                                                                                                                    R
+                                                                                                                                                            .string
+                                                                                                                                                            .content_deleted);
                                                                                                                                 }
                                                                                                                             }
                                                                                                                         });
@@ -1450,13 +1456,13 @@ public class PopulateSubmissionViewHolder {
             edit.setVisibility(View.GONE);
         }
 
-        if (HasSeen.getSeen(submission) && !full) {
+        if (HasSeen.getSeen(submission) && holder instanceof CardSubmissionViewHolder cardHolder) {
             holder.title.setAlpha(0.54f);
-            holder.body.setAlpha(0.54f);
+            cardHolder.body.setAlpha(0.54f);
         } else {
             holder.title.setAlpha(1f);
-            if (!full) {
-                holder.body.setAlpha(1f);
+            if (holder instanceof CardSubmissionViewHolder cardHolder) {
+                cardHolder.body.setAlpha(1f);
             }
         }
     }
@@ -1500,7 +1506,7 @@ public class PopulateSubmissionViewHolder {
         }
     }
 
-    private void setViews(String rawHTML, String subredditName, SubmissionViewHolder holder) {
+    private void setViews(String rawHTML, String subredditName, FullSubmissionViewHolder holder) {
         if (rawHTML.isEmpty()) {
             return;
         }
@@ -1532,7 +1538,7 @@ public class PopulateSubmissionViewHolder {
             String bodyHtml,
             JsonNode dataNode,
             String subredditName,
-            SubmissionViewHolder holder) {
+            FullSubmissionViewHolder holder) {
         MarkdownImages.renderInto(
                 holder.firstTextView,
                 holder.commentOverflow,

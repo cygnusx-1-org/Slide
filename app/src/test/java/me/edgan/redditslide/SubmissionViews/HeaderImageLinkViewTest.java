@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.InputStream;
 import java.util.HashSet;
 import me.edgan.redditslide.Activities.MediaView;
+import me.edgan.redditslide.Adapters.CardSubmissionViewHolder;
+import me.edgan.redditslide.Adapters.FullSubmissionViewHolder;
 import me.edgan.redditslide.Adapters.SubmissionViewHolder;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.R;
@@ -105,8 +107,7 @@ public class HeaderImageLinkViewTest {
         assertPlayPlaceholder(activity, thumbnail);
         assertThat(holder.leadImage.loadedUrl, is(submission.getUrl()));
 
-        SubmissionClickActions.addClickFunctions(
-                thumbnail, type, activity, submission, holder, false);
+        SubmissionClickActions.addClickFunctions(thumbnail, type, activity, submission, holder);
         OnSingleClickListener.override = true;
         assertTrue(thumbnail.performClick());
         final Intent startedIntent =
@@ -200,7 +201,10 @@ public class HeaderImageLinkViewTest {
         final View root =
                 LayoutInflater.from(activity).inflate(layout, new FrameLayout(activity), false);
         activity.setContentView(root);
-        final SubmissionViewHolder holder = new SubmissionViewHolder(root);
+        // `full` picks submission_fullscreen, which is the only layout the FullSubmissionViewHolder
+        // fields exist in; everything else here is a feed card. See NULLAWAY.md phase 14.
+        final SubmissionViewHolder holder =
+                full ? new FullSubmissionViewHolder(root) : new CardSubmissionViewHolder(root);
         holder.leadImage.setThumbnail((ImageView) holder.thumbimage);
         if (full) {
             holder.leadImage.setWrapArea(root.findViewById(R.id.wraparea));

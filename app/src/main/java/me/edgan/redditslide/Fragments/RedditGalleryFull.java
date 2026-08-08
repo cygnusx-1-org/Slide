@@ -142,7 +142,7 @@ public class RedditGalleryFull extends BaseAlbumFull {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        i = this.getArguments().getInt("page", 0);
+        i = requireArguments().getInt("page", 0);
         s = resolveSubmission();
         if (s != null) {
             images = extractGalleryImages(s);

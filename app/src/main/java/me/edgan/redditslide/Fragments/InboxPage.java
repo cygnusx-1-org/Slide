@@ -121,7 +121,7 @@ public class InboxPage extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle bundle = this.getArguments();
+        Bundle bundle = requireArguments();
         id = bundle.getString("id", "");
     }
 

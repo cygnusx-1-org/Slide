@@ -283,7 +283,7 @@ public class MediaFragment extends BaseMediaFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle bundle = this.getArguments();
+        Bundle bundle = requireArguments();
         firstUrl = bundle.getString("firstUrl");
         sub = ((Shadowbox) requireActivity()).subreddit;
         i = bundle.getInt("page");

@@ -73,7 +73,7 @@ public class AlbumFull extends BaseAlbumFull {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        i = this.getArguments().getInt("page", 0);
+        i = requireArguments().getInt("page", 0);
         s = submissionForShadowboxPage();
     }
 }

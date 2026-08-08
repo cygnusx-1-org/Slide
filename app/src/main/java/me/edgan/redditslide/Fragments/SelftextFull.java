@@ -78,7 +78,7 @@ public class SelftextFull extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle bundle = this.getArguments();
+        Bundle bundle = requireArguments();
         i = bundle.getInt("page", 0);
         sub = bundle.getString("sub");
         if (((Shadowbox) requireActivity()).subredditPosts == null

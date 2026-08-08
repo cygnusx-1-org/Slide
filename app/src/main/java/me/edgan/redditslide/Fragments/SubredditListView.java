@@ -127,7 +127,7 @@ public class SubredditListView extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle bundle = this.getArguments();
+        Bundle bundle = requireArguments();
         where = bundle.getString("id", "");
     }
 

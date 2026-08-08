@@ -255,13 +255,25 @@ public class Tutorial extends AppCompatActivity {
                 @Nullable Bundle savedInstanceState) {
             welcomeBinding = FragmentWelcomeBinding.inflate(inflater, container, false);
             welcomeBinding.welcomeGetStarted.setOnClickListener(
-                    v1 -> ((Tutorial) requireActivity()).binding.tutorialViewPager.setCurrentItem(1));
+                    v1 -> {
+                        // A detached fragment has no host here; there is nothing to page.
+                        final Activity activity = getActivity();
+                        if (activity == null) {
+                            return;
+                        }
+                        ((Tutorial) activity).binding.tutorialViewPager.setCurrentItem(1);
+                    });
 
             // Add click listener for restore button
             welcomeBinding.welcomeRestore.setOnClickListener(v -> {
-                Intent intent = new Intent(getActivity(), SettingsBackup.class);
+                // A detached fragment has no host here; there is nothing to act on.
+                final Activity activity = getActivity();
+                if (activity == null) {
+                    return;
+                }
+                Intent intent = new Intent(activity, SettingsBackup.class);
                 startActivity(intent);
-                requireActivity().finish();
+                activity.finish();
             });
 
             // Keep the bottom buttons above the navigation bar under edge-to-edge (Android 15+).
@@ -310,19 +322,25 @@ public class Tutorial extends AppCompatActivity {
 
             personalizeBinding.primaryColor.setOnClickListener(
                     v -> {
+                        // A detached fragment has no host here; there is nothing to inflate into.
+                        final Activity activity = getActivity();
+                        if (activity == null) {
+                            return;
+                        }
+
                         final ChoosemainBinding choosemainBinding =
-                                ChoosemainBinding.inflate(requireActivity().getLayoutInflater());
+                                ChoosemainBinding.inflate(activity.getLayoutInflater());
 
                         choosemainBinding.title.setBackgroundColor(Palette.getDefaultColor());
 
                         choosemainBinding.picker.setColors(
-                                ColorPreferences.getBaseColors(requireContext()));
+                                ColorPreferences.getBaseColors(activity));
                         for (final int i : choosemainBinding.picker.getColors()) {
-                            for (final int i2 : ColorPreferences.getColors(requireContext(), i)) {
+                            for (final int i2 : ColorPreferences.getColors(activity, i)) {
                                 if (i2 == Palette.getDefaultColor()) {
                                     choosemainBinding.picker.setSelectedColor(i);
                                     choosemainBinding.picker2.setColors(
-                                            ColorPreferences.getColors(requireContext(), i));
+                                            ColorPreferences.getColors(activity, i));
                                     choosemainBinding.picker2.setSelectedColor(i2);
                                     break;
                                 }
@@ -331,8 +349,14 @@ public class Tutorial extends AppCompatActivity {
 
                         choosemainBinding.picker.setOnColorChangedListener(
                                 c -> {
+                                    // The dialog has its own window and can still deliver a colour
+                                    // change after the fragment's view is gone.
+                                    final Activity dialogActivity = getActivity();
+                                    if (dialogActivity == null) {
+                                        return;
+                                    }
                                     choosemainBinding.picker2.setColors(
-                                            ColorPreferences.getColors(requireContext(), c));
+                                            ColorPreferences.getColors(dialogActivity, c));
                                     choosemainBinding.picker2.setSelectedColor(c);
                                 });
 
@@ -343,15 +367,15 @@ public class Tutorial extends AppCompatActivity {
 
                                     // The dialog has its own window and can still deliver a colour
                                     // change after the fragment's view is gone.
-                                    final Activity activity = getActivity();
-                                    if (personalizeBinding == null || activity == null) {
+                                    final Activity dialogActivity = getActivity();
+                                    if (personalizeBinding == null || dialogActivity == null) {
                                         return;
                                     }
 
                                     personalizeBinding.header.setBackgroundColor(
                                             choosemainBinding.picker2.getColor());
 
-                                    activity.getWindow()
+                                    dialogActivity.getWindow()
                                             .setStatusBarColor(
                                                     Palette.getDarkerColor(
                                                             choosemainBinding.picker2.getColor()));
@@ -368,15 +392,21 @@ public class Tutorial extends AppCompatActivity {
                                     finishDialogLayout();
                                 });
 
-                        showTrackedDialog(new AlertDialog.Builder(requireContext())
+                        showTrackedDialog(new AlertDialog.Builder(activity)
                                 .setView(choosemainBinding.getRoot())
                                 );
                     });
 
             personalizeBinding.secondaryColor.setOnClickListener(
                     v -> {
+                        // A detached fragment has no host here; there is nothing to inflate into.
+                        final Activity activity = getActivity();
+                        if (activity == null) {
+                            return;
+                        }
+
                         final ChooseaccentBinding accentBinding =
-                                ChooseaccentBinding.inflate(requireActivity().getLayoutInflater());
+                                ChooseaccentBinding.inflate(activity.getLayoutInflater());
 
                         accentBinding.title.setBackgroundColor(Palette.getDefaultColor());
 
@@ -388,7 +418,7 @@ public class Tutorial extends AppCompatActivity {
                         for (final ColorPreferences.Theme type : ColorPreferences.Theme.values()) {
                             if (type.getThemeType()
                                     == ColorPreferences.ColorThemeOptions.AMOLED.getValue()) {
-                                arrs[i] = ContextCompat.getColor(requireActivity(), type.getColor());
+                                arrs[i] = ContextCompat.getColor(activity, type.getColor());
 
                                 i++;
                             }
@@ -396,13 +426,13 @@ public class Tutorial extends AppCompatActivity {
 
                         accentBinding.picker3.setColors(arrs);
                         accentBinding.picker3.setSelectedColor(
-                                new ColorPreferences(requireActivity()).getColor(""));
+                                new ColorPreferences(activity).getColor(""));
 
                         accentBinding.ok.setOnClickListener(
                                 v12 -> {
                                     // The dialog has its own window and can outlive the fragment.
-                                    final Activity activity = getActivity();
-                                    if (activity == null) {
+                                    final Activity dialogActivity = getActivity();
+                                    if (dialogActivity == null) {
                                         return;
                                     }
 
@@ -410,9 +440,9 @@ public class Tutorial extends AppCompatActivity {
                                     ColorPreferences.Theme theme = null;
                                     for (final ColorPreferences.Theme type :
                                             ColorPreferences.Theme.values()) {
-                                        if (ContextCompat.getColor(activity, type.getColor())
+                                        if (ContextCompat.getColor(dialogActivity, type.getColor())
                                                         == color
-                                                && ((Tutorial) activity).back
+                                                && ((Tutorial) dialogActivity).back
                                                         == type.getThemeType()) {
                                             theme = type;
                                             break;
@@ -421,21 +451,27 @@ public class Tutorial extends AppCompatActivity {
                                     // No theme carries this colour for the current base theme;
                                     // setFontStyle(null) would throw, so keep the existing style.
                                     if (theme != null) {
-                                        new ColorPreferences(activity).setFontStyle(theme);
+                                        new ColorPreferences(dialogActivity).setFontStyle(theme);
                                     }
 
                                     finishDialogLayout();
                                 });
 
-                        showTrackedDialog(new AlertDialog.Builder(requireActivity())
+                        showTrackedDialog(new AlertDialog.Builder(activity)
                                 .setView(accentBinding.getRoot())
                                 );
                     });
 
             personalizeBinding.baseColor.setOnClickListener(
                     v -> {
+                        // A detached fragment has no host here; there is nothing to inflate into.
+                        final Activity activity = getActivity();
+                        if (activity == null) {
+                            return;
+                        }
+
                         final ChoosethemesmallBinding themesmallBinding =
-                                ChoosethemesmallBinding.inflate(requireActivity().getLayoutInflater());
+                                ChoosethemesmallBinding.inflate(activity.getLayoutInflater());
                         final View themesmallBindingRoot = themesmallBinding.getRoot();
 
                         themesmallBinding.title.setBackgroundColor(Palette.getDefaultColor());
@@ -447,15 +483,15 @@ public class Tutorial extends AppCompatActivity {
                                             v14 -> {
                                                 // The dialog has its own window and can outlive
                                                 // the fragment.
-                                                final Activity activity = getActivity();
-                                                if (activity == null) {
+                                                final Activity dialogActivity = getActivity();
+                                                if (dialogActivity == null) {
                                                     return;
                                                 }
 
                                                 // Theme titles are <base>_<accent family>, so the
                                                 // last segment is the accent to carry over.
                                                 final String[] names =
-                                                        new ColorPreferences(activity)
+                                                        new ColorPreferences(dialogActivity)
                                                                 .getFontStyle()
                                                                 .getTitle()
                                                                 .split("_");
@@ -469,9 +505,9 @@ public class Tutorial extends AppCompatActivity {
                                                     if (theme.toString().endsWith("_" + accent)
                                                             && theme.getThemeType()
                                                                     == pair.second) {
-                                                        ((Tutorial) activity).back =
+                                                        ((Tutorial) dialogActivity).back =
                                                                 theme.getThemeType();
-                                                        new ColorPreferences(activity)
+                                                        new ColorPreferences(dialogActivity)
                                                                 .setFontStyle(theme);
                                                         finishDialogLayout();
                                                         break;
@@ -480,19 +516,27 @@ public class Tutorial extends AppCompatActivity {
                                             });
                         }
 
-                        showTrackedDialog(new AlertDialog.Builder(requireActivity())
+                        showTrackedDialog(new AlertDialog.Builder(activity)
                                 .setView(themesmallBindingRoot)
                                 );
                     });
 
             personalizeBinding.done.setOnClickListener(v1 -> {
+                // Every statement below needs the host — the overlay, its window and the restart —
+                // so the guard belongs at the top. Marking the tutorial done without restarting
+                // would leave the app sitting on this screen.
+                final Activity activity = getActivity();
+                if (activity == null) {
+                    return;
+                }
+
                 // Add a black overlay view for a clean transition into the restart
-                View overlayView = new View(getActivity());
+                View overlayView = new View(activity);
                 overlayView.setBackgroundColor(Color.BLACK);
                 overlayView.setAlpha(1.0f); // Fully opaque black
 
                 // Add overlay to root window
-                ViewGroup rootView = (ViewGroup) requireActivity().getWindow().getDecorView().getRootView();
+                ViewGroup rootView = (ViewGroup) activity.getWindow().getDecorView().getRootView();
                 rootView.addView(overlayView, new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT));
@@ -500,7 +544,7 @@ public class Tutorial extends AppCompatActivity {
                 // Complete tutorial and restart app. The app ships with a default Reddit client ID,
                 // so there is no need to prompt for one here.
                 Reddit.colors.edit().putString("Tutorial", "S").commit();
-                Reddit.forceRestart(requireActivity(), false);
+                Reddit.forceRestart(activity, false);
             });
 
             // Keep the Done button above the navigation bar under edge-to-edge (Android 15+). It

@@ -263,7 +263,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     View v =
                             LayoutInflater.from(viewGroup.getContext())
                                     .inflate(R.layout.submission_fullscreen, viewGroup, false);
-                    return new SubmissionViewHolder(v);
+                    return new FullSubmissionViewHolder(v);
                 }
             case 2:
                 {
@@ -673,11 +673,12 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
             }
 
-        } else if (firstHolder instanceof SubmissionViewHolder && submission != null) {
-            submissionViewHolder = (SubmissionViewHolder) firstHolder;
+        } else if (firstHolder instanceof FullSubmissionViewHolder fullHolder
+                && submission != null) {
+            submissionViewHolder = fullHolder;
             new PopulateSubmissionViewHolder()
                     .populateSubmissionViewHolder(
-                            (SubmissionViewHolder) firstHolder,
+                            fullHolder,
                             submission,
                             (Activity) mContext,
                             true,

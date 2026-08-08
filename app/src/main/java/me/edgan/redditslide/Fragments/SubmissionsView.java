@@ -714,7 +714,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle bundle = this.getArguments();
+        Bundle bundle = requireArguments();
         id = bundle.getString("id", "");
         main = bundle.getBoolean("main", false);
         forceLoad = bundle.getBoolean("load", false);

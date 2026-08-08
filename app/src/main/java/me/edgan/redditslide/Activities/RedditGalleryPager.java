@@ -641,7 +641,7 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            Bundle bundle = this.getArguments();
+            Bundle bundle = requireArguments();
             i = bundle.getInt("page", 0);
             if (savedInstanceState != null) {
                 currentRotation = savedInstanceState.getInt("currentRotation", 0);

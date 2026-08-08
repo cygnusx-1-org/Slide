@@ -434,7 +434,7 @@ public class TumblrPager extends BaseSaveActivity {
             LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-            Bundle bundle = this.getArguments();
+            Bundle bundle = requireArguments();
             final int i = bundle.getInt("page", 0);
 
             rootView = (ViewGroup) inflater.inflate(R.layout.submission_gifcard_album, container, false);
@@ -636,14 +636,19 @@ public class TumblrPager extends BaseSaveActivity {
                                     .getBooleanExtra(
                                             MediaView.EXTRA_OPEN_COMMENTS_DIRECT, false);
                     comments.setOnClickListener(v -> {
+                        // A detached fragment has no host here; there is nothing to act on.
+                        final FragmentActivity activity = getActivity();
+                        if (activity == null) {
+                            return;
+                        }
                         if (openCommentsDirect && submissionPermalink != null) {
                             OpenRedditLink.openUrl(
-                                    requireActivity(),
+                                    activity,
                                     "https://reddit.com" + submissionPermalink,
                                     false);
-                            requireActivity().finish();
+                            activity.finish();
                         } else {
-                            requireActivity().finish();
+                            activity.finish();
                             SubmissionsView.datachanged(adapterPosition);
                         }
                     });
@@ -908,7 +913,7 @@ public class TumblrPager extends BaseSaveActivity {
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            Bundle bundle = this.getArguments();
+            Bundle bundle = requireArguments();
             i = bundle.getInt("page", 0);
             if (savedInstanceState != null) {
                 currentRotation = savedInstanceState.getInt("currentRotation", 0);

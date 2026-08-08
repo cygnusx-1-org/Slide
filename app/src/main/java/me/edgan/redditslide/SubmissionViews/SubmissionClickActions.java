@@ -23,6 +23,7 @@ import me.edgan.redditslide.Activities.Search;
 import me.edgan.redditslide.Activities.SubredditView;
 import me.edgan.redditslide.Activities.Tumblr;
 import me.edgan.redditslide.Activities.TumblrPager;
+import me.edgan.redditslide.Adapters.CardSubmissionViewHolder;
 import me.edgan.redditslide.Adapters.SubmissionViewHolder;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.ForceTouch.PeekViewActivity;
@@ -51,8 +52,7 @@ public class SubmissionClickActions {
             final ContentType.Type type,
             final Activity contextActivity,
             final Submission submission,
-            final SubmissionViewHolder holder,
-            final boolean full) {
+            final SubmissionViewHolder holder) {
         base.setOnClickListener(
                 new OnSingleClickListener() {
                     @Override
@@ -60,7 +60,8 @@ public class SubmissionClickActions {
                         if (NetworkUtil.isConnected(contextActivity)
                                 || (!NetworkUtil.isConnected(contextActivity)
                                         && ContentType.fullImage(type))) {
-                            if (SettingValues.storeHistory && !full) {
+                            if (SettingValues.storeHistory
+                                    && holder instanceof CardSubmissionViewHolder cardHolder) {
                                 if (!submission.isNsfw() || SettingValues.storeNSFWHistory) {
                                     HasSeen.addSeen(submission.getFullName());
                                     if (contextActivity instanceof MainActivity
@@ -69,7 +70,7 @@ public class SubmissionClickActions {
                                             || contextActivity instanceof Search
                                             || contextActivity instanceof Profile) {
                                         holder.title.setAlpha(0.54f);
-                                        holder.body.setAlpha(0.54f);
+                                        cardHolder.body.setAlpha(0.54f);
                                     }
                                 }
                             }

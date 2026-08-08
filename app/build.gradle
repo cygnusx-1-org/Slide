@@ -263,12 +263,25 @@ tasks.withType(JavaCompile).configureEach { task ->
         // carry no nullability annotation at all — AOSP says so in a source comment — so skipping
         // their model changes nothing. Those sites are source changes or nothing.
         //
-        // Fragment.getArguments is the obvious next entry and costs 23 findings; the other six
-        // models measured alongside it (ViewGroup.getChildAt, the three getDrawable overloads,
-        // TextInputLayout.getEditText, View.getResources) cost zero. See NULLAWAY.md phase 14.
+        // Everything phase 14 measured and left for later is now listed too, so the whole of
+        // NONNULL_RETURNS that this codebase actually calls is dropped rather than half of it.
+        // Re-measured rather than trusted, and both numbers had moved: getArguments cost 22
+        // findings (the phase predicted 23) and ContextCompat.getDrawable cost 2 where the phase
+        // measured zero. The four that really are free are listed anyway — the entry is what
+        // stops a future call site being waved through. See NULLAWAY.md phase 14.
+        //
+        // Fragment.onCreateView is deliberately NOT listed: the model constrains what an override
+        // may return, and returning null from onCreateView is legal and used here.
         option('NullAway:IgnoreLibraryModelsFor',
                 'androidx.fragment.app.Fragment.getActivity'
-                        + ',androidx.fragment.app.Fragment.getContext')
+                        + ',androidx.fragment.app.Fragment.getContext'
+                        + ',androidx.fragment.app.Fragment.getArguments'
+                        + ',android.view.ViewGroup.getChildAt'
+                        + ',android.view.View.getResources'
+                        + ',android.content.res.Resources.getDrawable'
+                        + ',androidx.core.content.ContextCompat.getDrawable'
+                        + ',androidx.appcompat.content.res.AppCompatResources.getDrawable'
+                        + ',android.support.design.widget.TextInputLayout.getEditText')
         // Read assertNotNull(x) / assertThat(x).isNotNull() as null checks. Only meaningful in
         // the unit-test compiles, but harmless in the others.
         option('NullAway:HandleTestAssertionLibraries', 'true')

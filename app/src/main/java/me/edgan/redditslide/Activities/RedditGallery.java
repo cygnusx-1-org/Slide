@@ -20,6 +20,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.recyclerview.widget.RecyclerView;
@@ -598,16 +599,21 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
                                             .getBooleanExtra(
                                                     MediaView.EXTRA_OPEN_COMMENTS_DIRECT, false);
                             comments.setOnClickListener(v -> {
+                                // A detached fragment has no host here; there is nothing to act on.
+                                final FragmentActivity activity = getActivity();
+                                if (activity == null) {
+                                    return;
+                                }
                                 if (openCommentsDirect && submissionPermalink != null) {
                                     OpenRedditLink.openUrl(
-                                            requireActivity(),
+                                            activity,
                                             "https://reddit.com" + submissionPermalink,
                                             false);
-                                    requireActivity().finish();
+                                    activity.finish();
                                 } else {
-                                    requireActivity().finish();
+                                    activity.finish();
                                     SubmissionsView.datachanged(
-                                            getAdapterPositionFromActivity(requireActivity()));
+                                            getAdapterPositionFromActivity(activity));
                                 }
                             });
                         } else {

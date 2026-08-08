@@ -127,7 +127,7 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             return new SubmissionFooterViewHolder(v);
         } else {
             View v = CreateCardView.CreateView(viewGroup);
-            return new SubmissionViewHolder(v);
+            return new CardSubmissionViewHolder(v);
         }
     }
 
@@ -145,8 +145,7 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public void onBindViewHolder(final RecyclerView.ViewHolder firstHolder, final int pos) {
         int i = pos != 0 ? pos - 1 : pos;
 
-        if (firstHolder instanceof SubmissionViewHolder) {
-            final SubmissionViewHolder holder = (SubmissionViewHolder) firstHolder;
+        if (firstHolder instanceof CardSubmissionViewHolder holder) {
             final Submission submission = (Submission) dataSet.posts.get(i);
             CreateCardView.resetColorCard(holder.itemView);
             if (submission.getSubredditName() != null)

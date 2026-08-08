@@ -136,7 +136,7 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             return new ProfileCommentViewHolder(v);
         } else {
             View v = CreateCardView.CreateView(viewGroup);
-            return new SubmissionViewHolder(v);
+            return new CardSubmissionViewHolder(v);
         }
     }
 
@@ -144,8 +144,7 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public void onBindViewHolder(final RecyclerView.ViewHolder firstHold, final int pos) {
         int i = pos != 0 ? pos - 1 : pos;
 
-        if (firstHold instanceof SubmissionViewHolder) {
-            SubmissionViewHolder holder = (SubmissionViewHolder) firstHold;
+        if (firstHold instanceof CardSubmissionViewHolder holder) {
             final Submission submission = (Submission) dataSet.posts.get(i);
             CreateCardView.resetColorCard(holder.itemView);
             CreateCardView.colorCard(

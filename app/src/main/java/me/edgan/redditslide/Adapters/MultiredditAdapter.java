@@ -88,8 +88,7 @@ public class MultiredditAdapter extends PaginatedListAdapter {
     public void onBindViewHolder(final RecyclerView.ViewHolder holder2, final int pos) {
         int i = (pos != 0) ? (pos - 1) : pos;
 
-        if (holder2 instanceof SubmissionViewHolder) {
-            final SubmissionViewHolder holder = (SubmissionViewHolder) holder2;
+        if (holder2 instanceof CardSubmissionViewHolder holder) {
             final Submission submission = dataSet.posts.get(i);
 
             CreateCardView.colorCard(
@@ -209,7 +208,7 @@ public class MultiredditAdapter extends PaginatedListAdapter {
     @Override
     protected RecyclerView.ViewHolder createContentViewHolder(ViewGroup viewGroup) {
         View v = CreateCardView.CreateView(viewGroup);
-        return new SubmissionViewHolder(v);
+        return new CardSubmissionViewHolder(v);
     }
 
 }

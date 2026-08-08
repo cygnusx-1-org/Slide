@@ -239,7 +239,7 @@ public class FolderChooserDialogCreate extends DialogFragment {
         if (dialog != null) {
             dialog.setTitle(parentFolder.getAbsolutePath());
         }
-        getArguments().putString("current_path", parentFolder.getAbsolutePath());
+        requireArguments().putString("current_path", parentFolder.getAbsolutePath());
         if (listAdapter != null) {
             listAdapter.clear();
             listAdapter.addAll(getContentsArray());

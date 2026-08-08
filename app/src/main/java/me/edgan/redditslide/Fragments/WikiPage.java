@@ -138,7 +138,7 @@ public class WikiPage extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle bundle = this.getArguments();
+        Bundle bundle = requireArguments();
         title = bundle.getString("title", "");
         subreddit = bundle.getString("subreddit", "");
         wikiUrl = "https://www.reddit.com/r/" + subreddit + "/wiki/";

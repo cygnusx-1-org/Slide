@@ -914,15 +914,27 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                     .setNegativeButton(
                             R.string.btn_close,
                             (dialog, which) -> {
-                                if (!(getActivity() instanceof MainActivity)) {
-                                    requireActivity().finish();
+                                // The dialog has its own window and can outlive the fragment's
+                                // view; a detached host has nothing to finish.
+                                final FragmentActivity activity = getActivity();
+                                if (activity == null) {
+                                    return;
+                                }
+                                if (!(activity instanceof MainActivity)) {
+                                    activity.finish();
                                 }
                             })
                     .setPositiveButton(
                             R.string.btn_offline,
                             (dialog, which) -> {
                                 Reddit.appRestart.edit().putBoolean("forceoffline", true).commit();
-                                Reddit.forceRestart(requireActivity(), false);
+                                // Guarded after the write, not before it: the preference is the
+                                // part that has to survive, and only the restart needs a host.
+                                final FragmentActivity activity = getActivity();
+                                if (activity == null) {
+                                    return;
+                                }
+                                Reddit.forceRestart(activity, false);
                             })
                     );
         }
@@ -2340,7 +2352,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle bundle = this.getArguments();
+        Bundle bundle = requireArguments();
         subreddit = bundle.getString("subreddit", "");
         fullname = bundle.getString("id", "");
         page = bundle.getInt("page", 0);
