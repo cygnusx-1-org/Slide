@@ -74,8 +74,13 @@ public class RoborazziLayoutTest {
     };
 
     /**
-     * Layouts under test — the big submission card variants, the compact list row, and the still and
-     * GIF rows of the vertical album/gallery lists.
+     * Layouts under test — the big submission card variants, the compact list and desktop rows, the
+     * Shadowbox album card, the comments-screen header, and the still and GIF rows of the vertical
+     * album/gallery lists.
+     *
+     * <p>submission_albumcard's RecyclerView is empty under a static inflate, so its golden covers
+     * the sliding panel — title, desc and the action row — which is the part that is laid out by
+     * XML rather than by an adapter.
      *
      * <p>submission_gifcard_album is deliberately not here. Its root is a SlidingUpPanelLayout, which
      * rejects the UNSPECIFIED height spec below and needs a bounded one; give it that and it measures
@@ -92,6 +97,9 @@ public class RoborazziLayoutTest {
         m.put("textcard", R.layout.submission_textcard);
         m.put("titlecard", R.layout.submission_titlecard);
         m.put("list", R.layout.submission_list);
+        m.put("list_desktop", R.layout.submission_list_desktop);
+        m.put("albumcard", R.layout.submission_albumcard);
+        m.put("fullscreen", R.layout.submission_fullscreen);
         m.put("album_image", R.layout.album_image);
         m.put("tumblr_gif", R.layout.list_item_tumblr_gif);
         return m;
