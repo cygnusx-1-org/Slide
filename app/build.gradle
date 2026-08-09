@@ -480,7 +480,7 @@ dependencies {
     implementation 'org.mp4parser:isoparser:1.9.56'
     implementation 'org.mp4parser:muxer:1.9.56'
 
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.21.3'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.22.1'
 
 /** Null checking **/
     // NullAway runs as an Error Prone plugin. See NULLAWAY.md for the rollout plan. Pin these
