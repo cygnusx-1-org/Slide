@@ -364,6 +364,15 @@ dependencies {
     implementation "com.atlassian.commonmark:commonmark-ext-gfm-strikethrough:$commonmarkVersion"
     implementation "com.atlassian.commonmark:commonmark-ext-gfm-tables:$commonmarkVersion"
     implementation 'com.github.Haptic-Apps:JReadability:bb291880a5'
+    // JReadability is a prebuilt 2021 jar pinning jsoup 1.9.2, and nothing else on the classpath
+    // requests jsoup — so there was no competing version for Gradle to resolve against and the
+    // 2016 release stood. That reached ReaderMode, which parses whatever page a link points at
+    // (CVE-2021-37714: crafted HTML makes the parser loop forever; the catch there cannot help).
+    // ReaderMode also imports org.jsoup directly, so this was a compile dependency arriving
+    // transitively either way. 1.23.1, NOT 1.14.2: the range 1.14.3-1.22.2 is affected by
+    // CVE-2026-71497, which 1.9.2 predates, so a smaller bump only trades one advisory for
+    // another. See docs/DEPENDENCY_AUDIT.md.
+    implementation 'org.jsoup:jsoup:1.23.1'
     implementation 'com.github.edgan:Android-RobotoTextView:d368c94b3c'
 
     // Markwon (Apache-2.0) — Continuum-style markdown renderer (issue #179).

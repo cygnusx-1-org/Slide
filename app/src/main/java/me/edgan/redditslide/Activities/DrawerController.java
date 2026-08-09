@@ -91,7 +91,13 @@ public class DrawerController {
         final LayoutInflater inflater = mainActivity.getLayoutInflater();
         final View header;
 
-        if (Authentication.isLoggedIn && Authentication.didOnline) {
+        // Read once and use for every decision below. didOnline is a mutable static an auth
+        // callback can flip mid-method, and only drawer_loggedin and drawer_loggedout carry the
+        // support and prof views the tail of this method requires; re-reading it there could ask
+        // drawer_offline for ids it does not have.
+        final boolean didOnline = Authentication.didOnline;
+
+        if (Authentication.isLoggedIn && didOnline) {
 
             header = inflater.inflate(R.layout.drawer_loggedin, drawerSubList, false);
             mainActivity.headerMain = header;
@@ -460,7 +466,7 @@ public class DrawerController {
                 new AsyncNotificationBadge(mainActivity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
 
-        } else if (Authentication.didOnline) {
+        } else if (didOnline) {
             header = inflater.inflate(R.layout.drawer_loggedout, drawerSubList, false);
             drawerSubList.addHeaderView(header, null, false);
             mainActivity.headerMain = header;
@@ -784,7 +790,7 @@ public class DrawerController {
                                 mainActivity.startActivity(i);
                             }
                         });
-        if (Authentication.didOnline) {
+        if (didOnline) {
             View support = header.requireViewById(R.id.support);
 
             support.setVisibility(View.GONE);

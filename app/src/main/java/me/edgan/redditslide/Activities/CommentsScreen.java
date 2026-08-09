@@ -163,7 +163,7 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
         multireddit = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_MULTIREDDIT));
         profile = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_PROFILE));
         currentPosts = new ArrayList<>();
-        if (multireddit != null) {
+        if (!multireddit.isEmpty()) {
             subredditPosts = new MultiredditPosts(multireddit, profile);
         } else {
             baseSubreddit = subreddit.toLowerCase(Locale.ENGLISH);
@@ -176,7 +176,7 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
         } else {
             OfflineSubreddit o =
                     OfflineSubreddit.getSubreddit(
-                            multireddit == null ? baseSubreddit : "multi_" + multireddit,
+                            multireddit.isEmpty() ? baseSubreddit : "multi_" + multireddit,
                             OfflineSubreddit.currentid,
                             !Authentication.didOnline,
                             CommentsScreen.this);
@@ -195,7 +195,7 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
         }
 
         if (currentPosts.isEmpty()
-                || currentPosts.size() < firstPage
+                || currentPosts.size() <= firstPage
                 || currentPosts.get(firstPage) == null
                 || firstPage < 0) {
             finish();
@@ -329,7 +329,7 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
             args.putString("subreddit", currentPosts.get(i).getSubredditName());
             args.putString(
                     "baseSubreddit",
-                    multireddit == null ? baseSubreddit : "multi_" + multireddit);
+                    multireddit.isEmpty() ? baseSubreddit : "multi_" + multireddit);
             f.setArguments(args);
             return f;
         }

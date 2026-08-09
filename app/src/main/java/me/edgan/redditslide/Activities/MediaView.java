@@ -803,7 +803,9 @@ public class MediaView extends BaseSaveActivity {
                             loader,
                             true, // closeIfNull
                             true, // autostart
-                            ((TextView) requireViewById(R.id.size)),
+                            // R.id.size is not in activity_media.xml; AsyncLoadGif takes it as
+                            // @Nullable, so this must stay findViewById
+                            ((TextView) findViewById(R.id.size)),
                             subreddit,
                             submissionTitle);
             // Show and attach speed button for GIFs (relevant for ExoVideoView)

@@ -113,8 +113,8 @@ public class MultiredditAdapter extends PaginatedListAdapter {
                                 i2.putExtra(
                                         CommentsScreen.EXTRA_MULTIREDDIT,
                                         dataSet.displayName());
-                                context.startActivityForResult(i2, 940);
                                 i2.putExtra("fullname", submission.getFullName());
+                                context.startActivityForResult(i2, 940);
                                 clicked = holder2.getBindingAdapterPosition();
 
                             } else {

@@ -104,7 +104,7 @@ public class ReaderMode extends BaseActivityAnim {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                if (url != null) {
+                if (!url.isEmpty()) {
                     Connection connection = Jsoup.connect(ReaderMode.this.url);
                     Document document = connection.get();
 
@@ -158,7 +158,7 @@ public class ReaderMode extends BaseActivityAnim {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        if (url != null) {
+        if (!url.isEmpty()) {
             inflater.inflate(R.menu.menu_reader, menu);
         }
 
