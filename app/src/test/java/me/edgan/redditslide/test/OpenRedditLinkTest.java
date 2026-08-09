@@ -54,6 +54,23 @@ public class OpenRedditLinkTest {
     }
 
     @Test
+    public void detectsRelativeMentionHrefs() {
+        // The relative hrefs MentionPostProcessor hands to routing for a mention that continues
+        // into a path (issue #356) must resolve to the destination the path names, not just the
+        // subreddit.
+        assertThat(
+                getType("/r/sysadmin/comments/1uvz7ns/telstra_australias_largest_telco/"),
+                is(RedditLinkType.SUBMISSION));
+        assertThat(
+                getType("/r/sysadmin/comments/1uvz7ns/slug/p28dgah/"),
+                is(RedditLinkType.COMMENT_PERMALINK));
+        assertThat(getType("/r/sysadmin/wiki/index"), is(RedditLinkType.WIKI));
+        assertThat(getType("/u/spez/comments/abc/slug/"), is(RedditLinkType.SUBMISSION));
+        assertThat(getType("/r/aa+bb"), is(RedditLinkType.SUBREDDIT));
+        assertThat(getType("/r/reddit.com"), is(RedditLinkType.SUBREDDIT));
+    }
+
+    @Test
     public void detectsHome() {
         assertThat(getType("https://www.reddit.com/"), is(RedditLinkType.HOME));
         assertThat(getType("np.reddit.com"), is(RedditLinkType.HOME));

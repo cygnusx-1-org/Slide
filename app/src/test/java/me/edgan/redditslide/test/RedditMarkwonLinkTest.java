@@ -60,6 +60,21 @@ public class RedditMarkwonLinkTest {
     }
 
     @Test
+    public void bareMentionWithPathLinksTheWholeReference() {
+        // Issue #356: the whole permalink is one link, so a tap past the subreddit name still
+        // opens the submission. LinkifyPlugin must not split or duplicate it.
+        String mention = "r/sysadmin/comments/1uvz7ns/telstra_australias_largest_telco/";
+        Spanned s = render("as reported in " + mention + " yesterday");
+        URLSpan[] spans = links(s);
+        assertEquals("mention should be linkified exactly once", 1, spans.length);
+        assertEquals("/" + mention, spans[0].getURL());
+        assertEquals(
+                "link should cover the whole reference",
+                mention,
+                s.subSequence(s.getSpanStart(spans[0]), s.getSpanEnd(spans[0])).toString());
+    }
+
+    @Test
     public void fencedCodeBlockStillRenders() {
         // Issue #179: the auto-added CorePlugin still renders fenced code as code-box text.
         Spanned s = render("```\ncode here\n```");
