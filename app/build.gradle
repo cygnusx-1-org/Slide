@@ -19,7 +19,7 @@ plugins {
     id 'com.gladed.androidgitversion' version '0.4.14'
     id 'com.github.ben-manes.versions' version '0.54.0'
     id 'com.github.breadmoirai.github-release' version '2.5.2'
-    id 'com.diffplug.spotless' version '8.8.0'
+    id 'com.diffplug.spotless' version '8.9.0'
     id 'io.github.takahirom.roborazzi' version '1.64.0'
     id 'net.ltgt.errorprone' version '5.1.0'
     id 'jacoco'
@@ -346,12 +346,16 @@ if (githubPropertiesFile.exists()) {
 dependencies {
 /** Flavors **/
     // For Google Sign-In
-    withGPlayImplementation 'com.google.android.gms:play-services-auth:20.6.0'
+    withGPlayImplementation 'com.google.android.gms:play-services-auth:21.6.0'
     // For the REST API Client
-    withGPlayImplementation 'com.google.http-client:google-http-client:2.1.0'
-    withGPlayImplementation 'com.google.api-client:google-api-client-android:2.7.1'
-    withGPlayImplementation 'com.google.api-client:google-api-client-gson:2.7.1'
-    withGPlayImplementation 'com.google.apis:google-api-services-drive:v3-rev20241206-2.0.0'
+    withGPlayImplementation 'com.google.http-client:google-http-client:2.2.0'
+    // google-api-client pins these two siblings at 2.0.0 and nothing contests them, so they
+    // would lag google-http-client by two minors. Declared here to keep the family in lockstep.
+    withGPlayImplementation 'com.google.http-client:google-http-client-gson:2.2.0'
+    withGPlayImplementation 'com.google.http-client:google-http-client-apache-v2:2.2.0'
+    withGPlayImplementation 'com.google.api-client:google-api-client-android:2.9.0'
+    withGPlayImplementation 'com.google.api-client:google-api-client-gson:2.9.0'
+    withGPlayImplementation 'com.google.apis:google-api-services-drive:v3-rev20260720-2.0.0'
 
 /** Custom **/
     implementation 'com.github.edgan:JRAW:40c5baef6b'
@@ -389,25 +393,29 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation 'androidx.browser:browser:1.10.0'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.core:core:1.18.0'
+    implementation 'androidx.core:core:1.19.0'
     implementation 'androidx.fragment:fragment:1.8.9'
     implementation 'androidx.media:media:1.8.0'
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
     implementation 'androidx.webkit:webkit:1.16.0'
-    implementation 'com.google.android.material:material:1.13.0'
+    implementation 'com.google.android.material:material:1.14.0'
     implementation "androidx.concurrent:concurrent-futures:1.3.0"
-    implementation "androidx.lifecycle:lifecycle-runtime:2.10.0"
+    implementation "androidx.lifecycle:lifecycle-runtime:2.11.0"
     implementation "androidx.databinding:databinding-runtime:9.2.1"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0"
 /** ExoPlayer **/
     // Application level media player
-    implementation "androidx.media3:media3-exoplayer:1.10.1"
-    implementation "androidx.media3:media3-ui:1.10.1"
-    implementation "androidx.media3:media3-common:1.10.1"
-    implementation("androidx.media3:media3-exoplayer-dash:1.10.1")
-    implementation "androidx.media3:media3-datasource-okhttp:1.10.1"
+    implementation "androidx.media3:media3-exoplayer:1.11.0"
+    implementation "androidx.media3:media3-ui:1.11.0"
+    implementation "androidx.media3:media3-common:1.11.0"
+    implementation("androidx.media3:media3-exoplayer-dash:1.11.0")
+    implementation "androidx.media3:media3-datasource-okhttp:1.11.0"
 
 /** Third-party **/
+    // JRAW and org.mp4parser request slf4j-api 1.7.13/1.8.0-beta4; nothing else contests
+    // it, so a 2018 beta ships. Declared here purely to lift it to the current 2.0.x line.
+    implementation 'org.slf4j:slf4j-api:2.0.18'
+
     // Good for debugging JRAW
     //implementation 'org.slf4j:slf4j-android:1.7.36'
 
@@ -417,7 +425,7 @@ dependencies {
 /**** Frontend (UI-related) ****/
 
     // Color picker (used by the in-app Draw screen)
-    implementation 'com.github.skydoves:colorpickerview:2.3.0'
+    implementation 'com.github.skydoves:colorpickerview:2.4.0'
 
     // Snackbar engagement for rating
     implementation 'com.github.ligi.snackengage:snackengage-core:0.30'
@@ -487,7 +495,12 @@ dependencies {
 
     // Read, write, and create MP4 files
     implementation 'org.mp4parser:isoparser:1.9.56'
-    implementation 'org.mp4parser:muxer:1.9.56'
+    // muxer's POM declares junit at compile scope (isoparser correctly uses provided), so
+    // JUnit 4.12 and hamcrest would otherwise ship in the APK. Neither mp4parser jar
+    // references org.junit, so excluding it is safe. See CVE-2020-15250.
+    implementation('org.mp4parser:muxer:1.9.56') {
+        exclude group: 'junit', module: 'junit'
+    }
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.22.1'
 
