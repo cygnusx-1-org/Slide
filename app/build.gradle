@@ -17,10 +17,10 @@ import java.util.Properties
 plugins {
     id 'com.android.application'
     id 'com.gladed.androidgitversion' version '0.4.14'
-    id 'com.github.ben-manes.versions' version '0.54.0'
+    id 'com.github.ben-manes.versions' version '0.61.0'
     id 'com.github.breadmoirai.github-release' version '2.5.2'
     id 'com.diffplug.spotless' version '8.9.0'
-    id 'io.github.takahirom.roborazzi' version '1.64.0'
+    id 'io.github.takahirom.roborazzi' version '1.71.0'
     id 'net.ltgt.errorprone' version '5.1.0'
     id 'jacoco'
 }
@@ -530,8 +530,8 @@ dependencies {
     // Roborazzi: render submission layouts at arbitrary smallest-width-dp configs (no emulator)
     // and diff them against committed golden PNGs. Driven by recordRoborazziWithGPlayDebug /
     // verifyRoborazziWithGPlayDebug / compareRoborazziWithGPlayDebug. See RoborazziLayoutTest.
-    testImplementation 'io.github.takahirom.roborazzi:roborazzi:1.64.0'
-    testImplementation 'io.github.takahirom.roborazzi:roborazzi-junit-rule:1.64.0'
+    testImplementation 'io.github.takahirom.roborazzi:roborazzi:1.71.0'
+    testImplementation 'io.github.takahirom.roborazzi:roborazzi-junit-rule:1.71.0'
 }
 
 spotless {
