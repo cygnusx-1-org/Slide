@@ -41,11 +41,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.BuildConfig;
 import me.edgan.redditslide.CaseInsensitiveArrayList;
@@ -60,7 +58,6 @@ import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.OAuthLoginHelper;
-import me.edgan.redditslide.util.PrefUtil;
 import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.http.RestResponse;
 import net.dean.jraw.http.oauth.Credentials;
@@ -867,22 +864,13 @@ public class Login extends BaseActivityAnim {
                     String refreshToken = Authentication.reddit.getOAuthData().getRefreshToken();
                     logV("Refresh token obtained: " + (refreshToken != null ? "yes" : "null"));
                     SharedPreferences.Editor editor = Authentication.authentication.edit();
-                    Set<String> accounts =
-                            PrefUtil.getMutableStringSet(
-                                    Authentication.authentication,
-                                    "accounts",
-                                    new HashSet<String>());
                     logV("Fetching logged-in account info...");
                     LoggedInAccount me = Authentication.reddit.me();
                     logV("Logged in as: " + me.getFullName());
-                    accounts.add(me.getFullName() + ":" + refreshToken);
                     Authentication.name = me.getFullName();
-                    editor.putStringSet("accounts", accounts);
-                    Set<String> tokens =
-                            PrefUtil.getMutableStringSet(
-                                    Authentication.authentication, "tokens", new HashSet<String>());
-                    tokens.add(refreshToken);
-                    editor.putStringSet("tokens", tokens);
+                    // Signing in again to an account already stored replaces its entry, rather
+                    // than adding a second one alongside the token it still held.
+                    Authentication.storeAccountToken(editor, me.getFullName(), refreshToken);
                     editor.putString("lasttoken", refreshToken);
                     editor.remove("backedCreds");
                     Reddit.appRestart.edit().remove("back").commit();

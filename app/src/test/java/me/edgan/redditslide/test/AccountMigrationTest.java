@@ -140,4 +140,28 @@ public class AccountMigrationTest {
 
         assertEquals(Collections.emptySet(), stored());
     }
+
+    @Test
+    public void bareNameIsLeftAloneWithoutARefreshToken() {
+        // JRAW can hand back a null refresh token; rewriting on that wrote "alice:null", an entry
+        // naming a token nothing can spend. The bare name is left for a later authentication.
+        Authentication.refresh = null;
+        Set<String> before = new HashSet<>(Collections.singletonList("alice"));
+        prefs.edit().putStringSet(KEY, new HashSet<>(before)).commit();
+
+        Authentication.migrateAccountToTokenForm("alice");
+
+        assertEquals(before, stored());
+    }
+
+    @Test
+    public void bareNameIsLeftAloneWithAnEmptyRefreshToken() {
+        Authentication.refresh = "";
+        Set<String> before = new HashSet<>(Collections.singletonList("alice"));
+        prefs.edit().putStringSet(KEY, new HashSet<>(before)).commit();
+
+        Authentication.migrateAccountToTokenForm("alice");
+
+        assertEquals(before, stored());
+    }
 }

@@ -2360,15 +2360,10 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (accounts.containsKey(profileName) && !accounts.get(profileName).isEmpty()) {
             token = accounts.get(profileName);
         } else {
-            ArrayList<String> tokens =
-                    new ArrayList<>(
-                            PrefUtil.getStringSet(Authentication.authentication,
-                                    "tokens", new HashSet<String>()));
-            int index = keys.indexOf(profileName);
-            if (keys.indexOf(profileName) > tokens.size()) {
-                index -= 1;
-            }
-            token = tokens.get(index);
+            final String legacy = Authentication.legacyTokenAt(keys.indexOf(profileName));
+            // An empty token leaves the client unauthenticated, which is what the callers already
+            // handle; the unchecked get this replaces threw instead.
+            token = legacy == null ? "" : legacy;
         }
         Authentication.doVerify(token, reddit, true, mContext);
         return reddit;

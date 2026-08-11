@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import me.edgan.redditslide.Adapters.SideArrayAdapter;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Constants;
@@ -278,21 +277,20 @@ public class DrawerController {
                                                 .setNegativeButton(
                                                         R.string.btn_delete,
                                                         (dialog2, which2) -> {
-                                                            Set<String> accounts2 = PrefUtil.getStringSet(Authentication.authentication, "accounts", new HashSet<>());
-                                                            Set<String> done = new HashSet<>();
-
-                                                            for (String s : accounts2) {
-                                                                if (!s.contains(accName)) {
-                                                                    done.add(s);
-                                                                }
-                                                            }
-
-                                                            Authentication.authentication
-                                                                    .edit()
-                                                                    .putStringSet("accounts", done)
-                                                                    .commit();
+                                                            Authentication.forgetAccount(accName);
+                                                            Authentication.clearWebViewCookies();
                                                             dialog2.dismiss();
                                                             accountList.removeView(t);
+
+                                                            // Drop the account from the in-memory
+                                                            // lists as well: the fallback below
+                                                            // indexes "tokens" by position in
+                                                            // keys, and forgetAccount has just
+                                                            // taken this account's token out of
+                                                            // it.
+                                                            accounts.remove(accName);
+                                                            keys.remove(accName);
+
                                                             if (accName.equalsIgnoreCase(Authentication.name)) {
                                                                 boolean d = false;
 
@@ -313,20 +311,23 @@ public class DrawerController {
                                                                                 .remove("backedCreds")
                                                                                 .commit();
                                                                         } else {
-                                                                            ArrayList<String>tokens = new ArrayList<>(Authentication.authentication
-                                                                                .getStringSet("tokens", new HashSet<>()));
+                                                                            final String legacy = Authentication.legacyTokenAt(keys.indexOf(s));
 
-                                                                            int index = keys.indexOf(s);
-
-                                                                            if (keys.indexOf(s) > tokens.size()) {
-                                                                                index -= 1;
+                                                                            if (legacy != null) {
+                                                                                Authentication.authentication
+                                                                                    .edit()
+                                                                                    .putString("lasttoken", legacy)
+                                                                                    .remove("backedCreds")
+                                                                                    .commit();
+                                                                            } else {
+                                                                                // No token to match this account to: end the session instead of leaving the
+                                                                                // previous account's cached credentials in place under the new name.
+                                                                                Authentication.authentication
+                                                                                    .edit()
+                                                                                    .remove("lasttoken")
+                                                                                    .remove("backedCreds")
+                                                                                    .commit();
                                                                             }
-
-                                                                            Authentication.authentication
-                                                                                .edit()
-                                                                                .putString("lasttoken", tokens.get(index))
-                                                                                .remove("backedCreds")
-                                                                                .commit();
                                                                         }
 
                                                                         Authentication.name = s;
@@ -347,10 +348,6 @@ public class DrawerController {
                                                                     UserSubscriptions.switchAccounts();
                                                                     Reddit.forceRestart(mainActivity, true);
                                                                 }
-
-                                                            } else {
-                                                                accounts.remove(accName);
-                                                                keys.remove(accName);
                                                             }
                                                         })
                                                 .setPositiveButton(R.string.btn_cancel, null)
@@ -374,12 +371,23 @@ public class DrawerController {
                                             .remove("backedCreds")
                                             .apply();
                                     } else {
-                                        ArrayList<String> tokens = new ArrayList<>(PrefUtil.getStringSet(Authentication.authentication, "tokens", new HashSet<String>()));
-                                        Authentication.authentication
-                                            .edit()
-                                            .putString("lasttoken", tokens.get(keys.indexOf(accName)))
-                                            .remove("backedCreds")
-                                            .apply();
+                                        final String legacy = Authentication.legacyTokenAt(keys.indexOf(accName));
+
+                                        if (legacy != null) {
+                                            Authentication.authentication
+                                                .edit()
+                                                .putString("lasttoken", legacy)
+                                                .remove("backedCreds")
+                                                .apply();
+                                        } else {
+                                            // No token to match this account to: end the session instead of leaving the
+                                            // previous account's cached credentials in place under the new name.
+                                            Authentication.authentication
+                                                .edit()
+                                                .remove("lasttoken")
+                                                .remove("backedCreds")
+                                                .apply();
+                                        }
                                     }
 
                                     Authentication.name = accName;
@@ -424,6 +432,11 @@ public class DrawerController {
                                         .remove("lasttoken")
                                         .remove("backedCreds")
                                         .apply();
+                                    // The stored accounts survive guest mode, but the session
+                                    // behind them must not: without this the shared WebView jar
+                                    // keeps the reddit.com cookies, and the in-app browser and
+                                    // wiki viewer stay signed in as the account we just left.
+                                    Authentication.clearWebViewCookies();
                                     UserSubscriptions.switchAccounts();
                                     Reddit.forceRestart(mainActivity, true);
                                 }
@@ -518,18 +531,18 @@ public class DrawerController {
                                             .setNegativeButton(
                                                     R.string.btn_delete,
                                                     (dialog2, which2) -> {
-                                                        Set<String> accounts2 = PrefUtil.getStringSet(Authentication.authentication, "accounts", new HashSet<>());
-                                                        Set<String> done = new HashSet<>();
-
-                                                        for (String s : accounts2) {
-                                                            if (!s.contains(accName)) {
-                                                                done.add(s);
-                                                            }
-                                                        }
-
-                                                        Authentication.authentication.edit().putStringSet("accounts", done).commit();
+                                                        Authentication.forgetAccount(accName);
+                                                        Authentication.clearWebViewCookies();
                                                         dialog2.dismiss();
                                                         accountList.removeView(t);
+
+                                                        // Drop the account from the in-memory
+                                                        // lists as well: the fallback below
+                                                        // indexes "tokens" by position in keys,
+                                                        // and forgetAccount has just taken this
+                                                        // account's token out of it.
+                                                        accounts.remove(accName);
+                                                        keys.remove(accName);
 
                                                         if (accName.equalsIgnoreCase(Authentication.name)) {
                                                             boolean d = false;
@@ -545,18 +558,29 @@ public class DrawerController {
                                                                                 .remove("backedCreds")
                                                                                 .commit();
                                                                     } else {
-                                                                        ArrayList<String>tokens = new ArrayList<>(Authentication.authentication
-                                                                            .getStringSet("tokens", new HashSet<>()));
-                                                                        Authentication.authentication
-                                                                            .edit()
-                                                                            .putString("lasttoken", tokens.get(keys.indexOf(s)))
-                                                                            .remove("backedCreds")
-                                                                            .commit();
+                                                                        final String legacy = Authentication.legacyTokenAt(keys.indexOf(s));
+
+                                                                        if (legacy != null) {
+                                                                            Authentication.authentication
+                                                                                .edit()
+                                                                                .putString("lasttoken", legacy)
+                                                                                .remove("backedCreds")
+                                                                                .commit();
+                                                                        } else {
+                                                                            // No token to match this account to: end the session instead of leaving the
+                                                                            // previous account's cached credentials in place under the new name.
+                                                                            Authentication.authentication
+                                                                                .edit()
+                                                                                .remove("lasttoken")
+                                                                                .remove("backedCreds")
+                                                                                .commit();
+                                                                        }
                                                                     }
 
                                                                     Authentication.name = s;
                                                                     UserSubscriptions.switchAccounts();
                                                                     Reddit.forceRestart(mainActivity, true);
+                                                                    break;
                                                                 }
                                                             }
 
@@ -574,9 +598,6 @@ public class DrawerController {
                                                                     mainActivity,
                                                                     true);
                                                             }
-                                                        } else {
-                                                            accounts.remove(accName);
-                                                            keys.remove(accName);
                                                         }
                                                     })
                                             .setPositiveButton(R.string.btn_cancel, null)
@@ -595,12 +616,23 @@ public class DrawerController {
                                             .remove("backedCreds")
                                             .commit();
                                     } else {
-                                        ArrayList<String> tokens = new ArrayList<>(PrefUtil.getStringSet(Authentication.authentication, "tokens", new HashSet<String>()));
-                                        Authentication.authentication
-                                            .edit()
-                                            .putString("lasttoken", tokens.get(keys.indexOf(accName)))
-                                            .remove("backedCreds")
-                                            .commit();
+                                        final String legacy = Authentication.legacyTokenAt(keys.indexOf(accName));
+
+                                        if (legacy != null) {
+                                            Authentication.authentication
+                                                .edit()
+                                                .putString("lasttoken", legacy)
+                                                .remove("backedCreds")
+                                                .commit();
+                                        } else {
+                                            // No token to match this account to: end the session instead of leaving the
+                                            // previous account's cached credentials in place under the new name.
+                                            Authentication.authentication
+                                                .edit()
+                                                .remove("lasttoken")
+                                                .remove("backedCreds")
+                                                .commit();
+                                        }
                                     }
 
                                     // Removing this will break Guest mode

@@ -13,8 +13,6 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import java.util.HashSet;
-import java.util.Set;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.R;
@@ -23,7 +21,6 @@ import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
-import me.edgan.redditslide.util.PrefUtil;
 import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.http.oauth.Credentials;
 import net.dean.jraw.http.oauth.OAuthData;
@@ -155,29 +152,11 @@ public class Reauthenticate extends BaseActivityAnim {
                     Authentication.isLoggedIn = true;
                     String refreshToken = Authentication.reddit.getOAuthData().getRefreshToken();
                     SharedPreferences.Editor editor = Authentication.authentication.edit();
-                    Set<String> accounts =
-                            PrefUtil.getMutableStringSet(
-                                    Authentication.authentication,
-                                    "accounts",
-                                    new HashSet<String>());
                     LoggedInAccount me = Authentication.reddit.me();
-                    String toRemove = "";
-                    for (String s : accounts) {
-                        if (s.contains(me.getFullName())) {
-                            toRemove = s;
-                        }
-                    }
-
-                    if (!toRemove.isEmpty()) accounts.remove(toRemove);
-
-                    accounts.add(me.getFullName() + ":" + refreshToken);
                     Authentication.name = me.getFullName();
-                    editor.putStringSet("accounts", accounts);
-                    Set<String> tokens =
-                            PrefUtil.getMutableStringSet(
-                                    Authentication.authentication, "tokens", new HashSet<String>());
-                    tokens.add(refreshToken);
-                    editor.putStringSet("tokens", tokens);
+                    // Replaces the account's previous entry and drops the refresh token it
+                    // carried, which this reauth supersedes.
+                    Authentication.storeAccountToken(editor, me.getFullName(), refreshToken);
                     editor.putString("lasttoken", refreshToken);
                     editor.remove("backedCreds");
                     Reddit.appRestart.edit().remove("back").apply();

@@ -5,11 +5,15 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.webkit.CookieManager;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executor;
@@ -86,12 +90,240 @@ public class Authentication {
      * on disk, which matters because some callers run on the main thread.
      */
     public static void migrateAccountToTokenForm(@Nullable String accountName) {
+        // Read the token once: it is the refresh token JRAW handed back, which can be null, and
+        // concatenating it regardless wrote "name:null" — an entry that names a token nothing can
+        // spend, which no later sign-in matches and no drawer row can switch to. The bare name is
+        // still usable through the index lookup, and the next authentication holding a real token
+        // migrates it properly.
+        final String token = refresh;
+        if (token == null || token.isEmpty()) {
+            return;
+        }
+
         final Set<String> accounts =
                 PrefUtil.getMutableStringSet(authentication, "accounts", new HashSet<String>());
         if (accounts.contains(accountName)) {
             accounts.remove(accountName);
-            accounts.add(accountName + ":" + refresh);
+            accounts.add(accountName + ":" + token);
             authentication.edit().putStringSet("accounts", accounts).apply();
+        }
+    }
+
+    /**
+     * The refresh token carried by an entry of the "accounts" set, or null for an entry stored in
+     * the older bare-name form, which has none.
+     */
+    @Nullable
+    public static String tokenOf(String accountEntry) {
+        final int split = accountEntry.indexOf(':');
+        return split < 0 ? null : accountEntry.substring(split + 1);
+    }
+
+    /**
+     * Whether an entry of the "accounts" set belongs to {@code accountName}. An entry is
+     * "name:token", or a bare name on older installs.
+     *
+     * <p>Every site used to test this with {@code contains}, which answers true for any substring:
+     * a stored "bobby:token" matched the name "bob", so signing in or removing an account could
+     * replace or delete a different one. Only the name half of the entry is compared, and case is
+     * ignored — Reddit names are unique regardless of case, and the drawer already decides which
+     * row is the current account with {@code equalsIgnoreCase}, so matching exactly here would let
+     * a name that came back in different case than it was stored in miss its own entry and be
+     * stored a second time.
+     */
+    public static boolean isEntryFor(String accountEntry, String accountName) {
+        final int split = accountEntry.indexOf(':');
+        final String storedName = split < 0 ? accountEntry : accountEntry.substring(0, split);
+        return storedName.equalsIgnoreCase(accountName);
+    }
+
+    /**
+     * Drops every token from {@code tokens} that has no matching entry in {@code accounts}.
+     *
+     * <p>"tokens" is read in exactly one way — the index-based lookup in {@code DrawerController}
+     * and {@code CommentAdapter} — and that lookup only runs for an entry stored in the older
+     * bare-name form, which carries no token of its own. Once every entry carries its token,
+     * nothing can reach the rest: they are stored credentials no code path can spend, and one more
+     * copy for the settings backup to export. With no accounts left at all, that is all of them.
+     *
+     * <p>While even one bare-name entry survives, those unnamed tokens are exactly the pool its
+     * lookup draws from, so nothing is pruned then — deleting one would lock that account out for
+     * good. {@code lasttoken} is kept regardless, being the session in use. Note this only ever
+     * removes: a token the caller has already dropped cannot come back through here.
+     */
+    private static boolean pruneOrphanTokens(Set<String> accounts, Set<String> tokens) {
+        final Set<String> named = new HashSet<>();
+
+        for (String entry : accounts) {
+            final String token = tokenOf(entry);
+            if (token == null || token.isEmpty()) {
+                return false;
+            }
+            named.add(token);
+        }
+
+        named.add(PrefUtil.getString(authentication, "lasttoken", ""));
+        return tokens.retainAll(named);
+    }
+
+    /**
+     * The refresh token an entry in the older bare-name form has to be matched to by position: it
+     * names no token of its own, so the drawer and {@code CommentAdapter} index "tokens" by the
+     * account's place in the name list.
+     *
+     * <p>Both sets are unordered, so that correspondence has always been a guess — but it used to
+     * be an unchecked one. Removing an account now takes its token out of "tokens" with it, which
+     * can leave the list shorter than the position asked for, and {@code get} on a list that short
+     * throws. The bounds test the call sites carried ({@code index > tokens.size()}, then
+     * {@code index -= 1}) never prevented that: it does not fire at {@code index == size}, and
+     * where it does fire the decremented index is still past the end.
+     */
+    @Nullable
+    public static String legacyTokenAt(int index) {
+        if (index < 0) {
+            return null;
+        }
+
+        final List<String> tokens =
+                new ArrayList<>(
+                        PrefUtil.getStringSet(authentication, "tokens", new HashSet<String>()));
+        return index < tokens.size() ? tokens.get(index) : null;
+    }
+
+    /**
+     * Prunes the stored sets where they sit, writing only when something actually goes — so the
+     * reauth paths that call this on every refresh cost a read and nothing else the rest of the
+     * time.
+     *
+     * <p>{@link #forgetAccount} and {@link #storeAccountToken} prune as they go, which cleans a
+     * profile the moment an account is added or removed. This is what reaches the profile that
+     * does neither, and in particular one restored from a backup: restore rewrites the preference
+     * file wholesale rather than going through either path, so a backup taken before any of this
+     * existed hands its orphans straight back.
+     */
+    public static synchronized void pruneOrphanTokens() {
+        final Set<String> accounts =
+                PrefUtil.getStringSet(authentication, "accounts", new HashSet<String>());
+        final Set<String> tokens =
+                PrefUtil.getMutableStringSet(authentication, "tokens", new HashSet<String>());
+
+        if (pruneOrphanTokens(accounts, tokens)) {
+            authentication.edit().putStringSet("tokens", tokens).apply();
+        }
+    }
+
+    /**
+     * Records {@code accountName}'s refresh token, replacing anything already stored for that
+     * account: its "accounts" entry, and the token that entry carried.
+     *
+     * <p>Login used to only add, so signing in again to an account already stored appended a second
+     * "name:token" entry and left both tokens in "tokens" — a duplicate the drawer's name-keyed map
+     * then collapsed to whichever entry it saw last. Reauthenticate replaced the entry but likewise
+     * kept the superseded token. Both are stored credentials for an account that has moved on.
+     *
+     * <p>Every matching entry goes, not just one, so a duplicate an earlier login left behind is
+     * cleaned up on the next sign-in. Both sets are put into the caller's {@code editor} rather
+     * than written here, so they land in the caller's single commit alongside "lasttoken".
+     *
+     * <p>Both values come straight off JRAW — the account name from {@link
+     * LoggedInAccount#getFullName()}, the token from the exchange — and either can be null when
+     * that response was not what it should have been. Neither set is touched then: the callers
+     * used to store the concatenation regardless, which put a "null:token" entry in the store that
+     * no later sign-in could match and no drawer row could switch to.
+     */
+    public static synchronized void storeAccountToken(
+            SharedPreferences.Editor editor,
+            @Nullable String accountName,
+            @Nullable String refreshToken) {
+        if (accountName == null || refreshToken == null) {
+            LogUtil.e("Not storing account credentials: name " + accountName
+                    + ", refresh token " + (refreshToken == null ? "missing" : "present"));
+            return;
+        }
+
+        final Set<String> accounts =
+                PrefUtil.getMutableStringSet(authentication, "accounts", new HashSet<String>());
+        final Set<String> tokens =
+                PrefUtil.getMutableStringSet(authentication, "tokens", new HashSet<String>());
+
+        for (Iterator<String> it = accounts.iterator(); it.hasNext(); ) {
+            final String entry = it.next();
+            if (isEntryFor(entry, accountName)) {
+                it.remove();
+                final String superseded = tokenOf(entry);
+                if (superseded != null) {
+                    tokens.remove(superseded);
+                }
+            }
+        }
+
+        accounts.add(accountName + ":" + refreshToken);
+        tokens.add(refreshToken);
+        pruneOrphanTokens(accounts, tokens);
+
+        editor.putStringSet("accounts", accounts).putStringSet("tokens", tokens);
+    }
+
+    /**
+     * Forgets a stored account: drops its entry from the "accounts" set and, with it, its refresh
+     * token from the parallel "tokens" set.
+     *
+     * <p>Account removal used to prune "accounts" alone, which left the removed account's refresh
+     * token sitting in "tokens" — still a live credential, and still reachable through the
+     * index-based fallback the drawer uses for entries stored in the older bare-name form. Both
+     * writes land in one {@code commit()}, because every caller restarts the process immediately
+     * afterwards.
+     *
+     * <p>Entries are matched with {@link #isEntryFor}, so removing "bob" no longer takes "bobby"
+     * with it. Tokens left over from before this pruning existed go too, under the conditions
+     * {@link #pruneOrphanTokens} describes.
+     */
+    public static synchronized void forgetAccount(String accountName) {
+        final Set<String> tokens =
+                PrefUtil.getMutableStringSet(authentication, "tokens", new HashSet<String>());
+        final Set<String> kept = new HashSet<>();
+
+        for (String s : PrefUtil.getStringSet(authentication, "accounts", new HashSet<String>())) {
+            if (isEntryFor(s, accountName)) {
+                final String token = tokenOf(s);
+                if (token != null) {
+                    tokens.remove(token);
+                }
+            } else {
+                kept.add(s);
+            }
+        }
+
+        pruneOrphanTokens(kept, tokens);
+
+        authentication
+                .edit()
+                .putStringSet("accounts", kept)
+                .putStringSet("tokens", tokens)
+                .commit();
+    }
+
+    /**
+     * Empties the WebView cookie jar, which is shared app-wide (the login flow, the in-app browser
+     * and the wiki viewer all use the one {@link CookieManager}).
+     *
+     * <p>Signing out only ever dropped the stored tokens, so the jar kept the reddit.com session
+     * cookies of the account that had just been signed out of — enough for any of those WebViews to
+     * still be logged in as them. Login and Reauthenticate already clear the jar on the way in;
+     * this is the matching clear on the way out.
+     */
+    public static void clearWebViewCookies() {
+        // getInstance() loads the WebView provider, and throws when there is not a usable one —
+        // the package being updated out from under the process, or disabled entirely. The screens
+        // that already clear the jar are WebView screens, so a failure there is fatal anyway; this
+        // runs on sign-out, which otherwise never touches a WebView, and must not take the account
+        // switch down with it. A jar that could not be opened has no cookies to leak.
+        try {
+            final CookieManager cookieManager = CookieManager.getInstance();
+            cookieManager.removeAllCookies(null);
+            cookieManager.flush();
+        } catch (Exception e) {
+            LogUtil.e(e, "Could not clear the WebView cookie jar");
         }
     }
 
@@ -314,6 +546,9 @@ public class Authentication {
                                 }
                                 Authentication.isLoggedIn = true;
                             }
+                            // A refresh just proved which token this account really uses; drop any
+                            // the account list no longer claims.
+                            pruneOrphanTokens();
                             Log.v(LogUtil.getTag(), "AUTHENTICATED");
                             result = client.isAuthenticated();
                         } catch (Exception e) {
@@ -545,6 +780,11 @@ public class Authentication {
                         }
 
                         Authentication.isLoggedIn = true;
+
+                        // Same reconcile as the resume-time refresh, on the cold-start path.
+                        // Gated on !single because the per-account client CommentAdapter builds
+                        // refreshes somebody else's token, not the session's.
+                        pruneOrphanTokens();
 
                         UserSubscriptions.doCachedModSubs();
                     }
