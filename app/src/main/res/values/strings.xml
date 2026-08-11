@@ -533,6 +533,10 @@
     <string name="err_backup_failed_msg">There was an error creating the backup. Please try again.</string>
     <string name="err_not_valid_backup">Not a valid Slide backup file</string>
     <string name="err_not_valid_backup_msg">The selected file is not a valid Slide backup file</string>
+    <string name="drive_authorization_failed">Google Drive Authorization Failed</string>
+    <string name="drive_authorization_failed_msg">Slide could not get access to its private Google Drive folder. Please try again.</string>
+    <string name="drive_authorization_denied">Google Drive Access Needed</string>
+    <string name="drive_authorization_denied_msg">Slide needs access to its private Google Drive folder to back up or restore your settings.</string>
     <string name="set_storage_location">Try setting a storage location in General settings.</string>
 
     <!-- Vote -->

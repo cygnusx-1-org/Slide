@@ -1,25 +1,27 @@
 package me.edgan.redditslide.ui.settings;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.util.Log;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.identity.AuthorizationClient;
+import com.google.android.gms.auth.api.identity.AuthorizationRequest;
+import com.google.android.gms.auth.api.identity.AuthorizationResult;
+import com.google.android.gms.auth.api.identity.ClearTokenRequest;
+import com.google.android.gms.auth.api.identity.Identity;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.Scope;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.http.ByteArrayContent;
+import com.google.api.client.http.HttpResponseException;
+import com.google.api.client.http.HttpStatusCodes;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
@@ -59,13 +61,22 @@ public class SettingsBackup extends BaseActivityAnim {
     private static final String TAG = "SettingsBackup";
 
     // Request codes
-    private static final int RC_SIGN_IN = 100;
     private static final int RC_AUTHORIZATION = 101;
     private static final int RC_OPEN_DOCUMENT = 102; // used for local restore via SAF
     private static final int RC_CREATE_DOCUMENT = 103; // used for local backup via SAF
 
-    // Google sign-in client
-    private GoogleSignInClient mGoogleSignInClient;
+    // Drive operations that can be deferred until authorization completes
+    private static final int OP_NONE = 0;
+    private static final int OP_BACKUP = 1;
+    private static final int OP_RESTORE = 2;
+
+    // Google Drive scope authorization. Slide never signs a user in with Google -- Reddit OAuth
+    // does that -- it only asks for access to its own private Drive folder.
+    private AuthorizationClient mAuthorizationClient;
+    private AuthorizationRequest mAuthorizationRequest;
+
+    // Access token backing mDriveService, kept so it can be invalidated when Drive rejects it
+    private String mAccessToken;
 
     // Google Drive service
     private Drive mDriveService;
@@ -81,9 +92,11 @@ public class SettingsBackup extends BaseActivityAnim {
 
     private HttpTransport HTTP_TRANSPORT;
 
-    // Flags to track whether user wanted to do certain actions after sign-in
-    private boolean backupRequestedAfterSignIn = false;
-    private boolean restoreRequestedAfterSignIn = false;
+    // The Drive operation waiting on authorization, one of the OP_ constants
+    private int pendingOperation = OP_NONE;
+
+    // Guards against looping when a freshly issued access token is also rejected
+    private boolean reauthorizeRetried = false;
 
     // We’ll store the final URI of the newly created local backup file so we can offer to "View" it
     private Uri localBackupFileUri = null;
@@ -99,61 +112,48 @@ public class SettingsBackup extends BaseActivityAnim {
 
         setupAppBar(R.id.toolbar, R.string.settings_title_backup, true, true);
 
-        // Initialize Google sign-in
-        initializeGoogleSignIn();
+        // Initialize Google Drive scope authorization
+        initializeAuthorization();
 
         // Setup UI elements and listeners
         setupUI();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // Check if already signed in
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        if (account != null && mDriveService == null) {
-            Log.d(TAG, "Already signed in, initializing Drive service.");
-            initializeDriveService(account);
-        } else {
-            Log.d(TAG, "Not signed in or service is already initialized.");
-        }
-    }
-
-    /** Initialize Google sign-in options and client. */
-    private void initializeGoogleSignIn() {
-        Log.d(TAG, "Initializing Google sign-in options");
-        GoogleSignInOptions gso =
-                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestScopes(
-                                new Scope(DriveScopes.DRIVE_FILE),
-                                new Scope(DriveScopes.DRIVE_APPDATA))
-                        .requestEmail()
+    /**
+     * Build the Drive authorization client and the scope request it runs. Only DRIVE_APPDATA is
+     * requested: every Drive call below is scoped to appDataFolder, so the broader DRIVE_FILE
+     * consent would go unused.
+     */
+    private void initializeAuthorization() {
+        Log.d(TAG, "Initializing Google Drive authorization client");
+        mAuthorizationClient = Identity.getAuthorizationClient(this);
+        mAuthorizationRequest =
+                AuthorizationRequest.builder()
+                        .setRequestedScopes(
+                                Collections.singletonList(new Scope(DriveScopes.DRIVE_APPDATA)))
                         .build();
-
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
     /**
-     * Initialize the Google Drive service with the signed-in account.
+     * Initialize the Google Drive service with an authorized access token.
      *
-     * @param account The GoogleSignInAccount obtained after sign-in.
+     * @param accessToken The bearer token obtained from the AuthorizationResult.
      */
-    private void initializeDriveService(GoogleSignInAccount account) {
-        Log.d(TAG, "Initializing Drive service for account: " + account.getEmail());
-        GoogleAccountCredential credential =
-                GoogleAccountCredential.usingOAuth2(
-                        this, Collections.singleton(DriveScopes.DRIVE_APPDATA));
-        credential.setSelectedAccount(account.getAccount());
-
+    private void initializeDriveService(String accessToken) {
         try {
             mDriveService =
-                    new Drive.Builder(HTTP_TRANSPORT, GsonFactory.getDefaultInstance(), credential)
+                    new Drive.Builder(
+                                    HTTP_TRANSPORT,
+                                    GsonFactory.getDefaultInstance(),
+                                    request ->
+                                            request.getHeaders()
+                                                    .setAuthorization("Bearer " + accessToken))
                             .setApplicationName(getString(R.string.app_name))
                             .build();
             Log.d(TAG, "Drive service initialized successfully.");
         } catch (Exception e) {
             Log.e(TAG, "Error initializing Drive service", e);
-            showErrorDialog(R.string.err_general, R.string.err_general);
+            mDriveService = null;
         }
     }
 
@@ -173,25 +173,13 @@ public class SettingsBackup extends BaseActivityAnim {
     /** Handle the Backup-to-Google-Drive button click */
     private void handleBackup() {
         Log.d(TAG, "handleBackup() called.");
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        if (account == null) {
-            Log.d(TAG, "User not signed in, requesting sign in before backup.");
-            backupRequestedAfterSignIn = true;
-            requestSignIn();
-            return;
-        }
-
-        if (mDriveService == null) {
-            initializeDriveService(account);
-        }
-
         showThemedDialog(
                 new AlertDialog.Builder(this)
                         .setTitle(R.string.general_confirm)
                         .setMessage(R.string.backup_confirm)
                         .setPositiveButton(
                                 R.string.btn_ok,
-                                (dialog, whichButton) -> new BackupToDriveAsyncTask().execute())
+                                (dialog, whichButton) -> startDriveOperation(OP_BACKUP))
                         .setNegativeButton(R.string.btn_no, null)
                         .setCancelable(false));
     }
@@ -199,25 +187,13 @@ public class SettingsBackup extends BaseActivityAnim {
     /** Handle the Restore-from-Google-Drive button click */
     private void handleRestore() {
         Log.d(TAG, "handleRestore() called.");
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        if (account == null) {
-            Log.d(TAG, "User not signed in, requesting sign in before restore.");
-            restoreRequestedAfterSignIn = true;
-            requestSignIn();
-            return;
-        }
-
-        if (mDriveService == null) {
-            initializeDriveService(account);
-        }
-
         showThemedDialog(
                 new AlertDialog.Builder(this)
                         .setTitle(R.string.general_confirm)
                         .setMessage(R.string.backup_restore_confirm)
                         .setPositiveButton(
                                 R.string.btn_ok,
-                                (dialog, whichButton) -> new RestoreFromDriveAsyncTask().execute())
+                                (dialog, whichButton) -> startDriveOperation(OP_RESTORE))
                         .setNegativeButton(R.string.btn_no, null)
                         .setCancelable(false));
     }
@@ -275,15 +251,134 @@ public class SettingsBackup extends BaseActivityAnim {
                 RC_OPEN_DOCUMENT);
     }
 
-    /** Request Google sign-in if needed. */
-    private void requestSignIn() {
-        Log.d(TAG, "requestSignIn() - launching Google sign-in intent.");
-        startActivityForResult(mGoogleSignInClient.getSignInIntent(), RC_SIGN_IN);
+    /**
+     * Remember the requested Drive operation and authorize before running it. There is no
+     * "last authorized account" to query, so authorize() is both the "do we already have access?"
+     * check and the consent launch: an existing grant resolves silently with a token, otherwise the
+     * result carries a PendingIntent to show the consent sheet.
+     */
+    private void startDriveOperation(int operation) {
+        pendingOperation = operation;
+        reauthorizeRetried = false;
+        requestAuthorization();
+    }
+
+    /** Ask for the Drive scope, resuming at onAuthorized() once a token is available. */
+    private void requestAuthorization() {
+        Log.d(TAG, "requestAuthorization() - authorizing Google Drive scope.");
+        mAuthorizationClient
+                .authorize(mAuthorizationRequest)
+                .addOnSuccessListener(
+                        this,
+                        result -> {
+                            if (result.hasResolution()) {
+                                launchAuthorizationConsent(result.getPendingIntent());
+                            } else {
+                                Log.d(TAG, "Authorization resolved silently.");
+                                onAuthorized(result);
+                            }
+                        })
+                .addOnFailureListener(
+                        this,
+                        e -> {
+                            Log.e(TAG, "Authorization request failed", e);
+                            failAuthorization();
+                        });
+    }
+
+    /** Show the consent sheet; its outcome arrives in onActivityResult under RC_AUTHORIZATION. */
+    private void launchAuthorizationConsent(PendingIntent pendingIntent) {
+        if (pendingIntent == null) {
+            Log.e(TAG, "Authorization needs resolution but supplied no PendingIntent.");
+            failAuthorization();
+            return;
+        }
+
+        try {
+            Log.d(TAG, "Launching Google Drive authorization consent.");
+            startIntentSenderForResult(
+                    pendingIntent.getIntentSender(), RC_AUTHORIZATION, null, 0, 0, 0, null);
+        } catch (IntentSender.SendIntentException e) {
+            Log.e(TAG, "Could not launch authorization consent", e);
+            failAuthorization();
+        }
     }
 
     /**
-     * Merged onActivityResult to handle: - Google sign-in - Google authorization - Local file open
-     * via SAF
+     * The single continuation point once a Drive access token is in hand, whether it came back
+     * silently or from the consent sheet. Runs whatever operation was waiting on it.
+     */
+    private void onAuthorized(AuthorizationResult result) {
+        String accessToken = result.getAccessToken();
+        if (accessToken == null) {
+            Log.e(TAG, "Authorization succeeded but returned no access token.");
+            failAuthorization();
+            return;
+        }
+
+        Log.d(TAG, "Authorized for scopes: " + result.getGrantedScopes());
+        mAccessToken = accessToken;
+        initializeDriveService(accessToken);
+        if (mDriveService == null) {
+            failAuthorization();
+            return;
+        }
+
+        int operation = pendingOperation;
+        pendingOperation = OP_NONE;
+
+        switch (operation) {
+            case OP_BACKUP:
+                new BackupToDriveAsyncTask().execute();
+                break;
+            case OP_RESTORE:
+                new RestoreFromDriveAsyncTask().execute();
+                break;
+            default:
+                Log.d(TAG, "Authorized with no operation pending.");
+                break;
+        }
+    }
+
+    /** Drop any deferred operation and tell the user authorization did not complete. */
+    private void failAuthorization() {
+        pendingOperation = OP_NONE;
+        showErrorDialog(
+                R.string.drive_authorization_failed, R.string.drive_authorization_failed_msg);
+    }
+
+    /**
+     * Discard the rejected access token and authorize again so the operation can run once more.
+     * Access tokens last about an hour, so a screen left open can outlive one.
+     *
+     * @return true if a retry was started, false if a retry already happened.
+     */
+    private boolean reauthorizeAndRetry(int operation) {
+        if (reauthorizeRetried) {
+            Log.w(TAG, "Drive rejected the access token again after reauthorizing; giving up.");
+            return false;
+        }
+
+        Log.d(TAG, "Drive rejected the access token; reauthorizing and retrying.");
+        reauthorizeRetried = true;
+        pendingOperation = operation;
+
+        String staleToken = mAccessToken;
+        mAccessToken = null;
+        if (staleToken == null) {
+            requestAuthorization();
+            return true;
+        }
+
+        // Without clearing it, authorize() can hand back the same cached, expired token.
+        mAuthorizationClient
+                .clearToken(ClearTokenRequest.builder().setToken(staleToken).build())
+                .addOnCompleteListener(this, task -> requestAuthorization());
+        return true;
+    }
+
+    /**
+     * Merged onActivityResult to handle: - Google Drive authorization - Local file open via SAF
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -291,16 +386,8 @@ public class SettingsBackup extends BaseActivityAnim {
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
-            case RC_SIGN_IN:
-                handleSignInResult(data);
-                break;
             case RC_AUTHORIZATION:
-                if (resultCode == Activity.RESULT_OK) {
-                    Log.d(TAG, "RC_AUTHORIZATION: user granted authorization. Retrying if needed.");
-                    // Retry last operation if needed
-                } else {
-                    Log.w(TAG, "RC_AUTHORIZATION: user denied or canceled authorization.");
-                }
+                handleAuthorizationResult(resultCode, data);
                 break;
             case RC_OPEN_DOCUMENT:
                 // SAF file picker result for local restore
@@ -316,37 +403,43 @@ public class SettingsBackup extends BaseActivityAnim {
         }
     }
 
-    /** Handle the result of the Google sign-in intent */
-    private void handleSignInResult(Intent data) {
-        Log.d(TAG, "handleSignInResult() called.");
-        Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-        task.addOnCompleteListener(
-                this,
-                new OnCompleteListener<GoogleSignInAccount>() {
-                    @Override
-                    public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
-                        try {
-                            GoogleSignInAccount account = task.getResult(Exception.class);
-                            if (account != null) {
-                                Log.d(TAG, "Sign-in successful, email: " + account.getEmail());
-                                initializeDriveService(account);
+    /** Handle the consent-sheet result and resume the operation that was waiting on it. */
+    private void handleAuthorizationResult(int resultCode, Intent data) {
+        Log.d(TAG, "handleAuthorizationResult() called, resultCode=" + resultCode);
+        if (data == null) {
+            Log.w(TAG, "RC_AUTHORIZATION: no result data, treating as canceled.");
+            denyAuthorization();
+            return;
+        }
 
-                                // If we had requested a backup or restore after sign-in, proceed
-                                // now
-                                if (backupRequestedAfterSignIn) {
-                                    backupRequestedAfterSignIn = false;
-                                    new BackupToDriveAsyncTask().execute();
-                                } else if (restoreRequestedAfterSignIn) {
-                                    restoreRequestedAfterSignIn = false;
-                                    new RestoreFromDriveAsyncTask().execute();
-                                }
-                            }
-                        } catch (Exception e) {
-                            Log.e(TAG, "Sign-in failed", e);
-                            showErrorDialog(R.string.sign_in_failed, R.string.sign_in_failed_msg);
-                        }
-                    }
-                });
+        // Parse the result even when resultCode is not RESULT_OK. GMS reports a failed
+        // authorization as a canceled resolution, so the status carried by the ApiException is the
+        // only thing that separates a user backing out from a configuration failure.
+        try {
+            onAuthorized(mAuthorizationClient.getAuthorizationResultFromIntent(data));
+        } catch (ApiException e) {
+            Log.e(
+                    TAG,
+                    "Authorization failed with status "
+                            + e.getStatusCode()
+                            + " ("
+                            + CommonStatusCodes.getStatusCodeString(e.getStatusCode())
+                            + "): "
+                            + e.getStatus(),
+                    e);
+            if (e.getStatusCode() == CommonStatusCodes.CANCELED) {
+                denyAuthorization();
+            } else {
+                failAuthorization();
+            }
+        }
+    }
+
+    /** The user backed out of the consent flow rather than granting access. */
+    private void denyAuthorization() {
+        pendingOperation = OP_NONE;
+        showErrorDialog(
+                R.string.drive_authorization_denied, R.string.drive_authorization_denied_msg);
     }
 
     /** SAF create document result for local backup. */
@@ -602,6 +695,9 @@ public class SettingsBackup extends BaseActivityAnim {
     /** Asynchronous task to upload single-file backup to Google Drive's appDataFolder. */
     private class BackupToDriveAsyncTask extends AsyncTask<Void, Void, Boolean> {
 
+        // Set when Drive rejected the access token, so onPostExecute can reauthorize
+        private boolean tokenRejected = false;
+
         @Override
         protected void onPreExecute() {
             Log.d(TAG, "BackupToDriveAsyncTask: started");
@@ -695,12 +791,14 @@ public class SettingsBackup extends BaseActivityAnim {
                     mDriveService.files().update(fileId, null, contentStream).execute();
                     Log.d(TAG, "Updated existing backup file on Drive: " + DRIVE_BACKUP_FILENAME);
                 }
-            } catch (UserRecoverableAuthIOException urae) {
-                Log.w(
-                        TAG,
-                        "UserRecoverableAuthIOException while uploading single backup. Requesting"
-                                + " auth again.");
-                startActivityForResult(urae.getIntent(), RC_AUTHORIZATION);
+            } catch (HttpResponseException e) {
+                if (e.getStatusCode() == HttpStatusCodes.STATUS_CODE_UNAUTHORIZED) {
+                    Log.w(TAG, "Drive rejected the access token while uploading the backup.");
+                    tokenRejected = true;
+                    return false;
+                }
+                Log.e(TAG, "Error uploading single-file backup to Drive", e);
+                errors++;
                 return false;
             } catch (IOException e) {
                 Log.e(TAG, "Error uploading single-file backup to Drive", e);
@@ -714,6 +812,9 @@ public class SettingsBackup extends BaseActivityAnim {
         protected void onPostExecute(Boolean success) {
             if (progress != null) {
                 progress.dismiss();
+            }
+            if (tokenRejected && reauthorizeAndRetry(OP_BACKUP)) {
+                return;
             }
             if (success) {
                 showThemedDialog(
@@ -749,6 +850,9 @@ public class SettingsBackup extends BaseActivityAnim {
      * Asynchronous task to download and restore the single "shared_prefs_backup.txt" from Drive.
      */
     private class RestoreFromDriveAsyncTask extends AsyncTask<Void, Void, Boolean> {
+
+        // Set when Drive rejected the access token, so onPostExecute can reauthorize
+        private boolean tokenRejected = false;
 
         @Override
         protected void onPreExecute() {
@@ -803,12 +907,14 @@ public class SettingsBackup extends BaseActivityAnim {
                 // Parse the single-file backup
                 return restoreSharedPrefsFromString(data);
 
-            } catch (UserRecoverableAuthIOException urae) {
-                Log.w(
-                        TAG,
-                        "UserRecoverableAuthIOException while downloading single backup. Requesting"
-                                + " auth again.");
-                startActivityForResult(urae.getIntent(), RC_AUTHORIZATION);
+            } catch (HttpResponseException e) {
+                if (e.getStatusCode() == HttpStatusCodes.STATUS_CODE_UNAUTHORIZED) {
+                    Log.w(TAG, "Drive rejected the access token while downloading the backup.");
+                    tokenRejected = true;
+                } else {
+                    Log.e(TAG, "Error downloading single-file backup from Drive", e);
+                    errors++;
+                }
             } catch (IOException e) {
                 Log.e(TAG, "Error downloading single-file backup from Drive", e);
                 errors++;
@@ -820,6 +926,10 @@ public class SettingsBackup extends BaseActivityAnim {
         protected void onPostExecute(Boolean success) {
             if (progress != null) {
                 progress.dismiss();
+            }
+
+            if (tokenRejected && reauthorizeAndRetry(OP_RESTORE)) {
+                return;
             }
 
             if (!success) {
