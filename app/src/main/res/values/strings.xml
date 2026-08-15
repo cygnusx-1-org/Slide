@@ -531,11 +531,11 @@
     <string name="backup_backing_up">Backing up your settings</string>
     <string name="backup_restore_settings">Restoring settings successful!</string>
     <string name="backup_restarting">App will now restart</string>
-    <string name="backup_info">Slide backs up all your data to a private Google Drive folder. You can sync this data across devices (or to the same device), and your data never goes through a third-party service or server.</string>
+    <string name="backup_info">Slide backs up all your data to a private Google Drive folder. You can sync this data across devices (or to the same device), and your data never goes through a third-party service or server. Backups are encrypted with a password you choose.</string>
     <string name="backup_btn">Backup</string>
     <string name="backup_btn_restore">Restore</string>
-    <string name="backup_btn_file">Backup to file</string>
-    <string name="backup_btn_restore_file">Restore from file</string>
+    <string name="backup_btn_file">Backup to zip</string>
+    <string name="backup_btn_restore_file">Restore from file or zip</string>
     <string name="backup_confirm">Are you sure you want to backup? Your previous backup will be overwritten</string>
     <string name="backup_restore_confirm">Are you sure you want to restore? Your current settings will be overwritten</string>
     <string name="backup_failed_msg">Backup failed. Please try again later.</string>
@@ -553,6 +553,12 @@
     <string name="err_backup_failed_msg">There was an error creating the backup. Please try again.</string>
     <string name="err_not_valid_backup">Not a valid Slide backup file</string>
     <string name="err_not_valid_backup_msg">The selected file is not a valid Slide backup file</string>
+    <string name="backup_password_title">Set a backup password</string>
+    <string name="backup_password_message">Your backup contains your Reddit account credentials, so it is encrypted. Choose a password of %1$d to %2$d characters. You will need it to restore, and it cannot be recovered.</string>
+    <string name="backup_password_hint">Password</string>
+    <string name="restore_password_title">Enter backup password</string>
+    <string name="restore_password_message">Enter the password used to encrypt this backup.</string>
+    <string name="restore_password_wrong">Incorrect password. Please try again.</string>
     <string name="drive_authorization_failed">Google Drive Authorization Failed</string>
     <string name="drive_authorization_failed_msg">Slide could not get access to its private Google Drive folder. Please try again.</string>
     <string name="drive_authorization_denied">Google Drive Access Needed</string>

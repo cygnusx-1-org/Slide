@@ -206,8 +206,11 @@ public class MaterialInputDialog {
 
         public MaterialInputDialog build() {
             final EditText editText = new EditText(context);
-            editText.setInputType(inputType);
+            // setSingleLine() installs its own transformation method, so it has to come first:
+            // after setInputType() it would overwrite the masking a password input type applies
+            // and leave the password legible on screen.
             editText.setSingleLine(true);
+            editText.setInputType(inputType);
             if (hint != null) {
                 editText.setHint(hint);
             }
@@ -219,6 +222,12 @@ public class MaterialInputDialog {
             final TextInputLayout inputLayout = new TextInputLayout(context);
             inputLayout.setErrorIconDrawable(null);
             inputLayout.addView(editText);
+            if (isPasswordInput()) {
+                // The standard Material reveal control, so a password can be read back before it is
+                // committed to something that cannot be recovered. Set once the field is attached:
+                // the toggle takes its initial state from that field's masking.
+                inputLayout.setEndIconMode(TextInputLayout.END_ICON_PASSWORD_TOGGLE);
+            }
 
             final LinearLayout container = new LinearLayout(context);
             container.setOrientation(LinearLayout.VERTICAL);
@@ -356,6 +365,18 @@ public class MaterialInputDialog {
             final MaterialInputDialog inputDialog = build();
             inputDialog.dialog.show();
             return inputDialog;
+        }
+
+        private boolean isPasswordInput() {
+            final int inputClass = inputType & InputType.TYPE_MASK_CLASS;
+            final int variation = inputType & InputType.TYPE_MASK_VARIATION;
+            if (inputClass == InputType.TYPE_CLASS_TEXT) {
+                return variation == InputType.TYPE_TEXT_VARIATION_PASSWORD
+                        || variation == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                        || variation == InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD;
+            }
+            return inputClass == InputType.TYPE_CLASS_NUMBER
+                    && variation == InputType.TYPE_NUMBER_VARIATION_PASSWORD;
         }
     }
 }

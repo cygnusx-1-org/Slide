@@ -482,6 +482,9 @@ dependencies {
     // Utilities to assist with developing IO functionality
     implementation 'commons-io:commons-io:2.22.0'
 
+    // Read and write AES-encrypted zip archives
+    implementation 'net.lingala.zip4j:zip4j:2.11.6'
+
 
     // HTTP client
     // BOM aligns okhttp, okhttp-android, and the okhttp-urlconnection that JRAW
