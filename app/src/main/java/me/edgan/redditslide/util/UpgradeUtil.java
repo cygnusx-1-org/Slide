@@ -23,13 +23,14 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import me.edgan.redditslide.Fragments.DrawerItemsDialog;
 import me.edgan.redditslide.SettingValues;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
 public class UpgradeUtil {
     // Increment for each needed change
-    private static final int VERSION = 2;
+    private static final int VERSION = 3;
 
     private UpgradeUtil() {}
 
@@ -167,6 +168,23 @@ public class UpgradeUtil {
             prefsEditor.putStringSet(SettingValues.PREF_ALWAYS_EXTERNAL, alwaysExternal);
 
             prefsEditor.apply();
+        }
+
+        // Show the new "Users" drawer item by default. selectedDrawerItems is a bitmask, and -1
+        // means "everything", so only a stored value written before USERS existed needs the bit
+        // adding; leaving it alone would hide the item for anyone who has opened the Drawer Items
+        // dialog.
+        if (CURRENT < 3) {
+            SharedPreferences prefs = context.getSharedPreferences("SETTINGS", 0);
+            long selected = prefs.getLong(SettingValues.PREF_SELECTED_DRAWER_ITEMS, -1);
+
+            if (selected != -1) {
+                prefs.edit()
+                        .putLong(
+                                SettingValues.PREF_SELECTED_DRAWER_ITEMS,
+                                selected | DrawerItemsDialog.SettingsDrawerEnum.USERS.value)
+                        .apply();
+            }
         }
 
         upgradePrefs.edit().putInt("VERSION", VERSION).apply();

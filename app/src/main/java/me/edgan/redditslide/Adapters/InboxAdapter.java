@@ -42,8 +42,8 @@ import me.edgan.redditslide.DataShare;
 import me.edgan.redditslide.Drafts;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
+import me.edgan.redditslide.SavedUsers;
 import me.edgan.redditslide.SettingValues;
-import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.UserTags;
 import me.edgan.redditslide.Views.DoEditorActions;
 import me.edgan.redditslide.Views.RoundedBackgroundSpan;
@@ -191,7 +191,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     titleString.append(" ");
                 }
 
-                if (UserSubscriptions.friends.contains(author)) {
+                if (SavedUsers.isFriend(author)) {
                     SpannableStringBuilder pinned =
                             new SpannableStringBuilder(
                                     " " + mContext.getString(R.string.profile_friend) + " ");

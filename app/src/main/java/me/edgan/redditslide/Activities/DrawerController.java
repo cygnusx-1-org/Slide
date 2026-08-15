@@ -826,6 +826,14 @@ public class DrawerController {
             View support = header.requireViewById(R.id.support);
 
             support.setVisibility(View.GONE);
+            header.requireViewById(R.id.users)
+                .setOnClickListener(new OnSingleClickListener() {
+                    @Override
+                    public void onSingleClick(View view) {
+                        Intent inte = new Intent(mainActivity, Users.class);
+                        mainActivity.startActivity(inte);
+                    }
+                });
             header.requireViewById(R.id.prof)
                 .setOnClickListener(new OnSingleClickListener() {
                     @Override

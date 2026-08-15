@@ -106,6 +106,11 @@ public class DrawerItemsDialog {
                 R.id.settings_drawer_multireddits,
                 R.id.settings_drawer_multireddits_checkbox,
                 R.id.multi),
+        USERS(
+                1 << 5,
+                R.id.settings_drawer_users,
+                R.id.settings_drawer_users_checkbox,
+                R.id.users),
         GOTO_PROFILE(
                 1 << 3,
                 R.id.settings_drawer_goto_profile,

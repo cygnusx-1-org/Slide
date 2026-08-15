@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Locale;
 import me.edgan.redditslide.ActionStates;
 import me.edgan.redditslide.R;
+import me.edgan.redditslide.SavedUsers;
 import me.edgan.redditslide.SettingValues;
-import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.UserTags;
 import me.edgan.redditslide.Views.RoundedBackgroundSpan;
 import me.edgan.redditslide.Visuals.FontPreferences;
@@ -203,7 +203,7 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
                     comment.getTimesPlatinized(),
                     R.drawable.platinum);
         }
-        if (UserSubscriptions.friends.contains(MiscUtil.orEmpty(comment.getAuthor()))) {
+        if (SavedUsers.isFriend(MiscUtil.orEmpty(comment.getAuthor()))) {
             SpannableStringBuilder pinned =
                     new SpannableStringBuilder(
                             "\u00A0" + mContext.getString(R.string.profile_friend) + "\u00A0");

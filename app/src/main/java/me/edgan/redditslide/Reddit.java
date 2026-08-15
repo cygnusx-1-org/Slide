@@ -517,6 +517,8 @@ public class Reddit extends Application implements Application.ActivityLifecycle
         UserSubscriptions.multiNameToSubs = getSharedPreferences("MULTITONAME", 0);
 
         UserSubscriptions.pinned = getSharedPreferences("PINNED", 0);
+        SavedUsers.users = getSharedPreferences("USERS", 0);
+        SavedUsers.friends = getSharedPreferences("USERFRIENDS", 0);
         PostMatch.filters = getSharedPreferences("FILTERS", 0);
         ImageFlairs.flairs = getSharedPreferences("FLAIRS", 0);
         SettingValues.setAllValues(getSharedPreferences("SETTINGS", 0));

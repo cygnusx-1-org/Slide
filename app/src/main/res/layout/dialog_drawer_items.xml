@@ -84,6 +84,30 @@
         </LinearLayout>
 
         <LinearLayout
+                android:id="@+id/settings_drawer_users"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="?android:selectableItemBackground"
+                android:orientation="horizontal">
+
+            <CheckBox
+                    android:id="@+id/settings_drawer_users_checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:clickable="false"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:textColor="?attr/fontColor"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:text="@string/title_users"/>
+        </LinearLayout>
+
+        <LinearLayout
                 android:id="@+id/settings_drawer_goto_profile"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"

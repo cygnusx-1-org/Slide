@@ -56,11 +56,11 @@ import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.SavedUsers;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.SubmissionViews.LocalSaved;
 import me.edgan.redditslide.Toolbox.ToolboxUI;
-import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.UserTags;
 import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Views.DoEditorActions;
@@ -2002,7 +2002,7 @@ final AlertDialog reportDialog =
             titleString.append(pinned);
             titleString.append(" ");
         }
-        if (UserSubscriptions.friends.contains(MiscUtil.orEmpty(comment.getAuthor()))) {
+        if (SavedUsers.isFriend(MiscUtil.orEmpty(comment.getAuthor()))) {
             SpannableStringBuilder pinned =
                     new SpannableStringBuilder(
                             "\u00A0" + mContext.getString(R.string.profile_friend) + "\u00A0");

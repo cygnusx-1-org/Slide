@@ -748,7 +748,6 @@
     <string name="share_slide">Slide delen</string>
     <string name="create_folder">Nieuwe map aanmaken</string>
     <string name="folder_name">Mapnaam</string>
-    <string name="sidebar_friends">Vrienden</string>
     <string name="open_links_externally">Altijd deze host extern openen</string>
     <string name="hide_read_posts">Verberg gelezen posts</string>
 </resources>

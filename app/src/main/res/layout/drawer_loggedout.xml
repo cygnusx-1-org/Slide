@@ -164,6 +164,32 @@
     </LinearLayout>
 
     <LinearLayout
+            android:id="@+id/users"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="?android:selectableItemBackground"
+            android:orientation="horizontal"
+            android:paddingStart="0dp">
+
+        <ImageView
+                android:layout_width="26dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="26dp"
+                android:layout_marginStart="16dp"
+                app:tint="?attr/tintColor"
+                app:srcCompat="@drawable/ic_person"/>
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="@string/title_users"
+                android:textColor="?attr/fontColor"
+                android:textSize="14sp"
+                android:textStyle="bold"/>
+    </LinearLayout>
+
+    <LinearLayout
             android:id="@+id/support"
             android:layout_width="match_parent"
             android:layout_height="48dp"

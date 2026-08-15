@@ -154,6 +154,8 @@
     <string name="profile_remove_friend">Remove friend</string>
     <string name="profile_follow_user">Follow</string>
     <string name="profile_unfollow_user">Unfollow</string>
+    <string name="profile_add_user">Add user</string>
+    <string name="profile_remove_user">Remove user</string>
     <string name="profile_remove_account">Would you really like to remove this account?</string>
     <string name="profile_remove">Delete account</string>
     <string name="profile_history">History</string>
@@ -443,6 +445,24 @@
     <string name="user_enter">Enter username</string>
     <string name="user_btn_goto">Go to user</string>
     <string name="user_btn_gotomultis">Go to user\'s multis</string>
+
+
+    <!-- Saved users list -->
+    <string name="users_empty">No saved users</string>
+    <string name="users_btn_add">Add user</string>
+    <string name="users_btn_remove">Remove user</string>
+    <string name="users_added">%s added to Users</string>
+    <string name="users_removed">%s removed from Users</string>
+    <string name="users_already_added">%s is already in Users</string>
+    <string name="users_copied">Copied %s</string>
+    <string name="users_checking">Checking username</string>
+    <string name="users_invalid_title">Cannot add user</string>
+    <string name="users_invalid">%s is not a Reddit user</string>
+    <string name="users_check_failed">Could not check whether %s exists. Please check your connection and try again.</string>
+    <string name="users_friend_added">%s added as a friend</string>
+    <string name="users_friend_removed">%s removed as a friend</string>
+    <string name="users_friend_failed">Could not update friend status for %s</string>
+    <string name="btn_fab_add_user">Add a user</string>
 
 
     <!-- Buttons -->
@@ -928,6 +948,7 @@
     <string name="title_share">Share using</string>
     <string name="title_login">Log into Reddit</string>
     <string name="title_multireddits">Multireddits</string>
+    <string name="title_users">Users</string>
     <string name="title_inbox">Inbox</string>
     <string name="title_theme_settings">Theme</string>
     <string name="title_create_multi">Create a multireddit</string>
@@ -1253,7 +1274,6 @@
     <string name="clipboard_no_reddit_link">No Reddit link in clipboard</string>
     <string name="create_folder">Create folder</string>
     <string name="folder_name">Folder name</string>
-    <string name="sidebar_friends">Friends</string>
     <string name="open_links_externally">Always open this host externally</string>
     <string name="hide_read_posts">Hide read posts</string>
     <string name="gallery_mode">Gallery mode</string>

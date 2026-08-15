@@ -1390,57 +1390,6 @@ public class MainActivity extends BaseActivity
         ContentType.invalidateTypeCache();
     }
 
-    public void doFriends(final List<String> friends) {
-        runOnUiThread(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        if (friends != null
-                                && !friends.isEmpty()
-                                && headerMain.findViewById(R.id.friends) != null) {
-                            headerMain.findViewById(R.id.friends).setVisibility(View.VISIBLE);
-                            headerMain
-                                    .findViewById(R.id.friends)
-                                    .setOnClickListener(
-                                            new OnSingleClickListener() {
-                                                @Override
-                                                public void onSingleClick(View view) {
-                                                    new MaterialAlertDialogBuilder(
-                                                                    new ContextThemeWrapper(
-                                                                            MainActivity.this,
-                                                                            new ColorPreferences(
-                                                                                            MainActivity
-                                                                                                    .this)
-                                                                                    .getFontStyle()
-                                                                                    .getBaseId()))
-                                                            .setTitle("Friends")
-                                                            .setItems(
-                                                                    friends.toArray(
-                                                                            new CharSequence[0]),
-                                                                    (dialog, which) -> {
-                                                                        Intent i =
-                                                                                new Intent(
-                                                                                        MainActivity
-                                                                                                .this,
-                                                                                        Profile
-                                                                                                .class);
-                                                                        i.putExtra(
-                                                                                Profile.EXTRA_PROFILE,
-                                                                                friends.get(which));
-                                                                        startActivity(i);
-                                                                        dialog.dismiss();
-                                                                    })
-                                                            .show();
-                                                }
-                                            });
-                        } else if (Authentication.isLoggedIn
-                                && headerMain.findViewById(R.id.friends) != null) {
-                            headerMain.findViewById(R.id.friends).setVisibility(View.GONE);
-                        }
-                    }
-                });
-    }
-
     public void doPageSelectedComments(int position) {
 
         pager.setSwipeLeftOnly(false);

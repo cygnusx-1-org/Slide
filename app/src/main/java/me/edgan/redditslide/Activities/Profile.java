@@ -55,12 +55,14 @@ import me.edgan.redditslide.Fragments.HistoryView;
 import me.edgan.redditslide.Fragments.LocalSavedView;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.SavedUsers;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.UserTags;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.DialogUtil;
+import me.edgan.redditslide.util.EditTextValidator;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
@@ -101,12 +103,6 @@ public class Profile extends BaseActivityAnim {
     private String[] usedArray;
     public boolean isSavedView;
 
-    private static boolean isValidUsername(String user) {
-        /* https://github.com/reddit/reddit/blob/master/r2/r2/lib/validator/validator.py#L261 */
-        return user.matches("^[a-zA-Z0-9_-]{3,20}$");
-    }
-
-    private boolean friend;
     private boolean following;
     @SuppressWarnings("NullAway.Init") // assigned in onCreateOptionsMenu
     private MenuItem sortItem;
@@ -283,7 +279,7 @@ public class Profile extends BaseActivityAnim {
             }
 
             try {
-                if (!isValidUsername(params[0])) {
+                if (!EditTextValidator.isValidUsername(params[0])) {
                     account = null;
                     return null;
                 }
@@ -962,72 +958,6 @@ public class Profile extends BaseActivityAnim {
                                             }
                                         });
 
-                        friend = account.isFriend();
-                        if (friend) {
-                            ((TextView) dialoglayout.requireViewById(R.id.friend))
-                                    .setText(R.string.profile_remove_friend);
-                        } else {
-                            ((TextView) dialoglayout.requireViewById(R.id.friend))
-                                    .setText(R.string.profile_add_friend);
-                        }
-                        dialoglayout
-                                .requireViewById(R.id.friend_body)
-                                .setOnClickListener(
-                                        new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                new AsyncTask<Void, Void, Void>() {
-                                                    @Override
-                                                    protected Void doInBackground(Void... params) {
-                                                        if (friend) {
-                                                            try {
-                                                                new AccountManager(
-                                                                                Authentication
-                                                                                        .reddit)
-                                                                        .deleteFriend(name);
-                                                            } catch (Exception ignored) {
-                                                                // Will throw
-                                                                // java.lang.IllegalStateException:
-                                                                // No Content-Type header was found,
-                                                                // but it still works.
-                                                            }
-                                                            friend = false;
-
-                                                        } else {
-                                                            new AccountManager(
-                                                                            Authentication.reddit)
-                                                                    .updateFriend(name);
-                                                            friend = true;
-                                                        }
-                                                        return null;
-                                                    }
-
-                                                    @Override
-                                                    public void onPostExecute(Void voids) {
-                                                        if (friend) {
-                                                            ((TextView)
-                                                                            dialoglayout
-                                                                                    .findViewById(
-                                                                                            R.id
-                                                                                                    .friend))
-                                                                    .setText(
-                                                                            R.string
-                                                                                    .profile_remove_friend);
-                                                        } else {
-                                                            ((TextView)
-                                                                            dialoglayout
-                                                                                    .findViewById(
-                                                                                            R.id
-                                                                                                    .friend))
-                                                                    .setText(
-                                                                            R.string
-                                                                                    .profile_add_friend);
-                                                        }
-                                                    }
-                                                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                                            }
-                                        });
-
                         final TextView blockButton = (TextView) dialoglayout.requireViewById(R.id.block);
                         updateBlockButtonState(blockButton);
                         dialoglayout
@@ -1124,6 +1054,45 @@ public class Profile extends BaseActivityAnim {
                         dialoglayout.requireViewById(R.id.pm).setVisibility(View.GONE);
                         dialoglayout.requireViewById(R.id.follow_body).setVisibility(View.GONE);
                     }
+
+                    // Add/Remove user: unlike Follow above it stays available logged out, because
+                    // the list itself is local. Removing is not purely local though -- if the name
+                    // is marked as a friend, SavedUsers.removeUser also ends that friendship on
+                    // reddit, or the next sync would put the name straight back into the list.
+                    final TextView addUser = (TextView) dialoglayout.requireViewById(R.id.add_user);
+                    addUser.setText(
+                            SavedUsers.contains(name)
+                                    ? R.string.profile_remove_user
+                                    : R.string.profile_add_user);
+                    dialoglayout
+                            .requireViewById(R.id.add_user_body)
+                            .setOnClickListener(
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            final boolean saved = SavedUsers.contains(name);
+
+                                            if (saved) {
+                                                SavedUsers.removeUser(name);
+                                            } else {
+                                                SavedUsers.addUser(name);
+                                            }
+
+                                            addUser.setText(
+                                                    saved
+                                                            ? R.string.profile_add_user
+                                                            : R.string.profile_remove_user);
+                                            Toast.makeText(
+                                                            Profile.this,
+                                                            getString(
+                                                                    saved
+                                                                            ? R.string.users_removed
+                                                                            : R.string.users_added,
+                                                                    name),
+                                                            Toast.LENGTH_SHORT)
+                                                    .show();
+                                        }
+                                    });
 
                     dialoglayout
                             .requireViewById(R.id.multi_body)

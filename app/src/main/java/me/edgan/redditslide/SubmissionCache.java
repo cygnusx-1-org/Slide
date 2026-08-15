@@ -193,7 +193,7 @@ public class SubmissionCache {
             titleString.append(pinned);
         }
 
-        if (UserSubscriptions.friends.contains(json.path("author").asText())) {
+        if (SavedUsers.isFriend(json.path("author").asText())) {
             SpannableStringBuilder pinned =
                     new SpannableStringBuilder(
                             " " + mContext.getString(R.string.profile_friend) + " ");
@@ -370,7 +370,7 @@ public class SubmissionCache {
             titleString.append(pinned);
         }
 
-        if (UserSubscriptions.friends.contains(authorName)) {
+        if (SavedUsers.isFriend(authorName)) {
             SpannableStringBuilder pinned =
                     new SpannableStringBuilder(
                             " " + mContext.getString(R.string.profile_friend) + " ");

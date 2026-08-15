@@ -186,32 +186,6 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/friend_body"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="?android:selectableItemBackground"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingEnd="16dp">
-
-                    <ImageView
-                        android:layout_width="56dp"
-                        android:layout_height="match_parent"
-                        android:alpha=".86"
-                        android:padding="12dp"
-                        app:tint="?attr/tintColor"
-                        app:srcCompat="@drawable/ic_account_circle" />
-
-                    <TextView
-                        android:id="@+id/friend"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/profile_friend"
-                        android:textColor="?attr/colorAccent"
-                        android:textSize="16sp" />
-                </LinearLayout>
-
-                <LinearLayout
                     android:id="@+id/follow_body"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
@@ -233,6 +207,32 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/profile_follow_user"
+                        android:textColor="?attr/colorAccent"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/add_user_body"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="?android:selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingEnd="16dp">
+
+                    <ImageView
+                        android:layout_width="56dp"
+                        android:layout_height="match_parent"
+                        android:alpha=".86"
+                        android:padding="12dp"
+                        app:tint="?attr/tintColor"
+                        app:srcCompat="@drawable/ic_person" />
+
+                    <TextView
+                        android:id="@+id/add_user"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/profile_add_user"
                         android:textColor="?attr/colorAccent"
                         android:textSize="16sp" />
                 </LinearLayout>

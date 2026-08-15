@@ -30,8 +30,6 @@ import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.managers.MultiRedditManager;
 import net.dean.jraw.models.MultiReddit;
 import net.dean.jraw.models.Subreddit;
-import net.dean.jraw.models.UserRecord;
-import net.dean.jraw.paginators.ImportantUserPaginator;
 import net.dean.jraw.paginators.UserSubredditsPaginator;
 
 /** Created by carlo_000 on 1/16/2016. */
@@ -304,12 +302,11 @@ public class UserSubscriptions {
                 }
             }
         }
-        doFriendsOf();
+        SavedUsers.syncFriendsFromReddit();
         loadMultireddits();
     }
 
     @Nullable public static CaseInsensitiveArrayList toreturn;
-    public static CaseInsensitiveArrayList friends = new CaseInsensitiveArrayList();
 
     public static CaseInsensitiveArrayList syncSubscriptionsOverwrite(final Context c) {
         toreturn = new CaseInsensitiveArrayList();
@@ -510,35 +507,6 @@ public class UserSubscriptions {
     // Public method to safely get moderated subreddits
     public static CaseInsensitiveArrayList getModeratedSubs() {
         return doModOf();
-    }
-
-    public static void doFriendsOfMain(MainActivity main) {
-        main.doFriends(doFriendsOf());
-    }
-
-    private static List<String> doFriendsOf() {
-        if (friends == null || friends.isEmpty()) {
-            friends = new CaseInsensitiveArrayList();
-            CaseInsensitiveArrayList finished = new CaseInsensitiveArrayList();
-
-            ImportantUserPaginator pag =
-                    new ImportantUserPaginator(Authentication.reddit, "friends");
-            pag.setLimit(100);
-            try {
-                while (pag.hasNext()) {
-                    for (UserRecord s : pag.next()) {
-                        finished.add(s.getFullName());
-                    }
-                }
-                friends = (finished);
-                return friends;
-
-            } catch (Exception e) {
-                // failed;
-                LogUtil.e(e, "UserSubscriptions.doFriendsOf failed");
-            }
-        }
-        return friends;
     }
 
     /** Null when no loaded multireddit carries that display name. */

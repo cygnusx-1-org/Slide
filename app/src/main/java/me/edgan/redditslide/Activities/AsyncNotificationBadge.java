@@ -18,6 +18,7 @@ import me.edgan.redditslide.Autocache.AutoCacheScheduler;
 import me.edgan.redditslide.Notifications.NotificationJobScheduler;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.SavedUsers;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LogUtil;
@@ -102,7 +103,7 @@ public class AsyncNotificationBadge extends AsyncTask<Void, Void, Void> {
             // Force reload of the LoggedInAccount object; an absent inbox_count reads as zero.
             final Integer inbox = me.getInboxCount();
             count = inbox == null ? 0 : inbox;
-            UserSubscriptions.doFriendsOfMain(activity);
+            SavedUsers.syncFriendsFromReddit();
 
         } catch (Exception e) {
             Log.w(LogUtil.getTag(), "Cannot fetch inbox count");
