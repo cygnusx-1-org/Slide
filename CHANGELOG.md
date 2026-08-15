@@ -4,6 +4,13 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.8.7 / 2026-8-15
+============
+* Made backups encrypted zips with user selected passwords
+* Replaced the Friends feature with friend marks on a new Users screen
+* Updated many libraries
+* Massive effort using Nullaway to prevent crashes
+
 7.8.6 / 2026-7-27
 ============
 * Implemented Feature request: Improve video previews in vertical gallery mode #170
