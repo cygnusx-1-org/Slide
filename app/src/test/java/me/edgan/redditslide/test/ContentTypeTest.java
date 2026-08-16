@@ -8,19 +8,38 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.ContentType.Type;
 import me.edgan.redditslide.SettingValues;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ContentTypeTest {
+
+    /**
+     * Captured and put back: {@code alwaysExternal} is an app-wide static, and this suite is plain
+     * JUnit — no Robolectric sandbox isolates it, and the test task forks a single JVM for every
+     * class — so a value left behind is visible to whatever class runs next. Captured in the field
+     * initializer, which runs at class load and so before {@code setUp} overwrites it.
+     */
+    private static final Set<String> ALWAYS_EXTERNAL_WAS = SettingValues.alwaysExternal;
 
     @BeforeClass
     public static void setUp() {
         SettingValues.alwaysExternal =
                 new HashSet<>(
                         Arrays.asList("twitter.com", "github.com", "t.co", "example.com/path"));
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        SettingValues.alwaysExternal = ALWAYS_EXTERNAL_WAS;
+        // invalidateTypeCache's contract: it must be called whenever alwaysExternal changes, since
+        // that is what decides whether a url resolves to EXTERNAL. Restoring the set is such a
+        // change, so a resolved type cached under this suite's set would outlive it.
+        ContentType.invalidateTypeCache();
     }
 
     @Test

@@ -1,23 +1,14 @@
 package me.edgan.redditslide.test;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import me.edgan.redditslide.SpoilerRobotoTextView;
-import org.junit.Before;
 import org.junit.Test;
 
 public class SpoilerTextTest {
-    private Pattern htmlSpoilerPattern;
-    private Pattern nativeSpoilerPattern;
-
-    @Before
-    public void setUp() {
-        htmlSpoilerPattern = SpoilerRobotoTextView.htmlSpoilerPattern;
-        nativeSpoilerPattern = SpoilerRobotoTextView.nativeSpoilerPattern;
-    }
 
     private final List<Object[]> htmlSpoilerTests =
             Arrays.asList(
@@ -37,22 +28,23 @@ public class SpoilerTextTest {
 
     @Test
     public void htmlSpoilerTest() {
-        spoilerTest(htmlSpoilerTests, htmlSpoilerPattern, "HTML spoiler test");
+        spoilerTest(
+                htmlSpoilerTests, SpoilerRobotoTextView.htmlSpoilerPattern, "HTML spoiler test");
     }
 
     @Test
     public void nativeSpoilerTest() {
-        spoilerTest(nativeSpoilerTests, nativeSpoilerPattern, "Native spoiler test");
+        spoilerTest(
+                nativeSpoilerTests,
+                SpoilerRobotoTextView.nativeSpoilerPattern,
+                "Native spoiler test");
     }
 
+    /** Asserted case by case, so a failure names the input rather than only the suite. */
     private void spoilerTest(List<Object[]> tests, Pattern pattern, String name) {
         for (Object[] test : tests) {
-            if (pattern.matcher((String) test[0]).matches() == (Boolean) test[1]) {
-                System.out.println(name + ": " + test[0] + " PASSED");
-            } else {
-                System.out.println(name + ": " + test[0] + " FAILED");
-                fail();
-            }
+            assertEquals(
+                    name + ": " + test[0], test[1], pattern.matcher((String) test[0]).matches());
         }
     }
 }

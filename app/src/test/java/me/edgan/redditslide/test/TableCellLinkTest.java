@@ -222,6 +222,12 @@ public class TableCellLinkTest {
         // future Markwon change surfaced it in the buffer, this would flag that the special-case
         // path may double-handle it.
         SpoilerRobotoTextView tv = renderAndLayout(TABLE);
+        // Markwon's TableCell visitor moves each cell's text and spans out of the buffer with
+        // SpannableBuilder.removeFromEnd, so the loop below runs over an empty array and asserts
+        // nothing on its own. Pin that the link rendered at all first, or a renderer that produced
+        // no spans whatsoever would pass this as readily as the arrangement it is meant to describe.
+        assertNotNull("the cell link has to render before its absence here means anything",
+                rowWithUrl(tv, TARGET));
         Spanned buffer = (Spanned) tv.getText();
         for (URLSpan u : buffer.getSpans(0, buffer.length(), URLSpan.class)) {
             assertNotEquals(TARGET, u.getURL());
