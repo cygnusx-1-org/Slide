@@ -4,6 +4,10 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.8.8 / 2026-8-17
+============
+* Added "Settings | Post layout | Show gallery posts as a grid" for Reddit gallery posts in a feed
+
 7.8.7 / 2026-8-15
 ============
 * Made backups encrypted zips with user selected passwords
