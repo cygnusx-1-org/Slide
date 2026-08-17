@@ -113,7 +113,6 @@ These rules apply to all changes in this repository.
 - Look for comments that might instruct you about what not to do, or how removing the code below them might break something.
 
 ### Language and Dependencies
-- This is an Android Java app. Do not introduce Kotlin code.
 - Do not introduce Glide as a library.
 - Try to use existing dependencies as much as possible, and avoid introducing new dependencies unless necessary.
 - Be sure to include new imports at the top of the file when making changes. DO NOT reference a library directly by its long name in code — use imports.
