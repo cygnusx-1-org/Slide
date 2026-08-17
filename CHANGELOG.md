@@ -4,6 +4,11 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.8.9 / 2026-8-17
+============
+* Changed three-image gallery grids to a 2 + 1 layout
+* Fixed an ANR related to Android-Universal-Image-Loader
+
 7.8.8 / 2026-8-17
 ============
 * Added "Settings | Post layout | Show gallery posts as a grid" for Reddit gallery posts in a feed
