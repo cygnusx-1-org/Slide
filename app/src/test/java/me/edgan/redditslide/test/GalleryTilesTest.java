@@ -198,9 +198,11 @@ public class GalleryTilesTest {
     // ---------------------------------------------------------------------
 
     @Test
-    public void threeImagesGetThreeColumnsEverythingElseGetsTwo() {
+    public void everyGallerySizeGetsTwoColumns() {
+        // Three included: it lays out 2 + 1 rather than a row of three, so its tiles are the same
+        // size as every other gallery's.
         assertThat(GalleryTiles.spanFor(2), is(2));
-        assertThat(GalleryTiles.spanFor(3), is(3));
+        assertThat(GalleryTiles.spanFor(3), is(2));
         assertThat(GalleryTiles.spanFor(4), is(2));
         assertThat(GalleryTiles.spanFor(5), is(2));
         assertThat(GalleryTiles.spanFor(9), is(2));

@@ -59,14 +59,18 @@ object GalleryTiles {
     )
 
     /**
-     * Columns for a gallery of [size].
+     * Columns for a gallery of [size]: always two.
      *
-     * Three only for a gallery of exactly three, so the row comes out even; everything else is two.
-     * Continuum's rule (two for 2 or 4, three otherwise) doesn't survive the [MAX_FEED_TILES] cap —
-     * it would put a nine-image gallery in three columns and leave a ragged 3 + 1 second row.
+     * A gallery of exactly three used to get three columns so its single row came out even, but that
+     * bought evenness with tiles a third narrower than every other gallery's, and left the card
+     * shorter than the ones above and below it. Two columns puts it at 2 + 1 — one tile alone on the
+     * second row — at the same tile size as the rest of the feed.
+     *
+     * Continuum's rule (two for 2 or 4, three otherwise) doesn't survive the [MAX_FEED_TILES] cap
+     * either: it would put a nine-image gallery in three columns and leave a ragged 3 + 1 second row.
      */
     @JvmStatic
-    fun spanFor(size: Int): Int = if (size == 3) 3 else 2
+    fun spanFor(size: Int): Int = 2
 
     /** How many tiles a feed card draws for a gallery of [size]. */
     @JvmStatic

@@ -134,8 +134,9 @@ class RoborazziGalleryGridTest(
             arrayOf(arrayOf("dark", R.style.Theme_DARK), arrayOf("light", R.style.Theme_LIGHT))
 
         /**
-         * One case per gallery size that changes the shape: two side by side, three in a row of
-         * three, a full 2x2, and a nine that has to fold into 2x2 with a "+6".
+         * One case per gallery size that changes the shape: two side by side, three as 2 + 1 with
+         * the third tile alone on its row, a full 2x2, and a nine that has to fold into 2x2 with a
+         * "+6".
          */
         private val GALLERY_SIZES = intArrayOf(2, 3, 4, 9)
 
