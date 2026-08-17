@@ -269,7 +269,10 @@ public class SubredditPosts implements PostLoader {
             if (!(SettingValues.noImages
                     && ((!NetworkUtil.isConnectedWifi(c) && SettingValues.lowResMobile)
                             || SettingValues.lowResAlways))) {
-                PhotoLoader.loadPhotos(c, filteredSubmissions);
+                PhotoLoader.loadPhotos(
+                        c,
+                        filteredSubmissions,
+                        subreddit == null ? null : subreddit.toLowerCase(Locale.ENGLISH));
             }
             if (SettingValues.storeHistory) {
                 HasSeen.setHasSeenSubmission(filteredSubmissions);

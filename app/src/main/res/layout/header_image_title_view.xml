@@ -17,6 +17,15 @@
         android:scaleType="centerCrop"
         tools:src="@drawable/chameleon" />
 
+    <!-- The feed's gallery grid, shown in place of leadimage when the "Show gallery posts as a
+         grid" setting is on. leadimage goes GONE on that path, and HeaderImageLinkView re-points
+         the tag and base overlays below at this view so they still sit on the bottom edge. -->
+    <me.edgan.redditslide.Views.GalleryGridView
+        android:id="@+id/gallerygrid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
     <me.edgan.redditslide.Views.TransparentTagTextView
         android:layout_width="wrap_content"
         android:text="IMAGE"

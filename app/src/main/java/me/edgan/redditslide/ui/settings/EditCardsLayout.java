@@ -149,6 +149,21 @@ public class EditCardsLayout extends BaseActivityAnim {
                     });
         }
         {
+            SwitchCompat single2 = (SwitchCompat) requireViewById(R.id.galleryGrid);
+            single2.setChecked(SettingValues.galleryGrid);
+            single2.setOnCheckedChangeListener(
+                    new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            SettingValues.galleryGrid = isChecked;
+                            SettingValues.prefs
+                                    .edit()
+                                    .putBoolean(SettingValues.PREF_GALLERY_GRID, isChecked)
+                                    .apply();
+                        }
+                    });
+        }
+        {
             SwitchCompat single2 = (SwitchCompat) requireViewById(R.id.selftextcomment);
             single2.setChecked(SettingValues.hideSelftextLeadImage);
             single2.setOnCheckedChangeListener(

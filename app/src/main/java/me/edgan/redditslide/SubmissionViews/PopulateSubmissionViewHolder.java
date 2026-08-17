@@ -405,6 +405,10 @@ public class PopulateSubmissionViewHolder {
             holder.leadImage.setThumbnail(thumbImage2);
         }
 
+        // Every bind, not just the first: the holder outlives a bind, and the gallery grid reads
+        // the row's adapter position through it when a tile is tapped.
+        holder.leadImage.setPositionHolder(holder);
+
         final ContentType.Type type = ContentType.getContentType(submission);
 
         if (thumbImage2 instanceof RoundImageTriangleView) {

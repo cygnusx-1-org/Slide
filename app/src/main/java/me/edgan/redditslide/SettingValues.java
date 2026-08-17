@@ -123,6 +123,7 @@ public class SettingValues {
     public static final String SYNCCIT_NAME = "SYNCCIT_NAME";
     public static final String PREF_BLUR = "blur";
     public static final String PREF_ALBUM_SWIPE = "albumswipe";
+    public static final String PREF_GALLERY_GRID = "galleryGrid";
     public static final String PREF_COMMENT_NAV = "commentVolumeNav";
     public static final String PREF_COLOR_COMMENT_DEPTH = "colorCommentDepth";
     public static final String PREF_MARKDOWN_NEW_REDDIT = "markdownNewReddit";
@@ -191,6 +192,10 @@ public class SettingValues {
     public static volatile boolean bigPicEnabled;
     public static boolean bigPicCropped;
     public static boolean bigPicLetterboxed;
+    // Draw a gallery post's images as a grid of thumbnails instead of a single lead image.
+    // volatile for the same reason as bigPicEnabled: PhotoLoader's background preload reads it to
+    // decide whether to warm the grid's tiles or the one lead image.
+    public static volatile boolean galleryGrid;
     @SuppressWarnings("NullAway.Init") // assigned in setAllValues
     public static ColorMatchingMode colorMatchingMode;
 
@@ -376,6 +381,7 @@ public class SettingValues {
         bigPicCropped = settings.getBoolean("bigPicCropped", false);
         bigPicLetterboxed = settings.getBoolean("bigPicLetterboxed", false);
         bigPicEnabled = settings.getBoolean("bigPicEnabled", true);
+        galleryGrid = settings.getBoolean(PREF_GALLERY_GRID, false);
 
         alwaysShowFAB = settings.getBoolean("alwaysShowFAB", false);
 

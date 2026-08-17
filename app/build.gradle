@@ -16,6 +16,9 @@ import java.util.Properties
 
 plugins {
     id 'com.android.application'
+    // AGP 9's built-in Kotlin (bundled Kotlin 2.2.10), so there is no separate kotlin-android
+    // plugin version to keep in step with AGP. Kotlin sources live in app/src/main/kotlin.
+    id 'com.android.built-in-kotlin'
     id 'com.gladed.androidgitversion' version '0.4.14'
     id 'com.github.ben-manes.versions' version '0.61.0'
     id 'com.github.breadmoirai.github-release' version '2.5.2'
@@ -544,6 +547,13 @@ spotless {
         removeUnusedImports()
         trimTrailingWhitespace()
         leadingTabsToSpaces(4)
+    }
+    // Whitespace only, deliberately: a real Kotlin formatter (ktfmt/ktlint) would add a dependency
+    // for the handful of .kt files here, and these are the same rules the java block enforces.
+    format 'kotlinSrc', {
+        target '**/*.kt'
+        leadingTabsToSpaces(4)
+        trimTrailingWhitespace()
     }
     format 'misc', {
         target '**/*.gradle', '**/*.md', '**/.gitignore'

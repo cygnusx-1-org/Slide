@@ -934,7 +934,11 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                                         // static executor and must not retain a destroyed Activity.
                                         PhotoLoader.warmAhead(
                                                 context.getApplicationContext(),
-                                                new ArrayList<>(snapshot.subList(from, to)));
+                                                new ArrayList<>(snapshot.subList(from, to)),
+                                                posts == null || posts.subreddit == null
+                                                        ? null
+                                                        : posts.subreddit.toLowerCase(
+                                                                Locale.ENGLISH));
                                         highestWarmedAhead = to - 1;
                                     } catch (RuntimeException ignored) {
                                         // A background reset/addAll raced this copy; skip this warm
@@ -1073,7 +1077,10 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                 rv,
                 posts != null ? posts.posts : null,
                 1,
-                warmedTapTargets);
+                warmedTapTargets,
+                posts == null || posts.subreddit == null
+                        ? null
+                        : posts.subreddit.toLowerCase(Locale.ENGLISH));
     }
 
     public static void currentPosition(int adapterPosition) {

@@ -15,6 +15,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -23,6 +24,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
+import me.edgan.redditslide.Activities.GalleryImage;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.ImgurAlbum.AlbumUtils;
 import me.edgan.redditslide.Reddit;
@@ -44,16 +46,211 @@ public class PhotoLoader {
 
     public static void loadPhoto(
             final Context c, final Submission submission, final boolean warmMemory) {
-        // The live feed (warmMemory) skips nsfw/spoiler posts that render a static drawable; offline
-        // mass caching (!warmMemory) still downloads their images so a reveal works while offline.
-        final String url = resolveFeedImageUrl(c, submission, warmMemory);
-        if (url != null && !PLACEHOLDER_URLS.contains(url)) {
-            loadImage(c, url, warmMemory);
+        for (final WarmTarget target : feedWarmTargets(c, submission, warmMemory)) {
+            loadImage(c, target, warmMemory);
         }
     }
 
     private static final List<String> PLACEHOLDER_URLS =
             Arrays.asList("self", "default", "image", "nsfw", "spoiler", "");
+
+    /** One image the feed card will display, the size it will be decoded at, and how. */
+    public static final class WarmTarget {
+        public final String url;
+        public final ImageSize size;
+        /** A gallery grid tile, which decodes differently from a lead image. See the options below. */
+        private final boolean galleryTile;
+
+        WarmTarget(final String url, final ImageSize size) {
+            this(url, size, false);
+        }
+
+        WarmTarget(final String url, final ImageSize size, final boolean galleryTile) {
+            this.url = url;
+            this.size = size;
+            this.galleryTile = galleryTile;
+        }
+
+        /**
+         * {@code warmMemory} decides disk-only versus disk-and-memory for either kind of target —
+         * offline mass caching must stay disk-only whether or not the image is a gallery tile, or a
+         * few hundred cached posts evict everything the user is currently looking at.
+         */
+        DisplayImageOptions options(final boolean warmMemory) {
+            if (galleryTile) {
+                return warmMemory ? GALLERY_TILE_PRELOAD_OPTIONS : GALLERY_TILE_DISK_OPTIONS;
+            }
+            return warmMemory ? FEED_PRELOAD_OPTIONS : PRELOAD_OPTIONS;
+        }
+    }
+
+    /**
+     * Warm options for a gallery grid tile.
+     *
+     * <p>EXACTLY rather than the IN_SAMPLE_POWER_OF_2 the other feed warms use. Sampling can only
+     * halve, so a 960px-wide preview asked for at a 625px tile does not shrink at all and lands in
+     * the memory cache at full size — and a gallery card holds four of those, where the lead image
+     * it replaced held one. That evicts the rows the user is looking at. EXACTLY scales the decode
+     * to the tile, which is all the tile can show anyway.
+     */
+    private static final DisplayImageOptions GALLERY_TILE_PRELOAD_OPTIONS =
+            new DisplayImageOptions.Builder()
+                    .cacheOnDisk(true)
+                    .cacheInMemory(true)
+                    .bitmapConfig(Bitmap.Config.RGB_565)
+                    .imageScaleType(ImageScaleType.EXACTLY)
+                    .build();
+
+    /** The disk-only tile variant, for offline mass caching — see {@link #PRELOAD_OPTIONS}. */
+    private static final DisplayImageOptions GALLERY_TILE_DISK_OPTIONS =
+            new DisplayImageOptions.Builder()
+                    .cacheOnDisk(true)
+                    .cacheInMemory(false)
+                    .bitmapConfig(Bitmap.Config.RGB_565)
+                    .imageScaleType(ImageScaleType.EXACTLY)
+                    .build();
+
+    /**
+     * Every image the feed card will display for {@code submission}, with the decode size for each.
+     *
+     * <p>Usually one — the lead image. A gallery post with the grid turned on displays several, so
+     * warming only the first would leave the rest of the tiles to pop in. Both the url and the size
+     * have to be the ones the card will actually ask for: UIL keys its memory cache by {@code
+     * uri_WxH}, so warming the same image at a different size puts the bitmap somewhere the bind
+     * won't look.
+     *
+     * @param skipDrawableOnlyPosts true for the live feed, which has nothing to download for a post
+     *     rendered as a static nsfw/spoiler drawable. Offline mass caching passes false, so a reveal
+     *     works without a connection.
+     */
+    public static List<WarmTarget> feedWarmTargets(
+            final Context c, final Submission submission, final boolean skipDrawableOnlyPosts) {
+        return feedWarmTargets(c, submission, skipDrawableOnlyPosts, null);
+    }
+
+    /**
+     * As above, for a caller that knows the feed's base subreddit.
+     *
+     * <p>{@code baseSub} is the listing's own name, exactly as the adapters hand it to
+     * {@link me.edgan.redditslide.SubmissionViews.PopulateSubmissionViewHolder} — the card decides
+     * whether to draw a grid from {@link SettingValues#isPicsEnabled(String)} on that name, so a
+     * warm that consulted the global flag instead would warm four tiles for a post the card renders
+     * as a thumbnail. Null (offline caching, profile and moderator listings) resolves to the global
+     * flag, which is what those callers' display path uses too.
+     */
+    public static List<WarmTarget> feedWarmTargets(
+            final Context c,
+            final Submission submission,
+            final boolean skipDrawableOnlyPosts,
+            final @Nullable String baseSub) {
+        // One gate for both branches below, and the only one that knows the listing: a post the card
+        // draws as the nsfw/spoiler icon has no image to warm, whichever branch would have chosen it.
+        // resolveFeedImageUrl repeats the listing-blind half of this check, which is all it can do
+        // and which is harmless once this has run.
+        if (skipDrawableOnlyPosts && rendersStaticDrawable(submission, baseSub)) {
+            return Collections.emptyList();
+        }
+
+        if (SettingValues.galleryGrid
+                && SettingValues.isPicsEnabled(baseSub)
+                && ContentType.getContentType(submission) == ContentType.Type.REDDIT_GALLERY) {
+            final GalleryTiles.Grid grid =
+                    GalleryTiles.gridFor(c, submission.getDataNode());
+            if (grid != null) {
+                final int tilePx = GalleryTiles.tileWidthPx(c, grid.span);
+                final ImageSize size = new ImageSize(tilePx, tilePx);
+                final List<WarmTarget> targets = new ArrayList<>(grid.tiles.size());
+                for (final GalleryTiles.Tile tile : grid.tiles) {
+                    if (tile.url != null && !PLACEHOLDER_URLS.contains(tile.url)) {
+                        targets.add(new WarmTarget(tile.url, size, true));
+                    }
+                }
+                return targets;
+            }
+        }
+
+        final String url = resolveFeedImageUrl(c, submission, skipDrawableOnlyPosts);
+        if (url == null || PLACEHOLDER_URLS.contains(url)) {
+            return Collections.emptyList();
+        }
+        return Collections.singletonList(new WarmTarget(url, feedDecodeSize(c)));
+    }
+
+    /**
+     * The user's "low resolution images" choice, for the connection in use right now.
+     *
+     * <p>One helper rather than the expression repeated per call site, because the feed card and the
+     * preloader have to reach the same answer — they pick the image URL independently, and a
+     * disagreement shows up as the card downloading a second copy of the same picture.
+     */
+    public static boolean isLowRes(final Context c) {
+        // Settings first, connectivity last. isConnectedWifi is three binder calls into
+        // ConnectivityManager with no caching, and this runs on the main thread once per gallery
+        // card bind; ordering it after the two flags means a user with neither setting on — the
+        // default — never makes those calls at all. Same result either way: the old expression was
+        // (!wifi && mobile) || always.
+        if (SettingValues.lowResAlways) {
+            return true;
+        }
+        if (!SettingValues.lowResMobile) {
+            return false;
+        }
+        return !NetworkUtil.isConnectedWifi(c);
+    }
+
+    /**
+     * The preview-width cap for a gallery post's lead image: half the display width when the user
+     * has asked for low-resolution images, otherwise uncapped (the largest rung, as before).
+     *
+     * <p>Deliberately derived from the display alone, not from the width the caller is about to draw
+     * at. The preloader sizes off the global "big pictures" flag while the card sizes off the
+     * per-subreddit override, so the two reach different widths for the same post — measured as 1280
+     * against 210 on a subreddit with pictures turned off — and a cap built on that would have them
+     * choose different preview rungs, leaving the card to download an image the preloader never
+     * warmed. A cap both sides can compute identically cannot do that.
+     */
+    public static int galleryMaxWidth(final Context c) {
+        if (!isLowRes(c)) {
+            return Integer.MAX_VALUE;
+        }
+        return Math.max(1, c.getResources().getDisplayMetrics().widthPixels / 2);
+    }
+
+    /**
+     * Whether the card renders this post as a static drawable rather than a downloaded image —
+     * mirrors doImageAndText's nsfw/spoiler branches, which run before any content-type handling.
+     */
+    private static boolean rendersStaticDrawable(final Submission submission) {
+        if (submission.isNsfw() && SettingValues.getIsNSFWEnabled()) {
+            return true;
+        }
+        final JsonNode dataNode = submission.getDataNode();
+        final JsonNode spoilerNode = (dataNode != null) ? dataNode.get("spoiler") : null;
+        return spoilerNode != null && spoilerNode.asBoolean();
+    }
+
+    /**
+     * As above, plus doImageAndText's second nsfw branch, which only a caller that knows the listing
+     * can evaluate: an nsfw post is also drawn as the static icon when it is being shown inside a
+     * collection ({@code hideNSFWCollection}) rather than on its own subreddit.
+     *
+     * <p>Missing this made the warm paths disagree with the card for exactly those posts, and a
+     * gallery is where that costs the most — four tiles and four full-resolution tap targets fetched
+     * for a card that draws one icon and can only ever open image one.
+     */
+    private static boolean rendersStaticDrawable(
+            final Submission submission, final @Nullable String baseSub) {
+        if (rendersStaticDrawable(submission)) {
+            return true;
+        }
+        return baseSub != null
+                && submission.isNsfw()
+                && SettingValues.hideNSFWCollection
+                && (baseSub.equals("frontpage")
+                        || baseSub.equals("all")
+                        || baseSub.contains("+")
+                        || baseSub.equals("popular"));
+    }
 
     /**
      * The image URL the feed card (HeaderImageLinkView.doImageAndText) will display for this
@@ -76,29 +273,21 @@ public class PhotoLoader {
         final ContentType.Type type = ContentType.getContentType(submission);
         final JsonNode dataNode = submission.getDataNode();
 
-        // Posts the card renders as a static drawable instead of a downloaded image (mirrors
-        // doImageAndText's nsfw/spoiler branches). Only skipped for the live feed; offline caching
-        // still wants the underlying image so a reveal works without a connection.
-        if (skipDrawableOnlyPosts) {
-            if (submission.isNsfw() && SettingValues.getIsNSFWEnabled()) {
-                return null;
-            }
-            final JsonNode spoilerNode = (dataNode != null) ? dataNode.get("spoiler") : null;
-            if (spoilerNode != null && spoilerNode.asBoolean()) {
-                return null;
-            }
+        // Posts the card renders as a static drawable instead of a downloaded image. Only skipped
+        // for the live feed; offline caching still wants the underlying image so a reveal works
+        // without a connection.
+        if (skipDrawableOnlyPosts && rendersStaticDrawable(submission)) {
+            return null;
         }
 
-        final boolean loadLq =
-                (!NetworkUtil.isConnectedWifi(c) && SettingValues.lowResMobile)
-                        || SettingValues.lowResAlways;
+        final boolean loadLq = isLowRes(c);
 
         // maxW sizes the URL to what will actually be shown — the thumbnail cell for a list feed, or
         // the full width for a card / a pre-warmed detail header. Reddit already serves
         // thumbnail-sized "resolutions", so a list thumbnail must not download the ≈1080px image.
         switch (type) {
             case REDDIT_GALLERY: {
-                final GalleryPreview gallery = getGalleryPreview(dataNode);
+                final GalleryPreview gallery = getGalleryPreview(dataNode, galleryMaxWidth(c));
                 return gallery != null ? gallery.url : null;
             }
             case ALBUM:
@@ -465,13 +654,18 @@ public class PhotoLoader {
 
     private static void loadImage(
             final Context context, final String url, final boolean warmMemory) {
+        loadImage(context, new WarmTarget(url, feedDecodeSize(context)), warmMemory);
+    }
+
+    private static void loadImage(
+            final Context context, final WarmTarget target, final boolean warmMemory) {
         final Reddit appContext = (Reddit) context.getApplicationContext();
         appContext
                 .getImageLoader()
                 .loadImage(
-                        url,
-                        feedDecodeSize(context),
-                        warmMemory ? FEED_PRELOAD_OPTIONS : PRELOAD_OPTIONS,
+                        target.url,
+                        target.size,
+                        target.options(warmMemory),
                         null);
     }
 
@@ -521,32 +715,46 @@ public class PhotoLoader {
      * quick. The rest of the page keeps warming in the background so later rows are ready on scroll.
      */
     public static void loadPhotos(final Context c, final List<Submission> submissions) {
-        final ArrayList<String> urls = new ArrayList<>(submissions.size());
+        loadPhotos(c, submissions, null);
+    }
+
+    /** As above, for a caller that knows the feed's base subreddit. See {@link #feedWarmTargets}. */
+    public static void loadPhotos(
+            final Context c, final List<Submission> submissions, final @Nullable String baseSub) {
+        // A gallery post with the grid on contributes one target per tile, so this is no longer one
+        // entry per submission. The blocking window below stays denominated in images — that is what
+        // FIRST_SCREEN_WARM and the timeout were measured against — but it only ever stops on a post
+        // boundary, so a card is never released with half its tiles warmed. On a feed without
+        // galleries every post is one image and this is exactly the old behaviour.
+        final ArrayList<WarmTarget> targets = new ArrayList<>(submissions.size());
+        int firstScreenTargets = 0;
+        boolean countingFirstScreen = true;
         for (final Submission submission : submissions) {
-            final String url = resolveFeedImageUrl(c, submission, true);
-            if (url != null && !PLACEHOLDER_URLS.contains(url)) {
-                urls.add(url);
+            final List<WarmTarget> postTargets = feedWarmTargets(c, submission, true, baseSub);
+            targets.addAll(postTargets);
+            if (countingFirstScreen) {
+                firstScreenTargets += postTargets.size();
+                countingFirstScreen = firstScreenTargets < FIRST_SCREEN_WARM;
             }
         }
-        if (urls.isEmpty()) {
+        if (targets.isEmpty()) {
             return;
         }
 
         final ImageLoader loader = ((Reddit) c.getApplicationContext()).getImageLoader();
-        final ImageSize size = feedDecodeSize(c);
         final ExecutorService pool =
-                Executors.newFixedThreadPool(Math.min(WARM_THREADS, Math.max(1, urls.size())));
+                Executors.newFixedThreadPool(Math.min(WARM_THREADS, Math.max(1, targets.size())));
 
         // Block only on the first screenful; the remaining downloads finish in the background.
-        final int blockCount = Math.min(urls.size(), FIRST_SCREEN_WARM);
+        final int blockCount = Math.min(targets.size(), firstScreenTargets);
         final CountDownLatch firstScreen = new CountDownLatch(blockCount);
-        for (int i = 0; i < urls.size(); i++) {
-            final String url = urls.get(i);
+        for (int i = 0; i < targets.size(); i++) {
+            final WarmTarget target = targets.get(i);
             final boolean counted = i < blockCount;
             pool.execute(
                     () -> {
                         try {
-                            loader.loadImageSync(url, size, FEED_PRELOAD_OPTIONS);
+                            loader.loadImageSync(target.url, target.size, target.options(true));
                         } catch (Throwable ignored) {
                             // Warming is best-effort, and Throwable covers the OOM a decode
                             // can raise; the finally below still counts this url down.
@@ -577,9 +785,12 @@ public class PhotoLoader {
      * window. URL resolution runs on {@link #WARM_AHEAD_EXECUTOR}, never the main thread (it does
      * JSON/gallery traversal — doing it per row on the main thread caused an ANR). Already-warmed
      * URLs are a cheap no-op: loadImage hits the memory cache and returns without re-downloading, and
-     * UIL de-dupes concurrent same-URI loads against the page-order warm.
+     * UIL de-dupes concurrent same-URI loads against the page-order warm. {@code baseSub} is the
+     * feed's base subreddit, which decides whether a row shows a big image at all — see {@link
+     * #feedWarmTargets}.
      */
-    public static void warmAhead(final Context c, final List<Submission> window) {
+    public static void warmAhead(
+            final Context c, final List<Submission> window, final @Nullable String baseSub) {
         if (c == null || window == null || window.isEmpty() || SettingValues.shouldSkipImages(c)) {
             return;
         }
@@ -587,9 +798,8 @@ public class PhotoLoader {
                 () -> {
                     for (final Submission s : window) {
                         try {
-                            final String url = resolveFeedImageUrl(c, s, true);
-                            if (url != null && !PLACEHOLDER_URLS.contains(url)) {
-                                loadImage(c, url, true);
+                            for (final WarmTarget target : feedWarmTargets(c, s, true, baseSub)) {
+                                loadImage(c, target, true);
                             }
                         } catch (Throwable ignored) {
                             // Warming is best-effort: the image loads on bind instead.
@@ -611,16 +821,18 @@ public class PhotoLoader {
      * data-saver gate is applied once per sweep by the sole caller ({@link #warmVisibleTapTargets}),
      * so it isn't repeated per row here. {@code app} must be the application context.
      */
-    private static void warmTapTarget(final Context app, final Submission submission) {
+    private static void warmTapTarget(
+            final Context app, final Submission submission, final @Nullable String baseSub) {
         if (app == null || submission == null) {
             return;
         }
         TAP_TARGET_EXECUTOR.execute(
                 () -> {
                     try {
-                        final String url = tapTargetUrl(app, submission);
-                        if (url != null && !PLACEHOLDER_URLS.contains(url)) {
-                            loadImage(app, url, false);
+                        for (final String url : tapTargetUrls(app, submission, baseSub)) {
+                            if (url != null && !PLACEHOLDER_URLS.contains(url)) {
+                                loadImage(app, url, false);
+                            }
                         }
                     } catch (Throwable ignored) {
                         // Warming is best-effort: the image loads on tap instead.
@@ -655,6 +867,17 @@ public class PhotoLoader {
             final @Nullable List<?> posts,
             final int headerOffset,
             final Set<String> warmed) {
+        warmVisibleTapTargets(context, rv, posts, headerOffset, warmed, null);
+    }
+
+    /** As above, for a caller that knows the feed's base subreddit. See {@link #feedWarmTargets}. */
+    public static void warmVisibleTapTargets(
+            final @Nullable Context context,
+            final RecyclerView rv,
+            final @Nullable List<?> posts,
+            final int headerOffset,
+            final Set<String> warmed,
+            final @Nullable String baseSub) {
         if (context == null || rv == null || posts == null || warmed == null) {
             return;
         }
@@ -716,7 +939,7 @@ public class PhotoLoader {
                 if (item instanceof Submission) {
                     final Submission s = (Submission) item;
                     if (warmed.add(s.getFullName())) {
-                        warmTapTarget(app, s);
+                        warmTapTarget(app, s, baseSub);
                     }
                 }
             } catch (RuntimeException ignored) {
@@ -845,24 +1068,72 @@ public class PhotoLoader {
      * still image, resolved through the imgur API. Callers run this off the main thread (the album
      * branch does blocking network I/O).
      */
-    private static @Nullable String tapTargetUrl(
-            final Context context, final Submission submission) {
+    private static List<String> tapTargetUrls(
+            final Context context, final Submission submission, final @Nullable String baseSub) {
         final ContentType.Type type = ContentType.getContentType(submission);
         if (type == ContentType.Type.IMAGE) {
             final String url = submission.getUrl();
             // Mirror MediaView.onCreate's initial displayImage: it appends ".png" for an imgur URL, so
             // warm that exact URL or the disk-cache entry won't match what the viewer requests.
-            return (url != null && ContentType.isImgurHash(url)) ? url + ".png" : url;
+            return singletonOrEmpty(
+                    (url != null && ContentType.isImgurHash(url)) ? url + ".png" : url);
         }
         if (type == ContentType.Type.REDDIT_GALLERY) {
-            return firstGalleryStillSourceUrl(submission.getDataNode());
+            return galleryTapTargetUrls(submission, baseSub);
         }
         if (type == ContentType.Type.ALBUM) {
             // Imgur album: unlike a reddit gallery, the member image URLs aren't in the reddit post,
             // so resolve the first image through the imgur API (blocking — hence TAP_TARGET_EXECUTOR).
-            return AlbumUtils.getFirstAlbumImageUrlBlocking(context, submission.getUrl());
+            return singletonOrEmpty(
+                    AlbumUtils.getFirstAlbumImageUrlBlocking(context, submission.getUrl()));
         }
-        return null;
+        return Collections.emptyList();
+    }
+
+    private static List<String> singletonOrEmpty(final @Nullable String url) {
+        return url == null ? Collections.emptyList() : Collections.singletonList(url);
+    }
+
+    /**
+     * The full-resolution images a tap on this gallery card can open.
+     *
+     * <p>One, normally: the card opens on the gallery's first still. With the grid on, every tile is
+     * its own tap target and opens the viewer on that image, so each of them needs warming or three
+     * of the four tiles download on tap while the first is instant. Bounded by
+     * {@link GalleryTiles#MAX_FEED_TILES}, and the caller has already checked that the user has not
+     * turned data saving on.
+     *
+     * <p>Animated entries are skipped for the same reason the single-image path skips them: the
+     * viewer opens those as a gif or mp4, not as a still this loader can warm.
+     */
+    private static List<String> galleryTapTargetUrls(
+            final Submission submission, final @Nullable String baseSub) {
+        final JsonNode dataNode = submission.getDataNode();
+        // rendersStaticDrawable: a card showing the nsfw/spoiler icon has no tiles to tap, and its
+        // one tap opens the viewer at image one — so warm that, not four originals nobody can reach.
+        if (!SettingValues.galleryGrid
+                || !SettingValues.isPicsEnabled(baseSub)
+                || rendersStaticDrawable(submission, baseSub)) {
+            return singletonOrEmpty(firstGalleryStillSourceUrl(dataNode));
+        }
+        final List<GalleryImage> images = GalleryTiles.imagesFor(dataNode);
+        if (images.size() < 2) {
+            // Too few for a grid, so the card still opens on the first still image.
+            return singletonOrEmpty(firstGalleryStillSourceUrl(dataNode));
+        }
+        final int tiles = GalleryTiles.tileCount(images.size());
+        final List<String> urls = new ArrayList<>(tiles);
+        for (int i = 0; i < tiles; i++) {
+            final GalleryImage image = images.get(i);
+            if (image.isAnimated() || image.metadata == null || image.metadata.source == null) {
+                continue;
+            }
+            final String url = image.metadata.source.u;
+            if (url != null && !url.isEmpty()) {
+                urls.add(url);
+            }
+        }
+        return urls;
     }
 
     /**
@@ -932,8 +1203,15 @@ public class PhotoLoader {
      * Resolve the first usable gallery image, preferring a reddit-sized preview variant over the
      * full-resolution source. Shared by the feed card (HeaderImageLinkView) and the preloader so
      * both reference the same cache entry. Returns null if no usable image exists.
+     *
+     * <p>Capped at {@code maxWidth} — the smallest {@code p} rung that covers it, rather than the
+     * largest rung there is. {@link Integer#MAX_VALUE} means uncapped, the same convention
+     * {@link #sizedResolutionUrl} uses, and nothing covers it so the largest rung wins. A finite cap
+     * is how the "low resolution images" setting reaches gallery posts, whose preview selection
+     * otherwise ignored it and always pulled the full-size rung.
      */
-    public static @Nullable GalleryPreview getGalleryPreview(@Nullable JsonNode dataNode) {
+    public static @Nullable GalleryPreview getGalleryPreview(
+            @Nullable JsonNode dataNode, final int maxWidth) {
         if (dataNode == null) return null;
         // A crosspost keeps its gallery data in the parent submission. Mirror the display path,
         // which always prefers the parent when a crosspost parent is present.
@@ -959,12 +1237,22 @@ public class PhotoLoader {
                 continue;
             }
 
-            // Prefer the largest reddit-sized preview ("p" is ordered smallest-to-largest).
+            // Prefer a reddit-sized preview ("p" is ordered smallest-to-largest): the largest one
+            // when uncapped, otherwise the smallest that still covers maxWidth.
             if (mediaInfo.has("p") && mediaInfo.path("p").size() > 0) {
-                final JsonNode largest = mediaInfo.path("p").path(mediaInfo.path("p").size() - 1);
-                if (largest.has("u")) {
+                final JsonNode previews = mediaInfo.path("p");
+                JsonNode chosen = previews.path(previews.size() - 1);
+                if (maxWidth != Integer.MAX_VALUE) {
+                    for (final JsonNode rung : previews) {
+                        if (rung != null && rung.has("u") && dimOf(rung, "x") >= maxWidth) {
+                            chosen = rung;
+                            break;
+                        }
+                    }
+                }
+                if (chosen.has("u")) {
                     return new GalleryPreview(
-                            largest.path("u").asText(), dimOf(largest, "x"), dimOf(largest, "y"));
+                            chosen.path("u").asText(), dimOf(chosen, "x"), dimOf(chosen, "y"));
                 }
             }
             // Fall back to the full-resolution source, normalized to the unsigned i.redd.it host

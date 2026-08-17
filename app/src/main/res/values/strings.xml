@@ -1283,6 +1283,9 @@
     <string name="open_links_externally">Always open this host externally</string>
     <string name="hide_read_posts">Hide read posts</string>
     <string name="gallery_mode">Gallery mode</string>
+    <string name="settings_gallery_grid">Show gallery posts as a grid</string>
+    <string name="gallery_grid_image">Gallery image %1$d of %2$d</string>
+    <string name="gallery_grid_overflow">+%1$d</string>
     <string name="friends_sort_error">/r/ friends is unsortable</string>
     <string name="shadowbox_comments_nolinks">No links found in comments</string>
     <string name="pro_previews">Preview (%d)</string>

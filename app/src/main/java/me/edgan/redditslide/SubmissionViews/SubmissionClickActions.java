@@ -6,7 +6,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import com.fasterxml.jackson.databind.JsonNode;
+import androidx.annotation.Nullable;
 import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import me.edgan.redditslide.Activities.Album;
@@ -34,7 +34,7 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.FileUtil;
-import me.edgan.redditslide.util.JsonUtil;
+import me.edgan.redditslide.util.GalleryTiles;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.NetworkUtil;
@@ -46,6 +46,86 @@ import net.dean.jraw.models.Submission;
  * Handles click actions for Submission views.
  */
 public class SubmissionClickActions {
+
+    /**
+     * Record that the user opened this post and dim its card to match.
+     *
+     * <p>Shared so that every way of opening a post from a card marks it read the same way. The
+     * gallery grid's tiles open the viewer without going through {@link #addClickFunctions}'s
+     * listener, and before this was shared they left the post unread — so a gallery opened from a
+     * tile never turned up in the read history, while the same post opened from its title did.
+     */
+    public static void markRead(
+            final Activity contextActivity,
+            final Submission submission,
+            final @Nullable SubmissionViewHolder holder) {
+        if (!SettingValues.storeHistory
+                || !(holder instanceof CardSubmissionViewHolder cardHolder)) {
+            return;
+        }
+        if (submission.isNsfw() && !SettingValues.storeNSFWHistory) {
+            return;
+        }
+        HasSeen.addSeen(submission.getFullName());
+        if (contextActivity instanceof MainActivity
+                || contextActivity instanceof MultiredditOverview
+                || contextActivity instanceof SubredditView
+                || contextActivity instanceof Search
+                || contextActivity instanceof Profile) {
+            holder.title.setAlpha(0.54f);
+            cardHolder.body.setAlpha(0.54f);
+        }
+    }
+
+    /**
+     * Open a Reddit gallery post's viewer on image {@code startIndex}, or hand the post to the
+     * browser when the in-app album viewer is switched off.
+     *
+     * <p>{@code startIndex} is an index into {@link GalleryTiles#imagesFor}, which is also what
+     * fills {@link RedditGallery#GALLERY_URLS} here — so a caller that identified an image from that
+     * list (the feed's gallery grid) can name it by position. Every other entry point passes 0 and
+     * behaves exactly as before.
+     *
+     * <p>{@code adapterPosition} is the feed row, not an image: it is what lets the viewer offer the
+     * "comments" menu item for the post it came from. Pass -1 when there is no row.
+     */
+    public static void openRedditGallery(
+            final Activity contextActivity,
+            final Submission submission,
+            final int startIndex,
+            final int adapterPosition) {
+        if (!SettingValues.album) {
+            LinkUtil.openExternally(submission.getUrl());
+            return;
+        }
+
+        final Intent i;
+        if (SettingValues.albumSwipe) {
+            i = new Intent(contextActivity, RedditGalleryPager.class);
+            i.putExtra(AlbumPager.SUBREDDIT, submission.getSubredditName());
+        } else {
+            i = new Intent(contextActivity, RedditGallery.class);
+            i.putExtra(Album.SUBREDDIT, submission.getSubredditName());
+        }
+
+        i.putExtra(EXTRA_SUBMISSION_TITLE, FileUtil.buildDownloadName(submission));
+        i.putExtra(RedditGallery.SUBREDDIT, submission.getSubredditName());
+        i.putExtra(RedditGallery.EXTRA_START_INDEX, startIndex);
+
+        // GalleryTiles resolves the crosspost parent the way the card's display path does, so the
+        // list handed to the viewer is the same one the card drew its images from. The grid relies
+        // on that: tile k has to be viewer image k.
+        final ArrayList<GalleryImage> urls =
+                new ArrayList<>(GalleryTiles.imagesFor(submission.getDataNode()));
+
+        final Bundle urlsBundle = new Bundle();
+        urlsBundle.putSerializable(RedditGallery.GALLERY_URLS, urls);
+        i.putExtras(urlsBundle);
+
+        PopulateBase.addAdaptorPosition(i, submission, adapterPosition, contextActivity);
+        contextActivity.startActivity(i);
+        contextActivity.overridePendingTransition(R.anim.slideright, R.anim.fade_out);
+    }
 
     public static void addClickFunctions(
             final View base,
@@ -60,20 +140,7 @@ public class SubmissionClickActions {
                         if (NetworkUtil.isConnected(contextActivity)
                                 || (!NetworkUtil.isConnected(contextActivity)
                                         && ContentType.fullImage(type))) {
-                            if (SettingValues.storeHistory
-                                    && holder instanceof CardSubmissionViewHolder cardHolder) {
-                                if (!submission.isNsfw() || SettingValues.storeNSFWHistory) {
-                                    HasSeen.addSeen(submission.getFullName());
-                                    if (contextActivity instanceof MainActivity
-                                            || contextActivity instanceof MultiredditOverview
-                                            || contextActivity instanceof SubredditView
-                                            || contextActivity instanceof Search
-                                            || contextActivity instanceof Profile) {
-                                        holder.title.setAlpha(0.54f);
-                                        cardHolder.body.setAlpha(0.54f);
-                                    }
-                                }
-                            }
+                            markRead(contextActivity, submission, holder);
                             if (!(contextActivity instanceof PeekViewActivity)
                                     || !((PeekViewActivity) contextActivity).isPeeking()
                                     || (base instanceof HeaderImageLinkView && ((HeaderImageLinkView) base).popped)) {
@@ -119,44 +186,11 @@ public class SubmissionClickActions {
                                             SubmissionThumbnailHelper.openRedditContent(submission.getUrl(), contextActivity);
                                             break;
                                         case REDDIT_GALLERY:
-                                            if (SettingValues.album) {
-                                                Intent i;
-                                                if (SettingValues.albumSwipe) {
-                                                    i = new Intent(contextActivity, RedditGalleryPager.class);
-                                                    i.putExtra(AlbumPager.SUBREDDIT, submission.getSubredditName());
-                                                } else {
-                                                    i = new Intent(contextActivity, RedditGallery.class);
-                                                    i.putExtra(Album.SUBREDDIT, submission.getSubredditName());
-                                                }
-
-                                                i.putExtra(
-                                                        EXTRA_SUBMISSION_TITLE,
-                                                        FileUtil.buildDownloadName(submission));
-                                                i.putExtra(RedditGallery.SUBREDDIT, submission.getSubredditName());
-
-                                                ArrayList<GalleryImage> urls = new ArrayList<>();
-
-                                                JsonNode dataNode = submission.getDataNode();
-
-                                                if (dataNode.has("gallery_data")) {
-                                                    JsonUtil.getGalleryData(dataNode, urls);
-                                                } else if (dataNode.has("crosspost_parent_list")) { // Else, try getting crosspost gallery data
-                                                    JsonNode crosspost_parent = dataNode.path("crosspost_parent_list").path(0);
-                                                    if (crosspost_parent.has("gallery_data")) {
-                                                        JsonUtil.getGalleryData(crosspost_parent, urls);
-                                                    }
-                                                }
-
-                                                Bundle urlsBundle = new Bundle();
-                                                urlsBundle.putSerializable(RedditGallery.GALLERY_URLS, urls);
-                                                i.putExtras(urlsBundle);
-
-                                                PopulateBase.addAdaptorPosition(i, submission, holder.getBindingAdapterPosition(), contextActivity);
-                                                contextActivity.startActivity(i);
-                                                contextActivity.overridePendingTransition(R.anim.slideright, R.anim.fade_out);
-                                            } else {
-                                                LinkUtil.openExternally(submission.getUrl());
-                                            }
+                                            openRedditGallery(
+                                                    contextActivity,
+                                                    submission,
+                                                    0,
+                                                    holder.getBindingAdapterPosition());
                                             break;
                                         case LINK:
                                             LinkUtil.openUrl(

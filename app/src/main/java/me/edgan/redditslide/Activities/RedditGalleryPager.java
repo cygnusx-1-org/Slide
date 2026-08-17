@@ -263,10 +263,17 @@ public class RedditGalleryPager extends BaseSaveActivity implements GalleryParen
                             }
                         });
 
-        int startPage = 0;
+        // The image a caller asked to open on (a tile tap in the feed's gallery grid); 0 for every
+        // other entry point, which is the first image, as before.
+        int startPage =
+                Math.max(
+                        0,
+                        Math.min(
+                                getIntent().getIntExtra(RedditGallery.EXTRA_START_INDEX, 0),
+                                images.size() - 1));
 
         if (SettingValues.oldSwipeMode) {
-            startPage = 1;
+            startPage += 1;
         }
 
         p.setCurrentItem(startPage);

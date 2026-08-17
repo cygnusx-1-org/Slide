@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -24,14 +23,12 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import me.edgan.redditslide.Adapters.SubmissionViewHolder;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.ForceTouch.PeekView;
 import me.edgan.redditslide.ForceTouch.PeekViewActivity;
@@ -45,11 +42,14 @@ import me.edgan.redditslide.HasSeen;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.Views.GalleryGridView;
 import me.edgan.redditslide.Views.MaxHeightImageView;
 import me.edgan.redditslide.Views.PeekMediaView;
 import me.edgan.redditslide.Views.RoundImageTriangleView;
 import me.edgan.redditslide.Views.TransparentTagTextView;
+import me.edgan.redditslide.util.CachedFirstImageBinder;
 import me.edgan.redditslide.util.CompatUtil;
+import me.edgan.redditslide.util.GalleryTiles;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
@@ -57,7 +57,6 @@ import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.PhotoLoader;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Thumbnails;
-import org.apache.commons.text.StringEscapeUtils;
 
 /** Created by carlo_000 on 2/7/2016. */
 public class HeaderImageLinkView extends RelativeLayout {
@@ -107,9 +106,20 @@ public class HeaderImageLinkView extends RelativeLayout {
     @Nullable private TextView info;
     public MaxHeightImageView backdrop;
 
+    // Stands in for backdrop on gallery posts when SettingValues.galleryGrid is on. Assigned in
+    // init() from the layout, like backdrop.
+    @SuppressWarnings("NullAway.Init")
+    public GalleryGridView galleryGrid;
+
+    // Installed by PopulateSubmissionViewHolder alongside setThumbnail, and read at click time
+    // rather than at bind time, so a gallery tile tap carries the row's current adapter position —
+    // which is what lets the media viewer offer the post's comments, as a card tap does.
+    @Nullable private SubmissionViewHolder positionHolder;
+
     // Cache the resolved gallery preview, keyed by the data node identity, so re-binds of the same
     // card skip re-traversing the gallery JSON while a refreshed submission (new node) recomputes.
     @Nullable private JsonNode galleryPreviewKey;
+    private int galleryPreviewMaxWidth;
     @Nullable private PhotoLoader.GalleryPreview galleryPreviewCache;
 
     // Same idea for single-image posts. The chosen URL also depends on the low-quality decision
@@ -196,6 +206,9 @@ public class HeaderImageLinkView extends RelativeLayout {
             boolean news) {
         backdrop.setAspectRatio(0);
         backdrop.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        // View recycling: the previous post may have been a gallery drawn as a grid. Undoing it here
+        // rather than on each of the paths below means no path can forget to.
+        hideGalleryGrid();
 
         boolean fullImage = ContentType.fullImage(type);
         thumbUsed = false;
@@ -594,6 +607,11 @@ public class HeaderImageLinkView extends RelativeLayout {
         thumbImage2 = v;
     }
 
+    /** See {@link #positionHolder}. */
+    public void setPositionHolder(@Nullable SubmissionViewHolder holder) {
+        positionHolder = holder;
+    }
+
     public void setUrl(String url) {}
 
     public void setWrapArea(View v) {
@@ -607,6 +625,7 @@ public class HeaderImageLinkView extends RelativeLayout {
         this.title = requireViewById(R.id.textimage);
         this.info = findViewById(R.id.subtextimage);
         this.backdrop = findViewById(R.id.leadimage);
+        this.galleryGrid = findViewById(R.id.gallerygrid);
         // Universal Image Loader reads the ImageView's maxHeight (the view's layout height is
         // WRAP_CONTENT) to size its decode target. Cap it to the screen-relative value so tall
         // images don't decode at near-full resolution. Previously this was a hardcoded 3200px in
@@ -795,100 +814,18 @@ public class HeaderImageLinkView extends RelativeLayout {
             @Nullable String url, @Nullable ImageView target, @Nullable ImageLoadingListener listener) {
         final ImageLoader loader =
                 ((Reddit) getContext().getApplicationContext()).getImageLoader();
+        // The synchronous disk decode is worth it for the small thumbnail but not for the big lead
+        // image, where a full-width decode on this thread could jank the scroll. The gallery grid
+        // passes true for its tiles, which are thumbnail-sized.
         final boolean isThumb = target instanceof RoundImageTriangleView;
-        if (url != null && target != null) {
-            // UIL keys its memory cache by "uri_WxH", so look up by URI across all sizes. Unescape
-            // to match ImageLoaderUnescape, which unescapes the URI on every display/load.
-            final String unescaped = StringEscapeUtils.unescapeHtml4(url);
-            Bitmap cached = firstCachedBitmap(loader, unescaped);
-
-            // Memory miss, but the preloader already downloaded the file (or it was decoded earlier
-            // and then evicted from the memory LRU while scrolling): decode the small thumbnail from
-            // disk synchronously in this frame instead of swapping it in asynchronously, which reads
-            // as a redraw. Bounded to the thumbnail size and gated on the file already being cached,
-            // so it never touches the network. Skipped for the big lead image, where a full-width
-            // synchronous decode could jank the scroll.
-            if (cached == null && isThumb) {
-                cached = syncDecodeThumbnailFromDisk(loader, unescaped);
-            }
-
-            // Keep the thumbnail and full-image paths from crossing over: only bind a cached bitmap
-            // that is actually large enough for this view. A thumbnail-sized bitmap must never be
-            // stretched into a full-width lead image (it would look blurry) — this covers the
-            // per-subreddit pics override and single-rung posts where the thumb and full share a URL.
-            // The small thumbnail view always passes; the big lead image only takes a full-sized one.
-            if (cached != null
-                    && !cached.isRecycled()
-                    && (target.getWidth() <= 0 || cached.getWidth() * 3 >= target.getWidth() * 2)) {
-                // The holder is recycled: cancel any load still in flight for this view from the
-                // previous post, or it could complete later and overwrite our bitmap.
-                loader.cancelDisplayTask(target);
-                target.setImageBitmap(cached);
-                if (listener != null) {
-                    listener.onLoadingComplete(url, target, cached);
-                }
-                return;
-            }
-        }
-        loader.displayImage(url, target, bigOptions, listener);
-    }
-
-    private static @Nullable Bitmap firstCachedBitmap(ImageLoader loader, String uri) {
-        for (Bitmap cached :
-                MemoryCacheUtils.findCachedBitmapsForImageUri(uri, loader.getMemoryCache())) {
-            if (cached != null && !cached.isRecycled()) {
-                return cached;
-            }
-        }
-        return null;
-    }
-
-    // Synchronously decode an already-downloaded thumbnail from the disk cache, or null if the file
-    // isn't cached yet (so the caller falls back to an async load). Decodes the file directly with
-    // BitmapFactory so it can never fall through to a main-thread network fetch — loadImageSync
-    // would, if the disk entry were evicted between the exists() check and the decode. Decoded at,
-    // and cached under, the preloader's target size/key so the result reuses the preloader's memory
-    // entry instead of adding a second differently sized one, and repeat binds hit memory instead
-    // of re-decoding.
-    private @Nullable Bitmap syncDecodeThumbnailFromDisk(ImageLoader loader, String uri) {
-        try {
-            final File diskFile = loader.getDiskCache().get(uri);
-            if (diskFile == null || !diskFile.exists()) {
-                return null;
-            }
-            final ImageSize size = PhotoLoader.feedDecodeSize(getContext());
-
-            final BitmapFactory.Options bounds = new BitmapFactory.Options();
-            bounds.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(diskFile.getAbsolutePath(), bounds);
-            if (bounds.outWidth <= 0 || bounds.outHeight <= 0) {
-                return null;
-            }
-
-            final BitmapFactory.Options opts = new BitmapFactory.Options();
-            opts.inPreferredConfig = Bitmap.Config.RGB_565;
-            // Cap the loop (sample <= 32) so it can't spin even if a target dimension is ever 0.
-            int sample = 1;
-            while (sample < 32
-                    && bounds.outWidth / (sample * 2) >= size.getWidth()
-                    && bounds.outHeight / (sample * 2) >= size.getHeight()) {
-                sample *= 2;
-            }
-            opts.inSampleSize = sample;
-
-            final Bitmap bmp = BitmapFactory.decodeFile(diskFile.getAbsolutePath(), opts);
-            if (bmp != null) {
-                loader.getMemoryCache().put(MemoryCacheUtils.generateKey(uri, size), bmp);
-            }
-            return bmp;
-            // Catch Throwable, not Exception: BitmapFactory.decodeFile throws OutOfMemoryError (an
-            // Error) on allocation failure, which must degrade to the async fallback, not crash the
-            // bind. UIL's own decoder guards against OOM the same way.
-        } catch (Throwable ignored) {
-            // See the note above: any failure, OOM
-            // included, degrades to the async load.
-        }
-        return null;
+        CachedFirstImageBinder.display(
+                loader,
+                url,
+                target,
+                bigOptions,
+                listener,
+                PhotoLoader.feedDecodeSize(getContext()),
+                isThumb);
     }
 
     private void handleImageType(Submission submission, @Nullable String baseSub, boolean full, boolean forceThumb, boolean loadLq) {
@@ -1288,16 +1225,173 @@ public class HeaderImageLinkView extends RelativeLayout {
         }
     }
 
+    /**
+     * Draw the gallery as a grid of thumbnails instead of a single lead image, or return false to
+     * leave the card on its ordinary lead-image path.
+     *
+     * <p>Only in the feed, and only where the card shows the big lead image: {@code full} is the
+     * comments screen (submission_fullscreen), and the list and desktop rows show a small thumbnail
+     * a grid has no room inside. A gallery of one has nothing a grid would add.
+     */
+    private boolean showGalleryGrid(
+            Submission submission, @Nullable String baseSub, boolean full, boolean forceThumb) {
+        // isPicsEnabled is the whole test, as it is for handlePreviewImage just below: it already
+        // falls back to the global bigPicEnabled when the subreddit has no override. Naming
+        // bigPicEnabled as well made this stricter than the lead image it replaces — a subreddit
+        // whose override turns pictures on while the global setting is off draws the big image but
+        // was refused the grid, and both warm paths went on warming tiles for it.
+        if (!SettingValues.galleryGrid
+                || full
+                || forceThumb
+                || !SettingValues.isPicsEnabled(baseSub)) {
+            return false;
+        }
+        // The submission's own node, not the crosspost-resolved one handleRedditGalleryType passes
+        // down: GalleryTiles resolves the crosspost itself, and it has to do so from the same node
+        // SubmissionClickActions.openRedditGallery starts from, or the tiles and the viewer's image
+        // list come from different posts. Handing it a node that has already been hopped once made
+        // a crosspost of a crosspost resolve to the grandparent here and the parent there, so tile
+        // k opened image k of another gallery — the one thing this whole indexing scheme promises.
+        final GalleryTiles.Grid grid = GalleryTiles.gridFor(getContext(), submission.getDataNode());
+        if (grid == null) {
+            return false;
+        }
+
+        backdrop.setVisibility(View.GONE);
+        galleryGrid.setVisibility(View.VISIBLE);
+        // The tag ("GALLERY") and domain overlays are anchored to leadimage; it is GONE on this
+        // path, so move whatever rules name it onto the grid instead.
+        anchorOverlays(R.id.leadimage, R.id.gallerygrid);
+        setThumbAndWrapVisibility(full, false);
+
+        galleryGrid.bind(
+                grid.tiles,
+                grid.span,
+                grid.overflowCount,
+                index -> {
+                    final Activity activity = activityOf(getContext());
+                    if (activity == null || activity.isFinishing()) {
+                        return;
+                    }
+                    // Same step the card's own click performs: opening a gallery from a tile has to
+                    // mark the post read, or it never reaches the read history.
+                    SubmissionClickActions.markRead(activity, submission, positionHolder);
+                    SubmissionClickActions.openRedditGallery(
+                            activity,
+                            submission,
+                            index,
+                            positionHolder == null
+                                    ? -1
+                                    : positionHolder.getBindingAdapterPosition());
+                },
+                // The post's url, not the tile's: the sheet's share/copy actions should hand over
+                // the post, the way a long press on a lead image does. A null event skips the peek
+                // (which needs the touch position) and goes straight to the sheet.
+                index -> {
+                    // The lead image's long press marks the post read before it opens the sheet
+                    // (see the longClicked runnable in setOnLongClickListener); a tile has to do
+                    // the same, or long-pressing a gallery leaves it out of the read history while
+                    // long-pressing the picture beside it does not.
+                    // The lead image's long press marks the post read before it opens the sheet
+                    // (see the longClicked runnable in setBottomSheet); a tile has to do the same,
+                    // or long-pressing a gallery leaves it out of the read history while
+                    // long-pressing the picture on the card below it does not.
+                    final Activity activity = activityOf(getContext());
+                    if (activity != null && !activity.isFinishing()) {
+                        SubmissionClickActions.markRead(activity, submission, positionHolder);
+                    }
+                    onLinkLongClick(submission.getUrl(), null, submission);
+                    return true;
+                });
+        return true;
+    }
+
+    /**
+     * The Activity behind this view's context, or null if there is none.
+     *
+     * <p>A card's context is a themed wrapper, not the Activity, so it cannot simply be cast —
+     * {@link ContextThemeWrapper} extends {@link ContextWrapper}, so unwrapping in a loop covers
+     * however deeply it happens to be nested.
+     */
+    private static @Nullable Activity activityOf(Context context) {
+        while (context instanceof ContextWrapper) {
+            if (context instanceof Activity) {
+                return (Activity) context;
+            }
+            context = ((ContextWrapper) context).getBaseContext();
+        }
+        return null;
+    }
+
+    /** Undo {@link #showGalleryGrid}, for a holder being rebound to anything else. */
+    private void hideGalleryGrid() {
+        if (galleryGrid.getVisibility() == View.GONE) {
+            return;
+        }
+        galleryGrid.clear();
+        galleryGrid.setVisibility(View.GONE);
+        backdrop.setVisibility(View.VISIBLE);
+        anchorOverlays(R.id.gallerygrid, R.id.leadimage);
+    }
+
+    /**
+     * Move the tag and domain overlays from anchoring on {@code fromId} to anchoring on {@code toId}.
+     *
+     * <p>Every rule that names the old anchor moves, not just one of them. The content-tag position
+     * setting is expressed as layout rules on {@code R.id.tag}: {@code CreateCardView.doHideObjects}
+     * anchors it {@code ALIGN_TOP}+{@code ALIGN_RIGHT} to the lead image for "top", and
+     * {@code ALIGN_BOTTOM}+{@code ALIGN_RIGHT} for "bottom". Re-pointing only the vertical rule left
+     * the horizontal one attached to a lead image that is GONE behind the grid, which put the tag in
+     * the wrong place instead of honouring the setting.
+     *
+     * <p>Both views in one call on purpose: they are a pair, and an anchor moved on one but not the
+     * other puts the domain strip and the type tag on different lines.
+     */
+    // Package-private rather than private so RoborazziContentTagTest can drive the gallery ->
+    // non-gallery recycle that this method has to survive; the alternative is a full bind, which
+    // needs the real Reddit application for its image loader.
+    void anchorOverlays(int fromId, int toId) {
+        reanchor(findViewById(R.id.tag), fromId, toId);
+        reanchor(findViewById(R.id.base), fromId, toId);
+    }
+
+    private static void reanchor(@Nullable View view, int fromId, int toId) {
+        if (view == null) {
+            return;
+        }
+        final RelativeLayout.LayoutParams params =
+                (RelativeLayout.LayoutParams) view.getLayoutParams();
+        if (params == null) {
+            return;
+        }
+        final int[] rules = params.getRules();
+        for (int verb = 0; verb < rules.length; verb++) {
+            if (rules[verb] == fromId) {
+                params.addRule(verb, toId);
+            }
+        }
+        view.setLayoutParams(params);
+    }
+
     private void handleGalleryData(JsonNode dataNode, Submission submission, @Nullable String baseSub, boolean full, boolean forceThumb) {
+        if (showGalleryGrid(submission, baseSub, full, forceThumb)) {
+            return;
+        }
+
         // Selection logic is shared with the preloader so the card and PhotoLoader reference the
-        // same (sized) gallery image — see PhotoLoader.getGalleryPreview. Cache by data node
-        // identity: a re-bind of the same card skips re-parsing, a refreshed submission recomputes.
+        // same (sized) gallery image — see PhotoLoader.getGalleryPreview. The width cap is how the
+        // low-resolution setting reaches a gallery, and it has to be computed the same way on both
+        // sides or the card downloads a second copy of the picture the preloader already fetched.
+        final int maxWidth = PhotoLoader.galleryMaxWidth(getContext());
+        // Cache by data node identity, plus the cap: a re-bind of the same card skips re-parsing, a
+        // refreshed submission recomputes, and so does a move on or off wifi (which changes the cap).
         final PhotoLoader.GalleryPreview gallery;
-        if (dataNode != null && dataNode == galleryPreviewKey) {
+        if (dataNode != null && dataNode == galleryPreviewKey && maxWidth == galleryPreviewMaxWidth) {
             gallery = galleryPreviewCache;
         } else {
-            gallery = PhotoLoader.getGalleryPreview(dataNode);
+            gallery = PhotoLoader.getGalleryPreview(dataNode, maxWidth);
             galleryPreviewKey = dataNode;
+            galleryPreviewMaxWidth = maxWidth;
             galleryPreviewCache = gallery;
         }
 

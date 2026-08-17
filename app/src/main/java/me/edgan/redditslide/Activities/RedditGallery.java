@@ -23,6 +23,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 import java.util.ArrayList;
@@ -54,6 +55,13 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
 
     public static final String SUBREDDIT = "subreddit";
     public static final String GALLERY_URLS = "galleryurls";
+
+    /**
+     * Zero-based index of the gallery image to open on, for a caller that knows which one the user
+     * asked for — a tile tap in the feed's gallery grid. Absent or 0 opens at the first image, which
+     * is what every other entry point does. Read by this activity and by {@link RedditGalleryPager}.
+     */
+    public static final String EXTRA_START_INDEX = "startIndex";
     private @Nullable List<GalleryImage> images;
     private int adapterPosition;
     @Nullable public String url;
@@ -343,10 +351,33 @@ public class RedditGallery extends BaseSaveActivity implements GalleryParent {
                                                 galleryActivity.subreddit,
                                                 galleryActivity.submissionTitle);
                                 recyclerView.setAdapter(adapter);
+                                scrollToStartIndex(galleryActivity);
                             }
                         });
             }
             return rootView;
+        }
+
+        /**
+         * Jump to {@link RedditGallery#EXTRA_START_INDEX}, for a caller that opened the gallery on a
+         * specific image. Mirrors the grid dialog's jump in {@link RedditGalleryView}: image
+         * {@code i} sits at RecyclerView position {@code i + 1}, past the toolbar spacer row, and
+         * the offset clears the toolbar drawn over the list.
+         */
+        private void scrollToStartIndex(final RedditGallery galleryActivity) {
+            final int startIndex =
+                    galleryActivity.getIntent().getIntExtra(RedditGallery.EXTRA_START_INDEX, 0);
+            if (startIndex <= 0 || recyclerView == null) {
+                return;
+            }
+            final RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+            if (!(layoutManager instanceof LinearLayoutManager)) {
+                return;
+            }
+            final int offset =
+                    galleryActivity.mToolbar != null ? galleryActivity.mToolbar.getHeight() : 0;
+            ((LinearLayoutManager) layoutManager)
+                    .scrollToPositionWithOffset(startIndex + 1, offset);
         }
     }
 

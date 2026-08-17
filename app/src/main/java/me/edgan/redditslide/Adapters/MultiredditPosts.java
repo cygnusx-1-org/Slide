@@ -273,7 +273,10 @@ public class MultiredditPosts implements PostLoader {
             if (!(SettingValues.noImages
                     && ((!NetworkUtil.isConnectedWifi(c) && SettingValues.lowResMobile)
                             || SettingValues.lowResAlways)))
-                PhotoLoader.loadPhotos(c, filteredSubmissions);
+                PhotoLoader.loadPhotos(
+                        c,
+                        filteredSubmissions,
+                        "multi_" + displayName().toLowerCase(Locale.ENGLISH));
 
             if (SettingValues.storeHistory) LastComments.setCommentsSince(filteredSubmissions);
 
