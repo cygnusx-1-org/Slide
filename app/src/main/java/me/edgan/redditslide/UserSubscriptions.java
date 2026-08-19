@@ -391,6 +391,9 @@ public class UserSubscriptions {
     public static void switchAccounts() {
         // Different account -> different saved list; drop the previous account's Saved cache.
         SavedPostCache.invalidate();
+        // ...and a different inbox, so the account being left must not lend its unread count to
+        // the one being joined.
+        InboxCount.clear(Reddit.appRestart);
         SharedPreferences.Editor editor = Reddit.appRestart.edit();
         editor.putBoolean("back", true);
         editor.putString("subs", "");

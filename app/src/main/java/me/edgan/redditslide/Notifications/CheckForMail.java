@@ -28,6 +28,7 @@ import me.edgan.redditslide.Activities.OpenContent;
 import me.edgan.redditslide.Adapters.MarkAsReadService;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.HasSeen;
+import me.edgan.redditslide.InboxCount;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
@@ -39,6 +40,7 @@ import me.edgan.redditslide.util.StringUtil;
 import net.dean.jraw.models.Message;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.paginators.InboxPaginator;
+import net.dean.jraw.paginators.Paginator;
 import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.SubredditPaginator;
 import org.apache.commons.text.StringEscapeUtils;
@@ -113,6 +115,18 @@ public class CheckForMail extends BroadcastReceiver {
                 // Intent for mark as read notification action
                 PendingIntent readPI = MarkAsReadService.getMarkAsReadIntent(2, c, messageNames);
 
+                // The listing is fetched a page at a time so the badge's count is not capped at
+                // the old 25, but the notifications it drives are not: one per unread message,
+                // re-posted every poll, is already a lot at 25 and the shade drops what will not
+                // fit. The summary's own total below still reports every unread message, and
+                // "mark all read" above still covers every one of them. Oldest-first here, so
+                // the newest are at the end.
+                final List<Message> toNotify =
+                        messages.size() > Paginator.DEFAULT_LIMIT
+                                ? messages.subList(
+                                        messages.size() - Paginator.DEFAULT_LIMIT, messages.size())
+                                : messages;
+
                 {
                     int amount = messages.size();
 
@@ -121,7 +135,7 @@ public class CheckForMail extends BroadcastReceiver {
                             res.getQuantityString(
                                     R.plurals.mail_notification_title, amount, amount));
                     notiStyle.setSummaryText("");
-                    for (Message m : messages) {
+                    for (Message m : toNotify) {
                         if (m.getAuthor() != null) {
                             notiStyle.addLine(
                                     c.getString(
@@ -165,7 +179,7 @@ public class CheckForMail extends BroadcastReceiver {
                     notificationManager.notify(0, notification);
                 }
 
-                for (Message m : messages) {
+                for (Message m : toNotify) {
                     NotificationCompat.BigTextStyle notiStyle =
                             new NotificationCompat.BigTextStyle();
                     String contentTitle;
@@ -262,12 +276,25 @@ public class CheckForMail extends BroadcastReceiver {
         protected List<Message> doInBackground(Void... params) {
             try {
                 if (Authentication.isLoggedIn && Authentication.didOnline) {
+                    final int generation = InboxCount.generation();
+
                     InboxPaginator unread = new InboxPaginator(Authentication.reddit, "unread");
+                    // The badge's stored unread count is the length of this listing, so ask for
+                    // the page cap: an inbox with more unread than that counts as that many.
+                    unread.setLimit(Paginator.RECOMMENDED_MAX_LIMIT);
 
                     List<Message> messages = new ArrayList<>();
                     if (unread.hasNext()) {
                         messages.addAll(unread.next());
                     }
+
+                    // Written here rather than only on the badge's own fetch so a poll while the
+                    // app is backgrounded still reaches a running drawer, through the same
+                    // observer, without a second request. Dropped if something read mail while
+                    // this was in flight, and stamped either way so a resume straight after a
+                    // poll does not ask reddit for the same listing again.
+                    InboxCount.setFromFetch(Reddit.appRestart, messages.size(), generation);
+                    InboxCount.markFetched();
 
                     return messages;
                 }

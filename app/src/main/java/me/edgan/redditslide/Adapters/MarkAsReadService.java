@@ -9,7 +9,9 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import me.edgan.redditslide.Authentication;
+import me.edgan.redditslide.InboxCount;
 import me.edgan.redditslide.Notifications.CheckForMail;
+import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import net.dean.jraw.managers.InboxManager;
@@ -57,6 +59,9 @@ public class MarkAsReadService extends IntentService {
             for (String message : messages) {
                 try {
                     inboxManager.setRead(message, true);
+                    // One per message reddit actually accepted, so a partial failure leaves the
+                    // stored count matching what was really read.
+                    InboxCount.decrement(Reddit.appRestart);
                 } catch (RuntimeException e) {
                     // Connection failures surface as a bare RuntimeException (not NetworkException)
                     LogUtil.e(e, "MarkAsReadService.onHandleIntent failed");

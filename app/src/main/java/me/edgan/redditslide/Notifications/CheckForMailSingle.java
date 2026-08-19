@@ -20,12 +20,14 @@ import me.edgan.redditslide.Activities.Inbox;
 import me.edgan.redditslide.Activities.OpenContent;
 import me.edgan.redditslide.Adapters.MarkAsReadService;
 import me.edgan.redditslide.Authentication;
+import me.edgan.redditslide.InboxCount;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.LogUtil;
 import net.dean.jraw.models.Message;
 import net.dean.jraw.paginators.InboxPaginator;
+import net.dean.jraw.paginators.Paginator;
 import org.apache.commons.text.StringEscapeUtils;
 
 public class CheckForMailSingle extends BroadcastReceiver {
@@ -226,12 +228,25 @@ public class CheckForMailSingle extends BroadcastReceiver {
         protected List<Message> doInBackground(Void... params) {
             try {
                 if (Authentication.isLoggedIn && Authentication.didOnline) {
+                    final int generation = InboxCount.generation();
+
                     InboxPaginator unread = new InboxPaginator(Authentication.reddit, "unread");
+                    // The badge's stored unread count is the length of this listing, so ask for
+                    // the page cap: an inbox with more unread than that counts as that many.
+                    unread.setLimit(Paginator.RECOMMENDED_MAX_LIMIT);
 
                     List<Message> messages = new ArrayList<>();
                     if (unread.hasNext()) {
                         messages.addAll(unread.next());
                     }
+
+                    // Written here rather than only on the badge's own fetch so a poll while the
+                    // app is backgrounded still reaches a running drawer, through the same
+                    // observer, without a second request. Dropped if something read mail while
+                    // this was in flight, and stamped either way so a resume straight after a
+                    // poll does not ask reddit for the same listing again.
+                    InboxCount.setFromFetch(Reddit.appRestart, messages.size(), generation);
+                    InboxCount.markFetched();
 
                     return messages;
                 }

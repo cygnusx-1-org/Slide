@@ -2,6 +2,7 @@ package me.edgan.redditslide.Activities;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.NotificationManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -80,6 +81,7 @@ import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.ForceTouch.util.DensityUtils;
 import me.edgan.redditslide.Fragments.SubmissionsView;
+import me.edgan.redditslide.InboxCount;
 import me.edgan.redditslide.Notifications.CheckForMail;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
@@ -197,6 +199,14 @@ public class MainActivity extends BaseActivity
     int headerHeight;
     public int reloadItemNumber = -2;
     private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 1001;
+
+    /**
+     * Strong reference to the unread-count observer. {@link android.content.SharedPreferences}
+     * holds change listeners weakly, so dropping this would stop badge updates at an
+     * unpredictable point.
+     */
+    @Nullable
+    private SharedPreferences.OnSharedPreferenceChangeListener inboxCountObserver;
 
     @SuppressWarnings("NullAway.Init") // assigned in onCreate
     DrawerController drawerController;
@@ -1228,6 +1238,55 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void networkUnavailable() {}
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Observing rather than being told the count gives both live updates while this screen
+        // runs and a fresh read when it comes back to the foreground, so a drawer built after a
+        // message was read never shows the pre-read number.
+        inboxCountObserver = InboxCount.observe(Reddit.appRestart, this::updateInboxBadge);
+    }
+
+    @Override
+    protected void onStop() {
+        if (inboxCountObserver != null) {
+            InboxCount.stopObserving(Reddit.appRestart, inboxCountObserver);
+            inboxCountObserver = null;
+        }
+        super.onStop();
+    }
+
+    /**
+     * Paints the drawer's unread badge. Only the logged-in drawer header carries the badge, and
+     * the header is re-inflated as the drawer is rebuilt, so this tolerates both a missing header
+     * and a header without the view.
+     */
+    void updateInboxBadge(int count) {
+        if (count == 0) {
+            NotificationManager notificationManager =
+                    ContextCompat.getSystemService(this, NotificationManager.class);
+            if (notificationManager != null) {
+                notificationManager.cancel(0);
+            }
+        }
+
+        if (headerMain == null) {
+            return;
+        }
+
+        TextView badge = headerMain.findViewById(R.id.count);
+        if (badge == null) {
+            return;
+        }
+
+        if (count == 0) {
+            badge.setVisibility(View.GONE);
+        } else {
+            badge.setVisibility(View.VISIBLE);
+            badge.setText(String.format(Locale.getDefault(), "%d", count));
+        }
+    }
 
     @Override
     public void onResume() {

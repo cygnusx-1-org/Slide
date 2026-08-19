@@ -20,6 +20,7 @@ import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Autocache.AutoCacheScheduler;
 import me.edgan.redditslide.ContentGrabber;
 import me.edgan.redditslide.Fragments.InboxPage;
+import me.edgan.redditslide.InboxCount;
 import me.edgan.redditslide.Notifications.NotificationJobScheduler;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
@@ -88,6 +89,10 @@ public class Inbox extends BaseActivityAnim {
                     try {
                         new InboxManager(Authentication.reddit).setAllRead();
                         changed = true;
+                        // Only once reddit has accepted it; a failed call leaves the stored
+                        // count alone. After changed, so the tab refresh does not hang on a
+                        // local write.
+                        InboxCount.set(Reddit.appRestart, 0);
                     } catch (Exception ignored) {
                         LogUtil.e(ignored, "Inbox.doInBackground failed");
                     }

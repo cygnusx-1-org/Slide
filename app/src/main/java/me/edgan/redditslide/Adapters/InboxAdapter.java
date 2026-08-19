@@ -40,8 +40,10 @@ import me.edgan.redditslide.Activities.SendMessage;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.DataShare;
 import me.edgan.redditslide.Drafts;
+import me.edgan.redditslide.InboxCount;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
+import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SavedUsers;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.UserTags;
@@ -704,6 +706,13 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         protected Void doInBackground(Message... params) {
             try {
                 new InboxManager(Authentication.reddit).setRead(b, params[0]);
+                // Only once reddit has accepted the change: an optimistic write would drift the
+                // stored count away from the unread listing every time the call failed.
+                if (b) {
+                    InboxCount.decrement(Reddit.appRestart);
+                } else {
+                    InboxCount.increment(Reddit.appRestart);
+                }
             } catch (RuntimeException e) {
                 // Connection failures surface as a bare RuntimeException (not NetworkException)
             }

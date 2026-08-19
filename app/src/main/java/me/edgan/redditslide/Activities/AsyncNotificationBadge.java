@@ -2,19 +2,16 @@ package me.edgan.redditslide.Activities;
 
 import static me.edgan.redditslide.UserSubscriptions.modOf;
 
-import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import com.google.android.material.snackbar.Snackbar;
-import java.util.Locale;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Autocache.AutoCacheScheduler;
+import me.edgan.redditslide.InboxCount;
 import me.edgan.redditslide.Notifications.NotificationJobScheduler;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
@@ -24,12 +21,32 @@ import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import net.dean.jraw.models.LoggedInAccount;
+import net.dean.jraw.paginators.InboxPaginator;
+import net.dean.jraw.paginators.Paginator;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
 public class AsyncNotificationBadge extends AsyncTask<Void, Void, Void> {
     private MainActivity activity;
-    int count;
+
+    /**
+     * Unread count for this run, or -1 for "did not get one". Every early return out of {@link
+     * #doInBackground} leaves it at -1 so the stored count survives: a 0 here would be written as
+     * the truth and wipe a real number that was never re-fetched.
+     */
+    int count = -1;
+
+    /**
+     * How stale the stored count may get before this task re-fetches the listing. MainActivity
+     * runs this on every resume, and the listing is the heaviest request here -- a page of full
+     * messages -- while the count itself is already kept current by the paths that read mail and
+     * by the background poll. So the fetch is reconciliation on a timer, not per screen return.
+     */
+    private static final long UNREAD_REFETCH_INTERVAL_MS = 60_000L;
+
+    /** {@link InboxCount#generation()} as it stood when the listing was requested. */
+    private int fetchedAtGeneration;
+
     boolean restart;
     boolean isCurrentUserMod = false; // Track if current user is mod
 
@@ -100,13 +117,29 @@ public class AsyncNotificationBadge extends AsyncTask<Void, Void, Void> {
                     UserSubscriptions.modOf = null;
                 }
             }
-            // Force reload of the LoggedInAccount object; an absent inbox_count reads as zero.
-            final Integer inbox = me.getInboxCount();
-            count = inbox == null ? 0 : inbox;
+            // Ahead of the unread fetch: that fetch is the last thing in this try, so a failure
+            // there cannot cost this sync its run. syncFriendsFromReddit swallows its own
+            // failures, so it cannot cost the count one either.
             SavedUsers.syncFriendsFromReddit();
 
+            if (InboxCount.isFresh(UNREAD_REFETCH_INTERVAL_MS)) {
+                // count stays -1, so onPostExecute leaves the stored number exactly as it is.
+                return null;
+            }
+
+            // The unread listing is the count. The account's own inbox_count field is not a
+            // count of unread messages -- it reports 0 while has_mail is true and
+            // /message/unread still lists them -- so it is not read anywhere. The page cap
+            // means an inbox with more than RECOMMENDED_MAX_LIMIT unread counts as that many.
+            fetchedAtGeneration = InboxCount.generation();
+            final InboxPaginator unread = new InboxPaginator(Authentication.reddit, "unread");
+            unread.setLimit(Paginator.RECOMMENDED_MAX_LIMIT);
+            count = unread.hasNext() ? unread.next().size() : 0;
+            InboxCount.markFetched();
+
         } catch (Exception e) {
-            Log.w(LogUtil.getTag(), "Cannot fetch inbox count");
+            // -1 leaves the stored count alone; the unread count never falls back to zero.
+            Log.w(LogUtil.getTag(), "Cannot fetch unread messages");
             count = -1;
         }
 
@@ -120,39 +153,14 @@ public class AsyncNotificationBadge extends AsyncTask<Void, Void, Void> {
             return;
         }
 
-        // Ensure headerMain is not null before accessing its children
-        if (activity.headerMain == null) {
-            Log.e(LogUtil.getTag(), "headerMain is null in AsyncNotificationBadge.onPostExecute");
-            return; // Cannot proceed without headerMain
-        }
-
-        // Always hide the mod button first
-        RelativeLayout mod = activity.headerMain.findViewById(R.id.mod);
-        mod.setVisibility(View.GONE);
-
-        // Only show mod button if user is a mod and has moderated subreddits
-        if (isCurrentUserMod && UserSubscriptions.modOf != null && !UserSubscriptions.modOf.isEmpty() && Authentication.didOnline) {
-            if (mod != null) {
-                mod.setVisibility(View.VISIBLE);
-
-                mod.setOnClickListener(
-                        new OnSingleClickListener() {
-                            @Override
-                            public void onSingleClick(View view) {
-                                if (modOf != null && !modOf.isEmpty()) {
-                                    Intent inte = new Intent(activity, ModQueue.class);
-                                    activity.startActivity(inte);
-                                }
-                            }
-                        });
-            } else {
-                Log.e(LogUtil.getTag(), "R.id.mod not found in headerMain");
-            }
-        }
-
+        // Store the count before anything that can bail out below: the drawer badge is painted
+        // from the stored value by MainActivity's observer, not from here, so a header that is
+        // not up yet must not cost us the number.
         if (count != -1) {
-            int oldCount = Reddit.appRestart.getInt("inbox", 0);
-            if (count > oldCount) {
+            int oldCount = InboxCount.get(Reddit.appRestart);
+            boolean stored =
+                    InboxCount.setFromFetch(Reddit.appRestart, count, fetchedAtGeneration);
+            if (stored && count > oldCount) {
                 // Ensure mToolbar is not null before using it
                 if (activity.mToolbar == null) {
                     Log.e(LogUtil.getTag(), "mToolbar is null in AsyncNotificationBadge.onPostExecute");
@@ -180,28 +188,40 @@ public class AsyncNotificationBadge extends AsyncTask<Void, Void, Void> {
                     LayoutUtils.showSnackbar(s);
                 }
             }
-            Reddit.appRestart.edit().putInt("inbox", count).apply();
         }
-        View badge = activity.headerMain.findViewById(R.id.count);
-        if (badge != null) { // Check if findViewById returned a valid view
-            if (count == 0) {
-                badge.setVisibility(View.GONE);
-                NotificationManager notificationManager =
-                        ContextCompat.getSystemService(activity, NotificationManager.class);
-                if (notificationManager != null) {
-                    notificationManager.cancel(0);
-                }
-            } else if (count != -1) {
-                badge.setVisibility(View.VISIBLE);
-                TextView countTextView = activity.headerMain.findViewById(R.id.count);
-                if (countTextView != null) {
-                    countTextView.setText(String.format(Locale.getDefault(), "%d", count));
-                } else {
-                    Log.e(LogUtil.getTag(), "R.id.count (TextView) not found in headerMain");
-                }
+
+        // Ensure headerMain is not null before accessing its children
+        if (activity.headerMain == null) {
+            Log.e(LogUtil.getTag(), "headerMain is null in AsyncNotificationBadge.onPostExecute");
+            return; // Cannot proceed without headerMain
+        }
+
+        // Always hide the mod button first. Only drawer_loggedin carries R.id.mod, and
+        // headerMain can still be the logged-out or offline header when this runs, so the null
+        // the guard below already expects has to be honoured here too.
+        RelativeLayout mod = activity.headerMain.findViewById(R.id.mod);
+        if (mod != null) {
+            mod.setVisibility(View.GONE);
+        }
+
+        // Only show mod button if user is a mod and has moderated subreddits
+        if (isCurrentUserMod && UserSubscriptions.modOf != null && !UserSubscriptions.modOf.isEmpty() && Authentication.didOnline) {
+            if (mod != null) {
+                mod.setVisibility(View.VISIBLE);
+
+                mod.setOnClickListener(
+                        new OnSingleClickListener() {
+                            @Override
+                            public void onSingleClick(View view) {
+                                if (modOf != null && !modOf.isEmpty()) {
+                                    Intent inte = new Intent(activity, ModQueue.class);
+                                    activity.startActivity(inte);
+                                }
+                            }
+                        });
+            } else {
+                Log.e(LogUtil.getTag(), "R.id.mod not found in headerMain");
             }
-        } else {
-            Log.e(LogUtil.getTag(), "R.id.count (View) not found in headerMain");
         }
     }
 }

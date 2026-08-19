@@ -43,6 +43,7 @@ import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.Fragments.DrawerItemsDialog;
 import me.edgan.redditslide.Fragments.SubmissionsView;
+import me.edgan.redditslide.InboxCount;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
@@ -474,6 +475,10 @@ public class DrawerController {
                             });
 
             mainActivity.headerMain = header;
+
+            // Re-inflating the header replaces the badge view, so repaint it from the stored
+            // count rather than waiting on the fetch below, which is slower and can fail.
+            mainActivity.updateInboxBadge(InboxCount.get(Reddit.appRestart));
 
             if (mainActivity.runAfterLoad == null) {
                 new AsyncNotificationBadge(mainActivity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
