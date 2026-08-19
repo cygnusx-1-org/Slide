@@ -4,6 +4,10 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.9.0 / 2026-8-19
+============
+* Fixed the inbox unread count and gave it one stored source of truth
+
 7.8.9 / 2026-8-17
 ============
 * Changed three-image gallery grids to a 2 + 1 layout
