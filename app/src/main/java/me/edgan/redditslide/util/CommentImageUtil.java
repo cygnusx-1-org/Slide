@@ -63,6 +63,13 @@ public final class CommentImageUtil {
     private static final int BASE_HEIGHT_PX = 300;
 
     /**
+     * How long a comment-media preload holds the comment list waiting. Shared with
+     * {@link CommentVideoPreview#preloadBlocking}: the two run back to back on the same thread
+     * ahead of the list, so the screen's worst-case wait is this twice over.
+     */
+    public static final int PRELOAD_WAIT_SECONDS = 5;
+
+    /**
      * Display scale for comment images: 1.0 (small), 1.5 (medium, default) or 2.0 (large). Public so
      * the legacy inline-{@link android.text.style.ImageSpan} path ({@code applyImageSpans}) scales by
      * the same factor as the block path here.
@@ -272,9 +279,14 @@ public final class CommentImageUtil {
         }
         pool.shutdown();
         try {
-            pool.awaitTermination(45, TimeUnit.SECONDS);
+            // The comment list is blocked on this, so cap the wait low enough that a stalled
+            // download cannot hold the screen. Images that arrive later still land in the cache
+            // and are picked up when the row binds.
+            pool.awaitTermination(PRELOAD_WAIT_SECONDS, TimeUnit.SECONDS);
         } catch (InterruptedException ignored) {
             pool.shutdownNow();
+            // Restore the flag so the AsyncTask owning this thread still sees the cancellation.
+            Thread.currentThread().interrupt();
         }
     }
 

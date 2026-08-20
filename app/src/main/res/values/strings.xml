@@ -194,6 +194,7 @@
     <string name="comment_loading_more">Loading more comments…</string>
     <string name="comment_permalink">Load comment permalink</string>
     <string name="comment_parent">Show parent comment</string>
+    <string name="comment_video_play">Play video</string>
 
 
     <!-- Welcome view (first time setup) -->

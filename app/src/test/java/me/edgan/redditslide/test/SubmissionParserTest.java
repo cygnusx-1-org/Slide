@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -433,5 +434,144 @@ public class SubmissionParserTest {
     public void imageBlockPrefixConstant() {
         // The prefix is wrapped in SOH (U+0001) control chars so it never collides with real text.
         assertEquals("\u0001img\u0001", SubmissionParser.IMAGE_BLOCK_PREFIX);
+    }
+
+    // ---------------------------------------------------------------------
+    // comment videos (a video uploaded through Reddit's comment composer)
+    // ---------------------------------------------------------------------
+
+    /** The verbatim payload of comment osdgm90 of r/initiald/comments/1u95l4h, trailing \n and all. */
+    private static final String BARE_VIDEO_BODY_HTML =
+            "<div class=\"md\"><p><a href=\"https://reddit.com/link/osdgm90/video/n9pjiglqh18h1/player\">"
+                    + "https://reddit.com/link/osdgm90/video/n9pjiglqh18h1/player</a></p>\n</div>";
+
+    private static List<String> videoBlocks(String html) {
+        return SubmissionParser.extractImageBlocks(SubmissionParser.getBlocks(html));
+    }
+
+    private static String onlyVideoBlock(List<String> blocks) {
+        List<String> found = new ArrayList<>();
+        for (String block : blocks) {
+            if (block.startsWith(SubmissionParser.VIDEO_BLOCK_PREFIX)) {
+                found.add(block);
+            }
+        }
+        assertThat("expected exactly one video block in " + blocks, found.size(), is(1));
+        return found.get(0);
+    }
+
+    @Test
+    public void videoBlockPrefixConstant() {
+        // Same SOH wrapping as the image prefix, for the same reason.
+        assertEquals("\u0001vid\u0001", SubmissionParser.VIDEO_BLOCK_PREFIX);
+    }
+
+    @Test
+    public void videoAnchorWithCaptionKeepsCaption() {
+        String block =
+                onlyVideoBlock(
+                        videoBlocks(
+                                "<div class=\"md\"><p><a href=\"https://reddit.com/link/abc/video/def/player\">"
+                                        + "gif</a></p></div>"));
+        assertThat(
+                SubmissionParser.videoUrlOf(block),
+                is("https://reddit.com/link/abc/video/def/player"));
+        assertThat(SubmissionParser.videoCaptionOf(block), is("gif"));
+    }
+
+    @Test
+    public void autolinkedBareVideoUrlHasNoCaption() {
+        List<String> blocks = videoBlocks(BARE_VIDEO_BODY_HTML);
+        String block = onlyVideoBlock(blocks);
+        assertThat(
+                SubmissionParser.videoUrlOf(block),
+                is("https://reddit.com/link/osdgm90/video/n9pjiglqh18h1/player"));
+        // The anchor text is the href, so there is nothing worth printing under the card.
+        assertThat(SubmissionParser.videoCaptionOf(block), is(""));
+        // Nothing but the card: the surrounding markup is not renderable text.
+        assertThat(blocks.size(), is(1));
+    }
+
+    @Test
+    public void wwwVideoHostStillRecognised() {
+        String block =
+                onlyVideoBlock(
+                        videoBlocks(
+                                "<div><a href=\"https://www.reddit.com/link/abc/video/def/player\">"
+                                        + "video</a></div>"));
+        assertThat(
+                SubmissionParser.videoUrlOf(block),
+                is("https://www.reddit.com/link/abc/video/def/player"));
+    }
+
+    @Test
+    public void videoQueryStringStillRecognised() {
+        String block =
+                onlyVideoBlock(
+                        videoBlocks(
+                                "<div><a href=\"https://reddit.com/link/abc/video/def/player?source=share\">"
+                                        + "gif</a></div>"));
+        assertThat(
+                SubmissionParser.videoUrlOf(block),
+                is("https://reddit.com/link/abc/video/def/player?source=share"));
+    }
+
+    @Test
+    public void textAroundVideoBecomesItsOwnBlocks() {
+        List<String> blocks =
+                SubmissionParser.extractImageBlocks(
+                        Collections.singletonList(
+                                "Look at this <a href=\"https://reddit.com/link/abc/video/def/player\">"
+                                        + "gif</a> it's great"));
+        assertThat(blocks.size(), is(3));
+        assertThat(blocks.get(0), containsString("Look at this"));
+        assertThat(blocks.get(1).startsWith(SubmissionParser.VIDEO_BLOCK_PREFIX), is(true));
+        assertThat(blocks.get(2), containsString("it's great"));
+    }
+
+    @Test
+    public void twoVideosInOneCommentBecomeTwoBlocks() {
+        List<String> blocks =
+                SubmissionParser.extractImageBlocks(
+                        Collections.singletonList(
+                                "<a href=\"https://reddit.com/link/a1/video/b1/player\">one</a>"
+                                        + "<a href=\"https://reddit.com/link/a2/video/b2/player\">two</a>"));
+        assertThat(blocks.size(), is(2));
+        assertThat(
+                SubmissionParser.videoUrlOf(blocks.get(0)),
+                is("https://reddit.com/link/a1/video/b1/player"));
+        assertThat(SubmissionParser.videoCaptionOf(blocks.get(0)), is("one"));
+        assertThat(
+                SubmissionParser.videoUrlOf(blocks.get(1)),
+                is("https://reddit.com/link/a2/video/b2/player"));
+        assertThat(SubmissionParser.videoCaptionOf(blocks.get(1)), is("two"));
+    }
+
+    @Test
+    public void videoUrlInCodeOrTableIsNotAVideoBlock() {
+        List<String> in =
+                Arrays.asList(
+                        "<pre><code>&lt;a href=\"https://reddit.com/link/abc/video/def/player\"&gt;"
+                                + "x&lt;/a&gt;</code></pre>",
+                        "<table><tr><td><a href=\"https://reddit.com/link/abc/video/def/player\">"
+                                + "x</a></td></tr></table>");
+        assertThat(SubmissionParser.extractImageBlocks(in), is(in));
+    }
+
+    @Test
+    public void imageUrlsFor_videoOnlyBodyReturnsEmpty() {
+        // A playlist url in the bitmap preloader would be a pointless download.
+        assertTrue(SubmissionParser.imageUrlsFor(BARE_VIDEO_BODY_HTML).isEmpty());
+    }
+
+    @Test
+    public void getBlocksAloneLeavesTheVideoAsText() {
+        // What the renderers do under data saving: CommentAdapter.computeBlocks skips
+        // extractImageBlocks entirely, so no card is produced and the plain link still works.
+        List<String> blocks = SubmissionParser.getBlocks(BARE_VIDEO_BODY_HTML);
+        assertThat(blocks.size(), is(1));
+        assertThat(blocks.get(0), containsString("<a href=\"https://reddit.com/link/osdgm90/video/"));
+        assertThat(
+                blocks.get(0).contains(SubmissionParser.VIDEO_BLOCK_PREFIX), is(false));
     }
 }

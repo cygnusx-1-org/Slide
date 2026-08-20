@@ -425,6 +425,64 @@ public class SubmissionParser {
         return urls;
     }
 
+    /**
+     * Marker for a block produced by {@link #extractImageBlocks(List)} that is a single inline
+     * comment video — a video uploaded through Reddit's comment composer, which arrives in the html
+     * as a plain anchor to a {@code reddit.com/link/<commentId>/video/<assetId>/player} url. The
+     * rest of the block string is that url, a {@link #VIDEO_BLOCK_SEPARATOR}, and the caption
+     * (possibly empty); read it with {@link #videoUrlOf} and {@link #videoCaptionOf} rather than
+     * substring-ing it here. Renderers detect this and draw a tappable video card instead of a
+     * bare link.
+     */
+    public static final String VIDEO_BLOCK_PREFIX = "\u0001vid\u0001";
+
+    /** Separates the url from the caption inside a {@link #VIDEO_BLOCK_PREFIX} block. */
+    private static final char VIDEO_BLOCK_SEPARATOR = '\u0002';
+
+    /**
+     * A comment-video anchor. Reddit's markdown renderer disallows images in comments, so the
+     * {@code ![caption](url)} the composer writes comes back as an anchor whose text is the
+     * caption — or, when the author pasted a bare link, the url itself.
+     */
+    private static final Pattern VIDEO_ANCHOR_PATTERN =
+            Pattern.compile(
+                    "<a\\s+href=\""
+                            + "(https://(?:www\\.)?reddit\\.com/link/[^/\"]+/video/[^/\"]+/player"
+                            + "(?:\\?[^\"]*)?)\""
+                            + "[^>]*>([^<]*)</a>");
+
+    /** The player url of a {@link #VIDEO_BLOCK_PREFIX} block. */
+    public static String videoUrlOf(String block) {
+        String body = block.substring(VIDEO_BLOCK_PREFIX.length());
+        int separator = body.indexOf(VIDEO_BLOCK_SEPARATOR);
+        return separator == -1 ? body : body.substring(0, separator);
+    }
+
+    /** The caption of a {@link #VIDEO_BLOCK_PREFIX} block, empty when there is nothing to show. */
+    public static String videoCaptionOf(String block) {
+        String body = block.substring(VIDEO_BLOCK_PREFIX.length());
+        int separator = body.indexOf(VIDEO_BLOCK_SEPARATOR);
+        return separator == -1 ? "" : body.substring(separator + 1);
+    }
+
+    /**
+     * Returns the comment-video player urls that {@link #extractImageBlocks} would draw as cards for
+     * this body, in the same form the renderer hands to the card, so a preloader warms their still
+     * frames under the identical keys it later asks for.
+     */
+    public static List<String> videoUrlsFor(@Nullable String rawHtml) {
+        List<String> urls = new ArrayList<>();
+        if (rawHtml == null || rawHtml.isEmpty()) {
+            return urls;
+        }
+        for (String block : extractImageBlocks(getBlocks(rawHtml))) {
+            if (block.startsWith(VIDEO_BLOCK_PREFIX)) {
+                urls.add(videoUrlOf(block));
+            }
+        }
+        return urls;
+    }
+
     private static final Pattern IMAGE_ANCHOR_PATTERN =
             Pattern.compile(
                     "<a\\s+href=\""
@@ -443,10 +501,55 @@ public class SubmissionParser {
                     || block.equals("<div class=\"md\">")) {
                 out.add(block);
             } else {
-                out.addAll(splitBlockImages(block));
+                // Videos first, so a comment-video anchor becomes its own block; whatever text
+                // surrounds it still goes through the image splitter.
+                for (String fragment : splitBlockVideos(block)) {
+                    if (fragment.startsWith(VIDEO_BLOCK_PREFIX)) {
+                        out.add(fragment);
+                    } else {
+                        out.addAll(splitBlockImages(fragment));
+                    }
+                }
             }
         }
         return out;
+    }
+
+    /**
+     * Pulls every Reddit comment-video anchor out of a single block into its own {@link
+     * #VIDEO_BLOCK_PREFIX} block, keeping the text around it as ordinary fragments (dropping the
+     * ones that are only markup or whitespace). A block with no video comes back unchanged.
+     */
+    private static List<String> splitBlockVideos(String block) {
+        List<String> result = new ArrayList<>();
+        Matcher matcher = VIDEO_ANCHOR_PATTERN.matcher(block);
+        int last = 0;
+        boolean found = false;
+        while (matcher.find()) {
+            found = true;
+            String before = block.substring(last, matcher.start());
+            if (hasRenderableText(before)) {
+                result.add(before);
+            }
+            String url = StringEscapeUtils.unescapeHtml4(matcher.group(1));
+            String caption = StringEscapeUtils.unescapeHtml4(matcher.group(2)).trim();
+            // A pasted bare link is autolinked, so the anchor text is the href: there is nothing
+            // to caption it with that the card doesn't already say.
+            if (caption.equals(url) || caption.equals(matcher.group(1))) {
+                caption = "";
+            }
+            result.add(VIDEO_BLOCK_PREFIX + url + VIDEO_BLOCK_SEPARATOR + caption);
+            last = matcher.end();
+        }
+        if (!found) {
+            result.add(block); // no videos: leave the original block untouched
+            return result;
+        }
+        String after = block.substring(last);
+        if (hasRenderableText(after)) {
+            result.add(after);
+        }
+        return result;
     }
 
     /**

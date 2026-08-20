@@ -615,6 +615,7 @@ public class PopulateSubmissionViewHolder {
                     setViews(
                             submission.getDataNode().path("selftext_html").asText(""),
                             selftextSubreddit,
+                            submission.getDataNode(),
                             fullHolder);
                 }
                 holder.itemView.requireViewById(R.id.body_area).setVisibility(View.VISIBLE);
@@ -1510,26 +1511,54 @@ public class PopulateSubmissionViewHolder {
         }
     }
 
-    private void setViews(String rawHTML, String subredditName, FullSubmissionViewHolder holder) {
+    /**
+     * Old Reddit-style rendering of self-text: the html split into {@link SubmissionParser} blocks,
+     * with standalone images and comment videos lifted into their own blocks so they draw as real
+     * views instead of bare links. This is the same pipeline {@code CommentAdapter.computeBlocks}
+     * runs for comments, and the first-block handling below matches its, so a self post and a
+     * comment carrying the same media render the same way.
+     */
+    private void setViews(
+            String rawHTML,
+            String subredditName,
+            JsonNode dataNode,
+            FullSubmissionViewHolder holder) {
         if (rawHTML.isEmpty()) {
             return;
         }
 
-        List<String> blocks = SubmissionParser.getBlocks(rawHTML);
-
-        int startIndex = 0;
-        if (!blocks.get(0).startsWith("<table>") && !blocks.get(0).startsWith("<pre>")) {
-            holder.firstTextView.setTextHtml(blocks.get(0), subredditName);
-            startIndex = 1;
+        List<String> blocks =
+                SubmissionParser.getBlocks(
+                        SubmissionParser.replaceProcessingImgPlaceholders(rawHTML, dataNode));
+        if (!SettingValues.shouldSkipImages(holder.firstTextView.getContext())) {
+            blocks = SubmissionParser.extractImageBlocks(blocks);
         }
 
-        if (blocks.size() > 1) {
-            if (startIndex == 0) {
-                holder.commentOverflow.setViews(blocks, subredditName);
-            } else {
-                holder.commentOverflow.setViews(
-                        blocks.subList(startIndex, blocks.size()), subredditName);
-            }
+        final String first = blocks.get(0);
+        // Image and video blocks are drawn by CommentOverflow, never as inline text — pushing one
+        // into firstTextView would print its sentinel prefix instead of the media.
+        final boolean firstIsMedia =
+                first.startsWith(SubmissionParser.IMAGE_BLOCK_PREFIX)
+                        || first.startsWith(SubmissionParser.VIDEO_BLOCK_PREFIX);
+
+        int startIndex = 0;
+        if (!firstIsMedia && !first.startsWith("<table>") && !first.startsWith("<pre>")) {
+            holder.firstTextView.setTextHtml(first, subredditName);
+            holder.firstTextView.setVisibility(View.VISIBLE);
+            startIndex = 1;
+        } else {
+            // Set explicitly on every bind: the holder is recycled, so leaving the view alone here
+            // would show the previous submission's first block above this one's blocks.
+            holder.firstTextView.setText("");
+            holder.firstTextView.setVisibility(firstIsMedia ? View.GONE : View.VISIBLE);
+        }
+
+        List<String> overflow =
+                startIndex == 0 ? blocks : blocks.subList(startIndex, blocks.size());
+        if (!overflow.isEmpty()) {
+            holder.commentOverflow.setViews(overflow, subredditName);
+        } else {
+            holder.commentOverflow.removeAllViews();
         }
     }
 

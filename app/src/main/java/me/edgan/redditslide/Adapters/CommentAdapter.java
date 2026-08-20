@@ -993,9 +993,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 holder.firstTextView,
                 holder.commentOverflow,
                 subredditName,
-                getPreparedMarkdown(comment, body),
-                bodyHtml,
-                comment.getDataNode(),
+                getPreparedMarkdown(comment, body, bodyHtml),
                 null);
     }
 
@@ -1003,11 +1001,20 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static class CachedMarkdown {
         final JsonNode dataNode;
         final String body;
+        final String bodyHtml;
+        final boolean skipImages;
         final MarkdownImages.Prepared prepared;
 
-        CachedMarkdown(JsonNode dataNode, String body, MarkdownImages.Prepared prepared) {
+        CachedMarkdown(
+                JsonNode dataNode,
+                String body,
+                String bodyHtml,
+                boolean skipImages,
+                MarkdownImages.Prepared prepared) {
             this.dataNode = dataNode;
             this.body = body;
+            this.bodyHtml = bodyHtml;
+            this.skipImages = skipImages;
             this.prepared = prepared;
         }
     }
@@ -1018,26 +1025,35 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      * time it scrolls back into view.
      *
      * <p>Keyed by fullname, so two comments never share the (stateful) spoiler spans of an
-     * identical body, and validated against the body and the data node (which supplies the
-     * media_metadata that resolves emote urls), so an edited or re-fetched comment re-parses.
+     * identical body, and validated against the body, the body html (which is where the media the
+     * text is interleaved with is resolved from), the data node (which supplies the media_metadata
+     * that resolves emote urls) and {@code skipImages} (which decides whether a comment-video link
+     * is left in the text or replaced by a card), so an edited or re-fetched comment — or a
+     * settings change — re-parses.
      *
      * <p>{@code body} is passed in rather than read from the comment so a body recovered from the
      * archive caches the same way: it differs from the comment's own body, so storing it evicts the
      * placeholder's entry once and then hits on every later bind.
      */
-    private MarkdownImages.Prepared getPreparedMarkdown(Comment comment, String body) {
+    private MarkdownImages.Prepared getPreparedMarkdown(
+            Comment comment, String body, String bodyHtml) {
         final JsonNode dataNode = comment.getDataNode();
         final String key = comment.getFullName();
+        final boolean skipImages = SettingValues.shouldSkipImages(mContext);
 
         final CachedMarkdown cached = markdownCache.get(key);
         if (cached != null
                 && cached.dataNode == dataNode
+                && cached.skipImages == skipImages
+                && cached.bodyHtml.equals(bodyHtml)
                 && (cached.body == null ? body == null : cached.body.equals(body))) {
             return cached.prepared;
         }
 
-        final MarkdownImages.Prepared prepared = MarkdownImages.prepare(mContext, body, dataNode);
-        markdownCache.put(key, new CachedMarkdown(dataNode, body, prepared));
+        final MarkdownImages.Prepared prepared =
+                MarkdownImages.prepare(mContext, body, bodyHtml, dataNode);
+        markdownCache.put(
+                key, new CachedMarkdown(dataNode, body, bodyHtml, skipImages, prepared));
         return prepared;
     }
 
@@ -1127,15 +1143,18 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         int startIndex;
         String first = blocks.get(0);
-        boolean firstIsImage = first.startsWith(SubmissionParser.IMAGE_BLOCK_PREFIX);
+        // Image and video blocks are both rendered by CommentOverflow, never as inline text.
+        boolean firstIsMedia =
+                first.startsWith(SubmissionParser.IMAGE_BLOCK_PREFIX)
+                        || first.startsWith(SubmissionParser.VIDEO_BLOCK_PREFIX);
         // the <div class="md"> case is when the body contains a table or code block first
-        if (!firstIsImage && !first.equals("<div class=\"md\">")) {
+        if (!firstIsMedia && !first.equals("<div class=\"md\">")) {
             firstTextView.setVisibility(View.VISIBLE);
             firstTextView.setTextHtml(first, subredditName);
             startIndex = 1;
         } else {
             firstTextView.setText("");
-            firstTextView.setVisibility(firstIsImage ? View.GONE : View.VISIBLE);
+            firstTextView.setVisibility(firstIsMedia ? View.GONE : View.VISIBLE);
             startIndex = 0;
         }
 
@@ -1192,16 +1211,19 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         int startIndex;
         String first = blocks.get(0);
-        boolean firstIsImage = first.startsWith(SubmissionParser.IMAGE_BLOCK_PREFIX);
+        // Image and video blocks are both rendered by CommentOverflow, never as inline text.
+        boolean firstIsMedia =
+                first.startsWith(SubmissionParser.IMAGE_BLOCK_PREFIX)
+                        || first.startsWith(SubmissionParser.VIDEO_BLOCK_PREFIX);
         // the <div class="md"> case is when the body contains a table or code block first
-        if (!firstIsImage && !first.equals("<div class=\"md\">")) {
+        if (!firstIsMedia && !first.equals("<div class=\"md\">")) {
             firstTextView.setVisibility(View.VISIBLE);
             firstTextView.setTextHtml(first + " ", subredditName);
             startIndex = 1;
         } else {
-            // First block is an image (or table/code); render everything via CommentOverflow.
+            // First block is media (or table/code); render everything via CommentOverflow.
             firstTextView.setText("");
-            firstTextView.setVisibility(firstIsImage ? View.GONE : View.VISIBLE);
+            firstTextView.setVisibility(firstIsMedia ? View.GONE : View.VISIBLE);
             startIndex = 0;
         }
 

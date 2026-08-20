@@ -18,6 +18,7 @@ import me.edgan.redditslide.Fragments.CommentPage;
 import me.edgan.redditslide.LastComments;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.util.CommentImageUtil;
+import me.edgan.redditslide.util.CommentVideoPreview;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.SubmissionParser;
@@ -283,10 +284,11 @@ public class SubmissionComments {
                     comments.add(new MoreChildItem(baseComment, baseComment.getMoreChildren()));
                 }
 
-                // Download every inline comment image into the shared cache BEFORE the comments are
-                // shown (we're on a background thread), so each image is already cached and renders
-                // in place with its comment instead of popping in afterward.
-                preloadCommentImages(comments);
+                // Download every inline comment image, and read every comment video's still frame,
+                // into the shared cache BEFORE the comments are shown (we're on a background
+                // thread), so each one is already cached and renders in place with its comment
+                // instead of popping in afterward.
+                preloadCommentMedia(comments);
 
                 return comments;
             } catch (Exception e) {
@@ -295,9 +297,10 @@ public class SubmissionComments {
             return null;
         }
 
-        private void preloadCommentImages(List<CommentObject> built) {
+        private void preloadCommentMedia(List<CommentObject> built) {
             try {
                 LinkedHashSet<String> urls = new LinkedHashSet<>();
+                LinkedHashSet<String> videos = new LinkedHashSet<>();
                 for (CommentObject o : built) {
                     if (o == null || !o.isComment() || o.comment == null) {
                         continue;
@@ -309,11 +312,27 @@ public class SubmissionComments {
                                         dataNode.path("body_html").asText(""), dataNode);
                         // Use the SAME extractor the renderer uses so the cache keys match exactly.
                         urls.addAll(SubmissionParser.imageUrlsFor(html));
+                        videos.addAll(SubmissionParser.videoUrlsFor(html));
                     } catch (Exception ignored) {
                         // Skip comments we can't parse; they'll still load on bind.
                     }
                 }
+                try {
+                    // The self-text renders above the comments through the same card, so its video
+                    // has to be warm by the time the header binds too.
+                    if (submission != null) {
+                        JsonNode dataNode = submission.getDataNode();
+                        videos.addAll(
+                                SubmissionParser.videoUrlsFor(
+                                        SubmissionParser.replaceProcessingImgPlaceholders(
+                                                dataNode.path("selftext_html").asText(""),
+                                                dataNode)));
+                    }
+                } catch (Exception ignored) {
+                    // Same as above: the card still reads its frame on bind.
+                }
                 CommentImageUtil.preloadBlocking(Reddit.getAppContext(), urls);
+                CommentVideoPreview.preloadBlocking(Reddit.getAppContext(), videos);
             } catch (Exception ignored) {
                 // Preloading images is best-effort: on any failure the
                 // images still load when a comment binds.

@@ -343,17 +343,18 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
             itemsAddedCount++;
         }
 
-        // Download the newly fetched child comments' images before they're inserted/shown (we're on
-        // a background thread), so they render in place with their comment instead of popping in,
-        // matching SubmissionComments.LoadData.
-        preloadCommentImages(finalData);
+        // Download the newly fetched child comments' images, and read their videos' still frames,
+        // before they're inserted/shown (we're on a background thread), so they render in place with
+        // their comment instead of popping in, matching SubmissionComments.LoadData.
+        preloadCommentMedia(finalData);
 
         return itemsAddedCount;
     }
 
-    private void preloadCommentImages(List<CommentObject> built) {
+    private void preloadCommentMedia(List<CommentObject> built) {
         try {
             LinkedHashSet<String> urls = new LinkedHashSet<>();
+            LinkedHashSet<String> videos = new LinkedHashSet<>();
             for (CommentObject o : built) {
                 if (o == null || !o.isComment() || o.comment == null) {
                     continue;
@@ -364,11 +365,13 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
                             SubmissionParser.replaceProcessingImgPlaceholders(
                                     dataNode.path("body_html").asText(""), dataNode);
                     urls.addAll(SubmissionParser.imageUrlsFor(html));
+                    videos.addAll(SubmissionParser.videoUrlsFor(html));
                 } catch (Exception ignored) {
                     // Skip comments we can't parse; they'll still load on bind.
                 }
             }
             CommentImageUtil.preloadBlocking(Reddit.getAppContext(), urls);
+            CommentVideoPreview.preloadBlocking(Reddit.getAppContext(), videos);
         } catch (Exception ignored) {
             // Preloading images is best-effort: on any failure the
             // images still load when a comment binds.
