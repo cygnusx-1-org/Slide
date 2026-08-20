@@ -4,6 +4,10 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.9.1 / 2026-8-20
+============
+* Added support for videos in posts and comments
+
 7.9.0 / 2026-8-19
 ============
 * Fixed the inbox unread count and gave it one stored source of truth
