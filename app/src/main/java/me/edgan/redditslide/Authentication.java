@@ -9,7 +9,9 @@ import android.webkit.CookieManager;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -64,6 +66,46 @@ public class Authentication {
     public static SharedPreferences authentication;
 
     @Nullable public static String refresh;
+
+    /**
+     * Scopes granted to the current token, as reported by Reddit on the most recent (re)auth. Null
+     * until a token has been obtained this session. OAuth scopes are frozen at consent time and the
+     * refresh-token flow can't widen them, so this is how we tell whether a user authorized before a
+     * newly-added scope (e.g. {@code modmail}) existed.
+     *
+     * <p>volatile: written from the authentication background threads and read on the main thread,
+     * like {@link #isLoggedIn}. Without it a screen can read a stale null and skip the warning it
+     * exists to show.
+     */
+    @Nullable public static volatile Set<String> grantedScopes;
+
+    /**
+     * Records the scopes Reddit reported for a freshly authenticated token. Reads the data node
+     * rather than calling {@link OAuthData#getScopes()}, which splits {@code data("scope")} with no
+     * null test: a token response carrying no scope field would throw from inside the authentication
+     * it is called from, turning a good refresh into a failed one.
+     */
+    private static void recordGrantedScopes(OAuthData data) {
+        final JsonNode scope = data.getDataNode().get("scope");
+        if (scope != null && scope.isTextual()) {
+            grantedScopes = new HashSet<>(Arrays.asList(scope.asText().split(" ")));
+        }
+    }
+
+    /**
+     * @return true if the current token is known to include {@code scope}. Also returns true when
+     *     scopes are unknown (e.g. offline before the first refresh) so callers don't warn on
+     *     incomplete information. A {@code *} grant counts as all scopes.
+     */
+    public static boolean hasScope(String scope) {
+        // Read once into a local: the field is written from the reauth background thread, so a
+        // null check on the field itself would not hold for the reads that follow it.
+        final Set<String> scopes = grantedScopes;
+        if (scopes == null) {
+            return true;
+        }
+        return scopes.contains("*") || scopes.contains(scope);
+    }
 
     public boolean hasDone;
     public static boolean didOnline;
@@ -532,6 +574,7 @@ public class Authentication {
                                     .putString("backedCreds", finalData.getDataNode().toString())
                                     .commit();
                             client.authenticate(finalData);
+                            recordGrantedScopes(finalData);
                             refresh = oAuthHelper.getRefreshToken();
 
                             if (client.isAuthenticated()) {
@@ -770,6 +813,10 @@ public class Authentication {
                     baseReddit.authenticate(finalData);
 
                     if (!single) {
+                        // Cold start authenticates here rather than through UpdateToken, so the
+                        // scopes have to be recorded here too, or hasScope() has nothing to answer
+                        // from for the rest of the session.
+                        recordGrantedScopes(finalData);
                         authentication
                                 .edit()
                                 .putString("backedCreds", finalData.getDataNode().toString())

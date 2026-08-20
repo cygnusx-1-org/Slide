@@ -577,6 +577,14 @@
     <!-- Moderation tools -->
     <string name="mod_mail">Mod mail</string>
     <string name="mod_mail_unread">Mod mail unread</string>
+    <string name="modmail_internal_note">(internal note)</string>
+    <string name="modmail_scope_missing">Mod mail needs re-authentication. Re-log in (Settings &#8594; account) to enable it.</string>
+    <string name="modmail_reply_sent">Reply sent!</string>
+    <string name="modmail_reply_failed">Sending failed! Reply saved as a draft.</string>
+    <plurals name="modmail_message_count">
+        <item quantity="one">%d message</item>
+        <item quantity="other">%d messages</item>
+    </plurals>
     <string name="mod_modqueue">Modqueue</string>
     <string name="mod_unmoderated">Unmoderated</string>
     <string name="mod_reports">Reports</string>

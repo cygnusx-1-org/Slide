@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -11,9 +12,11 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
-import me.edgan.redditslide.Fragments.InboxPage;
+import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Fragments.ModLog;
 import me.edgan.redditslide.Fragments.ModPage;
+import me.edgan.redditslide.Fragments.ModmailPage;
+import me.edgan.redditslide.Modmail.ModmailApi;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Visuals.ColorPreferences;
@@ -57,6 +60,12 @@ public class ModQueue extends BaseActivityAnim {
         requireViewById(R.id.header).setBackgroundColor(Palette.getDefaultColor());
         pager.setAdapter(new ModQueuePagerAdapter(getSupportFragmentManager()));
         tabs.setupWithViewPager(pager);
+
+        // New Modmail needs the "modmail" OAuth scope, which tokens authorized before it was added
+        // don't carry. Warn so the empty Mod mail tabs aren't mistaken for a bug (issue #219).
+        if (!Authentication.hasScope(ModmailApi.SCOPE)) {
+            Toast.makeText(this, R.string.modmail_scope_missing, Toast.LENGTH_LONG).show();
+        }
     }
 
     private class ModQueuePagerAdapter extends FragmentStatePagerAdapter {
@@ -84,13 +93,13 @@ public class ModQueue extends BaseActivityAnim {
             Bundle args = new Bundle();
             switch (i) {
                 case 0:
-                    f = new InboxPage();
-                    args.putString("id", "moderator/unread");
+                    f = new ModmailPage();
+                    args.putBoolean("unread", true);
                     f.setArguments(args);
                     return f;
                 case 1:
-                    f = new InboxPage();
-                    args.putString("id", "moderator");
+                    f = new ModmailPage();
+                    args.putBoolean("unread", false);
                     f.setArguments(args);
                     return f;
                 case 2:

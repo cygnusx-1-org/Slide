@@ -25,6 +25,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -41,6 +42,7 @@ import java.util.Map;
 import java.util.Objects;
 import me.edgan.redditslide.Activities.Reauthenticate;
 import me.edgan.redditslide.Authentication;
+import me.edgan.redditslide.Modmail.ModmailApi;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
@@ -216,6 +218,20 @@ public class ToolboxUI {
                                 || actions.getCheckedRadioButtonId() == R.id.both) {
                             removalString.append("\n\n---\n[[Link to your {kind}]({url})]");
                         }
+                        // A PM "from the subreddit" is New Modmail, which needs a scope that
+                        // tokens authorized before it was added don't carry. Warn here: the send
+                        // fails inside the background task, which has no context to explain why.
+                        if (actionModmail.isChecked()
+                                && (actions.getCheckedRadioButtonId() == R.id.pm
+                                        || actions.getCheckedRadioButtonId() == R.id.both)
+                                && !Authentication.hasScope(ModmailApi.SCOPE)) {
+                            Toast.makeText(
+                                            context,
+                                            R.string.modmail_scope_missing,
+                                            Toast.LENGTH_LONG)
+                                    .show();
+                        }
+
                         // Remove the item and send the message if desired
                         new AsyncRemoveTask(callback)
                                 .execute(
@@ -771,6 +787,12 @@ public class ToolboxUI {
          * @return success
          */
         private boolean sendRemovalPM(String from, String to, String subject, String body) {
+            // A non-empty "from" means send as the subreddit — that is modmail, so route it through
+            // New Modmail. The legacy /api/compose from_sr path rides the retired modmail system.
+            // A plain user PM (empty "from") still goes through the regular compose endpoint.
+            if (!from.isEmpty()) {
+                return ModmailApi.createConversation(from, to, subject, body, true);
+            }
             try {
                 new InboxManager(Authentication.reddit).compose(from, to, subject, body);
                 return true;
