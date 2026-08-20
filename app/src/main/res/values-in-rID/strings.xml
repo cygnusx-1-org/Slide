@@ -457,22 +457,6 @@
     <plurals name="mod_btn_reports">
         <item quantity="other">Lihat %d laporan</item>
     </plurals>
-    <!-- Toolbox-related stuff -->
-    <string name="mod_usernotes_view">Lihat catatan pengguna</string>
-    <string name="mod_usernotes_title">Catatan pengguna untuk %s</string>
-    <string name="mod_usernotes_add">Tambah catatan pengguna</string>
-    <string name="toolbox_removal_footer">Sertakan catatan kaki</string>
-    <string name="toolbox_removal_comment">Balas dengan komentar ke item yang dihapus</string>
-    <string name="toolbox_removal_pm">Kirim sebagai PM</string>
-    <string name="toolbox_removal_modmail">Kirim PM sebagai pesan mod</string>
-    <string name="toolbox_removal_both">Kirim sebagai PM maupun balasan</string>
-    <string name="toolbox_removal_lock">Kunci utas yang dihapus</string>
-    <string name="toolbox_logreason_placeholder">Alasan log</string>
-    <string name="toolbox_note_text_required">Teks catatan diperlukan</string>
-    <string name="toolbox_note_text_placeholder">Sesuatu tentang pengguna...</string>
-    <string name="toolbox_note_default">Tidak ada tipe</string>
-    <string name="toolbox_wiki_edit_reauth">Untuk menambah atau menghapus catatan pengguna, Slide harus mengotentikasi anda kembali</string>
-    <string name="toolbox_wiki_edit_reauth_question">Apakah anda ingin masuk kembali ke Slide sekarang?</string>
     <!-- If he did -->
     <string name="really_pin_submission_message">Kiriman tidak disematkan</string>
     <string name="really_unpin_submission_message">Kiriman tidak disematkan</string>
@@ -547,7 +531,6 @@
     <string name="settings_general_immersive_mode">Modus layar penuh mendalam</string>
     <string name="settings_general_immersive_mode_desc">Menyembunyikan status dan bar navigasi (eksperimental)</string>
     <string name="settings_general_subtitle_drawer_items">Pilih item bilah sisi untuk ditampilkan</string>
-    <string name="settings_moderation">Moderasi</string>
     <!-- Settings titles displayed in settings activity-->
     <string name="settings_title_backup">Cadangkan &amp; pulihkan</string>
     <string name="settings_title_default_theme">Tema utama</string>
@@ -639,15 +622,6 @@
     <string name="settings_theme_night_end_at">Akhir at\u0020</string>
     <string name="settings_general_inbox_snd">Suara dan bergetar</string>
     <string name="settings_enable_notifs">Mengaktifkan pemberitahuan inbox</string>
-    <string name="settings_mod_toolbox_header">Kotak peralatan</string>
-    <string name="settings_mod_toolbox_enabled">Aktifkan fungsi kotak peralatan</string>
-    <string name="settings_mod_toolbox_desc">Dapat menyebabkan penurunan performa</string>
-    <string name="settings_mod_removal_reasons">Tipe alasan penghapusan</string>
-    <string name="settings_mod_removal_slide">Slide \"hapus dengan alasan\"</string>
-    <string name="settings_mod_removal_toolbox">Alasan membuang kotak peralatan</string>
-    <string name="settings_mod_removal_reddit">Alasan membuang reddit</string>
-    <string name="settings_mod_toolbox_message">Metode mengirim alasan pembuangan</string>
-    <string name="settings_mod_toolbox_modmail">Mengirimkan alasan penghapusan sebagai subreddit</string>
     <!-- Quick setting toggles in the drawer -->
     <string name="toggle_night_mode">Mode malam</string>
     <string name="toggle_immersive_mode">Modus mendalam</string>

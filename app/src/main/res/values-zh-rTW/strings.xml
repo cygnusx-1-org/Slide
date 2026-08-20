@@ -449,26 +449,6 @@
     <plurals name="mod_btn_reports">
         <item quantity="other">檢視 %d 個報告</item>
     </plurals>
-    <!-- Toolbox-related stuff -->
-    <string name="mod_usernotes_view">查看用戶備註</string>
-    <string name="mod_usernotes_title">%s 的用戶備註</string>
-    <string name="mod_usernotes_add">添加用戶備註</string>
-    <string name="toolbox_removal_title">移除 %s 的原因</string>
-    <string name="toolbox_removal_header">包含標題：</string>
-    <string name="toolbox_removal_footer">包含頁腳：</string>
-    <string name="toolbox_removal_comment">向已移除的項目回復</string>
-    <string name="toolbox_removal_sticky">置頂移除說明</string>
-    <string name="toolbox_removal_pm">作為私信發送</string>
-    <string name="toolbox_removal_modmail">作為版主郵件發送私信</string>
-    <string name="toolbox_removal_both">作為私信和回復發送</string>
-    <string name="toolbox_removal_none">不，只記錄移除</string>
-    <string name="toolbox_removal_lock">鎖定已移除的帖子</string>
-    <string name="toolbox_logreason_placeholder">記錄原因</string>
-    <string name="toolbox_note_text_required">備註文本是必需的</string>
-    <string name="toolbox_note_text_placeholder">有關此用戶的事...</string>
-    <string name="toolbox_note_default">無類型</string>
-    <string name="toolbox_wiki_edit_reauth">為了添加或移除用戶備註，Slide 必須重新驗證你的身份</string>
-    <string name="toolbox_wiki_edit_reauth_question">你想現在重新登入 Slide 嗎？</string>
     <!-- If he did -->
     <string name="really_pin_submission_message">已置頂帖子</string>
     <string name="really_unpin_submission_message">已取消置頂帖子</string>
@@ -544,7 +524,6 @@
     <string name="settings_general_immersive_mode_desc">隱藏狀態和導航欄 (實驗功能)</string>
     <string name="settings_general_title_drawer_items">抽屜項目</string>
     <string name="settings_general_subtitle_drawer_items">選擇側滑選單顯示的項目</string>
-    <string name="settings_moderation">版主管理</string>
     <!-- Settings titles displayed in settings activity-->
     <string name="settings_title_backup">備份及還原</string>
     <string name="settings_title_default_theme">主要主題</string>

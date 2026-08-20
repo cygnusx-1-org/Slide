@@ -470,26 +470,6 @@
         <item quantity="many">Zobrazit %d hlášení</item>
         <item quantity="other">Zobrazit %d hlášení</item>
     </plurals>
-    <!-- Toolbox-related stuff -->
-    <string name="mod_usernotes_view">Zobrazit uživatelské poznámky</string>
-    <string name="mod_usernotes_title">Uživatelské poznámky pro %s</string>
-    <string name="mod_usernotes_add">Přidat uživatelskou poznámku</string>
-    <string name="toolbox_removal_title">Důvody odebrání pro %s</string>
-    <string name="toolbox_removal_header">Zahrnout hlavičku:</string>
-    <string name="toolbox_removal_footer">Zahrnout patičku:</string>
-    <string name="toolbox_removal_comment">Odpovědět komentářem na odstraněnou položku</string>
-    <string name="toolbox_removal_sticky">Přilepit komentář odstranění</string>
-    <string name="toolbox_removal_pm">Odeslat jako PM</string>
-    <string name="toolbox_removal_modmail">Poslat PM jako modmail</string>
-    <string name="toolbox_removal_both">Odeslat jako PM i odpověď</string>
-    <string name="toolbox_removal_none">Žádný, zaznamenat pouze odstranění</string>
-    <string name="toolbox_removal_lock">Zamknout odstraněné vlákno</string>
-    <string name="toolbox_logreason_placeholder">Zaznamenat odstranění</string>
-    <string name="toolbox_note_text_required">Text poznámky je povinný</string>
-    <string name="toolbox_note_text_placeholder">Něco o uživateli&#8230;</string>
-    <string name="toolbox_note_default">Bez typu</string>
-    <string name="toolbox_wiki_edit_reauth">Chcete-li přidat nebo odebrat uživatelské poznámky, musí Vás Slide znovu ověřit</string>
-    <string name="toolbox_wiki_edit_reauth_question">Chcete se nyní znovu přihlásit do Slide?</string>
     <!-- If he did -->
     <string name="really_pin_submission_message">Příspěvek připnut</string>
     <string name="really_unpin_submission_message">Příspěvek odepnut</string>
@@ -565,7 +545,6 @@
     <string name="settings_general_immersive_mode_desc">Skrýt stavové a navigační lišty (experimentální)</string>
     <string name="settings_general_title_drawer_items">Položky v zásuvce</string>
     <string name="settings_general_subtitle_drawer_items">Vyberte položky zásuvky k zobrazení</string>
-    <string name="settings_moderation">Moderace</string>
     <!-- Settings titles displayed in settings activity-->
     <string name="settings_title_backup">Záloha &amp; Obnovení</string>
     <string name="settings_title_default_theme">Hlavní téma</string>
@@ -654,19 +633,6 @@
     <string name="settings_theme_night_end_at">Konec v\u0020</string>
     <string name="settings_general_inbox_snd">Zvuk a vibrace</string>
     <string name="settings_enable_notifs">Povolit upozornění na schránku doručené</string>
-    <string name="settings_mod_toolbox_header">Nástroje</string>
-    <string name="settings_mod_toolbox_enabled">Povolit funkci Nástroje</string>
-    <string name="settings_mod_toolbox_desc">Může způsobit mírné snížení výkonu</string>
-    <string name="settings_mod_removal_reasons">Typ důvodu odstranění</string>
-    <string name="settings_mod_removal_slide">Posunout \"odstranit s důvodem\"</string>
-    <string name="settings_mod_removal_toolbox">Důvody odstranění nástrojů</string>
-    <string name="settings_mod_removal_reddit">Důvody odstranění Redditu</string>
-    <string name="settings_mod_toolbox_refresh">Vynutit obnovení dat nástrojů</string>
-    <string name="settings_mod_toolbox_message">Způsob odeslání důvodů vyhoštění</string>
-    <string name="settings_mod_toolbox_sticky">Přilepit komentáře odstranění</string>
-    <string name="settings_mod_toolbox_lock">Zamknout vlákna po zanechání důvodu odstranění</string>
-    <string name="settings_mod_toolbox_modmail">Odeslat důvody odstranění jako subreddit</string>
-    <string name="settings_mod_toolbox_refreshing">Obnovuji data nástrojů pro všechny subreddity</string>
     <!-- Quick setting toggles in the drawer -->
     <string name="toggle_night_mode">Noční režim</string>
     <string name="toggle_immersive_mode">Režim celé obrazovky</string>

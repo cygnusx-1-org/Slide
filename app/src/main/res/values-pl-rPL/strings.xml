@@ -469,25 +469,6 @@
         <item quantity="many">Przejrzyj %d zgłoszeń</item>
         <item quantity="other">Przejrzyj %d zgłoszeń</item>
     </plurals>
-    <!-- Toolbox-related stuff -->
-    <string name="mod_usernotes_view">Zobacz notatki użytkowników</string>
-    <string name="mod_usernotes_title">Notatki użytkownika dla %s</string>
-    <string name="mod_usernotes_add">Dodaj notatkę użytkownika</string>
-    <string name="toolbox_removal_title">Powody usunięcia %s</string>
-    <string name="toolbox_removal_header">Dołącz nagłówek:</string>
-    <string name="toolbox_removal_footer">Dołącz stopkę:</string>
-    <string name="toolbox_removal_comment">Odpowiedz z komentarzem do elementu, który został usunięty</string>
-    <string name="toolbox_removal_sticky">Przyklej komentarz do usunięcia</string>
-    <string name="toolbox_removal_pm">Wyślij jako prywatna wiadomość</string>
-    <string name="toolbox_removal_both">Wyślij jako wiadomość i odpowiedź</string>
-    <string name="toolbox_removal_none">Brak, rejestruj tylko usunięcie</string>
-    <string name="toolbox_removal_lock">Zablokuj usunięty wątek </string>
-    <string name="toolbox_logreason_placeholder">Powód dziennika</string>
-    <string name="toolbox_note_text_required">Tekst jest wymagany</string>
-    <string name="toolbox_note_text_placeholder">Coś o użytkowniku&#8230;</string>
-    <string name="toolbox_note_default">Brak typu</string>
-    <string name="toolbox_wiki_edit_reauth">By dodać lub usunąć notatki użytkowników, Slide musi Cię ponownie uwierzytelnić</string>
-    <string name="toolbox_wiki_edit_reauth_question">Czy chcesz zalogować się ponownie do Slide?</string>
     <!-- If he did -->
     <string name="really_pin_submission_message">Post przypięty</string>
     <string name="really_unpin_submission_message">Post odpięty</string>
@@ -564,7 +545,6 @@
     <string name="settings_general_immersive_mode_desc">Ukryj paski statusu i nawigacji (eksperymentalne)</string>
     <string name="settings_general_title_drawer_items">Elementy menu</string>
     <string name="settings_general_subtitle_drawer_items">Wybierz które elementy menu wyświetlać</string>
-    <string name="settings_moderation">Moderacja</string>
     <!-- Settings titles displayed in settings activity-->
     <string name="settings_title_backup">Kopia zapasowa i przywracanie</string>
     <string name="settings_title_default_theme">Główny motyw</string>
@@ -658,12 +638,6 @@
     <string name="settings_theme_night_end_at">Kończ o\u0020</string>
     <string name="settings_general_inbox_snd">Dźwięki i wibracje</string>
     <string name="settings_enable_notifs">Włącz powiadomienia w skrzynce</string>
-    <string name="settings_mod_toolbox_header">Toolbox</string>
-    <string name="settings_mod_toolbox_enabled">Włącz funkcjonalność Toolbox</string>
-    <string name="settings_mod_toolbox_desc">Może lekko zmniejszyć wydajność</string>
-    <string name="settings_mod_toolbox_refresh">Wymuś odświeżenie danych Toolboxa</string>
-    <string name="settings_mod_toolbox_message">Metoda wysyłania przyczyny usunięcia</string>
-    <string name="settings_mod_toolbox_lock">Zablokuj wątki po zostawieniu powodu usunięcia</string>
     <!-- Quick setting toggles in the drawer -->
     <string name="toggle_night_mode">Tryb nocny</string>
     <string name="toggle_immersive_mode">Tryb immersyjny</string>

@@ -37,7 +37,6 @@ import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionViews.PopulateSubmissionViewHolder;
-import me.edgan.redditslide.Toolbox.ToolboxUI;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Views.CreateCardView;
 import me.edgan.redditslide.Visuals.FontPreferences;
@@ -203,9 +202,6 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             SpannableStringBuilder author = new SpannableStringBuilder(comment.getAuthor());
 
             CommentAdapterHelper.styleAuthorBadge(mContext, author, comment, null);
-
-            ToolboxUI.appendToolboxNote(
-                    mContext, author, comment.getSubredditName(), comment.getAuthor());
 
             holder.user.setText(author);
             holder.user.append(
@@ -469,7 +465,6 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         final Drawable remove = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_close, color);
         final Drawable ban = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_gavel, color);
         final Drawable spam = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_flag, color);
-        final Drawable note = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_note, color);
         final Drawable removeReason = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_announcement, color);
         final Drawable lock = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_lock, color);
 
@@ -491,10 +486,6 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     mContext.getResources()
                             .getQuantityString(
                                     R.plurals.mod_btn_reports, reportCount, reportCount));
-        }
-
-        if (SettingValues.toolboxEnabled) {
-            b.sheet(24, note, mContext.getString(R.string.mod_usernotes_view));
         }
 
         b.sheet(1, approve, mContext.getString(R.string.mod_btn_approve));
@@ -545,37 +536,7 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                                 removeComment(mContext, holder, comment, false);
                                 break;
                             case 7:
-                                if (SettingValues.removalReasonType
-                                                == SettingValues.RemovalReasonType.TOOLBOX.ordinal()
-                                        && ToolboxUI.canShowRemoval(
-                                                MiscUtil.orEmpty(comment.getSubredditName()))) {
-                                    ToolboxUI.showRemoval(
-                                            mContext,
-                                            comment,
-                                            new ToolboxUI.CompletedRemovalCallback() {
-                                                @Override
-                                                public void onComplete(boolean success) {
-                                                    if (success) {
-                                                        Snackbar s =
-                                                                Snackbar.make(
-                                                                        holder.itemView,
-                                                                        R.string.comment_removed,
-                                                                        Snackbar.LENGTH_LONG);
-                                                        LayoutUtils.showSnackbar(s);
-
-                                                    } else {
-                                                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
-                                                                .setTitle(R.string.err_general)
-                                                                .setMessage(
-                                                                        R.string.err_retry_later)
-                                                                );
-                                                    }
-                                                }
-                                            });
-                                } else { // Show a Slide reason dialog if we can't show a toolbox or
-                                    // reddit reason
-                                    doRemoveCommentReason(mContext, holder, comment);
-                                }
+                                doRemoveCommentReason(mContext, holder, comment);
                                 break;
                             case 10:
                                 removeComment(mContext, holder, comment, true);
@@ -588,13 +549,6 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                             case 23:
                                 CommentAdapterHelper.showBan(
                                         mContext, holder.itemView, comment, "", "", "", "");
-                                break;
-                            case 24:
-                                ToolboxUI.showUsernotes(
-                                        mContext,
-                                        MiscUtil.orEmpty(comment.getAuthor()),
-                                        MiscUtil.orEmpty(comment.getSubredditName()),
-                                        "l," + comment.getParentId() + "," + comment.getId());
                                 break;
                             case 25:
                                 lockUnlockComment(mContext, holder, comment, !locked);

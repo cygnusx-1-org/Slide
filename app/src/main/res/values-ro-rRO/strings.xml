@@ -346,7 +346,6 @@
     <string name="mod_remove_title">Care este motivul pentru eliminarea acestei postări?</string>
     <string name="mod_distinguish">Distinge</string>
     <string name="reauth_complete">Reautentificare completă!</string>
-    <!-- Toolbox-related stuff -->
     <!-- If he did -->
     <!-- Subreddit Wiki -->
     <string name="wiki_err">Nu s-a găsit wiki</string>

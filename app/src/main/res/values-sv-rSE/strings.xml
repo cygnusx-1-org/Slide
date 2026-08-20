@@ -302,9 +302,6 @@
     <string name="mod_btn_approve">Godkänn</string>
     <string name="mod_btn_remove">Ta bort</string>
     <string name="mod_btn_spam">Markera som skräppost</string>
-    <!-- Toolbox-related stuff -->
-    <string name="toolbox_removal_pm">Skicka som PM</string>
-    <string name="toolbox_note_default">Ingen typ</string>
     <!-- If he did -->
     <!-- Subreddit Wiki -->
     <string name="wiki_err">Ingen wiki hittades</string>
@@ -377,7 +374,6 @@
     <string name="settings_layout_picture_mode">Bildläge</string>
     <string name="settings_section_content">Innehåll</string>
     <string name="settings_backup_view">Visa säkerhetskopia</string>
-    <string name="settings_mod_toolbox_header">Verktygslåda</string>
     <!-- Quick setting toggles in the drawer -->
     <string name="toggle_night_mode">Nattläge</string>
     <string name="toggle_nsfw">Visa NSFW-innehåll</string>

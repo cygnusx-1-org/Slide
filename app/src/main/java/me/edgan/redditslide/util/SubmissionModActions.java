@@ -29,7 +29,6 @@ import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionCache;
-import me.edgan.redditslide.Toolbox.ToolboxUI;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import net.dean.jraw.ApiException;
 import net.dean.jraw.fluent.FlairReference;
@@ -110,7 +109,6 @@ public class SubmissionModActions {
         final Drawable ban = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_gavel, color);
         final Drawable spam = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_flag, color);
         final Drawable distinguish = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_star, color);
-        final Drawable note = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_note, color);
 
         ta.recycle();
 
@@ -119,10 +117,6 @@ public class SubmissionModActions {
         int reportCount = reports.size() + reports2.size();
 
         b.sheet(0, report, res.getQuantityString(R.plurals.mod_btn_reports, reportCount, reportCount));
-
-        if (SettingValues.toolboxEnabled) {
-            b.sheet(24, note, res.getString(R.string.mod_usernotes_view));
-        }
 
         boolean approved = false;
         String whoApproved = "";
@@ -261,42 +255,7 @@ public class SubmissionModActions {
                                     mContext, submission, posts, recyclerview, holder, false);
                             break;
                         case 7:
-                            if (SettingValues.removalReasonType
-                                            == SettingValues.RemovalReasonType.TOOLBOX.ordinal()
-                                    && ToolboxUI.canShowRemoval(
-                                            MiscUtil.orEmpty(submission.getSubredditName()))) {
-                                ToolboxUI.showRemoval(
-                                        mContext,
-                                        submission,
-                                        new ToolboxUI.CompletedRemovalCallback() {
-                                            @Override
-                                            public void onComplete(boolean success) {
-                                                if (success) {
-                                                    SubmissionCache.removed.add(submission.getFullName());
-                                                    SubmissionCache.approved.remove(submission.getFullName());
-
-                                                    SubmissionCache.updateInfoSpannable(submission, mContext, submission.getSubredditName());
-
-                                                    notifyModActionApplied(
-                                                            mContext,
-                                                            posts,
-                                                            submission,
-                                                            recyclerview,
-                                                            holder);
-
-                                                    Snackbar s = Snackbar.make(holder.itemView, R.string.submission_removed, Snackbar.LENGTH_LONG);
-                                                    LayoutUtils.showSnackbar(s);
-                                                } else {
-                                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
-                                                        .setTitle(R.string.err_general)
-                                                        .setMessage(R.string.err_retry_later)
-                                                        );
-                                                }
-                                            }
-                                        });
-                            } else { // Show a Slide reason dialog if we can't show a toolbox or rddit one
-                                doRemoveSubmissionReason(mContext, submission, posts, recyclerview, holder);
-                            }
+                            doRemoveSubmissionReason(mContext, submission, posts, recyclerview, holder);
 
                             break;
                         case 30:
@@ -317,10 +276,6 @@ public class SubmissionModActions {
                             // ban a user
                             CommentAdapterHelper.showBan(
                                     mContext, holder.itemView, submission, "", "", "", "");
-
-                            break;
-                        case 24:
-                            ToolboxUI.showUsernotes(mContext, MiscUtil.orEmpty(submission.getAuthor()), MiscUtil.orEmpty(submission.getSubredditName()), "l," + submission.getId());
 
                             break;
                     }

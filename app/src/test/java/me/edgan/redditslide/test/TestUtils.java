@@ -21,8 +21,8 @@ public class TestUtils {
 
     /**
      * Seeds the private static {@code Reddit.mApplication} with the Robolectric application context.
-     * Some classes (notably anything that class-loads {@code Toolbox}, whose static initializer calls
-     * {@code Reddit.getAppContext().getSharedPreferences(...)}) otherwise throw an {@code
+     * Any class whose static initializer calls {@code
+     * Reddit.getAppContext().getSharedPreferences(...)} otherwise throws an {@code
      * ExceptionInInitializerError} in tests. Robolectric-only — needs an Android runtime.
      */
     public static void seedRedditApplication() {

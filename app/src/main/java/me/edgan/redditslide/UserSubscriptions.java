@@ -17,7 +17,6 @@ import java.util.Map;
 import me.edgan.redditslide.Activities.Login;
 import me.edgan.redditslide.Activities.MainActivity;
 import me.edgan.redditslide.Activities.MultiredditOverview;
-import me.edgan.redditslide.Toolbox.Toolbox;
 import me.edgan.redditslide.ui.settings.dragSort.ReorderSubreddits;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
@@ -295,12 +294,6 @@ public class UserSubscriptions {
     public static void doOnlineSyncing() {
         if (Authentication.mod) {
             doModOf();
-            if (modOf != null) {
-                for (String sub : modOf) {
-                    Toolbox.ensureConfigCachedLoaded(sub);
-                    Toolbox.ensureUsernotesCachedLoaded(sub);
-                }
-            }
         }
         SavedUsers.syncFriendsFromReddit();
         loadMultireddits();

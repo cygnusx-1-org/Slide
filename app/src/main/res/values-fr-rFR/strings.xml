@@ -463,26 +463,6 @@
         <item quantity="one">Afficher le rapport %d</item>
         <item quantity="other">Afficher les rapports %d</item>
     </plurals>
-    <!-- Toolbox-related stuff -->
-    <string name="mod_usernotes_view">Voir notes utilisateur</string>
-    <string name="mod_usernotes_title">Notes utilisateurs pour %s</string>
-    <string name="mod_usernotes_add">Ajouter une note</string>
-    <string name="toolbox_removal_title">Motif de suppression pour %s</string>
-    <string name="toolbox_removal_header">Inclure en-tête:</string>
-    <string name="toolbox_removal_footer">Inclure pied de page:</string>
-    <string name="toolbox_removal_comment">Répondre avec un commentaire à l\'élément supprimé</string>
-    <string name="toolbox_removal_sticky">Mettre en post-it le commentaire de suppression</string>
-    <string name="toolbox_removal_pm">Envoyer en MP</string>
-    <string name="toolbox_removal_modmail">Envoyer MP via modmail</string>
-    <string name="toolbox_removal_both">Envoyer en MP et en réponse</string>
-    <string name="toolbox_removal_none">Aucun, n\'enregistrer que la suppression</string>
-    <string name="toolbox_removal_lock">Verrouiller le sujet supprimé</string>
-    <string name="toolbox_logreason_placeholder">Raison du log</string>
-    <string name="toolbox_note_text_required">Un texte est nécessaire</string>
-    <string name="toolbox_note_text_placeholder">Quelque chose à propos de l\'utilisateur&#8230;</string>
-    <string name="toolbox_note_default">Aucun type</string>
-    <string name="toolbox_wiki_edit_reauth">Pour ajouter ou supprimer des notes utilisateurs, Slide doit vous ré-authentifier</string>
-    <string name="toolbox_wiki_edit_reauth_question">Voulez-vous vous reconnecter à Slide maintenant?</string>
     <!-- If he did -->
     <string name="really_pin_submission_message">Publication épinglée</string>
     <string name="really_unpin_submission_message">Publication désépinglée</string>
@@ -559,7 +539,6 @@
     <string name="settings_general_immersive_mode_desc">Masquer les barres d’état et de la navigation (expérimental)</string>
     <string name="settings_general_title_drawer_items">Éléments du tiroir</string>
     <string name="settings_general_subtitle_drawer_items">Sélectionner les éléments du tiroir à afficher</string>
-    <string name="settings_moderation">Modération</string>
     <!-- Settings titles displayed in settings activity-->
     <string name="settings_title_backup">Sauvegarder &amp; restaurer</string>
     <string name="settings_title_default_theme">Thème principal</string>
@@ -652,19 +631,6 @@
     <string name="settings_theme_night_end_at">Finit à\u0020</string>
     <string name="settings_general_inbox_snd">Son et vibration</string>
     <string name="settings_enable_notifs">Activer les notifications de messages</string>
-    <string name="settings_mod_toolbox_header">Toolbox</string>
-    <string name="settings_mod_toolbox_enabled">Activer la fonctionnalité de la Toolbox</string>
-    <string name="settings_mod_toolbox_desc">Peut causer une légère baisse de performance</string>
-    <string name="settings_mod_removal_reasons">Type de raison de suppression</string>
-    <string name="settings_mod_removal_slide">Glisser \"supprimer avec raison\"</string>
-    <string name="settings_mod_removal_toolbox">Raisons de la suppression de la ToolBox</string>
-    <string name="settings_mod_removal_reddit">Motifs de suppression du Reddit</string>
-    <string name="settings_mod_toolbox_refresh">Forcer les données de la Toolbox</string>
-    <string name="settings_mod_toolbox_message">Méthode d\'envoi des raisons de suppression</string>
-    <string name="settings_mod_toolbox_sticky">Mettre en post-it le commentaire de suppression</string>
-    <string name="settings_mod_toolbox_lock">Verrouiller le topic après avoir laissé une raison de suppression</string>
-    <string name="settings_mod_toolbox_modmail">Envoyer les raisons de suppression en tant que subreddit</string>
-    <string name="settings_mod_toolbox_refreshing">Actualisation des données de la Toolbox pour tous les subreddits</string>
     <!-- Quick setting toggles in the drawer -->
     <string name="toggle_night_mode">Mode Nuit</string>
     <string name="toggle_immersive_mode">Mode immersif</string>

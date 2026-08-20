@@ -469,26 +469,6 @@ Möchten Sie Slide for Reddit unterstützen?</string>
         <item quantity="one">%d Bericht anzeigen</item>
         <item quantity="other">%d Berichte anzeigen</item>
     </plurals>
-    <!-- Toolbox-related stuff -->
-    <string name="mod_usernotes_view">Benutzernotizen anzeigen</string>
-    <string name="mod_usernotes_title">Benutzernotizen für %s</string>
-    <string name="mod_usernotes_add">Benutzernotiz hinzufügen</string>
-    <string name="toolbox_removal_title">Gründe für das Löschen von %s</string>
-    <string name="toolbox_removal_header">Header einbeziehen:</string>
-    <string name="toolbox_removal_footer">Fußzeile einschließen:</string>
-    <string name="toolbox_removal_comment">Antworte mit einem Kommentar auf das Element, das entfernt wird</string>
-    <string name="toolbox_removal_sticky">Kommentar auf Entfernen anpinnen</string>
-    <string name="toolbox_removal_pm">Als private Nachricht senden</string>
-    <string name="toolbox_removal_modmail">Private Nachricht als Modmail senden</string>
-    <string name="toolbox_removal_both">Als private Nachricht und als Antwort senden</string>
-    <string name="toolbox_removal_none">Keine, nur die Entfernung protokollieren</string>
-    <string name="toolbox_removal_lock">Entfernten Thread sperren</string>
-    <string name="toolbox_logreason_placeholder">Loggrund</string>
-    <string name="toolbox_note_text_required">Text erforderlich</string>
-    <string name="toolbox_note_text_placeholder">Etwas über den Benutzer&#8230;</string>
-    <string name="toolbox_note_default">Kein Typ</string>
-    <string name="toolbox_wiki_edit_reauth">Um Benutzernotizen hinzuzufügen oder zu entfernen, muss Slide dich erneut authentifizieren</string>
-    <string name="toolbox_wiki_edit_reauth_question">Möchten Sie sich jetzt wieder in Slide einloggen?</string>
     <!-- If he did -->
     <string name="really_pin_submission_message">Beitrag angepinnt</string>
     <string name="really_unpin_submission_message">Beitrag abgepinnt</string>
@@ -564,7 +544,6 @@ Möchten Sie Slide for Reddit unterstützen?</string>
     <string name="settings_general_immersive_mode_desc">Ausblenden der Status und Navigationsleisten (experimentell)</string>
     <string name="settings_general_title_drawer_items">Menü-Elemente</string>
     <string name="settings_general_subtitle_drawer_items">Auswählen, welche Menü-Elemente angezeigt werden sollen</string>
-    <string name="settings_moderation">Moderation</string>
     <!-- Settings titles displayed in settings activity-->
     <string name="settings_title_backup">Sichern &amp; Wiederherstellen</string>
     <string name="settings_title_default_theme">Haupt-Theme</string>
@@ -653,19 +632,6 @@ Möchten Sie Slide for Reddit unterstützen?</string>
     <string name="settings_theme_night_end_at">Ende um\u0020</string>
     <string name="settings_general_inbox_snd">Töne und Vibration</string>
     <string name="settings_enable_notifs">Benachrichtigungen für Posteingang aktivieren</string>
-    <string name="settings_mod_toolbox_header">Toolbox</string>
-    <string name="settings_mod_toolbox_enabled">Toolbox-Funktionalität aktivieren</string>
-    <string name="settings_mod_toolbox_desc">Kann die Leistung etwas reduzieren</string>
-    <string name="settings_mod_removal_reasons">Art des Grundes für Entfernen</string>
-    <string name="settings_mod_removal_slide">Slide \"mit Grund entfernen\"</string>
-    <string name="settings_mod_removal_toolbox">Entfernen der Toolbox Gründe</string>
-    <string name="settings_mod_removal_reddit">Gründe für das Löschen von Reddit</string>
-    <string name="settings_mod_toolbox_refresh">Aktualisierung der Toolbox-Daten erzwingen</string>
-    <string name="settings_mod_toolbox_message">Methode zum Senden von Entfernungsgründen</string>
-    <string name="settings_mod_toolbox_sticky">Angepinnte Kommentare auf Entfernen</string>
-    <string name="settings_mod_toolbox_lock">Threads nach Verlassen eines Entfernungsgrunds sperren</string>
-    <string name="settings_mod_toolbox_modmail">Entfernungsgründe als Subreddit senden</string>
-    <string name="settings_mod_toolbox_refreshing">Toolbox-Daten für alle Subreddits aktualisieren</string>
     <!-- Quick setting toggles in the drawer -->
     <string name="toggle_night_mode">Nachtmodus</string>
     <string name="toggle_immersive_mode">Vollbildmodus</string>

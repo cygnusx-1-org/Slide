@@ -291,7 +291,6 @@
         <item quantity="one">Vis %d rapport</item>
         <item quantity="other">Vis %d rapporter</item>
     </plurals>
-    <!-- Toolbox-related stuff -->
     <!-- If he did -->
     <!-- Subreddit Wiki -->
     <string name="wiki_err">Fant ingen wiki</string>

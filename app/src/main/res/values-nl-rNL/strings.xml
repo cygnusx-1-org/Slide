@@ -371,7 +371,6 @@
         <item quantity="one">Bekijk %d melding</item>
         <item quantity="other">Bekijk %d meldingen</item>
     </plurals>
-    <!-- Toolbox-related stuff -->
     <!-- If he did -->
     <string name="really_pin_submission_message">Post vastgezet</string>
     <string name="really_unpin_submission_message">Post los gemaakt</string>

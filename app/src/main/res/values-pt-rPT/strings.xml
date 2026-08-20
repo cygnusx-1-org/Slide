@@ -458,10 +458,6 @@
         <item quantity="one">Ver %d denúncia</item>
         <item quantity="other">Ver %d denúncias</item>
     </plurals>
-    <!-- Toolbox-related stuff -->
-    <string name="mod_usernotes_view">Ver notas de moderadores</string>
-    <string name="mod_usernotes_title">Notas de %s</string>
-    <string name="mod_usernotes_add">Adicionar nota de utilizador</string>
     <!-- If he did -->
     <string name="really_pin_submission_message">Publicação afixada</string>
     <string name="really_unpin_submission_message">Publicação desafixada</string>

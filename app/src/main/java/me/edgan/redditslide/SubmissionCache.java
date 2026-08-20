@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.WeakHashMap;
 import me.edgan.redditslide.Adapters.CommentAdapterHelper;
-import me.edgan.redditslide.Toolbox.ToolboxUI;
 import me.edgan.redditslide.Views.RoundedBackgroundSpan;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
@@ -270,8 +269,8 @@ public class SubmissionCache {
         titleString.append(spacer);
 
         // Prefer an author restored by "Recover post": Reddit reports "[deleted]" once the poster
-        // deletes their account, and everything below (badge, colour, tag, friend, Toolbox note)
-        // should key off the real name.
+        // deletes their account, and everything below (badge, colour, tag, friend) should key off
+        // the real name.
         final String authorName = PostRecovery.getDisplayAuthor(submission);
         SpannableStringBuilder author = new SpannableStringBuilder(" " + authorName + " ");
         int authorcolor = Palette.getFontColorUser(authorName);
@@ -383,9 +382,6 @@ public class SubmissionCache {
             titleString.append(" ");
             titleString.append(pinned);
         }
-
-        ToolboxUI.appendToolboxNote(
-                mContext, titleString, submission.getSubredditName(), authorName);
 
         /* too big, might add later todo
         if (submission.getAuthorFlair() != null && submission.getAuthorFlair().getText() != null && !submission.getAuthorFlair().getText().isEmpty()) {

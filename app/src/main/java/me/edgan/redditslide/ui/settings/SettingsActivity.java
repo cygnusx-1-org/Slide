@@ -708,22 +708,6 @@ public class SettingsActivity extends BaseActivity implements RestartActivity {
             requireViewById(R.id.settings_child_reddit_settings).setEnabled(false);
             requireViewById(R.id.settings_child_reddit_settings).setAlpha(0.25f);
         }
-
-        if (Authentication.mod) {
-            requireViewById(R.id.settings_child_moderation).setVisibility(View.VISIBLE);
-            requireViewById(R.id.settings_child_moderation)
-                    .setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Intent i =
-                                            new Intent(
-                                                    SettingsActivity.this,
-                                                    SettingsModeration.class);
-                                    startActivity(i);
-                                }
-                            });
-        }
     }
 
     @Override

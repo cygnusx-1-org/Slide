@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.util.LogUtil;
-import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.RedditClient;
 import net.dean.jraw.http.HttpRequest;
 import net.dean.jraw.http.RestResponse;
@@ -127,49 +126,6 @@ public class ModmailApi {
             return !response.hasErrors();
         } catch (Exception e) {
             LogUtil.e(e, "ModmailApi.reply failed");
-            return false;
-        }
-    }
-
-    /**
-     * POST {@code /api/mod/conversations} — start a new conversation from a subreddit to a user. The
-     * New Modmail replacement for sending a message "as the subreddit" (legacy {@code /api/compose}
-     * with {@code from_sr}, which rides the retired modmail system).
-     *
-     * @param srName subreddit the conversation is sent as
-     * @param to recipient, a bare username (or {@code u/username})
-     * @param subject conversation subject; Reddit caps this at 100 characters
-     * @param body raw markdown
-     * @param isAuthorHidden show the subreddit as the author instead of the individual moderator
-     * @return true on success
-     */
-    public static boolean createConversation(
-            String srName,
-            String to,
-            @Nullable String subject,
-            String body,
-            boolean isAuthorHidden) {
-        final RedditClient client = Authentication.reddit;
-        if (client == null || !Authentication.hasScope(SCOPE)) {
-            return false;
-        }
-        try {
-            Map<String, String> args = new HashMap<>();
-            args.put("srName", srName);
-            args.put("to", to);
-            // Reddit rejects subjects longer than 100 chars; truncate defensively. A null value in
-            // the form map would reach URLEncoder.encode() inside JRAW and throw.
-            final String trimmed = MiscUtil.orEmpty(subject);
-            args.put("subject", trimmed.length() > 100 ? trimmed.substring(0, 100) : trimmed);
-            args.put("body", body);
-            args.put("isAuthorHidden", String.valueOf(isAuthorHidden));
-
-            HttpRequest r =
-                    client.request().path("/api/mod/conversations").post(args).build();
-            RestResponse response = client.execute(r);
-            return !response.hasErrors();
-        } catch (Exception e) {
-            LogUtil.e(e, "ModmailApi.createConversation failed");
             return false;
         }
     }

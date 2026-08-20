@@ -458,26 +458,6 @@
         <item quantity="one">Veure %d informe</item>
         <item quantity="other">Veure %d denúncies</item>
     </plurals>
-    <!-- Toolbox-related stuff -->
-    <string name="mod_usernotes_view">Veure notes de l\'usuari</string>
-    <string name="mod_usernotes_title">Notes d\'usuari per %s</string>
-    <string name="mod_usernotes_add">Afegir una nota</string>
-    <string name="toolbox_removal_title">Raons de l\'eliminació per %s</string>
-    <string name="toolbox_removal_header">Incloure l\'encapçalament:</string>
-    <string name="toolbox_removal_footer">Incloure el peu de pàgina:</string>
-    <string name="toolbox_removal_comment">Contestar amb un comentari a l\'element eliminat</string>
-    <string name="toolbox_removal_sticky">Destacar el comentari d\'eliminació</string>
-    <string name="toolbox_removal_pm">Enviar com a Missatge Privat</string>
-    <string name="toolbox_removal_modmail">Enviar com a Missatge Privat dels Moderadors</string>
-    <string name="toolbox_removal_both">Enviar tant com a Missatge Privat com a resposta</string>
-    <string name="toolbox_removal_none">Cap, sols registra l\'eliminació</string>
-    <string name="toolbox_removal_lock">Bloquejar la publicació eliminada</string>
-    <string name="toolbox_logreason_placeholder">Registrar raó</string>
-    <string name="toolbox_note_text_required">És requereix emplenar la nota</string>
-    <string name="toolbox_note_text_placeholder">Quelcom sobre l\'usuari&#8230;</string>
-    <string name="toolbox_note_default">Sense estil</string>
-    <string name="toolbox_wiki_edit_reauth">Per afegir o treure notes d\'usuari, Slide necessita autenticar-vos de nou</string>
-    <string name="toolbox_wiki_edit_reauth_question">Voleu tornar a accedir a Slide?</string>
     <!-- If he did -->
     <string name="really_pin_submission_message">Publicació anclada</string>
     <string name="really_unpin_submission_message">Publicació no anclada</string>
@@ -553,7 +533,6 @@
     <string name="settings_general_immersive_mode_desc">Amagar les barres d\'estat i navegació (experimentals)</string>
     <string name="settings_general_title_drawer_items">Elements de calaix</string>
     <string name="settings_general_subtitle_drawer_items">Seleccioneu els elements del calaix que voleu que es mostrin</string>
-    <string name="settings_moderation">Moderació</string>
     <!-- Settings titles displayed in settings activity-->
     <string name="settings_title_backup">Còpia de seguretat i restauració</string>
     <string name="settings_title_default_theme">Tema principal</string>
@@ -642,19 +621,6 @@
     <string name="settings_theme_night_end_at">Finalitzar a\u0020</string>
     <string name="settings_general_inbox_snd">So i vibració</string>
     <string name="settings_enable_notifs">Habilitar les notificacions de la safata d\'entrada</string>
-    <string name="settings_mod_toolbox_header">Caixa d\'eines</string>
-    <string name="settings_mod_toolbox_enabled">Habilitar les funcionalitats de Toolbox</string>
-    <string name="settings_mod_toolbox_desc">Pot provocar una petita disminució del rendiment de l\'aplicació</string>
-    <string name="settings_mod_removal_reasons">Tipologia de la raó d\'eliminació</string>
-    <string name="settings_mod_removal_slide">Slide \"eliminar amb raó\"</string>
-    <string name="settings_mod_removal_toolbox">Raons d\'eliminació de Toolbox</string>
-    <string name="settings_mod_removal_reddit">Raons d\'eliminació de Reddit</string>
-    <string name="settings_mod_toolbox_refresh">Forçar una actualització de les dades de Toolbox</string>
-    <string name="settings_mod_toolbox_message">Mètode d\'enviament de les raons d\'eliminació</string>
-    <string name="settings_mod_toolbox_sticky">Destacar els comentaris explicatius de l\'eliminació</string>
-    <string name="settings_mod_toolbox_lock">Clausurar fils després de llevar-hi una explicació sobre l\'eliminació</string>
-    <string name="settings_mod_toolbox_modmail">Enviar les raons d\'eliminació com a subreddit</string>
-    <string name="settings_mod_toolbox_refreshing">Actualitzant les dades de Toolbox per tots els subreddits</string>
     <!-- Quick setting toggles in the drawer -->
     <string name="toggle_night_mode">Mode nocturn</string>
     <string name="toggle_immersive_mode">Mode immersiu</string>
