@@ -18,6 +18,7 @@ import me.edgan.redditslide.Fragments.CommentPage;
 import me.edgan.redditslide.LastComments;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.util.CommentImageUtil;
+import me.edgan.redditslide.util.CommentLimit;
 import me.edgan.redditslide.util.CommentVideoPreview;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
@@ -150,6 +151,9 @@ public class SubmissionComments {
     public void loadMoreReply(CommentAdapter adapter) {
         this.adapter = adapter;
         adapter.currentSelectedItem = context;
+        // This runs right after the user posted or edited a comment, which is exactly the case a
+        // stale cache slot swallows -- so read a different slot than the load before it did.
+        page.advanceCommentLimitRotation();
         mLoadData = new LoadData(false);
         mLoadData.execute(fullName);
     }
@@ -210,6 +214,13 @@ public class SubmissionComments {
     public class LoadData extends AsyncTask<String, Void, ArrayList<CommentObject>> {
         final boolean reset;
 
+        /**
+         * Read on the posting thread, not in {@link #doInBackground}: the page advances the rotation
+         * before each fetch it starts, so a task that read it once it was already running could see
+         * a later fetch's value and send the same limit twice.
+         */
+        private final int limitRotation = page.getCommentLimitRotation();
+
         public LoadData(boolean reset) {
             this.reset = reset;
         }
@@ -234,7 +245,20 @@ public class SubmissionComments {
             SubmissionRequest.Builder builder;
             if (context == null) {
                 single = false;
-                builder = new SubmissionRequest.Builder(fullName).sort(defaultSorting);
+                // Always send an explicit limit, sized to the thread and never 200, so this fetch
+                // does not read the cache slot every client that omits the parameter shares -- the
+                // one that can hold a tree missing a comment entirely. See CommentLimit.
+                builder =
+                        new SubmissionRequest.Builder(fullName)
+                                .sort(defaultSorting)
+                                .limit(
+                                        CommentLimit.forCommentCount(
+                                                // The submission from the previous fetch carries the
+                                                // freshest count; before that, whatever the feed knew.
+                                                submission != null
+                                                        ? submission.getCommentCount()
+                                                        : page.getKnownCommentCount(),
+                                                limitRotation));
             } else {
                 single = true;
                 builder =

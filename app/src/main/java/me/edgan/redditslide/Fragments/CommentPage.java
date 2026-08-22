@@ -97,6 +97,7 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.handler.ToolbarScrollHideHandler;
 import me.edgan.redditslide.ui.settings.SettingsSubAdapter;
 import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.CommentLimit;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.LayoutUtils;
@@ -147,6 +148,20 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
     private SubmissionComments comments;
 
     private boolean single;
+
+    /**
+     * Which cache slot the next comment fetch reads; see {@link CommentLimit}. A fresh {@link
+     * SubmissionComments} is built for every load and every refresh of this page, so the counter has
+     * to live out here to advance at all. Seeded randomly per page so re-opening a submission does
+     * not go straight back to the previous visit's slot.
+     */
+    private int commentLimitRotation = CommentLimit.newRotation();
+
+    /**
+     * The submission's comment count as the feed knew it, for pages opened from a feed. Null on a
+     * permalink/deep-link open, where only the id is known until the fetch comes back.
+     */
+    @Nullable private Integer knownCommentCount;
 
     // onCreateView -> doAdapter assigns this, but only inside the suggested-sort branches; the file already null-checks it at doAdapter itself. See NULLAWAY.md phase 12.
 
@@ -869,6 +884,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                     @Override
                     public void onRefresh() {
                         if (comments != null) {
+                            advanceCommentLimitRotation();
                             comments.loadMore(adapter, subreddit, true);
                         } else {
                             mSwipeRefreshLayout.setRefreshing(false);
@@ -1291,6 +1307,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
         } else if (itemId == R.id.reload) {
             if (comments != null) {
                 mSwipeRefreshLayout.setRefreshing(true);
+                advanceCommentLimitRotation();
                 comments.loadMore(adapter, subreddit);
             }
             return true;
@@ -2191,6 +2208,25 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
         }
     }
 
+    /** Which slot of this submission's limit band the next comment fetch should read. */
+    public int getCommentLimitRotation() {
+        return commentLimitRotation;
+    }
+
+    /**
+     * Move to the next slot, so an explicit refresh is answered by a different cached tree than the
+     * one that just came back - which is the only thing that can rescue a comment lost to a stale
+     * slot.
+     */
+    public void advanceCommentLimitRotation() {
+        commentLimitRotation++;
+    }
+
+    /** The comment count the feed reported for this submission, or null if it was never loaded. */
+    public @Nullable Integer getKnownCommentCount() {
+        return knownCommentCount;
+    }
+
     public void doAdapter(boolean load) {
         commentSorting = SettingValues.getCommentSorting(subreddit);
         if (load) doRefresh(true);
@@ -2207,6 +2243,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                 return;
             }
             Submission s = ((CommentsScreen) getActivity()).currentPosts.get(page);
+            if (s != null) knownCommentCount = s.getCommentCount();
             if (s != null
                     && s.getDataNode().has("suggested_sort")
                     && !s.getDataNode().path("suggested_sort").asText().equalsIgnoreCase("null")
@@ -2229,6 +2266,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
             if (Authentication.didOnline) {
                 comments = new SubmissionComments(fullname, this, mSwipeRefreshLayout);
                 Submission s = ((MainActivity) getActivity()).openingComments;
+                if (s != null) knownCommentCount = s.getCommentCount();
                 if (s != null
                         && s.getDataNode().has("suggested_sort")
                         && !s.getDataNode()
@@ -2473,6 +2511,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
 
     private void reloadSubs() {
         mSwipeRefreshLayout.setRefreshing(true);
+        advanceCommentLimitRotation();
         comments.setSorting(commentSorting);
         rv.scrollToPosition(0);
     }
