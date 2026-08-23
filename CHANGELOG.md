@@ -4,6 +4,13 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.9.2 / 2026-8-23
+============
+* Implemented a workaround for Reddit comment caching
+* Feature Request: Enhance user blocking #126
+
+The new setting for hiding users comments is "Settings | Comments | Collapse comments from blocked users".
+
 7.9.1 / 2026-8-20
 ============
 * Added support for videos in posts and comments
