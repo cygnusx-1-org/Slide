@@ -5,21 +5,23 @@ import android.text.Editable;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
-
+import androidx.annotation.Nullable;
+import java.util.ArrayList;
 import me.edgan.redditslide.Adapters.SubChooseAdapter;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.FontPreferences;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
-
-import java.util.ArrayList;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 10/2/2015. */
+@NullMarked
 public class Shortcut extends BaseActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         getTheme().applyStyle(new FontPreferences(this).getCommentFontStyle().getResId(), true);
         getTheme().applyStyle(new FontPreferences(this).getPostFontStyle().getResId(), true);
         getTheme().applyStyle(new ColorPreferences(this).getFontStyle().getBaseId(), true);
@@ -28,14 +30,17 @@ public class Shortcut extends BaseActivity {
         doShortcut();
     }
 
+    @SuppressWarnings("NullAway.Init") // assigned in doShortcut
     View header;
 
     public void doShortcut() {
 
         setContentView(R.layout.activity_setup_widget);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, R.string.shortcut_creation_title, true, true);
         header = getLayoutInflater().inflate(R.layout.shortcut_header, null);
-        ListView list = (ListView) findViewById(R.id.subs);
+        ListView list = (ListView) requireViewById(R.id.subs);
 
         list.addHeaderView(header);
 
@@ -45,8 +50,8 @@ public class Shortcut extends BaseActivity {
                 new SubChooseAdapter(this, sorted, UserSubscriptions.getAllSubreddits(this));
         list.setAdapter(adapter);
 
-        (header.findViewById(R.id.sort)).clearFocus();
-        ((EditText) header.findViewById(R.id.sort))
+        (header.requireViewById(R.id.sort)).clearFocus();
+        ((EditText) header.requireViewById(R.id.sort))
                 .addTextChangedListener(
                         new SimpleTextWatcher() {
                             @Override

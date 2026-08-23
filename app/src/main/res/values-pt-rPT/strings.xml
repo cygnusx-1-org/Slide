@@ -84,8 +84,6 @@
     <string name="card_save_button">Botão \"Gravar publicação\" na barra de ação</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Multicolunas</string>
-    <string name="multi_column_landscape">Horizontal</string>
-    <string name="multi_column_portrait">Duas colunas em modo retrato</string>
     <string name="single_column_multi_window">Única coluna no modo de janela multi-janela</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Você</string>
@@ -462,7 +460,7 @@
     </plurals>
     <!-- Toolbox-related stuff -->
     <string name="mod_usernotes_view">Ver notas de moderadores</string>
-    <string name="mod_usernotes_title">Notas de </string>
+    <string name="mod_usernotes_title">Notas de %s</string>
     <string name="mod_usernotes_add">Adicionar nota de utilizador</string>
     <!-- If he did -->
     <string name="really_pin_submission_message">Publicação afixada</string>
@@ -901,10 +899,6 @@
     <string name="load_videos_internally_content">Gostaria de experimentar o plugin de vídeo do Slide? Isso permitirá ver os vídeos (como YouTube) internamente!</string>
     <string name="do_not_show_again">Não mostrar novamente</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Escrever texto a filtrar (subreddit:flair_text), pressione enviar para adicionar</string>
-    <plurals name="landscape_columns">
-        <item quantity="one">%d coluna no Modo Paisagem</item>
-        <item quantity="other">%d colunas no Modo Paisagem</item>
-    </plurals>
     <string name="datasave_always">Dados móveis e acesso Wi-Fi</string>
     <string name="datasave_mobile">Dados móveis</string>
     <string name="never">Nunca</string>
@@ -975,7 +969,6 @@
     <string name="share_slide">Partilhar Slide</string>
     <string name="create_folder">Criar pasta</string>
     <string name="folder_name">Nome da pasta</string>
-    <string name="sidebar_friends">Amigos</string>
     <string name="open_links_externally">Abrir sempre este domínio externamente</string>
     <string name="hide_read_posts">Ocultar publicações lidas</string>
     <string name="gallery_mode">Modo galeria</string>

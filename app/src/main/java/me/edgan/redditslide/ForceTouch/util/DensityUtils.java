@@ -3,8 +3,10 @@ package me.edgan.redditslide.ForceTouch.util;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.TypedValue;
+import org.jspecify.annotations.NullMarked;
 
 /** Convert between DP and PX */
+@NullMarked
 public class DensityUtils {
     public static int toPx(Context context, int dp) {
         return convert(context, dp, TypedValue.COMPLEX_UNIT_DIP);

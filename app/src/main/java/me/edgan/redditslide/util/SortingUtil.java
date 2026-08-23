@@ -6,27 +6,33 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
-
-import me.edgan.redditslide.Activities.Search;
-import me.edgan.redditslide.R;
-import me.edgan.redditslide.Reddit;
-import me.edgan.redditslide.Visuals.ColorPreferences;
-
-import net.dean.jraw.paginators.Sorting;
-import net.dean.jraw.paginators.SubmissionSearchPaginator;
-import net.dean.jraw.paginators.TimePeriod;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import me.edgan.redditslide.Activities.Search;
+import me.edgan.redditslide.R;
+import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.Visuals.ColorPreferences;
+import net.dean.jraw.paginators.Sorting;
+import net.dean.jraw.paginators.SubmissionSearchPaginator;
+import net.dean.jraw.paginators.TimePeriod;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class SortingUtil {
     public static final Map<String, TimePeriod> times = new HashMap<>();
     public static SubmissionSearchPaginator.SearchSort search =
             SubmissionSearchPaginator.SearchSort.RELEVANCE;
+    // All three are assigned unconditionally by Reddit.doMainStuff, immediately after
+    // SettingValues.setAllValues, before any Slide component can read them.
+    @SuppressWarnings("NullAway.Init")
     public static Sorting defaultSorting;
+
+    @SuppressWarnings("NullAway.Init") // Reddit.onCreate assigns this (Reddit.java:525)
     public static Sorting frontpageSorting;
+
+    @SuppressWarnings("NullAway.Init") // Reddit.onCreate assigns this (Reddit.java:526)
     public static TimePeriod timePeriod;
 
     public static Integer getSortingId(Sorting sort) {

@@ -4,9 +4,12 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.net.Uri;
 
+import androidx.annotation.Nullable;
+
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Helper class used to set the source and additional attributes from a variety of sources. Supports
@@ -18,18 +21,20 @@ import java.net.URLDecoder;
 
 // From https://github.com/davemorrissey/subsampling-scale-image-view
 
+@NullMarked
 public final class ImageSource {
 
-    static final String FILE_SCHEME = "file:///";
-    static final String ASSET_SCHEME = "file:///android_asset/";
+    public static final String FILE_SCHEME = "file:///";
+    public static final String ASSET_SCHEME = "file:///android_asset/";
 
-    private final Uri uri;
-    private final Bitmap bitmap;
-    private final Integer resource;
+    // Exactly one of uri, bitmap and resource is set; the other two stay null.
+    @Nullable private final Uri uri;
+    @Nullable private final Bitmap bitmap;
+    @Nullable private final Integer resource;
     private boolean tile;
     private int sWidth;
     private int sHeight;
-    private Rect sRegion;
+    @Nullable private Rect sRegion;
     private boolean cached;
 
     private ImageSource(Bitmap bitmap, boolean cached) {
@@ -216,35 +221,35 @@ public final class ImageSource {
         }
     }
 
-    protected final Uri getUri() {
+    @Nullable public final Uri getUri() {
         return uri;
     }
 
-    protected final Bitmap getBitmap() {
+    @Nullable public final Bitmap getBitmap() {
         return bitmap;
     }
 
-    protected final Integer getResource() {
+    @Nullable public final Integer getResource() {
         return resource;
     }
 
-    protected final boolean getTile() {
+    public final boolean getTile() {
         return tile;
     }
 
-    protected final int getSWidth() {
+    public final int getSWidth() {
         return sWidth;
     }
 
-    protected final int getSHeight() {
+    public final int getSHeight() {
         return sHeight;
     }
 
-    protected final Rect getSRegion() {
+    @Nullable public final Rect getSRegion() {
         return sRegion;
     }
 
-    protected final boolean isCached() {
+    public final boolean isCached() {
         return cached;
     }
 }

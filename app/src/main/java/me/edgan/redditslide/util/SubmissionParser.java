@@ -1,11 +1,14 @@
 package me.edgan.redditslide.util;
 
-import org.apache.commons.text.StringEscapeUtils;
+import androidx.annotation.Nullable;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.text.StringEscapeUtils;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Utility methods to transform html received from Reddit into a more parsable format.
@@ -13,6 +16,7 @@ import java.util.regex.Pattern;
  * <p>The output will unescape all html, except for table tags and some special delimiter token such
  * as for code blocks.
  */
+@NullMarked
 public class SubmissionParser {
     private static final Pattern SPOILER_PATTERN =
             Pattern.compile("<a[^>]*title=\"([^\"]*)\"[^>]*>([^<]*)</a>");
@@ -31,7 +35,10 @@ public class SubmissionParser {
      * html received from reddit.
      *
      * @param html html to be formatted. Can be raw from the api
-     * @return list of text blocks
+     * @return list of text blocks, never empty — every helper below contributes at least one block
+     *     per block it is given, and the first of them seeds one from the whole input. Callers that
+     *     want only the first block may still guard with {@code isEmpty()}; that is belt-and-braces,
+     *     not a live case, and SubmissionParserTest is what keeps it that way.
      */
     public static List<String> getBlocks(String html) {
         html =
@@ -177,10 +184,20 @@ public class SubmissionParser {
         List<String> newBlocks = new ArrayList<>();
         for (String block : blocks) {
             if (block.contains(HR_TAG)) {
-                for (String s : block.split(HR_TAG)) {
+                final String[] parts = block.split(HR_TAG);
+                if (parts.length == 0) {
+                    // A block that is nothing but rules — a comment or caption whose whole body is
+                    // "---". split() drops every part as a trailing empty, so there is nothing to
+                    // interleave, and the trailing-tag trim below would instead delete a block an
+                    // earlier iteration had added, or throw outright when this is the first one.
+                    newBlocks.add(HR_TAG);
+                    continue;
+                }
+                for (String s : parts) {
                     newBlocks.add(s);
                     newBlocks.add(HR_TAG);
                 }
+                // Drop the tag the last part added: the rules go between the parts, not after them.
                 newBlocks.remove(newBlocks.size() - 1);
             } else {
                 newBlocks.add(block);
@@ -210,6 +227,14 @@ public class SubmissionParser {
         String text;
         String code;
         String[] split;
+
+        if (startSeperated.length == 0) {
+            // html is nothing but start tags, which split() drops as trailing empties: no text
+            // before the first and no code after the last. Seed the one empty text block the
+            // caller's contract promises rather than indexing an empty array.
+            preSeperated.add("");
+            return preSeperated;
+        }
 
         preSeperated.add(
                 startSeperated[0]
@@ -281,6 +306,13 @@ public class SubmissionParser {
         for (String block : blocks) {
             if (block.contains(TABLE_START_TAG)) {
                 String[] startSeperated = block.split(TABLE_START_TAG);
+                if (startSeperated.length == 0) {
+                    // Nothing but start tags, which split() drops as trailing empties. There is no
+                    // content to pull out of them, so keep the block as it stands rather than
+                    // indexing an empty array.
+                    newBlocks.add(block);
+                    continue;
+                }
                 newBlocks.add(startSeperated[0].trim());
                 for (int i = 1; i < startSeperated.length; i++) {
                     String[] split = startSeperated[i].split(TABLE_END_TAG);
@@ -295,5 +327,318 @@ public class SubmissionParser {
         }
 
         return newBlocks;
+    }
+
+    private static final Pattern PROCESSING_IMG_PATTERN =
+            Pattern.compile("\\*?Processing img (\\w+)\\.{3}\\*?");
+
+    /**
+     * Replaces "Processing img &lt;id&gt;..." placeholders in comment HTML with actual image URLs
+     * from the comment's media_metadata. Reddit uses these placeholders for inline images (e.g.
+     * giphy GIFs) that haven't been fully processed server-side.
+     *
+     * @param bodyHtml the raw body_html from the comment
+     * @param dataNode the comment's raw JSON data node (from getDataNode())
+     * @return the body HTML with placeholders replaced by image URLs, or the original if no
+     *     media_metadata is available
+     */
+    public static String replaceProcessingImgPlaceholders(
+            String bodyHtml, @Nullable JsonNode dataNode) {
+        if (dataNode == null || !dataNode.has("media_metadata")) {
+            return bodyHtml;
+        }
+
+        JsonNode mediaMetadata = dataNode.get("media_metadata");
+        if (mediaMetadata == null || mediaMetadata.isNull()) {
+            return bodyHtml;
+        }
+
+        Matcher matcher = PROCESSING_IMG_PATTERN.matcher(bodyHtml);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String imgId = matcher.group(1);
+            if (mediaMetadata.has(imgId)) {
+                JsonNode mediaNode = mediaMetadata.get(imgId);
+                if (mediaNode != null && mediaNode.has("s")) {
+                    JsonNode s = mediaNode.path("s");
+                    String url = null;
+                    if (s.has("gif")) {
+                        url = s.path("gif").asText();
+                    } else if (s.has("mp4")) {
+                        url = s.path("mp4").asText();
+                    } else if (s.has("u")) {
+                        url = s.path("u").asText();
+                    }
+                    if (url != null) {
+                        url = StringEscapeUtils.unescapeHtml4(url);
+                        matcher.appendReplacement(sb, Matcher.quoteReplacement(url));
+                    }
+                }
+            }
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    /**
+     * Marker for a block produced by {@link #extractImageBlocks(List)} that is a single inline
+     * comment image. The remainder of the block string is the image URL. Renderers detect this and
+     * draw a real (pre-sized) ImageView instead of inline text.
+     */
+    public static final String IMAGE_BLOCK_PREFIX = "\u0001img\u0001";
+
+    private static final Pattern GIPHY_ANCHOR_WITH_IMG_PATTERN =
+            Pattern.compile(
+                    "<a\\s+href=\"https://giphy\\.com/gifs/[^\"]+\"[^>]*>\\s*<img\\s+src=\""
+                            + "(https://(?:external-preview\\.redd\\.it|i\\.giphy\\.com)/[^\"]+)\""
+                            + "[^>]*>\\s*</a>");
+    private static final Pattern GIPHY_PLAIN_LINK_PATTERN =
+            Pattern.compile("<a\\s+href=\"https://giphy\\.com/gifs/([^\"]+)\"[^>]*>[^<]*</a>");
+    private static final Pattern GIPHY_BARE_IMG_PATTERN =
+            Pattern.compile(
+                    "<img\\s+src=\"(https://(?:external-preview\\.redd\\.it|i\\.giphy\\.com)/[^\"]+)\""
+                            + "[^>]*>");
+    private static final Pattern TAG_PATTERN = Pattern.compile("<[^>]*>");
+
+    /**
+     * Splits standalone inline comment images out of the text blocks so they can be rendered as
+     * real (pre-sized) ImageViews rather than inline spans. A block whose only visible content is a
+     * single image URL (preview.redd.it / i.redd.it / external-preview.redd.it / i.giphy.com — after
+     * rewriting giphy links) becomes {@link #IMAGE_BLOCK_PREFIX} + url. All other blocks (text,
+     * tables, code, and the rare text-with-embedded-image) pass through unchanged.
+     */
+    /**
+     * Returns the image URLs that {@link #extractImageBlocks} would render for this comment body, in
+     * the exact same string form, so a preloader warms the cache under the identical keys the
+     * renderer later requests.
+     */
+    public static List<String> imageUrlsFor(@Nullable String rawHtml) {
+        List<String> urls = new ArrayList<>();
+        if (rawHtml == null || rawHtml.isEmpty()) {
+            return urls;
+        }
+        for (String block : extractImageBlocks(getBlocks(rawHtml))) {
+            if (block.startsWith(IMAGE_BLOCK_PREFIX)) {
+                urls.add(block.substring(IMAGE_BLOCK_PREFIX.length()));
+            }
+        }
+        return urls;
+    }
+
+    /**
+     * Marker for a block produced by {@link #extractImageBlocks(List)} that is a single inline
+     * comment video — a video uploaded through Reddit's comment composer, which arrives in the html
+     * as a plain anchor to a {@code reddit.com/link/<commentId>/video/<assetId>/player} url. The
+     * rest of the block string is that url, a {@link #VIDEO_BLOCK_SEPARATOR}, and the caption
+     * (possibly empty); read it with {@link #videoUrlOf} and {@link #videoCaptionOf} rather than
+     * substring-ing it here. Renderers detect this and draw a tappable video card instead of a
+     * bare link.
+     */
+    public static final String VIDEO_BLOCK_PREFIX = "\u0001vid\u0001";
+
+    /** Separates the url from the caption inside a {@link #VIDEO_BLOCK_PREFIX} block. */
+    private static final char VIDEO_BLOCK_SEPARATOR = '\u0002';
+
+    /**
+     * A comment-video anchor. Reddit's markdown renderer disallows images in comments, so the
+     * {@code ![caption](url)} the composer writes comes back as an anchor whose text is the
+     * caption — or, when the author pasted a bare link, the url itself.
+     */
+    private static final Pattern VIDEO_ANCHOR_PATTERN =
+            Pattern.compile(
+                    "<a\\s+href=\""
+                            + "(https://(?:www\\.)?reddit\\.com/link/[^/\"]+/video/[^/\"]+/player"
+                            + "(?:\\?[^\"]*)?)\""
+                            + "[^>]*>([^<]*)</a>");
+
+    /** The player url of a {@link #VIDEO_BLOCK_PREFIX} block. */
+    public static String videoUrlOf(String block) {
+        String body = block.substring(VIDEO_BLOCK_PREFIX.length());
+        int separator = body.indexOf(VIDEO_BLOCK_SEPARATOR);
+        return separator == -1 ? body : body.substring(0, separator);
+    }
+
+    /** The caption of a {@link #VIDEO_BLOCK_PREFIX} block, empty when there is nothing to show. */
+    public static String videoCaptionOf(String block) {
+        String body = block.substring(VIDEO_BLOCK_PREFIX.length());
+        int separator = body.indexOf(VIDEO_BLOCK_SEPARATOR);
+        return separator == -1 ? "" : body.substring(separator + 1);
+    }
+
+    /**
+     * Returns the comment-video player urls that {@link #extractImageBlocks} would draw as cards for
+     * this body, in the same form the renderer hands to the card, so a preloader warms their still
+     * frames under the identical keys it later asks for.
+     */
+    public static List<String> videoUrlsFor(@Nullable String rawHtml) {
+        List<String> urls = new ArrayList<>();
+        if (rawHtml == null || rawHtml.isEmpty()) {
+            return urls;
+        }
+        for (String block : extractImageBlocks(getBlocks(rawHtml))) {
+            if (block.startsWith(VIDEO_BLOCK_PREFIX)) {
+                urls.add(videoUrlOf(block));
+            }
+        }
+        return urls;
+    }
+
+    private static final Pattern IMAGE_ANCHOR_PATTERN =
+            Pattern.compile(
+                    "<a\\s+href=\""
+                            + "(https://(?:preview\\.redd\\.it|i\\.redd\\.it|external-preview\\.redd\\.it|i\\.giphy\\.com)/[^\"]+)\""
+                            + "[^>]*>[^<]*</a>");
+    private static final Pattern IMAGE_URL_PATTERN =
+            Pattern.compile(
+                    "https://(?:preview\\.redd\\.it|i\\.redd\\.it|external-preview\\.redd\\.it|i\\.giphy\\.com)/[^\\s\"<]+");
+
+    public static List<String> extractImageBlocks(List<String> blocks) {
+        List<String> out = new ArrayList<>(blocks.size());
+        for (String block : blocks) {
+            if (block.startsWith("<table>")
+                    || block.startsWith("<pre>")
+                    || block.equals("<hr/>")
+                    || block.equals("<div class=\"md\">")) {
+                out.add(block);
+            } else {
+                // Videos first, so a comment-video anchor becomes its own block; whatever text
+                // surrounds it still goes through the image splitter.
+                for (String fragment : splitBlockVideos(block)) {
+                    if (fragment.startsWith(VIDEO_BLOCK_PREFIX)) {
+                        out.add(fragment);
+                    } else {
+                        out.addAll(splitBlockImages(fragment));
+                    }
+                }
+            }
+        }
+        return out;
+    }
+
+    /**
+     * Pulls every Reddit comment-video anchor out of a single block into its own {@link
+     * #VIDEO_BLOCK_PREFIX} block, keeping the text around it as ordinary fragments (dropping the
+     * ones that are only markup or whitespace). A block with no video comes back unchanged.
+     */
+    private static List<String> splitBlockVideos(String block) {
+        List<String> result = new ArrayList<>();
+        Matcher matcher = VIDEO_ANCHOR_PATTERN.matcher(block);
+        int last = 0;
+        boolean found = false;
+        while (matcher.find()) {
+            found = true;
+            String before = block.substring(last, matcher.start());
+            if (hasRenderableText(before)) {
+                result.add(before);
+            }
+            String url = StringEscapeUtils.unescapeHtml4(matcher.group(1));
+            String caption = StringEscapeUtils.unescapeHtml4(matcher.group(2)).trim();
+            // A pasted bare link is autolinked, so the anchor text is the href: there is nothing
+            // to caption it with that the card doesn't already say.
+            if (caption.equals(url) || caption.equals(matcher.group(1))) {
+                caption = "";
+            }
+            result.add(VIDEO_BLOCK_PREFIX + url + VIDEO_BLOCK_SEPARATOR + caption);
+            last = matcher.end();
+        }
+        if (!found) {
+            result.add(block); // no videos: leave the original block untouched
+            return result;
+        }
+        String after = block.substring(last);
+        if (hasRenderableText(after)) {
+            result.add(after);
+        }
+        return result;
+    }
+
+    /**
+     * Pulls every inline image out of a single text block into its own {@link #IMAGE_BLOCK_PREFIX}
+     * block, keeping the surrounding text as text blocks. This covers both whole-block images and
+     * images embedded in a paragraph of text, so they all render as pre-sized ImageViews instead of
+     * popping in via inline spans.
+     */
+    private static List<String> splitBlockImages(String block) {
+        List<String> result = new ArrayList<>();
+        // Rewrite giphy links and direct image anchors to bare URLs so they can be split out.
+        String normalized = imageAnchorsToUrls(convertGiphyToImageUrls(block));
+        Matcher matcher = IMAGE_URL_PATTERN.matcher(normalized);
+        int last = 0;
+        boolean found = false;
+        while (matcher.find()) {
+            String url = StringEscapeUtils.unescapeHtml4(matcher.group());
+            if (!isImageUrl(url)) {
+                continue;
+            }
+            found = true;
+            String before = normalized.substring(last, matcher.start());
+            if (hasRenderableText(before)) {
+                result.add(before);
+            }
+            result.add(IMAGE_BLOCK_PREFIX + url);
+            last = matcher.end();
+        }
+        if (!found) {
+            result.add(block); // no images: leave the original block untouched
+            return result;
+        }
+        String after = normalized.substring(last);
+        if (hasRenderableText(after)) {
+            result.add(after);
+        }
+        return result;
+    }
+
+    private static String imageAnchorsToUrls(String html) {
+        Matcher matcher = IMAGE_ANCHOR_PATTERN.matcher(html);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(sb, Matcher.quoteReplacement(" " + matcher.group(1) + " "));
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    private static boolean hasRenderableText(String fragment) {
+        return !TAG_PATTERN.matcher(fragment).replaceAll(" ").trim().isEmpty();
+    }
+
+    private static boolean isImageUrl(String url) {
+        boolean okDomain =
+                url.startsWith("https://preview.redd.it/")
+                        || url.startsWith("https://i.redd.it/")
+                        || url.startsWith("https://external-preview.redd.it/")
+                        || url.startsWith("https://i.giphy.com/");
+        return okDomain
+                && (url.endsWith(".jpeg")
+                        || url.endsWith(".jpg")
+                        || url.endsWith(".png")
+                        || url.contains(".gif")
+                        || url.contains("format=pjpg")
+                        || url.contains("format=png"));
+    }
+
+    private static String convertGiphyToImageUrls(String html) {
+        if (html.indexOf("giphy") < 0 && !html.contains("external-preview.redd.it")) {
+            return html;
+        }
+        html = replaceGiphyMatches(html, GIPHY_ANCHOR_WITH_IMG_PATTERN, false);
+        html = replaceGiphyMatches(html, GIPHY_PLAIN_LINK_PATTERN, true);
+        html = replaceGiphyMatches(html, GIPHY_BARE_IMG_PATTERN, false);
+        return html;
+    }
+
+    private static String replaceGiphyMatches(String html, Pattern pattern, boolean buildGiphyMedia) {
+        Matcher matcher = pattern.matcher(html);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String url =
+                    buildGiphyMedia
+                            ? "https://i.giphy.com/media/" + matcher.group(1) + "/giphy.gif"
+                            : matcher.group(1);
+            matcher.appendReplacement(sb, Matcher.quoteReplacement(" " + url + " "));
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 }

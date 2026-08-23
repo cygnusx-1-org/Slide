@@ -1,55 +1,61 @@
 package me.edgan.redditslide.Flair;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * A richtext flair element. Which fields are present depends on the element type, so all of them
+ * are nullable: "t" carries text, "a" and "u" carry an emoji alias and URL.
+ */
 public class Richtext {
 
     @SerializedName("e")
     @Expose
-    private String e;
+    private @Nullable String e;
 
     @SerializedName("t")
     @Expose
-    private String t;
+    private @Nullable String t;
 
     @SerializedName("a")
     @Expose
-    private String a;
+    private @Nullable String a;
 
     @SerializedName("u")
     @Expose
-    private String u;
+    private @Nullable String u;
 
-    public String getE() {
+    public @Nullable String getE() {
         return e;
     }
 
-    public void setE(String e) {
+    public void setE(@Nullable String e) {
         this.e = e;
     }
 
-    public String getT() {
+    public @Nullable String getT() {
         return t;
     }
 
-    public void setT(String t) {
+    public void setT(@Nullable String t) {
         this.t = t;
     }
 
-    public String getA() {
+    public @Nullable String getA() {
         return a;
     }
 
-    public void setA(String a) {
+    public void setA(@Nullable String a) {
         this.a = a;
     }
 
-    public String getU() {
+    public @Nullable String getU() {
         return u;
     }
 
-    public void setU(String u) {
+    public void setU(@Nullable String u) {
         this.u = u;
     }
 }

@@ -5,11 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
-
+import androidx.annotation.Nullable;
 import androidx.documentfile.provider.DocumentFile;
-
 import me.edgan.redditslide.R;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class StorageUtil {
     private static final String TAG = "SlideStorage";
     private static final String PREF_STORAGE_URI = "storage_uri";
@@ -44,7 +45,7 @@ public class StorageUtil {
                 .apply();
     }
 
-    public static Uri getStorageUri(Context context) {
+    public static @Nullable Uri getStorageUri(Context context) {
         String uriStr =
                 context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
                         .getString(PREF_STORAGE_URI, null);
@@ -58,7 +59,7 @@ public class StorageUtil {
     }
 
     public static void showDirectoryChooser(
-            Activity activity, OnDirectorySelectedListener listener) {
+            Activity activity, @Nullable OnDirectorySelectedListener listener) {
         if (activity instanceof DirectoryChooserHost) {
             ((DirectoryChooserHost) activity).setDirectorySelectedListener(listener);
         } else {
@@ -82,9 +83,9 @@ public class StorageUtil {
 
     // Host interface for activities that use directory chooser
     public interface DirectoryChooserHost {
-        void setDirectorySelectedListener(OnDirectorySelectedListener listener);
+        void setDirectorySelectedListener(@Nullable OnDirectorySelectedListener listener);
 
-        OnDirectorySelectedListener getDirectorySelectedListener();
+        @Nullable OnDirectorySelectedListener getDirectorySelectedListener();
     }
 
     public static void showDirectoryChooser(Activity activity) {
@@ -105,7 +106,9 @@ public class StorageUtil {
 
                 // Fallback to just the display name if path parsing fails
                 String name = docFile.getName();
-                return name;
+                if (name != null) {
+                    return name;
+                }
             }
         } catch (Exception e) {
             LogUtil.e(e, TAG + "Error getting display path: " + e.getMessage());

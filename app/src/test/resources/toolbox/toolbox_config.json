@@ -1,0 +1,20 @@
+{
+  "ver": 1,
+  "domainTags": [ { "name": "imgur.com", "color": "#cc0000" } ],
+  "removalReasons": {
+    "pmsubject": "Your post was removed",
+    "logsub": "modlog",
+    "logtitle": "Removed {title}",
+    "logreason": "rule violation",
+    "header": "Header text",
+    "footer": "Footer text",
+    "reasons": [
+      { "title": "Rule 1", "text": "No%20spam", "flairText": "spam", "flairCSS": "spam-css" },
+      { "title": "Rule 2", "text": "Be%20nice" }
+    ]
+  },
+  "usernoteColors": [
+    { "key": "spamwarn", "color": "#ff0000", "text": "Spam Warning" },
+    { "key": "gooduser", "color": "#008000", "text": "Good Contributor" }
+  ]
+}

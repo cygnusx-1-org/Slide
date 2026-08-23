@@ -1,13 +1,12 @@
 package me.edgan.redditslide;
 
 import android.os.AsyncTask;
-
+import java.util.HashSet;
+import java.util.Set;
+import me.edgan.redditslide.util.LogUtil;
 import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.Submission;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /** Created by carlo_000 on 10/16/2015. */
 public class Hidden {
@@ -21,7 +20,7 @@ public class Hidden {
                     id.add(s.getFullName());
                     new AccountManager(Authentication.reddit).hide(true, (Submission) s);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "Hidden.doInBackground failed");
                 }
                 return null;
             }
@@ -36,7 +35,7 @@ public class Hidden {
                     id.remove(s.getFullName());
                     new AccountManager(Authentication.reddit).hide(false, (Submission) s);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "Hidden.doInBackground failed");
                 }
                 return null;
             }

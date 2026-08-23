@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 
 /** Created by carlo_000 on 4/18/2016. */
 public class OfflineSubAdapter extends ArrayAdapter<String> {
@@ -28,11 +29,11 @@ public class OfflineSubAdapter extends ArrayAdapter<String> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, @Nullable View convertView, ViewGroup parent) {
         return getCustomView(position, convertView, parent);
     }
 
-    public View getCustomView(int position, View convertView, ViewGroup parent) {
+    public View getCustomView(int position, @Nullable View convertView, ViewGroup parent) {
         ViewHolder holder;
 
         if (convertView == null) {
@@ -53,6 +54,7 @@ public class OfflineSubAdapter extends ArrayAdapter<String> {
     }
 
     static class ViewHolder {
+        @SuppressWarnings("NullAway.Init") // bound before the holder is stored as a tag
         TextView txt01;
     }
 }

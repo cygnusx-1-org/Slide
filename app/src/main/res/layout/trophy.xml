@@ -6,7 +6,7 @@
     android:gravity="center"
     android:theme="@style/Ripple.List"
     android:layout_height="wrap_content">
-    <com.makeramen.roundedimageview.RoundedImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:layout_width="60dp"
         android:id="@+id/image"
         android:layout_height="60dp" />

@@ -9,8 +9,10 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.ViewCompat;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 7/20/2015. */
+@NullMarked
 class AutoHideFAB extends FloatingActionButton.Behavior {
     public AutoHideFAB(Context context, AttributeSet attributeSet) {
         super();

@@ -9,57 +9,60 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-
-import com.afollestad.materialdialogs.color.ColorChooserDialog;
 import com.canhub.cropper.CropImageContract;
 import com.canhub.cropper.CropImageContractOptions;
 import com.canhub.cropper.CropImageOptions;
 import com.canhub.cropper.CropImageView;
-
-import me.edgan.redditslide.R;
-import me.edgan.redditslide.Reddit;
-import me.edgan.redditslide.Views.CanvasView;
-import me.edgan.redditslide.Views.DoEditorActions;
-import me.edgan.redditslide.Visuals.Palette;
-import me.edgan.redditslide.util.BlendModeUtil;
-import me.edgan.redditslide.util.FileUtil;
-
+import com.skydoves.colorpickerview.ColorEnvelope;
+import com.skydoves.colorpickerview.ColorPickerDialog;
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import me.edgan.redditslide.R;
+import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.Views.CanvasView;
+import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.FileUtil;
+import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 5/27/2015. */
-public class Draw extends BaseActivity implements ColorChooserDialog.ColorCallback {
+@NullMarked
+public class Draw extends BaseActivity {
 
+    @SuppressWarnings("NullAway.Init") // DoEditorActions assigns Draw.uri before starting this activity
     public static Uri uri;
-    public static DoEditorActions editor;
     CanvasView drawView;
     View color;
-    Bitmap bitmap;
+    @Nullable Bitmap bitmap;
     boolean enabled;
     private final ActivityResultLauncher<CropImageContractOptions> cropImageLauncher =
             registerForActivityResult(new CropImageContract(), this::cropImageResult);
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         overrideSwipeFromAnywhere();
         disableSwipeBackLayout();
         super.onCreate(savedInstance);
         applyColorTheme("");
         setContentView(R.layout.activity_draw);
-        drawView = (CanvasView) findViewById(R.id.paintView);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
+        drawView = (CanvasView) requireViewById(R.id.paintView);
         drawView.setBaseColor(Color.parseColor("#303030"));
-        color = findViewById(R.id.color);
+        color = requireViewById(R.id.color);
+        CropImageOptions cropImageOptions = new CropImageOptions();
+        cropImageOptions.guidelines = CropImageView.Guidelines.ON;
         final CropImageContractOptions options =
-                new CropImageContractOptions(uri, new CropImageOptions())
-                        .setGuidelines(CropImageView.Guidelines.ON);
+                new CropImageContractOptions(uri, cropImageOptions);
         cropImageLauncher.launch(options);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        setSupportActionBar((Toolbar) requireViewById(R.id.toolbar));
         setupAppBar(R.id.toolbar, "", true, Color.parseColor("#212121"), R.id.toolbar);
     }
 
@@ -72,9 +75,16 @@ public class Draw extends BaseActivity implements ColorChooserDialog.ColorCallba
         int id = item.getItemId();
 
         if (id == android.R.id.home) {
-            onBackPressed();
+            getOnBackPressedDispatcher().onBackPressed();
         }
         if (id == R.id.done && enabled) {
+            // CanvasView.getBitmap() wraps getDrawingCache(), which is null until the view has
+            // been measured and drawn -- Bitmap.createBitmap(null) then threw the NPE the catch
+            // below swallowed. Decide before opening a file rather than after.
+            final Bitmap drawn = drawView.getBitmap();
+            if (drawn == null) {
+                return super.onOptionsItemSelected(item);
+            }
             File image; // image to share
             // check to see if the cache/shared_images directory is present
             final File imagesDir =
@@ -95,7 +105,7 @@ public class Draw extends BaseActivity implements ColorChooserDialog.ColorCallba
                     // convert image to png
                     out = new FileOutputStream(image);
                     Bitmap.createBitmap(
-                                    drawView.getBitmap(),
+                                    drawn,
                                     0,
                                     (int) drawView.height,
                                     (int) drawView.right,
@@ -116,8 +126,8 @@ public class Draw extends BaseActivity implements ColorChooserDialog.ColorCallba
                         finish();
                     }
                 }
-            } catch (IOException | NullPointerException e) {
-                e.printStackTrace();
+            } catch (IOException e) {
+                LogUtil.e(e, "Draw.onOptionsItemSelected failed");
                 // todo error Toast.makeText(this, getString(R.string.err_share_image),
                 // Toast.LENGTH_LONG).show();
             }
@@ -136,14 +146,11 @@ public class Draw extends BaseActivity implements ColorChooserDialog.ColorCallba
     }
 
     private void cropImageResult(final CropImageView.CropResult result) {
-        if (result.isSuccessful()) {
-            bitmap = result.getBitmap(this).copy(Bitmap.Config.RGB_565, true);
+        final Bitmap cropped = result.isSuccessful() ? result.getBitmap(this) : null;
+        if (cropped != null) {
+            bitmap = cropped.copy(Bitmap.Config.RGB_565, true);
             BlendModeUtil.tintDrawableAsModulate(color.getBackground(), getLastColor());
-            color.setOnClickListener(
-                    v ->
-                            new ColorChooserDialog.Builder(Draw.this, R.string.choose_color_title)
-                                    .allowUserColorInput(true)
-                                    .show(Draw.this));
+            color.setOnClickListener(v -> showColorPicker());
             drawView.drawBitmap(bitmap);
             drawView.setPaintStrokeColor(getLastColor());
             drawView.setPaintStrokeWidth(20f);
@@ -153,14 +160,29 @@ public class Draw extends BaseActivity implements ColorChooserDialog.ColorCallba
         }
     }
 
-    @Override
-    public void onColorSelection(@NonNull ColorChooserDialog dialog, @ColorInt int selectedColor) {
-        drawView.setPaintStrokeColor(selectedColor);
-        BlendModeUtil.tintDrawableAsModulate(color.getBackground(), selectedColor);
-
-        Reddit.colors.edit().putInt("drawColor", selectedColor).commit();
+    private void showColorPicker() {
+        ColorPickerDialog.Builder builder =
+                new ColorPickerDialog.Builder(Draw.this)
+                        .setTitle(R.string.choose_color_title)
+                        .setPositiveButton(
+                                getString(R.string.btn_ok),
+                                (ColorEnvelopeListener)
+                                        (ColorEnvelope envelope, boolean fromUser) -> {
+                                            int selectedColor = envelope.getColor();
+                                            drawView.setPaintStrokeColor(selectedColor);
+                                            BlendModeUtil.tintDrawableAsModulate(
+                                                    color.getBackground(), selectedColor);
+                                            Reddit.colors
+                                                    .edit()
+                                                    .putInt("drawColor", selectedColor)
+                                                    .commit();
+                                        })
+                        .setNegativeButton(
+                                getString(R.string.btn_cancel),
+                                (dialogInterface, i) -> dialogInterface.dismiss())
+                        .attachAlphaSlideBar(false)
+                        .attachBrightnessSlideBar(true);
+        builder.getColorPickerView().setInitialColor(getLastColor());
+        builder.show();
     }
-
-    @Override
-    public void onColorChooserDismissed(@NonNull ColorChooserDialog dialog) {}
 }

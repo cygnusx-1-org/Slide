@@ -3,22 +3,16 @@ package me.edgan.redditslide;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Movie;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -38,62 +32,53 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.LruCache;
-import android.util.Pair;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
-
+import androidx.annotation.Nullable;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.content.ContextCompat;
-
-import com.cocosw.bottomsheet.BottomSheet;
 import com.devspark.robototextview.widget.RobotoTextView;
-
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
+import java.io.File;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import me.edgan.redditslide.Activities.Album;
 import me.edgan.redditslide.Activities.AlbumPager;
 import me.edgan.redditslide.Activities.MediaView;
 import me.edgan.redditslide.Activities.TumblrPager;
-import me.edgan.redditslide.ForceTouch.PeekView;
-import me.edgan.redditslide.ForceTouch.PeekViewActivity;
-import me.edgan.redditslide.ForceTouch.builder.Peek;
-import me.edgan.redditslide.ForceTouch.builder.PeekViewOptions;
-import me.edgan.redditslide.ForceTouch.callback.OnButtonUp;
-import me.edgan.redditslide.ForceTouch.callback.OnPop;
-import me.edgan.redditslide.ForceTouch.callback.OnRemove;
-import me.edgan.redditslide.ForceTouch.callback.SimpleOnPeek;
 import me.edgan.redditslide.SubmissionViews.OpenVRedditTask;
 import me.edgan.redditslide.Views.CustomQuoteSpan;
-import me.edgan.redditslide.Views.PeekMediaView;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.handler.TextViewLinkHandler;
+import me.edgan.redditslide.markdown.RedditSpoilerSpan;
 import me.edgan.redditslide.util.AnimatedImageSpan;
-import me.edgan.redditslide.util.BlendModeUtil;
-import me.edgan.redditslide.util.ClipboardUtil;
+import me.edgan.redditslide.util.CommentImageUtil;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.GifDrawable;
 import me.edgan.redditslide.util.GifUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 
 /** Created by carlo_000 on 1/11/2016. */
@@ -101,20 +86,28 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
     private List<CharacterStyle> storedSpoilerSpans = new ArrayList<>();
     private List<Integer> storedSpoilerStarts = new ArrayList<>();
     private List<Integer> storedSpoilerEnds = new ArrayList<>();
-    private static final Pattern htmlSpoilerPattern =
-            Pattern.compile("<a href=\"[#/](?:spoiler|sp|s)\">([^<]*)</a>");
-    private static final Pattern nativeSpoilerPattern =
-            Pattern.compile("<span class=\"[^\"]*md-spoiler-text+[^\"]*\">([^<]*)</span>");
 
-    private static class MatchPair {
-        final int start;
-        final int end;
+    /**
+     * Base name (title_postId_commentId) used when saving media opened from a link inside this
+     * view. Set by the comment adapter so comment media is named after its source. Null for
+     * non-comment text, in which case no title is attached and the save falls back to a timestamp.
+     */
+    @Nullable private String downloadName;
 
-        MatchPair(int start, int end) {
-            this.start = start;
-            this.end = end;
+    public void setDownloadName(@Nullable String downloadName) {
+        this.downloadName = downloadName;
+    }
+
+    /** Attaches the download base name to a media-viewer intent when one is available. */
+    private void addDownloadName(Intent intent) {
+        if (downloadName != null && !downloadName.isEmpty()) {
+            intent.putExtra(MediaView.EXTRA_SUBMISSION_TITLE, downloadName);
         }
     }
+    public static final Pattern htmlSpoilerPattern =
+            Pattern.compile("<a href=\"[#/](?:spoiler|sp|s)\">([^<]*)</a>");
+    public static final Pattern nativeSpoilerPattern =
+            Pattern.compile("<span class=\"[^\"]*md-spoiler-text+[^\"]*\">([^<]*)</span>");
 
     public SpoilerRobotoTextView(Context context) {
         super(context);
@@ -176,15 +169,19 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
      */
     public void setTextHtml(CharSequence baseText, String subreddit) {
         String text = wrapAlternateSpoilers(saveEmotesFromDestruction(baseText.toString().trim()));
+        text = replaceCodeBlocks(text);
+        if (text.contains("giphy") || text.contains("external-preview.redd.it")) {
+            text = convertGiphyToImageUrls(text);
+        }
         SpannableStringBuilder builder = (SpannableStringBuilder) CompatUtil.fromHtml(text);
-
-        // Add Reddit preview image processing
-        processRedditPreviewImages(builder);
 
         // replace the <blockquote> blue line with something more colorful
         replaceQuoteSpans(builder);
 
-        if (text.contains("free_emotes_pack") || text.contains("giphy")) {
+        // Only snoomoji (free_emotes_pack) emotes go through the emote subsystem now. Giphy /
+        // external-preview comment images were rewritten to plain URLs above and are rendered by
+        // applyInlineImages (shared cache, no placeholder, off-screen prefetch).
+        if (text.contains("free_emotes_pack")) {
             setEmoteText(text, this);
         }
         if (text.contains("<a")) {
@@ -200,6 +197,7 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
         if (text.contains("[[h[")) {
             setHighlight(builder, subreddit);
         }
+
         if (subreddit != null && !subreddit.isEmpty()) {
             setMovementMethod(new TextViewLinkHandler(this, subreddit, builder));
             setFocusable(false);
@@ -212,7 +210,7 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
         builder = removeNewlines(builder);
         builder.append(" ");
 
-        super.setText(builder, BufferType.SPANNABLE);
+        applyInlineImages(builder);
     }
 
     /**
@@ -282,10 +280,6 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
         return html;
     }
 
-    // List to keep track of active GifDrawables to manage their lifecycle
-    private List<GifDrawable> activeGifDrawables = new ArrayList<>();
-
-    private SpannableStringBuilder currentBuilder;
     private final Object spanLock = new Object();
 
     private static class PendingEmoteSpan {
@@ -304,14 +298,9 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
 
     private static class EmoteDrawInfo {
         GifDrawable drawable;
-        int position; // Character position in text
-        float x; // Cached x position
-        float y; // Cached y position
-        boolean isValid;
 
-        EmoteDrawInfo(GifDrawable drawable, int position) {
+        EmoteDrawInfo(GifDrawable drawable) {
             this.drawable = drawable;
-            this.position = position;
         }
     }
 
@@ -325,7 +314,8 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
         return false;
     }
 
-    private void setEmoteSpan(DynamicDrawableSpan span, String emoteName, int position) {
+    private void setEmoteSpan(
+            @Nullable DynamicDrawableSpan span, @Nullable String emoteName, int position) {
         if (span == null || emoteName == null) {
             Log.e("EmoteDebug", "Null span or emote name in setEmoteSpan");
             return;
@@ -381,7 +371,7 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
                     if (span instanceof AnimatedImageSpan) {
                         AnimatedImageSpan animatedSpan = (AnimatedImageSpan) span;
                         animatedSpan.start();
-                        emoteDrawables.add(new EmoteDrawInfo(animatedSpan.getGifDrawable(), pos));
+                        emoteDrawables.add(new EmoteDrawInfo(animatedSpan.getGifDrawable()));
                     }
                 }
 
@@ -466,7 +456,7 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
     }
 
 // In setEmoteText(...), after processing the raw HTML:
-public void setEmoteText(String text, TextView textView) {
+public void setEmoteText(@Nullable String text, @Nullable TextView textView) {
     if (text == null || textView == null) {
         Log.e("EmoteDebug", "Null text or textview in setEmoteText");
         return;
@@ -482,6 +472,9 @@ public void setEmoteText(String text, TextView textView) {
         Pattern giphyPattern =
                 Pattern.compile(
                     "<img\\s+src=\\\"(https://external-preview\\.redd\\.it/([^?]+)\\?width=([0-9]+)&height=([0-9]+)&s=([^\\\"]+))\\\"[^>]*>");
+        Pattern giphyDirectPattern =
+                Pattern.compile(
+                    "<img\\s+src=\\\"(https://i\\.giphy\\.com/media/([^/\\\"]+)/[^\\\"]+)\\\"[^>]*>");
 
         List<EmoteSpanRequest> spanRequests = new ArrayList<>();
         StringBuilder processedText = new StringBuilder();
@@ -489,9 +482,10 @@ public void setEmoteText(String text, TextView textView) {
         // Strip unwanted divs first
         text = text.replaceAll("<div class=\\\"md\\\"><div>", "").replaceAll("</div>", "");
 
-        // Process the text for both patterns (note: free_emote_pack is handled by redditPattern)
+        // Process the text for all patterns
         processPattern(text, redditPattern, processedText, spanRequests);
         processPattern(text, giphyPattern, processedText, spanRequests);
+        processPattern(text, giphyDirectPattern, processedText, spanRequests);
 
         // Create builder and ensure it's a SpannableStringBuilder
         SpannableStringBuilder builder = new SpannableStringBuilder(processedText);
@@ -501,9 +495,10 @@ public void setEmoteText(String text, TextView textView) {
 
         // For each emote request, decide how to load it
         for (EmoteSpanRequest request : spanRequests) {
-            // If this URL comes from external-preview (i.e. giphy emote), use the new inline image loader…
-            if (request.gifUrl.contains("external-preview.redd.it")) {
-                loadGiphyEmote(request, textView, request.start);
+            // If this URL comes from external-preview or i.giphy.com, use the inline image loader
+            if (request.gifUrl.contains("external-preview.redd.it")
+                    || request.gifUrl.contains("i.giphy.com")) {
+                loadGiphyEmote(request, request.start);
             } else {
                 // …otherwise (e.g. free_emote_pack/snoomoji) leave it as before.
                 loadGifEmote(request, textView, request.start);
@@ -520,11 +515,15 @@ public void setEmoteText(String text, TextView textView) {
  * and replaces the placeholder ImageSpan (inserted as the object replacement character)
  * with one that uses the downloaded image.
  */
-private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int posCount) {
+private void loadGiphyEmote(EmoteSpanRequest request, int posCount) {
+    // Respect the "Don't load any images" data saving setting.
+    if (SettingValues.shouldSkipImages(getContext())) {
+        return;
+    }
     Log.d("EmoteDebug", "Starting image download for giphy emote: " + request.gifUrl);
     loadThumbnailFromUrl(request.gifUrl, new ImageCallback() {
         @Override
-        public void onImageLoaded(Bitmap bitmap) {
+        public void onImageLoaded(@Nullable Bitmap bitmap) {
             post(() -> {
                 if (bitmap != null) {
                     try {
@@ -606,7 +605,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                     processedText.append("\uFFFC"); // Object replacement character
 
                     spanRequests.add(
-                            new EmoteSpanRequest(gifUrl, emoteCount, emoteCount + 1, emoteName));
+                            new EmoteSpanRequest(gifUrl, emoteCount, emoteName));
 
                     emoteCount++;
                 }
@@ -694,7 +693,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                                     if (SettingValues.commentEmoteAnimation) {
                                         animatedSpan.start();
                                     }
-                                    emoteDrawables.add(new EmoteDrawInfo(animatedSpan.getGifDrawable(), pos));
+                                    emoteDrawables.add(new EmoteDrawInfo(animatedSpan.getGifDrawable()));
                                     requestLayout();
 
                                 } catch (Exception e) {
@@ -717,17 +716,29 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
         }, textView.getContext());
     }
 
+    /**
+     * Fill the ￼ placeholders left by the new Reddit-style renderer with animated free emotes,
+     * in order. Reuses the same loader as the snudown emote path. See issue #179.
+     */
+    public void loadFreeEmotes(@Nullable List<String> emoteUrls) {
+        if (emoteUrls == null || emoteUrls.isEmpty()) {
+            return;
+        }
+        for (int i = 0; i < emoteUrls.size(); i++) {
+            String url = emoteUrls.get(i);
+            loadGifEmote(new EmoteSpanRequest(url, 0, url), this, i);
+        }
+    }
+
     // Helper class to keep track of span requests
     private static class EmoteSpanRequest {
         String gifUrl;
         int start;
-        int end;
         String emoteName;
 
-        EmoteSpanRequest(String gifUrl, int start, int end, String emoteName) {
+        EmoteSpanRequest(String gifUrl, int start, String emoteName) {
             this.gifUrl = gifUrl;
             this.start = start;
-            this.end = end;
             this.emoteName = emoteName;
         }
     }
@@ -760,7 +771,10 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                 // Make sure bitmap loaded works well with screen density.
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 DisplayMetrics metrics = new DisplayMetrics();
-                ContextCompat.getSystemService(getContext(), WindowManager.class)
+                // WindowManager is present on every UI context; a null here would fail on the
+                // very next line regardless.
+                Objects.requireNonNull(
+                                ContextCompat.getSystemService(getContext(), WindowManager.class))
                         .getDefaultDisplay()
                         .getMetrics(metrics);
                 options.inDensity = 240;
@@ -901,8 +915,48 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
         }
     }
 
+    /**
+     * Highlight every case-insensitive occurrence of {@code search} in the already-rendered text,
+     * using the same color as the snudown {@code [[h[…]h]]} highlight pass ({@link #setHighlight}).
+     * Used by the new Reddit-style search path, where the marker-injection trick can't run because
+     * the text is rendered from raw markdown rather than the marked-up {@code body_html}. No-op if
+     * {@code search} is empty or the view text isn't spannable.
+     */
+    public void highlightOccurrences(@Nullable String search, String subreddit) {
+        if (search == null || search.isEmpty()) {
+            return;
+        }
+        CharSequence cs = getText();
+        if (!(cs instanceof Spannable)) {
+            return;
+        }
+        Spannable spannable = (Spannable) cs;
+        String haystack = spannable.toString();
+        int len = search.length();
+        int color = Palette.getColor(subreddit);
+        for (int i = 0; i + len <= haystack.length(); ) {
+            if (haystack.regionMatches(true, i, search, 0, len)) {
+                spannable.setSpan(
+                        new BackgroundColorSpan(color),
+                        i,
+                        i + len,
+                        Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                i += len;
+            } else {
+                i++;
+            }
+        }
+    }
+
     @Override
-    public void onLinkClick(String url, int xOffset, String subreddit, URLSpan span) {
+    public void onLinkClick(
+            @Nullable String url, int xOffset, String subreddit, URLSpan span) {
+        if (span instanceof RedditSpoilerSpan) {
+            // New Reddit-style spoiler: toggle reveal in place, don't navigate. Issue #179.
+            ((RedditSpoilerSpan) span).toggle(this);
+            spoilerClicked = true;
+            return;
+        }
         if (url == null) {
             ((View) getParent()).callOnClick();
             return;
@@ -932,25 +986,41 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
         }
 
         if (!PostMatch.openExternal(url) || type == ContentType.Type.VIDEO) {
+            // activity is null when this view was inflated against a Context that wraps
+            // something other than an Activity — the unwrap chain above has no branch for that.
+            // Each case that needs one falls back to opening the link externally, which is what
+            // these branches already do when they cannot handle it in-app; the cases that never
+            // needed an Activity are untouched.
             switch (type) {
                 case DEVIANTART:
                 case IMGUR:
                 case XKCD:
-                    if (SettingValues.image) {
+                    if (SettingValues.image && activity != null) {
                         Intent intent2 = new Intent(activity, MediaView.class);
                         intent2.putExtra(MediaView.EXTRA_URL, url);
                         intent2.putExtra(MediaView.SUBREDDIT, subreddit);
+                        addDownloadName(intent2);
                         activity.startActivity(intent2);
                     } else {
                         LinkUtil.openExternally(url);
                     }
                     break;
                 case REDDIT:
-                    OpenRedditLink.openUrl(activity, url, true);
+                    if (activity != null) {
+                        OpenRedditLink.openUrl(activity, url, true);
+                    } else {
+                        LinkUtil.openExternally(url);
+                    }
                     break;
                 case LINK:
-                    LogUtil.v("Opening link");
-                    LinkUtil.openUrl(url, Palette.getColor(subreddit), activity);
+                    if (url.startsWith("https://giphy.com/")) {
+                        openGif(url, subreddit);
+                    } else if (activity != null) {
+                        LogUtil.v("Opening link");
+                        LinkUtil.openUrl(url, Palette.getColor(subreddit), activity);
+                    } else {
+                        LinkUtil.openExternally(url);
+                    }
                     break;
                 case SELF:
                 case NONE:
@@ -959,7 +1029,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                     openStreamable(url, subreddit);
                     break;
                 case ALBUM:
-                    if (SettingValues.album) {
+                    if (SettingValues.album && activity != null) {
                         Intent i;
                         if (SettingValues.albumSwipe) {
                             i = new Intent(activity, AlbumPager.class);
@@ -970,15 +1040,17 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                             i.putExtra(Album.SUBREDDIT, subreddit);
                             i.putExtra(Album.EXTRA_URL, url);
                         }
+                        addDownloadName(i);
                         activity.startActivity(i);
                     } else {
                         LinkUtil.openExternally(url);
                     }
                     break;
                 case TUMBLR:
-                    if (SettingValues.image) {
+                    if (SettingValues.image && activity != null) {
                         Intent i = new Intent(activity, TumblrPager.class);
                         i.putExtra(Album.EXTRA_URL, url);
+                        addDownloadName(i);
                         activity.startActivity(i);
                     } else {
                         LinkUtil.openExternally(url);
@@ -988,15 +1060,25 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                     openImage(url, subreddit);
                     break;
                 case VREDDIT_REDIRECT:
-                    openVReddit(url, subreddit, activity);
+                    if (url.contains("reddit.com/link/") && url.contains("/video/")) {
+                        openGif(url, subreddit);
+                    } else if (activity != null) {
+                        openVReddit(url, subreddit, activity);
+                    } else {
+                        LinkUtil.openExternally(url);
+                    }
                     break;
                 case GIF:
                 case VREDDIT_DIRECT:
-                    openGif(url, subreddit, activity);
+                    openGif(url, subreddit);
                     break;
                 case VIDEO:
                     if (!LinkUtil.tryOpenWithVideoPlugin(url)) {
-                        LinkUtil.openUrl(url, Palette.getStatusBarColor(), activity);
+                        if (activity != null) {
+                            LinkUtil.openUrl(url, Palette.getStatusBarColor(), activity);
+                        } else {
+                            LinkUtil.openExternally(url);
+                        }
                     }
                 case SPOILER:
                     spoilerClicked = true;
@@ -1012,8 +1094,13 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
     }
 
     @Override
-    public void onLinkLongClick(final String baseUrl, MotionEvent event) {
+    public void onLinkLongClick(@Nullable final String baseUrl, @Nullable MotionEvent event) {
         if (baseUrl == null || SettingValues.noPreviewImageLongClick) {
+            return;
+        }
+        // New Reddit-style spoilers use the sentinel "#spoiler" URL; a long-press is not an image
+        // preview, so ignore it (the tap toggle in onLinkClick handles reveal/hide).
+        if ("#spoiler".equals(baseUrl)) {
             return;
         }
         final String url = StringEscapeUtils.unescapeHtml4(baseUrl);
@@ -1042,45 +1129,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
         }
 
         if (activity != null && !activity.isFinishing()) {
-            BottomSheet.Builder b = new BottomSheet.Builder(activity).title(url).grid();
-            int[] attrs = new int[] {R.attr.tintColor};
-            TypedArray ta = getContext().obtainStyledAttributes(attrs);
-
-            int color = ta.getColor(0, Color.WHITE);
-            Drawable open = getResources().getDrawable(R.drawable.ic_open_in_new);
-            Drawable share = getResources().getDrawable(R.drawable.ic_share);
-            Drawable copy = getResources().getDrawable(R.drawable.ic_content_copy);
-            final List<Drawable> drawableSet = Arrays.asList(open, share, copy);
-            BlendModeUtil.tintDrawablesAsSrcAtop(drawableSet, color);
-
-            ta.recycle();
-
-            b.sheet(R.id.open_link, open, getResources().getString(R.string.open_externally));
-            b.sheet(R.id.share_link, share, getResources().getString(R.string.share_link));
-            b.sheet(
-                    R.id.copy_link,
-                    copy,
-                    getResources().getString(R.string.submission_link_copy));
-            final Activity finalActivity = activity;
-            b.listener(
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    switch (which) {
-                                        case R.id.open_link:
-                                            LinkUtil.openExternally(url);
-                                            break;
-                                        case R.id.share_link:
-                                            Reddit.defaultShareText("", url, finalActivity);
-                                            break;
-                                        case R.id.copy_link:
-                                            LinkUtil.copyUrl(url, finalActivity);
-                                            break;
-                                    }
-                                }
-                            })
-                    .show();
-//            }
+            LinkUtil.showLinkBottomSheet(activity, getContext(), url);
         }
     }
 
@@ -1089,16 +1138,14 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, url);
     }
 
-    private void openGif(String url, String subreddit, Activity activity) {
+    private void openGif(String url, String subreddit) {
         if (SettingValues.gif) {
-            if (GifUtils.AsyncLoadGif.getVideoType(url).shouldLoadPreview()) {
-                LinkUtil.openUrl(url, Palette.getColor(subreddit), activity);
-            } else {
-                Intent myIntent = new Intent(getContext(), MediaView.class);
-                myIntent.putExtra(MediaView.EXTRA_URL, url);
-                myIntent.putExtra(MediaView.SUBREDDIT, subreddit);
-                getContext().startActivity(myIntent);
-            }
+            Intent myIntent = new Intent(getContext(), MediaView.class);
+            myIntent.putExtra(MediaView.EXTRA_URL, url);
+            myIntent.putExtra(MediaView.SUBREDDIT, subreddit);
+            addDownloadName(myIntent);
+            getContext().startActivity(myIntent);
+            //}
         } else {
             LinkUtil.openExternally(url);
         }
@@ -1110,6 +1157,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
 
             myIntent.putExtra(MediaView.EXTRA_URL, url);
             myIntent.putExtra(MediaView.SUBREDDIT, subreddit);
+            addDownloadName(myIntent);
             getContext().startActivity(myIntent);
 
         } else {
@@ -1122,28 +1170,32 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
             Intent myIntent = new Intent(getContext(), MediaView.class);
             myIntent.putExtra(MediaView.EXTRA_URL, submission);
             myIntent.putExtra(MediaView.SUBREDDIT, subreddit);
+            addDownloadName(myIntent);
             getContext().startActivity(myIntent);
         } else {
             LinkUtil.openExternally(submission);
         }
     }
 
-    public void setOrRemoveSpoilerSpans(int endOfLink, URLSpan span) {
+    public void setOrRemoveSpoilerSpans(int endOfLink, @Nullable URLSpan span) {
         if (span != null) {
             int offset = (span.getURL().contains("hidden")) ? -1 : 2;
+            // Clamp to a valid index: a link resolved from inside a Markwon table cell passes
+            // endOfLink = -1 (it has no outer-buffer offset), and even a real link at buffer start
+            // can go negative when offset is -1. getSpans must never see a negative index.
+            int spoilerPos = Math.max(0, endOfLink + offset);
             Spannable text = (Spannable) getText();
             // add 2 to end of link since there is a white space between the link text and the
             // spoiler
             ForegroundColorSpan[] foregroundColors =
-                    text.getSpans(
-                            endOfLink + offset, endOfLink + offset, ForegroundColorSpan.class);
+                    text.getSpans(spoilerPos, spoilerPos, ForegroundColorSpan.class);
 
             if (foregroundColors.length > 1) {
                 text.removeSpan(foregroundColors[1]);
             } else {
                 for (int i = 1; i < storedSpoilerStarts.size(); i++) {
-                    if (storedSpoilerStarts.get(i) < endOfLink + offset
-                            && storedSpoilerEnds.get(i) > endOfLink + offset) {
+                    if (storedSpoilerStarts.get(i) < spoilerPos
+                            && storedSpoilerEnds.get(i) > spoilerPos) {
                         try {
                             text.setSpan(
                                     storedSpoilerSpans.get(i),
@@ -1154,7 +1206,7 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
                                     Spanned.SPAN_INCLUSIVE_INCLUSIVE);
                         } catch (Exception ignored) {
                             // catch out of bounds
-                            ignored.printStackTrace();
+                            LogUtil.e(ignored, "SpoilerRobotoTextView.setOrRemoveSpoilerSpans failed");
                         }
                     }
                 }
@@ -1301,100 +1353,272 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
         return sequence;
     }
 
-    private boolean isRedditPreviewImage(String url) {
-        return (url.startsWith("https://preview.redd.it/") || url.startsWith("https://i.redd.it/")) &&
-               (url.endsWith(".jpeg") || url.endsWith(".jpg") || url.endsWith(".png") ||
-                url.contains(".gif") || url.contains("format=pjpg") || url.contains("format=png"));
+    private static boolean isRedditPreviewImage(String url) {
+        boolean okDomain =
+                url.startsWith("https://preview.redd.it/")
+                        || url.startsWith("https://i.redd.it/")
+                        || url.startsWith("https://external-preview.redd.it/")
+                        || url.startsWith("https://i.giphy.com/");
+        return okDomain
+                && (url.endsWith(".jpeg")
+                        || url.endsWith(".jpg")
+                        || url.endsWith(".png")
+                        || url.contains(".gif")
+                        || url.contains("format=pjpg")
+                        || url.contains("format=png"));
     }
 
-    private void processRedditPreviewImages(SpannableStringBuilder builder) {
-        Pattern previewPattern = Pattern.compile("https://preview\\.redd\\.it/[^\\s]+");
-        Matcher previewMatcher = previewPattern.matcher(builder);
+    private static final Pattern PREVIEW_IMAGE_PATTERN =
+            Pattern.compile("https://preview\\.redd\\.it/[^\\s]+");
+    private static final Pattern I_REDD_IT_PATTERN =
+            Pattern.compile("https://i\\.redd\\.it/[^\\s]+");
+    private static final Pattern EXTERNAL_PREVIEW_PATTERN =
+            Pattern.compile("https://external-preview\\.redd\\.it/[^\\s]+");
+    private static final Pattern I_GIPHY_PATTERN =
+            Pattern.compile("https://i\\.giphy\\.com/[^\\s]+");
 
-        Pattern iPattern = Pattern.compile("https://i\\.redd\\.it/[^\\s]+");
-        Matcher iMatcher = iPattern.matcher(builder);
+    /** A detected inline image URL together with its span range in the rendered text. */
+    private static class RedditImageMatch {
+        final String url;
+        final int start;
+        final int end;
 
-        List<MatchPair> matches = new ArrayList<>();
-
-        // preview.redd.it
-        while (previewMatcher.find()) {
-            matches.add(new MatchPair(previewMatcher.start(), previewMatcher.end()));
+        RedditImageMatch(String url, int start, int end) {
+            this.url = url;
+            this.start = start;
+            this.end = end;
         }
+    }
 
-        // i.redd.it
-        while (iMatcher.find()) {
-            matches.add(new MatchPair(iMatcher.start(), iMatcher.end()));
-        }
+    private static List<RedditImageMatch> findRedditPreviewImageMatches(CharSequence text) {
+        List<RedditImageMatch> matches = new ArrayList<>();
+        addImageMatches(matches, PREVIEW_IMAGE_PATTERN.matcher(text), text);
+        addImageMatches(matches, I_REDD_IT_PATTERN.matcher(text), text);
+        addImageMatches(matches, EXTERNAL_PREVIEW_PATTERN.matcher(text), text);
+        addImageMatches(matches, I_GIPHY_PATTERN.matcher(text), text);
+        return matches;
+    }
 
-        // Process matches from last to first to avoid invalidating indices
-        for (int i = matches.size() - 1; i >= 0; i--) {
-            MatchPair match = matches.get(i);
-            String url = builder.subSequence(match.start, match.end).toString();
-
+    private static void addImageMatches(
+            List<RedditImageMatch> matches, Matcher matcher, CharSequence text) {
+        while (matcher.find()) {
+            String url = text.subSequence(matcher.start(), matcher.end()).toString();
             if (isRedditPreviewImage(url)) {
-                // Set initial placeholder
-                ColorDrawable placeholder = new ColorDrawable(Color.LTGRAY);
-                placeholder.setBounds(0, 0, 300, 300);
-                builder.setSpan(
-                    new ImageSpan(placeholder),
-                    match.start,
-                    match.end,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                );
+                matches.add(new RedditImageMatch(url, matcher.start(), matcher.end()));
+            }
+        }
+    }
 
-                // Load the actual image
-                loadThumbnailFromUrl(url, bitmap -> {
-                    post(() -> {
-                        if (bitmap != null) {
-                            try {
-                                // Calculate dimensions maintaining aspect ratio
-                                int maxWidth = Math.min(getWidth() - getPaddingLeft() - getPaddingRight(), 500);
-                                int maxHeight = 300;  // Max height of 300dp
+    // Inline comment images are routed through the app's shared ImageLoader (shared memory + 100MB
+    // disk cache) so they survive view recycling and never re-download or flash a placeholder on
+    // scroll. Decode to a bounded size matching the on-screen scaling below.
 
-                                float widthScale = (float) maxWidth / bitmap.getWidth();
-                                float heightScale = (float) maxHeight / bitmap.getHeight();
-                                float scale = Math.min(widthScale, heightScale);  // Use the smaller scale
+    /** Decode box scaled by the comment-image-size setting so "large" inline images stay sharp. */
+    private static ImageSize inlineImageSize() {
+        int box = Math.max(720, (int) (500 * CommentImageUtil.sizeMultiplier()));
+        return new ImageSize(box, box);
+    }
 
-                                int scaledWidth = (int) (bitmap.getWidth() * scale);
-                                int scaledHeight = (int) (bitmap.getHeight() * scale);
+    @Nullable private static DisplayImageOptions inlineImageOptions;
 
-                                BitmapDrawable drawable = new BitmapDrawable(getResources(), bitmap);
-                                drawable.setBounds(0, 0, scaledWidth, scaledHeight);
+    private static DisplayImageOptions getInlineImageOptions() {
+        DisplayImageOptions options = inlineImageOptions;
+        if (options == null) {
+            options =
+                    new DisplayImageOptions.Builder()
+                            .cacheOnDisk(true)
+                            .cacheInMemory(true)
+                            .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
+                            .bitmapConfig(
+                                    SettingValues.highColorspaceImages
+                                            ? Bitmap.Config.ARGB_8888
+                                            : Bitmap.Config.RGB_565)
+                            .resetViewBeforeLoading(false)
+                            .build();
+            inlineImageOptions = options;
+        }
+        return options;
+    }
 
-                                // Create new span with the loaded image
-                                ImageSpan newSpan = new ImageSpan(drawable);
+    /** Null when the image is in neither the memory nor the disk cache. */
+    @Nullable
+    private static Bitmap getCachedInlineBitmap(ImageLoader loader, String url) {
+        List<Bitmap> cached =
+                MemoryCacheUtils.findCachedBitmapsForImageUri(url, loader.getMemoryCache());
+        for (Bitmap b : cached) {
+            if (b != null && !b.isRecycled()) {
+                return b;
+            }
+        }
+        // Not in memory, but if the image is already on disk (downloaded by the prefetch or a
+        // previous view) decode it synchronously here — no network — so it is in place at first
+        // appearance instead of popping in. loadImageSync also re-populates the memory cache.
+        try {
+            File diskFile = loader.getDiskCache().get(url);
+            if (diskFile != null && diskFile.exists()) {
+                return loader.loadImageSync(url, inlineImageSize(), getInlineImageOptions());
+            }
+        } catch (Exception e) {
+            Log.e("SpoilerRobotoTextView", "disk decode failed " + url, e);
+        }
+        return null;
+    }
 
-                                // Update the text
-                                if (getText() instanceof Spannable) {
-                                    Spannable spannable = (Spannable) getText();
-                                    ImageSpan[] oldSpans = spannable.getSpans(match.start, match.end, ImageSpan.class);
-                                    for (ImageSpan span : oldSpans) {
-                                        spannable.removeSpan(span);
-                                    }
-                                    spannable.setSpan(
-                                        newSpan,
-                                        match.start,
-                                        match.end,
-                                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                                    );
+    /**
+     * Extracts the fully-decoded inline image URLs from a comment body, in the exact same string
+     * form the renderer requests them, so prefetch and render share identical ImageLoader cache
+     * keys. Safe to call off the main thread.
+     */
+    public static List<String> extractInlineImageUrls(@Nullable String bodyHtml) {
+        List<String> urls = new ArrayList<>();
+        if (bodyHtml == null || bodyHtml.isEmpty()) {
+            return urls;
+        }
+        try {
+            // Mirror the render path: rewrite giphy/external-preview to plain URLs, then decode
+            // HTML so prefetch requests the exact same URL strings (and cache keys) as the renderer.
+            CharSequence decoded = CompatUtil.fromHtml(convertGiphyToImageUrls(bodyHtml));
+            for (RedditImageMatch m : findRedditPreviewImageMatches(decoded)) {
+                urls.add(m.url);
+            }
+        } catch (Exception e) {
+            Log.e("SpoilerRobotoTextView", "Error extracting inline image urls", e);
+        }
+        return urls;
+    }
 
-                                    Log.d("SpoilerRobotoTextView", "Replaced placeholder with image: " + scaledWidth + "x" + scaledHeight);
-                                }
+    /**
+     * Incremented on every {@link #setTextHtml} so an in-flight image load whose view has since
+     * been rebound to a different comment can detect that and drop its stale result.
+     */
+    private long pendingImageLoadId = 0;
 
-                                invalidate();
+    /**
+     * Renders any inline comment images. If every image is already in the shared memory cache the
+     * comment is rendered synchronously with the real images (no placeholder). Otherwise the whole
+     * comment is held back (rendered blank, never a gray box) until all of its images finish
+     * downloading, then shown complete.
+     */
+    private void applyInlineImages(final SpannableStringBuilder builder) {
+        final long loadId = ++pendingImageLoadId;
+
+        if (SettingValues.shouldSkipImages(getContext())) {
+            super.setText(builder, BufferType.SPANNABLE);
+            return;
+        }
+
+        final List<RedditImageMatch> matches = findRedditPreviewImageMatches(builder);
+        if (matches.isEmpty()) {
+            super.setText(builder, BufferType.SPANNABLE);
+            return;
+        }
+
+        final ImageLoader loader =
+                ((Reddit) getContext().getApplicationContext()).getImageLoader();
+
+        final Map<String, Bitmap> loaded = new HashMap<>();
+        final List<RedditImageMatch> missing = new ArrayList<>();
+        for (RedditImageMatch m : matches) {
+            Bitmap cached = getCachedInlineBitmap(loader, m.url);
+            if (cached != null) {
+                loaded.put(m.url, cached);
+            } else {
+                missing.add(m);
+            }
+        }
+
+        if (missing.isEmpty()) {
+            // Everything is already cached: show the real images synchronously, no placeholder.
+            applyImageSpans(builder, matches, loaded);
+            super.setText(builder, BufferType.SPANNABLE);
+            return;
+        }
+
+        // Hold the whole comment back until every image is ready. Blank (not a gray box) meanwhile.
+        super.setText("", BufferType.SPANNABLE);
+
+        final int[] remaining = {missing.size()};
+        for (final RedditImageMatch m : missing) {
+            loader.loadImage(
+                    m.url,
+                    inlineImageSize(),
+                    getInlineImageOptions(),
+                    new SimpleImageLoadingListener() {
+                        @Override
+                        public void onLoadingComplete(@Nullable String uri, @Nullable View view, @Nullable Bitmap bitmap) {
+                            finishOne(bitmap);
+                        }
+
+                        @Override
+                        public void onLoadingFailed(String uri, @Nullable View view, FailReason reason) {
+                            finishOne(null);
+                        }
+
+                        @Override
+                        public void onLoadingCancelled(String uri, @Nullable View view) {
+                            finishOne(null);
+                        }
+
+                        private void finishOne(@Nullable Bitmap bitmap) {
+                            // View was rebound to a different comment; drop this stale result.
+                            if (loadId != pendingImageLoadId) {
+                                return;
+                            }
+                            if (bitmap != null) {
+                                loaded.put(m.url, bitmap);
+                            }
+                            if (--remaining[0] == 0) {
+                                applyImageSpans(builder, matches, loaded);
+                                SpoilerRobotoTextView.super.setText(
+                                        builder, BufferType.SPANNABLE);
                                 requestLayout();
-                            } catch (Exception e) {
-                                Log.e("SpoilerRobotoTextView", "Error updating image span", e);
                             }
                         }
                     });
-                });
+        }
+    }
+
+    private void applyImageSpans(
+            SpannableStringBuilder builder,
+            List<RedditImageMatch> matches,
+            Map<String, Bitmap> loaded) {
+        for (RedditImageMatch m : matches) {
+            Bitmap bitmap = loaded.get(m.url);
+            if (bitmap == null || bitmap.isRecycled()) {
+                // Failed image: leave the URL as plain text/link so the comment still renders.
+                continue;
+            }
+            try {
+                // Scale the bounds by the comment-image-size setting so inline images grow the same
+                // way the block path (CommentImageUtil) does.
+                double mult = CommentImageUtil.sizeMultiplier();
+                int baseMaxWidth = (int) (500 * mult);
+                int viewWidth = getWidth() - getPaddingLeft() - getPaddingRight();
+                int maxWidth = viewWidth > 0 ? Math.min(viewWidth, baseMaxWidth) : baseMaxWidth;
+                int maxHeight = (int) (300 * mult);
+
+                float widthScale = (float) maxWidth / bitmap.getWidth();
+                float heightScale = (float) maxHeight / bitmap.getHeight();
+                float scale = Math.min(widthScale, heightScale);
+
+                int scaledWidth = (int) (bitmap.getWidth() * scale);
+                int scaledHeight = (int) (bitmap.getHeight() * scale);
+
+                BitmapDrawable drawable = new BitmapDrawable(getResources(), bitmap);
+                drawable.setBounds(0, 0, scaledWidth, scaledHeight);
+
+                builder.setSpan(
+                        new ImageSpan(drawable),
+                        m.start,
+                        m.end,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            } catch (Exception e) {
+                Log.e("SpoilerRobotoTextView", "Error applying inline image span", e);
             }
         }
     }
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     // Define a cache for thumbnails.
     private LruCache<String, Bitmap> thumbnailCache = new LruCache<>(calculateCacheSize());
@@ -1480,6 +1704,93 @@ private void loadGiphyEmote(EmoteSpanRequest request, TextView textView, int pos
 
     // Simple callback interface
     private interface ImageCallback {
-        void onImageLoaded(Bitmap bitmap);
+        void onImageLoaded(@Nullable Bitmap bitmap);
+    }
+
+    private interface GiphyUrlMapper {
+        String map(Matcher matcher);
+    }
+
+    // A giphy link wrapping an external-preview / i.giphy <img>: use the embedded image URL.
+    private static final Pattern GIPHY_ANCHOR_WITH_IMG_PATTERN =
+            Pattern.compile(
+                    "<a\\s+href=\"https://giphy\\.com/gifs/[^\"]+\"[^>]*>\\s*<img\\s+src=\""
+                            + "(https://(?:external-preview\\.redd\\.it|i\\.giphy\\.com)/[^\"]+)\""
+                            + "[^>]*>\\s*</a>");
+    // A plain giphy link with no embedded img: map the giphy id to its media gif URL.
+    private static final Pattern GIPHY_PLAIN_LINK_PATTERN =
+            Pattern.compile("<a\\s+href=\"https://giphy\\.com/gifs/([^\"]+)\"[^>]*>[^<]*</a>");
+    // Any remaining bare external-preview / i.giphy img tags.
+    private static final Pattern GIPHY_BARE_IMG_PATTERN =
+            Pattern.compile(
+                    "<img\\s+src=\"(https://(?:external-preview\\.redd\\.it|i\\.giphy\\.com)/[^\"]+)\""
+                            + "[^>]*>");
+
+    /**
+     * Rewrites giphy / external-preview comment images into plain-text image URLs so they flow
+     * through the unified {@link #applyInlineImages} path (shared cache, no placeholder,
+     * delay-until-loaded, off-screen prefetch) instead of the emote subsystem. Snoomoji
+     * free_emotes_pack emotes (redditstatic.com) are intentionally left untouched. The URLs are
+     * kept HTML-escaped (e.g. &amp;amp;) so {@link CompatUtil#fromHtml} decodes them to the exact
+     * same string the existing preview.redd.it links produce, keeping image-cache keys consistent.
+     */
+    private static String convertGiphyToImageUrls(String html) {
+        html = replaceGiphyMatches(html, GIPHY_ANCHOR_WITH_IMG_PATTERN, m -> m.group(1));
+        html =
+                replaceGiphyMatches(
+                        html,
+                        GIPHY_PLAIN_LINK_PATTERN,
+                        m -> "https://i.giphy.com/media/" + m.group(1) + "/giphy.gif");
+        html = replaceGiphyMatches(html, GIPHY_BARE_IMG_PATTERN, m -> m.group(1));
+        return html;
+    }
+
+    private static String replaceGiphyMatches(String html, Pattern pattern, GiphyUrlMapper mapper) {
+        Matcher matcher = pattern.matcher(html);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(sb, Matcher.quoteReplacement(" " + mapper.map(matcher) + " "));
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    /**
+     * Replaces Markdown code block delimiters wrapped in paragraph tags
+     * with standard HTML code tags.
+     *
+     * @param html The input HTML string.
+     * @return The HTML string with code blocks replaced.
+     */
+    private String replaceCodeBlocks(String html) {
+        Log.d("SpoilerRobotoTextView", "Initial HTML for code block replacement: " + html);
+        StringBuffer sb = new StringBuffer();
+
+        // Refined Pattern:
+        // 1. `<div>\s*```(.*?)```\s*</div>`: Matches standard ```content``` within a div, capturing content.
+        // 2. `<div>\s*([^`\s][^<]*)```\s*</div>`: Matches content``` within a div, where content doesn't start with ` or whitespace, and doesn't contain '<'.
+        Pattern combinedPattern = Pattern.compile("<div>\\s*(?:```(.*?)```|([^`\\s][^<]*)```)\\s*</div>", Pattern.DOTALL);
+        Matcher matcher = combinedPattern.matcher(html);
+
+        while (matcher.find()) {
+            String content;
+            if (matcher.group(1) != null) {
+                // Matched ```content```
+                content = matcher.group(1);
+            } else {
+                // Matched content```
+                content = matcher.group(2);
+            }
+            content = content.trim(); // Trim whitespace
+
+            // Replace the entire matched <div>...</div> block
+            String replacement = "<div><code>[[&lt;[" + Matcher.quoteReplacement(content) + "]&gt;]]</code></div>";
+            matcher.appendReplacement(sb, replacement);
+        }
+        matcher.appendTail(sb);
+        String result = sb.toString();
+        Log.d("SpoilerRobotoTextView", "Final HTML after code block replacement: " + result);
+
+        return result;
     }
 }

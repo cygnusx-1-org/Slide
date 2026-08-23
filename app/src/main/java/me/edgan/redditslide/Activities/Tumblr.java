@@ -3,7 +3,6 @@ package me.edgan.redditslide.Activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,18 +12,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
-
+import java.util.ArrayList;
+import java.util.List;
 import me.edgan.redditslide.Adapters.TumblrView;
 import me.edgan.redditslide.Fragments.BlankFragment;
 import me.edgan.redditslide.Fragments.SubmissionsView;
-import me.edgan.redditslide.Notifications.ImageDownloadNotificationService;
+import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Tumblr.Photo;
@@ -32,12 +32,11 @@ import me.edgan.redditslide.Tumblr.TumblrUtils;
 import me.edgan.redditslide.Views.PreCachingLayoutManager;
 import me.edgan.redditslide.Views.ToolbarColorizeHelper;
 import me.edgan.redditslide.Visuals.ColorPreferences;
-import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.DialogUtil;
+import me.edgan.redditslide.util.ImageSaveUtils;
 import me.edgan.redditslide.util.LinkUtil;
-import me.edgan.redditslide.util.StorageUtil;
-
-import java.util.ArrayList;
-import java.util.List;
+import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Created by ccrama on 9/7/2016.
@@ -45,19 +44,22 @@ import java.util.List;
  * <p>This class is responsible for accessing the Tumblr api to get the image-related json data from
  * a URL. It extends FullScreenActivity and supports swipe from anywhere.
  */
+@NullMarked
 public class Tumblr extends BaseSaveActivity {
     public static final String EXTRA_URL = "url";
-    private List<Photo> images;
+    @Nullable private List<Photo> images;
     public static final String SUBREDDIT = "subreddit";
     private int adapterPosition;
-    public String subreddit;
+    public String subreddit = "";
+
+    private static final String TAG = "Tumblr";
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         if (id == android.R.id.home) {
-            onBackPressed();
+            getOnBackPressedDispatcher().onBackPressed();
         }
         if (id == R.id.slider) {
             SettingValues.albumSwipe = true;
@@ -79,25 +81,41 @@ public class Tumblr extends BaseSaveActivity {
             finish();
         }
         if (id == R.id.grid) {
-            mToolbar.findViewById(R.id.grid).callOnClick();
+            requireToolbar().requireViewById(R.id.grid).callOnClick();
         }
         if (id == R.id.comments) {
-            SubmissionsView.datachanged(adapterPosition);
+            String submissionPermalink = getIntent().getStringExtra(MediaView.SUBMISSION_URL);
+            boolean openCommentsDirect =
+                    getIntent().getBooleanExtra(MediaView.EXTRA_OPEN_COMMENTS_DIRECT, false);
+            if (openCommentsDirect && submissionPermalink != null) {
+                OpenRedditLink.openUrl(this, "https://reddit.com" + submissionPermalink, false);
+            } else {
+                SubmissionsView.datachanged(adapterPosition);
+            }
             finish();
         }
         if (id == R.id.external) {
             LinkUtil.openExternally(url);
         }
-        if (id == R.id.download) {
+        if (id == R.id.download && images != null) {
+            int index = 0;
             for (final Photo elem : images) {
-                doImageSave(false, elem.getOriginalSize().getUrl());
+                // A photo whose JSON carried no original_size — or that Jackson left null for a null
+                // element in the photos array — has no url to save. index still advances so the
+                // saved files keep matching album positions: a gap in the numbering, rather than
+                // renumbering everything after the skip.
+                final String elemUrl = elem == null ? null : elem.getOriginalUrl();
+                if (elemUrl != null) {
+                    doImageSave(false, elemUrl, index);
+                }
+                index++;
             }
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    public String url;
+    @Nullable public String url;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -112,7 +130,7 @@ public class Tumblr extends BaseSaveActivity {
 
     public TumblrPagerAdapter album;
 
-    public void onCreate(Bundle savedInstanceState) {
+    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
         overrideSwipeFromAnywhere();
         super.onCreate(savedInstanceState);
         getTheme()
@@ -120,25 +138,28 @@ public class Tumblr extends BaseSaveActivity {
                         new ColorPreferences(this)
                                 .getDarkThemeSubreddit(ColorPreferences.FONT_STYLE),
                         true);
+        MiscUtil.applyWideColorGamut(this);
         setContentView(R.layout.album);
 
         // Keep the screen on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        final ViewPager pager = (ViewPager) findViewById(R.id.images);
+        final ViewPager pager = (ViewPager) requireViewById(R.id.images);
 
         album = new TumblrPagerAdapter(getSupportFragmentManager());
         pager.setAdapter(album);
         pager.setCurrentItem(1);
         if (getIntent().hasExtra(SUBREDDIT)) {
-            subreddit = getIntent().getStringExtra(SUBREDDIT);
+            subreddit = MiscUtil.orEmpty(getIntent().getStringExtra(SUBREDDIT));
         }
 
         if (getIntent().hasExtra(EXTRA_SUBMISSION_TITLE)) {
-            this.submissionTitle = getIntent().getStringExtra(EXTRA_SUBMISSION_TITLE);
+            this.submissionTitle = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_SUBMISSION_TITLE));
         }
 
         if (SettingValues.oldSwipeMode) {
+            MiscUtil.setupOldSwipeModeBackground(this, pager);
+
             pager.addOnPageChangeListener(
                     new ViewPager.SimpleOnPageChangeListener() {
                         @Override
@@ -147,16 +168,12 @@ public class Tumblr extends BaseSaveActivity {
                             if (position == 0 && positionOffsetPixels == 0) {
                                 finish();
                             }
+                            final TumblrPagerAdapter pagerAdapter =
+                                    (TumblrPagerAdapter) pager.getAdapter();
                             if (position == 0
-                                    && ((TumblrPagerAdapter) pager.getAdapter()).blankPage
-                                            != null) {
-                                if (((TumblrPagerAdapter) pager.getAdapter()).blankPage != null) {
-                                    ((TumblrPagerAdapter) pager.getAdapter())
-                                            .blankPage.doOffset(positionOffset);
-                                }
-                                ((TumblrPagerAdapter) pager.getAdapter())
-                                        .blankPage.realBack.setBackgroundColor(
-                                                Palette.adjustAlpha(positionOffset * 0.7f));
+                                    && pagerAdapter != null
+                                    && pagerAdapter.blankPage != null) {
+                                pagerAdapter.blankPage.doOffset(positionOffset);
                             }
                         }
                     });
@@ -166,7 +183,9 @@ public class Tumblr extends BaseSaveActivity {
     }
 
     public static class TumblrPagerAdapter extends FragmentStatePagerAdapter {
+        @SuppressWarnings("NullAway.Init") // assigned in getItem/onCreate
         public AlbumFrag album;
+        @SuppressWarnings("NullAway.Init") // assigned in getItem
         public BlankFragment blankPage;
 
         public TumblrPagerAdapter(FragmentManager fm) {
@@ -206,28 +225,31 @@ public class Tumblr extends BaseSaveActivity {
 
         @Override
         public View onCreateView(
-                LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
             rootView = inflater.inflate(R.layout.fragment_verticalalbum, container, false);
 
             final PreCachingLayoutManager mLayoutManager =
-                    new PreCachingLayoutManager(getActivity());
-            recyclerView = rootView.findViewById(R.id.images);
+                    new PreCachingLayoutManager(requireActivity());
+            recyclerView = rootView.requireViewById(R.id.images);
             recyclerView.setLayoutManager(mLayoutManager);
-            ((Tumblr) getActivity()).url =
-                    getActivity().getIntent().getExtras().getString(EXTRA_URL, "");
+            ((Tumblr) requireActivity()).url =
+                    MiscUtil.orEmpty(requireActivity().getIntent().getStringExtra(EXTRA_URL));
 
-            new LoadIntoRecycler(((Tumblr) getActivity()).url, getActivity())
+            new LoadIntoRecycler(((Tumblr) requireActivity()).url, requireActivity())
                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            ((Tumblr) getActivity()).mToolbar = rootView.findViewById(R.id.toolbar);
-            ((Tumblr) getActivity()).mToolbar.setTitle(R.string.type_album);
+            ((Tumblr) requireActivity()).mToolbar = rootView.requireViewById(R.id.toolbar);
+            ((Tumblr) requireActivity()).requireToolbar().setTitle(R.string.type_tumblr);
             ToolbarColorizeHelper.colorizeToolbar(
-                    ((Tumblr) getActivity()).mToolbar, Color.WHITE, (getActivity()));
-            ((Tumblr) getActivity()).setSupportActionBar(((Tumblr) getActivity()).mToolbar);
-            ((Tumblr) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                    ((Tumblr) requireActivity()).requireToolbar(), Color.WHITE, (requireActivity()));
+            ((Tumblr) requireActivity()).setSupportActionBar(((Tumblr) requireActivity()).requireToolbar());
+            java.util.Objects.requireNonNull(((Tumblr) requireActivity()).getSupportActionBar())
+                    .setDisplayHomeAsUpEnabled(true);
 
-            ((Tumblr) getActivity())
+            ((Tumblr) requireActivity())
                     .mToolbar.setPopupTheme(
-                            new ColorPreferences(getActivity())
+                            new ColorPreferences(requireActivity())
                                     .getDarkThemeSubreddit(ColorPreferences.FONT_STYLE));
             return rootView;
         }
@@ -243,47 +265,55 @@ public class Tumblr extends BaseSaveActivity {
 
             @Override
             public void onError() {
-                Intent i = new Intent(getActivity(), Website.class);
+                // Resolved once and null-checked: this is posted to the main looper from the
+                // loader's background thread, so the fragment can be detached by the time it runs.
+                // new Intent(null, …) is an NPE and startActivity on a detached fragment throws.
+                final Activity activity = getActivity();
+                if (activity == null || activity.isFinishing()) {
+                    return;
+                }
+                Intent i = new Intent(activity, Website.class);
                 i.putExtra(LinkUtil.EXTRA_URL, url);
-                startActivity(i);
-                getActivity().finish();
+                activity.startActivity(i);
+                activity.finish();
             }
 
             @Override
-            public void doWithData(final List<Photo> jsonElements) {
-                super.doWithData(jsonElements);
+            public boolean doWithData(final @Nullable List<Photo> jsonElements) {
+                // A post with no photos has no album to build; super has already sent this to
+                // onError(), which opens the link in the web view instead.
+                if (!super.doWithData(jsonElements)) {
+                    return false;
+                }
                 if (getActivity() != null) {
-                    getActivity().findViewById(R.id.progress).setVisibility(View.GONE);
+                    getActivity().requireViewById(R.id.progress).setVisibility(View.GONE);
                     ((Tumblr) getActivity()).images = new ArrayList<>(jsonElements);
                     TumblrView adapter =
                             new TumblrView(
                                     baseActivity,
                                     ((Tumblr) getActivity()).images,
-                                    getActivity().findViewById(R.id.toolbar).getHeight(),
-                                    ((Tumblr) getActivity()).subreddit);
+                                    ((Tumblr) getActivity()).subreddit,
+                                    ((Tumblr) getActivity()).submissionTitle);
                     recyclerView.setAdapter(adapter);
                 }
+                return true;
             }
         }
     }
 
-    public void doImageSave(boolean isGif, String contentUrl) {
-        if (!isGif) {
-            Uri storageUri = StorageUtil.getStorageUri(this);
-            if (storageUri == null) {
-                StorageUtil.showDirectoryChooser(this);
-            } else {
-                Intent i = new Intent(this, ImageDownloadNotificationService.class);
-                i.putExtra("actuallyLoaded", contentUrl);
-                i.putExtra("downloadUri", storageUri.toString());
+    @Override public void doImageSave(boolean isGif, String contentUrl, int index) {
+        ImageSaveUtils.doImageSave(
+                this,
+                isGif,
+                contentUrl,
+                index,
+                subreddit,
+                submissionTitle,
+                this::showFirstDialog
+        );
+    }
 
-                if (subreddit != null && !subreddit.isEmpty()) {
-                    i.putExtra("subreddit", subreddit);
-                }
-                startService(i);
-            }
-        } else {
-            MediaView.doOnClick.run();
-        }
+    private void showFirstDialog() {
+        runOnUiThread(() -> DialogUtil.showFirstDialog(Tumblr.this));
     }
 }

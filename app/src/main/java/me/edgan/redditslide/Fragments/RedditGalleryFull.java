@@ -1,48 +1,28 @@
 package me.edgan.redditslide.Fragments;
 
-import android.animation.ValueAnimator;
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import me.edgan.redditslide.Activities.CommentsScreen;
-import me.edgan.redditslide.Activities.Shadowbox;
-import me.edgan.redditslide.Adapters.RedditGalleryView;
 import me.edgan.redditslide.Activities.GalleryImage;
-import me.edgan.redditslide.R;
+import me.edgan.redditslide.Adapters.RedditGalleryView;
 import me.edgan.redditslide.SubmissionViews.PopulateShadowboxInfo;
 import me.edgan.redditslide.util.LogUtil;
-
+import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.models.Submission;
 
-public class RedditGalleryFull extends Fragment {
+public class RedditGalleryFull extends BaseAlbumFull {
 
-    boolean gallery = false;
-    private View list;
     private int i;
-    private Submission s;
-    private View rootView;
-    private List<GalleryImage> images;
-    boolean hidden;
+    // Package-private so the fragment's own test can stand them up without a live Shadowbox host.
+    @Nullable Submission s;
+    @Nullable List<GalleryImage> images;
 
-    private List<GalleryImage> extractGalleryImages(Submission submission) {
+    List<GalleryImage> extractGalleryImages(Submission submission) {
         List<GalleryImage> galleryImages = new ArrayList<>();
         try {
             LogUtil.v("Extracting gallery images from submission");
@@ -50,46 +30,50 @@ public class RedditGalleryFull extends Fragment {
             JsonNode mediaMetadata = submission.getDataNode().get("media_metadata");
 
             if (galleryData != null && mediaMetadata != null && galleryData.has("items")) {
-                JsonNode items = galleryData.get("items");
+                JsonNode items = galleryData.path("items");
                 LogUtil.v("Gallery items: " + items.toString());
 
                 for (JsonNode item : items) {
-                    String mediaId = item.get("media_id").asText();
+                    String mediaId = item.path("media_id").asText();
                     if (mediaMetadata.has(mediaId)) {
-                        JsonNode mediaItem = mediaMetadata.get(mediaId);
+                        JsonNode mediaItem = mediaMetadata.path(mediaId);
                         LogUtil.v("Media item for " + mediaId + ": " + mediaItem.toString());
 
                         if (mediaItem != null && mediaItem.has("s")) {
-                            JsonNode s = mediaItem.get("s");
+                            JsonNode s = mediaItem.path("s");
                             // Create a new object matching GalleryImage's expected structure
                             ObjectNode imageNode = JsonNodeFactory.instance.objectNode();
 
                             // Add the URL field as "u" instead of "url"
                             if (s.has("u")) {
-                                imageNode.put("u", s.get("u").asText());
+                                imageNode.put("u", s.path("u").asText());
                             } else if (s.has("mp4")) {
-                                imageNode.put("mp4", s.get("mp4").asText());
+                                imageNode.put("mp4", s.path("mp4").asText());
                             }
 
                             // Add width and height as x and y
-                            imageNode.put("x", s.has("x") ? s.get("x").asInt() : 0);
-                            imageNode.put("y", s.has("y") ? s.get("y").asInt() : 0);
+                            imageNode.put("x", s.has("x") ? s.path("x").asInt() : 0);
+                            imageNode.put("y", s.has("y") ? s.path("y").asInt() : 0);
 
                             // Add metadata fields
-                            if (mediaItem.has("e")) imageNode.put("e", mediaItem.get("e").asText());
-                            if (mediaItem.has("m")) imageNode.put("m", mediaItem.get("m").asText());
+                            if (mediaItem.has("e")) imageNode.put("e", mediaItem.path("e").asText());
+                            if (mediaItem.has("m")) imageNode.put("m", mediaItem.path("m").asText());
 
                             // Add source information
                             ObjectNode sourceNode = JsonNodeFactory.instance.objectNode();
-                            if (s.has("mp4")) sourceNode.put("mp4", s.get("mp4").asText());
-                            if (s.has("gif")) sourceNode.put("gif", s.get("gif").asText());
-                            if (s.has("x")) sourceNode.put("x", s.get("x").asInt());
-                            if (s.has("y")) sourceNode.put("y", s.get("y").asInt());
-                            if (s.has("u")) sourceNode.put("u", s.get("u").asText());
+                            if (s.has("mp4")) sourceNode.put("mp4", s.path("mp4").asText());
+                            if (s.has("gif")) sourceNode.put("gif", s.path("gif").asText());
+                            if (s.has("x")) sourceNode.put("x", s.path("x").asInt());
+                            if (s.has("y")) sourceNode.put("y", s.path("y").asInt());
+                            if (s.has("u")) sourceNode.put("u", s.path("u").asText());
                             imageNode.set("s", sourceNode);
 
                             LogUtil.v("Created image node: " + imageNode.toString());
-                            galleryImages.add(new GalleryImage(imageNode));
+                            GalleryImage galleryImage = new GalleryImage(imageNode);
+                            if (item.has("caption") && !item.path("caption").isNull()) {
+                                galleryImage.caption = item.path("caption").asText();
+                            }
+                            galleryImages.add(galleryImage);
                         }
                     }
                 }
@@ -100,86 +84,76 @@ public class RedditGalleryFull extends Fragment {
             LogUtil.v("Found " + galleryImages.size() + " gallery images");
         } catch (Exception e) {
             LogUtil.e("Error extracting gallery images: " + e.getMessage());
-            e.printStackTrace();
+            LogUtil.e(e, "RedditGalleryFull.extractGalleryImages failed");
         }
         return galleryImages;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.submission_albumcard, container, false);
-        PopulateShadowboxInfo.doActionbar(s, rootView, getActivity(), true);
+    protected void bindActionbar() {
+        if (s == null) {
+            return;
+        }
+        PopulateShadowboxInfo.doActionbar(s, rootView, requireActivity(), true);
+    }
 
-        list = rootView.findViewById(R.id.images);
+    /**
+     * The submission's own url. Nothing fetches it — a gallery has no album endpoint behind it — so
+     * it is only here to satisfy the base class; {@link #hasAlbumToShow()} is what decides whether
+     * this page renders.
+     */
+    @Override
+    protected @Nullable String getAlbumUrl() {
+        return s == null ? null : s.getUrl();
+    }
 
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        ((RecyclerView) list).setLayoutManager(layoutManager);
-
-        final View.OnClickListener openClick = view -> {
-            if (rootView.findViewById(R.id.base).getAlpha() <= 0.8) {
-                rootView.findViewById(R.id.base).setAlpha(1f);
-            } else {
-                rootView.findViewById(R.id.base).setAlpha(0.2f);
-            }
-        };
-
-        rootView.findViewById(R.id.base).setOnClickListener(openClick);
-
-        ((SlidingUpPanelLayout) rootView.findViewById(R.id.sliding_layout))
-                .addPanelSlideListener(new SlidingUpPanelLayout.SimplePanelSlideListener() {
-                    @Override
-                    public void onPanelStateChanged(View panel,
-                            SlidingUpPanelLayout.PanelState previousState,
-                            SlidingUpPanelLayout.PanelState newState) {
-                        if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
-                            rootView.findViewById(R.id.base).setOnClickListener(v -> {
-                                Intent i2 = new Intent(getActivity(), CommentsScreen.class);
-                                i2.putExtra(CommentsScreen.EXTRA_PAGE, i);
-                                i2.putExtra(CommentsScreen.EXTRA_SUBREDDIT,
-                                        ((Shadowbox) getActivity()).subreddit);
-                                getActivity().startActivity(i2);
-                            });
-                        } else {
-                            rootView.findViewById(R.id.base).setOnClickListener(openClick);
-                        }
-                    }
-                });
-
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        if (getActivity() != null) {
-                            Activity activity = getActivity();
-                            View toolbar = rootView.findViewById(R.id.toolbar);
-                            int toolbarHeight = toolbar != null ? toolbar.getHeight() : 0;
-
-                            ((RecyclerView) list).setAdapter(new RedditGalleryView(
-                                    activity,
-                                    images,
-                                    toolbarHeight,
-                                    s.getSubredditName(),
-                                    s.getTitle()));
-                            rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        }
-                    }
-                });
-
-        return rootView;
+    /** The images, not a url: they came out of the submission in onCreate and are all that matters. */
+    @Override
+    protected boolean hasAlbumToShow() {
+        return images != null && !images.isEmpty();
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void openComments() {
+        openShadowboxComments(i);
+    }
+
+    /**
+     * Binds the images extracted in onCreate. Unlike the other album fragments this does no loading,
+     * so it can set the adapter straight away rather than from a callback.
+     */
+    @Override
+    protected void loadAlbum(String url) {
+        final Submission submission = s;
+        final List<GalleryImage> galleryImages = images;
+        if (submission == null || galleryImages == null) {
+            return;
+        }
+
+        ((RecyclerView) list)
+                .setAdapter(
+                        new RedditGalleryView(
+                                requireActivity(),
+                                galleryImages,
+                                MiscUtil.orEmpty(submission.getSubredditName()),
+                                MiscUtil.orEmpty(submission.getTitle())));
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle bundle = this.getArguments();
-        i = bundle.getInt("page", 0);
-        if (((Shadowbox) getActivity()).subredditPosts == null
-                || ((Shadowbox) getActivity()).subredditPosts.getPosts().size() < bundle.getInt("page",
-                        0)) {
-            getActivity().finish();
-        } else {
-            s = ((Shadowbox) getActivity()).subredditPosts.getPosts().get(bundle.getInt("page", 0));
+        i = requireArguments().getInt("page", 0);
+        s = resolveSubmission();
+        if (s != null) {
             images = extractGalleryImages(s);
         }
+    }
+
+    /**
+     * The submission this page shows. Separated from {@link #onCreate} only so a test can host this
+     * fragment without a live Shadowbox behind it — everything else here works off {@code s}.
+     */
+    @Nullable Submission resolveSubmission() {
+        return submissionForShadowboxPage();
     }
 }

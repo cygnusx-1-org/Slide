@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Tumblr;
 
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,19 +17,19 @@ import java.util.Map;
 public class Blog_ {
 
     @JsonProperty("name")
-    private String name;
+    @Nullable private String name;
 
     @JsonProperty("active")
-    private Boolean active;
+    @Nullable private Boolean active;
 
     @JsonProperty("theme")
-    private Theme theme;
+    @Nullable private Theme theme;
 
     @JsonProperty("share_likes")
-    private Boolean shareLikes;
+    @Nullable private Boolean shareLikes;
 
     @JsonProperty("share_following")
-    private Boolean shareFollowing;
+    @Nullable private Boolean shareFollowing;
 
     @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -35,6 +37,7 @@ public class Blog_ {
      * @return The name
      */
     @JsonProperty("name")
+    @Nullable
     public String getName() {
         return name;
     }
@@ -43,7 +46,7 @@ public class Blog_ {
      * @param name The name
      */
     @JsonProperty("name")
-    public void setName(String name) {
+    public void setName(@Nullable String name) {
         this.name = name;
     }
 
@@ -51,6 +54,7 @@ public class Blog_ {
      * @return The active
      */
     @JsonProperty("active")
+    @Nullable
     public Boolean getActive() {
         return active;
     }
@@ -59,7 +63,7 @@ public class Blog_ {
      * @param active The active
      */
     @JsonProperty("active")
-    public void setActive(Boolean active) {
+    public void setActive(@Nullable Boolean active) {
         this.active = active;
     }
 
@@ -67,6 +71,7 @@ public class Blog_ {
      * @return The theme
      */
     @JsonProperty("theme")
+    @Nullable
     public Theme getTheme() {
         return theme;
     }
@@ -75,7 +80,7 @@ public class Blog_ {
      * @param theme The theme
      */
     @JsonProperty("theme")
-    public void setTheme(Theme theme) {
+    public void setTheme(@Nullable Theme theme) {
         this.theme = theme;
     }
 
@@ -83,6 +88,7 @@ public class Blog_ {
      * @return The shareLikes
      */
     @JsonProperty("share_likes")
+    @Nullable
     public Boolean getShareLikes() {
         return shareLikes;
     }
@@ -91,7 +97,7 @@ public class Blog_ {
      * @param shareLikes The share_likes
      */
     @JsonProperty("share_likes")
-    public void setShareLikes(Boolean shareLikes) {
+    public void setShareLikes(@Nullable Boolean shareLikes) {
         this.shareLikes = shareLikes;
     }
 
@@ -99,6 +105,7 @@ public class Blog_ {
      * @return The shareFollowing
      */
     @JsonProperty("share_following")
+    @Nullable
     public Boolean getShareFollowing() {
         return shareFollowing;
     }
@@ -107,7 +114,7 @@ public class Blog_ {
      * @param shareFollowing The share_following
      */
     @JsonProperty("share_following")
-    public void setShareFollowing(Boolean shareFollowing) {
+    public void setShareFollowing(@Nullable Boolean shareFollowing) {
         this.shareFollowing = shareFollowing;
     }
 

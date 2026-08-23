@@ -3,8 +3,10 @@ package me.edgan.redditslide.util;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Path;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by adrian on 8/24/16. */
+@NullMarked
 public class ImageUtil {
     /* TODO: Implement tolerance */
     public static void drawWithTargetColor(Bitmap bm, Bitmap src, int targetcolor, int tolerance) {
@@ -32,10 +34,6 @@ public class ImageUtil {
     }
 
     public static Bitmap clipToCircle(final Bitmap bitmap) {
-        if (bitmap == null) {
-            return null;
-        }
-
         final int width = bitmap.getWidth();
         final int height = bitmap.getHeight();
         final Bitmap outputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);

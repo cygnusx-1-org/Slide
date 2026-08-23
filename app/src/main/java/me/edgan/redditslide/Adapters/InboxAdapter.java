@@ -1,6 +1,5 @@
 package me.edgan.redditslide.Adapters;
 
-/** Created by ccrama on 3/22/2015. */
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -21,49 +20,52 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.cocosw.bottomsheet.BottomSheet;
 import com.devspark.robototextview.RobotoTypefaces;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.android.material.snackbar.Snackbar;
-
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Activities.Inbox;
 import me.edgan.redditslide.Activities.Profile;
 import me.edgan.redditslide.Activities.SendMessage;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.DataShare;
 import me.edgan.redditslide.Drafts;
+import me.edgan.redditslide.InboxCount;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
+import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.SavedUsers;
 import me.edgan.redditslide.SettingValues;
-import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.UserTags;
 import me.edgan.redditslide.Views.DoEditorActions;
 import me.edgan.redditslide.Views.RoundedBackgroundSpan;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.BottomSheet;
 import me.edgan.redditslide.util.ClipboardUtil;
 import me.edgan.redditslide.util.CompatUtil;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
-
 import net.dean.jraw.ApiException;
 import net.dean.jraw.managers.InboxManager;
-import net.dean.jraw.models.Captcha;
 import net.dean.jraw.models.Message;
 import net.dean.jraw.models.PrivateMessage;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 
 public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements BaseAdapter {
@@ -79,26 +81,32 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         this.mContext = mContext;
         this.listView = listView;
         this.dataSet = dataSet;
-
-        boolean isSame = false;
     }
+
+    private boolean errorShown;
 
     @Override
     public void setError(Boolean b) {
+        errorShown = true;
         listView.setAdapter(new ErrorAdapter());
     }
 
     @Override
     public void undoSetError() {
-        listView.setAdapter(this);
+        // Only swap the real adapter back in when we are actually showing the error view; calling
+        // setAdapter() on every successful load would needlessly reset scroll position.
+        if (errorShown) {
+            errorShown = false;
+            listView.setAdapter(this);
+        }
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0 && !dataSet.posts.isEmpty()
-                || position == dataSet.posts.size() + 1
+        if ((position == 0 && !dataSet.posts.isEmpty())
+                || (position == dataSet.posts.size() + 1
                         && dataSet.nomore
-                        && !dataSet.where.equalsIgnoreCase("where")) {
+                        && !dataSet.where.equalsIgnoreCase("where"))) {
             return SPACER;
         } else {
             position -= 1;
@@ -106,7 +114,9 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (position == dataSet.posts.size() && !dataSet.posts.isEmpty() && !dataSet.nomore) {
             return 5;
         }
-        if (dataSet.posts.get(position).getSubject().toLowerCase(Locale.ENGLISH).contains("re:")
+        if (MiscUtil.orEmpty(dataSet.posts.get(position).getSubject())
+                        .toLowerCase(Locale.ENGLISH)
+                        .contains("re:")
                 && dataSet.where.equalsIgnoreCase("messages")) // IS COMMENT IN MESSAGES
         {
             return 2;
@@ -157,13 +167,13 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             String direction = "from ";
             if (!dataSet.where.contains("mod")
                     && comment.getDataNode().has("dest")
-                    && !Authentication.name.equalsIgnoreCase(
-                            comment.getDataNode().get("dest").asText())
-                    && !comment.getDataNode().get("dest").asText().equals("reddit")) {
-                author = comment.getDataNode().get("dest").asText().replace("#", "/r/");
+                    && !Authentication.nameOrEmpty().equalsIgnoreCase(
+                            comment.getDataNode().path("dest").asText())
+                    && !comment.getDataNode().path("dest").asText().equals("reddit")) {
+                author = comment.getDataNode().path("dest").asText().replace("#", "/r/");
                 direction = "to ";
             }
-            if (comment.getDataNode().has("subreddit") && author == null || author.isEmpty()) {
+            if (comment.getDataNode().has("subreddit") && (author == null || author.isEmpty())) {
                 direction = "via /r/" + comment.getSubreddit();
             }
             titleString.append(direction);
@@ -183,7 +193,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     titleString.append(" ");
                 }
 
-                if (UserSubscriptions.friends.contains(author)) {
+                if (SavedUsers.isFriend(author)) {
                     SpannableStringBuilder pinned =
                             new SpannableStringBuilder(
                                     " " + mContext.getString(R.string.profile_friend) + " ");
@@ -202,9 +212,9 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             }
             String spacer = mContext.getString(R.string.submission_properties_seperator);
             if (comment.getDataNode().has("subreddit")
-                    && !comment.getDataNode().get("subreddit").isNull()) {
+                    && !comment.getDataNode().path("subreddit").isNull()) {
                 titleString.append(spacer);
-                String subname = comment.getDataNode().get("subreddit").asText();
+                String subname = comment.getDataNode().path("subreddit").asText();
                 SpannableStringBuilder subreddit = new SpannableStringBuilder("/r/" + subname);
                 if ((SettingValues.colorSubName
                         && Palette.getColor(subname) != Palette.getDefaultColor())) {
@@ -232,7 +242,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 tagNew.setSpan(
                         new RoundedBackgroundSpan(
                                 Color.WHITE,
-                                mContext.getResources().getColor(R.color.md_green_400),
+                                ContextCompat.getColor(mContext, R.color.md_green_400),
                                 true,
                                 mContext),
                         0,
@@ -249,7 +259,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         new SpannableStringBuilder(
                                 " "
                                         + CompatUtil.fromHtml(
-                                                comment.getDataNode().get("link_title").asText())
+                                                comment.getDataNode().path("link_title").asText())
                                         + " ");
                 link.setSpan(
                         new StyleSpan(Typeface.BOLD_ITALIC),
@@ -310,37 +320,40 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                             String author = comment.getAuthor();
                             if (!dataSet.where.contains("mod")
                                     && comment.getDataNode().has("dest")
-                                    && !Authentication.name.equalsIgnoreCase(
-                                            comment.getDataNode().get("dest").asText())
+                                    && !Authentication.nameOrEmpty().equalsIgnoreCase(
+                                            comment.getDataNode().path("dest").asText())
                                     && !comment.getDataNode()
-                                            .get("dest")
+                                            .path("dest")
                                             .asText()
                                             .equals("reddit")) {
                                 author =
                                         comment.getDataNode()
-                                                .get("dest")
+                                                .path("dest")
                                                 .asText()
                                                 .replace("#", "/r/");
                             }
+
                             if (comment.getAuthor() != null) {
                                 b.sheet(1, profile, "/u/" + author);
                             }
 
                             String read = mContext.getString(R.string.mail_mark_read);
                             Drawable rDrawable = hide;
-                            if (comment.isRead()) {
-                                read = mContext.getString(R.string.mail_mark_unread);
-                                rDrawable = unhide;
+
+                            if (!comment.isRead()) {
+                                b.sheet(2, rDrawable, read);
                             }
-                            b.sheet(2, rDrawable, read);
+
                             b.sheet(3, reply, mContext.getString(R.string.btn_reply));
                             b.sheet(25, copy, mContext.getString(R.string.misc_copy_text));
+
                             if (comment.isComment()) {
                                 b.sheet(
                                         30,
                                         reddit,
                                         mContext.getString(R.string.mail_view_full_thread));
                             }
+
                             final String finalAuthor = author;
                             b.listener(
                                             new DialogInterface.OnClickListener() {
@@ -362,28 +375,10 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                                             break;
                                                         case 2:
                                                             {
-                                                                if (comment.isRead()) {
-                                                                    comment.read = false;
-                                                                    new AsyncSetRead(false)
-                                                                            .execute(comment);
-                                                                    messageViewHolder.title
-                                                                            .setTextColor(
-                                                                                    ContextCompat
-                                                                                            .getColor(
-                                                                                                    mContext,
-                                                                                                    R
-                                                                                                            .color
-                                                                                                            .md_red_400));
-                                                                } else {
-                                                                    comment.read = true;
-                                                                    new AsyncSetRead(true)
-                                                                            .execute(comment);
-                                                                    messageViewHolder.title
-                                                                            .setTextColor(
-                                                                                    messageViewHolder
-                                                                                            .content
-                                                                                            .getCurrentTextColor());
-                                                                }
+                                                                markReadAndRebind(
+                                                                        messageViewHolder,
+                                                                        comment,
+                                                                        !comment.isRead());
                                                             }
                                                             break;
                                                         case 3:
@@ -396,7 +391,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                                                 ClipboardUtil.copyToClipboard(
                                                                         mContext,
                                                                         "Message",
-                                                                        comment.getBody());
+                                                                        MiscUtil.orEmpty(comment.getBody()));
                                                                 Toast.makeText(
                                                                                 mContext,
                                                                                 mContext.getString(
@@ -410,17 +405,24 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                                             {
                                                                 String context =
                                                                         comment.getDataNode()
-                                                                                .get("context")
+                                                                                .path("context")
                                                                                 .asText();
-                                                                OpenRedditLink.openUrl(
-                                                                        mContext,
-                                                                        "https://reddit.com"
-                                                                                + context.substring(
-                                                                                        0,
-                                                                                        context
-                                                                                                .lastIndexOf(
-                                                                                                        "/")),
-                                                                        true);
+                                                                // lastIndexOf is -1 for an absent
+                                                                // context, and substring(0, -1)
+                                                                // throws. There is no parent
+                                                                // permalink to open without one.
+                                                                final int lastSlash =
+                                                                        context.lastIndexOf("/");
+                                                                if (lastSlash > 0) {
+                                                                    OpenRedditLink.openUrl(
+                                                                            mContext,
+                                                                            "https://reddit.com"
+                                                                                    + context
+                                                                                            .substring(
+                                                                                                    0,
+                                                                                                    lastSlash),
+                                                                            true);
+                                                                }
                                                             }
                                                             break;
                                                     }
@@ -445,43 +447,11 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                 } else {
                                     OpenRedditLink.openUrl(
                                             mContext,
-                                            comment.getDataNode().get("context").asText(),
+                                            comment.getDataNode().path("context").asText(),
                                             true);
                                 }
                             } else {
-                                comment.read = true;
-                                new AsyncSetRead(true).execute(comment);
-
-                                messageViewHolder.title.setTextColor(
-                                        messageViewHolder.content.getCurrentTextColor());
-                                {
-                                    SpannableStringBuilder b =
-                                            new SpannableStringBuilder(comment.getSubject());
-
-                                    if (comment.getDataNode().has("link_title")) {
-                                        SpannableStringBuilder link =
-                                                new SpannableStringBuilder(
-                                                        " "
-                                                                + CompatUtil.fromHtml(
-                                                                        comment.getDataNode()
-                                                                                .get("link_title")
-                                                                                .asText())
-                                                                + " ");
-                                        link.setSpan(
-                                                new StyleSpan(Typeface.BOLD_ITALIC),
-                                                0,
-                                                link.length(),
-                                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                        link.setSpan(
-                                                new RelativeSizeSpan(0.8f),
-                                                0,
-                                                link.length(),
-                                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-                                        b.append(link);
-                                    }
-                                    messageViewHolder.title.setText(b);
-                                }
+                                markReadAndRebind(messageViewHolder, comment, true);
                             }
                         }
                     }); // Set typeface for body
@@ -495,20 +465,39 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             }
             messageViewHolder.content.setTypeface(typeface);
 
-            setViews(
-                    comment.getDataNode().get("body_html").asText(),
-                    "FORCE_LINK_CLICK",
-                    messageViewHolder);
+            if (SettingValues.markdownNewReddit) {
+                setViewsMarkdown(
+                        comment.getDataNode().path("body").asText(),
+                        comment.getDataNode().path("body_html").asText(""),
+                        comment.getDataNode(),
+                        "FORCE_LINK_CLICK",
+                        messageViewHolder);
+            } else {
+                setViews(
+                        SubmissionParser.replaceProcessingImgPlaceholders(
+                                comment.getDataNode().path("body_html").asText(""),
+                                comment.getDataNode()),
+                        "FORCE_LINK_CLICK",
+                        messageViewHolder);
+            }
+
+            // For an unread message, make the body's links/images inert so that a tap anywhere on
+            // the row (including a link- or image-only body) bubbles up to the row's click listener
+            // and marks it read. Once read, the next bind leaves links live so taps open them.
+            if (!comment.isRead()) {
+                disableInlineLinkHandling(messageViewHolder.content);
+                disableInlineLinkHandling(messageViewHolder.commentOverflow);
+            }
         }
 
         if (viewHolder instanceof SpacerViewHolder) {
             viewHolder
                     .itemView
-                    .findViewById(R.id.height)
+                    .requireViewById(R.id.height)
                     .setLayoutParams(
                             new LinearLayout.LayoutParams(
                                     viewHolder.itemView.getWidth(),
-                                    ((Activity) mContext).findViewById(R.id.header).getHeight()));
+                                    ((Activity) mContext).requireViewById(R.id.header).getHeight()));
         }
     }
 
@@ -517,7 +506,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         final View dialoglayout = inflater.inflate(R.layout.edit_comment, null);
 
-        final EditText e = dialoglayout.findViewById(R.id.entry);
+        final EditText e = dialoglayout.requireViewById(R.id.entry);
 
         DoEditorActions.doActions(
                 e,
@@ -529,11 +518,14 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(mContext).setView(dialoglayout);
         final Dialog d = builder.create();
-        d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        if (d.getWindow() != null) {
+            d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        }
 
+        DialogUtil.matchDialogToCardBackground(d);
         d.show();
         dialoglayout
-                .findViewById(R.id.cancel)
+                .requireViewById(R.id.cancel)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -542,7 +534,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                             }
                         });
         dialoglayout
-                .findViewById(R.id.submit)
+                .requireViewById(R.id.submit)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -556,8 +548,6 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     private class AsyncReplyTask extends AsyncTask<Void, Void, Void> {
-        String trying;
-
         Message replyTo;
         String text;
 
@@ -568,21 +558,21 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         @Override
         protected Void doInBackground(Void... voids) {
-            sendMessage(null, null);
+            sendMessage();
 
             return null;
         }
 
         boolean sent;
 
-        public void sendMessage(Captcha captcha, String captchaAttempt) {
+        public void sendMessage() {
             try {
                 new net.dean.jraw.managers.AccountManager(Authentication.reddit)
                         .reply(replyTo, text);
                 sent = true;
-            } catch (ApiException e) {
+            } catch (ApiException | RuntimeException e) {
                 sent = false;
-                e.printStackTrace();
+                LogUtil.e(e, "InboxAdapter.sendMessage failed");
             }
         }
 
@@ -608,6 +598,60 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public static class SpacerViewHolder extends RecyclerView.ViewHolder {
         public SpacerViewHolder(View itemView) {
             super(itemView);
+        }
+    }
+
+    /** New Reddit-style rendering of an inbox item body via Markwon. See issue #179. */
+    private void setViewsMarkdown(
+            String rawMarkdown,
+            String bodyHtml,
+            JsonNode dataNode,
+            String subredditName,
+            MessageViewHolder holder) {
+        MarkdownImages.renderInto(
+                holder.content,
+                holder.commentOverflow,
+                subredditName,
+                rawMarkdown,
+                bodyHtml,
+                dataNode);
+    }
+
+    /**
+     * Sets a message's read state on the server and rebinds its row so the read state (color, NEW
+     * tag) and the body's link/image handling stay in sync, and bumps {@link Inbox#readGeneration}
+     * so sibling tabs refresh when next shown.
+     */
+    private void markReadAndRebind(MessageViewHolder holder, Message comment, boolean read) {
+        comment.read = read;
+        new AsyncSetRead(read).execute(comment);
+        Inbox.readGeneration++;
+
+        int pos = holder.getBindingAdapterPosition();
+        if (pos != RecyclerView.NO_POSITION) {
+            notifyItemChanged(pos);
+        }
+    }
+
+    /**
+     * Makes a rendered body inert to taps so they bubble to the row's click listener: strips the
+     * link-handling movement method from text views (so {@code URLSpan}s don't consume the tap) and
+     * disables clicks on standalone inline images (which set their own open-image listener, see
+     * {@link me.edgan.redditslide.util.CommentImageUtil#display}). Used for unread inbox items so a
+     * tap marks them read even when the body is entirely a link or image. The next bind after the
+     * message is read recreates the views with their handlers intact, so links/images work again.
+     */
+    private void disableInlineLinkHandling(View view) {
+        if (view instanceof TextView) {
+            ((TextView) view).setMovementMethod(null);
+        } else if (view instanceof ImageView) {
+            view.setClickable(false);
+        }
+        if (view instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) view;
+            for (int i = 0; i < group.getChildCount(); i++) {
+                disableInlineLinkHandling(group.getChildAt(i));
+            }
         }
     }
 
@@ -660,7 +704,18 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         @Override
         protected Void doInBackground(Message... params) {
-            new InboxManager(Authentication.reddit).setRead(b, params[0]);
+            try {
+                new InboxManager(Authentication.reddit).setRead(b, params[0]);
+                // Only once reddit has accepted the change: an optimistic write would drift the
+                // stored count away from the unread listing every time the call failed.
+                if (b) {
+                    InboxCount.decrement(Reddit.appRestart);
+                } else {
+                    InboxCount.increment(Reddit.appRestart);
+                }
+            } catch (RuntimeException e) {
+                // Connection failures surface as a bare RuntimeException (not NetworkException)
+            }
             return null;
         }
     }

@@ -7,8 +7,10 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 
 import java.util.Locale;
+import org.jspecify.annotations.NullMarked;
 
 /** Gen */
+@NullMarked
 public class NavigationUtils {
     public static int getStatusBarHeight(Context context) {
         int result = 0;
@@ -29,7 +31,10 @@ public class NavigationUtils {
         if (resourceId > 0) {
             result = context.getResources().getDimensionPixelSize(resourceId);
         } else if (hasNavBar(context)) {
-            DensityUtils.toDp(context, 48);
+            // toPx, and assigned: this fallback used to call toDp — which converts with
+            // COMPLEX_UNIT_PX and so returns its own argument — and then dropped the result, leaving
+            // 0 for a device that does have a nav bar.
+            result = DensityUtils.toPx(context, 48);
         }
 
         return result;

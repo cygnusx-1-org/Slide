@@ -33,7 +33,16 @@ cd
 captures
 
 *.bak
+*.swp
 
 crowdin.properties
 app/noGPlay/
 app/withGPlay/
+
+changelog_override.txt
+
+.claude
+
+backup/
+
+.kotlin

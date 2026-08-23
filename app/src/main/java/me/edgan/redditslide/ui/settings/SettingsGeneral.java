@@ -3,34 +3,38 @@ package me.edgan.redditslide.ui.settings;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
-
 import me.edgan.redditslide.Activities.BaseActivityAnim;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.StorageUtil;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 3/5/2015. */
+@NullMarked
 public class SettingsGeneral extends BaseActivityAnim implements StorageUtil.DirectoryChooserHost {
 
     private SettingsGeneralFragment fragment = new SettingsGeneralFragment(this);
-    private StorageUtil.OnDirectorySelectedListener directorySelectedListener;
+    @Nullable private StorageUtil.OnDirectorySelectedListener directorySelectedListener;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_general);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, R.string.settings_title_general, true, true);
 
-        ((ViewGroup) findViewById(R.id.settings_general))
+        ((ViewGroup) requireViewById(R.id.settings_general))
                 .addView(
                         getLayoutInflater()
                                 .inflate(R.layout.activity_settings_general_child, null));
@@ -98,24 +102,31 @@ public class SettingsGeneral extends BaseActivityAnim implements StorageUtil.Dir
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == StorageUtil.REQUEST_STORAGE_ACCESS && resultCode == Activity.RESULT_OK) {
+        if (requestCode == StorageUtil.REQUEST_STORAGE_ACCESS
+                && resultCode == Activity.RESULT_OK
+                && data != null) {
             Uri uri = data.getData();
+            if (uri == null) {
+                return;
+            }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                try {
-                    final int takeFlags =
-                            data.getFlags()
-                                    & (Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    getContentResolver().takePersistableUriPermission(uri, takeFlags);
-                } catch (Exception e) {
-                    LogUtil.e(
-                            e,
-                            "SlideStorage Error taking persistent permission: " + e.getMessage());
+            try {
+                final int dataFlags = data.getFlags();
+                int takeFlags = 0;
+                if ((dataFlags & Intent.FLAG_GRANT_READ_URI_PERMISSION) != 0) {
+                    takeFlags |= Intent.FLAG_GRANT_READ_URI_PERMISSION;
                 }
+                if ((dataFlags & Intent.FLAG_GRANT_WRITE_URI_PERMISSION) != 0) {
+                    takeFlags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+                }
+                getContentResolver().takePersistableUriPermission(uri, takeFlags);
+            } catch (Exception e) {
+                LogUtil.e(
+                        e,
+                        "SlideStorage Error taking persistent permission: " + e.getMessage());
             }
 
             StorageUtil.saveStorageUri(this, uri);
@@ -146,12 +157,35 @@ public class SettingsGeneral extends BaseActivityAnim implements StorageUtil.Dir
     }
 
     @Override
-    public void setDirectorySelectedListener(StorageUtil.OnDirectorySelectedListener listener) {
+    public void setDirectorySelectedListener(
+            @Nullable StorageUtil.OnDirectorySelectedListener listener) {
         this.directorySelectedListener = listener;
     }
 
     @Override
-    public StorageUtil.OnDirectorySelectedListener getDirectorySelectedListener() {
+    public @Nullable StorageUtil.OnDirectorySelectedListener getDirectorySelectedListener() {
         return directorySelectedListener;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // Forward permission results to our fragment
+        fragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Update viewtype display when returning from SettingsViewType
+        TextView viewTypeCurrentView = (TextView) findViewById(R.id.settings_general_viewtype_current);
+        if (viewTypeCurrentView != null) {
+            viewTypeCurrentView.setText(
+                    SettingValues.single
+                            ? (SettingValues.commentPager
+                                    ? getString(R.string.view_type_comments)
+                                    : getString(R.string.view_type_none))
+                            : getString(R.string.view_type_tabs));
+        }
     }
 }

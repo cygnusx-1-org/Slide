@@ -18,23 +18,23 @@ import android.webkit.WebView;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.afollestad.materialdialogs.MaterialDialog;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.neovisionaries.ws.client.WebSocket;
-import com.neovisionaries.ws.client.WebSocketAdapter;
-import com.neovisionaries.ws.client.WebSocketException;
-import com.neovisionaries.ws.client.WebSocketFactory;
-
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.R;
@@ -44,41 +44,42 @@ import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Views.SidebarLayout;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.CompatUtil;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.HttpUtil;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MaterialProgressDialog;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
 import me.edgan.redditslide.util.TwitterObject;
-
 import net.dean.jraw.managers.LiveThreadManager;
 import net.dean.jraw.models.LiveUpdate;
 import net.dean.jraw.paginators.LiveThreadPaginator;
-
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
+import org.jspecify.annotations.NullMarked;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
+@NullMarked
 public class LiveThread extends BaseActivityAnim {
 
     public static final String EXTRA_LIVEURL = "liveurl";
+    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
     public net.dean.jraw.models.LiveThread thread;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            case R.id.info:
-                ((DrawerLayout) findViewById(R.id.drawer_layout)).openDrawer(Gravity.RIGHT);
-                return true;
-            default:
-                return false;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            getOnBackPressedDispatcher().onBackPressed();
+            return true;
+        } else if (itemId == R.id.info) {
+            ((DrawerLayout) requireViewById(R.id.drawer_layout)).openDrawer(Gravity.RIGHT);
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -91,7 +92,6 @@ public class LiveThread extends BaseActivityAnim {
 
     public RecyclerView baseRecycler;
 
-    public String term;
 
     @Override
     public void onDestroy() {
@@ -99,24 +99,25 @@ public class LiveThread extends BaseActivityAnim {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         overrideSwipeFromAnywhere();
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         getWindow().getDecorView().setBackground(null);
         super.onCreate(savedInstanceState);
-
         applyColorTheme();
-
         setContentView(R.layout.activity_livethread);
-        baseRecycler = (RecyclerView) findViewById(R.id.content_view);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
+        baseRecycler = (RecyclerView) requireViewById(R.id.content_view);
         baseRecycler.setLayoutManager(new LinearLayoutManager(LiveThread.this));
         new AsyncTask<Void, Void, Void>() {
-            MaterialDialog d;
+            @SuppressWarnings("NullAway.Init") // assigned in onPreExecute
+            MaterialProgressDialog d;
 
             @Override
             public void onPreExecute() {
                 d =
-                        new MaterialDialog.Builder(LiveThread.this)
+                        new MaterialProgressDialog.Builder(LiveThread.this)
                                 .title(R.string.livethread_loading_title)
                                 .content(R.string.misc_please_wait)
                                 .progress(true, 100)
@@ -131,7 +132,8 @@ public class LiveThread extends BaseActivityAnim {
                             new LiveThreadManager(Authentication.reddit)
                                     .get(getIntent().getStringExtra(EXTRA_LIVEURL));
                 } catch (Exception e) {
-
+                    // A thread that will not load leaves `thread` null, which
+                    // onPostExecute already treats as the failure case.
                 }
                 return null;
             }
@@ -139,23 +141,23 @@ public class LiveThread extends BaseActivityAnim {
             @Override
             public void onPostExecute(Void aVoid) {
                 if (thread == null) {
-                    new AlertDialog.Builder(LiveThread.this)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(LiveThread.this)
                             .setTitle(R.string.livethread_not_found)
                             .setMessage(R.string.misc_please_try_again_soon)
                             .setPositiveButton(R.string.btn_ok, (dialog, which) -> finish())
                             .setOnDismissListener(dialog -> finish())
                             .setCancelable(false)
-                            .show();
+                            );
                 } else {
                     d.dismiss();
-                    setupAppBar(R.id.toolbar, thread.getTitle(), true, false);
-                    (findViewById(R.id.toolbar)).setBackgroundResource(R.color.md_red_300);
-                    (findViewById(R.id.header_sub)).setBackgroundResource(R.color.md_red_300);
+                    setupAppBar(R.id.toolbar, MiscUtil.orEmpty(thread.getTitle()), true, false);
+                    (requireViewById(R.id.toolbar)).setBackgroundResource(R.color.md_red_300);
+                    (requireViewById(R.id.header_sub)).setBackgroundResource(R.color.md_red_300);
                     themeSystemBars(
-                            Palette.getDarkerColor(getResources().getColor(R.color.md_red_300)));
+                            Palette.getDarkerColor(ContextCompat.getColor(LiveThread.this, R.color.md_red_300)));
                     setRecentBar(
                             getString(R.string.livethread_recents_title, thread.getTitle()),
-                            getResources().getColor(R.color.md_red_300));
+                            ContextCompat.getColor(LiveThread.this, R.color.md_red_300));
 
                     doPaginator();
                 }
@@ -163,7 +165,9 @@ public class LiveThread extends BaseActivityAnim {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
     ArrayList<LiveUpdate> updates;
+    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
     LiveThreadPaginator paginator;
 
     public void doPaginator() {
@@ -188,76 +192,71 @@ public class LiveThread extends BaseActivityAnim {
         baseRecycler.setAdapter(adapter);
         doLiveSidebar();
         if (thread.getWebsocketUrl() != null && !thread.getWebsocketUrl().isEmpty()) {
-            new AsyncTask<Void, Void, Void>() {
-                @Override
-                protected Void doInBackground(Void... params) {
-                    final ObjectReader o = new ObjectMapper().reader();
-
-                    try {
-                        WebSocket ws =
-                                new WebSocketFactory().createSocket(thread.getWebsocketUrl());
-                        ws.addListener(
-                                new WebSocketAdapter() {
-                                    @Override
-                                    public void onTextMessage(WebSocket websocket, String s) {
-                                        LogUtil.v("Recieved" + s);
-                                        if (s.contains("\"type\": \"update\"")) {
-                                            try {
-                                                LiveUpdate u =
-                                                        new LiveUpdate(
-                                                                o.readTree(s)
-                                                                        .get("payload")
-                                                                        .get("data"));
-                                                updates.add(0, u);
-                                                runOnUiThread(
-                                                        new Runnable() {
-                                                            @Override
-                                                            public void run() {
-                                                                adapter.notifyItemInserted(0);
-                                                                baseRecycler.smoothScrollToPosition(
-                                                                        0);
-                                                            }
-                                                        });
-                                            } catch (IOException e) {
-                                                e.printStackTrace();
-                                            }
-                                        } else if (s.contains("embeds_ready")) {
-                                            String node = updates.get(0).getDataNode().toString();
-                                            LogUtil.v("Getting");
-                                            try {
-                                                node =
-                                                        node.replace(
-                                                                "\"embeds\":[]",
-                                                                "\"embeds\":"
-                                                                        + o.readTree(s)
-                                                                                .get("payload")
-                                                                                .get("media_embeds")
-                                                                                .toString());
-                                                LiveUpdate u = new LiveUpdate(o.readTree(node));
-                                                updates.set(0, u);
-                                                runOnUiThread(
-                                                        new Runnable() {
-                                                            @Override
-                                                            public void run() {
-                                                                adapter.notifyItemChanged(0);
-                                                            }
-                                                        });
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                            }
-                                        } /* todoelse if(s.contains("delete")){
-                                              updates.remove(0);
-                                              adapter.notifyItemRemoved(0);
-                                          }*/
+            final ObjectReader o = new ObjectMapper().reader();
+            Request request = new Request.Builder().url(thread.getWebsocketUrl()).build();
+            // OkHttp connects on its own dispatcher thread; onMessage is delivered off the UI
+            // thread, so the view updates below are posted back via runOnUiThread.
+            Reddit.client.newWebSocket(
+                    request,
+                    new WebSocketListener() {
+                        @Override
+                        public void onMessage(WebSocket webSocket, String s) {
+                            LogUtil.v("Recieved" + s);
+                            if (s.contains("\"type\": \"update\"")) {
+                                try {
+                                    final JsonNode data =
+                                            o.readTree(s).path("payload").path("data");
+                                    // A malformed update carries no payload.data. JsonModel keeps
+                                    // whatever node it is handed, so such an update would be added
+                                    // to the list and then dereferenced by the adapter on the UI
+                                    // thread, out of reach of this catch.
+                                    if (!data.isObject()) {
+                                        LogUtil.v("Ignoring live update with no payload data");
+                                        return;
                                     }
-                                });
-                        ws.connect();
-                    } catch (IOException | WebSocketException e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                }
-            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                    LiveUpdate u = new LiveUpdate(data);
+                                    updates.add(0, u);
+                                    runOnUiThread(
+                                            new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    adapter.notifyItemInserted(0);
+                                                    baseRecycler.smoothScrollToPosition(0);
+                                                }
+                                            });
+                                } catch (IOException e) {
+                                    LogUtil.e(e, "LiveThread.run failed");
+                                }
+                            } else if (s.contains("embeds_ready")) {
+                                String node = updates.get(0).getDataNode().toString();
+                                LogUtil.v("Getting");
+                                try {
+                                    node =
+                                            node.replace(
+                                                    "\"embeds\":[]",
+                                                    "\"embeds\":"
+                                                            + o.readTree(s)
+                                                                    .path("payload")
+                                                                    .path("media_embeds")
+                                                                    .toString());
+                                    LiveUpdate u = new LiveUpdate(o.readTree(node));
+                                    updates.set(0, u);
+                                    runOnUiThread(
+                                            new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    adapter.notifyItemChanged(0);
+                                                }
+                                            });
+                                } catch (Exception e) {
+                                    LogUtil.e(e, "LiveThread.run failed");
+                                }
+                            } /* todoelse if(s.contains("delete")){
+                                  updates.remove(0);
+                                  adapter.notifyItemRemoved(0);
+                              }*/
+                        }
+                    });
         }
     }
 
@@ -284,12 +283,12 @@ public class LiveThread extends BaseActivityAnim {
                             + u.getAuthor()
                             + " "
                             + TimeUtils.getTimeAgo(u.getCreated().getTime(), LiveThread.this));
-            if (u.getBody().isEmpty()) {
+            if (MiscUtil.orEmpty(u.getBody()).isEmpty()) {
                 holder.info.setVisibility(View.GONE);
             } else {
                 holder.info.setVisibility(View.VISIBLE);
                 holder.info.setTextHtml(
-                        CompatUtil.fromHtml(u.getDataNode().get("body_html").asText()),
+                        CompatUtil.fromHtml(u.getDataNode().path("body_html").asText("")),
                         "NO SUBREDDIT");
             }
             holder.title.setOnClickListener(
@@ -304,10 +303,13 @@ public class LiveThread extends BaseActivityAnim {
             holder.imageArea.setVisibility(View.GONE);
             holder.twitterArea.setVisibility(View.GONE);
             holder.twitterArea.stopLoading();
-            if (u.getEmbeds().isEmpty()) {
+            // An embed carrying no url is as good as no embed at all: everything in the branch
+            // below needs a real one, and URI.create throws on a null rather than returning a
+            // Uri that the host tests could reject.
+            final String url = u.getEmbeds().isEmpty() ? null : u.getEmbeds().get(0).getUrl();
+            if (url == null) {
                 holder.go.setVisibility(View.GONE);
             } else {
-                final String url = u.getEmbeds().get(0).getUrl();
                 holder.go.setVisibility(View.VISIBLE);
                 holder.go.setOnClickListener(
                         new View.OnClickListener() {
@@ -349,7 +351,7 @@ public class LiveThread extends BaseActivityAnim {
             private Gson gson;
             String url;
             private WebView view;
-            TwitterObject twitter;
+            @Nullable TwitterObject twitter;
 
             public LoadTwitter(@NonNull WebView view, @NonNull String url) {
                 this.view = view;
@@ -366,10 +368,14 @@ public class LiveThread extends BaseActivityAnim {
                                     gson,
                                     "https://publish.twitter.com/oembed?url=" + url,
                                     null);
+                    if (result == null) {
+                        return;
+                    }
+
                     LogUtil.v("Got " + CompatUtil.fromHtml(result.toString()));
                     twitter = new ObjectMapper().readValue(result.toString(), TwitterObject.class);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LogUtil.e(e, "LiveThread.parseJson failed");
                 }
             }
 
@@ -406,11 +412,11 @@ public class LiveThread extends BaseActivityAnim {
 
             public ItemHolder(View itemView) {
                 super(itemView);
-                title = itemView.findViewById(R.id.title);
-                info = itemView.findViewById(R.id.body);
-                go = itemView.findViewById(R.id.go);
-                imageArea = itemView.findViewById(R.id.image_area);
-                twitterArea = itemView.findViewById(R.id.twitter_area);
+                title = itemView.requireViewById(R.id.title);
+                info = itemView.requireViewById(R.id.body);
+                go = itemView.requireViewById(R.id.go);
+                imageArea = itemView.requireViewById(R.id.image_area);
+                twitterArea = itemView.requireViewById(R.id.twitter_area);
                 twitterArea.setWebChromeClient(new WebChromeClient());
                 twitterArea.getSettings().setJavaScriptEnabled(true);
                 twitterArea.setBackgroundColor(Color.TRANSPARENT);
@@ -420,30 +426,30 @@ public class LiveThread extends BaseActivityAnim {
     }
 
     public void doLiveSidebar() {
-        findViewById(R.id.loader).setVisibility(View.GONE);
+        requireViewById(R.id.loader).setVisibility(View.GONE);
 
-        final View dialoglayout = findViewById(R.id.sidebarsub);
+        final View dialoglayout = requireViewById(R.id.sidebarsub);
 
-        dialoglayout.findViewById(R.id.sub_stuff).setVisibility(View.GONE);
+        dialoglayout.requireViewById(R.id.sub_stuff).setVisibility(View.GONE);
 
-        ((TextView) dialoglayout.findViewById(R.id.sub_infotitle))
+        ((TextView) dialoglayout.requireViewById(R.id.sub_infotitle))
                 .setText((thread.getState() ? "LIVE: " : "") + thread.getTitle());
-        ((TextView) dialoglayout.findViewById(R.id.active_users))
+        ((TextView) dialoglayout.requireViewById(R.id.active_users))
                 .setText(thread.getLocalizedViewerCount() + " viewing");
-        ((TextView) dialoglayout.findViewById(R.id.active_users))
+        ((TextView) dialoglayout.requireViewById(R.id.active_users))
                 .setText(thread.getLocalizedViewerCount());
 
         {
-            final String text = thread.getDataNode().get("resources_html").asText();
+            final String text = thread.getDataNode().path("resources_html").asText();
             final SpoilerRobotoTextView body =
-                    (SpoilerRobotoTextView) findViewById(R.id.sidebar_text);
-            CommentOverflow overflow = (CommentOverflow) findViewById(R.id.commentOverflow);
+                    (SpoilerRobotoTextView) requireViewById(R.id.sidebar_text);
+            CommentOverflow overflow = (CommentOverflow) requireViewById(R.id.commentOverflow);
             setViews(text, "none", body, overflow);
         }
         {
-            final String text = thread.getDataNode().get("description_html").asText();
-            final SpoilerRobotoTextView body = (SpoilerRobotoTextView) findViewById(R.id.sub_title);
-            CommentOverflow overflow = (CommentOverflow) findViewById(R.id.sub_title_overflow);
+            final String text = thread.getDataNode().path("description_html").asText();
+            final SpoilerRobotoTextView body = (SpoilerRobotoTextView) requireViewById(R.id.sub_title);
+            CommentOverflow overflow = (CommentOverflow) requireViewById(R.id.sub_title_overflow);
             setViews(text, "none", body, overflow);
         }
     }
@@ -476,7 +482,7 @@ public class LiveThread extends BaseActivityAnim {
             } else {
                 commentOverflow.setViews(blocks.subList(startIndex, blocks.size()), subreddit);
             }
-            SidebarLayout sidebar = (SidebarLayout) findViewById(R.id.drawer_layout);
+            SidebarLayout sidebar = (SidebarLayout) requireViewById(R.id.drawer_layout);
             for (int i = 0; i < commentOverflow.getChildCount(); i++) {
                 View maybeScrollable = commentOverflow.getChildAt(i);
                 if (maybeScrollable instanceof HorizontalScrollView) {

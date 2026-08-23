@@ -1,16 +1,28 @@
 package me.edgan.redditslide.Adapters;
 
 import android.os.AsyncTask;
-
+import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.fasterxml.jackson.databind.JsonNode;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Fragments.CommentPage;
 import me.edgan.redditslide.LastComments;
+import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.util.CommentImageUtil;
+import me.edgan.redditslide.util.CommentLimit;
+import me.edgan.redditslide.util.CommentVideoPreview;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
-
+import me.edgan.redditslide.util.SubmissionParser;
 import net.dean.jraw.http.RestResponse;
 import net.dean.jraw.http.SubmissionRequest;
 import net.dean.jraw.models.CommentNode;
@@ -19,27 +31,40 @@ import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.meta.SubmissionSerializer;
 import net.dean.jraw.util.JrawUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
-
 /** Created by ccrama on 9/17/2015. */
 public class SubmissionComments {
+
+    /**
+     * Move every "load more" placeholder at or below {@code depth} out of {@code waiting} and onto
+     * {@code comments}. {@code waiting} is ordered deepest-first, so this drains it in place.
+     */
+    private static void drainDeeperThan(
+            TreeMap<Integer, MoreChildItem> waiting, int depth, List<CommentObject> comments) {
+        Iterator<Map.Entry<Integer, MoreChildItem>> it = waiting.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Integer, MoreChildItem> entry = it.next();
+            if (entry.getKey() >= depth) {
+                comments.add(entry.getValue());
+                it.remove();
+            }
+        }
+    }
 
     public boolean single;
     public final SwipeRefreshLayout refreshLayout;
     private final String fullName;
     private final CommentPage page;
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     public ArrayList<CommentObject> comments;
     public HashMap<String, String> commentOPs = new HashMap<>();
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute/reloadSubmission
     public Submission submission;
+    @SuppressWarnings("NullAway.Init") // assigned in SubmissionComments
     private String context;
     private CommentSort defaultSorting = CommentSort.CONFIDENCE;
+    @SuppressWarnings("NullAway.Init") // assigned in loadMore/loadMoreReply
     private CommentAdapter adapter;
+    @SuppressWarnings("NullAway.Init") // assigned in loadMore/loadMoreReply/setSorting
     public LoadData mLoadData;
     public boolean online = true;
     int contextNumber = 5;
@@ -52,26 +77,18 @@ public class SubmissionComments {
 
         this.refreshLayout = layout;
 
-        if (s.getComments() != null) {
+        CommentNode baseComment = s.getComments();
+        if (baseComment != null) {
             submission = s;
-            CommentNode baseComment = s.getComments();
             comments = new ArrayList<>();
-            Map<Integer, MoreChildItem> waiting = new HashMap<>();
+            // Sorted descending, so it can be drained in place instead of copying it into a fresh
+            // reverse-ordered TreeMap for every comment in the tree.
+            TreeMap<Integer, MoreChildItem> waiting = new TreeMap<>(Collections.reverseOrder());
 
             for (CommentNode n : baseComment.walkTree()) {
 
                 CommentObject obj = new CommentItem(n);
-                List<Integer> removed = new ArrayList<>();
-                Map<Integer, MoreChildItem> map = new TreeMap<>(Collections.reverseOrder());
-                map.putAll(waiting);
-
-                for (Integer i : map.keySet()) {
-                    if (i >= n.getDepth()) {
-                        comments.add(waiting.get(i));
-                        removed.add(i);
-                        waiting.remove(i);
-                    }
-                }
+                drainDeeperThan(waiting, n.getDepth(), comments);
 
                 comments.add(obj);
 
@@ -79,12 +96,8 @@ public class SubmissionComments {
                     waiting.put(n.getDepth(), new MoreChildItem(n, n.getMoreChildren()));
                 }
             }
-            Map<Integer, MoreChildItem> map = new TreeMap<>(Collections.reverseOrder());
-            map.putAll(waiting);
-            for (Integer i : map.keySet()) {
-                comments.add(waiting.get(i));
-                waiting.remove(i);
-            }
+            comments.addAll(waiting.values());
+            waiting.clear();
             if (baseComment.hasMoreComments() && online) {
                 comments.add(new MoreChildItem(baseComment, baseComment.getMoreChildren()));
             }
@@ -138,6 +151,9 @@ public class SubmissionComments {
     public void loadMoreReply(CommentAdapter adapter) {
         this.adapter = adapter;
         adapter.currentSelectedItem = context;
+        // This runs right after the user posted or edited a comment, which is exactly the case a
+        // stale cache slot swallows -- so read a different slot than the load before it did.
+        page.advanceCommentLimitRotation();
         mLoadData = new LoadData(false);
         mLoadData.execute(fullName);
     }
@@ -171,6 +187,10 @@ public class SubmissionComments {
             sort = CommentSort.CONFIDENCE;
         args.put("sort", sort.name().toLowerCase(Locale.ENGLISH));
 
+        if (Authentication.reddit == null) {
+            throw new IllegalStateException("Not signed in");
+        }
+
         RestResponse response =
                 Authentication.reddit.execute(
                         Authentication.reddit
@@ -183,12 +203,23 @@ public class SubmissionComments {
     }
 
     public void reloadSubmission(CommentAdapter commentAdapter) {
+        if (Authentication.reddit == null) {
+            return;
+        }
+
         commentAdapter.submission =
-                Authentication.reddit.getSubmission(submission.getFullName().substring(3));
+                Authentication.reddit.getSubmission(MiscUtil.idFromFullname(submission.getFullName()));
     }
 
     public class LoadData extends AsyncTask<String, Void, ArrayList<CommentObject>> {
         final boolean reset;
+
+        /**
+         * Read on the posting thread, not in {@link #doInBackground}: the page advances the rotation
+         * before each fetch it starts, so a task that read it once it was already running could see
+         * a later fetch's value and send the same limit twice.
+         */
+        private final int limitRotation = page.getCommentLimitRotation();
 
         public LoadData(boolean reset) {
             this.reset = reset;
@@ -201,7 +232,7 @@ public class SubmissionComments {
                 page.doRefresh(false);
                 if ((submission.isArchived() && !page.archived)
                         || (submission.isLocked() && !page.locked)
-                        || (submission.getDataNode().get("contest_mode").asBoolean()
+                        || (submission.getDataNode().path("contest_mode").asBoolean()
                                 && !page.contest)) page.doTopBarNotify(submission, adapter);
 
                 page.doData(reset);
@@ -210,11 +241,24 @@ public class SubmissionComments {
         }
 
         @Override
-        protected ArrayList<CommentObject> doInBackground(String... subredditPaginators) {
+        protected @Nullable ArrayList<CommentObject> doInBackground(String... subredditPaginators) {
             SubmissionRequest.Builder builder;
             if (context == null) {
                 single = false;
-                builder = new SubmissionRequest.Builder(fullName).sort(defaultSorting);
+                // Always send an explicit limit, sized to the thread and never 200, so this fetch
+                // does not read the cache slot every client that omits the parameter shares -- the
+                // one that can hold a tree missing a comment entirely. See CommentLimit.
+                builder =
+                        new SubmissionRequest.Builder(fullName)
+                                .sort(defaultSorting)
+                                .limit(
+                                        CommentLimit.forCommentCount(
+                                                // The submission from the previous fetch carries the
+                                                // freshest count; before that, whatever the feed knew.
+                                                submission != null
+                                                        ? submission.getCommentCount()
+                                                        : page.getKnownCommentCount(),
+                                                limitRotation));
             } else {
                 single = true;
                 builder =
@@ -228,12 +272,19 @@ public class SubmissionComments {
                 JsonNode node = getSubmissionNode(builder.build());
                 submission = SubmissionSerializer.withComments(node, defaultSorting);
                 CommentNode baseComment = submission.getComments();
+                if (baseComment == null) {
+                    // A submission deserialized without a comment tree has nothing to walk.
+                    return new ArrayList<>();
+                }
 
                 /* if (page.o != null)
                 page.o.setCommentAndWrite(submission.getFullName(), node, submission).writeToMemory();*/
 
                 comments = new ArrayList<>();
-                Map<Integer, MoreChildItem> waiting = new HashMap<>();
+                // Sorted descending, so it can be drained in place instead of copying it into a
+                // fresh reverse-ordered TreeMap for every comment in the tree.
+                TreeMap<Integer, MoreChildItem> waiting =
+                        new TreeMap<>(Collections.reverseOrder());
                 commentOPs = new HashMap<>();
                 String currentOP = "";
 
@@ -243,17 +294,7 @@ public class SubmissionComments {
                     }
                     commentOPs.put(n.getComment().getId(), currentOP);
                     CommentObject obj = new CommentItem(n);
-                    List<Integer> removed = new ArrayList<>();
-                    Map<Integer, MoreChildItem> map = new TreeMap<>(Collections.reverseOrder());
-                    map.putAll(waiting);
-
-                    for (Integer i : map.keySet()) {
-                        if (i >= n.getDepth()) {
-                            comments.add(waiting.get(i));
-                            removed.add(i);
-                            waiting.remove(i);
-                        }
-                    }
+                    drainDeeperThan(waiting, n.getDepth(), comments);
 
                     comments.add(obj);
 
@@ -261,21 +302,65 @@ public class SubmissionComments {
                         waiting.put(n.getDepth(), new MoreChildItem(n, n.getMoreChildren()));
                     }
                 }
-                Map<Integer, MoreChildItem> map = new TreeMap<>(Collections.reverseOrder());
-                map.putAll(waiting);
-                for (Integer i : map.keySet()) {
-                    comments.add(waiting.get(i));
-                    waiting.remove(i);
-                }
+                comments.addAll(waiting.values());
+                waiting.clear();
                 if (baseComment.hasMoreComments()) {
                     comments.add(new MoreChildItem(baseComment, baseComment.getMoreChildren()));
                 }
+
+                // Download every inline comment image, and read every comment video's still frame,
+                // into the shared cache BEFORE the comments are shown (we're on a background
+                // thread), so each one is already cached and renders in place with its comment
+                // instead of popping in afterward.
+                preloadCommentMedia(comments);
 
                 return comments;
             } catch (Exception e) {
                 // Todo reauthenticate
             }
             return null;
+        }
+
+        private void preloadCommentMedia(List<CommentObject> built) {
+            try {
+                LinkedHashSet<String> urls = new LinkedHashSet<>();
+                LinkedHashSet<String> videos = new LinkedHashSet<>();
+                for (CommentObject o : built) {
+                    if (o == null || !o.isComment() || o.comment == null) {
+                        continue;
+                    }
+                    try {
+                        JsonNode dataNode = o.comment.getComment().getDataNode();
+                        String html =
+                                SubmissionParser.replaceProcessingImgPlaceholders(
+                                        dataNode.path("body_html").asText(""), dataNode);
+                        // Use the SAME extractor the renderer uses so the cache keys match exactly.
+                        urls.addAll(SubmissionParser.imageUrlsFor(html));
+                        videos.addAll(SubmissionParser.videoUrlsFor(html));
+                    } catch (Exception ignored) {
+                        // Skip comments we can't parse; they'll still load on bind.
+                    }
+                }
+                try {
+                    // The self-text renders above the comments through the same card, so its video
+                    // has to be warm by the time the header binds too.
+                    if (submission != null) {
+                        JsonNode dataNode = submission.getDataNode();
+                        videos.addAll(
+                                SubmissionParser.videoUrlsFor(
+                                        SubmissionParser.replaceProcessingImgPlaceholders(
+                                                dataNode.path("selftext_html").asText(""),
+                                                dataNode)));
+                    }
+                } catch (Exception ignored) {
+                    // Same as above: the card still reads its frame on bind.
+                }
+                CommentImageUtil.preloadBlocking(Reddit.getAppContext(), urls);
+                CommentVideoPreview.preloadBlocking(Reddit.getAppContext(), videos);
+            } catch (Exception ignored) {
+                // Preloading images is best-effort: on any failure the
+                // images still load when a comment binds.
+            }
         }
     }
 }

@@ -2,13 +2,11 @@ package me.edgan.redditslide.Visuals;
 
 import android.content.Context;
 import android.graphics.Color;
-
 import androidx.core.content.ContextCompat;
-
-import me.edgan.redditslide.R;
-
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
+import me.edgan.redditslide.R;
 
 /** Created by carlo_000 on 2/8/2016. */
 public class GetClosestColor {
@@ -177,6 +175,7 @@ public class GetClosestColor {
             colors.put(distance(base, i), i);
         }
 
-        return colors.get(colors.keySet().toArray()[0]);
+        // The key comes from the map's own keySet, so the lookup cannot miss.
+        return Objects.requireNonNull(colors.get(colors.keySet().toArray()[0]));
     }
 }

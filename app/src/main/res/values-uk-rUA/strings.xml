@@ -30,7 +30,6 @@
     <string name="font_size_tiny">Мінімальний</string>
     <!-- For editing the submission card layout -->
     <!-- Settings for Multi-column view -->
-    <string name="multi_column_landscape">Альбомна орієнтація</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Ти</string>
     <string name="drawer_support">Перейти на Pro</string>

@@ -5,13 +5,11 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-
 import androidx.drawerlayout.widget.DrawerLayout;
-
-import me.edgan.redditslide.R;
-
 import java.util.ArrayList;
 import java.util.List;
+import me.edgan.redditslide.R;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Drawer that allows for horizontal scrolling views.
@@ -21,6 +19,7 @@ import java.util.List;
  *
  * <p>Only supports R.id.commentOverflow for now, but could be updated to support any view.
  */
+@NullMarked
 public class SidebarLayout extends DrawerLayout {
     private List<View> scrollableViews = new ArrayList<>();
 
@@ -54,8 +53,8 @@ public class SidebarLayout extends DrawerLayout {
      */
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        View sidebarScrollView = findViewById(R.id.sidebar_scroll);
-        View commentOverflow = findViewById(R.id.commentOverflow);
+        View sidebarScrollView = requireViewById(R.id.sidebar_scroll);
+        View commentOverflow = requireViewById(R.id.commentOverflow);
         int yOffset = sidebarScrollView.getScrollY();
         for (View view : scrollableViews) {
             Rect rect = new Rect();

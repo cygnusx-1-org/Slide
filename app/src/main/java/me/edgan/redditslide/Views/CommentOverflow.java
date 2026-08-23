@@ -3,36 +3,59 @@ package me.edgan.redditslide.Views;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
-
+import android.widget.TextView;
+import androidx.annotation.Nullable;
 import com.devspark.robototextview.RobotoTypefaces;
-
+import java.util.List;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.FontPreferences;
+import me.edgan.redditslide.util.CommentImageUtil;
+import me.edgan.redditslide.util.CommentVideoPreview;
+import me.edgan.redditslide.util.CommentVideoUtil;
 import me.edgan.redditslide.util.DisplayUtil;
-
-import java.util.List;
+import me.edgan.redditslide.util.SubmissionParser;
+import org.jspecify.annotations.NullMarked;
 
 /** Class that provides methods to help bind submissions with multiple blocks of text. */
+@NullMarked
 public class CommentOverflow extends LinearLayout {
+    // Assigned by init(context), which every constructor calls.
+    @SuppressWarnings("NullAway.Init")
     private ColorPreferences colorPreferences;
-    private Typeface typeface = null;
+
+    @Nullable private Typeface typeface = null;
     private int textColor;
     private int fontSize;
     private static final MarginLayoutParams COLUMN_PARAMS;
     private static final MarginLayoutParams MARGIN_PARAMS;
     private static final MarginLayoutParams HR_PARAMS;
+
+    /** Metrics of the inline comment-video card. Fixed, so a card is the same size in every state. */
+    private static final int VIDEO_CARD_HEIGHT_DP = 200;
+
+    private static final int VIDEO_CARD_MARGIN_DP = 8;
+    private static final int VIDEO_CARD_PLAY_DP = 48;
+
+    /**
+     * Padding of the arrow's circular scrim. The arrow itself stays {@link #VIDEO_CARD_PLAY_DP};
+     * the scrim is what makes a white glyph readable over a bright preview frame.
+     */
+    private static final int VIDEO_CARD_PLAY_PADDING_DP = 12;
 
     static {
         COLUMN_PARAMS =
@@ -81,6 +104,26 @@ public class CommentOverflow extends LinearLayout {
     }
 
     /**
+     * Propagates the download base name (title_postId_commentId) to every text block so media
+     * links inside comment overflow blocks save with the same name as the rest of the comment.
+     * Call after {@link #setViews} has populated the children.
+     */
+    public void setDownloadName(String downloadName) {
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (child instanceof SpoilerRobotoTextView) {
+                ((SpoilerRobotoTextView) child).setDownloadName(downloadName);
+            } else if (child instanceof HorizontalScrollView
+                    && ((HorizontalScrollView) child).getChildCount() > 0) {
+                View inner = ((HorizontalScrollView) child).getChildAt(0);
+                if (inner instanceof SpoilerRobotoTextView) {
+                    ((SpoilerRobotoTextView) inner).setDownloadName(downloadName);
+                }
+            }
+        }
+    }
+
+    /**
      * Set the text for the corresponding views.
      *
      * @param blocks list of all blocks to be set
@@ -89,8 +132,25 @@ public class CommentOverflow extends LinearLayout {
     public void setViews(
             List<String> blocks,
             String subreddit,
-            OnClickListener click,
-            OnLongClickListener longClick) {
+            @Nullable OnClickListener click,
+            @Nullable OnLongClickListener longClick) {
+        beginBlocks();
+
+        if (!blocks.isEmpty()) {
+            setVisibility(View.VISIBLE);
+        }
+
+        for (String block : blocks) {
+            addBlock(block, subreddit, click, longClick);
+        }
+    }
+
+    /**
+     * Resolve the comment font settings and drop the previous bind's views, so the {@code add*Block}
+     * methods below can be called one at a time. {@link #setViews} does this for a whole block list;
+     * a caller that interleaves parsed text with blocks (the new-Reddit renderer) drives it itself.
+     */
+    public void beginBlocks() {
         Context context = getContext();
         int type = new FontPreferences(context).getFontTypeComment().getTypeface();
         if (type >= 0) {
@@ -113,49 +173,176 @@ public class CommentOverflow extends LinearLayout {
         fontSize = a.getDimensionPixelSize(0, -1);
         a.recycle();
         removeAllViews();
+    }
 
-        if (!blocks.isEmpty()) {
-            setVisibility(View.VISIBLE);
+    /**
+     * Adds an empty comment-styled text view as the next block and returns it, for a caller that
+     * supplies an already-parsed {@link android.text.Spanned} instead of html. {@link #beginBlocks}
+     * must have run first — that is what resolves the font, size and colour applied here.
+     */
+    public SpoilerRobotoTextView addTextBlock(
+            String subreddit,
+            @Nullable OnClickListener click,
+            @Nullable OnLongClickListener longClick) {
+        SpoilerRobotoTextView textView = new SpoilerRobotoTextView(getContext());
+        setStyle(textView, subreddit);
+        textView.setLayoutParams(MARGIN_PARAMS);
+        if (click != null) textView.setOnClickListener(click);
+        if (longClick != null) textView.setOnLongClickListener(longClick);
+        addView(textView);
+        return textView;
+    }
+
+    /** Adds one parsed block — table, image, video, rule, code or text. See {@link #beginBlocks}. */
+    public void addBlock(
+            String block,
+            String subreddit,
+            @Nullable OnClickListener click,
+            @Nullable OnLongClickListener longClick) {
+        Context context = getContext();
+        if (block.startsWith("<table>")) {
+            HorizontalScrollView scrollView = new HorizontalScrollView(context);
+            scrollView.setScrollbarFadingEnabled(false);
+            TableLayout table = formatTable(block, subreddit, click, longClick);
+            scrollView.setLayoutParams(MARGIN_PARAMS);
+            table.setPaddingRelative(0, 0, 0, DisplayUtil.dpToPxVertical(10));
+            scrollView.addView(table);
+            addView(scrollView);
+        } else if (block.startsWith(SubmissionParser.IMAGE_BLOCK_PREFIX)) {
+            // A standalone inline comment image: render a real, pre-sized ImageView (loaded
+            // from the shared cache) so the image is in place with no placeholder and no reflow.
+            String url = block.substring(SubmissionParser.IMAGE_BLOCK_PREFIX.length());
+            MaxHeightImageView imageView = new MaxHeightImageView(context);
+            LinearLayout.LayoutParams imageParams =
+                    new LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
+            imageParams.setMargins(0, 16, 0, 16);
+            imageView.setLayoutParams(imageParams);
+            CommentImageUtil.display(imageView, url, subreddit);
+            if (longClick != null) imageView.setOnLongClickListener(longClick);
+            addView(imageView);
+        } else if (block.startsWith(SubmissionParser.VIDEO_BLOCK_PREFIX)) {
+            addVideoCard(context, block, subreddit, longClick);
+        } else if (block.equals("<hr/>")) {
+            View line = new View(context);
+            line.setLayoutParams(HR_PARAMS);
+            line.setBackgroundColor(textColor);
+            line.setAlpha(0.6f);
+            addView(line);
+        } else if (block.startsWith("<pre>")) {
+            HorizontalScrollView scrollView = new HorizontalScrollView(context);
+            scrollView.setScrollbarFadingEnabled(false);
+            SpoilerRobotoTextView newTextView = new SpoilerRobotoTextView(context);
+            newTextView.setTextHtml(block, subreddit);
+            setStyle(newTextView, subreddit);
+            scrollView.setLayoutParams(MARGIN_PARAMS);
+            newTextView.setPaddingRelative(0, 0, 0, DisplayUtil.dpToPxVertical(10));
+            scrollView.addView(newTextView);
+            if (click != null) newTextView.setOnClickListener(click);
+            if (longClick != null) newTextView.setOnLongClickListener(longClick);
+            addView(scrollView);
+
+        } else {
+            SpoilerRobotoTextView newTextView = new SpoilerRobotoTextView(context);
+            newTextView.setTextHtml(block, subreddit);
+            setStyle(newTextView, subreddit);
+            newTextView.setLayoutParams(MARGIN_PARAMS);
+            if (click != null) newTextView.setOnClickListener(click);
+            if (longClick != null) newTextView.setOnLongClickListener(longClick);
+            addView(newTextView);
+        }
+    }
+
+    /**
+     * dp to px against the display's density. {@link DisplayUtil} converts against the physical
+     * xdpi/ydpi instead, which are not the same number on every device — the card would be inset
+     * further on one axis than the other.
+     */
+    private static int dp(Context context, int dp) {
+        return Math.round(
+                TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        dp,
+                        context.getResources().getDisplayMetrics()));
+    }
+
+    /**
+     * Draws a video uploaded through Reddit's comment composer as a static card: a full-width black
+     * rounded rectangle with a centered play arrow, and — only when Reddit gave a caption that is
+     * something other than the link itself — that caption on its own line underneath. Tapping the
+     * card opens the same full-screen player a tap on the link would.
+     *
+     * <p>The card's size and margins never depend on the caption, so it lands on identical pixels
+     * whether or not one is shown, and whether it is a comment's first block or a later one.
+     */
+    private void addVideoCard(
+            Context context,
+            String block,
+            String subreddit,
+            @Nullable OnLongClickListener longClick) {
+        final String url = SubmissionParser.videoUrlOf(block);
+        final String caption = SubmissionParser.videoCaptionOf(block);
+
+        LinearLayout container = new LinearLayout(context);
+        container.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams containerParams =
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        containerParams.setMargins(0, 16, 0, 16);
+        container.setLayoutParams(containerParams);
+
+        FrameLayout card = new FrameLayout(context);
+        LinearLayout.LayoutParams cardParams =
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, dp(context, VIDEO_CARD_HEIGHT_DP));
+        int margin = dp(context, VIDEO_CARD_MARGIN_DP);
+        cardParams.setMargins(margin, margin, margin, margin);
+        card.setLayoutParams(cardParams);
+        card.setBackgroundResource(R.drawable.comment_video_card);
+        // The rounded background supplies the outline, so this clips the preview frame to the
+        // card's corners instead of letting it square them off.
+        card.setClipToOutline(true);
+
+        // Added before the arrow so it draws underneath. It stays invisible until a frame is read;
+        // a video that yields none just leaves the card its flat fill.
+        ImageView preview = new ImageView(context);
+        preview.setLayoutParams(
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        preview.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        card.addView(preview);
+        CommentVideoPreview.load(preview, url);
+
+        ImageView play = new ImageView(context);
+        int playPadding = dp(context, VIDEO_CARD_PLAY_PADDING_DP);
+        int playSize = dp(context, VIDEO_CARD_PLAY_DP) + playPadding * 2;
+        play.setLayoutParams(new FrameLayout.LayoutParams(playSize, playSize, Gravity.CENTER));
+        play.setPadding(playPadding, playPadding, playPadding, playPadding);
+        play.setBackgroundResource(R.drawable.comment_video_play_scrim);
+        play.setImageResource(R.drawable.ic_play_arrow);
+        play.setColorFilter(Color.WHITE);
+        play.setContentDescription(context.getString(R.string.comment_video_play));
+        card.addView(play);
+
+        card.setOnClickListener(v -> CommentVideoUtil.open(context, url, subreddit));
+        if (longClick != null) card.setOnLongClickListener(longClick);
+        container.addView(card);
+
+        if (!caption.isEmpty()) {
+            TextView captionView = new TextView(context);
+            captionView.setLayoutParams(
+                    new LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT));
+            captionView.setText(caption);
+            captionView.setTextColor(textColor);
+            captionView.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize);
+            if (typeface != null) captionView.setTypeface(typeface);
+            container.addView(captionView);
         }
 
-        for (String block : blocks) {
-            if (block.startsWith("<table>")) {
-                HorizontalScrollView scrollView = new HorizontalScrollView(context);
-                scrollView.setScrollbarFadingEnabled(false);
-                TableLayout table = formatTable(block, subreddit, click, longClick);
-                scrollView.setLayoutParams(MARGIN_PARAMS);
-                table.setPaddingRelative(0, 0, 0, DisplayUtil.dpToPxVertical(10));
-                scrollView.addView(table);
-                addView(scrollView);
-            } else if (block.equals("<hr/>")) {
-                View line = new View(context);
-                line.setLayoutParams(HR_PARAMS);
-                line.setBackgroundColor(textColor);
-                line.setAlpha(0.6f);
-                addView(line);
-            } else if (block.startsWith("<pre>")) {
-                HorizontalScrollView scrollView = new HorizontalScrollView(context);
-                scrollView.setScrollbarFadingEnabled(false);
-                SpoilerRobotoTextView newTextView = new SpoilerRobotoTextView(context);
-                newTextView.setTextHtml(block, subreddit);
-                setStyle(newTextView, subreddit);
-                scrollView.setLayoutParams(MARGIN_PARAMS);
-                newTextView.setPaddingRelative(0, 0, 0, DisplayUtil.dpToPxVertical(10));
-                scrollView.addView(newTextView);
-                if (click != null) newTextView.setOnClickListener(click);
-                if (longClick != null) newTextView.setOnLongClickListener(longClick);
-                addView(scrollView);
-
-            } else {
-                SpoilerRobotoTextView newTextView = new SpoilerRobotoTextView(context);
-                newTextView.setTextHtml(block, subreddit);
-                setStyle(newTextView, subreddit);
-                newTextView.setLayoutParams(MARGIN_PARAMS);
-                if (click != null) newTextView.setOnClickListener(click);
-                if (longClick != null) newTextView.setOnLongClickListener(longClick);
-                addView(newTextView);
-            }
-        }
+        addView(container);
     }
 
     /*todo: possibly fix tapping issues, better method required (this disables scrolling the HorizontalScrollView)
@@ -169,7 +356,10 @@ public class CommentOverflow extends LinearLayout {
     }
 
     private TableLayout formatTable(
-            String text, String subreddit, OnClickListener click, OnLongClickListener longClick) {
+            String text,
+            String subreddit,
+            @Nullable OnClickListener click,
+            @Nullable OnLongClickListener longClick) {
         TableRow.LayoutParams rowParams =
                 new TableRow.LayoutParams(
                         TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);

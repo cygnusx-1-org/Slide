@@ -8,15 +8,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
-
+import java.util.Locale;
 import me.edgan.redditslide.Adapters.ContributionAdapter;
 import me.edgan.redditslide.Adapters.SubredditSearchPosts;
 import me.edgan.redditslide.Constants;
@@ -27,18 +24,19 @@ import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.handler.ToolbarScrollHideHandler;
 import me.edgan.redditslide.util.CompatUtil;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.MaterialInputDialog;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SortingUtil;
 import me.edgan.redditslide.util.TimeUtils;
-
 import net.dean.jraw.paginators.SubmissionSearchPaginator;
 import net.dean.jraw.paginators.TimePeriod;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.jspecify.annotations.NullMarked;
 
-import java.util.Locale;
-
+@NullMarked
 public class Search extends BaseActivityAnim {
 
     public static final String EXTRA_TERM = "term";
@@ -54,16 +52,19 @@ public class Search extends BaseActivityAnim {
     private int totalItemCount;
     private int visibleItemCount;
     private int pastVisiblesItems;
+    @SuppressWarnings("NullAway.Init") // assigned in the run() posted from onCreate
     private ContributionAdapter adapter;
 
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate/onOptionsItemSelected
     private String where;
-    private String subreddit;
+    private String subreddit = "";
     //    private String site;
     //    private String url;
     //    private boolean self;
     //    private boolean nsfw;
     //    private String author;
 
+    @SuppressWarnings("NullAway.Init") // assigned in the run() posted from onCreate
     private SubredditSearchPosts posts;
 
     @Override
@@ -112,7 +113,7 @@ public class Search extends BaseActivityAnim {
                         // When the .name() is returned for both of the ENUMs, it will be in all
                         // caps.
                         // So, make it lowercase, then capitalize the first letter of each.
-                        getSupportActionBar()
+                        java.util.Objects.requireNonNull(getSupportActionBar())
                                 .setSubtitle(
                                         StringUtils.capitalize(
                                                         SortingUtil.search
@@ -123,13 +124,13 @@ public class Search extends BaseActivityAnim {
                                                         time.name().toLowerCase(Locale.ENGLISH)));
                     }
                 };
-        new AlertDialog.Builder(Search.this)
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(Search.this)
                 .setTitle(R.string.sorting_time_choose)
                 .setSingleChoiceItems(
                         SortingUtil.getSortingTimesStrings(),
                         SortingUtil.getSortingSearchId(this),
                         l2)
-                .show();
+                );
     }
 
     public void openSearchTypePopup() {
@@ -157,7 +158,7 @@ public class Search extends BaseActivityAnim {
                         // When the .name() is returned for both of the ENUMs, it will be in all
                         // caps.
                         // So, make it lowercase, then capitalize the first letter of each.
-                        getSupportActionBar()
+                        java.util.Objects.requireNonNull(getSupportActionBar())
                                 .setSubtitle(
                                         StringUtils.capitalize(
                                                         SortingUtil.search
@@ -168,146 +169,146 @@ public class Search extends BaseActivityAnim {
                                                         time.name().toLowerCase(Locale.ENGLISH)));
                     }
                 };
-        new AlertDialog.Builder(Search.this)
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(Search.this)
                 .setTitle(R.string.sorting_choose)
                 .setSingleChoiceItems(SortingUtil.getSearch(), SortingUtil.getSearchType(), l2)
-                .show();
+                );
     }
 
+    @SuppressWarnings("NullAway.Init") // assigned in onClick/onCreate
     public TimePeriod time;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            case R.id.time:
-                openTimeFramePopup();
-                return true;
-            case R.id.edit:
-                MaterialDialog.Builder builder =
-                        new MaterialDialog.Builder(this)
-                                .title(R.string.search_title)
-                                .alwaysCallInputCallback()
-                                .input(
-                                        getString(R.string.search_msg),
-                                        where,
-                                        new MaterialDialog.InputCallback() {
-                                            @Override
-                                            public void onInput(
-                                                    MaterialDialog materialDialog,
-                                                    CharSequence charSequence) {
-                                                where = charSequence.toString();
-                                            }
-                                        });
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            getOnBackPressedDispatcher().onBackPressed();
+            return true;
+        } else if (itemId == R.id.time) {
+            openTimeFramePopup();
+            return true;
+        } else if (itemId == R.id.edit) {
+            MaterialInputDialog.Builder builder =
+                    new MaterialInputDialog.Builder(this)
+                            .title(R.string.search_title)
+                            .input(
+                                    getString(R.string.search_msg),
+                                    where,
+                                    (dialog, charSequence) -> where = charSequence.toString());
 
-                // Add "search current sub" if it is not frontpage/all/random
-                builder.positiveText("Search")
-                        .onPositive(
-                                new MaterialDialog.SingleButtonCallback() {
-                                    @Override
-                                    public void onClick(
-                                            @NonNull MaterialDialog materialDialog,
-                                            @NonNull DialogAction dialogAction) {
-                                        Intent i = new Intent(Search.this, Search.class);
-                                        i.putExtra(Search.EXTRA_TERM, where);
-                                        if (multireddit) {
-                                            i.putExtra(Search.EXTRA_MULTIREDDIT, subreddit);
-                                        } else {
-                                            i.putExtra(Search.EXTRA_SUBREDDIT, subreddit);
-                                        }
-                                        startActivity(i);
-                                        overridePendingTransition(0, 0);
-                                        finish();
-                                        overridePendingTransition(0, 0);
-                                    }
-                                });
-                builder.show();
-                return true;
-            case R.id.sort:
-                openSearchTypePopup();
-                return true;
+            // Add "search current sub" if it is not frontpage/all/random
+            builder.positiveText("Search")
+                    .onPositive(
+                            dialog -> {
+                                Intent i = new Intent(Search.this, Search.class);
+                                i.putExtra(Search.EXTRA_TERM, where);
+                                if (multireddit) {
+                                    i.putExtra(Search.EXTRA_MULTIREDDIT, subreddit);
+                                } else {
+                                    i.putExtra(Search.EXTRA_SUBREDDIT, subreddit);
+                                }
+                                startActivity(i);
+                                overridePendingTransition(0, 0);
+                                finish();
+                                overridePendingTransition(0, 0);
+                            });
+            builder.show();
+            return true;
+        } else if (itemId == R.id.sort) {
+            openSearchTypePopup();
+            return true;
         }
         return false;
     }
 
     public boolean multireddit;
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     RecyclerView rv;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         overrideSwipeFromAnywhere();
         super.onCreate(savedInstanceState);
 
         applyColorTheme("");
         setContentView(R.layout.activity_search);
-        where = getIntent().getExtras().getString(EXTRA_TERM, "");
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
+        Bundle extras = getIntent().getExtras();
+        if (extras == null) {
+            finish();
+            return;
+        }
+        where = extras.getString(EXTRA_TERM, "");
 
         time = TimePeriod.ALL;
 
         if (getIntent().hasExtra(EXTRA_MULTIREDDIT)) {
             multireddit = true;
-            subreddit = getIntent().getExtras().getString(EXTRA_MULTIREDDIT);
+            subreddit = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_MULTIREDDIT));
         } else {
             if (getIntent().hasExtra(EXTRA_AUTHOR)) {
-                where = where + "&author=" + getIntent().getExtras().getString(EXTRA_AUTHOR);
+                where = where + "&author=" + getIntent().getStringExtra(EXTRA_AUTHOR);
             }
             if (getIntent().hasExtra(EXTRA_NSFW)) {
                 where =
                         where
                                 + "&nsfw="
-                                + (getIntent().getExtras().getBoolean(EXTRA_NSFW) ? "yes" : "no");
+                                + (getIntent().getBooleanExtra(EXTRA_NSFW, false) ? "yes" : "no");
             }
             if (getIntent().hasExtra(EXTRA_SELF)) {
                 where =
                         where
                                 + "&selftext="
-                                + (getIntent().getExtras().getBoolean(EXTRA_SELF) ? "yes" : "no");
+                                + (getIntent().getBooleanExtra(EXTRA_SELF, false) ? "yes" : "no");
             }
             if (getIntent().hasExtra(EXTRA_SITE)) {
-                where = where + "&site=" + getIntent().getExtras().getString(EXTRA_SITE);
+                where = where + "&site=" + getIntent().getStringExtra(EXTRA_SITE);
             }
             if (getIntent().hasExtra(EXTRA_URL)) {
-                where = where + "&url=" + getIntent().getExtras().getString(EXTRA_URL);
+                where = where + "&url=" + getIntent().getStringExtra(EXTRA_URL);
             }
             if (getIntent().hasExtra(EXTRA_TIME)) {
                 TimePeriod timePeriod =
-                        TimeUtils.stringToTimePeriod(getIntent().getExtras().getString(EXTRA_TIME));
+                        TimeUtils.stringToTimePeriod(
+                                MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_TIME)));
                 if (timePeriod != null) {
                     time = timePeriod;
                 }
             }
 
-            subreddit = getIntent().getExtras().getString(EXTRA_SUBREDDIT, "");
+            subreddit = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_SUBREDDIT));
         }
 
         where = StringEscapeUtils.unescapeHtml4(where);
 
         setupSubredditAppBar(R.id.toolbar, "Search", true, subreddit.toLowerCase(Locale.ENGLISH));
 
-        getSupportActionBar().setTitle(CompatUtil.fromHtml(where));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            java.util.Objects.requireNonNull(getSupportActionBar()).setTitle(CompatUtil.fromHtml(where));
+            java.util.Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        }
         assert mToolbar != null; // it won't be, trust me
-        mToolbar.setNavigationOnClickListener(
+        requireToolbar().setNavigationOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        onBackPressed(); // Simulate a system's "Back" button functionality.
+                        getOnBackPressedDispatcher().onBackPressed(); // Simulate a system's "Back" button functionality.
                     }
                 });
-        mToolbar.setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
+        requireToolbar().setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
 
         // When the .name() is returned for both of the ENUMs, it will be in all caps.
         // So, make it lowercase, then capitalize the first letter of each.
-        getSupportActionBar()
+        java.util.Objects.requireNonNull(getSupportActionBar())
                 .setSubtitle(
                         StringUtils.capitalize(
                                         SortingUtil.search.name().toLowerCase(Locale.ENGLISH))
                                 + " › "
                                 + StringUtils.capitalize(time.name().toLowerCase(Locale.ENGLISH)));
 
-        rv = ((RecyclerView) findViewById(R.id.vertical_content));
+        rv = ((RecyclerView) requireViewById(R.id.vertical_content));
         final RecyclerView.LayoutManager mLayoutManager =
                 createLayoutManager(
                         LayoutUtils.getNumColumns(
@@ -315,12 +316,12 @@ public class Search extends BaseActivityAnim {
         rv.setLayoutManager(mLayoutManager);
 
         rv.addOnScrollListener(
-                new ToolbarScrollHideHandler(mToolbar, findViewById(R.id.header)) {
+                new ToolbarScrollHideHandler(requireToolbar(), requireViewById(R.id.header)) {
                     @Override
                     public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                         super.onScrolled(recyclerView, dx, dy);
 
-                        visibleItemCount = rv.getLayoutManager().getChildCount();
+                        visibleItemCount = java.util.Objects.requireNonNull(rv.getLayoutManager()).getChildCount();
                         totalItemCount = rv.getLayoutManager().getItemCount();
                         if (rv.getLayoutManager() instanceof PreCachingLayoutManager) {
                             pastVisiblesItems =
@@ -345,7 +346,7 @@ public class Search extends BaseActivityAnim {
                     }
                 });
         final SwipeRefreshLayout mSwipeRefreshLayout =
-                (SwipeRefreshLayout) findViewById(R.id.activity_main_swipe_refresh_layout);
+                (SwipeRefreshLayout) requireViewById(R.id.activity_main_swipe_refresh_layout);
 
         mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors(subreddit, this));
 
@@ -389,7 +390,7 @@ public class Search extends BaseActivityAnim {
         final int currentOrientation = newConfig.orientation;
 
         final CatchStaggeredGridLayoutManager mLayoutManager =
-                (CatchStaggeredGridLayoutManager) rv.getLayoutManager();
+                (CatchStaggeredGridLayoutManager) java.util.Objects.requireNonNull(rv.getLayoutManager());
 
         mLayoutManager.setSpanCount(LayoutUtils.getNumColumns(currentOrientation, Search.this));
     }

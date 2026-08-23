@@ -32,8 +32,6 @@
     <!-- For editing the submission card layout -->
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Multi-kolom</string>
-    <string name="multi_column_landscape">Landskap</string>
-    <string name="multi_column_portrait">Dubbel kolomme in portret mode</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Jy</string>
     <string name="drawer_support">Gaan Pro</string>

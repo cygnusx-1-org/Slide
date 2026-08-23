@@ -8,9 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
 import androidx.recyclerview.widget.RecyclerView;
-
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Activities.SubredditView;
 import me.edgan.redditslide.Fragments.SubredditListView;
 import me.edgan.redditslide.R;
@@ -19,92 +19,32 @@ import me.edgan.redditslide.Views.CatchStaggeredGridLayoutManager;
 import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.SubmissionParser;
-
 import net.dean.jraw.models.Subreddit;
 
-import java.util.List;
-import java.util.Locale;
+public class SubredditAdapter extends PaginatedListAdapter {
 
-public class SubredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-        implements BaseAdapter {
-
-    private final RecyclerView listView;
     public Activity context;
     public SubredditNames dataSet;
-    private final int LOADING_SPINNER = 5;
-    private final int NO_MORE = 3;
-    private final int SPACER = 6;
     SubredditListView displayer;
 
     public SubredditAdapter(
             Activity context,
             SubredditNames dataSet,
             RecyclerView listView,
-            String where,
             SubredditListView displayer) {
-        String where1 = where.toLowerCase(Locale.ENGLISH);
-        this.listView = listView;
+        super(listView);
         this.dataSet = dataSet;
         this.context = context;
         this.displayer = displayer;
     }
 
-    @Override
-    public void setError(Boolean b) {
-        listView.setAdapter(new ErrorAdapter());
-    }
 
-    @Override
-    public void undoSetError() {
-        listView.setAdapter(this);
-    }
 
-    @Override
-    public int getItemViewType(int position) {
-        if (position <= 0 && !dataSet.posts.isEmpty()) {
-            return SPACER;
-        } else if (!dataSet.posts.isEmpty()) {
-            position -= (1);
-        }
-        if (position == dataSet.posts.size() && !dataSet.posts.isEmpty() && !dataSet.nomore) {
-            return LOADING_SPINNER;
-        } else if (position == dataSet.posts.size() && dataSet.nomore) {
-            return NO_MORE;
-        }
-        return 1;
-    }
 
-    int tag = 1;
 
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        tag++;
-
-        if (i == SPACER) {
-            View v =
-                    LayoutInflater.from(viewGroup.getContext())
-                            .inflate(R.layout.spacer, viewGroup, false);
-            return new SpacerViewHolder(v);
-
-        } else if (i == LOADING_SPINNER) {
-            View v =
-                    LayoutInflater.from(viewGroup.getContext())
-                            .inflate(R.layout.loadingmore, viewGroup, false);
-            return new SubmissionFooterViewHolder(v);
-        } else if (i == NO_MORE) {
-            View v =
-                    LayoutInflater.from(viewGroup.getContext())
-                            .inflate(R.layout.nomoreposts, viewGroup, false);
-            return new SubmissionFooterViewHolder(v);
-        } else {
-            View v =
-                    LayoutInflater.from(viewGroup.getContext())
-                            .inflate(R.layout.subfordiscover, viewGroup, false);
-            return new SubredditViewHolder(v);
-        }
-    }
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder2, final int pos) {
@@ -127,7 +67,7 @@ public class SubredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             holder.color.setBackgroundResource(R.drawable.circle);
             BlendModeUtil.tintDrawableAsModulate(
                     holder.color.getBackground(),
-                    Palette.getColor(sub.getDisplayName().toLowerCase(Locale.ENGLISH)));
+                    Palette.getColor(MiscUtil.orEmpty(sub.getDisplayName()).toLowerCase(Locale.ENGLISH)));
             holder.itemView.setOnClickListener(
                     new OnSingleClickListener() {
                         @Override
@@ -155,15 +95,19 @@ public class SubredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                             context.startActivityForResult(inte, 4);
                         }
                     });
-            if (sub.getDataNode().get("public_description_html").asText().equals("null")) {
+            final String description =
+                    sub.getDataNode().path("public_description_html").asText();
+            // An absent key reads as empty here rather than throwing, and an empty description
+            // hides the body for the same reason reddit's literal "null" does.
+            if (description.isEmpty() || description.equals("null")) {
                 holder.body.setVisibility(View.GONE);
                 holder.overflow.setVisibility(View.GONE);
             } else {
                 holder.body.setVisibility(View.VISIBLE);
                 holder.overflow.setVisibility(View.VISIBLE);
                 setViews(
-                        sub.getDataNode().get("public_description_html").asText().trim(),
-                        sub.getDisplayName().toLowerCase(Locale.ENGLISH),
+                        description.trim(),
+                        MiscUtil.orEmpty(sub.getDisplayName()).toLowerCase(Locale.ENGLISH),
                         holder.body,
                         holder.overflow);
             }
@@ -180,7 +124,7 @@ public class SubredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
             final Runnable r =
                     new Runnable() {
-                        public void run() {
+                        @Override public void run() {
                             notifyItemChanged(
                                     dataSet.posts.size() + 1); // the loading spinner to replaced by
                             // nomoreposts.xml
@@ -193,10 +137,10 @@ public class SubredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
         }
         if (holder2 instanceof SpacerViewHolder) {
-            final int height = (context).findViewById(R.id.header).getHeight();
+            final int height = (context).requireViewById(R.id.header).getHeight();
 
             holder2.itemView
-                    .findViewById(R.id.height)
+                    .requireViewById(R.id.height)
                     .setLayoutParams(
                             new LinearLayout.LayoutParams(holder2.itemView.getWidth(), height));
             if (listView.getLayoutManager() instanceof CatchStaggeredGridLayoutManager) {
@@ -209,17 +153,7 @@ public class SubredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    public static class SubmissionFooterViewHolder extends RecyclerView.ViewHolder {
-        public SubmissionFooterViewHolder(View itemView) {
-            super(itemView);
-        }
-    }
 
-    public static class SpacerViewHolder extends RecyclerView.ViewHolder {
-        public SpacerViewHolder(View itemView) {
-            super(itemView);
-        }
-    }
 
     @Override
     public int getItemCount() {
@@ -241,25 +175,43 @@ public class SubredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         List<String> blocks = SubmissionParser.getBlocks(rawHTML);
 
-        int startIndex = 0;
-        // the <div class="md"> case is when the body contains a table or code block first
-        if (!blocks.get(0).equals("<div class=\"md\">")) {
+        // In the Discover list we only show a short preview: the first text block. Rendering the
+        // remaining blocks (horizontal rules, link lists, tables and other sidebar content) caused
+        // large amounts of empty/dead space for subreddits with rich descriptions such as
+        // r/Deltarune, so the overflow is intentionally skipped here.
+        // The <div class="md"> case is when the description leads with a table or code block.
+        if (!blocks.isEmpty() && !blocks.get(0).equals("<div class=\"md\">")) {
             firstTextView.setVisibility(View.VISIBLE);
             firstTextView.setTextHtml(blocks.get(0), subredditName);
-            startIndex = 1;
         } else {
             firstTextView.setText("");
             firstTextView.setVisibility(View.GONE);
         }
 
-        if (blocks.size() > 1) {
-            if (startIndex == 0) {
-                commentOverflow.setViews(blocks, subredditName);
-            } else {
-                commentOverflow.setViews(blocks.subList(startIndex, blocks.size()), subredditName);
-            }
-        } else {
-            commentOverflow.removeAllViews();
-        }
+        commentOverflow.removeAllViews();
+        commentOverflow.setVisibility(View.GONE);
     }
+    @Override
+    protected boolean isEmpty() {
+        return dataSet.posts.isEmpty();
+    }
+
+    @Override
+    protected int postCount() {
+        return dataSet.posts.size();
+    }
+
+    @Override
+    protected boolean noMore() {
+        return dataSet.nomore;
+    }
+
+    @Override
+    protected RecyclerView.ViewHolder createContentViewHolder(ViewGroup viewGroup) {
+        View v =
+                LayoutInflater.from(viewGroup.getContext())
+                        .inflate(R.layout.subfordiscover, viewGroup, false);
+        return new SubredditViewHolder(v);
+    }
+
 }

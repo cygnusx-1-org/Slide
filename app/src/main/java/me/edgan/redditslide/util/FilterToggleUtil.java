@@ -1,7 +1,9 @@
 package me.edgan.redditslide.util;
 
 import android.widget.ListView;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class FilterToggleUtil {
     public static final int STATE_ALL_NON_NSFW = 0;
     public static final int STATE_ALL_NSFW = 1;

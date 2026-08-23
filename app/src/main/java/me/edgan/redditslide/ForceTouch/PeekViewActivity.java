@@ -5,15 +5,20 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.util.DisplayUtil;
 
+import org.jspecify.annotations.NullMarked;
+
+@NullMarked
 public class PeekViewActivity extends AppCompatActivity {
 
-    private PeekView peekView;
+    // Only set while a peek is on screen; removePeek() clears it again.
+    @Nullable private PeekView peekView;
 
     @Override
     public void onPause() {
@@ -40,19 +45,14 @@ public class PeekViewActivity extends AppCompatActivity {
         } else if (peekView != null) {
             // peekView.doScroll(event);
             peekView.highlightMenu(event);
-            View peek = peekView.content.findViewById(R.id.peek);
+            View peek = peekView.content.requireViewById(R.id.peek);
             RelativeLayout.LayoutParams params =
                     (RelativeLayout.LayoutParams) peek.getLayoutParams();
 
             if (event.getAction() == MotionEvent.ACTION_MOVE) {
                 params.topMargin = (int) -((origY - event.getY()) / 5);
-                if (false && event.getY() < (2 * origY) / 3) {
-                    params.leftMargin = twelve - (int) ((origY - event.getY())) / 2;
-                    params.rightMargin = twelve - (int) ((origY - event.getY())) / 2;
-                } else {
-                    params.leftMargin = twelve;
-                    params.rightMargin = twelve;
-                }
+                params.leftMargin = twelve;
+                params.rightMargin = twelve;
 
                 if (event.getY() < (origY) / 2 && !Reddit.peek) {
                     peekView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
@@ -89,7 +89,7 @@ public class PeekViewActivity extends AppCompatActivity {
         this.origY = origY;
     }
 
-    public void removePeek(MotionEvent event) {
+    public void removePeek(@Nullable MotionEvent event) {
         isPeeking = false;
         if (peekView != null) {
             if (event != null) peekView.checkButtons(event);

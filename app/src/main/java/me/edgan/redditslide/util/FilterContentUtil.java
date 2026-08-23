@@ -4,18 +4,18 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.LinearLayout;
-
+import android.widget.ListView;
 import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Utility class for handling content filtering dialogs
  */
+@NullMarked
 public class FilterContentUtil {
 
     /**
@@ -35,16 +35,15 @@ public class FilterContentUtil {
         customDialogView.addView(filterContent);
 
         // Get references to the list views
-        final ListView regularListView = filterContent.findViewById(R.id.regular_content_list);
-        final ListView nsfwListView = filterContent.findViewById(R.id.nsfw_content_list);
+        final ListView regularListView = filterContent.requireViewById(R.id.regular_content_list);
+        final ListView nsfwListView = filterContent.requireViewById(R.id.nsfw_content_list);
 
         // Create a wrapper class to hold the lists reference that can be modified
         class ListsHolder {
-            FilterUtil.FilterLists lists;
+            FilterUtil.FilterLists lists = FilterUtil.setupFilterLists(activity, subreddit, false);
         }
 
         final ListsHolder listsHolder = new ListsHolder();
-        listsHolder.lists = FilterUtil.setupFilterLists(activity, subreddit, false);
 
         FilterUtil.setupListViews(activity, regularListView, nsfwListView, listsHolder.lists);
 

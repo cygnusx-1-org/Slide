@@ -6,17 +6,18 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Adapters.MultiredditPosts;
 import me.edgan.redditslide.Adapters.SubmissionDisplay;
 import me.edgan.redditslide.Adapters.SubredditPosts;
@@ -29,15 +30,11 @@ import me.edgan.redditslide.PostLoader;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
-import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.CustomViewPager;
 import me.edgan.redditslide.util.KeyboardUtil;
-
+import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.models.Submission;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * This activity is responsible for the view when clicking on a post, showing the post and its
@@ -50,6 +47,7 @@ import java.util.Locale;
  *
  * <p>Created by ccrama on 9/17/2015.
  */
+@NullMarked
 public class CommentsScreen extends BaseActivityAnim implements SubmissionDisplay {
     public static final String EXTRA_PROFILE = "profile";
     public static final String EXTRA_PAGE = "page";
@@ -61,9 +59,10 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
     public PostLoader subredditPosts;
     int firstPage;
 
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     CommentsScreenPagerAdapter comments;
     private String subreddit;
-    private String baseSubreddit;
+    private String baseSubreddit = "";
 
     String multireddit;
     String profile;
@@ -92,7 +91,7 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 14) {
             comments.notifyDataSetChanged();
@@ -134,7 +133,7 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
     }
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         popup =
                 getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE
                         && !SettingValues.fullCommentOverride;
@@ -158,13 +157,13 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
 
         Reddit.setDefaultErrorHandler(this);
 
-        firstPage = getIntent().getExtras().getInt(EXTRA_PAGE, -1);
-        baseSubreddit = getIntent().getExtras().getString(EXTRA_SUBREDDIT);
+        firstPage = getIntent().getIntExtra(EXTRA_PAGE, -1);
+        baseSubreddit = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_SUBREDDIT));
         subreddit = baseSubreddit;
-        multireddit = getIntent().getExtras().getString(EXTRA_MULTIREDDIT);
-        profile = getIntent().getExtras().getString(EXTRA_PROFILE, "");
+        multireddit = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_MULTIREDDIT));
+        profile = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_PROFILE));
         currentPosts = new ArrayList<>();
-        if (multireddit != null) {
+        if (!multireddit.isEmpty()) {
             subredditPosts = new MultiredditPosts(multireddit, profile);
         } else {
             baseSubreddit = subreddit.toLowerCase(Locale.ENGLISH);
@@ -177,7 +176,7 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
         } else {
             OfflineSubreddit o =
                     OfflineSubreddit.getSubreddit(
-                            multireddit == null ? baseSubreddit : "multi" + multireddit,
+                            multireddit.isEmpty() ? baseSubreddit : "multi_" + multireddit,
                             OfflineSubreddit.currentid,
                             !Authentication.didOnline,
                             CommentsScreen.this);
@@ -188,7 +187,7 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
         if (getIntent().hasExtra("fullname")) {
             String fullname = getIntent().getStringExtra("fullname");
             for (int i = 0; i < currentPosts.size(); i++) {
-                if (currentPosts.get(i).getFullName().equals(fullname)) {
+                if (MiscUtil.orEmpty(currentPosts.get(i).getFullName()).equals(fullname)) {
                     if (i != firstPage) firstPage = i;
                     break;
                 }
@@ -196,18 +195,19 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
         }
 
         if (currentPosts.isEmpty()
-                || currentPosts.size() < firstPage
+                || currentPosts.size() <= firstPage
                 || currentPosts.get(firstPage) == null
                 || firstPage < 0) {
             finish();
         } else {
             updateSubredditAndSubmission(currentPosts.get(firstPage));
 
-            final CustomViewPager pager = (CustomViewPager) findViewById(R.id.content_view);
+            final CustomViewPager pager = (CustomViewPager) requireViewById(R.id.content_view);
             // final ViewPager pager = (ViewPager) findViewById(R.id.content_view);
 
             comments = new CommentsScreenPagerAdapter(getSupportFragmentManager());
             pager.setAdapter(comments);
+
             currentPage = firstPage;
 
             if (SettingValues.oldSwipeMode) {
@@ -219,6 +219,8 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
             pager.setEntryPageIndex(firstPage);
 
             if (SettingValues.oldSwipeMode) {
+                MiscUtil.setupOldSwipeModeBackground(this, pager);
+
                 pager.addOnPageChangeListener(new CommonPageChangeListener() {
                     @Override
                     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -226,11 +228,11 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
                             finish();
                         }
                         if (position == firstPage && !popup) {
-                            CommentsScreenPagerAdapter adapter = (CommentsScreenPagerAdapter) pager.getAdapter();
-                            if (adapter.blankPage != null) {
+                            CommentsScreenPagerAdapter adapter =
+                                    (CommentsScreenPagerAdapter) pager.getAdapter();
+                            if (adapter != null && adapter.blankPage != null) {
                                 adapter.blankPage.doOffset(positionOffset);
                             }
-                            pager.setBackgroundColor(Palette.adjustAlpha(positionOffset * 0.7f));
                         }
                     }
                 });
@@ -241,10 +243,10 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
     }
 
     private void updateSubredditAndSubmission(Submission post) {
-        subreddit = post.getSubredditName();
-        if (post.getSubredditName() == null) {
-            subreddit = "Promoted";
-        }
+        // A submission with no subreddit is a promoted post; that fallback was already here, just
+        // written after the assignment it was meant to cover rather than as part of it.
+        final String postSubreddit = post.getSubredditName();
+        subreddit = postSubreddit == null ? "Promoted" : postSubreddit;
         themeSystemBars(subreddit);
         setRecentBar(subreddit);
     }
@@ -289,7 +291,9 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
     }
 
     private class CommentsScreenPagerAdapter extends FragmentStatePagerAdapter {
+        @SuppressWarnings("NullAway.Init") // assigned in setPrimaryItem as the pager swaps pages
         private CommentPage mCurrentFragment;
+        @SuppressWarnings("NullAway.Init") // assigned in getItem
         public BlankFragment blankPage;
 
         CommentsScreenPagerAdapter(FragmentManager fm) {
@@ -315,18 +319,17 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
         private Fragment createCommentPageFragment(int i) {
             Fragment f = new CommentPage();
             Bundle args = new Bundle();
-            String name = currentPosts.get(i).getFullName();
-            args.putString("id", name.substring(3));
+            args.putString("id", MiscUtil.idFromFullname(currentPosts.get(i).getFullName()));
             args.putBoolean("archived", currentPosts.get(i).isArchived());
             args.putBoolean(
                     "contest",
-                    currentPosts.get(i).getDataNode().get("contest_mode").asBoolean());
+                    currentPosts.get(i).getDataNode().path("contest_mode").asBoolean());
             args.putBoolean("locked", currentPosts.get(i).isLocked());
             args.putInt("page", i);
             args.putString("subreddit", currentPosts.get(i).getSubredditName());
             args.putString(
                     "baseSubreddit",
-                    multireddit == null ? baseSubreddit : "multi" + multireddit);
+                    multireddit.isEmpty() ? baseSubreddit : "multi_" + multireddit);
             f.setArguments(args);
             return f;
         }

@@ -1,5 +1,6 @@
 package me.edgan.redditslide.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -7,11 +8,15 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
 import android.text.style.RelativeSizeSpan;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
-
+import androidx.annotation.Nullable;
 import me.edgan.redditslide.Adapters.ProfileCommentViewHolder;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.R;
+import me.edgan.redditslide.SettingValues;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Created by TacoTheDank on 03/15/2021.
@@ -19,7 +24,29 @@ import me.edgan.redditslide.R;
  * <p>These functions wouldn't really make sense to be anywhere else, so... MiscUtil is meant to be
  * temporary; these functions will ideally eventually go into their own little places.
  */
+@NullMarked
 public class MiscUtil {
+
+    /**
+     * {@code value}, or {@code ""} when it is null. For intent extras a screen cannot run without:
+     * a missing one used to surface as an NPE somewhere further down, and an empty string reaches
+     * the same "nothing to show" handling the rest of the code already has.
+     */
+    public static String orEmpty(final @Nullable String value) {
+        return value == null ? "" : value;
+    }
+
+    /**
+     * The bare id inside a reddit fullname, i.e. {@code t3_abc123} without its kind prefix, or
+     * {@code ""} when there is no fullname or it is too short to carry one.
+     *
+     * <p>Callers build permalinks and API ids out of this. Coalescing the fullname to {@code ""}
+     * first and then calling {@code substring(3)} does not work — it trades an NPE for a
+     * StringIndexOutOfBoundsException, which is why this does the length test itself.
+     */
+    public static String idFromFullname(final @Nullable String fullname) {
+        return fullname == null || fullname.length() < 3 ? "" : fullname.substring(3);
+    }
 
     // Used in SubredditView, MainActivity, and CommentPage (ugly-af code moment)
     public static void doSubscribeButtonText(boolean currentlySubbed, TextView subscribe) {
@@ -122,6 +149,74 @@ public class MiscUtil {
             createAwards(mContext, fontsize, awarded, image);
             titleString.append(awarded);
             titleString.append(" ");
+        }
+    }
+
+    public static void setupOldSwipeModeBackground(Context context, android.view.View view) {
+        if (SettingValues.oldSwipeMode) {
+            // Set an opaque background for the View
+            android.util.TypedValue typedValue = new android.util.TypedValue();
+            context.getTheme().resolveAttribute(R.attr.card_background, typedValue, true);
+            view.setBackgroundColor(typedValue.data);
+        }
+    }
+
+    /**
+     * Applies the wide color gamut window color mode to the given activity when the user has the
+     * preference enabled. Replaces the static android:colorMode="wideColorGamut" manifest attribute
+     * so it can be toggled at runtime (see issue #284: the wide gamut mode washes out colors on some
+     * OLED panels).
+     */
+    public static void applyWideColorGamut(Activity activity) {
+        if (activity == null) return;
+        activity.getWindow()
+                .setColorMode(
+                        SettingValues.wideColorGamut
+                                ? android.content.pm.ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT
+                                : android.content.pm.ActivityInfo.COLOR_MODE_DEFAULT);
+    }
+
+    /**
+     * Adjusts button sizes for small screens (360dp or less)
+     * @param rootView The root view containing the buttons (null for activity-level)
+     * @param activity The activity context
+     */
+    public static void adjustButtonSizesForSmallScreens(
+            @Nullable View rootView, Activity activity) {
+        if (activity == null) return;
+
+        // Get the smallest screen width in dp (respects Developer Options setting)
+        int smallestWidthDp = activity.getResources().getConfiguration().smallestScreenWidthDp;
+
+        if (smallestWidthDp <= 360) {
+            // Convert 48dp to pixels
+            float density = activity.getResources().getDisplayMetrics().density;
+            int buttonSizePx = (int) (48 * density);
+
+            // List of button IDs to resize
+            int[] buttonIds = {
+                R.id.comments, R.id.more, R.id.save, R.id.speed,
+                R.id.rotate_left, R.id.rotate_right, R.id.mute, R.id.hq
+            };
+
+            // Resize each button
+            for (int buttonId : buttonIds) {
+                View button;
+                if (rootView != null) {
+                    button = rootView.findViewById(buttonId);
+                } else {
+                    button = activity.findViewById(buttonId);
+                }
+
+                if (button != null) {
+                    ViewGroup.LayoutParams params = button.getLayoutParams();
+                    if (params != null) {
+                        params.width = buttonSizePx;
+                        params.height = buttonSizePx;
+                        button.setLayoutParams(params);
+                    }
+                }
+            }
         }
     }
 }

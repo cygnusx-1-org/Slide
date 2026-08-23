@@ -3,12 +3,8 @@ package me.edgan.redditslide.util;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import me.edgan.redditslide.Reddit;
-
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
@@ -16,10 +12,59 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import me.edgan.redditslide.Reddit;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import org.json.JSONObject;
+import org.jspecify.annotations.NullMarked;
 
 // Following methods sourced from https://github.com/Kennyc1012/Opengur, Code by Kenny Campagna
+@NullMarked
 public class ImgurUtils {
-    public static File createFile(Uri uri, @NonNull Context context) {
+
+    /**
+     * Uploads an image to Imgur and returns its link. Must be called off the main thread. Mirrors
+     * {@link me.edgan.redditslide.ImgurAlbum.UploadImgur} but runs synchronously so it can be done
+     * as part of a submit action.
+     */
+    public static String uploadSync(Context c, Uri uri) throws IOException {
+        File file = createFile(uri, c);
+        if (file == null) {
+            throw new IOException("Could not read image");
+        }
+        OkHttpClient client = Reddit.client;
+        RequestBody formBody =
+                new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart(
+                                "image",
+                                file.getName(),
+                                RequestBody.create(file, MediaType.parse("image/*")))
+                        .build();
+        Request request =
+                new Request.Builder()
+                        .header("Authorization", "Client-ID bef87913eb202e9")
+                        .url("https://api.imgur.com/3/image")
+                        .post(formBody)
+                        .build();
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Imgur upload failed: " + response.code());
+            }
+            try {
+                JSONObject json = new JSONObject(response.body().string());
+                return json.getJSONObject("data").getString("link");
+            } catch (Exception e) {
+                throw new IOException("Could not parse Imgur response", e);
+            }
+        }
+    }
+
+    public static @Nullable File createFile(Uri uri, @NonNull Context context) {
         InputStream in;
         ContentResolver resolver = context.getContentResolver();
         String type = resolver.getType(uri);
@@ -36,6 +81,10 @@ public class ImgurUtils {
         try {
             in = resolver.openInputStream(uri);
         } catch (FileNotFoundException e) {
+            return null;
+        }
+
+        if (in == null) {
             return null;
         }
 
@@ -67,7 +116,7 @@ public class ImgurUtils {
             byte[] byt = new byte[1024];
             int i;
 
-            for (long l = 0L; (i = in.read(byt)) != -1; l += i) {
+            while ((i = in.read(byt)) != -1) {
                 buffer.write(byt, 0, i);
             }
 
@@ -88,6 +137,8 @@ public class ImgurUtils {
             try {
                 closeable.close();
             } catch (IOException ex) {
+                // Failing to close a stream we are done with changes nothing the
+                // caller can act on.
             }
         }
     }

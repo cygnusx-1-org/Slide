@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Tumblr;
 
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,7 +17,7 @@ import java.util.Map;
 public class Post_ {
 
     @JsonProperty("id")
-    private String id;
+    @Nullable private String id;
 
     @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -23,6 +25,7 @@ public class Post_ {
      * @return The id
      */
     @JsonProperty("id")
+    @Nullable
     public String getId() {
         return id;
     }
@@ -31,7 +34,7 @@ public class Post_ {
      * @param id The id
      */
     @JsonProperty("id")
-    public void setId(String id) {
+    public void setId(@Nullable String id) {
         this.id = id;
     }
 

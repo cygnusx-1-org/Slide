@@ -1,6 +1,5 @@
 package me.edgan.redditslide.Adapters;
 
-/** Created by ccrama on 3/22/2015. */
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -13,36 +12,39 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
+import android.util.LruCache;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.devspark.robototextview.RobotoTypefaces;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.lusfold.androidkeyvaluestore.KVStore;
 import com.mikepenz.itemanimators.AlphaInAnimator;
 import com.mikepenz.itemanimators.SlideRightAlphaAnimator;
 import com.nostra13.universalimageloader.utils.DiskCacheUtils;
-
-import me.edgan.redditslide.ActionStates;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import me.edgan.redditslide.Activities.Profile;
 import me.edgan.redditslide.Authentication;
-import me.edgan.redditslide.BuildConfig;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.Drafts;
 import me.edgan.redditslide.Fragments.CommentPage;
@@ -51,26 +53,28 @@ import me.edgan.redditslide.ImageFlairs;
 import me.edgan.redditslide.LastComments;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
-import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.SubmissionViews.PopulateSubmissionViewHolder;
-import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Views.DoEditorActions;
 import me.edgan.redditslide.Views.PreCachingLayoutManagerComments;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
-import me.edgan.redditslide.Vote;
+import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.util.AnimatorUtil;
-import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.AsyncLoadMoreTask;
+import me.edgan.redditslide.util.CommentRecovery;
+import me.edgan.redditslide.util.CommentStateUtil;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.DisplayUtil;
+import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
+import me.edgan.redditslide.util.PrefUtil;
 import me.edgan.redditslide.util.SubmissionParser;
-import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
-
 import net.dean.jraw.ApiException;
 import net.dean.jraw.RedditClient;
 import net.dean.jraw.http.UserAgent;
@@ -79,25 +83,6 @@ import net.dean.jraw.models.Comment;
 import net.dean.jraw.models.CommentNode;
 import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.Submission;
-import net.dean.jraw.models.VoteDirection;
-
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
-// Add import
-import me.edgan.redditslide.Activities.Profile;
 
 public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -106,47 +91,84 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public final Bitmap[] awardIcons;
     public Context mContext;
     public SubmissionComments dataSet;
+    // Left unset by the constructor when the host had no loaded submission yet. Every read is
+    // on a path that only runs once one has arrived; a host without one produced the same
+    // dereference before this field was annotated.
+    @SuppressWarnings("NullAway.Init")
     public Submission submission;
-    public CommentViewHolder currentlySelected;
-    public CommentNode currentNode;
+    public @Nullable CommentViewHolder currentlySelected;
+    public @Nullable CommentNode currentNode;
     public String currentSelectedItem = "";
     public int shiftFrom;
-    public FragmentManager fm;
+    @Nullable public FragmentManager fm;
     public int clickpos;
     public int currentPos;
-    public CommentViewHolder isHolder;
+    // isClicking is only ever read and set false -- nothing sets it true, so the branch below that
+    // used the deleted `isHolder` field was unreachable. That is the only reason a permanently null
+    // isHolder never crashed there; the holder it wanted is the one already in scope.
     public boolean isClicking;
     public HashMap<String, Integer> keys = new HashMap<>();
     public ArrayList<CommentObject> currentComments;
     public ArrayList<String> deleted = new ArrayList<>();
     RecyclerView listView;
-    CommentPage mPage;
+    public CommentPage mPage;
     int shifted;
     int toShiftTo;
     HashSet<String> hidden;
-    ArrayList<String> hiddenPersons;
-    ArrayList<String> toCollapse;
-    private String backedText = "";
-    private String currentlyEditingId = "";
+    public ArrayList<String> hiddenPersons;
+    public ArrayList<String> toCollapse;
+    public String backedText = "";
+    public String currentlyEditingId = "";
+    @SuppressWarnings("NullAway.Init") // assigned in onSingleClick, the header click listener
     public SubmissionViewHolder submissionViewHolder;
     long lastSeen = 0;
     public ArrayList<String> approved = new ArrayList<>();
     public ArrayList<String> removed = new ArrayList<>();
-    private Set<String> blockedUsers;
+    private Set<String> blockedUsers = new HashSet<>();
+    private boolean blockedUsersRequested;
+
+    /** Visible row index -> index in currentComments. See {@link #getRealPosition(int)}. */
+    @SuppressWarnings("NullAway.Init")
+    private ArrayList<Integer> visiblePositions;
+
+    /** Volatile: AsyncForceLoadChild mutates currentComments off the UI thread. */
+    private volatile boolean positionMapDirty = true;
+
+    /** Subtree sizes for collapsed rows. See {@link #getChildNumber(CommentNode)}. */
+    private final HashMap<String, Integer> childCountCache = new HashMap<>();
+
+    private volatile boolean childCountsDirty = true;
+
+    /**
+     * Parsed comment bodies, keyed by fullname. Bounded: a long thread would otherwise hold a
+     * Spanned for every comment ever scrolled past. Dropped on reset() because the spans bake in
+     * theme colors (see {@link me.edgan.redditslide.markdown.RedditMarkwon#invalidate()}).
+     */
+    private final LruCache<String, CachedMarkdown> markdownCache = new LruCache<>(250);
+
+    /** Parsed snudown blocks, keyed by fullname. See {@link #getBlocksCached(Comment)}. */
+    private final LruCache<String, CachedBlocks> blockCache = new LruCache<>(250);
 
     public CommentAdapter(
             CommentPage mContext,
             SubmissionComments dataSet,
             RecyclerView listView,
-            Submission submission,
-            FragmentManager fm) {
-        this.mContext = mContext.getContext();
+            @Nullable Submission submission,
+            @Nullable FragmentManager fm) {
+        // requireContext rather than a guard: an adapter with no Context cannot be built at all,
+        // and every construction site is either CommentPage.onCreateView or an activity calling
+        // doAdapter() on the pager's current fragment — both attached. See NULLAWAY.md phase 14.
+        this.mContext = mContext.requireContext();
         mPage = mContext;
         this.listView = listView;
         this.dataSet = dataSet;
         this.fm = fm;
 
-        this.submission = submission;
+        // Left unset when the host has no loaded submission yet, exactly as before: the field
+        // is read by code that only runs once one has arrived.
+        if (submission != null) {
+            this.submission = submission;
+        }
         hidden = new HashSet<>();
         currentComments = dataSet.comments;
         if (currentComments != null) {
@@ -167,14 +189,6 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     BitmapFactory.decodeResource(mContext.getResources(), R.drawable.platinum),
                 };
 
-        // Load blocked users in background
-        Profile.getBlockedUsers(new Profile.BlockedUsersCallback() {
-            @Override
-            public void onResult(Set<String> users) {
-                blockedUsers = users;
-                notifyDataSetChanged();
-            }
-        });
     }
 
     public void reset(
@@ -185,6 +199,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             boolean reset) {
 
         doTimes();
+        invalidatePositionCache();
+        markdownCache.evictAll();
+        blockCache.evictAll();
 
         this.mContext = mContext;
         this.listView = listView;
@@ -221,10 +238,13 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 && !currentComments.isEmpty()) {
             int i = 2;
             for (CommentObject n : currentComments) {
-                if (n instanceof CommentItem
-                        && n.comment.getComment().getFullName().contains(currentSelectedItem)) {
-                    ((PreCachingLayoutManagerComments) listView.getLayoutManager())
-                            .scrollToPositionWithOffset(i, mPage.headerHeight);
+                final String nFullname =
+                        n instanceof CommentItem ? n.comment.getComment().getFullName() : null;
+                if (nFullname != null && nFullname.contains(currentSelectedItem)) {
+                    if (listView.getLayoutManager() != null) {
+                        ((PreCachingLayoutManagerComments) listView.getLayoutManager())
+                                .scrollToPositionWithOffset(i, mPage.headerHeight);
+                    }
                     break;
                 }
                 i++;
@@ -248,7 +268,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     View v =
                             LayoutInflater.from(viewGroup.getContext())
                                     .inflate(R.layout.submission_fullscreen, viewGroup, false);
-                    return new SubmissionViewHolder(v);
+                    return new FullSubmissionViewHolder(v);
                 }
             case 2:
                 {
@@ -278,10 +298,13 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         for (CommentObject o : currentComments) {
             if (o.comment.isTopLevel()) {
                 hiddenPersons.remove(o.comment.getComment().getFullName());
-                unhideAll(o.comment);
+                // unhideNumber, not unhideAll: the latter fires a notifyDataSetChanged per
+                // top-level comment, rebinding (and re-rendering) every visible row each time.
+                unhideNumber(o.comment, 0);
             }
         }
-        notifyItemChanged(2);
+        setCollapseAnimator();
+        notifyDataSetChanged();
     }
 
     public void collapseAll() {
@@ -291,10 +314,25 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (!hiddenPersons.contains(o.comment.getComment().getFullName())) {
                     hiddenPersons.add(o.comment.getComment().getFullName());
                 }
-                hideAll(o.comment);
+                // hideNumber, not hideAll: see expandAll().
+                hideNumber(o.comment, 0);
             }
         }
-        notifyItemChanged(2);
+        setCollapseAnimator();
+        notifyDataSetChanged();
+    }
+
+    private void setCollapseAnimator() {
+        if (SettingValues.collapseComments) {
+            listView.setItemAnimator(null);
+        } else {
+            try {
+                listView.setItemAnimator(new AlphaInAnimator());
+            } catch (Exception ignored) {
+                // The animator is decoration; a RecyclerView mid-layout
+                // refuses it.
+            }
+        }
     }
 
     public void doScoreText(CommentViewHolder holder, Comment comment, CommentAdapter adapter) {
@@ -310,12 +348,15 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 && (SettingValues.storeHistory
                         && (!submission.isNsfw() || SettingValues.storeNSFWHistory))) {
             lastSeen = HasSeen.getSeenTime(submission);
-            String fullname = submission.getFullName();
+            String fullname = MiscUtil.orEmpty(submission.getFullName());
             if (fullname.contains("t3_")) {
                 fullname = fullname.substring(3);
             }
             HasSeen.seenTimes.put(fullname, System.currentTimeMillis());
-            KVStore.getInstance().insert(fullname, String.valueOf(System.currentTimeMillis()));
+            final String key = fullname;
+            final String value = String.valueOf(System.currentTimeMillis());
+            // Off the UI thread: insert() runs a SELECT plus an INSERT against the seen database.
+            AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> KVStore.getInstance().insert(key, value));
         }
         if (submission != null) {
             if (SettingValues.storeHistory) {
@@ -333,9 +374,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         int pos = old != 0 ? old - 1 : old;
         if (firstHolder instanceof CommentViewHolder) {
             final CommentViewHolder holder = (CommentViewHolder) firstHolder;
-            int datasetPosition = pos - 1;
-
-            datasetPosition = getRealPosition(datasetPosition);
+            int datasetPosition = datasetPositionForAdapterPosition(old);
 
             if (pos > toShiftTo) {
                 shifted = 0;
@@ -346,6 +385,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             final CommentNode baseNode = currentComments.get(datasetPosition).comment;
             final Comment comment = baseNode.getComment();
+            // Body pulled from the archive by "Recover comment", if any. Read once: it decides both
+            // how the body renders and whether the deleted-comment collapse still applies.
+            final String recoveredBody = CommentRecovery.getRecovered(comment.getFullName());
 
             if (pos == getItemCount() - 1) {
                 holder.itemView.setPadding(
@@ -410,11 +452,38 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             holder.itemView.setOnClickListener(singleClick);
             holder.commentOverflow.setOnClickListener(singleClick);
             if (!toCollapse.contains(comment.getFullName()) || !SettingValues.collapseComments) {
-                setViews(
-                        comment.getDataNode().get("body_html").asText(),
-                        submission.getSubredditName(),
-                        holder,
-                        comment);
+                if (!collapseIfBlocked(comment, holder)) {
+                    if (recoveredBody != null) {
+                        // Body recovered from the archive. Arctic Shift returns markdown only (no
+                        // body_html), so render via Markwon regardless of the markdownNewReddit
+                        // setting; the empty bodyHtml means inline images in the recovered text aren't
+                        // drawn (text-only recovery).
+                        setViewsMarkdown(
+                                comment,
+                                recoveredBody,
+                                "",
+                                MiscUtil.orEmpty(submission.getSubredditName()),
+                                holder);
+                    } else if (SettingValues.markdownNewReddit) {
+                        // New Reddit-style: render the raw markdown body via Markwon (issue #179).
+                        setViewsMarkdown(
+                                comment, MiscUtil.orEmpty(submission.getSubredditName()), holder);
+                    } else {
+                        final List<String> cachedBlocks = getBlocksCached(comment);
+                        setViews(
+                                cachedBlocks == null ? new ArrayList<String>() : cachedBlocks,
+                                MiscUtil.orEmpty(submission.getSubredditName()),
+                                holder,
+                                singleClick,
+                                onLongClickListener);
+                    }
+                }
+
+                // Name media saved from links in this comment after its source:
+                // title_postId_commentId.
+                String downloadName = FileUtil.buildDownloadName(comment);
+                holder.firstTextView.setDownloadName(downloadName);
+                holder.commentOverflow.setDownloadName(downloadName);
             }
 
             holder.firstTextView.setOnClickListener(
@@ -435,7 +504,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             }
                         }
                     });
-            if (ImageFlairs.isSynced(comment.getSubredditName())
+            if (ImageFlairs.isSynced(MiscUtil.orEmpty(comment.getSubredditName()))
                     && comment.getAuthorFlair() != null
                     && comment.getAuthorFlair().getCssClass() != null
                     && !comment.getAuthorFlair().getCssClass().isEmpty()) {
@@ -444,7 +513,8 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     ImageFlairs.FlairImageLoader loader = ImageFlairs.getFlairImageLoader(mContext);
                     File file =
                             DiskCacheUtils.findInCache(
-                                    comment.getSubredditName().toLowerCase(Locale.ENGLISH)
+                                    MiscUtil.orEmpty(comment.getSubredditName())
+                                                    .toLowerCase(Locale.ENGLISH)
                                             + ":"
                                             + s.toLowerCase(Locale.ENGLISH),
                                     loader.getDiskCache());
@@ -475,9 +545,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             // Show padding on top
             if (baseNode.isTopLevel()) {
-                holder.itemView.findViewById(R.id.next).setVisibility(View.VISIBLE);
-            } else if (holder.itemView.findViewById(R.id.next).getVisibility() == View.VISIBLE) {
-                holder.itemView.findViewById(R.id.next).setVisibility(View.GONE);
+                holder.itemView.requireViewById(R.id.next).setVisibility(View.VISIBLE);
+            } else if (holder.itemView.requireViewById(R.id.next).getVisibility() == View.VISIBLE) {
+                holder.itemView.requireViewById(R.id.next).setVisibility(View.GONE);
             }
 
             // Should be collapsed?
@@ -571,8 +641,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 holder.dot.setVisibility(View.GONE);
             }
 
+            final String commentFullname = MiscUtil.orEmpty(comment.getFullName());
             if (currentSelectedItem != null
-                    && comment.getFullName().contains(currentSelectedItem)
+                    && commentFullname.contains(currentSelectedItem)
                     && !currentSelectedItem.isEmpty()
                     && !currentlyEditingId.equals(comment.getFullName())) {
                 doHighlighted(holder, comment, baseNode, false);
@@ -590,9 +661,12 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 setCommentStateHighlighted(holder, comment, baseNode, true, false);
             }
 
-            if (SettingValues.collapseDeletedComments) {
-                if (comment.getBody().startsWith("[removed]")
-                        || comment.getBody().startsWith("[deleted]")) {
+            // A recovered comment has real text to show, so the deleted-comment collapse no longer
+            // applies to it.
+            if (SettingValues.collapseDeletedComments && recoveredBody == null) {
+                final String collapseBody = MiscUtil.orEmpty(comment.getBody());
+                if (collapseBody.startsWith("[removed]")
+                        || collapseBody.startsWith("[deleted]")) {
                     holder.firstTextView.setVisibility(View.GONE);
                     holder.commentOverflow.setVisibility(View.GONE);
                 }
@@ -600,17 +674,18 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             if (SettingValues.collapseStickyComment) {
                 if (comment.getDataNode().has("stickied")
-                        && comment.getDataNode().get("stickied").asBoolean()) {
+                        && comment.getDataNode().path("stickied").asBoolean()) {
                     holder.firstTextView.setVisibility(View.GONE);
                     holder.commentOverflow.setVisibility(View.GONE);
                 }
             }
 
-        } else if (firstHolder instanceof SubmissionViewHolder && submission != null) {
-            submissionViewHolder = (SubmissionViewHolder) firstHolder;
+        } else if (firstHolder instanceof FullSubmissionViewHolder fullHolder
+                && submission != null) {
+            submissionViewHolder = fullHolder;
             new PopulateSubmissionViewHolder()
                     .populateSubmissionViewHolder(
-                            (SubmissionViewHolder) firstHolder,
+                            fullHolder,
                             submission,
                             (Activity) mContext,
                             true,
@@ -623,11 +698,11 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             this);
             if (Authentication.isLoggedIn && Authentication.didOnline) {
                 if (submission.isArchived() || submission.isLocked()) {
-                    firstHolder.itemView.findViewById(R.id.reply).setVisibility(View.GONE);
+                    firstHolder.itemView.requireViewById(R.id.reply).setVisibility(View.GONE);
                 } else {
                     firstHolder
                             .itemView
-                            .findViewById(R.id.reply)
+                            .requireViewById(R.id.reply)
                             .setOnClickListener(
                                     new OnSingleClickListener() {
                                         @Override
@@ -637,14 +712,14 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     });
                     firstHolder
                             .itemView
-                            .findViewById(R.id.discard)
+                            .requireViewById(R.id.discard)
                             .setOnClickListener(
                                     new OnSingleClickListener() {
                                         @Override
                                         public void onSingleClick(View v) {
                                             firstHolder
                                                     .itemView
-                                                    .findViewById(R.id.innerSend)
+                                                    .requireViewById(R.id.innerSend)
                                                     .setVisibility(View.GONE);
                                             currentlyEditing = null;
                                             editingPosition = -1;
@@ -667,13 +742,13 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     });
                 }
             } else {
-                firstHolder.itemView.findViewById(R.id.innerSend).setVisibility(View.GONE);
-                firstHolder.itemView.findViewById(R.id.reply).setVisibility(View.GONE);
+                firstHolder.itemView.requireViewById(R.id.innerSend).setVisibility(View.GONE);
+                firstHolder.itemView.requireViewById(R.id.reply).setVisibility(View.GONE);
             }
 
             firstHolder
                     .itemView
-                    .findViewById(R.id.more)
+                    .requireViewById(R.id.more)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -689,26 +764,17 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             nextPos = getRealPosition(nextPos);
 
             final MoreChildItem baseNode = (MoreChildItem) currentComments.get(nextPos);
-            if (baseNode.children.getCount() > 0) {
-                try {
-                    holder.content.setText(
-                            mContext.getString(
-                                    R.string.comment_load_more_string_new,
-                                    baseNode.children.getLocalizedCount()));
-                } catch (Exception e) {
-                    holder.content.setText(R.string.comment_load_more_number_unknown);
-                }
-            } else if (!baseNode.children.getChildrenIds().isEmpty()) {
+            final Integer moreCount = baseNode.children.getCount();
+            if (!baseNode.children.getChildrenIds().isEmpty()
+                    || (moreCount != null && moreCount > 0)) {
                 holder.content.setText(R.string.comment_load_more_number_unknown);
             } else {
                 holder.content.setText(R.string.thread_continue);
             }
 
-            int dwidth =
-                    (int)
-                            ((SettingValues.largeDepth ? 5 : 3)
-                                    * Resources.getSystem().getDisplayMetrics().density);
+            int dwidth = (int) ((SettingValues.largeDepth ? 5 : 3) * Resources.getSystem().getDisplayMetrics().density);
             int width = 0;
+
             for (int i = 1; i < baseNode.comment.getDepth(); i++) {
                 width += dwidth;
             }
@@ -731,13 +797,16 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 progress.setVisibility(View.VISIBLE);
                                 holder.content.setText(R.string.comment_loading_more);
                                 currentLoading =
-                                        new AsyncLoadMore(
-                                                getRealPosition(
-                                                        holder.getBindingAdapterPosition() - 2),
-                                                holder.getBindingAdapterPosition(),
-                                                holder,
+                                        new AsyncLoadMoreTask(
                                                 finalNextPos,
-                                                baseNode.comment.getComment().getFullName());
+                                                holder,
+                                                MiscUtil.orEmpty(
+                                                        baseNode.comment.getComment().getFullName()),
+                                                mContext,
+                                                CommentAdapter.this,
+                                                listView,
+                                                currentComments,
+                                                keys);
                                 currentLoading.execute(baseNode);
                             }
                         }
@@ -752,7 +821,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             // Make a space the size of the toolbar minus 1 so there isn't a gap
             firstHolder
                     .itemView
-                    .findViewById(R.id.height)
+                    .requireViewById(R.id.height)
                     .setLayoutParams(
                             new LinearLayout.LayoutParams(
                                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -762,11 +831,11 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    AsyncLoadMore currentLoading;
-    String changedProfile;
+    public @Nullable AsyncLoadMoreTask currentLoading;
+    public @Nullable String changedProfile;
 
     private void doReplySubmission(RecyclerView.ViewHolder submissionViewHolder) {
-        final View replyArea = submissionViewHolder.itemView.findViewById(R.id.innerSend);
+        final View replyArea = submissionViewHolder.itemView.requireViewById(R.id.innerSend);
         if (replyArea.getVisibility() == View.GONE) {
             expandSubmissionReply(replyArea);
             EditText replyLine = submissionViewHolder.itemView.findViewById(R.id.replyLine);
@@ -780,7 +849,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             currentlyEditing = submissionViewHolder.itemView.findViewById(R.id.replyLine);
 
-            final TextView profile = submissionViewHolder.itemView.findViewById(R.id.profile);
+            final TextView profile = submissionViewHolder.itemView.requireViewById(R.id.profile);
             changedProfile = Authentication.name;
             profile.setText("/u/" + changedProfile);
             profile.setOnClickListener(
@@ -790,8 +859,10 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             final HashMap<String, String> accounts = new HashMap<>();
 
                             for (String s :
-                                    Authentication.authentication.getStringSet(
-                                            "accounts", new HashSet<String>())) {
+                                    PrefUtil.getStringSet(
+                                            Authentication.authentication,
+                                            "accounts",
+                                            new HashSet<String>())) {
                                 if (s.contains(":")) {
                                     accounts.put(s.split(":")[0], s.split(":")[1]);
                                 } else {
@@ -801,7 +872,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             final ArrayList<String> keys = new ArrayList<>(accounts.keySet());
                             final int i = keys.indexOf(changedProfile);
 
-                            new AlertDialog.Builder(mContext)
+                            DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                                     .setTitle(R.string.replies_switch_accounts)
                                     .setSingleChoiceItems(
                                             keys.toArray(new String[0]),
@@ -811,7 +882,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                 profile.setText("/u/" + changedProfile);
                                             })
                                     .setNegativeButton(R.string.btn_cancel, null)
-                                    .show();
+                                    );
                         }
                     });
             currentlyEditing.setOnFocusChangeListener(
@@ -830,18 +901,16 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         }
                     });
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                replyLine.setOnFocusChangeListener(
-                        (v, b) -> {
-                            if (b) {
-                                v.postDelayed(
-                                        () -> {
-                                            if (!v.hasFocus()) v.requestFocus();
-                                        },
-                                        100);
-                            }
-                        });
-            }
+            replyLine.setOnFocusChangeListener(
+                    (v, b) -> {
+                        if (b) {
+                            v.postDelayed(
+                                    () -> {
+                                        if (!v.hasFocus()) v.requestFocus();
+                                    },
+                                    100);
+                        }
+                    });
             replyLine.requestFocus();
             KeyboardUtil.toggleKeyboard(
                     mContext,
@@ -852,7 +921,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             submissionViewHolder
                     .itemView
-                    .findViewById(R.id.send)
+                    .requireViewById(R.id.send)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -866,8 +935,16 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     mPage.overrideFab = false;
                                     if (currentlyEditing != null) {
                                         String text = currentlyEditing.getText().toString();
-                                        new ReplyTaskComment(submission, changedProfile)
-                                                .execute(text);
+                                        ReplyTaskComment replyTask =
+                                                new ReplyTaskComment(
+                                                        submission,
+                                                        changedProfile == null
+                                                                ? Authentication.nameOrEmpty()
+                                                                : changedProfile);
+                                        replyTask.uploadedImages =
+                                                me.edgan.redditslide.util.RedditImageUploads
+                                                        .consume(currentlyEditing);
+                                        replyTask.execute(text);
                                         replyArea.setVisibility(View.GONE);
                                         currentlyEditing.setText("");
                                         currentlyEditing = null;
@@ -892,6 +969,167 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+    /**
+     * New Reddit-style rendering: render the raw markdown {@code body} via Markwon into the
+     * single comment TextView (Markwon renders code/tables/blocks inline, so the
+     * {@link CommentOverflow} block list is cleared). See issue #179.
+     */
+    public void setViewsMarkdown(
+            Comment comment, String subredditName, CommentViewHolder holder) {
+        setViewsMarkdown(
+                comment,
+                MiscUtil.orEmpty(comment.getBody()),
+                comment.getDataNode().path("body_html").asText(""),
+                subredditName,
+                holder);
+    }
+
+    /**
+     * As {@link #setViewsMarkdown(Comment, String, CommentViewHolder)}, rendering {@code body}
+     * instead of the comment's own. Used for a body recovered from the archive, which arrives as
+     * markdown with no {@code body_html} of its own — pass {@code ""} for {@code bodyHtml} so the
+     * overflow's image blocks are cleared rather than drawn from the removed comment's html.
+     */
+    public void setViewsMarkdown(
+            Comment comment,
+            String body,
+            String bodyHtml,
+            String subredditName,
+            CommentViewHolder holder) {
+        MarkdownImages.renderPrepared(
+                holder.firstTextView,
+                holder.commentOverflow,
+                subredditName,
+                getPreparedMarkdown(comment, body, bodyHtml),
+                null);
+    }
+
+    /** A comment's parsed markdown, plus every input it was parsed from. */
+    private static class CachedMarkdown {
+        final JsonNode dataNode;
+        final String body;
+        final String bodyHtml;
+        final boolean skipImages;
+        final MarkdownImages.Prepared prepared;
+
+        CachedMarkdown(
+                JsonNode dataNode,
+                String body,
+                String bodyHtml,
+                boolean skipImages,
+                MarkdownImages.Prepared prepared) {
+            this.dataNode = dataNode;
+            this.body = body;
+            this.bodyHtml = bodyHtml;
+            this.skipImages = skipImages;
+            this.prepared = prepared;
+        }
+    }
+
+    /**
+     * The parsed form of {@code comment}'s markdown, reused across binds. Parsing it is the single
+     * most expensive thing {@link #onBindViewHolder} does, and a RecyclerView re-binds a row every
+     * time it scrolls back into view.
+     *
+     * <p>Keyed by fullname, so two comments never share the (stateful) spoiler spans of an
+     * identical body, and validated against the body, the body html (which is where the media the
+     * text is interleaved with is resolved from), the data node (which supplies the media_metadata
+     * that resolves emote urls) and {@code skipImages} (which decides whether a comment-video link
+     * is left in the text or replaced by a card), so an edited or re-fetched comment — or a
+     * settings change — re-parses.
+     *
+     * <p>{@code body} is passed in rather than read from the comment so a body recovered from the
+     * archive caches the same way: it differs from the comment's own body, so storing it evicts the
+     * placeholder's entry once and then hits on every later bind.
+     */
+    private MarkdownImages.Prepared getPreparedMarkdown(
+            Comment comment, String body, String bodyHtml) {
+        final JsonNode dataNode = comment.getDataNode();
+        final String key = comment.getFullName();
+        final boolean skipImages = SettingValues.shouldSkipImages(mContext);
+
+        final CachedMarkdown cached = markdownCache.get(key);
+        if (cached != null
+                && cached.dataNode == dataNode
+                && cached.skipImages == skipImages
+                && cached.bodyHtml.equals(bodyHtml)
+                && (cached.body == null ? body == null : cached.body.equals(body))) {
+            return cached.prepared;
+        }
+
+        final MarkdownImages.Prepared prepared =
+                MarkdownImages.prepare(mContext, body, bodyHtml, dataNode);
+        markdownCache.put(
+                key, new CachedMarkdown(dataNode, body, bodyHtml, skipImages, prepared));
+        return prepared;
+    }
+
+    /** Parse {@code rawHTML} (already placeholder-resolved) into the renderer's block list. */
+    private List<String> computeBlocks(String rawHTML) {
+        List<String> blocks = SubmissionParser.getBlocks(rawHTML);
+        if (!SettingValues.shouldSkipImages(mContext)) {
+            // Split standalone images into their own blocks so they render as pre-sized ImageViews.
+            blocks = SubmissionParser.extractImageBlocks(blocks);
+        }
+        return blocks;
+    }
+
+    /** A comment's parsed blocks, plus every input they were parsed from. */
+    private static class CachedBlocks {
+        final JsonNode dataNode;
+        final String bodyHtml;
+        final boolean skipImages;
+        final List<String> blocks;
+
+        CachedBlocks(JsonNode dataNode, String bodyHtml, boolean skipImages, List<String> blocks) {
+            this.dataNode = dataNode;
+            this.bodyHtml = bodyHtml;
+            this.skipImages = skipImages;
+            this.blocks = blocks;
+        }
+    }
+
+    /**
+     * The snudown renderer's blocks for {@code comment}, reused across binds. Producing them runs
+     * the placeholder regex, {@link SubmissionParser#getBlocks} (unescape plus a chain of replaces
+     * and spoiler/list/code/table passes) and image extraction, and a RecyclerView re-binds a row
+     * every time it scrolls back into view.
+     *
+     * <p>Returns null when the comment has no body_html, matching the early return in the String
+     * overloads of setViews (which leave the recycled views untouched).
+     *
+     * <p>Validated against every input the blocks depend on: the data node (a stable, final
+     * reference per Comment, and the source of the media_metadata that resolves image
+     * placeholders), the source html, and {@code skipImages}, which follows the live data-saving
+     * state and decides whether images become their own blocks.
+     */
+    private @Nullable List<String> getBlocksCached(Comment comment) {
+        final JsonNode dataNode = comment.getDataNode();
+        final String bodyHtml = dataNode.path("body_html").asText("");
+        if (bodyHtml.isEmpty()) {
+            return null;
+        }
+        final boolean skipImages = SettingValues.shouldSkipImages(mContext);
+
+        final CachedBlocks cached = blockCache.get(comment.getFullName());
+        if (cached != null
+                && cached.dataNode == dataNode
+                && cached.skipImages == skipImages
+                && cached.bodyHtml.equals(bodyHtml)) {
+            return cached.blocks;
+        }
+
+        final String rawHTML =
+                SubmissionParser.replaceProcessingImgPlaceholders(bodyHtml, dataNode);
+        if (rawHTML.isEmpty()) {
+            return null;
+        }
+        final List<String> blocks = computeBlocks(rawHTML);
+        blockCache.put(
+                comment.getFullName(), new CachedBlocks(dataNode, bodyHtml, skipImages, blocks));
+        return blocks;
+    }
+
     public void setViews(
             String rawHTML,
             String subredditName,
@@ -901,24 +1139,36 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return;
         }
 
-        List<String> blocks = SubmissionParser.getBlocks(rawHTML);
+        List<String> blocks = computeBlocks(rawHTML);
 
-        int startIndex = 0;
+        if (blocks.isEmpty()) {
+            firstTextView.setText("");
+            firstTextView.setVisibility(View.GONE);
+            commentOverflow.removeAllViews();
+            return;
+        }
+
+        int startIndex;
+        String first = blocks.get(0);
+        // Image and video blocks are both rendered by CommentOverflow, never as inline text.
+        boolean firstIsMedia =
+                first.startsWith(SubmissionParser.IMAGE_BLOCK_PREFIX)
+                        || first.startsWith(SubmissionParser.VIDEO_BLOCK_PREFIX);
         // the <div class="md"> case is when the body contains a table or code block first
-        if (!blocks.get(0).equals("<div class=\"md\">")) {
+        if (!firstIsMedia && !first.equals("<div class=\"md\">")) {
             firstTextView.setVisibility(View.VISIBLE);
-            firstTextView.setTextHtml(blocks.get(0), subredditName);
+            firstTextView.setTextHtml(first, subredditName);
             startIndex = 1;
         } else {
             firstTextView.setText("");
+            firstTextView.setVisibility(firstIsMedia ? View.GONE : View.VISIBLE);
+            startIndex = 0;
         }
 
-        if (blocks.size() > 1) {
-            if (startIndex == 0) {
-                commentOverflow.setViews(blocks, subredditName);
-            } else {
-                commentOverflow.setViews(blocks.subList(startIndex, blocks.size()), subredditName);
-            }
+        List<String> overflow =
+                startIndex == 0 ? blocks : blocks.subList(startIndex, blocks.size());
+        if (!overflow.isEmpty()) {
+            commentOverflow.setViews(overflow, subredditName);
         } else {
             commentOverflow.removeAllViews();
         }
@@ -934,53 +1184,82 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (rawHTML.isEmpty()) {
             return;
         }
+        setViews(
+                computeBlocks(rawHTML),
+                subredditName,
+                firstTextView,
+                commentOverflow,
+                click,
+                onLongClickListener);
+    }
 
-        List<String> blocks = SubmissionParser.getBlocks(rawHTML);
-
-        int startIndex = 0;
-        // the <div class="md"> case is when the body contains a table or code block first
-        if (!blocks.get(0).equals("<div class=\"md\">")) {
-            firstTextView.setVisibility(View.VISIBLE);
-            firstTextView.setTextHtml(blocks.get(0) + " ", subredditName);
-            startIndex = 1;
-        } else {
-            firstTextView.setText("");
+    /**
+     * As {@link #setViews(String, String, SpoilerRobotoTextView, CommentOverflow,
+     * View.OnClickListener, View.OnLongClickListener)}, but with the blocks already parsed. A null
+     * {@code blocks} means the source html was empty, which leaves the views untouched.
+     */
+    public void setViews(
+            List<String> blocks,
+            String subredditName,
+            final SpoilerRobotoTextView firstTextView,
+            CommentOverflow commentOverflow,
+            View.OnClickListener click,
+            View.OnLongClickListener onLongClickListener) {
+        if (blocks == null) {
+            return;
         }
 
-        if (blocks.size() > 1) {
-            if (startIndex == 0) {
-                commentOverflow.setViews(blocks, subredditName, click, onLongClickListener);
-            } else {
-                commentOverflow.setViews(
-                        blocks.subList(startIndex, blocks.size()),
-                        subredditName,
-                        click,
-                        onLongClickListener);
-            }
+        if (blocks.isEmpty()) {
+            firstTextView.setText("");
+            firstTextView.setVisibility(View.GONE);
+            commentOverflow.removeAllViews();
+            return;
+        }
+
+        int startIndex;
+        String first = blocks.get(0);
+        // Image and video blocks are both rendered by CommentOverflow, never as inline text.
+        boolean firstIsMedia =
+                first.startsWith(SubmissionParser.IMAGE_BLOCK_PREFIX)
+                        || first.startsWith(SubmissionParser.VIDEO_BLOCK_PREFIX);
+        // the <div class="md"> case is when the body contains a table or code block first
+        if (!firstIsMedia && !first.equals("<div class=\"md\">")) {
+            firstTextView.setVisibility(View.VISIBLE);
+            firstTextView.setTextHtml(first + " ", subredditName);
+            startIndex = 1;
+        } else {
+            // First block is media (or table/code); render everything via CommentOverflow.
+            firstTextView.setText("");
+            firstTextView.setVisibility(firstIsMedia ? View.GONE : View.VISIBLE);
+            startIndex = 0;
+        }
+
+        List<String> overflow =
+                startIndex == 0 ? blocks : blocks.subList(startIndex, blocks.size());
+        if (!overflow.isEmpty()) {
+            commentOverflow.setViews(overflow, subredditName, click, onLongClickListener);
         } else {
             commentOverflow.removeAllViews();
         }
     }
 
-    private void setViews(String rawHTML, String subredditName, CommentViewHolder holder, Comment comment) {
-        if (rawHTML.isEmpty()) {
-            return;
-        }
-
-        if (SettingValues.collapseBlockedUsers) {
-            // Use cached blocked users list
-            if (isUserBlocked(comment.getAuthor())) {
-                Log.d(LogUtil.getTag(), "Blocking user: " + comment.getAuthor());
-                holder.firstTextView.setVisibility(View.GONE);
-                holder.commentOverflow.setVisibility(View.GONE);
-                if (!hiddenPersons.contains(comment.getFullName())) {
-                    hiddenPersons.add(comment.getFullName());
-                }
-                return;
-            }
-        }
-
+    public void setViews(String rawHTML, String subredditName, CommentViewHolder holder) {
         setViews(rawHTML, subredditName, holder.firstTextView, holder.commentOverflow);
+    }
+
+    private void setViews(
+            List<String> blocks,
+            String subredditName,
+            CommentViewHolder holder,
+            View.OnClickListener click,
+            View.OnLongClickListener longClickListener) {
+        setViews(
+                blocks,
+                subredditName,
+                holder.firstTextView,
+                holder.commentOverflow,
+                click,
+                longClickListener);
     }
 
     private void setViews(
@@ -998,7 +1277,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 longClickListener);
     }
 
-    int editingPosition;
+    public int editingPosition;
 
     private void collapseAndHide(final View v) {
         int finalHeight = v.getHeight();
@@ -1042,7 +1321,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mAnimator.start();
     }
 
-    private void doShowMenu(final View l) {
+    public void doShowMenu(final View l) {
         l.setVisibility(View.VISIBLE);
 
         final int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
@@ -1071,9 +1350,10 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mAnimator.start();
     }
 
+    @SuppressWarnings("NullAway.Init") // assigned in collapseAndHide/collapseAndRemove/doShowMenu
     ValueAnimator mAnimator;
 
-    private void expand(final View l) {
+    public void expand(final View l) { // Made public (was private)
         l.setVisibility(View.VISIBLE);
 
         final int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
@@ -1082,7 +1362,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         View l2 =
                 l.findViewById(R.id.replyArea) == null
-                        ? l.findViewById(R.id.innerSend)
+                        ? l.requireViewById(R.id.innerSend)
                         : l.findViewById(R.id.replyArea);
         final int widthSpec2 = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
         final int heightSpec2 = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
@@ -1094,7 +1374,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mAnimator.start();
     }
 
-    private void expandAndSetParams(final View l) {
+    public void expandAndSetParams(final View l) { // Made public (was private)
         l.setVisibility(View.VISIBLE);
 
         final int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
@@ -1103,7 +1383,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         View l2 =
                 l.findViewById(R.id.replyArea) == null
-                        ? l.findViewById(R.id.innerSend)
+                        ? l.requireViewById(R.id.innerSend)
                         : l.findViewById(R.id.replyArea);
         final int widthSpec2 = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
         final int heightSpec2 = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
@@ -1168,7 +1448,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mAnimator.start();
     }
 
-    CommentNode currentBaseNode;
+    public @Nullable CommentNode currentBaseNode;
 
     public void setCommentStateHighlighted(
             final CommentViewHolder holder,
@@ -1176,590 +1456,8 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             final CommentNode baseNode,
             boolean isReplying,
             boolean animate) {
-        if (currentlySelected != null && currentlySelected != holder) {
-            setCommentStateUnhighlighted(currentlySelected, currentBaseNode, true);
-        }
-
-        // If a comment is hidden and (Swap long press == true), then a single click will un-hide
-        // the comment
-        // and expand to show all children comments
-        if (SettingValues.swap
-                && holder.firstTextView.getVisibility() == View.GONE
-                && !isReplying) {
-            hiddenPersons.remove(n.getFullName());
-            unhideAll(baseNode, holder.getBindingAdapterPosition() + 1);
-            if (toCollapse.contains(n.getFullName()) && SettingValues.collapseComments) {
-                setViews(
-                        n.getDataNode().get("body_html").asText(),
-                        submission.getSubredditName(),
-                        holder,
-                        n);
-            }
-            CommentAdapterHelper.hideChildrenObject(holder.childrenNumber);
-            holder.commentOverflow.setVisibility(View.VISIBLE);
-            toCollapse.remove(n.getFullName());
-        } else {
-            currentlySelected = holder;
-            currentBaseNode = baseNode;
-            int color = Palette.getColor(n.getSubredditName());
-            currentSelectedItem = n.getFullName();
-            currentNode = baseNode;
-            LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
-            resetMenu(holder.menuArea, false);
-            final View baseView =
-                    inflater.inflate(
-                            SettingValues.rightHandedCommentMenu
-                                    ? R.layout.comment_menu_right_handed
-                                    : R.layout.comment_menu,
-                            holder.menuArea);
-
-            if (!isReplying) {
-                baseView.setVisibility(View.GONE);
-                if (animate) {
-                    expand(baseView);
-                } else {
-                    baseView.setVisibility(View.VISIBLE);
-                    final int widthSpec =
-                            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                    final int heightSpec =
-                            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                    baseView.measure(widthSpec, heightSpec);
-                    View l2 =
-                            baseView.findViewById(R.id.replyArea) == null
-                                    ? baseView.findViewById(R.id.innerSend)
-                                    : baseView.findViewById(R.id.replyArea);
-                    final int widthSpec2 =
-                            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                    final int heightSpec2 =
-                            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                    l2.measure(widthSpec2, heightSpec2);
-                    ViewGroup.LayoutParams layoutParams = baseView.getLayoutParams();
-                    layoutParams.height = baseView.getMeasuredHeight() - l2.getMeasuredHeight();
-                    baseView.setLayoutParams(layoutParams);
-                }
-            }
-
-            RecyclerView.LayoutParams params =
-                    (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
-            params.setMargins(0, 0, 0, 0);
-            holder.itemView.setLayoutParams(params);
-
-            View reply = baseView.findViewById(R.id.reply);
-            View send = baseView.findViewById(R.id.send);
-
-            final View menu = baseView.findViewById(R.id.menu);
-            final View replyArea = baseView.findViewById(R.id.replyArea);
-
-            final View more = baseView.findViewById(R.id.more);
-            final ImageView upvote = baseView.findViewById(R.id.upvote);
-            final ImageView downvote = baseView.findViewById(R.id.downvote);
-            View discard = baseView.findViewById(R.id.discard);
-            final EditText replyLine = baseView.findViewById(R.id.replyLine);
-            final ImageView mod = baseView.findViewById(R.id.mod);
-
-            final Comment comment = baseNode.getComment();
-            if (ActionStates.getVoteDirection(comment) == VoteDirection.UPVOTE) {
-                BlendModeUtil.tintImageViewAsModulate(upvote, holder.textColorUp);
-                upvote.setContentDescription(
-                        mContext.getResources().getString(R.string.btn_upvoted));
-            } else if (ActionStates.getVoteDirection(comment) == VoteDirection.DOWNVOTE) {
-                BlendModeUtil.tintImageViewAsModulate(downvote, holder.textColorDown);
-                downvote.setContentDescription(
-                        mContext.getResources().getString(R.string.btn_downvoted));
-            } else {
-                downvote.clearColorFilter();
-                downvote.setContentDescription(
-                        mContext.getResources().getString(R.string.btn_downvote));
-                upvote.clearColorFilter();
-                upvote.setContentDescription(
-                        mContext.getResources().getString(R.string.btn_upvote));
-            }
-
-            try {
-                if (UserSubscriptions.modOf.contains(submission.getSubredditName())) {
-                    // todo
-                    mod.setVisibility(View.GONE);
-                } else {
-                    mod.setVisibility(View.GONE);
-                }
-            } catch (Exception e) {
-                Log.d(LogUtil.getTag(), "Error loading mod " + e.toString());
-            }
-
-            if (UserSubscriptions.modOf != null
-                    && UserSubscriptions.modOf.contains(
-                            submission.getSubredditName().toLowerCase(Locale.ENGLISH))) {
-                mod.setVisibility(View.VISIBLE);
-                final Map<String, Integer> reports = comment.getUserReports();
-                final Map<String, String> reports2 = comment.getModeratorReports();
-                if (reports.size() + reports2.size() > 0) {
-                    BlendModeUtil.tintImageViewAsSrcAtop(
-                            mod, ContextCompat.getColor(mContext, R.color.md_red_300));
-                } else {
-                    BlendModeUtil.tintImageViewAsSrcAtop(mod, Color.WHITE);
-                }
-                mod.setOnClickListener(
-                        new OnSingleClickListener() {
-                            @Override
-                            public void onSingleClick(View v) {
-                                CommentAdapterHelper.showModBottomSheet(
-                                        CommentAdapter.this,
-                                        mContext,
-                                        baseNode,
-                                        comment,
-                                        holder,
-                                        reports,
-                                        reports2);
-                            }
-                        });
-            } else {
-                mod.setVisibility(View.GONE);
-            }
-
-            final ImageView edit = baseView.findViewById(R.id.edit);
-            if (Authentication.name != null
-                    && Authentication.name
-                            .toLowerCase(Locale.ENGLISH)
-                            .equals(comment.getAuthor().toLowerCase(Locale.ENGLISH))
-                    && Authentication.didOnline) {
-                edit.setOnClickListener(
-                        new OnSingleClickListener() {
-                            @Override
-                            public void onSingleClick(View v) {
-                                CommentAdapterHelper.doCommentEdit(
-                                        CommentAdapter.this,
-                                        mContext,
-                                        fm,
-                                        baseNode,
-                                        baseNode.isTopLevel()
-                                                ? submission.getSelftext()
-                                                : baseNode.getParent().getComment().getBody(),
-                                        holder);
-                            }
-                        });
-            } else {
-                edit.setVisibility(View.GONE);
-            }
-
-            final ImageView delete = baseView.findViewById(R.id.delete);
-            if (Authentication.name != null
-                    && Authentication.name
-                            .toLowerCase(Locale.ENGLISH)
-                            .equals(comment.getAuthor().toLowerCase(Locale.ENGLISH))
-                    && Authentication.didOnline) {
-                delete.setOnClickListener(
-                        new OnSingleClickListener() {
-                            @Override
-                            public void onSingleClick(View v) {
-                                CommentAdapterHelper.deleteComment(
-                                        CommentAdapter.this, mContext, baseNode, holder);
-                            }
-                        });
-            } else {
-                delete.setVisibility(View.GONE);
-            }
-
-            if (Authentication.isLoggedIn
-                    && !submission.isArchived()
-                    && !submission.isLocked()
-                    && !(comment.getDataNode().has("locked")
-                            && comment.getDataNode().get("locked").asBoolean())
-                    && !deleted.contains(n.getFullName())
-                    && !comment.getAuthor().equals("[deleted]")
-                    && Authentication.didOnline) {
-                if (isReplying) {
-                    baseView.setVisibility(View.VISIBLE);
-
-                    final int widthSpec =
-                            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                    final int heightSpec =
-                            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                    baseView.measure(widthSpec, heightSpec);
-
-                    View l2 =
-                            baseView.findViewById(R.id.replyArea) == null
-                                    ? baseView.findViewById(R.id.innerSend)
-                                    : baseView.findViewById(R.id.replyArea);
-                    final int widthSpec2 =
-                            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                    final int heightSpec2 =
-                            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                    l2.measure(widthSpec2, heightSpec2);
-                    RelativeLayout.LayoutParams params2 =
-                            (RelativeLayout.LayoutParams) baseView.getLayoutParams();
-                    params2.height = RelativeLayout.LayoutParams.WRAP_CONTENT;
-                    params2.addRule(RelativeLayout.BELOW, R.id.commentOverflow);
-                    baseView.setLayoutParams(params2);
-                    replyArea.setVisibility(View.VISIBLE);
-                    menu.setVisibility(View.GONE);
-                    currentlyEditing = replyLine;
-                    currentlyEditing.setOnFocusChangeListener(
-                            new View.OnFocusChangeListener() {
-                                @Override
-                                public void onFocusChange(View v, boolean hasFocus) {
-                                    if (hasFocus) {
-                                        mPage.fastScroll.setVisibility(View.GONE);
-                                        if (mPage.fab != null) {
-                                            mPage.fab.setVisibility(View.GONE);
-                                        }
-                                        mPage.overrideFab = true;
-                                    } else if (SettingValues.fastscroll) {
-                                        mPage.fastScroll.setVisibility(View.VISIBLE);
-                                        if (mPage.fab != null) {
-                                            mPage.fab.setVisibility(View.VISIBLE);
-                                        }
-                                        mPage.overrideFab = false;
-                                    }
-                                }
-                            });
-                    final TextView profile = baseView.findViewById(R.id.profile);
-                    changedProfile = Authentication.name;
-                    profile.setText("/u/" + changedProfile);
-                    profile.setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    final HashMap<String, String> accounts = new HashMap<>();
-
-                                    for (String s :
-                                            Authentication.authentication.getStringSet(
-                                                    "accounts", new HashSet<String>())) {
-                                        if (s.contains(":")) {
-                                            accounts.put(s.split(":")[0], s.split(":")[1]);
-                                        } else {
-                                            accounts.put(s, "");
-                                        }
-                                    }
-                                    final ArrayList<String> keys =
-                                            new ArrayList<>(accounts.keySet());
-                                    final int i = keys.indexOf(changedProfile);
-
-                                    new AlertDialog.Builder(mContext)
-                                            .setTitle(R.string.sorting_choose)
-                                            .setSingleChoiceItems(
-                                                    keys.toArray(new String[0]),
-                                                    i,
-                                                    (dialog, which) -> {
-                                                        changedProfile = keys.get(which);
-                                                        profile.setText("/u/" + changedProfile);
-                                                    })
-                                            .setNegativeButton(R.string.btn_cancel, null)
-                                            .show();
-                                }
-                            });
-                    replyLine.requestFocus();
-                    KeyboardUtil.toggleKeyboard(
-                            mContext,
-                            InputMethodManager.SHOW_FORCED,
-                            InputMethodManager.HIDE_IMPLICIT_ONLY);
-
-                    currentlyEditingId = n.getFullName();
-                    replyLine.setText(backedText);
-                    replyLine.addTextChangedListener(
-                            new SimpleTextWatcher() {
-                                @Override
-                                public void onTextChanged(
-                                        CharSequence s, int start, int before, int count) {
-                                    backedText = s.toString();
-                                }
-                            });
-                    editingPosition = holder.getBindingAdapterPosition();
-                }
-                reply.setOnClickListener(
-                        new OnSingleClickListener() {
-                            @Override
-                            public void onSingleClick(View v) {
-                                expandAndSetParams(baseView);
-
-                                // If the base theme is Light or Sepia, tint the Editor actions to
-                                // be white
-                                if (SettingValues.currentTheme == 1
-                                        || SettingValues.currentTheme == 5) {
-                                    final ImageView saveDraft =
-                                            (ImageView) replyArea.findViewById(R.id.savedraft);
-                                    final ImageView draft =
-                                            (ImageView) replyArea.findViewById(R.id.draft);
-                                    final ImageView imagerep =
-                                            (ImageView) replyArea.findViewById(R.id.imagerep);
-                                    final ImageView link =
-                                            (ImageView) replyArea.findViewById(R.id.link);
-                                    final ImageView bold =
-                                            (ImageView) replyArea.findViewById(R.id.bold);
-                                    final ImageView italics =
-                                            (ImageView) replyArea.findViewById(R.id.italics);
-                                    final ImageView bulletlist =
-                                            (ImageView) replyArea.findViewById(R.id.bulletlist);
-                                    final ImageView numlist =
-                                            (ImageView) replyArea.findViewById(R.id.numlist);
-                                    final ImageView draw =
-                                            (ImageView) replyArea.findViewById(R.id.draw);
-                                    final ImageView quote =
-                                            (ImageView) replyArea.findViewById(R.id.quote);
-                                    final ImageView size =
-                                            (ImageView) replyArea.findViewById(R.id.size);
-                                    final ImageView strike =
-                                            (ImageView) replyArea.findViewById(R.id.strike);
-                                    final ImageView author =
-                                            (ImageView) replyArea.findViewById(R.id.author);
-                                    final ImageView spoiler =
-                                            (ImageView) replyArea.findViewById(R.id.spoiler);
-                                    final List<ImageView> imageViewSet =
-                                            Arrays.asList(
-                                                    saveDraft,
-                                                    draft,
-                                                    imagerep,
-                                                    link,
-                                                    bold,
-                                                    italics,
-                                                    bulletlist,
-                                                    numlist,
-                                                    draw,
-                                                    quote,
-                                                    size,
-                                                    strike,
-                                                    author,
-                                                    spoiler);
-                                    BlendModeUtil.tintImageViewsAsSrcAtop(
-                                            imageViewSet, Color.WHITE);
-                                    BlendModeUtil.tintDrawableAsSrcIn(
-                                            replyLine.getBackground(), Color.WHITE);
-                                }
-
-                                replyArea.setVisibility(View.VISIBLE);
-                                menu.setVisibility(View.GONE);
-                                currentlyEditing = replyLine;
-                                DoEditorActions.doActions(
-                                        currentlyEditing,
-                                        replyArea,
-                                        fm,
-                                        (Activity) mContext,
-                                        comment.getBody(),
-                                        getParents(baseNode));
-                                currentlyEditing.setOnFocusChangeListener(
-                                        new View.OnFocusChangeListener() {
-                                            @Override
-                                            public void onFocusChange(View v, boolean hasFocus) {
-                                                if (hasFocus) {
-                                                    mPage.fastScroll.setVisibility(View.GONE);
-                                                    if (mPage.fab != null)
-                                                        mPage.fab.setVisibility(View.GONE);
-                                                    mPage.overrideFab = true;
-                                                } else if (SettingValues.fastscroll) {
-                                                    mPage.fastScroll.setVisibility(View.VISIBLE);
-                                                    if (mPage.fab != null)
-                                                        mPage.fab.setVisibility(View.VISIBLE);
-                                                    mPage.overrideFab = false;
-                                                }
-                                            }
-                                        });
-                                final TextView profile = baseView.findViewById(R.id.profile);
-                                changedProfile = Authentication.name;
-                                profile.setText("/u/" + changedProfile);
-                                profile.setOnClickListener(
-                                        new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                final HashMap<String, String> accounts =
-                                                        new HashMap<>();
-
-                                                for (String s :
-                                                        Authentication.authentication.getStringSet(
-                                                                "accounts",
-                                                                new HashSet<String>())) {
-                                                    if (s.contains(":")) {
-                                                        accounts.put(
-                                                                s.split(":")[0], s.split(":")[1]);
-                                                    } else {
-                                                        accounts.put(s, "");
-                                                    }
-                                                }
-                                                final ArrayList<String> keys =
-                                                        new ArrayList<>(accounts.keySet());
-                                                final int i = keys.indexOf(changedProfile);
-
-                                                new AlertDialog.Builder(mContext)
-                                                        .setTitle(R.string.sorting_choose)
-                                                        .setSingleChoiceItems(
-                                                                keys.toArray(new String[0]),
-                                                                i,
-                                                                (dialog, which) -> {
-                                                                    changedProfile =
-                                                                            keys.get(which);
-                                                                    profile.setText(
-                                                                            "/u/" + changedProfile);
-                                                                })
-                                                        .setNegativeButton(
-                                                                R.string.btn_cancel, null)
-                                                        .show();
-                                            }
-                                        });
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                                    replyLine.setOnFocusChangeListener(
-                                            (view, b) -> {
-                                                if (b) {
-                                                    view.postDelayed(
-                                                            () -> {
-                                                                if (!view.hasFocus())
-                                                                    view.requestFocus();
-                                                            },
-                                                            100);
-                                                }
-                                            });
-                                }
-                                replyLine.requestFocus(); // TODO: Not working when called a second
-                                // time
-                                KeyboardUtil.toggleKeyboard(
-                                        mContext,
-                                        InputMethodManager.SHOW_FORCED,
-                                        InputMethodManager.HIDE_IMPLICIT_ONLY);
-
-                                currentlyEditingId = n.getFullName();
-                                replyLine.addTextChangedListener(
-                                        new SimpleTextWatcher() {
-                                            @Override
-                                            public void onTextChanged(
-                                                    CharSequence s,
-                                                    int start,
-                                                    int before,
-                                                    int count) {
-                                                backedText = s.toString();
-                                            }
-                                        });
-                                editingPosition = holder.getBindingAdapterPosition();
-                            }
-                        });
-                send.setOnClickListener(
-                        new OnSingleClickListener() {
-                            @Override
-                            public void onSingleClick(View v) {
-                                currentlyEditingId = "";
-                                backedText = "";
-
-                                doShowMenu(baseView);
-                                if (SettingValues.fastscroll) {
-                                    mPage.fastScroll.setVisibility(View.VISIBLE);
-                                    if (mPage.fab != null) mPage.fab.setVisibility(View.VISIBLE);
-                                    mPage.overrideFab = false;
-                                }
-                                dataSet.refreshLayout.setRefreshing(true);
-                                if (currentlyEditing != null) {
-                                    String text = currentlyEditing.getText().toString();
-                                    new ReplyTaskComment(n, baseNode, holder, changedProfile)
-                                            .execute(text);
-                                    currentlyEditing = null;
-                                    editingPosition = -1;
-                                }
-                                // Hide soft keyboard
-                                View view =
-                                        ((Activity) mContext).findViewById(android.R.id.content);
-                                if (view != null) {
-                                    KeyboardUtil.hideKeyboard(mContext, view.getWindowToken(), 0);
-                                }
-                            }
-                        });
-                discard.setOnClickListener(
-                        new OnSingleClickListener() {
-                            @Override
-                            public void onSingleClick(View v) {
-                                currentlyEditing = null;
-                                editingPosition = -1;
-                                currentlyEditingId = "";
-                                backedText = "";
-                                mPage.overrideFab = false;
-                                View view =
-                                        ((Activity) mContext).findViewById(android.R.id.content);
-                                if (view != null) {
-                                    KeyboardUtil.hideKeyboard(mContext, view.getWindowToken(), 0);
-                                }
-                                doShowMenu(baseView);
-                            }
-                        });
-            } else {
-                if (reply.getVisibility() == View.VISIBLE) {
-                    reply.setVisibility(View.GONE);
-                }
-                if ((submission.isArchived()
-                                || deleted.contains(n.getFullName())
-                                || comment.getAuthor().equals("[deleted]"))
-                        && Authentication.isLoggedIn
-                        && Authentication.didOnline
-                        && upvote.getVisibility() == View.VISIBLE) {
-                    upvote.setVisibility(View.GONE);
-                }
-                if ((submission.isArchived()
-                                || deleted.contains(n.getFullName())
-                                || comment.getAuthor().equals("[deleted]"))
-                        && Authentication.isLoggedIn
-                        && Authentication.didOnline
-                        && downvote.getVisibility() == View.VISIBLE) {
-                    downvote.setVisibility(View.GONE);
-                }
-            }
-
-            more.setOnClickListener(
-                    new OnSingleClickListener() {
-                        @Override
-                        public void onSingleClick(View v) {
-                            CommentAdapterHelper.showOverflowBottomSheet(
-                                    CommentAdapter.this, mContext, holder, baseNode);
-                        }
-                    });
-            upvote.setOnClickListener(
-                    new OnSingleClickListener() {
-
-                        @Override
-                        public void onSingleClick(View v) {
-                            setCommentStateUnhighlighted(holder, comment, baseNode, true);
-                            if (ActionStates.getVoteDirection(comment) == VoteDirection.UPVOTE) {
-                                new Vote(v, mContext).execute(n);
-                                ActionStates.setVoteDirection(comment, VoteDirection.NO_VOTE);
-                                doScoreText(holder, n, CommentAdapter.this);
-                                upvote.clearColorFilter();
-                            } else {
-                                new Vote(true, v, mContext).execute(n);
-                                ActionStates.setVoteDirection(comment, VoteDirection.UPVOTE);
-                                downvote.clearColorFilter(); // reset colour
-                                doScoreText(holder, n, CommentAdapter.this);
-                                BlendModeUtil.tintImageViewAsModulate(upvote, holder.textColorUp);
-                            }
-                        }
-                    });
-            downvote.setOnClickListener(
-                    new OnSingleClickListener() {
-
-                        @Override
-                        public void onSingleClick(View v) {
-                            setCommentStateUnhighlighted(holder, comment, baseNode, true);
-                            if (ActionStates.getVoteDirection(comment) == VoteDirection.DOWNVOTE) {
-                                new Vote(v, mContext).execute(n);
-                                ActionStates.setVoteDirection(comment, VoteDirection.NO_VOTE);
-                                doScoreText(holder, n, CommentAdapter.this);
-                                downvote.clearColorFilter();
-
-                            } else {
-                                new Vote(false, v, mContext).execute(n);
-                                ActionStates.setVoteDirection(comment, VoteDirection.DOWNVOTE);
-                                upvote.clearColorFilter(); // reset colour
-                                doScoreText(holder, n, CommentAdapter.this);
-                                BlendModeUtil.tintImageViewAsModulate(
-                                        downvote, holder.textColorDown);
-                            }
-                        }
-                    });
-            menu.setBackgroundColor(color);
-            replyArea.setBackgroundColor(color);
-
-            if (!isReplying) {
-                menu.setVisibility(View.VISIBLE);
-                replyArea.setVisibility(View.GONE);
-            }
-
-            holder.itemView
-                    .findViewById(R.id.background)
-                    .setBackgroundColor(
-                            Color.argb(
-                                    50, Color.red(color), Color.green(color), Color.blue(color)));
-        }
+        // Call the extracted static method
+        CommentStateUtil.handleSetCommentStateHighlighted(this, holder, n, baseNode, isReplying, animate);
     }
 
     public void doHighlighted(
@@ -1781,7 +1479,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    public EditText currentlyEditing;
+    public @Nullable EditText currentlyEditing;
 
     public void resetMenu(LinearLayout v, boolean collapsed) {
         v.removeAllViews();
@@ -1809,7 +1507,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 && lastSeen < c.getCreated().getTime()
                 && !dataSet.single
                 && SettingValues.commentLastVisit
-                && !Authentication.name.equals(c.getAuthor())) {
+                && !Authentication.nameOrEmpty().equals(c.getAuthor())) {
             color = Palette.getColor(baseNode.getComment().getSubredditName());
             color = Color.argb(20, Color.red(color), Color.green(color), Color.blue(color));
         } else {
@@ -1830,7 +1528,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         params.setMargins(width, 0, 0, 0);
         holder.itemView.setLayoutParams(params);
 
-        holder.itemView.findViewById(R.id.background).setBackgroundColor(color);
+        holder.itemView.requireViewById(R.id.background).setBackgroundColor(color);
     }
 
     public void setCommentStateUnhighlighted(
@@ -1841,7 +1539,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (currentlyEditing != null
                 && !currentlyEditing.getText().toString().isEmpty()
                 && holder.getBindingAdapterPosition() <= editingPosition) {
-            new AlertDialog.Builder(mContext)
+            DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                     .setTitle(R.string.discard_comment_title)
                     .setMessage(R.string.comment_discard_msg)
                     .setPositiveButton(
@@ -1865,7 +1563,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 setCommentStateUnhighlighted(holder, comment, baseNode, true);
                             })
                     .setNegativeButton(R.string.btn_no, null)
-                    .show();
+                    );
         } else {
             currentlySelected = null;
             currentSelectedItem = "";
@@ -1890,14 +1588,14 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             Resources.Theme theme = mContext.getTheme();
             theme.resolveAttribute(R.attr.card_background, typedValue, true);
             int color = typedValue.data;
-            holder.itemView.findViewById(R.id.background).setBackgroundColor(color);
+            holder.itemView.requireViewById(R.id.background).setBackgroundColor(color);
         }
     }
 
     public void doLongClick(
             final CommentViewHolder holder, final Comment comment, final CommentNode baseNode) {
         if (currentlyEditing != null && !currentlyEditing.getText().toString().isEmpty()) {
-            new AlertDialog.Builder(mContext)
+            DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                     .setTitle(R.string.discard_comment_title)
                     .setMessage(R.string.comment_discard_msg)
                     .setPositiveButton(
@@ -1921,7 +1619,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 doLongClick(holder, comment, baseNode);
                             })
                     .setNegativeButton(R.string.btn_no, null)
-                    .show();
+                    );
 
         } else {
             if (currentSelectedItem != null
@@ -1951,7 +1649,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (currentlyEditing != null
                 && !currentlyEditing.getText().toString().isEmpty()
                 && holder.getBindingAdapterPosition() <= editingPosition) {
-            new AlertDialog.Builder(mContext)
+            DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                     .setTitle(R.string.discard_comment_title)
                     .setMessage(R.string.comment_discard_msg)
                     .setPositiveButton(
@@ -1975,36 +1673,64 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 doOnClick(holder, baseNode, comment);
                             })
                     .setNegativeButton(R.string.btn_no, null)
-                    .show();
+                    );
 
         } else {
             if (isClicking) {
                 isClicking = false;
                 resetMenu(holder.menuArea, true);
-                isHolder.itemView.findViewById(R.id.menu).setVisibility(View.GONE);
+                View menu = holder.itemView.findViewById(R.id.menu);
+                if (menu != null) {
+                    menu.setVisibility(View.GONE);
+                }
             } else {
                 if (hiddenPersons.contains(comment.getFullName())) {
                     hiddenPersons.remove(comment.getFullName());
                     unhideAll(baseNode, holder.getBindingAdapterPosition() + 1);
 
+                    boolean blockedBody = false;
                     if (toCollapse.contains(comment.getFullName())
                             && SettingValues.collapseComments) {
-                        setViews(
-                                comment.getDataNode().get("body_html").asText(),
-                                submission.getSubredditName(),
-                                holder,
-                                comment);
+                        blockedBody = collapseIfBlocked(comment, holder);
+                        if (!blockedBody) {
+                            // Expanding re-renders the body here, not through onBindViewHolder, so an
+                            // archive recovery has to win over the placeholder on this path too.
+                            final String recoveredBody =
+                                    CommentRecovery.getRecovered(comment.getFullName());
+                            if (recoveredBody != null) {
+                                setViewsMarkdown(
+                                        comment,
+                                        recoveredBody,
+                                        "",
+                                        MiscUtil.orEmpty(submission.getSubredditName()),
+                                        holder);
+                            } else if (SettingValues.markdownNewReddit) {
+                                setViewsMarkdown(comment, MiscUtil.orEmpty(submission.getSubredditName()), holder);
+                            } else {
+                                setViews(
+                                        SubmissionParser.replaceProcessingImgPlaceholders(
+                                                comment.getDataNode().path("body_html").asText(""),
+                                                comment.getDataNode()),
+                                        MiscUtil.orEmpty(submission.getSubredditName()),
+                                        holder);
+                            }
+                        }
                     }
 
                     CommentAdapterHelper.hideChildrenObject(holder.childrenNumber);
-                    if (!holder.firstTextView.getText().toString().isEmpty()) {
-                        holder.firstTextView.setVisibility(View.VISIBLE);
-                    } else {
-                        holder.firstTextView.setVisibility(View.GONE);
-                    }
-                    holder.commentOverflow.setVisibility(View.VISIBLE);
+                    // A blocked author's body was not re-rendered above, so restoring visibility
+                    // here would reveal whatever text and overflow views the recycled holder still
+                    // carried from another comment. Leave the row collapsed.
+                    if (!blockedBody) {
+                        if (!holder.firstTextView.getText().toString().isEmpty()) {
+                            holder.firstTextView.setVisibility(View.VISIBLE);
+                        } else {
+                            holder.firstTextView.setVisibility(View.GONE);
+                        }
+                        holder.commentOverflow.setVisibility(View.VISIBLE);
 
-                    toCollapse.remove(comment.getFullName());
+                        toCollapse.remove(comment.getFullName());
+                    }
 
                 } else {
                     int childNumber = getChildNumber(baseNode);
@@ -2042,7 +1768,23 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+    /**
+     * The number of comments under {@code user}, shown as the "+N" badge on a collapsed row.
+     * Cached: this walks the whole subtree, and it ran on every bind of every collapsed row. Only
+     * a change to the comment tree can change the answer, so it is dropped alongside the position
+     * map. Called from onBindViewHolder, i.e. always on the UI thread.
+     */
     private int getChildNumber(CommentNode user) {
+        if (childCountsDirty) {
+            childCountCache.clear();
+            childCountsDirty = false;
+        }
+        String key = user.getComment().getFullName();
+        Integer cached = childCountCache.get(key);
+        if (cached != null) {
+            return cached;
+        }
+
         int i = 0;
         for (CommentNode ignored : user.walkTree()) {
             i++;
@@ -2051,6 +1793,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
         }
 
+        childCountCache.put(key, i - 1);
         return i - 1;
     }
 
@@ -2090,11 +1833,13 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 try {
                     listView.setItemAnimator(new AlphaInAnimator());
                 } catch (Exception ignored) {
+                    // As in setCollapseAnimator: decoration only.
                 }
             }
             notifyItemRangeInserted(i, counter);
         } catch (Exception ignored) {
-
+            // The tree changed under the unhide; the next bind
+            // rebuilds it from the adapter's own data.
         }
     }
 
@@ -2143,9 +1888,10 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public int unhideNumber(CommentNode n, int i) {
+        invalidatePositionCache();
         for (CommentNode ignored : n.getChildren()) {
 
-            if (!ignored.getComment().getFullName().equals(n.getComment().getFullName())) {
+            if (!MiscUtil.orEmpty(ignored.getComment().getFullName()).equals(MiscUtil.orEmpty(n.getComment().getFullName()))) {
                 boolean parentHidden = parentHidden(ignored);
 
                 if (parentHidden) {
@@ -2187,8 +1933,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public int hideNumber(CommentNode n, int i) {
+        invalidatePositionCache();
         for (CommentNode ignored : n.getChildren()) {
-            if (!ignored.getComment().getFullName().equals(n.getComment().getFullName())) {
+            if (!MiscUtil.orEmpty(ignored.getComment().getFullName()).equals(MiscUtil.orEmpty(n.getComment().getFullName()))) {
                 String fullname = ignored.getComment().getFullName();
 
                 if (!hidden.contains(fullname)) {
@@ -2222,18 +1969,18 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public String[] getParents(CommentNode comment) {
         String[] bodies = new String[comment.getDepth() + 1];
-        bodies[0] = comment.getComment().getAuthor();
+        bodies[0] = MiscUtil.orEmpty(comment.getComment().getAuthor());
 
         CommentNode parent = comment.getParent();
         int index = 1;
 
         while (parent != null) {
-            bodies[index] = parent.getComment().getAuthor();
+            bodies[index] = MiscUtil.orEmpty(parent.getComment().getAuthor());
             index++;
             parent = parent.getParent();
         }
 
-        bodies[index - 1] = submission.getAuthor();
+        bodies[index - 1] = MiscUtil.orEmpty(submission.getAuthor());
 
         // Reverse the array so Submission > Author > ... > Current OP
         for (int i = 0; i < bodies.length / 2; i++) {
@@ -2245,7 +1992,80 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return bodies;
     }
 
+    /**
+     * Maps a visible row index to its index in {@link #currentComments}, skipping hidden comments.
+     * Rebuilt lazily after a hide/unhide or a dataset change rather than rescanning the list on
+     * every call, which made binding a thread cost O(n^2) in the number of comments.
+     */
+    /**
+     * The {@link #currentComments} index bound at adapter position {@code adapterPos}. Single source
+     * of truth for the mapping used both here and at the top of {@link #onBindViewHolder}, so the
+     * two can't drift.
+     */
+    private int datasetPositionForAdapterPosition(int adapterPos) {
+        int pos = adapterPos != 0 ? adapterPos - 1 : adapterPos;
+        return getRealPosition(pos - 1);
+    }
+
+    /**
+     * Whether adapter position {@code adapterPos} currently binds the comment {@code fullName}. Lets
+     * an async callback confirm a holder still represents its comment before refreshing that exact
+     * row — a recovery fetch can outlive the bind, and the list may have scrolled the holder onto a
+     * different comment meanwhile.
+     */
+    public boolean isCommentAt(int adapterPos, String fullName) {
+        if (currentComments == null || adapterPos == RecyclerView.NO_POSITION) {
+            return false;
+        }
+        int datasetPosition = datasetPositionForAdapterPosition(adapterPos);
+        if (datasetPosition < 0 || datasetPosition >= currentComments.size()) {
+            return false;
+        }
+        CommentObject o = currentComments.get(datasetPosition);
+        return o instanceof CommentItem
+                && o.comment != null
+                && o.comment.getComment() != null
+                && fullName.equals(o.comment.getComment().getFullName());
+    }
+
+    /**
+     * The adapter position of the currently on-screen row for {@code fullName}, or {@link
+     * RecyclerView#NO_POSITION} if that comment isn't visible. Lets a callback refresh exactly the
+     * recovered row (rather than the whole list) even when its original holder was recycled onto a
+     * different comment; an off-screen comment needs no refresh — it binds from the recovery map on
+     * its next appearance.
+     */
+    public int visibleAdapterPositionOf(String fullName) {
+        if (listView == null) {
+            return RecyclerView.NO_POSITION;
+        }
+        for (int i = 0; i < listView.getChildCount(); i++) {
+            int p = listView.getChildAdapterPosition(listView.getChildAt(i));
+            if (isCommentAt(p, fullName)) {
+                return p;
+            }
+        }
+        return RecyclerView.NO_POSITION;
+    }
+
     public int getRealPosition(int position) {
+        if (currentComments == null) {
+            return position;
+        }
+        if (positionMapDirty
+                || visiblePositions == null
+                || visiblePositions.size() != currentComments.size() - hidden.size()) {
+            rebuildVisiblePositions();
+        }
+        if (position >= 0 && position < visiblePositions.size()) {
+            return visiblePositions.get(position);
+        }
+        // Out of range: fall back to the original walk, which returns a specific past-the-end
+        // value that callers do arithmetic on before it throws. Rare, so the O(n) cost is fine.
+        return walkToRealPosition(position);
+    }
+
+    private int walkToRealPosition(int position) {
         int hElements = getHiddenCountUpTo(position);
         int diff = 0;
         for (int i = 0; i < hElements; i++) {
@@ -2268,198 +2088,30 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return count;
     }
 
-    public class AsyncLoadMore extends AsyncTask<MoreChildItem, Void, Integer> {
-        public MoreCommentViewHolder holder;
-        public int holderPos;
-        public int position;
-        public int dataPos;
-        public String fullname;
+    /** Drop the cached visible-row map; the next {@link #getRealPosition} rebuilds it. */
+    public void invalidatePositionCache() {
+        positionMapDirty = true;
+        childCountsDirty = true;
+    }
 
-        public AsyncLoadMore(
-                int position,
-                int holderPos,
-                MoreCommentViewHolder holder,
-                int dataPos,
-                String fullname) {
-            this.holderPos = holderPos;
-            this.holder = holder;
-            this.position = position;
-            this.dataPos = dataPos;
-            this.fullname = fullname;
-        }
-
-        @Override
-        public void onPostExecute(Integer data) {
-            currentLoading = null;
-            if (!isCancelled() && data != null) {
-                shifted += data;
-                ((Activity) mContext)
-                        .runOnUiThread(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        currentComments.remove(position);
-                                        notifyItemRemoved(holderPos);
-                                    }
-                                });
-                int oldSize = currentComments.size();
-                currentComments.addAll(position, finalData);
-                int newSize = currentComments.size();
-
-                for (int i2 = 0; i2 < currentComments.size(); i2++) {
-                    keys.put(currentComments.get(i2).getName(), i2);
-                }
-                data = newSize - oldSize;
-                listView.setItemAnimator(new SlideRightAlphaAnimator());
-                notifyItemRangeInserted(holderPos, data);
-                currentPos = holderPos;
-                toShiftTo =
-                        ((LinearLayoutManager) listView.getLayoutManager())
-                                .findLastVisibleItemPosition();
-                shiftFrom =
-                        ((LinearLayoutManager) listView.getLayoutManager())
-                                .findFirstVisibleItemPosition();
-
-            } else if (data == null && currentComments.get(dataPos) instanceof MoreChildItem) {
-                final MoreChildItem baseNode = (MoreChildItem) currentComments.get(dataPos);
-                if (baseNode.children.getCount() > 0) {
-                    holder.content.setText(
-                            mContext.getString(
-                                    R.string.comment_load_more, baseNode.children.getCount()));
-                } else if (!baseNode.children.getChildrenIds().isEmpty()) {
-                    holder.content.setText(R.string.comment_load_more_number_unknown);
-                } else {
-                    holder.content.setText(R.string.thread_continue);
-                }
-                holder.loading.setVisibility(View.GONE);
+    private void rebuildVisiblePositions() {
+        ArrayList<Integer> map = new ArrayList<>(currentComments.size() - hidden.size());
+        for (int i = 0; i < currentComments.size(); i++) {
+            if (!hidden.contains(currentComments.get(i).getName())) {
+                map.add(i);
             }
         }
-
-        ArrayList<CommentObject> finalData;
-
-        @Override
-        protected Integer doInBackground(MoreChildItem... params) {
-            finalData = new ArrayList<>();
-            int i = 0;
-            if (params.length > 0) {
-                try {
-                    CommentNode node = params[0].comment;
-                    node.loadMoreComments(Authentication.reddit);
-                    HashMap<Integer, MoreChildItem> waiting = new HashMap<>();
-
-                    for (CommentNode n : node.walkTree()) {
-                        if (!keys.containsKey(n.getComment().getFullName())) {
-
-                            CommentObject obj = new CommentItem(n);
-                            ArrayList<Integer> removed = new ArrayList<>();
-                            Map<Integer, MoreChildItem> map =
-                                    new TreeMap<>(Collections.reverseOrder());
-                            map.putAll(waiting);
-
-                            for (Integer i2 : map.keySet()) {
-                                if (i2 >= n.getDepth()) {
-                                    finalData.add(waiting.get(i2));
-                                    removed.add(i2);
-                                    waiting.remove(i2);
-                                    i++;
-                                }
-                            }
-
-                            finalData.add(obj);
-                            i++;
-
-                            if (n.hasMoreComments()) {
-                                waiting.put(
-                                        n.getDepth(), new MoreChildItem(n, n.getMoreChildren()));
-                            }
-                        }
-                    }
-                    if (node.hasMoreComments()) {
-                        finalData.add(new MoreChildItem(node, node.getMoreChildren()));
-                        i++;
-                    }
-                } catch (Exception e) {
-                    Log.w(LogUtil.getTag(), "Cannot load more comments " + e);
-                    Writer writer = new StringWriter();
-                    PrintWriter printWriter = new PrintWriter(writer);
-                    e.printStackTrace(printWriter);
-                    String stacktrace = writer.toString().replace(";", ",");
-                    if (stacktrace.contains("UnknownHostException")
-                            || stacktrace.contains("SocketTimeoutException")
-                            || stacktrace.contains("ConnectException")) {
-                        // is offline
-                        final Handler mHandler = new Handler(Looper.getMainLooper());
-                        mHandler.post(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            new AlertDialog.Builder(mContext)
-                                                    .setTitle(R.string.err_title)
-                                                    .setMessage(R.string.err_connection_failed_msg)
-                                                    .setNegativeButton(R.string.btn_ok, null)
-                                                    .show();
-                                        } catch (Exception ignored) {
-
-                                        }
-                                    }
-                                });
-                    } else if (stacktrace.contains("403 Forbidden")
-                            || stacktrace.contains("401 Unauthorized")) {
-                        // Un-authenticated
-                        final Handler mHandler = new Handler(Looper.getMainLooper());
-                        mHandler.post(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            new AlertDialog.Builder(mContext)
-                                                    .setTitle(R.string.err_title)
-                                                    .setMessage(R.string.err_refused_request_msg)
-                                                    .setNegativeButton(R.string.btn_no, null)
-                                                    .setPositiveButton(
-                                                            R.string.btn_yes,
-                                                            (dialog, which) ->
-                                                                    Reddit.authentication
-                                                                            .updateToken(mContext))
-                                                    .show();
-                                        } catch (Exception ignored) {
-
-                                        }
-                                    }
-                                });
-
-                    } else if (stacktrace.contains("404 Not Found")
-                            || stacktrace.contains("400 Bad Request")) {
-                        final Handler mHandler = new Handler(Looper.getMainLooper());
-                        mHandler.post(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            new AlertDialog.Builder(mContext)
-                                                    .setTitle(R.string.err_title)
-                                                    .setMessage(
-                                                            R.string.err_could_not_find_content_msg)
-                                                    .setNegativeButton(R.string.btn_close, null)
-                                                    .show();
-                                        } catch (Exception ignored) {
-
-                                        }
-                                    }
-                                });
-                    }
-                    return null;
-                }
-            }
-            return i;
-        }
+        visiblePositions = map;
+        positionMapDirty = false;
     }
 
     public class AsyncForceLoadChild extends AsyncTask<String, Void, Integer> {
         CommentNode node;
         public int holderPos;
         public int position;
+
+        /** Comments found in the background, spliced into currentComments on the UI thread. */
+        private final List<CommentItem> collected = new ArrayList<>();
 
         public AsyncForceLoadChild(int position, int holderPos, CommentNode baseNode) {
             this.holderPos = holderPos;
@@ -2468,19 +2120,60 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
         @Override
-        public void onPostExecute(Integer data) {
+        public void onPostExecute(Integer result) {
+            // Splice the fetched comments into the shared list here, on the UI thread, rather than
+            // in doInBackground: currentComments and keys are read by the UI thread (binding,
+            // getItemCount) and must never be mutated off it.
+            int data = result;
+            if (data != -1) {
+                // position was captured at construction; the list may have shrunk (collapse/reset)
+                // during the network call, so clamp into range rather than risk an out-of-bounds.
+                int insertAt = Math.max(0, Math.min(position, currentComments.size()));
+                int i = 0;
+                for (CommentItem item : collected) {
+                    currentComments.add(insertAt, item);
+                    i++;
+                }
+                shifted += i;
+                invalidatePositionCache();
+                if (currentComments != null) {
+                    for (int i2 = 0; i2 < currentComments.size(); i2++) {
+                        keys.put(currentComments.get(i2).getName(), i2);
+                    }
+                } else {
+                    i = -1;
+                }
+                data = i;
+            }
+
             if (data != -1) {
                 listView.setItemAnimator(new SlideRightAlphaAnimator());
 
-                notifyItemInserted(holderPos + 1);
+                // data is the number of rows actually spliced in; notify all of them, not just one
+                // (the walk can yield more than a single node). holderPos was captured at
+                // construction, so if the list shrank while loading, holderPos + 1 may no longer be
+                // a valid insert position; notify precisely only when it is (getItemCount() - data
+                // is the pre-insertion count), else fall back to a full refresh so RecyclerView's
+                // item count stays consistent.
+                if (data > 0) {
+                    int notifyStart = holderPos + 1;
+                    if (notifyStart >= 0 && notifyStart <= getItemCount() - data) {
+                        notifyItemRangeInserted(notifyStart, data);
+                    } else {
+                        notifyDataSetChanged();
+                    }
+                }
 
                 currentPos = holderPos + 1;
+                final RecyclerView.LayoutManager shiftLm = listView.getLayoutManager();
                 toShiftTo =
-                        ((LinearLayoutManager) listView.getLayoutManager())
-                                .findLastVisibleItemPosition();
+                        shiftLm == null
+                                ? -1
+                                : ((LinearLayoutManager) shiftLm).findLastVisibleItemPosition();
                 shiftFrom =
-                        ((LinearLayoutManager) listView.getLayoutManager())
-                                .findFirstVisibleItemPosition();
+                        shiftLm == null
+                                ? -1
+                                : ((LinearLayoutManager) shiftLm).findFirstVisibleItemPosition();
 
                 dataSet.refreshLayout.setRefreshing(false);
             } else {
@@ -2488,7 +2181,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 Handler handler2 = new Handler();
                 handler2.postDelayed(
                         new Runnable() {
-                            public void run() {
+                            @Override public void run() {
                                 ((Activity) mContext)
                                         .runOnUiThread(
                                                 new Runnable() {
@@ -2506,61 +2199,68 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         @Override
         protected Integer doInBackground(String... params) {
-
-            int i = 0;
-
-            if (params.length > 0) {
-                try {
-                    node.insertComment(Authentication.reddit, "t1_" + params[0]);
-                    for (CommentNode n : node.walkTree()) {
-                        if (n.getComment().getFullName().contains(params[0])) {
-                            currentComments.add(position, new CommentItem(n));
-                            i++;
-                        }
-                    }
-
-                } catch (Exception e) {
-                    Log.w(LogUtil.getTag(), "Cannot load more comments " + e);
-                    i = -1;
-                }
-
-                shifted += i;
-
-                if (currentComments != null) {
-                    for (int i2 = 0; i2 < currentComments.size(); i2++) {
-                        keys.put(currentComments.get(i2).getName(), i2);
-                    }
-                } else {
-                    i = -1;
-                }
+            if (params.length == 0) {
+                return 0;
             }
-            return i;
+            try {
+                node.insertComment(Authentication.reddit, "t1_" + params[0]);
+                // Read-only tree walk on the background thread; the matches are collected into a
+                // local list and spliced into currentComments on the UI thread (see onPostExecute).
+                for (CommentNode n : node.walkTree()) {
+                    if (MiscUtil.orEmpty(n.getComment().getFullName()).contains(params[0])) {
+                        collected.add(new CommentItem(n));
+                    }
+                }
+            } catch (Exception e) {
+                Log.w(LogUtil.getTag(), "Cannot load more comments " + e);
+                return -1;
+            }
+            return 0;
         }
     }
 
-    public void editComment(CommentNode n, CommentViewHolder holder) {
-        if (n == null) {
-            dataSet.loadMoreReply(this);
-        } else {
-            int position = getRealPosition(holder.getBindingAdapterPosition() - 1);
-            final int holderpos = holder.getBindingAdapterPosition();
-            currentComments.remove(position - 1);
-            currentComments.add(position - 1, new CommentItem(n));
-            listView.setItemAnimator(new SlideRightAlphaAnimator());
-            ((Activity) mContext)
-                    .runOnUiThread(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    notifyItemChanged(holderpos);
+    public void editComment(final CommentNode n, final CommentViewHolder holder) {
+        // Called from AsyncEditTask.doInBackground; hop to the UI thread before touching the shared
+        // comment list, the RecyclerView, or the holder's position.
+        ((Activity) mContext)
+                .runOnUiThread(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                if (n == null) {
+                                    dataSet.loadMoreReply(CommentAdapter.this);
+                                    return;
                                 }
-                            });
-        }
+                                int adapterPos = holder.getBindingAdapterPosition();
+                                if (adapterPos == RecyclerView.NO_POSITION) {
+                                    // Holder was recycled while the edit was in flight; resolve the
+                                    // row by name instead of by its (now invalid) holder position.
+                                    Integer dataIndex =
+                                            keys.get(n.getComment().getFullName());
+                                    if (dataIndex != null
+                                            && dataIndex >= 0
+                                            && dataIndex < currentComments.size()) {
+                                        currentComments.set(dataIndex, new CommentItem(n));
+                                        invalidatePositionCache();
+                                        notifyDataSetChanged();
+                                    }
+                                    return;
+                                }
+                                int position = getRealPosition(adapterPos - 1);
+                                currentComments.remove(position - 1);
+                                currentComments.add(position - 1, new CommentItem(n));
+                                invalidatePositionCache();
+                                listView.setItemAnimator(new SlideRightAlphaAnimator());
+                                notifyItemChanged(adapterPos);
+                            }
+                        });
     }
 
     public class ReplyTaskComment extends AsyncTask<String, Void, String> {
         public Contribution sub;
+        @SuppressWarnings("NullAway.Init") // assigned in AsyncForceLoadChild/run
         CommentNode node;
+        @SuppressWarnings("NullAway.Init") // assigned in onSingleClick, the header click listener/onBindViewHolder/run
         CommentViewHolder holder;
         boolean isSubmission;
         String profileName;
@@ -2586,7 +2286,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (commentBack != null && !commentBack.isEmpty()) {
                     Drafts.addDraft(commentBack);
                     try {
-                        new AlertDialog.Builder(mContext)
+                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                                 .setTitle(R.string.err_comment_post)
                                 .setMessage(
                                         ((why == null)
@@ -2597,13 +2297,13 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                 + mContext.getString(
                                                         R.string.err_comment_post_message))
                                 .setPositiveButton(R.string.btn_ok, null)
-                                .show();
+                                );
                     } catch (Exception ignored) {
-
+                        // Error dialog on a host that is finishing.
                     }
                 } else {
                     try {
-                        new AlertDialog.Builder(mContext)
+                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                                 .setTitle(R.string.err_comment_post)
                                 .setMessage(
                                         ((why == null)
@@ -2614,14 +2314,17 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                 + mContext.getString(
                                                         R.string.err_comment_post_nosave_message))
                                 .setPositiveButton(R.string.btn_ok, null)
-                                .show();
+                                );
                     } catch (Exception ignored) {
-
+                        // Error dialog on a host that is finishing.
                     }
                 }
             } else {
                 if (isSubmission) {
-                    new AsyncForceLoadChild(0, 0, submission.getComments()).execute(s);
+                    final CommentNode rootNode = submission.getComments();
+                    if (rootNode != null) {
+                        new AsyncForceLoadChild(0, 0, rootNode).execute(s);
+                    }
                 } else {
                     new AsyncForceLoadChild(
                                     getRealPosition(holder.getBindingAdapterPosition() - 1),
@@ -2632,24 +2335,40 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
         }
 
-        String why;
-        String commentBack;
+        @Nullable String why;
+        @Nullable String commentBack;
+
+        @Nullable
+        public java.util.List<me.edgan.redditslide.markdown.UploadedImage> uploadedImages;
 
         @Override
-        protected String doInBackground(String... comment) {
+        protected @Nullable String doInBackground(String... comment) {
             if (Authentication.me != null) {
                 try {
                     commentBack = comment[0];
-                    if (profileName.equals(Authentication.name)) {
-                        return new AccountManager(Authentication.reddit).reply(sub, comment[0]);
-                    } else {
-                        LogUtil.v("Switching to " + profileName);
-                        return new AccountManager(getAuthenticatedClient(profileName))
-                                .reply(sub, comment[0]);
+                    RedditClient client =
+                            profileName.equals(Authentication.name)
+                                    ? Authentication.reddit
+                                    : getAuthenticatedClient(profileName);
+                    if (client == null) {
+                        return null;
                     }
+
+                    if (uploadedImages != null && !uploadedImages.isEmpty()) {
+                        // Inline Reddit images require submitting the body as richtext_json, which
+                        // JRAW's reply() cannot do.
+                        return me.edgan.redditslide.util.RichtextSubmission.reply(
+                                client, (Contribution) sub, comment[0], uploadedImages);
+                    }
+
+                    return new AccountManager(client).reply(sub, comment[0]);
                 } catch (Exception e) {
                     if (e instanceof ApiException) {
                         why = ((ApiException) e).getExplanation();
+                    } else if (e
+                            instanceof
+                            me.edgan.redditslide.util.RichtextSubmission.RedditApiError) {
+                        why = e.getMessage();
                     }
                     return null;
                 }
@@ -2663,11 +2382,12 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         String token;
         RedditClient reddit =
                 new RedditClient(
-                        UserAgent.of("android:me.edgan.RedditSlide:v" + BuildConfig.VERSION_NAME));
+                        UserAgent.of(Constants.getUserAgent()));
         final HashMap<String, String> accounts = new HashMap<>();
 
         for (String s :
-                Authentication.authentication.getStringSet("accounts", new HashSet<String>())) {
+                PrefUtil.getStringSet(
+                        Authentication.authentication, "accounts", new HashSet<String>())) {
             if (s.contains(":")) {
                 accounts.put(s.split(":")[0], s.split(":")[1]);
             } else {
@@ -2678,22 +2398,64 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (accounts.containsKey(profileName) && !accounts.get(profileName).isEmpty()) {
             token = accounts.get(profileName);
         } else {
-            ArrayList<String> tokens =
-                    new ArrayList<>(
-                            Authentication.authentication.getStringSet(
-                                    "tokens", new HashSet<String>()));
-            int index = keys.indexOf(profileName);
-            if (keys.indexOf(profileName) > tokens.size()) {
-                index -= 1;
-            }
-            token = tokens.get(index);
+            final String legacy = Authentication.legacyTokenAt(keys.indexOf(profileName));
+            // An empty token leaves the client unauthenticated, which is what the callers already
+            // handle; the unchecked get this replaces threw instead.
+            token = legacy == null ? "" : legacy;
         }
         Authentication.doVerify(token, reddit, true, mContext);
         return reddit;
     }
 
     // Add helper method to check if user is blocked
+    /**
+     * Fetches the account's block list the first time a bind actually needs it. Loading here
+     * rather than in the constructor keeps a comment page free of a /prefs/blocked round-trip
+     * while the setting is off, and still picks the list up if the setting is turned on while
+     * this page is in the back stack.
+     */
+    private void ensureBlockedUsersRequested() {
+        if (blockedUsersRequested) {
+            return;
+        }
+        blockedUsersRequested = true;
+        Profile.getBlockedUsers(new Profile.BlockedUsersCallback() {
+            @Override
+            public void onResult(Set<String> users) {
+                blockedUsers = users;
+                notifyDataSetChanged();
+            }
+        });
+    }
+
     private boolean isUserBlocked(String username) {
-        return blockedUsers != null && blockedUsers.contains(username.toLowerCase());
+        return blockedUsers.contains(username.toLowerCase(Locale.ENGLISH));
+    }
+
+    /**
+     * Collapses a blocked user's comment body instead of rendering it. Master renders a comment
+     * body through several different paths (Markwon, cached blocks, body_html), so the check lives
+     * at each render site rather than inside one setViews overload.
+     *
+     * @return true when the body was collapsed and must not be rendered
+     */
+    public boolean collapseIfBlocked(Comment comment, CommentViewHolder holder) {
+        if (!SettingValues.collapseBlockedUsers) {
+            return false;
+        }
+        ensureBlockedUsersRequested();
+        if (!isUserBlocked(MiscUtil.orEmpty(comment.getAuthor()))) {
+            return false;
+        }
+        holder.firstTextView.setVisibility(View.GONE);
+        holder.commentOverflow.setVisibility(View.GONE);
+        // toCollapse means "this body is collapsed"; hiddenPersons means "this subtree is hidden"
+        // and is only ever set alongside hideAll. Marking hiddenPersons here would badge the row
+        // "+N" for children that are still on screen, and make unhideNumber count them as
+        // re-inserted rows that never left.
+        if (!toCollapse.contains(comment.getFullName())) {
+            toCollapse.add(comment.getFullName());
+        }
+        return true;
     }
 }

@@ -1,27 +1,34 @@
 package me.edgan.redditslide.util;
 
+import androidx.annotation.Nullable;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
-
 import org.apache.commons.text.StringEscapeUtils;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class ImageLoaderUnescape extends ImageLoader {
 
-    private static volatile ImageLoaderUnescape instance;
+    @Nullable private static volatile ImageLoaderUnescape instance;
 
     public static ImageLoaderUnescape getInstance() {
-        if (instance == null) {
+        // Read the volatile field into a local so the result is provably non-null on return; the
+        // double-check itself is unchanged.
+        ImageLoaderUnescape result = instance;
+        if (result == null) {
             synchronized (ImageLoader.class) {
-                if (instance == null) {
-                    instance = new ImageLoaderUnescape();
+                result = instance;
+                if (result == null) {
+                    result = new ImageLoaderUnescape();
+                    instance = result;
                 }
             }
         }
-        return instance;
+        return result;
     }
 
     @Override

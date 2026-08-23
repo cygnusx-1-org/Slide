@@ -2,18 +2,19 @@ package me.edgan.redditslide.Views;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
-
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.view.inputmethod.EditorInfoCompat;
 import androidx.core.view.inputmethod.InputConnectionCompat;
 import androidx.core.view.inputmethod.InputContentInfoCompat;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by Carlos on 11/5/2016. */
+@NullMarked
 public class ImageInsertEditText extends AppCompatEditText {
 
     public interface ImageSelectedCallback {
@@ -25,26 +26,30 @@ public class ImageInsertEditText extends AppCompatEditText {
         super(context);
     }
 
-    public ImageInsertEditText(Context context, AttributeSet attrs) {
+    public ImageInsertEditText(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public ImageInsertEditText(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ImageInsertEditText(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
     // endregion
 
-    private ImageSelectedCallback callback;
+    @Nullable private ImageSelectedCallback callback;
 
     public void setImageSelectedCallback(ImageSelectedCallback callback) {
         this.callback = callback;
     }
 
     @Override
-    public InputConnection onCreateInputConnection(EditorInfo attrs) {
+    public @Nullable InputConnection onCreateInputConnection(EditorInfo attrs) {
         InputConnection con = super.onCreateInputConnection(attrs);
         EditorInfoCompat.setContentMimeTypes(attrs, new String[] {"image/gif", "image/png"});
+
+        if (con == null) {
+            return null;
+        }
 
         return InputConnectionCompat.createWrapper(
                 con,
@@ -52,13 +57,14 @@ public class ImageInsertEditText extends AppCompatEditText {
                 new InputConnectionCompat.OnCommitContentListener() {
                     @Override
                     public boolean onCommitContent(
-                            InputContentInfoCompat inputContentInfo, int flags, Bundle opts) {
+                            InputContentInfoCompat inputContentInfo,
+                            int flags,
+                            @Nullable Bundle opts) {
                         if (callback != null) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1
-                                    && (flags
-                                                    & InputConnectionCompat
-                                                            .INPUT_CONTENT_GRANT_READ_URI_PERMISSION)
-                                            != 0) {
+                            if ((flags
+                                            & InputConnectionCompat
+                                                    .INPUT_CONTENT_GRANT_READ_URI_PERMISSION)
+                                    != 0) {
                                 try {
                                     inputContentInfo.requestPermission();
                                 } catch (Exception e) {

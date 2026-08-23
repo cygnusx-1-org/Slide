@@ -64,8 +64,6 @@
     <string name="card_save_button">\"Gem indlæg\"-knap i handlingsmenuen</string>
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Multi-kolonne</string>
-    <string name="multi_column_landscape">Landskab</string>
-    <string name="multi_column_portrait">Flere kolonner i portrættilstand</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Dig</string>
     <string name="drawer_support">Skift til Pro</string>

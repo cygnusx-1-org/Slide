@@ -21,9 +21,10 @@
         android:id="@+id/welcome_appIcon"
         android:src="@drawable/ic_launcher"
         android:layout_height="140dp" />
-    
+
     <!-- Bottom container for buttons -->
     <LinearLayout
+        android:id="@+id/bottom_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

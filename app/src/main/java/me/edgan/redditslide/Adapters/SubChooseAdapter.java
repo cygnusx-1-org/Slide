@@ -13,9 +13,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.TextView;
-
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import me.edgan.redditslide.Activities.OpenContent;
 import me.edgan.redditslide.Activities.SetupWidget;
 import me.edgan.redditslide.Activities.Shortcut;
@@ -26,10 +29,6 @@ import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.DrawableUtil;
 import me.edgan.redditslide.util.ImageUtil;
 import me.edgan.redditslide.util.LogUtil;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 /** Created by ccrama on 8/17/2015. */
 public class SubChooseAdapter extends ArrayAdapter<String> {
@@ -76,13 +75,13 @@ public class SubChooseAdapter extends ArrayAdapter<String> {
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(int position, @Nullable View convertView, ViewGroup parent) {
         ViewHolderItem viewHolderItem;
         if (convertView == null) {
             convertView =
                     LayoutInflater.from(getContext())
                             .inflate(R.layout.subforsublist, parent, false);
-            viewHolderItem = new ViewHolderItem(convertView.findViewById(R.id.name));
+            viewHolderItem = new ViewHolderItem(convertView.requireViewById(R.id.name));
             convertView.setTag(viewHolderItem);
         } else {
             viewHolderItem = (ViewHolderItem) convertView.getTag();
@@ -92,7 +91,7 @@ public class SubChooseAdapter extends ArrayAdapter<String> {
 
         final String subreddit = fitems.get(position);
 
-        final View colorView = convertView.findViewById(R.id.color);
+        final View colorView = convertView.requireViewById(R.id.color);
         colorView.setBackgroundResource(R.drawable.circle);
         BlendModeUtil.tintDrawableAsModulate(
                 colorView.getBackground(), Palette.getColor(subreddit));
@@ -116,17 +115,27 @@ public class SubChooseAdapter extends ArrayAdapter<String> {
                             final Bitmap src;
                             final Bitmap bm2;
                             Intent shortcutIntent = new Intent(getContext(), OpenContent.class);
+                            // Both ids are this app's own drawables, so getDrawable cannot return
+                            // null for them — a missing one throws NotFoundException instead. The
+                            // assert matches BlendModeUtil.tintedDrawable and fails one frame
+                            // earlier than drawableToBitmapShortcut would anyway.
                             if (subreddit.toLowerCase(Locale.ENGLISH).equals("androidcirclejerk")) {
                                 bm2 =
                                         DrawableUtil.drawableToBitmapShortcut(
-                                                ContextCompat.getDrawable(
-                                                        getContext(), R.drawable.matiasduarte));
+                                                Objects.requireNonNull(
+                                                        ContextCompat.getDrawable(
+                                                                getContext(),
+                                                                R.drawable.matiasduarte),
+                                                        "missing drawable resource"));
                                 Log.v(LogUtil.getTag(), "NULL IS " + (bm2 == null));
                             } else {
                                 src =
                                         DrawableUtil.drawableToBitmapShortcut(
-                                                ContextCompat.getDrawable(
-                                                        getContext(), R.drawable.blackandwhite));
+                                                Objects.requireNonNull(
+                                                        ContextCompat.getDrawable(
+                                                                getContext(),
+                                                                R.drawable.blackandwhite),
+                                                        "missing drawable resource"));
                                 final int overlayColor = Palette.getColor(subreddit);
                                 final Paint paint = new Paint();
                                 final Bitmap bm1 =

@@ -10,12 +10,14 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Movie;
 import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -24,12 +26,11 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
-
-import com.cocosw.bottomsheet.BottomSheet;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -38,34 +39,6 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
-
-import me.edgan.redditslide.ContentType;
-import me.edgan.redditslide.Fragments.SubmissionsView;
-import me.edgan.redditslide.Notifications.ImageDownloadNotificationService;
-import me.edgan.redditslide.R;
-import me.edgan.redditslide.Reddit;
-import me.edgan.redditslide.SecretConstants;
-import me.edgan.redditslide.SettingValues;
-import me.edgan.redditslide.SubmissionViews.OpenVRedditTask;
-import me.edgan.redditslide.Views.ExoVideoView;
-import me.edgan.redditslide.Views.ImageSource;
-import me.edgan.redditslide.Views.SubsamplingScaleImageView;
-import me.edgan.redditslide.Visuals.ColorPreferences;
-import me.edgan.redditslide.util.AnimatorUtil;
-import me.edgan.redditslide.util.BlendModeUtil;
-import me.edgan.redditslide.util.CompatUtil;
-import me.edgan.redditslide.util.DialogUtil;
-import me.edgan.redditslide.util.FileUtil;
-import me.edgan.redditslide.util.GifUtils;
-import me.edgan.redditslide.util.HttpUtil;
-import me.edgan.redditslide.util.LinkUtil;
-import me.edgan.redditslide.util.LogUtil;
-import me.edgan.redditslide.util.NetworkUtil;
-import me.edgan.redditslide.util.ShareUtil;
-import me.edgan.redditslide.util.StorageUtil;
-
-import org.apache.commons.text.StringEscapeUtils;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -78,9 +51,44 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
+import me.edgan.redditslide.ContentType;
+import me.edgan.redditslide.Fragments.SubmissionsView;
+import me.edgan.redditslide.Notifications.ImageDownloadNotificationService;
+import me.edgan.redditslide.OpenRedditLink;
+import me.edgan.redditslide.R;
+import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.SecretConstants;
+import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.SubmissionViews.OpenVRedditTask;
+import me.edgan.redditslide.Views.ExoVideoView;
+import me.edgan.redditslide.Views.ImageSource;
+import me.edgan.redditslide.Views.SubsamplingScaleImageView;
+import me.edgan.redditslide.Visuals.ColorPreferences;
+import me.edgan.redditslide.util.AnimatorUtil;
+import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.BottomSheet;
+import me.edgan.redditslide.util.CompatUtil;
+import me.edgan.redditslide.util.DialogUtil;
+import me.edgan.redditslide.util.FileUtil;
+import me.edgan.redditslide.util.GifDrawable;
+import me.edgan.redditslide.util.GifUtils;
+import me.edgan.redditslide.util.GsonUtil;
+import me.edgan.redditslide.util.HttpUtil;
+import me.edgan.redditslide.util.ImageSaveUtils;
+import me.edgan.redditslide.util.LinkUtil;
+import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
+import me.edgan.redditslide.util.NetworkUtil;
+import me.edgan.redditslide.util.PrefUtil;
+import me.edgan.redditslide.util.ShareUtil;
+import me.edgan.redditslide.util.StorageUtil;
+import org.apache.commons.text.StringEscapeUtils;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 3/5/2015. */
+@NullMarked
 public class MediaView extends BaseSaveActivity {
     public static final String EXTRA_URL = "url";
     public static final String SUBREDDIT = "sub";
@@ -89,29 +97,39 @@ public class MediaView extends BaseSaveActivity {
     public static final String EXTRA_DISPLAY_URL = "displayUrl";
     public static final String EXTRA_LQ = "lq";
     public static final String EXTRA_SHARE_URL = "urlShare";
+    public static final String EXTRA_OPEN_COMMENTS_DIRECT = "open_comments_direct";
 
-    public static String fileLoc;
-    public String subreddit;
+    @Nullable public static String fileLoc;
+    public String subreddit = "";
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     private String submissionTitle;
     private int index;
-    public static Runnable doOnClick;
     public static boolean didLoadGif;
 
     public float previous;
     public boolean hidden;
     public boolean imageShown;
+    @SuppressWarnings("NullAway.Init") // assigned in displayImage/doLoadImage/onCreate
     public String actuallyLoaded;
     public boolean isGif;
+    private int currentRotation = 0; // Track current rotation in degrees
+    private int currentGifRotation = 0; // Track current rotation for direct GIFs
 
+    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
     private NotificationManager mNotifyManager;
+    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
     private NotificationCompat.Builder mBuilder;
     private long stopPosition;
-    private GifUtils.AsyncLoadGif gif;
-    private String contentUrl;
-    private ExoVideoView videoView;
+    @Nullable private GifUtils.AsyncLoadGif gif;
+    private String contentUrl = "";
+    @Nullable private ExoVideoView videoView;
     private Gson gson;
     private String imgurKey;
-    private String lastContentUrl;
+    @Nullable private String lastContentUrl;
+
+    // Fields for direct GIF handling
+    private ImageView directGifViewer;
+    @Nullable private GifDrawable activeGifDrawable; // To manage its lifecycle
 
     private static final String TAG = "MediaView";
 
@@ -131,7 +149,9 @@ public class MediaView extends BaseSaveActivity {
         super.onResume();
         if (videoView != null) {
             videoView.seekTo(stopPosition);
-            videoView.play();
+            if (videoView.isPlaying() || gif != null) {
+                videoView.play();
+            }
         }
     }
 
@@ -163,21 +183,20 @@ public class MediaView extends BaseSaveActivity {
 
         if (!isGif) b.sheet(3, image, getString(R.string.share_image));
         b.sheet(4, save, "Save " + (isGif ? "MP4" : "image"));
-        Drawable folder = getResources().getDrawable(R.drawable.ic_folder);
         if (isGif
                 && !contentUrl.contains(".mp4")
                 && !contentUrl.contains("streamable.com")
                 && !contentUrl.contains("gfycat.com")
                 && !contentUrl.contains("redgifs.com")
                 && !contentUrl.contains("v.redd.it")) {
-            String type = contentUrl.substring(contentUrl.lastIndexOf(".") + 1).toUpperCase();
+            String type = contentUrl.substring(contentUrl.lastIndexOf(".") + 1).toUpperCase(Locale.ENGLISH);
             try {
                 if (type.equals("GIFV") && new URL(contentUrl).getHost().equals("i.imgur.com")) {
                     type = "GIF";
                     contentUrl = contentUrl.replace(".gifv", ".gif");
                 }
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                LogUtil.e(e, "MediaView.URL failed");
             }
             b.sheet(6, file, getString(R.string.mediaview_save, type));
         }
@@ -228,7 +247,7 @@ public class MediaView extends BaseSaveActivity {
                                 {
                                     String urlToSave =
                                             actuallyLoaded != null ? actuallyLoaded : contentUrl;
-                                    doImageSave(urlToSave);
+                                    doImageSave(isGif, urlToSave, index);
                                     break;
                                 }
                             case (16):
@@ -243,39 +262,21 @@ public class MediaView extends BaseSaveActivity {
         b.show();
     }
 
-    public void doImageSave(String actuallyLoaded) {
-        if (!isGif) {
-            Uri storageUri = StorageUtil.getStorageUri(this);
-            if (storageUri == null) {
-                Log.e(TAG, "No valid storage URI found.");
-                showFirstDialog();
-                return;
-            }
-
-            Intent i = new Intent(this, ImageDownloadNotificationService.class);
-            i.putExtra("actuallyLoaded", contentUrl);
-            i.putExtra("downloadUri", storageUri.toString());
-            if (subreddit != null && !subreddit.isEmpty()) i.putExtra("subreddit", subreddit);
-            if (submissionTitle != null) i.putExtra(EXTRA_SUBMISSION_TITLE, submissionTitle);
-            i.putExtra("index", index);
-
-            ComponentName component = startService(i);
-            if (component == null) {
-                Log.e(TAG, "Failed to start ImageDownloadNotificationService.");
-                DialogUtil.showErrorDialog(this);
-            } else {
-                Toast.makeText(this, getString(R.string.mediaview_downloading), Toast.LENGTH_SHORT)
-                        .show();
-            }
-        } else {
-            doOnClick.run();
-        }
+    @Override public void doImageSave(boolean isGif, String contentUrl, int index) {
+        ImageSaveUtils.doImageSave(
+                this,
+                isGif,
+                contentUrl,
+                index,
+                subreddit,
+                submissionTitle,
+                this::showFirstDialog
+        );
     }
-
     public void saveFile(final String baseUrl) {
         Uri storageUri = StorageUtil.getStorageUri(this);
 
-        if (storageUri == null) {
+        if (storageUri == null || !StorageUtil.hasStorageAccess(this)) {
             Log.e(TAG, "No storage URI available");
             DialogUtil.showErrorDialog(this);
             return;
@@ -305,20 +306,21 @@ public class MediaView extends BaseSaveActivity {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                if (Reddit.appRestart.getString("imagelocation", "").isEmpty()) {
+                if (PrefUtil.getString(Reddit.appRestart, "imagelocation", "").isEmpty()) {
                     showFirstDialog();
-                } else if (!new File(Reddit.appRestart.getString("imagelocation", "")).exists()) {
+                } else if (!new File(PrefUtil.getString(Reddit.appRestart, "imagelocation", "")).exists()) {
                     showErrorDialog();
                 } else {
                     final File f =
                             new File(
-                                    Reddit.appRestart.getString("imagelocation", "")
+                                    PrefUtil.getString(Reddit.appRestart, "imagelocation", "")
                                             + File.separator
                                             + UUID.randomUUID().toString()
                                             + baseUrl.substring(baseUrl.lastIndexOf(".")));
                     mNotifyManager =
-                            ContextCompat.getSystemService(
-                                    MediaView.this, NotificationManager.class);
+                            java.util.Objects.requireNonNull(
+                                    ContextCompat.getSystemService(
+                                            MediaView.this, NotificationManager.class));
                     mBuilder = new NotificationCompat.Builder(MediaView.this, Reddit.CHANNEL_IMG);
                     mBuilder.setContentTitle(getString(R.string.mediaview_saving, baseUrl))
                             .setSmallIcon(R.drawable.ic_download);
@@ -356,7 +358,7 @@ public class MediaView extends BaseSaveActivity {
                                 new String[] {f.getAbsolutePath()},
                                 null,
                                 new MediaScannerConnection.OnScanCompletedListener() {
-                                    public void onScanCompleted(String path, Uri uri) {
+                                    @Override public void onScanCompleted(String path, Uri uri) {
                                         Intent mediaScanIntent =
                                                 FileUtil.getFileIntent(
                                                         f,
@@ -378,7 +380,7 @@ public class MediaView extends BaseSaveActivity {
                                     }
                                 });
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtil.e(e, "MediaView.onScanCompleted failed");
                     }
                 }
                 return null;
@@ -389,14 +391,27 @@ public class MediaView extends BaseSaveActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        ((SubsamplingScaleImageView) findViewById(R.id.submission_image)).recycle();
-        if (gif != null) {
+        if (findViewById(R.id.submission_image) != null && ((SubsamplingScaleImageView) findViewById(R.id.submission_image)) != null) {
+            ((SubsamplingScaleImageView) findViewById(R.id.submission_image)).recycle();
+        }
+        if (gif != null) { // This is GifUtils.AsyncLoadGif for ExoVideoView
             gif.cancel();
             gif.cancel(true);
         }
 
-        doOnClick = null;
+        // Cleanup for direct GifDrawable
+        if (activeGifDrawable != null) {
+            activeGifDrawable.setCallback(null);
+            activeGifDrawable.stop();
+            activeGifDrawable = null;
+        }
+        if (directGifViewer != null) {
+            directGifViewer.setImageDrawable(null);
+        }
+
         if (!didLoadGif && fileLoc != null && !fileLoc.isEmpty()) {
+            // This fileLoc seems related to an old way of handling gifs, review if still needed
+            // For now, keeping it as is.
             new File(fileLoc).delete();
         }
     }
@@ -412,24 +427,9 @@ public class MediaView extends BaseSaveActivity {
     }
 
     public void hideOnLongClick() {
-        (findViewById(R.id.gifheader))
-                .setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (findViewById(R.id.gifheader).getVisibility() == View.GONE) {
-                                    AnimatorUtil.animateIn(findViewById(R.id.gifheader), 56);
-                                    AnimatorUtil.fadeOut(findViewById(R.id.black));
-                                    getWindow().getDecorView().setSystemUiVisibility(0);
-                                } else {
-                                    AnimatorUtil.animateOut(findViewById(R.id.gifheader));
-                                    AnimatorUtil.fadeIn(findViewById(R.id.black));
-                                    getWindow()
-                                            .getDecorView()
-                                            .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
-                                }
-                            }
-                        });
+        // Keep the bottom button row static — consume clicks in gaps between buttons
+        // so they don't fall through to submission_image (which would close the activity).
+        findViewById(R.id.gifheader).setClickable(true);
         findViewById(R.id.submission_image)
                 .setOnClickListener(
                         new View.OnClickListener() {
@@ -438,7 +438,7 @@ public class MediaView extends BaseSaveActivity {
                             public void onClick(View v2) {
                                 if (findViewById(R.id.gifheader).getVisibility() == View.GONE) {
                                     AnimatorUtil.animateIn(findViewById(R.id.gifheader), 56);
-                                    AnimatorUtil.fadeOut(findViewById(R.id.black));
+                                    AnimatorUtil.fadeOut(requireViewById(R.id.black));
                                     getWindow().getDecorView().setSystemUiVisibility(0);
                                 } else {
                                     finish();
@@ -448,7 +448,7 @@ public class MediaView extends BaseSaveActivity {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         overrideRedditSwipeAnywhere();
         super.onCreate(savedInstanceState);
         getTheme().applyStyle(new ColorPreferences(this).getDarkThemeSubreddit(""), true);
@@ -460,20 +460,33 @@ public class MediaView extends BaseSaveActivity {
             stopPosition = savedInstanceState.getLong("position");
         }
 
-        doOnClick =
-                new Runnable() {
-                    @Override
-                    public void run() {}
-                };
+        MiscUtil.applyWideColorGamut(this);
+
         setContentView(R.layout.activity_media);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+        // Initialize the new ImageView for direct GIFs and cast it
+        directGifViewer = (ImageView) findViewById(R.id.direct_gif_viewer);
 
         // Keep the screen on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        final String firstUrl = getIntent().getExtras().getString(EXTRA_DISPLAY_URL, "");
-        contentUrl = getIntent().getExtras().getString(EXTRA_URL);
+        // Hide speed button by default
+        ImageView speedBtn = (ImageView) findViewById(R.id.speed);
 
-        if (contentUrl == null || contentUrl.isEmpty()) {
+        if (speedBtn != null) {
+            speedBtn.setVisibility(View.GONE);
+        }
+
+        Bundle mediaExtras = getIntent().getExtras();
+        if (mediaExtras == null) {
+            finish();
+            return;
+        }
+        final String firstUrl = mediaExtras.getString(EXTRA_DISPLAY_URL, "");
+        contentUrl = mediaExtras.getString(EXTRA_URL, "");
+
+        if (contentUrl.isEmpty()) {
             finish();
             return;
         }
@@ -487,39 +500,53 @@ public class MediaView extends BaseSaveActivity {
 
         actuallyLoaded = contentUrl;
         if (getIntent().hasExtra(SUBMISSION_URL)) {
-            final int commentUrl = getIntent().getExtras().getInt(ADAPTER_POSITION);
-            findViewById(R.id.comments)
+            final int commentUrl = getIntent().getIntExtra(ADAPTER_POSITION, 0);
+            final String submissionPermalink = getIntent().getStringExtra(SUBMISSION_URL);
+            final boolean openCommentsDirect =
+                    getIntent().getBooleanExtra(EXTRA_OPEN_COMMENTS_DIRECT, false);
+            requireViewById(R.id.comments)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    finish();
-                                    SubmissionsView.datachanged(commentUrl);
+                                    if (openCommentsDirect && submissionPermalink != null) {
+                                        OpenRedditLink.openUrl(
+                                                MediaView.this,
+                                                "https://reddit.com" + submissionPermalink,
+                                                false);
+                                        finish();
+                                    } else {
+                                        finish();
+                                        SubmissionsView.datachanged(commentUrl);
+                                    }
                                 }
                             });
         } else {
-            findViewById(R.id.comments).setVisibility(View.GONE);
+            requireViewById(R.id.comments).setVisibility(View.GONE);
         }
         if (getIntent().hasExtra(SUBREDDIT)) {
-            subreddit = getIntent().getExtras().getString(SUBREDDIT);
+            subreddit = MiscUtil.orEmpty(getIntent().getStringExtra(SUBREDDIT));
         }
         if (getIntent().hasExtra(EXTRA_SUBMISSION_TITLE)) {
-            submissionTitle = getIntent().getExtras().getString(EXTRA_SUBMISSION_TITLE);
+            submissionTitle = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_SUBMISSION_TITLE));
         }
         index = getIntent().getIntExtra("index", -1);
-        findViewById(R.id.mute).setVisibility(View.GONE);
+        requireViewById(R.id.mute).setVisibility(View.GONE);
 
         if (getIntent().hasExtra(EXTRA_LQ)) {
-            String lqUrl = getIntent().getStringExtra(EXTRA_DISPLAY_URL);
+            String lqUrl = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_DISPLAY_URL));
             displayImage(lqUrl);
-            findViewById(R.id.hq)
+            // Reveal the rotate buttons for the low-res image, same as doLoadImage does — otherwise
+            // rotation is unavailable until HQ is tapped.
+            showImageControls();
+            requireViewById(R.id.hq)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     imageShown = false;
                                     doLoad(contentUrl);
-                                    findViewById(R.id.hq).setVisibility(View.GONE);
+                                    requireViewById(R.id.hq).setVisibility(View.GONE);
                                 }
                             });
         } else if (ContentType.isImgurImage(contentUrl)
@@ -533,21 +560,22 @@ public class MediaView extends BaseSaveActivity {
                             + url.substring(url.lastIndexOf("."));
 
             displayImage(url);
-            findViewById(R.id.hq)
+            showImageControls();
+            requireViewById(R.id.hq)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     imageShown = false;
                                     doLoad(contentUrl);
-                                    findViewById(R.id.hq).setVisibility(View.GONE);
+                                    requireViewById(R.id.hq).setVisibility(View.GONE);
                                 }
                             });
         } else {
             if (!firstUrl.isEmpty()
                     && contentUrl != null
                     && ContentType.displayImage(ContentType.getContentType(contentUrl))) {
-                ((ProgressBar) findViewById(R.id.progress)).setIndeterminate(true);
+                ((ProgressBar) requireViewById(R.id.progress)).setIndeterminate(true);
                 if (ContentType.isImgurHash(firstUrl)) {
                     displayImage(firstUrl + ".png");
                 } else {
@@ -555,13 +583,13 @@ public class MediaView extends BaseSaveActivity {
                 }
             } else if (firstUrl.isEmpty()) {
                 imageShown = false;
-                ((ProgressBar) findViewById(R.id.progress)).setIndeterminate(true);
+                ((ProgressBar) requireViewById(R.id.progress)).setIndeterminate(true);
             }
-            findViewById(R.id.hq).setVisibility(View.GONE);
+            requireViewById(R.id.hq).setVisibility(View.GONE);
             doLoad(contentUrl);
         }
 
-        findViewById(R.id.more)
+        requireViewById(R.id.more)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -569,25 +597,59 @@ public class MediaView extends BaseSaveActivity {
                                 showBottomSheetImage();
                             }
                         });
-        findViewById(R.id.save)
+        requireViewById(R.id.save)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 String urlToSave =
                                         actuallyLoaded != null ? actuallyLoaded : contentUrl;
-                                doImageSave(urlToSave);
+                                doImageSave(isGif, urlToSave, index);
                             }
                         });
         if (!SettingValues.imageDownloadButton) {
-            findViewById(R.id.save).setVisibility(View.INVISIBLE);
+            requireViewById(R.id.save).setVisibility(View.INVISIBLE);
         }
 
+        requireViewById(R.id.rotate_right)
+                .setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (videoView != null && videoView.getVisibility() == View.VISIBLE) {
+                                    videoView.rotateRight();
+                                } else if (directGifViewer != null && directGifViewer.getVisibility() == View.VISIBLE) {
+                                    rotateDirectGifRight();
+                                } else {
+                                    rotateImage();
+                                }
+                            }
+                        });
+
+        requireViewById(R.id.rotate_left)
+                .setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (videoView != null && videoView.getVisibility() == View.VISIBLE) {
+                                    videoView.rotateLeft();
+                                } else if (directGifViewer != null && directGifViewer.getVisibility() == View.VISIBLE) {
+                                    rotateDirectGifLeft();
+                                } else {
+                                    rotateImageLeft();
+                                }
+                            }
+                        });
+
         hideOnLongClick();
+
+        // Adjust button sizes for small screens
+        MiscUtil.adjustButtonSizesForSmallScreens(null, this);
     }
 
     public void doLoad(final String contentUrl) {
         ContentType.Type contentType = ContentType.getContentType(contentUrl);
+        Log.v(TAG, "contentType: " + contentType.toString());
         switch (contentType) {
             case DEVIANTART:
                 doLoadDeviantArt(contentUrl);
@@ -597,6 +659,11 @@ public class MediaView extends BaseSaveActivity {
                 break;
             case IMGUR:
                 doLoadImgur(contentUrl);
+                break;
+            case LINK:
+                if (contentUrl.startsWith("https://giphy.com/")) {
+                    doLoadGif(contentUrl);
+                }
                 break;
             case XKCD:
                 doLoadXKCD(contentUrl);
@@ -612,39 +679,146 @@ public class MediaView extends BaseSaveActivity {
 
     public void doLoadGif(final String dat) {
         isGif = true;
-        videoView = (ExoVideoView) findViewById(R.id.gif);
-        findViewById(R.id.black)
-                .setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (findViewById(R.id.gifheader).getVisibility() == View.GONE) {
-                                    AnimatorUtil.animateIn(findViewById(R.id.gifheader), 56);
-                                    AnimatorUtil.fadeOut(findViewById(R.id.black));
-                                }
-                            }
-                        });
-        videoView.clearFocus();
-        findViewById(R.id.gifarea).setVisibility(View.VISIBLE);
-        findViewById(R.id.submission_image).setVisibility(View.GONE);
+        // Show rotate buttons for videos/GIFs
+        requireViewById(R.id.rotate_right).setVisibility(View.VISIBLE);
+        requireViewById(R.id.rotate_left).setVisibility(View.VISIBLE);
         final ProgressBar loader = (ProgressBar) findViewById(R.id.gifprogress);
-        findViewById(R.id.progress).setVisibility(View.GONE);
-        gif =
-                new GifUtils.AsyncLoadGif(
-                        this,
-                        videoView,
-                        loader,
-                        findViewById(R.id.placeholder),
-                        doOnClick,
-                        true,
-                        true,
-                        ((TextView) findViewById(R.id.size)),
-                        subreddit,
-                        submissionTitle);
-        videoView.attachMuteButton((ImageView) findViewById(R.id.mute));
-        videoView.attachHqButton((ImageView) findViewById(R.id.hq));
-        gif.execute(dat);
-        findViewById(R.id.more)
+        final String gifUrl = GifUtils.AsyncLoadGif.formatUrl(dat); // Corrected static call
+
+        // Check the URL path, not the whole string: giphy/external-preview gifs carry query
+        // params (e.g. ...giphy.gif?width=296&s=...), so endsWith(".gif") on the full URL is false
+        // and they would wrongly fall through to the ExoPlayer branch, which has no GIF extractor
+        // and spins forever. Stripping the query lets real gifs reach the direct-GIF decoder.
+        final String gifPath = Uri.parse(gifUrl).getPath();
+        // ...but reddit serves an MP4 transcode at preview.redd.it/<id>.gif?format=mp4 — the path
+        // still ends in .gif while the bytes are actually MP4. Decoding those with Movie returns
+        // null and the viewer closes instantly, so treat format=mp4 URLs as video and send them
+        // to the ExoPlayer branch (getVideoType() already classifies preview.redd.it as DIRECT).
+        final boolean isMp4Transcode = gifUrl.toLowerCase(Locale.ENGLISH).contains("format=mp4");
+        if (gifPath != null && gifPath.toLowerCase(Locale.ENGLISH).endsWith(".gif") && !isMp4Transcode) {
+            // Handle direct .gif URLs with Movie/GifDrawable
+            Log.v(TAG, "Loading direct GIF: " + gifUrl); // Changed to Log.v
+            requireViewById(R.id.gifarea).setVisibility(View.VISIBLE); // Ensure gifarea is visible for progress bar
+            findViewById(R.id.submission_image).setVisibility(View.GONE);
+            if (videoView != null) videoView.setVisibility(View.GONE); // Hide ExoVideoView
+            directGifViewer.setVisibility(View.VISIBLE); // Show our ImageView
+            loader.setVisibility(View.VISIBLE);
+            loader.setIndeterminate(true); // Indeterminate for download phase
+
+            // Clear any previous direct GIF
+            if (activeGifDrawable != null) {
+                activeGifDrawable.setCallback(null);
+                activeGifDrawable.stop();
+            }
+            directGifViewer.setImageDrawable(null);
+
+            // Reset rotation for new GIF
+            currentGifRotation = 0;
+            directGifViewer.setRotation(0f);
+
+            GifUtils.downloadGif(gifUrl, new GifUtils.GifDownloadCallback() {
+                @Override
+                public void onGifDownloaded(File gifFile) {
+                    if (isFinishing() || isDestroyed()) return;
+                    runOnUiThread(() -> {
+                        loader.setVisibility(View.GONE);
+                        Movie movie = Movie.decodeFile(gifFile.getAbsolutePath());
+                        if (movie != null) {
+                            activeGifDrawable = new GifDrawable(movie, new Drawable.Callback() {
+                                @Override
+                                public void invalidateDrawable(@NonNull Drawable who) {
+                                    directGifViewer.invalidate();
+                                }
+
+                                @Override
+                                public void scheduleDrawable(@NonNull Drawable who, @NonNull Runnable what, long when) {
+                                    directGifViewer.postDelayed(what, when - SystemClock.uptimeMillis());
+                                }
+
+                                @Override
+                                public void unscheduleDrawable(@NonNull Drawable who, @NonNull Runnable what) {
+                                    directGifViewer.removeCallbacks(what);
+                                }
+                            });
+                            directGifViewer.setImageDrawable(activeGifDrawable);
+                            activeGifDrawable.start();
+                            didLoadGif = true; // Mark that a GIF was successfully loaded this way
+                            fileLoc = gifFile.getAbsolutePath(); // Potentially for cleanup, though this might need review
+                        } else {
+                            Log.e(TAG, "Failed to decode direct GIF: " + gifUrl);
+                            Toast.makeText(MediaView.this, "Failed to load GIF.", Toast.LENGTH_SHORT).show();
+                            // Optionally, try to open externally or show a specific error view
+                             finish(); // Or handle error more gracefully
+                        }
+                    });
+                }
+
+                @Override
+                public void onGifDownloadFailed(Exception e) {
+                    if (isFinishing() || isDestroyed()) return;
+                    runOnUiThread(() -> {
+                        loader.setVisibility(View.GONE);
+                        Log.e(TAG, "Failed to download direct GIF: " + gifUrl, e);
+                        Toast.makeText(MediaView.this, "Failed to download GIF.", Toast.LENGTH_SHORT).show();
+                        finish(); // Or handle error more gracefully
+                    });
+                }
+            }, this, submissionTitle);
+
+        } else {
+            // Existing logic for Gfycat, Streamable, v.redd.it, etc., using ExoVideoView via AsyncLoadGif
+            Log.v(TAG, "Loading GIF/video via AsyncLoadGif (ExoPlayer): " + gifUrl); // Changed to Log.v
+            if (directGifViewer != null) directGifViewer.setVisibility(View.GONE); // Hide our direct ImageViewer
+            videoView = (ExoVideoView) findViewById(R.id.gif);
+            videoView.setVisibility(View.VISIBLE); // Ensure ExoVideoView is visible
+            // The full-screen viewer is the one place a horizontal drag should seek; everywhere else
+            // it pages between items or scrolls a list.
+            videoView.setScrubEnabled(true);
+
+            requireViewById(R.id.black)
+                    .setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (findViewById(R.id.gifheader).getVisibility() == View.GONE) {
+                                        AnimatorUtil.animateIn(findViewById(R.id.gifheader), 56);
+                                        AnimatorUtil.fadeOut(requireViewById(R.id.black));
+                                    }
+                                }
+                            });
+            videoView.clearFocus();
+            requireViewById(R.id.gifarea).setVisibility(View.VISIBLE);
+            findViewById(R.id.submission_image).setVisibility(View.GONE);
+            loader.setVisibility(View.VISIBLE); // Progress bar for AsyncLoadGif
+            requireViewById(R.id.progress).setVisibility(View.GONE); // Main progress bar for images
+
+            // Ensure this.gif (AsyncLoadGif) is not mixed up with activeGifDrawable (GifDrawable)
+            if (this.gif != null) { // Cancel previous AsyncLoadGif if any
+                this.gif.cancel(true);
+            }
+            this.gif = // Assign to the class field 'gif'
+                    new GifUtils.AsyncLoadGif(
+                            this,
+                            videoView,
+                            loader,
+                            true, // closeIfNull
+                            true, // autostart
+                            // R.id.size is not in activity_media.xml; AsyncLoadGif takes it as
+                            // @Nullable, so this must stay findViewById
+                            ((TextView) findViewById(R.id.size)),
+                            subreddit,
+                            submissionTitle);
+            // Show and attach speed button for GIFs (relevant for ExoVideoView)
+            ImageView speedBtn = (ImageView) findViewById(R.id.speed);
+            if (speedBtn != null) speedBtn.setVisibility(View.VISIBLE);
+            videoView.attachMuteButton((ImageView) requireViewById(R.id.mute));
+            videoView.attachHqButton((ImageView) requireViewById(R.id.hq));
+            videoView.attachSpeedButton(speedBtn, this);
+            this.gif.execute(gifUrl); // Use the formatted gifUrl
+        }
+
+        // Common setup for both paths (direct GIF or ExoVideoView GIF)
+        requireViewById(R.id.more)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -668,7 +842,7 @@ public class MediaView extends BaseSaveActivity {
 
             new AsyncTask<Void, Void, JsonObject>() {
                 @Override
-                protected JsonObject doInBackground(Void... params) {
+                protected @Nullable JsonObject doInBackground(Void... params) {
                     return HttpUtil.getImgurJsonObject(Reddit.client, gson, apiUrl, imgurKey);
                 }
 
@@ -679,57 +853,16 @@ public class MediaView extends BaseSaveActivity {
                         (MediaView.this).finish();
                     } else {
                         try {
-                            if (result != null && !result.isJsonNull() && result.has("image")) {
-                                String type =
-                                        result.get("image")
-                                                .getAsJsonObject()
-                                                .get("image")
-                                                .getAsJsonObject()
-                                                .get("type")
-                                                .getAsString();
-                                String urls =
-                                        result.get("image")
-                                                .getAsJsonObject()
-                                                .get("links")
-                                                .getAsJsonObject()
-                                                .get("original")
-                                                .getAsString();
-
-                                if (type.contains("gif")) {
-                                    doLoadGif(urls);
-                                } else if (!imageShown) { // only load if there is no image
-                                    displayImage(urls);
-                                }
-                            } else if (result != null && result.has("data")) {
-                                String type =
-                                        result.get("data")
-                                                .getAsJsonObject()
-                                                .get("type")
-                                                .getAsString();
-                                String urls =
-                                        result.get("data")
-                                                .getAsJsonObject()
-                                                .get("link")
-                                                .getAsString();
-                                String mp4 = "";
-                                if (result.get("data").getAsJsonObject().has("mp4")) {
-                                    mp4 =
-                                            result.get("data")
-                                                    .getAsJsonObject()
-                                                    .get("mp4")
-                                                    .getAsString();
-                                }
-
-                                if (type.contains("gif")) {
-                                    doLoadGif(((mp4 == null || mp4.isEmpty()) ? urls : mp4));
-                                } else if (!imageShown) { // only load if there is no image
-                                    displayImage(urls);
-                                }
-                            } else {
+                            HttpUtil.ImgurMedia media = HttpUtil.parseImgurMedia(result);
+                            if (media == null) {
                                 if (!imageShown) doLoadImage(finalUrl);
+                            } else if (media.isGif()) {
+                                doLoadGif(media.getGifUrl());
+                            } else if (!imageShown) { // only load if there is no image
+                                displayImage(media.getImageUrl());
                             }
                         } catch (Exception e2) {
-                            e2.printStackTrace();
+                            LogUtil.e(e2, "MediaView.onPostExecute failed");
                             Intent i = new Intent(MediaView.this, Website.class);
                             i.putExtra(LinkUtil.EXTRA_URL, finalUrl);
                             MediaView.this.startActivity(i);
@@ -753,7 +886,7 @@ public class MediaView extends BaseSaveActivity {
             final String finalUrl = url;
             new AsyncTask<Void, Void, JsonObject>() {
                 @Override
-                protected JsonObject doInBackground(Void... params) {
+                protected @Nullable JsonObject doInBackground(Void... params) {
                     return HttpUtil.getJsonObject(Reddit.client, gson, apiUrl);
                 }
 
@@ -764,24 +897,27 @@ public class MediaView extends BaseSaveActivity {
                         (MediaView.this).finish();
                     } else {
                         try {
-                            if (result != null && !result.isJsonNull() && result.has("img")) {
-                                doLoadImage(result.get("img").getAsString());
+                            // Absent, JSON null, or a non-string "img" all mean there is no comic to
+                            // show, and an empty uri reads to the image loader as a completed load
+                            // with a null bitmap. Fall through to the web view instead.
+                            if (result != null
+                                    && !result.isJsonNull()
+                                    && !GsonUtil.string(result, "img", "").isEmpty()) {
+                                doLoadImage(GsonUtil.string(result, "img", ""));
                                 findViewById(R.id.submission_image)
                                         .setOnLongClickListener(
                                                 new View.OnLongClickListener() {
                                                     @Override
-                                                    public boolean onLongClick(View v) {
+                                                    public @Nullable boolean onLongClick(View v) {
                                                         try {
-                                                            new AlertDialog.Builder(MediaView.this)
+                                                            DialogUtil.showWithCardBackground(new AlertDialog.Builder(MediaView.this)
                                                                     .setTitle(
-                                                                            result.get("safe_title")
-                                                                                    .getAsString())
+                                                                            GsonUtil.string(result, "safe_title", ""))
                                                                     .setMessage(
-                                                                            result.get("alt")
-                                                                                    .getAsString())
-                                                                    .show();
+                                                                            GsonUtil.string(result, "alt", ""))
+                                                                    );
                                                         } catch (Exception ignored) {
-
+                                                            // Alt-text dialog on a host that is finishing.
                                                         }
                                                         return true;
                                                     }
@@ -793,7 +929,7 @@ public class MediaView extends BaseSaveActivity {
                                 finish();
                             }
                         } catch (Exception e2) {
-                            e2.printStackTrace();
+                            LogUtil.e(e2, "MediaView.onLongClick failed");
                             Intent i = new Intent(MediaView.this, Website.class);
                             i.putExtra(LinkUtil.EXTRA_URL, finalUrl);
                             MediaView.this.startActivity(i);
@@ -810,7 +946,7 @@ public class MediaView extends BaseSaveActivity {
         LogUtil.v(apiUrl);
         new AsyncTask<Void, Void, JsonObject>() {
             @Override
-            protected JsonObject doInBackground(Void... params) {
+            protected @Nullable JsonObject doInBackground(Void... params) {
                 return HttpUtil.getJsonObject(Reddit.client, gson, apiUrl);
             }
 
@@ -819,14 +955,8 @@ public class MediaView extends BaseSaveActivity {
                 LogUtil.v("doLoad onPostExecute() called with: " + "result = [" + result + "]");
                 if (result != null
                         && !result.isJsonNull()
-                        && (result.has("fullsize_url") || result.has("url"))) {
-                    String url;
-                    if (result.has("fullsize_url")) {
-                        url = result.get("fullsize_url").getAsString();
-                    } else {
-                        url = result.get("url").getAsString();
-                    }
-                    doLoadImage(url);
+                        && !deviantArtImageUrl(result).isEmpty()) {
+                    doLoadImage(deviantArtImageUrl(result));
                 } else {
                     Intent i = new Intent(MediaView.this, Website.class);
                     i.putExtra(LinkUtil.EXTRA_URL, contentUrl);
@@ -837,6 +967,21 @@ public class MediaView extends BaseSaveActivity {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    // Hide the gif loader bar and reveal the rotate buttons for a shown image. Shared by the direct
+    // image load (doLoadImage) and the low-res LQ paths so rotation works on any displayed image.
+    private void showImageControls() {
+        requireViewById(R.id.gifprogress).setVisibility(View.GONE);
+        requireViewById(R.id.rotate_right).setVisibility(View.VISIBLE);
+        requireViewById(R.id.rotate_left).setVisibility(View.VISIBLE);
+    }
+
+    // True once the activity is going away. Async image callbacks (UIL listeners, delayed runnables,
+    // the HEAD task) can fire after the user leaves MediaView; they check this and bail so they never
+    // touch torn-down views or launch a stray activity.
+    private boolean isTornDown() {
+        return isFinishing() || isDestroyed();
+    }
+
     public void doLoadImage(String contentUrl) {
         if (contentUrl != null && contentUrl.contains("bildgur.de")) {
             contentUrl = contentUrl.replace("b.bildgur.de", "i.imgur.com");
@@ -844,7 +989,7 @@ public class MediaView extends BaseSaveActivity {
         if (contentUrl != null && ContentType.isImgurLink(contentUrl)) {
             contentUrl = contentUrl + ".png";
         }
-        findViewById(R.id.gifprogress).setVisibility(View.GONE);
+        showImageControls();
 
         if (contentUrl != null && contentUrl.contains("m.imgur.com")) {
             contentUrl = contentUrl.replace("m.imgur.com", "i.imgur.com");
@@ -859,8 +1004,15 @@ public class MediaView extends BaseSaveActivity {
                 && !contentUrl.contains(
                         "imgur.com"))) { // we can assume redditmedia and imgur links are to direct
             // images and not websites
-            findViewById(R.id.progress).setVisibility(View.VISIBLE);
-            ((ProgressBar) findViewById(R.id.progress)).setIndeterminate(true);
+            // Only show the loading spinner when this HEAD-checked load isn't already on screen from
+            // displayImage() (a feed IMAGE handed to us as the display URL). For the HQ button and
+            // other fresh loads the URLs differ, so the spinner still appears while they download.
+            final boolean spinnerShown =
+                    !contentUrl.equals(getIntent().getStringExtra(EXTRA_DISPLAY_URL));
+            if (spinnerShown) {
+                requireViewById(R.id.progress).setVisibility(View.VISIBLE);
+                ((ProgressBar) requireViewById(R.id.progress)).setIndeterminate(true);
+            }
 
             final String finalUrl2 = contentUrl;
             new AsyncTask<Void, Void, Void>() {
@@ -874,6 +1026,12 @@ public class MediaView extends BaseSaveActivity {
                                 new Runnable() {
                                     @Override
                                     public void run() {
+                                        // The HEAD request can finish after the user has left this
+                                        // screen; don't touch views or launch Website on a
+                                        // finishing/destroyed activity.
+                                        if (isTornDown()) {
+                                            return;
+                                        }
                                         if (!imageShown
                                                 && type != null
                                                 && !type.isEmpty()
@@ -898,14 +1056,23 @@ public class MediaView extends BaseSaveActivity {
                                 });
 
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        LogUtil.e(e, "MediaView.run failed");
                     }
                     return null;
                 }
 
                 @Override
                 protected void onPostExecute(Void aVoid) {
-                    findViewById(R.id.progress).setVisibility(View.GONE);
+                    if (isTornDown()) {
+                        return;
+                    }
+                    // Only hide the spinner this task showed. When the image was already on screen
+                    // from displayImage() (URLs equal, spinner suppressed above), R.id.progress
+                    // belongs to that download's own determinate bar — hiding it here would blank the
+                    // progress mid-download.
+                    if (spinnerShown) {
+                        requireViewById(R.id.progress).setVisibility(View.GONE);
+                    }
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
@@ -921,20 +1088,23 @@ public class MediaView extends BaseSaveActivity {
         final String url = StringEscapeUtils.unescapeHtml4(urlB);
 
         if (!imageShown) {
+            // Reset rotation when loading a new image
+            currentRotation = 0;
             actuallyLoaded = url;
             final SubsamplingScaleImageView i =
                     (SubsamplingScaleImageView) findViewById(R.id.submission_image);
 
             i.setMinimumDpi(70);
             i.setMinimumTileDpi(240);
-            final ProgressBar bar = (ProgressBar) findViewById(R.id.progress);
+            final ProgressBar bar = (ProgressBar) requireViewById(R.id.progress);
             bar.setIndeterminate(false);
             bar.setProgress(0);
 
             final Handler handler = new Handler();
             final Runnable progressBarDelayRunner =
                     new Runnable() {
-                        public void run() {
+                        @Override public void run() {
+                            if (isTornDown()) return;
                             bar.setVisibility(View.VISIBLE);
                         }
                     };
@@ -957,11 +1127,11 @@ public class MediaView extends BaseSaveActivity {
                             }
                         });
                 try {
-                    i.setImage(ImageSource.uri(f.getAbsolutePath()));
+                    i.loader.setImage(ImageSource.uri(f.getAbsolutePath()));
                 } catch (Exception e) {
                     imageShown = false;
                 }
-                (findViewById(R.id.progress)).setVisibility(View.GONE);
+                (requireViewById(R.id.progress)).setVisibility(View.GONE);
                 handler.removeCallbacks(progressBarDelayRunner);
 
                 previous = i.scale;
@@ -970,61 +1140,21 @@ public class MediaView extends BaseSaveActivity {
                         new Runnable() {
                             @Override
                             public void run() {
+                                if (isTornDown()) return;
                                 i.setOnStateChangedListener(
-                                        new SubsamplingScaleImageView
-                                                .DefaultOnStateChangedListener() {
-                                            @Override
-                                            public void onScaleChanged(float newScale, int origin) {
-                                                if (newScale > previous
-                                                        && !hidden
-                                                        && newScale > base) {
-                                                    hidden = true;
-                                                    final View base = findViewById(R.id.gifheader);
-
-                                                    ValueAnimator va =
-                                                            ValueAnimator.ofFloat(1.0f, 0.2f);
-                                                    int mDuration = 250; // in millis
-                                                    va.setDuration(mDuration);
-                                                    va.addUpdateListener(
-                                                            new ValueAnimator
-                                                                    .AnimatorUpdateListener() {
-                                                                public void onAnimationUpdate(
-                                                                        ValueAnimator animation) {
-                                                                    Float value =
-                                                                            (Float)
-                                                                                    animation
-                                                                                            .getAnimatedValue();
-                                                                    base.setAlpha(value);
-                                                                }
-                                                            });
-                                                    va.start();
-                                                    // hide
-                                                } else if (newScale <= previous && hidden) {
-                                                    hidden = false;
-                                                    final View base = findViewById(R.id.gifheader);
-
-                                                    ValueAnimator va =
-                                                            ValueAnimator.ofFloat(0.2f, 1.0f);
-                                                    int mDuration = 250; // in millis
-                                                    va.setDuration(mDuration);
-                                                    va.addUpdateListener(
-                                                            new ValueAnimator
-                                                                    .AnimatorUpdateListener() {
-                                                                public void onAnimationUpdate(
-                                                                        ValueAnimator animation) {
-                                                                    Float value =
-                                                                            (Float)
-                                                                                    animation
-                                                                                            .getAnimatedValue();
-                                                                    base.setAlpha(value);
-                                                                }
-                                                            });
-                                                    va.start();
-                                                    // unhide
-                                                }
-                                                previous = newScale;
+                                    new SubsamplingScaleImageView.DefaultOnStateChangedListener() {
+                                        @Override
+                                        public void onScaleChanged(float newScale, int origin) {
+                                            if (newScale > previous && !hidden && newScale > base) {
+                                                hidden = true;
+                                                animateGifHeaderAlpha(false);
+                                            } else if (newScale <= previous && hidden) {
+                                                hidden = false;
+                                                animateGifHeaderAlpha(true);
                                             }
-                                        });
+                                            previous = newScale;
+                                        }
+                                    });
                             }
                         },
                         2000);
@@ -1046,23 +1176,32 @@ public class MediaView extends BaseSaveActivity {
                                 new ImageLoadingListener() {
 
                                     @Override
-                                    public void onLoadingStarted(String imageUri, View view) {
+                                    public void onLoadingStarted(@Nullable String imageUri, @Nullable View view) {
+                                        if (isTornDown()) return;
                                         imageShown = true;
-                                        size.setVisibility(View.VISIBLE);
+                                        if (size != null) size.setVisibility(View.VISIBLE);
                                     }
 
                                     @Override
                                     public void onLoadingFailed(
-                                            String imageUri, View view, FailReason failReason) {
+                                            String imageUri, @Nullable View view, FailReason failReason) {
                                         Log.v(LogUtil.getTag(), "MediaView: LOADING FAILED");
                                         imageShown = false;
+                                        if (isTornDown()) return;
+                                        // Clear the download spinner so a failed load doesn't leave
+                                        // it stuck over a blank view — doLoadImage's onPostExecute no
+                                        // longer hides it when the image was handed to us as the
+                                        // display URL (spinnerShown == false).
+                                        handler.removeCallbacks(progressBarDelayRunner);
+                                        (requireViewById(R.id.progress)).setVisibility(View.GONE);
                                     }
 
                                     @Override
                                     public void onLoadingComplete(
-                                            String imageUri, View view, Bitmap loadedImage) {
+                                            @Nullable String imageUri, @Nullable View view, @Nullable Bitmap loadedImage) {
+                                        if (isTornDown()) return;
                                         imageShown = true;
-                                        size.setVisibility(View.GONE);
+                                        if (size != null) size.setVisibility(View.GONE);
 
                                         File f =
                                                 ((Reddit) getApplicationContext())
@@ -1070,11 +1209,14 @@ public class MediaView extends BaseSaveActivity {
                                                         .getDiskCache()
                                                         .get(url);
                                         if (f != null && f.exists()) {
-                                            i.setImage(ImageSource.uri(f.getAbsolutePath()));
-                                        } else {
-                                            i.setImage(ImageSource.bitmap(loadedImage));
+                                            i.loader.setImage(ImageSource.uri(f.getAbsolutePath()));
+                                        } else if (loadedImage != null) {
+                                            // A completed load with no bitmap is how the loader
+                                            // reports an unusable uri, and ImageSource.bitmap
+                                            // throws on a null rather than ignoring it.
+                                            i.loader.setImage(ImageSource.bitmap(loadedImage));
                                         }
-                                        (findViewById(R.id.progress)).setVisibility(View.GONE);
+                                        (requireViewById(R.id.progress)).setVisibility(View.GONE);
                                         handler.removeCallbacks(progressBarDelayRunner);
 
                                         previous = i.scale;
@@ -1089,56 +1231,10 @@ public class MediaView extends BaseSaveActivity {
                                                                 && !hidden
                                                                 && newScale > base) {
                                                             hidden = true;
-                                                            final View base =
-                                                                    findViewById(R.id.gifheader);
-
-                                                            ValueAnimator va =
-                                                                    ValueAnimator.ofFloat(
-                                                                            1.0f, 0.2f);
-                                                            int mDuration = 250; // in millis
-                                                            va.setDuration(mDuration);
-                                                            va.addUpdateListener(
-                                                                    new ValueAnimator
-                                                                            .AnimatorUpdateListener() {
-                                                                        public void
-                                                                                onAnimationUpdate(
-                                                                                        ValueAnimator
-                                                                                                animation) {
-                                                                            Float value =
-                                                                                    (Float)
-                                                                                            animation
-                                                                                                    .getAnimatedValue();
-                                                                            base.setAlpha(value);
-                                                                        }
-                                                                    });
-                                                            va.start();
-                                                            // hide
+                                                            animateGifHeaderAlpha(false);
                                                         } else if (newScale <= previous && hidden) {
                                                             hidden = false;
-                                                            final View base =
-                                                                    findViewById(R.id.gifheader);
-
-                                                            ValueAnimator va =
-                                                                    ValueAnimator.ofFloat(
-                                                                            0.2f, 1.0f);
-                                                            int mDuration = 250; // in millis
-                                                            va.setDuration(mDuration);
-                                                            va.addUpdateListener(
-                                                                    new ValueAnimator
-                                                                            .AnimatorUpdateListener() {
-                                                                        public void
-                                                                                onAnimationUpdate(
-                                                                                        ValueAnimator
-                                                                                                animation) {
-                                                                            Float value =
-                                                                                    (Float)
-                                                                                            animation
-                                                                                                    .getAnimatedValue();
-                                                                            base.setAlpha(value);
-                                                                        }
-                                                                    });
-                                                            va.start();
-                                                            // unhide
+                                                            animateGifHeaderAlpha(true);
                                                         }
                                                         previous = newScale;
                                                     }
@@ -1146,7 +1242,7 @@ public class MediaView extends BaseSaveActivity {
                                     }
 
                                     @Override
-                                    public void onLoadingCancelled(String imageUri, View view) {
+                                    public void onLoadingCancelled(String imageUri, @Nullable View view) {
                                         Log.v(LogUtil.getTag(), "MediaView: LOADING CANCELLED");
                                     }
                                 },
@@ -1154,10 +1250,11 @@ public class MediaView extends BaseSaveActivity {
                                     @Override
                                     public void onProgressUpdate(
                                             String imageUri, View view, int current, int total) {
-                                        size.setText(FileUtil.readableFileSize(total));
-
-                                        ((ProgressBar) findViewById(R.id.progress))
-                                                .setProgress(Math.round(100.0f * current / total));
+                                        if (isTornDown()) return;
+                                        TextView size = (TextView) findViewById(R.id.size);
+                                        if (size != null) {
+                                            size.setText(String.format("%d%%", (int) (100.0 * current / total)));
+                                        }
                                     }
                                 });
             }
@@ -1172,6 +1269,96 @@ public class MediaView extends BaseSaveActivity {
         runOnUiThread(() -> DialogUtil.showErrorDialog(MediaView.this));
     }
 
+    private void rotateImage() {
+        SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) findViewById(R.id.submission_image);
+        if (imageView != null) {
+            currentRotation = (currentRotation + 90) % 360;
+            refreshImageWithRotation(imageView, currentRotation);
+        }
+    }
+
+    private void rotateImageLeft() {
+        SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) findViewById(R.id.submission_image);
+        if (imageView != null) {
+            currentRotation = (currentRotation - 90 + 360) % 360;
+            refreshImageWithRotation(imageView, currentRotation);
+        }
+    }
+
+    private void refreshImageWithRotation(SubsamplingScaleImageView imageView, int rotation) {
+        // Store the current source
+        if (imageView.loader != null && imageView.loader.savedImageSource != null) {
+            ImageSource currentSource = imageView.loader.savedImageSource;
+
+            // Set a proper black background to avoid ghosting
+            imageView.setBackgroundColor(Color.BLACK);
+
+            // Force a complete refresh by resetting and reloading with new orientation
+            imageView.recycle();
+            imageView.setOrientation(rotation);
+
+            // Delay the image reload slightly to ensure the view is properly cleared
+            imageView.post(new Runnable() {
+                @Override
+                public void run() {
+                    imageView.loader.setImage(currentSource);
+                }
+            });
+        } else {
+            // Fallback to direct orientation setting if no saved source
+            imageView.setBackgroundColor(Color.BLACK);
+            imageView.setOrientation(rotation);
+            imageView.invalidate();
+        }
+    }
+
+    private void rotateDirectGifRight() {
+        if (directGifViewer != null) {
+            currentGifRotation = (currentGifRotation + 90) % 360;
+            refreshDirectGifWithRotation();
+        }
+    }
+
+    private void rotateDirectGifLeft() {
+        if (directGifViewer != null) {
+            currentGifRotation = (currentGifRotation - 90 + 360) % 360;
+            refreshDirectGifWithRotation();
+        }
+    }
+
+    private void refreshDirectGifWithRotation() {
+        if (directGifViewer != null) {
+            // Set background to black to prevent ghosting, similar to image rotation
+            directGifViewer.setBackgroundColor(Color.BLACK);
+
+            // Apply rotation using ImageView's built-in rotation
+            directGifViewer.setRotation(currentGifRotation);
+
+            // Invalidate to ensure the view redraws
+            directGifViewer.invalidate();
+        }
+    }
+
+    /**
+     * Animates the alpha of the gifheader view
+     * @param show true to show (animate alpha to 1.0f), false to hide (animate alpha to 0.2f)
+     */
+    private void animateGifHeaderAlpha(boolean show) {
+        final View headerView = findViewById(R.id.gifheader);
+        if (headerView == null) return;
+
+        ValueAnimator va = ValueAnimator.ofFloat(show ? 0.2f : 1.0f, show ? 1.0f : 0.2f);
+        int mDuration = 250; // in millis
+        va.setDuration(mDuration);
+        va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override public void onAnimationUpdate(ValueAnimator animation) {
+                Float value = (Float) animation.getAnimatedValue();
+                headerView.setAlpha(value);
+            }
+        });
+        va.start();
+    }
+
     @Override
     protected void onStoragePermissionGranted() {
         super.onStoragePermissionGranted();
@@ -1181,7 +1368,9 @@ public class MediaView extends BaseSaveActivity {
             // always download the original file, or use the cached original if that is currently
             // displayed
             i.putExtra("actuallyLoaded", lastContentUrl);
-            i.putExtra("downloadUri", StorageUtil.getStorageUri(this).toString());
+            i.putExtra(
+                    "downloadUri",
+                    java.util.Objects.requireNonNull(StorageUtil.getStorageUri(this)).toString());
             if (subreddit != null && !subreddit.isEmpty()) i.putExtra("subreddit", subreddit);
             if (submissionTitle != null) i.putExtra(EXTRA_SUBMISSION_TITLE, submissionTitle);
             i.putExtra("index", index);
@@ -1198,4 +1387,15 @@ public class MediaView extends BaseSaveActivity {
             lastContentUrl = null;
         }
     }
+
+    /**
+     * The oEmbed image url, preferring the full-size one. Empty when the response carries neither as
+     * a string — callers treat that as "not an image" rather than handing the loader an empty uri,
+     * which it reads as a completed load with a null bitmap.
+     */
+    private static String deviantArtImageUrl(JsonObject result) {
+        final String fullsize = GsonUtil.string(result, "fullsize_url", "");
+        return fullsize.isEmpty() ? GsonUtil.string(result, "url", "") : fullsize;
+    }
+
 }

@@ -17,11 +17,22 @@
         android:paddingBottom="48dp"
         android:orientation="vertical">
 
+        <me.edgan.redditslide.SpoilerRobotoTextView
+            android:id="@+id/galleryCaption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:background="#aa000000"
+            android:padding="8dp"
+            android:textColor="#fff"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
         <me.edgan.redditslide.Views.SubsamplingScaleImageView
             android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
+            android:layout_below="@id/galleryCaption"
              />
 
         <RelativeLayout
@@ -44,10 +55,10 @@
                 android:layout_width="56dp"
                 android:layout_height="56dp"
                 android:theme="@style/Ripple.List"
-                android:layout_toLeftOf="@+id/save"
+                android:layout_toLeftOf="@+id/rotate_left"
                 android:padding="15dp"
                 sothree:srcCompat="@drawable/ic_high_quality"
-                android:tint="#e1e1e1" />
+                app:tint="#e1e1e1" />
             <ImageView
                 android:id="@+id/comments"
                 android:layout_width="56dp"
@@ -56,7 +67,29 @@
                 android:layout_alignParentLeft="true"
                 android:padding="15dp"
                 sothree:srcCompat="@drawable/ic_forum"
-                android:tint="#e1e1e1" />
+                app:tint="#e1e1e1" />
+            <ImageView
+                android:id="@+id/rotate_left"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_toLeftOf="@id/rotate_right"
+                android:layout_marginEnd="4dp"
+                android:theme="@style/Ripple.List"
+                android:padding="15dp"
+                sothree:srcCompat="@drawable/ic_rotate_left"
+                app:tint="#e1e1e1"
+                android:contentDescription="@string/image_rotate_left_content_desc" />
+            <ImageView
+                android:id="@+id/rotate_right"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_toLeftOf="@id/save"
+                android:layout_marginEnd="4dp"
+                android:theme="@style/Ripple.List"
+                android:padding="15dp"
+                sothree:srcCompat="@drawable/ic_rotate_right"
+                app:tint="#e1e1e1"
+                android:contentDescription="@string/image_rotate_content_desc" />
             <ImageView
                 android:id="@+id/save"
                 android:layout_width="56dp"
@@ -65,7 +98,7 @@
                 android:theme="@style/Ripple.List"
                 android:padding="15dp"
                 sothree:srcCompat="@drawable/ic_download"
-                android:tint="#e1e1e1" />
+                app:tint="#e1e1e1" />
             <ImageView
                 android:id="@+id/more"
                 style="@style/Ripple.List"
@@ -79,7 +112,7 @@
                 android:layout_alignParentRight="true"
                 android:paddingBottom="15dp"
                 sothree:srcCompat="@drawable/ic_more_vert"
-                android:tint="#e1e1e1" />
+                app:tint="#e1e1e1" />
 
         </RelativeLayout>
 
@@ -88,7 +121,7 @@
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
+            android:layout_below="@id/galleryCaption"
             android:indeterminate="false"
             android:max="100"
             android:progress="0" />

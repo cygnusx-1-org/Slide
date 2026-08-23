@@ -23,8 +23,10 @@ import androidx.annotation.Nullable;
 import me.edgan.redditslide.ForceTouch.PeekView;
 import me.edgan.redditslide.ForceTouch.PeekViewActivity;
 import me.edgan.redditslide.ForceTouch.callback.OnPeek;
+import org.jspecify.annotations.NullMarked;
 
 /** This is a builder class to facilitate the creation of the PeekView. */
+@NullMarked
 public class Peek {
 
     public static Peek into(@LayoutRes int layoutRes, @Nullable OnPeek onPeek) {
@@ -46,10 +48,10 @@ public class Peek {
     }
 
     private int layoutRes = 0;
-    private View layout = null;
+    @Nullable private View layout = null;
 
     private PeekViewOptions options = new PeekViewOptions();
-    private OnPeek callbacks;
+    @Nullable private OnPeek callbacks;
 
     private Peek(@LayoutRes int layoutRes, @Nullable OnPeek callbacks) {
         this.layoutRes = layoutRes;

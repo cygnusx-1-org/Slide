@@ -1,8 +1,7 @@
 package me.edgan.redditslide.Adapters;
 
-import net.dean.jraw.models.Submission;
-
 import java.util.List;
+import net.dean.jraw.models.Submission;
 
 /** Interface to provide methods for updating an object when new submissions have been loaded. */
 public interface SubmissionDisplay {

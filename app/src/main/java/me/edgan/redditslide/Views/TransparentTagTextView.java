@@ -6,26 +6,28 @@ import android.graphics.BlendMode;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.util.AttributeSet;
-
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
-
 import me.edgan.redditslide.R;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by carlos on 3/14/16. */
+@NullMarked
 public class TransparentTagTextView extends AppCompatTextView {
-    Bitmap mMaskBitmap;
-    Canvas mMaskCanvas;
+    @Nullable Bitmap mMaskBitmap;
+    @Nullable Canvas mMaskCanvas;
+
+    // Assigned by init(context), which every constructor calls.
+    @SuppressWarnings("NullAway.Init")
     Paint mPaint;
 
-    Drawable backdrop;
-    Drawable mBackground;
-    Bitmap mBackgroundBitmap;
-    Canvas mBackgroundCanvas;
+    @Nullable Drawable backdrop;
+    @Nullable Drawable mBackground;
+    @Nullable Bitmap mBackgroundBitmap;
+    @Nullable Canvas mBackgroundCanvas;
     boolean mSetBoundsOnSizeAvailable = false;
 
     public TransparentTagTextView(Context context) {
@@ -34,7 +36,7 @@ public class TransparentTagTextView extends AppCompatTextView {
         init(context);
     }
 
-    public TransparentTagTextView(Context context, AttributeSet attrs) {
+    public TransparentTagTextView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
@@ -48,7 +50,7 @@ public class TransparentTagTextView extends AppCompatTextView {
     }
 
     @Override
-    public void setBackgroundDrawable(Drawable bg) {
+    public void setBackgroundDrawable(@Nullable Drawable bg) {
         if (bg != null) {
             mBackground = bg;
             int w = bg.getIntrinsicWidth();
@@ -85,7 +87,7 @@ public class TransparentTagTextView extends AppCompatTextView {
             mMaskBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
             mMaskCanvas = new Canvas(mMaskBitmap);
 
-            if (mSetBoundsOnSizeAvailable) {
+            if (mSetBoundsOnSizeAvailable && mBackground != null) {
                 mBackground.setBounds(0, 0, w, h);
                 mSetBoundsOnSizeAvailable = false;
             }
@@ -96,19 +98,25 @@ public class TransparentTagTextView extends AppCompatTextView {
     protected void onDraw(Canvas canvas) {
         super.setBackgroundDrawable(backdrop);
 
+        // Everything below needs the off-screen buffers onSizeChanged allocates, so a draw that
+        // arrives before the first layout has nothing to composite.
+        final Drawable background = mBackground;
+        final Canvas backgroundCanvas = mBackgroundCanvas;
+        final Bitmap maskBitmap = mMaskBitmap;
+        final Bitmap backgroundBitmap = mBackgroundBitmap;
+        if (background == null || backgroundCanvas == null) {
+            return;
+        }
+
         // Draw background
-        mBackground.draw(mBackgroundCanvas);
+        background.draw(backgroundCanvas);
 
         // Draw mask
-        if (mMaskCanvas != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                mMaskCanvas.drawColor(Color.BLACK, BlendMode.CLEAR);
-            } else {
-                mMaskCanvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR);
-            }
+        if (mMaskCanvas != null && maskBitmap != null && backgroundBitmap != null) {
+            mMaskCanvas.drawColor(Color.BLACK, BlendMode.CLEAR);
             super.onDraw(mMaskCanvas);
-            mBackgroundCanvas.drawBitmap(mMaskBitmap, 0.f, 0.f, mPaint);
-            canvas.drawBitmap(mBackgroundBitmap, 0.f, 0.f, null);
+            backgroundCanvas.drawBitmap(maskBitmap, 0.f, 0.f, mPaint);
+            canvas.drawBitmap(backgroundBitmap, 0.f, 0.f, null);
         }
     }
 }

@@ -1,5 +1,7 @@
 package me.edgan.redditslide.ImgurAlbum;
 
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,10 +19,10 @@ import java.util.Map;
 public class Data {
 
     @JsonProperty("count")
-    private Integer count;
+    @Nullable private Integer count;
 
     @JsonProperty("images")
-    private List<Image> images = new ArrayList<>();
+    @Nullable private List<Image> images = new ArrayList<>();
 
     @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -28,6 +30,7 @@ public class Data {
      * @return The count
      */
     @JsonProperty("count")
+    @Nullable
     public Integer getCount() {
         return count;
     }
@@ -36,7 +39,7 @@ public class Data {
      * @param count The count
      */
     @JsonProperty("count")
-    public void setCount(Integer count) {
+    public void setCount(@Nullable Integer count) {
         this.count = count;
     }
 
@@ -44,6 +47,7 @@ public class Data {
      * @return The images
      */
     @JsonProperty("images")
+    @Nullable
     public List<Image> getImages() {
         return images;
     }
@@ -52,7 +56,7 @@ public class Data {
      * @param images The images
      */
     @JsonProperty("images")
-    public void setImages(List<Image> images) {
+    public void setImages(@Nullable List<Image> images) {
         this.images = images;
     }
 

@@ -4,21 +4,18 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.util.Pair;
-
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Activities.Slide;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
-
-import org.apache.commons.text.StringEscapeUtils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import me.edgan.redditslide.util.PrefUtil;
 
 /** Created by ccrama on 7/9/2015. */
 public class ColorPreferences {
@@ -26,6 +23,9 @@ public class ColorPreferences {
     private static final String USER_THEME_DELIMITER = "$USER$";
     public static final String FONT_STYLE = "THEME";
     private final Context context;
+
+    /** Resolved once: getSharedPreferences is a synchronized lookup and open() is called a lot. */
+    private @Nullable SharedPreferences prefs;
 
     public ColorPreferences(Context context) {
         this.context = context;
@@ -493,20 +493,31 @@ public class ColorPreferences {
     }
 
     protected SharedPreferences open() {
-        return context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+        if (prefs == null) {
+            prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+        }
+        return prefs;
     }
 
     protected SharedPreferences.Editor edit() {
         return open().edit();
     }
 
+    private String getString(String key, String defValue) {
+        return PrefUtil.getString(open(), key, defValue);
+    }
+
     private String getUserThemeName(String themeName, String defaultValue) {
         String userTheme =
                 open().getString(themeName + USER_THEME_DELIMITER + Authentication.name, null);
         if (userTheme != null) {
-            return userTheme.split(StringEscapeUtils.escapeJava(USER_THEME_DELIMITER))[0];
+            // Was userTheme.split(escapeJava(USER_THEME_DELIMITER))[0]. escapeJava leaves "$USER$"
+            // unchanged, and split() takes a regex in which both '$' are end-of-input anchors, so
+            // the pattern can never match and [0] was always the whole string. Same result, without
+            // compiling a Pattern on every call.
+            return userTheme;
         } else {
-            return open().getString(themeName, defaultValue);
+            return getString(themeName, defaultValue);
         }
     }
 
@@ -522,9 +533,9 @@ public class ColorPreferences {
                         SettingValues.nightTheme,
                         getUserThemeName(FONT_STYLE, Theme.valueOf(Constants.DEFAULT_THEME).name()),
                         Theme.valueOf(
-                                open().getString(
-                                                FONT_STYLE,
-                                                Theme.valueOf(Constants.DEFAULT_THEME).name())));
+                                getString(
+                                        FONT_STYLE,
+                                        Theme.valueOf(Constants.DEFAULT_THEME).name())));
             }
             return Theme.valueOf(
                     getUserThemeName(FONT_STYLE, Theme.valueOf(Constants.DEFAULT_THEME).name()));
@@ -565,7 +576,7 @@ public class ColorPreferences {
         return getFontStyle().baseId;
     }
 
-    public Theme getThemeSubreddit(String s, boolean b) {
+    public Theme getThemeSubreddit(@Nullable String s, boolean b) {
         if (s == null) {
             s = "Promoted";
         }
@@ -586,7 +597,8 @@ public class ColorPreferences {
                 return Theme.valueOf(str);
             }
         } catch (Exception ignored) {
-
+            // An unknown theme name falls back to getFontStyle()
+            // below.
         }
         return getFontStyle();
     }
@@ -613,7 +625,8 @@ public class ColorPreferences {
                 return Theme.valueOf(base);
             }
         } catch (Exception ignored) {
-
+            // An unknown theme name falls back to defaultTheme
+            // below.
         }
         return defaultTheme;
     }
@@ -626,7 +639,7 @@ public class ColorPreferences {
         edit().remove(subreddit + USER_THEME_DELIMITER + Authentication.name).commit();
     }
 
-    public int getColor(String s) {
+    public int getColor(@Nullable String s) {
         return ContextCompat.getColor(context, getThemeSubreddit(s, true).getColor());
     }
 

@@ -1,18 +1,41 @@
 package me.edgan.redditslide.util;
 
+import android.content.Context;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.BlendModeColorFilterCompat;
 import androidx.core.graphics.BlendModeCompat;
 
 import java.util.List;
+import java.util.Objects;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class BlendModeUtil {
+    /** Loads a drawable and tints it SRC_ATOP — the mod bottom-sheet icon pattern. */
+    public static Drawable getTintedDrawable(
+            @NonNull final Context context,
+            @DrawableRes final int drawableRes,
+            @ColorInt final int color) {
+        // getDrawable is @Nullable, but every caller passes an R.drawable constant that exists, and
+        // a missing one throws NotFoundException rather than returning null. Asserting it here
+        // keeps the non-null return the 40-odd bottom-sheet call sites rely on; without it the
+        // tint below would NPE on the next line anyway.
+        final Drawable drawable =
+                Objects.requireNonNull(
+                        ResourcesCompat.getDrawable(context.getResources(), drawableRes, null),
+                        "missing drawable resource");
+        tintDrawable(drawable, color, BlendModeCompat.SRC_ATOP);
+        return drawable;
+    }
+
     private static void tintDrawable(
             @NonNull final Drawable drawable,
             @ColorInt final int color,

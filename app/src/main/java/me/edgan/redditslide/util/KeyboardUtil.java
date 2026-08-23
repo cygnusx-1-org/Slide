@@ -5,8 +5,10 @@ import android.os.IBinder;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.core.content.ContextCompat;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by TacoTheDank on 03/15/2021. */
+@NullMarked
 public class KeyboardUtil {
 
     /**

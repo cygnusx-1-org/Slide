@@ -2,7 +2,11 @@ package me.edgan.redditslide.Adapters;
 
 import android.content.Context;
 import android.os.AsyncTask;
-
+import androidx.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.HasSeen;
@@ -16,17 +20,12 @@ import me.edgan.redditslide.SubmissionCache;
 import me.edgan.redditslide.Synccit.MySynccitReadTask;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.PhotoLoader;
-
 import net.dean.jraw.models.MultiReddit;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.paginators.MultiRedditPaginator;
-
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * This class is reponsible for loading subreddit specific submissions {@link loadMore(Context,
@@ -41,8 +40,11 @@ public class MultiredditPosts implements PostLoader {
     public boolean offline;
     public boolean loading;
     public String profile;
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     private MultiRedditPaginator paginator;
+    @SuppressWarnings("NullAway.Init") // assigned in loadMore
     Context c;
+    @SuppressWarnings("NullAway.Init") // assigned in loadMore
     MultiredditAdapter adapter;
 
     public MultiredditPosts(String multireddit, String profile) {
@@ -61,6 +63,14 @@ public class MultiredditPosts implements PostLoader {
     @Override
     public void loadMore(Context context, SubmissionDisplay displayer, boolean reset) {
         this.c = context;
+        if (multiReddit == null) {
+            // The constructor could not resolve the name: UserSubscriptions.multireddits is null
+            // after a failed sync, and loadPublicMultireddits stores a null for any profile whose
+            // fetch threw. Both LoadData.doInBackground and its onPostExecute dereference this
+            // without a guard, so stop here rather than there.
+            displayer.updateError();
+            return;
+        }
         new LoadData(context, displayer, reset).execute(multiReddit);
     }
 
@@ -79,7 +89,19 @@ public class MultiredditPosts implements PostLoader {
         return posts;
     }
 
-    public MultiReddit multiReddit;
+    // Null when the constructor could not resolve the name; loadMore is the single entry
+    // point and reports the error rather than proceeding.
+    @Nullable public MultiReddit multiReddit;
+
+    /** Display name of the multireddit, or "" when it could not be resolved. */
+    public String displayName() {
+        return multiReddit == null ? "" : MiscUtil.orEmpty(multiReddit.getDisplayName());
+    }
+
+    /** Cache key part for a multireddit; empty when it could not be resolved. */
+    private static String multiName(final @Nullable MultiReddit multi) {
+        return multi == null ? "" : MiscUtil.orEmpty(multi.getDisplayName()).toLowerCase(Locale.ENGLISH);
+    }
 
     @Override
     public boolean hasMore() {
@@ -108,7 +130,10 @@ public class MultiredditPosts implements PostLoader {
                 // new submissions found
                 int start = 0;
                 if (posts != null) {
-                    start = posts.size() + 1;
+                    // Adapter offset of the first newly appended post (old size, before
+                    // the addAll below). updateSuccess adds the +1 for the spacer header
+                    // and derives the insert count, so this must be the real offset.
+                    start = posts.size();
                 }
 
                 if (reset || offline || posts == null) {
@@ -121,10 +146,8 @@ public class MultiredditPosts implements PostLoader {
                 }
                 if (!usedOffline)
                     OfflineSubreddit.getSubreddit(
-                                    "multi"
-                                            + multiReddit
-                                                    .getDisplayName()
-                                                    .toLowerCase(Locale.ENGLISH),
+                                    "multi_"
+                                            + multiName(multiReddit),
                                     false,
                                     context)
                             .overwriteSubmissions(posts)
@@ -133,7 +156,7 @@ public class MultiredditPosts implements PostLoader {
                 String[] ids = new String[submissions.size()];
                 int i = 0;
                 for (Submission s : submissions) {
-                    ids[i] = s.getId();
+                    ids[i] = MiscUtil.orEmpty(s.getId());
                     i++;
                 }
                 if (!SettingValues.synccitName.isEmpty() && !offline) {
@@ -148,10 +171,8 @@ public class MultiredditPosts implements PostLoader {
                 // end of submissions
                 nomore = true;
             } else if (!OfflineSubreddit.getSubreddit(
-                                    "multi"
-                                            + multiReddit
-                                                    .getDisplayName()
-                                                    .toLowerCase(Locale.ENGLISH),
+                                    "multi_"
+                                            + multiName(multiReddit),
                                     false,
                                     context)
                             .submissions
@@ -161,7 +182,7 @@ public class MultiredditPosts implements PostLoader {
                 offline = true;
                 final OfflineSubreddit cached =
                         OfflineSubreddit.getSubreddit(
-                                "multi" + multiReddit.getDisplayName().toLowerCase(Locale.ENGLISH),
+                                "multi_" + multiName(multiReddit),
                                 true,
                                 context);
 
@@ -169,7 +190,7 @@ public class MultiredditPosts implements PostLoader {
                 for (Submission s : cached.submissions) {
                     if (!PostMatch.doesMatch(
                             s,
-                            "multi" + multiReddit.getDisplayName().toLowerCase(Locale.ENGLISH),
+                            "multi_" + multiName(multiReddit),
                             false)) {
                         finalSubs.add(s);
                     }
@@ -191,7 +212,7 @@ public class MultiredditPosts implements PostLoader {
         }
 
         @Override
-        protected List<Submission> doInBackground(MultiReddit... subredditPaginators) {
+        protected @Nullable List<Submission> doInBackground(MultiReddit... subredditPaginators) {
             if (!NetworkUtil.isConnected(context)) {
                 offline = true;
                 return null;
@@ -207,17 +228,18 @@ public class MultiredditPosts implements PostLoader {
                 paginator = new MultiRedditPaginator(Authentication.reddit, subredditPaginators[0]);
                 paginator.setSorting(
                         SettingValues.getSubmissionSort(
-                                "multi"
-                                        + subredditPaginators[0]
-                                                .getDisplayName()
+                                "multi_"
+                                        + MiscUtil.orEmpty(
+                                                        subredditPaginators[0].getDisplayName())
                                                 .toLowerCase(Locale.ENGLISH)));
                 paginator.setTimePeriod(
                         SettingValues.getSubmissionTimePeriod(
-                                "multi"
-                                        + subredditPaginators[0]
-                                                .getDisplayName()
+                                "multi_"
+                                        + MiscUtil.orEmpty(
+                                                        subredditPaginators[0]
+                                                                .getDisplayName())
                                                 .toLowerCase(Locale.ENGLISH)));
-                paginator.setLimit(Constants.PAGINATOR_POST_LIMIT);
+                paginator.setLimit(Constants.DEFAULT_PAGINATOR_LIMIT);
             }
 
             List<Submission> things = new ArrayList<>();
@@ -230,15 +252,16 @@ public class MultiredditPosts implements PostLoader {
                 }
 
             } catch (Exception e) {
-                e.printStackTrace();
-                if (e.getMessage().contains("Forbidden")) {
+                LogUtil.e(e, "MultiredditPosts.doInBackground failed");
+                if (String.valueOf(e.getMessage()).contains("Forbidden")) {
                     Reddit.authentication.updateToken(context);
                 }
             }
 
             List<Submission> filteredSubmissions = new ArrayList<>();
+            String multiName = "multi_" + MiscUtil.orEmpty(paginator.getMultiReddit().getDisplayName()).toLowerCase(Locale.ENGLISH);
             for (Submission s : things) {
-                if (!PostMatch.doesMatch(s, paginator.getMultiReddit().getDisplayName(), false)) {
+                if (!PostMatch.doesMatch(s, multiName, false)) {
                     filteredSubmissions.add(s);
                 }
             }
@@ -250,7 +273,10 @@ public class MultiredditPosts implements PostLoader {
             if (!(SettingValues.noImages
                     && ((!NetworkUtil.isConnectedWifi(c) && SettingValues.lowResMobile)
                             || SettingValues.lowResAlways)))
-                PhotoLoader.loadPhotos(c, filteredSubmissions);
+                PhotoLoader.loadPhotos(
+                        c,
+                        filteredSubmissions,
+                        "multi_" + displayName().toLowerCase(Locale.ENGLISH));
 
             if (SettingValues.storeHistory) LastComments.setCommentsSince(filteredSubmissions);
 

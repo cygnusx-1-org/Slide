@@ -3,19 +3,21 @@ package me.edgan.redditslide;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
-
 import com.fasterxml.jackson.databind.JsonNode;
-
-import me.edgan.redditslide.util.GifUtils;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.PhotoLoader;
-
+import me.edgan.redditslide.util.PrefUtil;
+import net.dean.jraw.RedditClient;
 import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.http.RestResponse;
 import net.dean.jraw.http.SubmissionRequest;
@@ -25,21 +27,17 @@ import net.dean.jraw.models.meta.SubmissionSerializer;
 import net.dean.jraw.paginators.SubredditPaginator;
 import net.dean.jraw.util.JrawUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
 /** Created by carlo_000 on 4/18/2016. */
 public class CommentCacheAsync extends AsyncTask<Void, Void, Void> {
 
     public static final String SAVED_SUBMISSIONS = "read later";
-    List<Submission> alreadyReceived;
 
-    NotificationManager mNotifyManager;
+    /** Null when the caller did not already have the submissions and they must be paginated for. */
+    @Nullable List<Submission> alreadyReceived;
+
+    // Both built together, and only for a real subreddit — the saved-posts pseudo-sub shows no
+    // progress notification.
+    @Nullable NotificationManager mNotifyManager;
 
     public CommentCacheAsync(
             List<Submission> submissions, Context c, String subreddit, boolean[] otherChoices) {
@@ -65,13 +63,16 @@ public class CommentCacheAsync extends AsyncTask<Void, Void, Void> {
     String[] subs;
 
     Context context;
-    NotificationCompat.Builder mBuilder;
+    @Nullable NotificationCompat.Builder mBuilder;
 
-    boolean[] otherChoices;
+    // Defaulted rather than left unset: the two-argument constructor never assigns it, and the
+    // content-type switch below indexes it unguarded. Matches what the four-argument constructor
+    // passes.
+    boolean[] otherChoices = new boolean[] {true, true};
 
     @Override
     public Void doInBackground(Void... params) {
-        if (Authentication.isLoggedIn && Authentication.me == null
+        if ((Authentication.isLoggedIn && Authentication.me == null)
                 || Authentication.reddit == null) {
 
             if (Authentication.reddit == null) {
@@ -91,17 +92,7 @@ public class CommentCacheAsync extends AsyncTask<Void, Void, Void> {
                     LogUtil.v("AUTHENTICATED");
 
                     if (Authentication.reddit.isAuthenticated()) {
-                        final Set<String> accounts =
-                                Authentication.authentication.getStringSet(
-                                        "accounts", new HashSet<String>());
-                        if (accounts.contains(name)) { // convert to new system
-                            accounts.remove(name);
-                            accounts.add(name + ":" + Authentication.refresh);
-                            Authentication.authentication
-                                    .edit()
-                                    .putStringSet("accounts", accounts)
-                                    .apply(); // force commit
-                        }
+                        Authentication.migrateAccountToTokenForm(name);
                         Authentication.isLoggedIn = true;
                         Reddit.notFirst = true;
                     }
@@ -153,20 +144,22 @@ public class CommentCacheAsync extends AsyncTask<Void, Void, Void> {
                     } else {
                         p = new SubredditPaginator(Authentication.reddit, sub);
                     }
-                    p.setLimit(Constants.PAGINATOR_POST_LIMIT);
+                    p.setLimit(Constants.DEFAULT_PAGINATOR_LIMIT);
                     try {
                         submissions.addAll(p.next());
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtil.e(e, "CommentCacheAsync.doInBackground failed");
                     }
                 }
 
                 int commentDepth =
                         Integer.parseInt(
-                                SettingValues.prefs.getString(SettingValues.COMMENT_DEPTH, "5"));
+                                PrefUtil.getString(
+                                        SettingValues.prefs, SettingValues.COMMENT_DEPTH, "5"));
                 int commentCount =
                         Integer.parseInt(
-                                SettingValues.prefs.getString(SettingValues.COMMENT_COUNT, "50"));
+                                PrefUtil.getString(
+                                        SettingValues.prefs, SettingValues.COMMENT_COUNT, "50"));
 
                 Log.v("CommentCacheAsync", "comment count " + commentCount);
                 int random = (int) (Math.random() * 100);
@@ -180,42 +173,46 @@ public class CommentCacheAsync extends AsyncTask<Void, Void, Void> {
                                                 .depth(commentDepth)
                                                 .sort(sortType)
                                                 .build());
-                        Submission s2 =
-                                SubmissionSerializer.withComments(n, CommentSort.CONFIDENCE);
-                        OfflineSubreddit.writeSubmission(n, s2, context);
-                        newFullnames.add(s2.getFullName());
-                        if (!SettingValues.noImages) PhotoLoader.loadPhoto(context, s);
-                        switch (ContentType.getContentType(s)) {
-                            case VREDDIT_DIRECT:
-                            case VREDDIT_REDIRECT:
-                            case GIF:
-                                if (otherChoices[0]) {
+                        if (n != null) {
+                            Submission s2 =
+                                    SubmissionSerializer.withComments(n, CommentSort.CONFIDENCE);
+                            OfflineSubreddit.writeSubmission(n, s2, context);
+                            newFullnames.add(s2.getFullName());
+                            if (!SettingValues.noImages) PhotoLoader.loadPhoto(context, s);
+                            switch (ContentType.getContentType(s)) {
+                                case VREDDIT_DIRECT:
+                                case VREDDIT_REDIRECT:
+                                case GIF:
+                                    if (otherChoices[0]) {
+                                        break;
+                                    }
                                     break;
-                                }
-                                break;
-                            case ALBUM:
-                                if (otherChoices[1])
-                                {
-                                    break;
-                                }
+                                case ALBUM:
+                                    if (otherChoices[1])
+                                    {
+                                        break;
+                                    }
+                            }
                         }
                     } catch (Exception ignored) {
+                        // One submission failing to cache must not stop the rest of the
+                        // batch; count still advances so the progress bar completes.
                     }
                     count = count + 1;
-                    if (mBuilder != null) {
+                    if (mBuilder != null && mNotifyManager != null) {
                         mBuilder.setProgress(submissions.size(), count, false);
                         mNotifyManager.notify(random, mBuilder.build());
                     }
                 }
 
                 OfflineSubreddit.newSubreddit(sub).writeToMemory(newFullnames);
-                if (mBuilder != null) {
+                if (mBuilder != null && mNotifyManager != null) {
                     mNotifyManager.cancel(random);
                 }
                 if (!submissions.isEmpty()) success.add(sub);
             }
         }
-        if (mBuilder != null) {
+        if (mBuilder != null && mNotifyManager != null) {
             mBuilder.setContentText(context.getString(R.string.offline_caching_complete))
                     // Removes the progress bar
                     .setSubText(success.size() + " subreddits cached")
@@ -227,7 +224,8 @@ public class CommentCacheAsync extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
-    public JsonNode getSubmission(SubmissionRequest request) throws NetworkException {
+    /** Null when the request failed; the caller skips the submission. */
+    @Nullable public JsonNode getSubmission(SubmissionRequest request) throws NetworkException {
         Map<String, String> args = new HashMap<>();
         if (request.getDepth() != null) args.put("depth", Integer.toString(request.getDepth()));
         if (request.getContext() != null) {
@@ -248,10 +246,13 @@ public class CommentCacheAsync extends AsyncTask<Void, Void, Void> {
 
         try {
 
+            final RedditClient client = Authentication.reddit;
+            if (client == null) {
+                return null;
+            }
             RestResponse response =
-                    Authentication.reddit.execute(
-                            Authentication.reddit
-                                    .request()
+                    client.execute(
+                            client.request()
                                     .path(String.format("/comments/%s", request.getId()))
                                     .query(args)
                                     .build());

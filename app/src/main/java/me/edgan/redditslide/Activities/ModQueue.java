@@ -4,15 +4,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-
 import com.google.android.material.tabs.TabLayout;
-
 import me.edgan.redditslide.Fragments.InboxPage;
 import me.edgan.redditslide.Fragments.ModLog;
 import me.edgan.redditslide.Fragments.ModPage;
@@ -20,27 +18,32 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 9/17/2015. */
+@NullMarked
 public class ModQueue extends BaseActivityAnim {
 
-    public ModQueuePagerAdapter adapter;
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         overrideSwipeFromAnywhere();
 
         super.onCreate(savedInstance);
 
         applyColorTheme("");
         setContentView(R.layout.activity_inbox);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, R.string.drawer_moderation, true, true);
 
-        TabLayout tabs = (TabLayout) findViewById(R.id.sliding_tabs);
+        TabLayout tabs = (TabLayout) requireViewById(R.id.sliding_tabs);
         tabs.setTabMode(TabLayout.MODE_SCROLLABLE);
         tabs.setSelectedTabIndicatorColor(new ColorPreferences(ModQueue.this).getColor("no sub"));
-        final View header = findViewById(R.id.header);
-        ViewPager pager = (ViewPager) findViewById(R.id.content_view);
+        final View header = requireViewById(R.id.header);
+        ViewPager pager = (ViewPager) requireViewById(R.id.content_view);
         pager.addOnPageChangeListener(
                 new ViewPager.SimpleOnPageChangeListener() {
                     @Override
@@ -51,13 +54,14 @@ public class ModQueue extends BaseActivityAnim {
                                 .setDuration(180);
                     }
                 });
-        findViewById(R.id.header).setBackgroundColor(Palette.getDefaultColor());
+        requireViewById(R.id.header).setBackgroundColor(Palette.getDefaultColor());
         pager.setAdapter(new ModQueuePagerAdapter(getSupportFragmentManager()));
         tabs.setupWithViewPager(pager);
     }
 
     private class ModQueuePagerAdapter extends FragmentStatePagerAdapter {
 
+        @SuppressWarnings("NullAway.Init") // assigned in setPrimaryItem as the pager swaps pages
         private Fragment mCurrentFragment;
 
         ModQueuePagerAdapter(FragmentManager fm) {
@@ -108,7 +112,11 @@ public class ModQueue extends BaseActivityAnim {
                 default:
                     f = new ModPage();
                     args.putString("id", "modqueue");
-                    args.putString("subreddit", UserSubscriptions.modOf.get(i - 5));
+                    args.putString(
+                            "subreddit",
+                            UserSubscriptions.modOf == null
+                                    ? ""
+                                    : UserSubscriptions.modOf.get(i - 5));
                     f.setArguments(args);
                     return f;
             }
@@ -133,7 +141,9 @@ public class ModQueue extends BaseActivityAnim {
                 case 4:
                     return getString(R.string.mod_log);
                 default:
-                    return UserSubscriptions.modOf.get(position - 5);
+                    return UserSubscriptions.modOf == null
+                            ? ""
+                            : UserSubscriptions.modOf.get(position - 5);
             }
         }
     }

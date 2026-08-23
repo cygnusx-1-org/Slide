@@ -1,26 +1,27 @@
 package me.edgan.redditslide.Adapters;
 
 import android.os.AsyncTask;
-
+import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import me.edgan.redditslide.Authentication;
-
 import net.dean.jraw.models.PublicContribution;
 import net.dean.jraw.paginators.ModeratorPaginator;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-
 /** Created by ccrama on 9/17/2015. */
 public class ModeratorPosts {
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     public ArrayList<PublicContribution> posts;
     public boolean loading;
+    @SuppressWarnings("NullAway.Init") // assigned in bindAdapter
     private SwipeRefreshLayout refreshLayout;
     private String where;
 
     private String subreddit;
+    @SuppressWarnings("NullAway.Init") // assigned in bindAdapter
     private ModeratorAdapter adapter;
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     private ModeratorPaginator paginator;
 
     public ModeratorPosts(String where, String subreddit) {
@@ -67,7 +68,7 @@ public class ModeratorPosts {
         }
 
         @Override
-        protected ArrayList<PublicContribution> doInBackground(String... subredditPaginators) {
+        protected @Nullable ArrayList<PublicContribution> doInBackground(String... subredditPaginators) {
             try {
                 if (reset || paginator == null) {
                     paginator = new ModeratorPaginator(Authentication.reddit, subreddit, where);

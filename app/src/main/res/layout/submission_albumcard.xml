@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:gravity="bottom"
     sothree:umanoOverlay="true"
-    sothree:umanoPanelHeight="96dp">
+    sothree:umanoPanelHeight="@dimen/album_card_panel_height">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -76,7 +76,7 @@
                 android:layout_marginEnd="4dp"
                 android:layout_marginStart="16dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/img_score"
                 sothree:srcCompat="@drawable/ic_arrow_upward" />
 
@@ -84,7 +84,6 @@
                 android:id="@+id/score"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
-                android:layout_below="@+id/innerrelative"
                 android:layout_gravity="center_vertical"
                 android:layout_toRightOf="@+id/scoreimg"
                 android:gravity="center_vertical"
@@ -97,13 +96,12 @@
                 android:id="@+id/pointsimg"
                 android:layout_width="15dp"
                 android:layout_height="36dp"
-                android:layout_below="@+id/innerrelative"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="4dp"
                 android:layout_marginStart="8dp"
                 android:layout_toRightOf="@+id/score"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/img_comments"
                 sothree:srcCompat="@drawable/ic_forum" />
 
@@ -111,7 +109,6 @@
                 android:id="@+id/comments"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
-                android:layout_below="@+id/innerrelative"
                 android:layout_gravity="center_vertical"
                 android:layout_toRightOf="@+id/pointsimg"
                 android:gravity="center_vertical"
@@ -126,12 +123,11 @@
                 style="@style/Ripple.List"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_below="@+id/innerrelative"
 
                 android:layout_toLeftOf="@+id/upvote"
                 android:padding="8dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/btn_save"
                 sothree:srcCompat="@drawable/ic_star" />
 
@@ -140,12 +136,11 @@
                 style="@style/Ripple.List"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_below="@+id/innerrelative"
                 android:layout_toLeftOf="@+id/downvote"
                 android:padding="8dp"
 
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/btn_upvote"
                 sothree:srcCompat="@drawable/ic_arrow_upward" />
 
@@ -155,12 +150,11 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:contentDescription="@string/btn_downvote"
-                android:layout_below="@+id/innerrelative"
 
                 android:layout_toLeftOf="@+id/menu"
                 android:padding="8dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 sothree:srcCompat="@drawable/ic_arrow_downward" />
 
 
@@ -170,10 +164,9 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_alignParentRight="true"
-                android:layout_below="@+id/innerrelative"
                 android:padding="8dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/btn_menu"
                 sothree:srcCompat="@drawable/ic_more_vert" />
         </me.edgan.redditslide.Views.RevealRelativeLayout>

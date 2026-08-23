@@ -7,20 +7,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
+import java.util.Collections;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Autocache.AutoCacheScheduler;
 import me.edgan.redditslide.Fragments.BlankFragment;
@@ -33,10 +28,11 @@ import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SwipeLayout.Utils;
 import me.edgan.redditslide.UserSubscriptions;
-import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
-
+import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.models.Submission;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Created by ccrama on 9/17/2015.
@@ -44,18 +40,24 @@ import net.dean.jraw.models.Submission;
  * <p>This activity takes parameters for a submission id (through intent or direct link), retrieves
  * the Submission object, and then displays the submission with its comments.
  */
+@NullMarked
 public class CommentsScreenSingle extends BaseActivityAnim {
+    @SuppressWarnings("NullAway.Init") // assigned in setupAdapter
     CommentsScreenSinglePagerAdapter comments;
     boolean np;
+    @SuppressWarnings("NullAway.Init") // assigned in setupAdapter
     private ViewPager pager;
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate/onPostExecute
     private String subreddit;
+    @SuppressWarnings("NullAway.Init") // assigned in doInBackground/onCreate/processNameAndHistory
     private String name;
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     private String context;
     private int contextNumber;
     private Boolean doneTranslucent = false;
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 14 && comments != null) {
@@ -87,27 +89,32 @@ public class CommentsScreenSingle extends BaseActivityAnim {
     }
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         disableSwipeBackLayout();
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         getWindow().getDecorView().setBackground(null);
         super.onCreate(savedInstance);
         applyColorTheme();
         setContentView(R.layout.activity_slide);
-        name = getIntent().getExtras().getString(EXTRA_SUBMISSION, "");
+        Bundle extras = getIntent().getExtras();
+        if (extras == null) {
+            finish();
+            return;
+        }
+        name = extras.getString(EXTRA_SUBMISSION, "");
 
-        subreddit = getIntent().getExtras().getString(EXTRA_SUBREDDIT, "");
-        np = getIntent().getExtras().getBoolean(EXTRA_NP, false);
-        context = getIntent().getExtras().getString(EXTRA_CONTEXT, "");
+        subreddit = extras.getString(EXTRA_SUBREDDIT, "");
+        np = extras.getBoolean(EXTRA_NP, false);
+        context = extras.getString(EXTRA_CONTEXT, "");
 
-        contextNumber = getIntent().getExtras().getInt(EXTRA_CONTEXT_NUMBER, 5);
+        contextNumber = extras.getInt(EXTRA_CONTEXT_NUMBER, 5);
 
         if (subreddit.equals(Reddit.EMPTY_STRING)) {
             new AsyncGetSubredditName().execute(name);
             TypedValue typedValue = new TypedValue();
             getTheme().resolveAttribute(R.attr.activity_background, typedValue, true);
             int color = typedValue.data;
-            findViewById(R.id.content_view).setBackgroundColor(color);
+            requireViewById(R.id.content_view).setBackgroundColor(color);
         } else {
             setupAdapter();
         }
@@ -146,17 +153,7 @@ public class CommentsScreenSingle extends BaseActivityAnim {
                             UserSubscriptions.doCachedModSubs();
 
                             if (Authentication.reddit.isAuthenticated()) {
-                                final Set<String> accounts =
-                                        Authentication.authentication.getStringSet(
-                                                "accounts", new HashSet<String>());
-                                if (accounts.contains(name)) { // convert to new system
-                                    accounts.remove(name);
-                                    accounts.add(name + ":" + Authentication.refresh);
-                                    Authentication.authentication
-                                            .edit()
-                                            .putStringSet("accounts", accounts)
-                                            .apply(); // force commit
-                                }
+                                Authentication.migrateAccountToTokenForm(name);
                                 Authentication.isLoggedIn = true;
                                 Reddit.notFirst = true;
                             }
@@ -184,13 +181,14 @@ public class CommentsScreenSingle extends BaseActivityAnim {
         themeSystemBars(subreddit);
         setRecentBar(subreddit);
 
-        pager = (ViewPager) findViewById(R.id.content_view);
+        pager = (ViewPager) requireViewById(R.id.content_view);
         comments = new CommentsScreenSinglePagerAdapter(getSupportFragmentManager());
         pager.setAdapter(comments);
-        pager.setBackgroundColor(Color.TRANSPARENT);
         pager.setCurrentItem(1);
 
         if (SettingValues.oldSwipeMode) {
+            MiscUtil.setupOldSwipeModeBackground(this, pager);
+
             pager.addOnPageChangeListener(new CommonPageChangeListener() {
                 @Override
                 public void onPageScrolled(
@@ -198,14 +196,12 @@ public class CommentsScreenSingle extends BaseActivityAnim {
                     if (position == 0 && positionOffsetPixels == 0) {
                         finish();
                     }
+                    final CommentsScreenSinglePagerAdapter pagerAdapter =
+                            (CommentsScreenSinglePagerAdapter) pager.getAdapter();
                     if (position == 0
-                            && ((CommentsScreenSinglePagerAdapter) pager.getAdapter())
-                                        .blankPage
-                                != null) {
-                        ((CommentsScreenSinglePagerAdapter) pager.getAdapter())
-                                .blankPage.doOffset(positionOffset);
-                        pager.setBackgroundColor(
-                                Palette.adjustAlpha(positionOffset * 0.7f));
+                            && pagerAdapter != null
+                            && pagerAdapter.blankPage != null) {
+                        pagerAdapter.blankPage.doOffset(positionOffset);
                     }
                 }
             });
@@ -227,24 +223,23 @@ public class CommentsScreenSingle extends BaseActivityAnim {
         }
 
         @Override
-        protected String doInBackground(String... params) {
+        protected @Nullable String doInBackground(String... params) {
+            if (Authentication.reddit == null) {
+                return null;
+            }
+
             try {
                 final Submission s = Authentication.reddit.getSubmission(params[0]);
                 if (SettingValues.storeHistory) {
-                    if (SettingValues.storeNSFWHistory && s.isNsfw() || !s.isNsfw()) {
+                    if ((SettingValues.storeNSFWHistory && s.isNsfw()) || !s.isNsfw()) {
                         HasSeen.addSeen(s.getFullName());
                     }
                     LastComments.setComments(s);
                 }
-                HasSeen.setHasSeenSubmission(
-                        new ArrayList<Submission>() {
-                            {
-                                this.add(s);
-                            }
-                        });
+                HasSeen.setHasSeenSubmission(Collections.singletonList(s));
                 locked = s.isLocked();
                 archived = s.isArchived();
-                contest = s.getDataNode().get("contest_mode").asBoolean();
+                contest = s.getDataNode().path("contest_mode").asBoolean();
                 if (s.getSubredditName() == null) {
                     subreddit = "Promoted";
                 } else {
@@ -258,17 +253,18 @@ public class CommentsScreenSingle extends BaseActivityAnim {
                             new Runnable() {
                                 @Override
                                 public void run() {
-                                    new AlertDialog.Builder(CommentsScreenSingle.this)
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(CommentsScreenSingle.this)
                                             .setTitle(R.string.submission_not_found)
                                             .setMessage(R.string.submission_not_found_msg)
                                             .setPositiveButton(
                                                     R.string.btn_ok, (dialog, which) -> finish())
                                             .setOnDismissListener(dialog -> finish())
-                                            .show();
+                                            );
                                 }
                             });
                 } catch (Exception ignored) {
-
+                    // Dialog on a host that finished while the
+                    // submission was being fetched.
                 }
                 return null;
             }
@@ -276,7 +272,9 @@ public class CommentsScreenSingle extends BaseActivityAnim {
     }
 
     private class CommentsScreenSinglePagerAdapter extends FragmentStatePagerAdapter {
+        @SuppressWarnings("NullAway.Init") // assigned in setPrimaryItem as the pager swaps pages
         private Fragment mCurrentFragment;
+        @SuppressWarnings("NullAway.Init") // assigned in getItem
         public BlankFragment blankPage;
 
         CommentsScreenSinglePagerAdapter(FragmentManager fm) {

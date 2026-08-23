@@ -4,10 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Spannable;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -19,8 +17,8 @@ import android.view.Window;
 import android.view.animation.LinearInterpolator;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -29,11 +27,11 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager.widget.ViewPager;
-
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.tabs.TabLayout;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import me.edgan.redditslide.Adapters.MultiredditPosts;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.CaseInsensitiveArrayList;
 import me.edgan.redditslide.Fragments.MultiredditView;
@@ -45,32 +43,36 @@ import me.edgan.redditslide.Views.PreCachingLayoutManager;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MaterialInputDialog;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SortingUtil;
-
 import net.dean.jraw.models.MultiReddit;
 import net.dean.jraw.models.MultiSubreddit;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.TimePeriod;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 9/17/2015. */
+@NullMarked
 public class MultiredditOverview extends BaseActivityAnim {
 
     public static final String EXTRA_PROFILE = "profile";
     public static final String EXTRA_MULTI = "multi";
 
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     public static Activity multiActivity;
 
-    public static MultiReddit searchMulti;
+    // @Nullable already exempts this from the initialization check; the suppression was dead.
+    @Nullable public static MultiReddit searchMulti;
+    @SuppressWarnings("NullAway.Init") // assigned in reloadSubs/setDataSet
     public MultiredditOverviewPagerAdapter adapter;
     private ViewPager pager;
-    private String profile;
+    private String profile = "";
     private TabLayout tabs;
+    @SuppressWarnings("NullAway.Init") // setDataSet assigns this before any page exists to read it
     private List<MultiReddit> usedArray;
     private String initialMulti;
 
@@ -96,9 +98,9 @@ public class MultiredditOverview extends BaseActivityAnim {
         int keyCode = event.getKeyCode();
         switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_UP:
-                return ((MultiredditView) adapter.getCurrentFragment()).onKeyDown(keyCode);
+                return currentMultiView().onKeyDown(keyCode);
             case KeyEvent.KEYCODE_VOLUME_DOWN:
-                return ((MultiredditView) adapter.getCurrentFragment()).onKeyDown(keyCode);
+                return currentMultiView().onKeyDown(keyCode);
             default:
                 return super.dispatchKeyEvent(event);
         }*/
@@ -108,22 +110,24 @@ public class MultiredditOverview extends BaseActivityAnim {
     public int getCurrentPage() {
         int position = 0;
         int currentOrientation = getResources().getConfiguration().orientation;
-        if (((MultiredditView) adapter.getCurrentFragment()).rv.getLayoutManager()
+        if (currentMultiView().rv.getLayoutManager()
                         instanceof LinearLayoutManager
                 && currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
             position =
                     ((LinearLayoutManager)
-                                            ((MultiredditView) adapter.getCurrentFragment())
-                                                    .rv.getLayoutManager())
+                                            java.util.Objects.requireNonNull(
+                                                    currentMultiView()
+                                                    .rv.getLayoutManager()))
                                     .findFirstVisibleItemPosition()
                             - 1;
-        } else if (((MultiredditView) adapter.getCurrentFragment()).rv.getLayoutManager()
+        } else if (currentMultiView().rv.getLayoutManager()
                 instanceof CatchStaggeredGridLayoutManager) {
             int[] firstVisibleItems = null;
             firstVisibleItems =
                     ((CatchStaggeredGridLayoutManager)
-                                    ((MultiredditView) adapter.getCurrentFragment())
-                                            .rv.getLayoutManager())
+                                    java.util.Objects.requireNonNull(
+                                            currentMultiView()
+                                            .rv.getLayoutManager()))
                             .findFirstVisibleItemPositions(firstVisibleItems);
             if (firstVisibleItems != null && firstVisibleItems.length > 0) {
                 position = firstVisibleItems[0] - 1;
@@ -131,15 +135,16 @@ public class MultiredditOverview extends BaseActivityAnim {
         } else {
             position =
                     ((PreCachingLayoutManager)
-                                            ((MultiredditView) adapter.getCurrentFragment())
-                                                    .rv.getLayoutManager())
+                                            java.util.Objects.requireNonNull(
+                                                    currentMultiView()
+                                                    .rv.getLayoutManager()))
                                     .findFirstVisibleItemPosition()
                             - 1;
         }
         return position;
     }
 
-    String term;
+    @Nullable String term;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -155,30 +160,28 @@ public class MultiredditOverview extends BaseActivityAnim {
             }
         }
 
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                try {
-                    onBackPressed();
-                } catch (Exception ignored) {
-
-                }
-                return true;
-            case R.id.action_edit:
-                {
-                    if (profile.isEmpty()
-                            && (UserSubscriptions.multireddits != null)
-                            && !UserSubscriptions.multireddits.isEmpty()) {
-                        Intent i = new Intent(MultiredditOverview.this, CreateMulti.class);
-                        i.putExtra(
-                                CreateMulti.EXTRA_MULTI,
-                                UserSubscriptions.multireddits
-                                        .get(pager.getCurrentItem())
-                                        .getDisplayName());
-                        startActivity(i);
-                    }
-                }
-                return true;
-            case R.id.search:
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            try {
+                getOnBackPressedDispatcher().onBackPressed();
+            } catch (Exception ignored) {
+                // Already finishing, which is what back would do.
+            }
+            return true;
+        } else if (itemId == R.id.action_edit) {
+            if (profile.isEmpty()
+                    && (UserSubscriptions.multireddits != null)
+                    && !UserSubscriptions.multireddits.isEmpty()) {
+                Intent i = new Intent(MultiredditOverview.this, CreateMulti.class);
+                i.putExtra(
+                        CreateMulti.EXTRA_MULTI,
+                        UserSubscriptions.multireddits
+                                .get(pager.getCurrentItem())
+                                .getDisplayName());
+                startActivity(i);
+            }
+            return true;
+        } else if (itemId == R.id.search) {
                 {
                     UserSubscriptions.MultiCallback m =
                             new UserSubscriptions.MultiCallback() {
@@ -186,25 +189,17 @@ public class MultiredditOverview extends BaseActivityAnim {
                                 public void onComplete(List<MultiReddit> multireddits) {
                                     if ((multireddits != null) && !multireddits.isEmpty()) {
                                         searchMulti = multireddits.get(pager.getCurrentItem());
-                                        MaterialDialog.Builder builder =
-                                                new MaterialDialog.Builder(MultiredditOverview.this)
+                                        MaterialInputDialog.Builder builder =
+                                                new MaterialInputDialog.Builder(
+                                                                MultiredditOverview.this)
                                                         .title(R.string.search_title)
-                                                        .alwaysCallInputCallback()
                                                         .input(
                                                                 getString(R.string.search_msg),
                                                                 "",
-                                                                new MaterialDialog.InputCallback() {
-                                                                    @Override
-                                                                    public void onInput(
-                                                                            MaterialDialog
-                                                                                    materialDialog,
-                                                                            CharSequence
-                                                                                    charSequence) {
+                                                                (dialog, charSequence) ->
                                                                         term =
                                                                                 charSequence
-                                                                                        .toString();
-                                                                    }
-                                                                });
+                                                                                        .toString());
 
                                         // Add "search current sub" if it is not
                                         // frontpage/all/random
@@ -215,27 +210,19 @@ public class MultiredditOverview extends BaseActivityAnim {
                                                                         + searchMulti
                                                                                 .getDisplayName()))
                                                 .onPositive(
-                                                        new MaterialDialog.SingleButtonCallback() {
-                                                            @Override
-                                                            public void onClick(
-                                                                    @NonNull
-                                                                            MaterialDialog
-                                                                                    materialDialog,
-                                                                    @NonNull
-                                                                            DialogAction
-                                                                                    dialogAction) {
-                                                                Intent i =
-                                                                        new Intent(
-                                                                                MultiredditOverview
-                                                                                        .this,
-                                                                                Search.class);
-                                                                i.putExtra(Search.EXTRA_TERM, term);
-                                                                i.putExtra(
-                                                                        Search.EXTRA_MULTIREDDIT,
-                                                                        searchMulti
-                                                                                .getDisplayName());
-                                                                startActivity(i);
-                                                            }
+                                                        dialog -> {
+                                                            Intent i =
+                                                                    new Intent(
+                                                                            MultiredditOverview.this,
+                                                                            Search.class);
+                                                            i.putExtra(Search.EXTRA_TERM, term);
+                                                            i.putExtra(
+                                                                    Search.EXTRA_MULTIREDDIT,
+                                                                    searchMulti == null
+                                                                            ? ""
+                                                                            : searchMulti
+                                                                                    .getDisplayName());
+                                                            startActivity(i);
                                                         });
 
                                         builder.show();
@@ -249,43 +236,42 @@ public class MultiredditOverview extends BaseActivityAnim {
                         UserSubscriptions.getPublicMultireddits(m, profile);
                     }
                 }
-                return true;
-            case R.id.create:
-                if (profile.isEmpty()) {
-                    Intent i2 = new Intent(MultiredditOverview.this, CreateMulti.class);
-                    startActivity(i2);
-                }
-                return true;
-            case R.id.action_sort:
-                openPopup();
-                return true;
-
-            case R.id.subs:
-                ((DrawerLayout) findViewById(R.id.drawer_layout)).openDrawer(Gravity.RIGHT);
-                return true;
-            case R.id.gallery:
-                if (currentFragment != null && posts != null && !posts.isEmpty()) {
-                    Intent i2 = new Intent(this, Gallery.class);
-                    i2.putExtra(Gallery.EXTRA_PROFILE, profile);
-                    i2.putExtra(
-                            Gallery.EXTRA_MULTIREDDIT,
-                            currentFragment.posts.multiReddit.getDisplayName());
-                    startActivity(i2);
-                }
-                return true;
-            case R.id.action_shadowbox:
-                if (currentFragment != null && posts != null && !posts.isEmpty()) {
-                    Intent i = new Intent(this, Shadowbox.class);
-                    i.putExtra(Shadowbox.EXTRA_PAGE, getCurrentPage());
-                    i.putExtra(Shadowbox.EXTRA_PROFILE, profile);
-                    i.putExtra(
-                            Shadowbox.EXTRA_MULTIREDDIT,
-                            currentFragment.posts.multiReddit.getDisplayName());
-                    startActivity(i);
-                }
-                return true;
-            default:
-                return false;
+            return true;
+        } else if (itemId == R.id.create) {
+            if (profile.isEmpty()) {
+                Intent i2 = new Intent(MultiredditOverview.this, CreateMulti.class);
+                startActivity(i2);
+            }
+            return true;
+        } else if (itemId == R.id.action_sort) {
+            openPopup();
+            return true;
+        } else if (itemId == R.id.subs) {
+            ((DrawerLayout) requireViewById(R.id.drawer_layout)).openDrawer(Gravity.RIGHT);
+            return true;
+        } else if (itemId == R.id.gallery) {
+            if (currentFragment != null && posts != null && !posts.isEmpty()) {
+                Intent i2 = new Intent(this, Gallery.class);
+                i2.putExtra(Gallery.EXTRA_PROFILE, profile);
+                i2.putExtra(
+                        Gallery.EXTRA_MULTIREDDIT,
+                        currentMultiPosts().displayName());
+                startActivity(i2);
+            }
+            return true;
+        } else if (itemId == R.id.action_shadowbox) {
+            if (currentFragment != null && posts != null && !posts.isEmpty()) {
+                Intent i = new Intent(this, Shadowbox.class);
+                i.putExtra(Shadowbox.EXTRA_PAGE, getCurrentPage());
+                i.putExtra(Shadowbox.EXTRA_PROFILE, profile);
+                i.putExtra(
+                        Shadowbox.EXTRA_MULTIREDDIT,
+                        currentMultiPosts().displayName());
+                startActivity(i);
+            }
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -319,36 +305,39 @@ public class MultiredditOverview extends BaseActivityAnim {
                         .setMessage(R.string.public_multireddit_err_msg)
                         .setNegativeButton(R.string.btn_go_back, (dialog, which) -> finish());
             }
-            b.show();
+            final AlertDialog multiDialog = b.create();
+            DialogUtil.matchDialogToCardBackground(MultiredditOverview.this, multiDialog);
+            multiDialog.show();
         } catch (Exception e) {
-
+            // Dialog on a host that finished while the multi
+            // was loading.
         }
     }
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         overrideSwipeFromAnywhere();
-
         multiActivity = this;
-
         super.onCreate(savedInstance);
 
         applyColorTheme("");
         setContentView(R.layout.activity_multireddits);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, R.string.title_multireddits, true, false);
 
         findViewById(R.id.header).setBackgroundColor(Palette.getDefaultColor());
-        tabs = (TabLayout) findViewById(R.id.sliding_tabs);
+        tabs = (TabLayout) requireViewById(R.id.sliding_tabs);
         tabs.setTabMode(TabLayout.MODE_SCROLLABLE);
 
-        pager = (ViewPager) findViewById(R.id.content_view);
-        mToolbar.setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
+        pager = (ViewPager) requireViewById(R.id.content_view);
+        requireToolbar().setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
 
         profile = "";
         initialMulti = "";
         if (getIntent().getExtras() != null) {
-            profile = getIntent().getExtras().getString(EXTRA_PROFILE, "");
-            initialMulti = getIntent().getExtras().getString(EXTRA_MULTI, "");
+            profile = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_PROFILE));
+            initialMulti = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_MULTI));
         }
         if (profile.equalsIgnoreCase(Authentication.name)) {
             profile = "";
@@ -373,28 +362,55 @@ public class MultiredditOverview extends BaseActivityAnim {
         }
     }
 
+    /**
+     * Display name of the multireddit on the current page, lowercased for the sorting keys.
+     *
+     * <p>Empty when there is no current page or its feed never loaded: {@code MultiredditView.posts}
+     * is only built when the account has at least one multireddit.
+     */
+    private String currentMultiName() {
+        MultiredditOverviewPagerAdapter a =
+                (MultiredditOverviewPagerAdapter) pager.getAdapter();
+        Fragment f = a == null ? null : a.getCurrentFragment();
+        MultiredditPosts p = (f instanceof MultiredditView) ? ((MultiredditView) f).posts : null;
+        return p == null ? "" : p.displayName().toLowerCase(Locale.ENGLISH);
+    }
+
+    /**
+     * The current page's {@link MultiredditView}.
+     *
+     * <p>Asserted rather than returned nullable: every caller is a key handler or a sort popup,
+     * which are only reachable from a live page, and a null here dereferenced one line later before
+     * this phase annotated anything. {@link #currentMultiName()} is the nullable-tolerant form, for
+     * the one caller that runs while a page may not exist yet.
+     */
+    private MultiredditView currentMultiView() {
+        MultiredditOverviewPagerAdapter a =
+                (MultiredditOverviewPagerAdapter) java.util.Objects.requireNonNull(pager.getAdapter());
+        return (MultiredditView) java.util.Objects.requireNonNull(a.getCurrentFragment());
+    }
+
+    /** The current page's feed, asserted for the same reason as {@link #currentMultiView()}. */
+    private MultiredditPosts currentMultiPosts() {
+        return java.util.Objects.requireNonNull(currentMultiView().posts);
+    }
+
     public void openPopup() {
         PopupMenu popup =
-                new PopupMenu(MultiredditOverview.this, findViewById(R.id.anchor), Gravity.RIGHT);
+                new PopupMenu(MultiredditOverview.this, requireViewById(R.id.anchor), Gravity.RIGHT);
         String id =
-                ((MultiredditView)
-                                (((MultiredditOverviewPagerAdapter) pager.getAdapter())
-                                        .getCurrentFragment()))
-                        .posts
-                        .multiReddit
-                        .getDisplayName()
-                        .toLowerCase(Locale.ENGLISH);
-        final Spannable[] base = SortingUtil.getSortingSpannables("multi" + id);
+                currentMultiName();
+        final Spannable[] base = SortingUtil.getSortingSpannables("multi_" + id);
         for (Spannable s : base) {
             // Do not add option for "Best" in any subreddit except for the frontpage.
             if (s.toString().equals(getString(R.string.sorting_best))) {
                 continue;
             }
-            MenuItem m = popup.getMenu().add(s);
+            popup.getMenu().add(s);
         }
         popup.setOnMenuItemClickListener(
                 new PopupMenu.OnMenuItemClickListener() {
-                    public boolean onMenuItemClick(MenuItem item) {
+                    @Override public boolean onMenuItemClick(MenuItem item) {
                         int i = 0;
                         for (Spannable s : base) {
                             if (s.equals(item.getTitle())) {
@@ -407,75 +423,45 @@ public class MultiredditOverview extends BaseActivityAnim {
                             switch (i) {
                                 case 0:
                                     SortingUtil.setSorting(
-                                            "multi"
-                                                    + ((MultiredditView)
-                                                                    (((MultiredditOverviewPagerAdapter)
-                                                                                    pager
-                                                                                            .getAdapter())
-                                                                            .getCurrentFragment()))
-                                                            .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                            "multi_"
+                                                    + currentMultiPosts()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             Sorting.HOT);
                                     reloadSubs();
                                     break;
                                 case 1:
                                     SortingUtil.setSorting(
-                                            "multi"
-                                                    + ((MultiredditView)
-                                                                    (((MultiredditOverviewPagerAdapter)
-                                                                                    pager
-                                                                                            .getAdapter())
-                                                                            .getCurrentFragment()))
-                                                            .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                            "multi_"
+                                                    + currentMultiPosts()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             Sorting.NEW);
                                     reloadSubs();
                                     break;
                                 case 2:
                                     SortingUtil.setSorting(
-                                            "multi"
-                                                    + ((MultiredditView)
-                                                                    (((MultiredditOverviewPagerAdapter)
-                                                                                    pager
-                                                                                            .getAdapter())
-                                                                            .getCurrentFragment()))
-                                                            .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                            "multi_"
+                                                    + currentMultiPosts()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             Sorting.RISING);
                                     reloadSubs();
                                     break;
                                 case 3:
                                     SortingUtil.setSorting(
-                                            "multi"
-                                                    + ((MultiredditView)
-                                                                    (((MultiredditOverviewPagerAdapter)
-                                                                                    pager
-                                                                                            .getAdapter())
-                                                                            .getCurrentFragment()))
-                                                            .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                            "multi_"
+                                                    + currentMultiPosts()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             Sorting.TOP);
                                     openPopupTime();
                                     break;
                                 case 4:
                                     SortingUtil.setSorting(
-                                            "multi"
-                                                    + ((MultiredditView)
-                                                                    (((MultiredditOverviewPagerAdapter)
-                                                                                    pager
-                                                                                            .getAdapter())
-                                                                            .getCurrentFragment()))
-                                                            .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                            "multi_"
+                                                    + currentMultiPosts()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             Sorting.CONTROVERSIAL);
                                     openPopupTime();
@@ -490,22 +476,16 @@ public class MultiredditOverview extends BaseActivityAnim {
 
     public void openPopupTime() {
         PopupMenu popup =
-                new PopupMenu(MultiredditOverview.this, findViewById(R.id.anchor), Gravity.RIGHT);
+                new PopupMenu(MultiredditOverview.this, requireViewById(R.id.anchor), Gravity.RIGHT);
         String id =
-                ((MultiredditView)
-                                (((MultiredditOverviewPagerAdapter) pager.getAdapter())
-                                        .getCurrentFragment()))
-                        .posts
-                        .multiReddit
-                        .getDisplayName()
-                        .toLowerCase(Locale.ENGLISH);
-        final Spannable[] base = SortingUtil.getSortingTimesSpannables("multi" + id);
+                currentMultiName();
+        final Spannable[] base = SortingUtil.getSortingTimesSpannables("multi_" + id);
         for (Spannable s : base) {
-            MenuItem m = popup.getMenu().add(s);
+            popup.getMenu().add(s);
         }
         popup.setOnMenuItemClickListener(
                 new PopupMenu.OnMenuItemClickListener() {
-                    public boolean onMenuItemClick(MenuItem item) {
+                    @Override public boolean onMenuItemClick(MenuItem item) {
                         int i = 0;
                         for (Spannable s : base) {
                             if (s.equals(item.getTitle())) {
@@ -518,90 +498,54 @@ public class MultiredditOverview extends BaseActivityAnim {
                             switch (i) {
                                 case 0:
                                     SortingUtil.setTime(
-                                            "multi"
-                                                    + ((MultiredditView)
-                                                                    (((MultiredditOverviewPagerAdapter)
-                                                                                    pager
-                                                                                            .getAdapter())
-                                                                            .getCurrentFragment()))
-                                                            .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                            "multi_"
+                                                    + currentMultiPosts()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             TimePeriod.HOUR);
                                     reloadSubs();
                                     break;
                                 case 1:
                                     SortingUtil.setTime(
-                                            "multi"
-                                                    + ((MultiredditView)
-                                                                    (((MultiredditOverviewPagerAdapter)
-                                                                                    pager
-                                                                                            .getAdapter())
-                                                                            .getCurrentFragment()))
-                                                            .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                            "multi_"
+                                                    + currentMultiPosts()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             TimePeriod.DAY);
                                     reloadSubs();
                                     break;
                                 case 2:
                                     SortingUtil.setTime(
-                                            "multi"
-                                                    + ((MultiredditView)
-                                                                    (((MultiredditOverviewPagerAdapter)
-                                                                                    pager
-                                                                                            .getAdapter())
-                                                                            .getCurrentFragment()))
-                                                            .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                            "multi_"
+                                                    + currentMultiPosts()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             TimePeriod.WEEK);
                                     reloadSubs();
                                     break;
                                 case 3:
                                     SortingUtil.setTime(
-                                            "multi"
-                                                    + ((MultiredditView)
-                                                                    (((MultiredditOverviewPagerAdapter)
-                                                                                    pager
-                                                                                            .getAdapter())
-                                                                            .getCurrentFragment()))
-                                                            .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                            "multi_"
+                                                    + currentMultiPosts()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             TimePeriod.MONTH);
                                     reloadSubs();
                                     break;
                                 case 4:
                                     SortingUtil.setTime(
-                                            "multi"
-                                                    + ((MultiredditView)
-                                                                    (((MultiredditOverviewPagerAdapter)
-                                                                                    pager
-                                                                                            .getAdapter())
-                                                                            .getCurrentFragment()))
-                                                            .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                            "multi_"
+                                                    + currentMultiPosts()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             TimePeriod.YEAR);
                                     reloadSubs();
                                     break;
                                 case 5:
                                     SortingUtil.setTime(
-                                            "multi"
-                                                    + ((MultiredditView)
-                                                                    (((MultiredditOverviewPagerAdapter)
-                                                                                    pager
-                                                                                            .getAdapter())
-                                                                            .getCurrentFragment()))
-                                                            .posts
-                                                            .multiReddit
-                                                            .getDisplayName()
+                                            "multi_"
+                                                    + currentMultiPosts()
+                                                            .displayName()
                                                             .toLowerCase(Locale.ENGLISH),
                                             TimePeriod.ALL);
                                     reloadSubs();
@@ -622,105 +566,103 @@ public class MultiredditOverview extends BaseActivityAnim {
     }
 
     private void setDataSet(List<MultiReddit> data) {
-        try {
-            usedArray = data;
+        usedArray = data;
 
-            if (usedArray.isEmpty()) {
-                buildDialog();
+        if (usedArray.isEmpty()) {
+            buildDialog();
+        } else {
+
+            if (adapter == null) {
+                adapter = new MultiredditOverviewPagerAdapter(getSupportFragmentManager());
             } else {
-
-                if (adapter == null) {
-                    adapter = new MultiredditOverviewPagerAdapter(getSupportFragmentManager());
-                } else {
-                    adapter.notifyDataSetChanged();
-                }
-                pager.setAdapter(adapter);
-                pager.setOffscreenPageLimit(1);
-                tabs.setupWithViewPager(pager);
-                if (!initialMulti.isEmpty()) {
-                    for (int i = 0; i < usedArray.size(); i++) {
-                        if (usedArray.get(i).getDisplayName().equalsIgnoreCase(initialMulti)) {
-                            pager.setCurrentItem(i);
-                            break;
-                        }
+                adapter.notifyDataSetChanged();
+            }
+            pager.setAdapter(adapter);
+            pager.setOffscreenPageLimit(1);
+            tabs.setupWithViewPager(pager);
+            if (!initialMulti.isEmpty()) {
+                for (int i = 0; i < usedArray.size(); i++) {
+                    if (MiscUtil.orEmpty(usedArray.get(i).getDisplayName()).equalsIgnoreCase(initialMulti)) {
+                        pager.setCurrentItem(i);
+                        break;
                     }
                 }
-                tabs.setSelectedTabIndicatorColor(
-                        new ColorPreferences(MultiredditOverview.this)
-                                .getColor(usedArray.get(0).getDisplayName()));
-                doDrawerSubs(0);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Window window = this.getWindow();
-                    int color = Palette.getDarkerColor(usedArray.get(0).getDisplayName());
+            }
+            tabs.setSelectedTabIndicatorColor(
+                    new ColorPreferences(MultiredditOverview.this)
+                            .getColor(usedArray.get(0).getDisplayName()));
+            doDrawerSubs(0);
+            Window window = this.getWindow();
+            int color = Palette.getDarkerColor(MiscUtil.orEmpty(usedArray.get(0).getDisplayName()));
 
-                    if (SettingValues.alwaysBlackStatusbar) {
-                        color = Color.BLACK;
-                    }
+            if (SettingValues.alwaysBlackStatusbar) {
+                color = Color.BLACK;
+            }
 
-                    window.setStatusBarColor(color);
-                }
-                final View header = findViewById(R.id.header);
-                tabs.addOnTabSelectedListener(
-                        new TabLayout.ViewPagerOnTabSelectedListener(pager) {
-                            @Override
-                            public void onTabReselected(TabLayout.Tab tab) {
-                                super.onTabReselected(tab);
-                                int pastVisiblesItems = 0;
-                                int[] firstVisibleItems =
-                                        ((CatchStaggeredGridLayoutManager)
-                                                        (((MultiredditView)
-                                                                        adapter
-                                                                                .getCurrentFragment())
-                                                                .rv.getLayoutManager()))
-                                                .findFirstVisibleItemPositions(null);
-                                if (firstVisibleItems != null && firstVisibleItems.length > 0) {
-                                    for (int firstVisibleItem : firstVisibleItems) {
-                                        pastVisiblesItems = firstVisibleItem;
-                                    }
-                                }
-                                if (pastVisiblesItems > 8) {
-                                    ((MultiredditView) adapter.getCurrentFragment())
-                                            .rv.scrollToPosition(0);
-                                    if (header != null) {
-                                        header.animate()
-                                                .translationY(header.getHeight())
-                                                .setInterpolator(new LinearInterpolator())
-                                                .setDuration(0);
-                                    }
-                                } else {
-                                    ((MultiredditView) adapter.getCurrentFragment())
-                                            .rv.smoothScrollToPosition(0);
+            window.setStatusBarColor(color);
+            final View header = findViewById(R.id.header);
+            tabs.addOnTabSelectedListener(
+                    new TabLayout.ViewPagerOnTabSelectedListener(pager) {
+                        @Override
+                        public void onTabReselected(TabLayout.Tab tab) {
+                            super.onTabReselected(tab);
+                            int pastVisiblesItems = 0;
+                            int[] firstVisibleItems =
+                                    ((CatchStaggeredGridLayoutManager)
+                                                    java.util.Objects.requireNonNull(
+                                                            currentMultiView()
+                                                                    .rv.getLayoutManager()))
+                                            .findFirstVisibleItemPositions(null);
+                            if (firstVisibleItems != null && firstVisibleItems.length > 0) {
+                                for (int firstVisibleItem : firstVisibleItems) {
+                                    pastVisiblesItems = firstVisibleItem;
                                 }
                             }
-                        });
-                findViewById(R.id.header)
-                        .setBackgroundColor(Palette.getColor(usedArray.get(0).getDisplayName()));
+                            if (pastVisiblesItems > 8) {
+                                currentMultiView()
+                                        .rv.scrollToPosition(0);
+                                if (header != null) {
+                                    header.animate()
+                                            .translationY(header.getHeight())
+                                            .setInterpolator(new LinearInterpolator())
+                                            .setDuration(0);
+                                }
+                            } else {
+                                currentMultiView()
+                                        .rv.smoothScrollToPosition(0);
+                            }
+                        }
+                    });
+            // The only unguarded null left in this method: findViewById answers null when the
+            // header is not in the inflated layout. That used to reach a catch announcing "cannot
+            // load multis" -- the wrong message for a missing view, and the multis themselves are
+            // already on screen by this point. Reuses the `header` looked up above, which the tab
+            // listener already treats as nullable.
+            if (header != null) {
+                header.setBackgroundColor(Palette.getColor(usedArray.get(0).getDisplayName()));
             }
-        } catch (NullPointerException e) {
-            buildDialog(true);
-            Log.e(LogUtil.getTag(), "Cannot load multis:\n" + e);
         }
     }
 
     public void doDrawerSubs(int position) {
         MultiReddit current = usedArray.get(position);
-        LinearLayout l = (LinearLayout) findViewById(R.id.sidebar_scroll);
+        LinearLayout l = (LinearLayout) requireViewById(R.id.sidebar_scroll);
         l.removeAllViews();
 
         CaseInsensitiveArrayList toSort = new CaseInsensitiveArrayList();
 
         for (MultiSubreddit s : current.getSubreddits()) {
-            toSort.add(s.getDisplayName().toLowerCase(Locale.ENGLISH));
+            toSort.add(MiscUtil.orEmpty(s.getDisplayName()).toLowerCase(Locale.ENGLISH));
         }
 
         for (String sub : UserSubscriptions.sortNoExtras(toSort)) {
             final View convertView = getLayoutInflater().inflate(R.layout.subforsublist, l, false);
 
             final String subreddit = sub;
-            final TextView t = convertView.findViewById(R.id.name);
+            final TextView t = convertView.requireViewById(R.id.name);
             t.setText(subreddit);
 
-            final View colorView = convertView.findViewById(R.id.color);
+            final View colorView = convertView.requireViewById(R.id.color);
             colorView.setBackgroundResource(R.drawable.circle);
             BlendModeUtil.tintDrawableAsModulate(
                     colorView.getBackground(), Palette.getColor(subreddit));
@@ -754,18 +696,16 @@ public class MultiredditOverview extends BaseActivityAnim {
                                     .setBackgroundColor(
                                             Palette.getColor(
                                                     usedArray.get(position).getDisplayName()));
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                Window window = getWindow();
-                                int color =
-                                        Palette.getDarkerColor(
-                                                usedArray.get(position).getDisplayName());
+                            Window window = getWindow();
+                            int color =
+                                    Palette.getDarkerColor(
+                                            MiscUtil.orEmpty(usedArray.get(position).getDisplayName()));
 
-                                if (SettingValues.alwaysBlackStatusbar) {
-                                    color = Color.BLACK;
-                                }
-
-                                window.setStatusBarColor(color);
+                            if (SettingValues.alwaysBlackStatusbar) {
+                                color = Color.BLACK;
                             }
+
+                            window.setStatusBarColor(color);
                             tabs.setSelectedTabIndicatorColor(
                                     new ColorPreferences(MultiredditOverview.this)
                                             .getColor(usedArray.get(position).getDisplayName()));
@@ -788,9 +728,10 @@ public class MultiredditOverview extends BaseActivityAnim {
             return f;
         }
 
+        @SuppressWarnings("NullAway.Init") // assigned in setPrimaryItem as the pager swaps pages
         private Fragment mCurrentFragment;
 
-        Fragment getCurrentFragment() {
+        @Nullable Fragment getCurrentFragment() {
             return mCurrentFragment;
         }
 
@@ -814,12 +755,12 @@ public class MultiredditOverview extends BaseActivityAnim {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return usedArray.get(position).getFullName();
+            return MiscUtil.orEmpty(usedArray.get(position).getFullName());
         }
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         // Check if adapter exists and has a current fragment

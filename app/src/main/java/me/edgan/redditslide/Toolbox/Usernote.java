@@ -1,14 +1,19 @@
 package me.edgan.redditslide.Toolbox;
 
+import androidx.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.Objects;
 
 /** Defines a Usernote so GSON can deserialize it */
 public class Usernote {
+    // Both keys are written by Toolbox for every note, but a hand-edited wiki page can omit
+    // either, so nothing here dereferences them without a guard.
     @SerializedName("n")
-    private String noteText;
+    @Nullable private String noteText;
 
     @SerializedName("l")
-    private String link;
+    @Nullable private String link;
 
     @SerializedName("t")
     private long time;
@@ -22,7 +27,8 @@ public class Usernote {
     public Usernote() { // for GSON
     }
 
-    public Usernote(String noteText, String link, long time, int mod, int warning) {
+    public Usernote(
+            @Nullable String noteText, @Nullable String link, long time, int mod, int warning) {
         this.noteText = noteText;
         this.link = link;
         this.time = time;
@@ -30,8 +36,13 @@ public class Usernote {
         this.warning = warning;
     }
 
+    /**
+     * @return the note's text, empty when the note carries none. Never null: both readers put the
+     *     result straight into a display string, and neither {@code SpannableStringBuilder.append}
+     *     nor {@code StringUtils.abbreviate} would survive one.
+     */
     public String getNoteText() {
-        return noteText;
+        return noteText == null ? "" : noteText;
     }
 
     public long getTime() {
@@ -42,6 +53,7 @@ public class Usernote {
         return mod;
     }
 
+    @Nullable
     public String getLink() {
         return link;
     }
@@ -56,10 +68,15 @@ public class Usernote {
             return ((Usernote) obj).warning == warning
                     && ((Usernote) obj).mod == mod
                     && ((Usernote) obj).time == time
-                    && ((Usernote) obj).noteText.equals(noteText)
-                    && ((Usernote) obj).link.equals(link);
+                    && Objects.equals(((Usernote) obj).noteText, noteText)
+                    && Objects.equals(((Usernote) obj).link, link);
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(noteText, link, time, mod, warning);
     }
 
     /**
@@ -67,8 +84,10 @@ public class Usernote {
      *
      * @return Type of link
      */
+    @Nullable
     public UsernoteLinkType getLinkType() {
-        if (link.isEmpty()) {
+        final String link = this.link;
+        if (link == null || link.isEmpty()) {
             return null;
         }
         if (link.startsWith("m,")) {
@@ -87,8 +106,10 @@ public class Usernote {
      *
      * @return String of usernote's URL.
      */
+    @Nullable
     public String getLinkAsURL(String subreddit) {
-        if (link.isEmpty()) {
+        final String link = this.link;
+        if (link == null || link.isEmpty()) {
             return null;
         }
 

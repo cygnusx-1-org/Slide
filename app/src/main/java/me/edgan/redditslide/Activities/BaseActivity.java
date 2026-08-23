@@ -1,22 +1,27 @@
 package me.edgan.redditslide.Activities;
 
-import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
-
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import java.util.Locale;
+import java.util.Map;
+import java.util.WeakHashMap;
 import me.edgan.redditslide.ForceTouch.PeekViewActivity;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
@@ -29,21 +34,37 @@ import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.GifUtils;
-
-import java.util.Locale;
+import me.edgan.redditslide.util.LogUtil;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * This is an activity which is the base for most of Slide's activities. It has support for handling
  * of swiping, setting up the AppBar (toolbar), and coloring of applicable views.
  */
+@NullMarked
 public class BaseActivity extends PeekViewActivity implements SwipeBackActivityBase {
     @Nullable public Toolbar mToolbar;
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     protected SwipeBackActivityHelper mHelper;
     protected boolean overrideRedditSwipeAnywhere = false;
     protected boolean enableSwipeBackLayout = true;
     protected boolean overrideSwipeFromAnywhere = false;
     protected boolean verticalExit = false;
-    protected GifUtils.AsyncLoadGif currentGif;
+    // Nothing assigns this -- no subclass sets it either, though it is protected. Both readers
+    // (onResume, onPause) already null-check it, so @Nullable states what is actually true.
+    @Nullable protected GifUtils.AsyncLoadGif currentGif;
+
+    /**
+     * Subclasses that want their content to draw behind the system bars (full-bleed media
+     * viewers) can set this to true before onPostCreate() runs.
+     */
+    protected boolean disableEdgeToEdgePadding = false;
+
+    @Nullable private View mStatusBarScrim;
+    @Nullable private View mNavBarScrim;
+    private int mSystemBarColor;
+    private boolean mSystemBarColorSet = false;
+    private final Map<View, int[]> mInitialPadding = new WeakHashMap<>();
 
     /** Enable fullscreen immersive mode if setting is checked */
     @Override
@@ -91,7 +112,8 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
                         });
             }
         } catch (Exception ignored) {
-
+            // Decor flags are cosmetic and the window is gone on an
+            // activity that is already finishing.
         }
     }
 
@@ -103,6 +125,8 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
                 decorView.setOnSystemUiVisibilityChangeListener(null);
             }
         } catch (Exception ignored) {
+            // As in hideDecor: no window left to restore on a
+            // finishing activity.
         }
     }
 
@@ -112,9 +136,10 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
 
         if (id == android.R.id.home) {
             try {
-                onBackPressed();
+                getOnBackPressedDispatcher().onBackPressed();
             } catch (IllegalStateException ignored) {
-
+                // The activity is already on its way out, which is what
+                // back would have done.
             }
         }
 
@@ -138,13 +163,11 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         applyOverrideLanguage();
 
         super.onCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            setAutofill();
-        }
+        setAutofill();
 
         /**
          * Enable fullscreen immersive mode if setting is checked
@@ -181,7 +204,6 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
     protected void setAutofill() {
         getWindow()
                 .getDecorView()
@@ -189,20 +211,193 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         if (enableSwipeBackLayout) mHelper.onPostCreate();
+        setupEdgeToEdge();
+    }
+
+    /**
+     * Handles window insets manually now that edge-to-edge is enforced (targetSdk 36 ignores
+     * windowOptOutEdgeToEdgeEnforcement on Android 16+). Pads the activity content by the system
+     * bar insets and draws colored scrims behind the status and navigation bars so activities
+     * keep the same look they had before enforcement. Below API 35 the decor still fits system
+     * windows, so this is skipped and the legacy setStatusBarColor() path applies.
+     */
+    private void setupEdgeToEdge() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            return;
+        }
+        if (disableEdgeToEdgePadding) {
+            return;
+        }
+        final FrameLayout contentFrame =
+                (FrameLayout) getWindow().getDecorView().findViewById(android.R.id.content);
+        if (contentFrame == null) {
+            return;
+        }
+
+        mStatusBarScrim = new View(this);
+        contentFrame.addView(
+                mStatusBarScrim,
+                new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT, 0, Gravity.TOP));
+        mNavBarScrim = new View(this);
+        contentFrame.addView(
+                mNavBarScrim,
+                new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT, 0, Gravity.BOTTOM));
+        applyScrimColors();
+
+        ViewCompat.setOnApplyWindowInsetsListener(
+                contentFrame,
+                (v, windowInsets) -> {
+                    Insets bars =
+                            windowInsets.getInsets(
+                                    WindowInsetsCompat.Type.systemBars()
+                                            | WindowInsetsCompat.Type.displayCutout());
+                    Insets ime = windowInsets.getInsets(WindowInsetsCompat.Type.ime());
+                    int bottom = Math.max(bars.bottom, ime.bottom);
+                    for (int i = 0; i < contentFrame.getChildCount(); i++) {
+                        View child = contentFrame.getChildAt(i);
+                        if (child == mStatusBarScrim || child == mNavBarScrim) {
+                            continue;
+                        }
+                        if (child instanceof DrawerLayout) {
+                            // DrawerLayout ignores padding in its measure/layout pass,
+                            // so inset it with margins instead
+                            int[] base = mInitialPadding.get(child);
+                            if (base == null) {
+                                ViewGroup.MarginLayoutParams params =
+                                        (ViewGroup.MarginLayoutParams) child.getLayoutParams();
+                                base =
+                                        new int[] {
+                                            params.leftMargin, params.topMargin,
+                                            params.rightMargin, params.bottomMargin
+                                        };
+                                mInitialPadding.put(child, base);
+                            }
+                            ViewGroup.MarginLayoutParams params =
+                                    (ViewGroup.MarginLayoutParams) child.getLayoutParams();
+                            params.leftMargin = base[0] + bars.left;
+                            params.topMargin = base[1] + bars.top;
+                            params.rightMargin = base[2] + bars.right;
+                            params.bottomMargin = base[3] + bottom;
+                            child.setLayoutParams(params);
+                        } else {
+                            int[] base = mInitialPadding.get(child);
+                            if (base == null) {
+                                base =
+                                        new int[] {
+                                            child.getPaddingLeft(), child.getPaddingTop(),
+                                            child.getPaddingRight(), child.getPaddingBottom()
+                                        };
+                                mInitialPadding.put(child, base);
+                            }
+                            child.setPadding(
+                                    base[0] + bars.left,
+                                    base[1] + bars.top,
+                                    base[2] + bars.right,
+                                    base[3] + bottom);
+                        }
+                    }
+                    if (mStatusBarScrim != null) {
+                        setScrimHeight(mStatusBarScrim, bars.top);
+                    }
+                    if (mNavBarScrim != null) {
+                        setScrimHeight(mNavBarScrim, bars.bottom);
+                    }
+                    return WindowInsetsCompat.CONSUMED;
+                });
+    }
+
+    private static void setScrimHeight(View scrim, int height) {
+        ViewGroup.LayoutParams params = scrim.getLayoutParams();
+        if (params.height != height) {
+            params.height = height;
+            scrim.setLayoutParams(params);
+        }
+    }
+
+    /**
+     * Colors the system bar scrims with the color last passed to themeSystemBars(), falling back
+     * to the theme's bar colors for activities that never set one.
+     */
+    private void applyScrimColors() {
+        if (mStatusBarScrim == null || mNavBarScrim == null) {
+            LogUtil.v(
+                    "StatusBarColor: applyScrimColors() skipped, scrims not created yet ("
+                            + getClass().getSimpleName()
+                            + ")");
+            return;
+        }
+        int themeFallback = opaqueOrBlack(resolveThemeColor(android.R.attr.statusBarColor));
+        int color = mSystemBarColorSet ? mSystemBarColor : themeFallback;
+        // Intermittent grey is usually this fallback firing before themeSystemBars() has run, or
+        // alwaysBlackStatusbar forcing black; log enough to tell which branch produced the color.
+        LogUtil.v(
+                "StatusBarColor: applyScrimColors() ["
+                        + getClass().getSimpleName()
+                        + "] source="
+                        + (mSystemBarColorSet ? "themeSystemBars" : "themeFallback")
+                        + " systemBarColorSet="
+                        + mSystemBarColorSet
+                        + " systemBarColor="
+                        + colorHex(mSystemBarColor)
+                        + " themeFallback="
+                        + colorHex(themeFallback)
+                        + " alwaysBlackStatusbar="
+                        + SettingValues.alwaysBlackStatusbar
+                        + " colorNavBar="
+                        + SettingValues.colorNavBar
+                        + " -> chosen="
+                        + colorHex(color));
+        if (SettingValues.alwaysBlackStatusbar) {
+            color = Color.BLACK;
+        }
+        mStatusBarScrim.setBackgroundColor(color);
+        mNavBarScrim.setBackgroundColor(
+                SettingValues.colorNavBar
+                        ? color
+                        : opaqueOrBlack(resolveThemeColor(android.R.attr.navigationBarColor)));
+    }
+
+    /** Formats a color-int as #AARRGGBB for readable logging of bar colors. */
+    private static String colorHex(int color) {
+        return String.format(Locale.ENGLISH, "#%08X", color);
+    }
+
+    /**
+     * The system bar scrims must be opaque so they hide the content behind them. Under edge-to-edge
+     * enforcement (API 35+) the framework default for android:navigationBarColor/statusBarColor is
+     * transparent, and our themes never override it, so resolveThemeColor() returns a fully
+     * transparent color. A transparent scrim paints nothing, which let the post list and FAB bleed
+     * through the navigation bar area and flicker. Fall back to black in that case.
+     */
+    private static int opaqueOrBlack(int color) {
+        return Color.alpha(color) == 0 ? Color.BLACK : color;
+    }
+
+    private int resolveThemeColor(int attr) {
+        TypedValue typedValue = new TypedValue();
+        if (getTheme().resolveAttribute(attr, typedValue, true)) {
+            return typedValue.data;
+        }
+        return Color.BLACK;
     }
 
     @Override
     public View findViewById(int id) {
         View v = super.findViewById(id);
-        if (v == null && mHelper != null) return mHelper.findViewById(id);
+        if (v == null && mHelper != null) {
+            View fromHelper = mHelper.findViewById(id);
+            if (fromHelper != null) return fromHelper;
+        }
         return v;
     }
 
     @Override
-    public SwipeBackLayout getSwipeBackLayout() {
+    public @Nullable SwipeBackLayout getSwipeBackLayout() {
         if (enableSwipeBackLayout) {
             return mHelper.getSwipeBackLayout();
         } else {
@@ -212,14 +407,14 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
 
     @Override
     public void setSwipeBackEnable(boolean enable) {
-        if (enableSwipeBackLayout) getSwipeBackLayout().setEnableGesture(enable);
+        if (enableSwipeBackLayout) java.util.Objects.requireNonNull(getSwipeBackLayout()).setEnableGesture(enable);
     }
 
     @Override
     public void scrollToFinishActivity() {
         if (enableSwipeBackLayout) {
             Utils.convertActivityToTranslucent(this);
-            getSwipeBackLayout().scrollToFinishActivity();
+            java.util.Objects.requireNonNull(getSwipeBackLayout()).scrollToFinishActivity();
         }
     }
 
@@ -293,6 +488,15 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
      * @param title String resource for the toolbar's title
      * @param enableUpButton Whether or not the toolbar should have up navigation
      */
+    /**
+     * The toolbar, asserted present. Callers of this have already run {@link #setupAppBar}, which
+     * binds it from the activity's layout and dereferences it itself. A screen that never sets one
+     * up must read {@link #mToolbar} and test it instead.
+     */
+    public Toolbar requireToolbar() {
+        return java.util.Objects.requireNonNull(mToolbar, "setupAppBar has not run");
+    }
+
     protected void setupAppBar(
             @IdRes int toolbar,
             @StringRes int title,
@@ -319,8 +523,8 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
         setSupportActionBar(mToolbar);
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(enableUpButton);
-            getSupportActionBar().setTitle(title);
+            java.util.Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(enableUpButton);
+            java.util.Objects.requireNonNull(getSupportActionBar()).setTitle(title);
         }
 
         themeSystemBars(systemBarColor);
@@ -348,8 +552,8 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
         setSupportActionBar(mToolbar);
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(enableUpButton);
-            getSupportActionBar().setTitle(title);
+            java.util.Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(enableUpButton);
+            java.util.Objects.requireNonNull(getSupportActionBar()).setTitle(title);
         }
 
         themeSystemBars(systemBarColor);
@@ -373,9 +577,9 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
         setSupportActionBar(mToolbar);
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(enableUpButton);
+            java.util.Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(enableUpButton);
             if (title != null) {
-                getSupportActionBar().setTitle(title);
+                java.util.Objects.requireNonNull(getSupportActionBar()).setTitle(title);
             }
         }
 
@@ -399,8 +603,8 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
         setSupportActionBar(mToolbar);
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(enableUpButton);
-            getSupportActionBar().setTitle(title);
+            java.util.Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(enableUpButton);
+            java.util.Objects.requireNonNull(getSupportActionBar()).setTitle(title);
         }
 
         themeSystemBars(subreddit);
@@ -412,8 +616,22 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
      *
      * @param subreddit The subreddit to base the color on.
      */
-    public void themeSystemBars(String subreddit) {
-        themeSystemBars(Palette.getSubredditStatusBarColor(subreddit));
+    public void themeSystemBars(@Nullable String subreddit) {
+        int color = Palette.getSubredditStatusBarColor(subreddit);
+        LogUtil.v(
+                "StatusBarColor: themeSystemBars(subreddit=\""
+                        + subreddit
+                        + "\") ["
+                        + getClass().getSimpleName()
+                        + "] subColor="
+                        + colorHex(Palette.getColor(subreddit))
+                        + " defaultColor="
+                        + colorHex(Palette.getDefaultColor())
+                        + " usingDefault="
+                        + (Palette.getColor(subreddit) == Palette.getDefaultColor())
+                        + " -> statusBar="
+                        + colorHex(color));
+        themeSystemBars(color);
     }
 
     /**
@@ -422,17 +640,30 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
      * @param color The color to tint the bars with
      */
     protected void themeSystemBars(int color) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (SettingValues.alwaysBlackStatusbar) {
-                color = Color.BLACK;
-            }
+        LogUtil.v(
+                "StatusBarColor: themeSystemBars(color="
+                        + colorHex(color)
+                        + ") ["
+                        + getClass().getSimpleName()
+                        + "] alwaysBlackStatusbar="
+                        + SettingValues.alwaysBlackStatusbar
+                        + " colorNavBar="
+                        + SettingValues.colorNavBar);
 
-            getWindow().setStatusBarColor(color);
-
-            if (SettingValues.colorNavBar) {
-                getWindow().setNavigationBarColor(color);
-            }
+        if (SettingValues.alwaysBlackStatusbar) {
+            color = Color.BLACK;
         }
+
+        mSystemBarColor = color;
+        mSystemBarColorSet = true;
+
+        // No-ops under edge-to-edge enforcement (API 35+); the scrims take over there
+        getWindow().setStatusBarColor(color);
+        if (SettingValues.colorNavBar) {
+            getWindow().setNavigationBarColor(color);
+        }
+
+        applyScrimColors();
     }
 
     /**
@@ -440,7 +671,7 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
      *
      * @param subreddit Name of the subreddit
      */
-    public void setRecentBar(String subreddit) {
+    public void setRecentBar(@Nullable String subreddit) {
         setRecentBar(subreddit, Palette.getColor(subreddit));
     }
 
@@ -451,28 +682,19 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
      * @param color Color for the recent app bar
      */
     public void setRecentBar(@Nullable String title, int color) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (title == null || title.isEmpty()) {
-                title = getString(R.string.app_name);
-            }
-            setRecentBarTaskDescription(title, color);
+        if (title == null || title.isEmpty()) {
+            title = getString(R.string.app_name);
         }
+        setRecentBarTaskDescription(title, color);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setRecentBarTaskDescription(@Nullable String title, int color) {
         int icon =
-                title.equalsIgnoreCase("androidcirclejerk")
+                "androidcirclejerk".equalsIgnoreCase(title)
                         ? R.drawable.matiasduarte
                         : R.drawable.ic_launcher;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            setTaskDescription(new ActivityManager.TaskDescription(title, icon, color));
-        } else {
-            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), icon);
-            setTaskDescription(new ActivityManager.TaskDescription(title, bitmap, color));
-            bitmap.recycle();
-        }
+        setTaskDescription(new ActivityManager.TaskDescription(title, icon, color));
     }
 
     @Override

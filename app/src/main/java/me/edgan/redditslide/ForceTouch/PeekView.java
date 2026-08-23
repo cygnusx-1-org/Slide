@@ -7,6 +7,8 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.os.Build;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,15 +18,14 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
-
 import androidx.annotation.FloatRange;
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
+import java.util.HashMap;
+import java.util.Map;
 import jp.wasabeef.blurry.Blurry;
-
 import me.edgan.redditslide.ForceTouch.builder.PeekViewOptions;
 import me.edgan.redditslide.ForceTouch.callback.OnButtonUp;
 import me.edgan.redditslide.ForceTouch.callback.OnPeek;
@@ -36,9 +37,9 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.Views.PeekMediaView;
 import me.edgan.redditslide.util.DisplayUtil;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class PeekView extends FrameLayout {
 
     private static final int ANIMATION_TIME = 300;
@@ -55,9 +56,10 @@ public class PeekView extends FrameLayout {
     private int distanceFromLeft;
     private int screenWidth;
     private int screenHeight;
-    private ViewGroup androidContentView = null;
-    private OnPeek callbacks;
-    private OnRemove remove;
+    private ViewGroup androidContentView;
+    // All three are optional: only set when the caller registers one.
+    @Nullable private OnPeek callbacks;
+    @Nullable private OnRemove remove;
 
     public PeekView(
             Activity context,
@@ -76,7 +78,7 @@ public class PeekView extends FrameLayout {
         buttons.put(i, onButtonUp);
     }
 
-    private OnPop mOnPop;
+    @Nullable private OnPop mOnPop;
 
     int currentHighlight;
     static int eight = DisplayUtil.dpToPxVertical(8);
@@ -167,7 +169,7 @@ public class PeekView extends FrameLayout {
     }
 
     public void doScroll(MotionEvent event) {
-        ((PeekMediaView) content.findViewById(R.id.peek)).doScroll(event);
+        ((PeekMediaView) content.requireViewById(R.id.peek)).doScroll(event);
     }
 
     private void init(
@@ -184,10 +186,17 @@ public class PeekView extends FrameLayout {
         androidContentView = (FrameLayout) context.findViewById(android.R.id.content).getRootView();
 
         // initialize the display size
-        WindowMetrics windowMetrics = context.getWindowManager().getCurrentWindowMetrics();
-        Rect bounds = windowMetrics.getBounds();
-        screenHeight = bounds.height();
-        screenWidth = bounds.width();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowMetrics windowMetrics = context.getWindowManager().getCurrentWindowMetrics();
+            Rect bounds = windowMetrics.getBounds();
+            screenHeight = bounds.height();
+            screenWidth = bounds.width();
+        } else {
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            context.getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
+            screenHeight = displayMetrics.heightPixels;
+            screenWidth = displayMetrics.widthPixels;
+        }
 
         // set up the content we want to show
         this.content = content;
@@ -232,7 +241,8 @@ public class PeekView extends FrameLayout {
 
                 dim.setAlpha(0f);
             } catch (Exception ignored) {
-
+                // Blurry needs a laid-out root view; without it the peek
+                // simply shows unblurred.
             }
         }
 

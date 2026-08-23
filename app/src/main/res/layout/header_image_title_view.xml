@@ -4,7 +4,8 @@
     android:id="@+id/imagearea"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
 
     <me.edgan.redditslide.Views.MaxHeightImageView
@@ -13,23 +14,32 @@
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:transitionName="large_image"
-        android:maxHeight="3200px"
         android:scaleType="centerCrop"
-        android:src="@drawable/chameleon" />
+        tools:src="@drawable/chameleon" />
+
+    <!-- The feed's gallery grid, shown in place of leadimage when the "Show gallery posts as a
+         grid" setting is on. leadimage goes GONE on that path, and HeaderImageLinkView re-points
+         the tag and base overlays below at this view so they still sit on the bottom edge. -->
+    <me.edgan.redditslide.Views.GalleryGridView
+        android:id="@+id/gallerygrid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 
     <me.edgan.redditslide.Views.TransparentTagTextView
         android:layout_width="wrap_content"
         android:text="IMAGE"
         android:id="@+id/tag"
         android:layout_alignBottom="@+id/leadimage"
-        android:textAllCaps="true"
         android:layout_alignParentRight="true"
+        android:textAllCaps="true"
         android:alpha=".86"
         android:layout_margin="10dp"
         android:textSize="10sp"
         android:textStyle="bold"
         android:padding="2dp"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:gravity="bottom" />
     <LinearLayout
         android:id="@+id/base"
         android:layout_width="match_parent"

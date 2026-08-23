@@ -7,7 +7,9 @@ import androidx.appcompat.widget.SwitchCompat;
 
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class SettingsCommentsFragment {
 
     private final Activity context;
@@ -18,51 +20,51 @@ public class SettingsCommentsFragment {
 
     public void Bind() {
         final SwitchCompat commentsCropImageSwitch =
-                context.findViewById(R.id.settings_comments_cropImage);
+                context.requireViewById(R.id.settings_comments_cropImage);
         final SwitchCompat commentsColorDepthSwitch =
-                context.findViewById(R.id.settings_comments_colorDepth);
+                context.requireViewById(R.id.settings_comments_colorDepth);
         final SwitchCompat commentsHighlightOpColorSwitch =
-                context.findViewById(R.id.settings_comments_highlightOpColor);
+                context.requireViewById(R.id.settings_comments_highlightOpColor);
         final SwitchCompat commentsWideDepthSwitch =
-                context.findViewById(R.id.settings_comments_wideDepth);
+                context.requireViewById(R.id.settings_comments_wideDepth);
         final SwitchCompat commentsShowCreateFabSwitch =
-                context.findViewById(R.id.settings_comments_showCreateFab);
+                context.requireViewById(R.id.settings_comments_showCreateFab);
         final SwitchCompat commentsRightHandedCommentsSwitch =
-                context.findViewById(R.id.settings_comments_rightHandedComments);
+                context.requireViewById(R.id.settings_comments_rightHandedComments);
         final SwitchCompat commentsUpvotePercentSwitch =
-                context.findViewById(R.id.settings_comments_upvotePercent);
+                context.requireViewById(R.id.settings_comments_upvotePercent);
         final SwitchCompat commentsColoredTimeBubbleSwitch =
-                context.findViewById(R.id.settings_comments_coloredTimeBubble);
+                context.requireViewById(R.id.settings_comments_coloredTimeBubble);
         final SwitchCompat commentsHideAwardsSwitch =
-                context.findViewById(R.id.settings_comments_hideAwards);
+                context.requireViewById(R.id.settings_comments_hideAwards);
 
         final SwitchCompat commentsParentCommentNavSwitch =
-                context.findViewById(R.id.settings_comments_parentCommentNav);
+                context.requireViewById(R.id.settings_comments_parentCommentNav);
         final TextView commentsAutohideNavbarView =
-                context.findViewById(R.id.settings_comments_autohideCommentNavbarView);
+                context.requireViewById(R.id.settings_comments_autohideCommentNavbarView);
         final SwitchCompat commentsAutohideNavbarSwitch =
-                context.findViewById(R.id.settings_comments_autohideCommentNavbar);
+                context.requireViewById(R.id.settings_comments_autohideCommentNavbar);
         final TextView commentsShowCollapseExpandView =
-                context.findViewById(R.id.settings_comments_showCollapseExpandView);
+                context.requireViewById(R.id.settings_comments_showCollapseExpandView);
         final SwitchCompat commentsShowCollapseExpandSwitch =
-                context.findViewById(R.id.settings_comments_showCollapseExpand);
+                context.requireViewById(R.id.settings_comments_showCollapseExpand);
         final SwitchCompat commentsVolumeNavCommentsSwitch =
-                context.findViewById(R.id.settings_comments_volumeNavComments);
+                context.requireViewById(R.id.settings_comments_volumeNavComments);
         final SwitchCompat commentsNavbarVoteGesturesSwitch =
-                context.findViewById(R.id.settings_comments_navbarVoteGestures);
+                context.requireViewById(R.id.settings_comments_navbarVoteGestures);
 
         final SwitchCompat commentsSwapLongpressTapSwitch =
-                context.findViewById(R.id.settings_comments_swapLongpressTap);
+                context.requireViewById(R.id.settings_comments_swapLongpressTap);
         final SwitchCompat commentsFullCollapseSwitch =
-                context.findViewById(R.id.settings_comments_fullCollapse);
+                context.requireViewById(R.id.settings_comments_fullCollapse);
         final SwitchCompat commentsCollapseChildCommentsSwitch =
-                context.findViewById(R.id.settings_comments_collapseChildComments);
+                context.requireViewById(R.id.settings_comments_collapseChildComments);
         final SwitchCompat commentsCollapseDeletedCommentsSwitch =
-                context.findViewById(R.id.settings_comments_collapseDeletedComments);
+                context.requireViewById(R.id.settings_comments_collapseDeletedComments);
         final SwitchCompat commentsCollapseStickyCommentSwitch =
-                context.findViewById(R.id.settings_comments_collapseStickyComment);
+                context.requireViewById(R.id.settings_comments_collapseStickyComment);
         final SwitchCompat commentsCollapseBlockedUsersSwitch =
-                context.findViewById(R.id.settings_comments_collapseBlockedUsers);
+                context.requireViewById(R.id.settings_comments_collapseBlockedUsers);
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // * Display */

@@ -1,6 +1,5 @@
 package me.edgan.redditslide;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
@@ -13,7 +12,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
-import android.os.Build;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -21,47 +20,22 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
-
+import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.multidex.MultiDexApplication;
-
-import com.google.android.exoplayer2.database.DatabaseProvider;
-import com.google.android.exoplayer2.database.ExoDatabaseProvider;
-import com.google.android.exoplayer2.upstream.cache.Cache;
-import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor;
-import com.google.android.exoplayer2.upstream.cache.SimpleCache;
+import androidx.media3.common.util.UnstableApi;
+import androidx.media3.database.DatabaseProvider;
+import androidx.media3.database.ExoDatabaseProvider;
+import androidx.media3.datasource.cache.Cache;
+import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor;
+import androidx.media3.datasource.cache.SimpleCache;
 import com.jakewharton.processphoenix.ProcessPhoenix;
 import com.lusfold.androidkeyvaluestore.KVStore;
 import com.nostra13.universalimageloader.core.ImageLoader;
-
-import me.edgan.redditslide.Activities.MainActivity;
-import me.edgan.redditslide.Autocache.AutoCacheScheduler;
-import me.edgan.redditslide.ImgurAlbum.AlbumUtils;
-import me.edgan.redditslide.Notifications.NotificationJobScheduler;
-import me.edgan.redditslide.Notifications.NotificationPiggyback;
-import me.edgan.redditslide.Tumblr.TumblrUtils;
-import me.edgan.redditslide.Visuals.Palette;
-import me.edgan.redditslide.util.AdBlocker;
-import me.edgan.redditslide.util.CompatUtil;
-import me.edgan.redditslide.util.GifCache;
-import me.edgan.redditslide.util.ImageLoaderUtils;
-import me.edgan.redditslide.util.LogUtil;
-import me.edgan.redditslide.util.NetworkUtil;
-import me.edgan.redditslide.util.SortingUtil;
-import me.edgan.redditslide.util.UpgradeUtil;
-
-import net.dean.jraw.http.NetworkException;
-
-import okhttp3.Dns;
-import okhttp3.OkHttpClient;
-
-import org.apache.commons.lang3.tuple.Triple;
-import org.apache.commons.text.StringEscapeUtils;
-
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -71,13 +45,43 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import me.edgan.redditslide.Activities.MainActivity;
+import me.edgan.redditslide.Autocache.AutoCacheScheduler;
+import me.edgan.redditslide.ImgurAlbum.AlbumUtils;
+import me.edgan.redditslide.Notifications.NotificationJobScheduler;
+import me.edgan.redditslide.Notifications.NotificationPiggyback;
+import me.edgan.redditslide.Notifications.TokenRefreshReceiver;
+import me.edgan.redditslide.Tumblr.TumblrUtils;
+import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.AdBlocker;
+import me.edgan.redditslide.util.CompatUtil;
+import me.edgan.redditslide.util.DialogUtil;
+import me.edgan.redditslide.util.GifCache;
+import me.edgan.redditslide.util.ImageLoaderUtils;
+import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.NetworkUtil;
+import me.edgan.redditslide.util.PrefUtil;
+import me.edgan.redditslide.util.ReauthNotifier;
+import me.edgan.redditslide.util.SortingUtil;
+import me.edgan.redditslide.util.UpgradeUtil;
+import net.dean.jraw.http.NetworkException;
+import okhttp3.Dns;
+import okhttp3.OkHttpClient;
+import org.apache.commons.lang3.tuple.Triple;
+import org.apache.commons.text.StringEscapeUtils;
 
 /** Created by ccrama on 9/17/2015. */
-public class Reddit extends MultiDexApplication implements Application.ActivityLifecycleCallbacks {
+@OptIn(markerClass = UnstableApi.class)
+public class Reddit extends Application implements Application.ActivityLifecycleCallbacks {
+    // NullAway.Init here and on the SharedPreferences group below: onCreate assigns mApplication
+    // as its first statement and doMainStuff assigns the rest, so all of them are set before any
+    // activity, service or receiver in the app can run.
+    @SuppressWarnings("NullAway.Init")
     private static Application mApplication;
 
     public static final String EMPTY_STRING = "NOTHING";
@@ -85,34 +89,49 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
     public static final long enter_animation_time_original = 600;
     public static final String PREF_LAYOUT = "PRESET";
     public static final String SHARED_PREF_IS_MOD = "is_mod";
-    public static Cache videoCache;
+
+    /** Built on first use by getVideoCache, so null until something plays a video. */
+    @Nullable private static Cache videoCache;
+    private static final Object videoCacheLock = new Object();
 
     public static long enter_animation_time = enter_animation_time_original;
     public static final int enter_animation_time_multiplier = 1;
 
+    @SuppressWarnings("NullAway.Init") // assigned in doMainStuff/onActivityResumed
     public static Authentication authentication;
 
+    @SuppressWarnings("NullAway.Init") // assigned in doMainStuff
     public static SharedPreferences colors;
+
+    @SuppressWarnings("NullAway.Init") // assigned in doMainStuff
     public static SharedPreferences appRestart;
+
+    @SuppressWarnings("NullAway.Init") // assigned in doMainStuff
     public static SharedPreferences tags;
 
     public static int dpWidth;
     public static int notificationTime;
     public static boolean videoPlugin;
-    public static NotificationJobScheduler notifications;
+    // Started on demand by whichever screen first needs them, and SettingsGeneralFragment
+    // already tests both for null before using them.
+    @Nullable public static NotificationJobScheduler notifications;
     public static boolean isLoading = false;
     public static final long time = System.currentTimeMillis();
     public static boolean fabClear;
-    public static ArrayList<Integer> lastPosition;
     public static int currentPosition;
+
+    @SuppressWarnings("NullAway.Init") // assigned in doMainStuff
     public static SharedPreferences cachedData;
     public static final boolean noGapps = true; // for testing
     public static boolean overrideLanguage;
     public static boolean isRestarting;
-    public static AutoCacheScheduler autoCache;
+    @Nullable public static AutoCacheScheduler autoCache;
     public static boolean peek;
     public boolean active;
-    public ImageLoader defaultImageLoader;
+    /** Built on first use by getImageLoader, and rebuilt whenever it has been de-initialised. */
+    @Nullable public ImageLoader defaultImageLoader;
+
+    @SuppressWarnings("NullAway.Init") // assigned in doMainStuff/onActivityResumed
     public static OkHttpClient client;
 
     public static boolean canUseNightModeAuto = false;
@@ -130,7 +149,7 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
         ProcessPhoenix.triggerRebirth(context, new Intent(context, MainActivity.class));
     }
 
-    public static void defaultShareText(String title, String url, Context c) {
+    public static void defaultShareText(@Nullable String title, @Nullable String url, Context c) {
         url = StringEscapeUtils.unescapeHtml4(CompatUtil.fromHtml(url).toString());
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
@@ -146,6 +165,7 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
             final PackageInfo pi = getAppContext().getPackageManager().getPackageInfo(s, 0);
             if (pi != null && pi.applicationInfo.enabled) return true;
         } catch (final Throwable ignored) {
+            // Not installed, which is what the false below reports.
         }
         return false;
     }
@@ -155,10 +175,7 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
     }
 
     public static HashMap<String, String> getInstalledBrowsers() {
-        int packageMatcher =
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                        ? PackageManager.MATCH_ALL
-                        : PackageManager.GET_DISABLED_COMPONENTS;
+        int packageMatcher = PackageManager.MATCH_ALL;
 
         HashMap<String, String> browserMap = new HashMap<>();
 
@@ -202,6 +219,7 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
 
     @Override
     public void onActivityResumed(Activity activity) {
+        ReauthNotifier.attach(activity);
         doLanguages();
         if (client == null) {
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
@@ -216,12 +234,19 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
         } else if (NetworkUtil.isConnected(activity) && authentication == null) {
             authentication = new Authentication(this);
         }
+        // Keep the background keep-warm token refresh aligned with the current token expiry so a
+        // later re-open usually finds a fresh token instead of relying on the resume-time refresh.
+        TokenRefreshReceiver.schedule(this);
     }
 
     @Override
-    public void onActivityPaused(Activity activity) {}
+    public void onActivityPaused(Activity activity) {
+        ReauthNotifier.detach(activity);
+    }
 
-    public static void setDefaultErrorHandler(Context base) {
+    /** Pass null to clear the handler: the weak reference then resolves to nothing and the
+     * previous android handler is all that runs. */
+    public static void setDefaultErrorHandler(@Nullable Context base) {
         // START code adapted from https://github.com/QuantumBadger/RedReader/
         final Thread.UncaughtExceptionHandler androidHandler =
                 Thread.getDefaultUncaughtExceptionHandler();
@@ -229,13 +254,16 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
 
         Thread.setDefaultUncaughtExceptionHandler(
                 new Thread.UncaughtExceptionHandler() {
-                    public void uncaughtException(Thread thread, Throwable t) {
+                    @Override public void uncaughtException(Thread thread, Throwable t) {
                         if (cont.get() != null) {
                             final Context c = cont.get();
                             Writer writer = new StringWriter();
                             PrintWriter printWriter = new PrintWriter(writer);
                             t.printStackTrace(printWriter);
                             String stacktrace = writer.toString().replace(";", ",");
+                            // Null for anything thrown without one, which includes the very
+                            // NullPointerException the branch below is trying to recognise.
+                            final String message = t.getMessage();
                             if (stacktrace.contains("UnknownHostException")
                                     || stacktrace.contains("SocketTimeoutException")
                                     || stacktrace.contains("ConnectException")) {
@@ -246,7 +274,7 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
                                             @Override
                                             public void run() {
                                                 try {
-                                                    new AlertDialog.Builder(c)
+                                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(c)
                                                             .setTitle(R.string.err_title)
                                                             .setMessage(
                                                                     R.string
@@ -272,9 +300,9 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
                                                                         Reddit.forceRestart(
                                                                                 c, false);
                                                                     })
-                                                            .show();
+                                                            );
                                                 } catch (Exception ignored) {
-
+                                                    // Dialog on a context that is finishing.
                                                 }
                                             }
                                         });
@@ -287,7 +315,7 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
                                             @Override
                                             public void run() {
                                                 try {
-                                                    new AlertDialog.Builder(c)
+                                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(c)
                                                             .setTitle(R.string.err_title)
                                                             .setMessage(
                                                                     R.string
@@ -306,9 +334,9 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
                                                                     (dialog, which) ->
                                                                             authentication
                                                                                     .updateToken(c))
-                                                            .show();
+                                                            );
                                                 } catch (Exception ignored) {
-
+                                                    // Dialog on a context that is finishing.
                                                 }
                                             }
                                         });
@@ -321,7 +349,7 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
                                             @Override
                                             public void run() {
                                                 try {
-                                                    new AlertDialog.Builder(c)
+                                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(c)
                                                             .setTitle(R.string.err_title)
                                                             .setMessage(
                                                                     R.string
@@ -335,9 +363,9 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
                                                                             ((Activity) c).finish();
                                                                         }
                                                                     })
-                                                            .show();
+                                                            );
                                                 } catch (Exception ignored) {
-
+                                                    // Dialog on a context that is finishing.
                                                 }
                                             }
                                         });
@@ -353,18 +381,19 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
                                                 Toast.LENGTH_LONG)
                                         .show();
                             } else if (t instanceof NullPointerException
-                                    && t.getMessage()
-                                            .contains(
-                                                    "Attempt to invoke virtual method"
-                                                        + " 'android.content.Context"
-                                                        + " android.view.ViewGroup.getContext()' on"
-                                                        + " a null object reference")) {
-                                t.printStackTrace();
+                                    && message != null
+                                    && message.contains(
+                                            "Attempt to invoke virtual method"
+                                                    + " 'android.content.Context"
+                                                    + " android.view.ViewGroup.getContext()' on a"
+                                                    + " null object reference")) {
+                                LogUtil.e(t, "Reddit.run failed");
                             } else if (t instanceof WindowManager.BadTokenException) {
-                                t.printStackTrace();
+                                LogUtil.e(t, "Reddit.run failed");
                             } else if (t instanceof IllegalArgumentException
-                                    && t.getMessage().contains("pointerIndex out of range")) {
-                                t.printStackTrace();
+                                    && message != null
+                                    && message.contains("pointerIndex out of range")) {
+                                LogUtil.e(t, "Reddit.run failed");
                             } else {
                                 appRestart
                                         .edit()
@@ -379,6 +408,8 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
                                     prefs.edit().putString("stacktrace", stacktrace).apply();
 
                                 } catch (Throwable ignored) {
+                                    // Inside the uncaught-exception handler: saving the stacktrace is
+                                    // best-effort and must not throw on top of the crash it is reporting.
                                 }
 
                                 androidHandler.uncaughtException(thread, t);
@@ -389,14 +420,13 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
                     }
                 });
         // END adaptation
-
     }
 
     @Override
     public void onActivityStopped(Activity activity) {}
 
     @Override
-    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+    public void onActivityCreated(Activity activity, @Nullable Bundle savedInstanceState) {
         doLanguages();
     }
 
@@ -418,20 +448,40 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
             return;
         }
 
-        final File dir;
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)
-                && getExternalCacheDir() != null) {
-            dir = new File(getExternalCacheDir() + File.separator + "video-cache");
-        } else {
-            dir = new File(getCacheDir() + File.separator + "video-cache");
-        }
-        LeastRecentlyUsedCacheEvictor evictor =
-                new LeastRecentlyUsedCacheEvictor(256 * 1024 * 1024);
-        DatabaseProvider databaseProvider = new ExoDatabaseProvider(getAppContext());
-        videoCache = new SimpleCache(dir, evictor, databaseProvider); // 256MB
-
         UpgradeUtil.upgrade(getApplicationContext());
         doMainStuff();
+
+        // Build the video cache off the launch thread; SimpleCache's constructor locks and scans
+        // the cache folder, which cost hundreds of milliseconds of cold start for every user,
+        // whether or not they went on to play a video.
+        AsyncTask.THREAD_POOL_EXECUTOR.execute(Reddit::getVideoCache);
+    }
+
+    /**
+     * The shared 256MB media cache, built on first use. SimpleCache throws if a second instance is
+     * created for the same directory, so this must be the only construction site.
+     */
+    public static Cache getVideoCache() {
+        synchronized (videoCacheLock) {
+            if (videoCache == null) {
+                final File dir;
+                if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)
+                        && getAppContext().getExternalCacheDir() != null) {
+                    dir =
+                            new File(
+                                    getAppContext().getExternalCacheDir()
+                                            + File.separator
+                                            + "video-cache");
+                } else {
+                    dir = new File(getAppContext().getCacheDir() + File.separator + "video-cache");
+                }
+                LeastRecentlyUsedCacheEvictor evictor =
+                        new LeastRecentlyUsedCacheEvictor(256 * 1024 * 1024);
+                DatabaseProvider databaseProvider = new ExoDatabaseProvider(getAppContext());
+                videoCache = new SimpleCache(dir, evictor, databaseProvider); // 256MB
+            }
+            return videoCache;
+        }
     }
 
     public void doMainStuff() {
@@ -440,9 +490,7 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
             client = new OkHttpClient();
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            setCanUseNightModeAuto();
-        }
+        setCanUseNightModeAuto();
 
         overrideLanguage =
                 getSharedPreferences("SETTINGS", 0)
@@ -453,38 +501,40 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
 
         cachedData = getSharedPreferences("cache", 0);
 
-        if (!cachedData.contains("hasReset")) {
-            cachedData.edit().clear().putBoolean("hasReset", true).apply();
-        }
+        // Off the launch thread: "cache" holds one entry per cached subreddit page and is never
+        // pruned, and contains() blocks until the whole file is parsed. Nothing needed for the
+        // first frame reads it.
+        AsyncTask.THREAD_POOL_EXECUTOR.execute(
+                () -> {
+                    if (!cachedData.contains("hasReset")) {
+                        cachedData.edit().clear().putBoolean("hasReset", true).apply();
+                    }
+                });
 
         registerActivityLifecycleCallbacks(this);
         Authentication.authentication = getSharedPreferences("AUTH", 0);
         UserSubscriptions.subscriptions = getSharedPreferences("SUBSNEW", 0);
         UserSubscriptions.multiNameToSubs = getSharedPreferences("MULTITONAME", 0);
-        UserSubscriptions.newsNameToSubs = getSharedPreferences("NEWSMULTITONAME", 0);
-        UserSubscriptions.news = getSharedPreferences("NEWS", 0);
-
-        UserSubscriptions.newsNameToSubs
-                .edit()
-                .putString("android", "android+androidapps+googlepixel")
-                .putString("news", "worldnews+news+politics")
-                .apply();
 
         UserSubscriptions.pinned = getSharedPreferences("PINNED", 0);
+        SavedUsers.users = getSharedPreferences("USERS", 0);
+        SavedUsers.friends = getSharedPreferences("USERFRIENDS", 0);
         PostMatch.filters = getSharedPreferences("FILTERS", 0);
         ImageFlairs.flairs = getSharedPreferences("FLAIRS", 0);
         SettingValues.setAllValues(getSharedPreferences("SETTINGS", 0));
         SortingUtil.defaultSorting = SettingValues.defaultSorting;
         SortingUtil.frontpageSorting = SettingValues.frontpageSorting;
         SortingUtil.timePeriod = SettingValues.timePeriod;
+        // Restore the persisted frontpage time period so it survives across sessions and
+        // is reflected in the settings sort dialog and the frontpage sort header.
+        SortingUtil.setTime("frontpage", SettingValues.getSubmissionTimePeriod("frontpage"));
         colors = getSharedPreferences("COLOR", 0);
         tags = getSharedPreferences("TAGS", 0);
         KVStore.init(this, "SEEN");
         doLanguages();
-        lastPosition = new ArrayList<>();
 
         Authentication.isLoggedIn = appRestart.getBoolean("loggedin", false);
-        Authentication.name = appRestart.getString("name", "LOGGEDOUT");
+        Authentication.name = PrefUtil.getString(appRestart, "name", "LOGGEDOUT");
         active = true;
 
         authentication = new Authentication(this);
@@ -497,16 +547,10 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
 
         fabClear = colors.getBoolean(SettingValues.PREF_FAB_CLEAR, false);
 
-        int widthDp = this.getResources().getConfiguration().screenWidthDp;
-        int heightDp = this.getResources().getConfiguration().screenHeightDp;
-
-        int fina = Math.max(widthDp, heightDp);
-        fina += 99;
-
         if (colors.contains("tabletOVERRIDE")) {
-            dpWidth = colors.getInt("tabletOVERRIDE", fina / 300);
+            dpWidth = colors.getInt("tabletOVERRIDE", 1);
         } else {
-            dpWidth = fina / 300;
+            dpWidth = 1;
         }
 
         if (colors.contains("notificationOverride")) {
@@ -554,35 +598,27 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
     public void setupNotificationChannels() {
         // Each triple contains the channel ID, name, and importance level
         List<Triple<String, String, Integer>> notificationTripleList =
-                new ArrayList<Triple<String, String, Integer>>() {
-                    {
-                        add(
-                                Triple.of(
-                                        CHANNEL_IMG,
-                                        "Image downloads",
-                                        NotificationManagerCompat.IMPORTANCE_LOW));
-                        add(
-                                Triple.of(
-                                        CHANNEL_COMMENT_CACHE,
-                                        "Comment caching",
-                                        NotificationManagerCompat.IMPORTANCE_LOW));
-                        add(
-                                Triple.of(
-                                        CHANNEL_MAIL,
-                                        "Reddit mail",
-                                        NotificationManagerCompat.IMPORTANCE_HIGH));
-                        add(
-                                Triple.of(
-                                        CHANNEL_MODMAIL,
-                                        "Reddit modmail",
-                                        NotificationManagerCompat.IMPORTANCE_HIGH));
-                        add(
-                                Triple.of(
-                                        CHANNEL_SUBCHECKING,
-                                        "Submission post checking",
-                                        NotificationManagerCompat.IMPORTANCE_LOW));
-                    }
-                };
+                Arrays.asList(
+                        Triple.of(
+                                CHANNEL_IMG,
+                                "Image downloads",
+                                NotificationManagerCompat.IMPORTANCE_LOW),
+                        Triple.of(
+                                CHANNEL_COMMENT_CACHE,
+                                "Comment caching",
+                                NotificationManagerCompat.IMPORTANCE_LOW),
+                        Triple.of(
+                                CHANNEL_MAIL,
+                                "Reddit mail",
+                                NotificationManagerCompat.IMPORTANCE_HIGH),
+                        Triple.of(
+                                CHANNEL_MODMAIL,
+                                "Reddit modmail",
+                                NotificationManagerCompat.IMPORTANCE_HIGH),
+                        Triple.of(
+                                CHANNEL_SUBCHECKING,
+                                "Submission post checking",
+                                NotificationManagerCompat.IMPORTANCE_LOW));
 
         final NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 
@@ -639,7 +675,6 @@ public class Reddit extends MultiDexApplication implements Application.ActivityL
         return mApplication.getApplicationContext();
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     private static void setCanUseNightModeAuto() {
         UiModeManager uiModeManager = getAppContext().getSystemService(UiModeManager.class);
         canUseNightModeAuto = uiModeManager != null;

@@ -1,20 +1,63 @@
 package me.edgan.redditslide.test;
 
+import android.app.Application;
 import android.content.SharedPreferences;
-
 import androidx.annotation.Nullable;
-
-import org.apache.commons.io.IOUtils;
-
+import androidx.test.core.app.ApplicationProvider;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import me.edgan.redditslide.Reddit;
+import org.apache.commons.io.IOUtils;
 
 public class TestUtils {
 
     public static String getResource(String path) throws IOException {
         return IOUtils.toString(
                 TestUtils.class.getClassLoader().getResourceAsStream(path), "utf-8");
+    }
+
+    /**
+     * Seeds the private static {@code Reddit.mApplication} with the Robolectric application context.
+     * Some classes (notably anything that class-loads {@code Toolbox}, whose static initializer calls
+     * {@code Reddit.getAppContext().getSharedPreferences(...)}) otherwise throw an {@code
+     * ExceptionInInitializerError} in tests. Robolectric-only — needs an Android runtime.
+     */
+    public static void seedRedditApplication() {
+        setMApplication((Application) ApplicationProvider.getApplicationContext());
+    }
+
+    /**
+     * Undoes {@link #seedRedditApplication()}, restoring {@code Reddit.mApplication} to its pristine
+     * null. Use in a test's teardown so it doesn't leave the static seeded for a later test sharing
+     * the same Robolectric sandbox.
+     */
+    public static void clearRedditApplication() {
+        setMApplication(null);
+    }
+
+    /**
+     * Restores {@code Reddit.colors} to its pristine (pre-{@link Reddit#onCreate}) null, alongside
+     * {@link #clearRedditApplication()}. The field is {@code @SuppressWarnings("NullAway.Init")} in
+     * main because {@code onCreate} always populates it in the app; nothing runs {@code onCreate}
+     * here, so a test that seeded it has to put it back for the next test in the sandbox.
+     */
+    @SuppressWarnings("NullAway")
+    public static void clearRedditColors() {
+        Reddit.colors = null;
+    }
+
+    /** Reflectively set the private static {@code Reddit.mApplication} (there is no public setter). */
+    private static void setMApplication(@Nullable Application value) {
+        try {
+            Field f = Reddit.class.getDeclaredField("mApplication");
+            f.setAccessible(true);
+            f.set(null, value);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Failed to set Reddit.mApplication for tests", e);
+        }
     }
 
     public static class MockPreferences implements SharedPreferences {
@@ -33,7 +76,7 @@ public class TestUtils {
 
         @Override
         public Map<String, ?> getAll() {
-            return null;
+            return Collections.emptyMap();
         }
 
         @Nullable
@@ -69,7 +112,7 @@ public class TestUtils {
 
         @Override
         public Editor edit() {
-            return null;
+            throw new UnsupportedOperationException("MockPreferences is read-only");
         }
 
         @Override

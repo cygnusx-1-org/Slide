@@ -1,5 +1,7 @@
 package me.edgan.redditslide.ImgurAlbum;
 
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,13 +17,13 @@ import java.util.Map;
 public class AlbumImage {
 
     @JsonProperty("data")
-    private Data data;
+    @Nullable private Data data;
 
     @JsonProperty("success")
-    private Boolean success;
+    @Nullable private Boolean success;
 
     @JsonProperty("status")
-    private Integer status;
+    @Nullable private Integer status;
 
     @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -29,6 +31,7 @@ public class AlbumImage {
      * @return The data
      */
     @JsonProperty("data")
+    @Nullable
     public Data getData() {
         return data;
     }
@@ -37,7 +40,7 @@ public class AlbumImage {
      * @param data The data
      */
     @JsonProperty("data")
-    public void setData(Data data) {
+    public void setData(@Nullable Data data) {
         this.data = data;
     }
 
@@ -45,6 +48,7 @@ public class AlbumImage {
      * @return The success
      */
     @JsonProperty("success")
+    @Nullable
     public Boolean getSuccess() {
         return success;
     }
@@ -53,7 +57,7 @@ public class AlbumImage {
      * @param success The success
      */
     @JsonProperty("success")
-    public void setSuccess(Boolean success) {
+    public void setSuccess(@Nullable Boolean success) {
         this.success = success;
     }
 
@@ -61,6 +65,7 @@ public class AlbumImage {
      * @return The status
      */
     @JsonProperty("status")
+    @Nullable
     public Integer getStatus() {
         return status;
     }
@@ -69,7 +74,7 @@ public class AlbumImage {
      * @param status The status
      */
     @JsonProperty("status")
-    public void setStatus(Integer status) {
+    public void setStatus(@Nullable Integer status) {
         this.status = status;
     }
 

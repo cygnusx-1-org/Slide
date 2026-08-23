@@ -19,17 +19,18 @@ package me.edgan.redditslide.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-
-import me.edgan.redditslide.SettingValues;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import me.edgan.redditslide.Fragments.DrawerItemsDialog;
+import me.edgan.redditslide.SettingValues;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class UpgradeUtil {
     // Increment for each needed change
-    private static final int VERSION = 2;
+    private static final int VERSION = 3;
 
     private UpgradeUtil() {}
 
@@ -51,7 +52,7 @@ public class UpgradeUtil {
 
         if (CURRENT < 1) {
             SharedPreferences prefs = context.getSharedPreferences("SETTINGS", 0);
-            String domains = prefs.getString(SettingValues.PREF_ALWAYS_EXTERNAL, "");
+            String domains = PrefUtil.getString(prefs, SettingValues.PREF_ALWAYS_EXTERNAL, "");
 
             domains =
                     domains.replaceFirst("(?<=^|,)youtube.co(?=$|,)", "youtube.com")
@@ -64,13 +65,13 @@ public class UpgradeUtil {
         if (CURRENT < 2) {
             SharedPreferences prefs = context.getSharedPreferences("SETTINGS", 0);
             SharedPreferences.Editor prefsEditor = prefs.edit();
-            String titleFilterStr = prefs.getString(SettingValues.PREF_TITLE_FILTERS, "");
-            String textFilterStr = prefs.getString(SettingValues.PREF_TEXT_FILTERS, "");
-            String flairFilterStr = prefs.getString(SettingValues.PREF_FLAIR_FILTERS, "");
-            String subredditFilterStr = prefs.getString(SettingValues.PREF_SUBREDDIT_FILTERS, "");
-            String domainFilterStr = prefs.getString(SettingValues.PREF_DOMAIN_FILTERS, "");
-            String usersFilterStr = prefs.getString(SettingValues.PREF_USER_FILTERS, "");
-            String alwaysExternalStr = prefs.getString(SettingValues.PREF_ALWAYS_EXTERNAL, "");
+            String titleFilterStr = PrefUtil.getString(prefs, SettingValues.PREF_TITLE_FILTERS, "");
+            String textFilterStr = PrefUtil.getString(prefs, SettingValues.PREF_TEXT_FILTERS, "");
+            String flairFilterStr = PrefUtil.getString(prefs, SettingValues.PREF_FLAIR_FILTERS, "");
+            String subredditFilterStr = PrefUtil.getString(prefs, SettingValues.PREF_SUBREDDIT_FILTERS, "");
+            String domainFilterStr = PrefUtil.getString(prefs, SettingValues.PREF_DOMAIN_FILTERS, "");
+            String usersFilterStr = PrefUtil.getString(prefs, SettingValues.PREF_USER_FILTERS, "");
+            String alwaysExternalStr = PrefUtil.getString(prefs, SettingValues.PREF_ALWAYS_EXTERNAL, "");
 
             prefsEditor.remove(SettingValues.PREF_TITLE_FILTERS);
             prefsEditor.remove(SettingValues.PREF_TEXT_FILTERS);
@@ -167,6 +168,23 @@ public class UpgradeUtil {
             prefsEditor.putStringSet(SettingValues.PREF_ALWAYS_EXTERNAL, alwaysExternal);
 
             prefsEditor.apply();
+        }
+
+        // Show the new "Users" drawer item by default. selectedDrawerItems is a bitmask, and -1
+        // means "everything", so only a stored value written before USERS existed needs the bit
+        // adding; leaving it alone would hide the item for anyone who has opened the Drawer Items
+        // dialog.
+        if (CURRENT < 3) {
+            SharedPreferences prefs = context.getSharedPreferences("SETTINGS", 0);
+            long selected = prefs.getLong(SettingValues.PREF_SELECTED_DRAWER_ITEMS, -1);
+
+            if (selected != -1) {
+                prefs.edit()
+                        .putLong(
+                                SettingValues.PREF_SELECTED_DRAWER_ITEMS,
+                                selected | DrawerItemsDialog.SettingsDrawerEnum.USERS.value)
+                        .apply();
+            }
         }
 
         upgradePrefs.edit().putInt("VERSION", VERSION).apply();

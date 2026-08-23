@@ -8,10 +8,8 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.widget.Toast;
-
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiskCache;
@@ -21,15 +19,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
-
-import me.edgan.redditslide.Activities.SendMessage;
-import me.edgan.redditslide.util.LogUtil;
-import me.edgan.redditslide.util.OkHttpImageDownloader;
-
-import net.dean.jraw.http.HttpRequest;
-import net.dean.jraw.http.MediaTypes;
-import net.dean.jraw.http.RestResponse;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,26 +27,36 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import me.edgan.redditslide.Activities.SendMessage;
+import me.edgan.redditslide.util.DialogUtil;
+import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MaterialProgressDialog;
+import me.edgan.redditslide.util.OkHttpImageDownloader;
+import net.dean.jraw.RedditClient;
+import net.dean.jraw.http.HttpRequest;
+import net.dean.jraw.http.MediaTypes;
+import net.dean.jraw.http.RestResponse;
 
 /** Created by Carlos on 4/15/2017. */
 public class ImageFlairs {
     public static void syncFlairs(final Context context, final String subreddit) {
         new StylesheetFetchTask(subreddit, context) {
             @Override
-            protected void onPostExecute(FlairStylesheet flairStylesheet) {
+            protected void onPostExecute(@Nullable FlairStylesheet flairStylesheet) {
                 super.onPostExecute(flairStylesheet);
-                d.dismiss();
+                if (d != null) {
+                    d.dismiss();
+                }
                 if (flairStylesheet != null) {
                     flairs.edit().putBoolean(subreddit.toLowerCase(Locale.ENGLISH), true).commit();
                     d =
-                            new AlertDialog.Builder(context)
+                            DialogUtil.showWithCardBackground(new AlertDialog.Builder(context)
                                     .setTitle("Subreddit flairs synced")
                                     .setMessage(
                                             "Slide found and synced "
                                                     + flairStylesheet.count
                                                     + " image flairs")
-                                    .setPositiveButton(R.string.btn_ok, null)
-                                    .show();
+                                    .setPositiveButton(R.string.btn_ok, null));
                 } else {
                     final AlertDialog.Builder b =
                             new AlertDialog.Builder(context)
@@ -87,19 +86,20 @@ public class ImageFlairs {
                                 });
                     }
 
-                    d = b.show();
+                    d = DialogUtil.showWithCardBackground(b);
                 }
             }
 
             @Override
             protected void onPreExecute() {
                 d =
-                        new MaterialDialog.Builder(context)
+                        new MaterialProgressDialog.Builder(context)
                                 .progress(true, 100)
                                 .content(R.string.misc_please_wait)
                                 .title("Syncing flairs...")
                                 .cancelable(false)
-                                .show();
+                                .show()
+                                .getDialog();
             }
         }.execute();
     }
@@ -107,7 +107,9 @@ public class ImageFlairs {
     static class StylesheetFetchTask extends AsyncTask<Void, Void, FlairStylesheet> {
         String subreddit;
         Context context;
-        Dialog d;
+
+        /** Shown from onPostExecute, so null until the fetch finishes. */
+        @Nullable Dialog d;
 
         StylesheetFetchTask(String subreddit, Context context) {
             super();
@@ -115,7 +117,9 @@ public class ImageFlairs {
             this.subreddit = subreddit;
         }
 
+        /** Null when the stylesheet could not be fetched or parsed. */
         @Override
+        @Nullable
         protected FlairStylesheet doInBackground(Void... params) {
             try {
                 HttpRequest r =
@@ -125,7 +129,11 @@ public class ImageFlairs {
                                 .expected(MediaTypes.CSS.type())
                                 .build();
 
-                RestResponse response = Authentication.reddit.execute(r);
+                final RedditClient client = Authentication.reddit;
+                if (client == null) {
+                    return null;
+                }
+                RestResponse response = client.execute(r);
 
                 String stylesheet = response.getRaw();
                 ArrayList<String> allImages = new ArrayList<>();
@@ -134,12 +142,15 @@ public class ImageFlairs {
                     String classDef =
                             flairStylesheet.getClass(
                                     flairStylesheet.stylesheetString, "flair-" + s);
+                    if (classDef == null) continue;
                     try {
                         String backgroundURL = flairStylesheet.getBackgroundURL(classDef);
                         if (backgroundURL == null) backgroundURL = flairStylesheet.defaultURL;
-                        if (!allImages.contains(backgroundURL)) allImages.add(backgroundURL);
+                        if (backgroundURL != null && !allImages.contains(backgroundURL)) {
+                            allImages.add(backgroundURL);
+                        }
                     } catch (Exception e) {
-                        //  e.printStackTrace();
+                        //  LogUtil.e(e, "ImageFlairs.doInBackground failed");
                     }
                 }
                 if (flairStylesheet.defaultURL != null) {
@@ -151,12 +162,14 @@ public class ImageFlairs {
                 }
                 return flairStylesheet;
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.e(e, "ImageFlairs.doInBackground failed");
                 return null;
             }
         }
     }
 
+    // Assigned by Reddit.doMainStuff, i.e. Application.onCreate, before anything can read it.
+    @SuppressWarnings("NullAway.Init")
     public static SharedPreferences flairs;
 
     public static boolean isSynced(String subreddit) {
@@ -214,10 +227,12 @@ public class ImageFlairs {
         String stylesheetString;
         Dimensions defaultDimension = new Dimensions();
         Location defaultLocation = new Location();
-        String defaultURL = "";
+        /** Null when the base .flair rule carries no background url. */
+        @Nullable String defaultURL = "";
+
         int count;
 
-        Dimensions prevDimension = null;
+        @Nullable Dimensions prevDimension = null;
 
         static class Dimensions {
             int width, height;
@@ -283,6 +298,7 @@ public class ImageFlairs {
          * @param className
          * @return
          */
+        @Nullable
         String getClass(String cssDefinitionString, String className) {
             Pattern propertyDefinition =
                     Pattern.compile(
@@ -311,6 +327,7 @@ public class ImageFlairs {
          * @param property
          * @return
          */
+        @Nullable
         String getProperty(String classDefinitionsString, String property) {
             Pattern propertyDefinition =
                     Pattern.compile("(?<!-)" + property + "\\s*:\\s*(.+?)(;|$)");
@@ -324,6 +341,7 @@ public class ImageFlairs {
         }
 
         // Attempts to get a real integer value instead of "auto", if possible
+        @Nullable
         String getPropertyTryNoAuto(String classDefinitionsString, String property) {
             Pattern propertyDefinition =
                     Pattern.compile("(?<!-)" + property + "\\s*:\\s*(.+?)(;|$)");
@@ -345,6 +363,7 @@ public class ImageFlairs {
             return defaultString;
         }
 
+        @Nullable
         String getPropertyBackgroundUrl(String classDefinitionsString) {
             Pattern propertyDefinition = Pattern.compile("background:url\\([\"'](.+?)[\"']\\)");
             Matcher matches = propertyDefinition.matcher(classDefinitionsString);
@@ -362,6 +381,7 @@ public class ImageFlairs {
          * @param classDefinitionString
          * @return
          */
+        @Nullable
         String getBackgroundURL(String classDefinitionString) {
             Pattern urlDefinition = Pattern.compile("url\\([\"\'](.+?)[\"\']\\)");
             String backgroundProperty = getPropertyBackgroundUrl(classDefinitionString);
@@ -458,13 +478,8 @@ public class ImageFlairs {
                     Pattern.compile("([+-]?\\d+|0)(px\\s|\\s)+(|([+-]?\\d+|0)(px|))");
             String backgroundPositionProperty =
                     getProperty(classDefinitionString, "background-size");
-            String backgroundPositionPropertySecondary =
-                    getProperty(classDefinitionString, "background-size");
 
-            if (backgroundPositionProperty == null && backgroundPositionPropertySecondary == null
-                    || backgroundPositionProperty == null
-                            && !backgroundPositionPropertySecondary.contains("px ")
-                            && !backgroundPositionPropertySecondary.contains("px;")) {
+            if (backgroundPositionProperty == null) {
                 return new Dimensions();
             }
 
@@ -516,7 +531,8 @@ public class ImageFlairs {
                     }
                 }
             } catch (NumberFormatException ignored) {
-
+                // A background-position CSS rule that is not numeric gives the empty
+                // Location returned below.
             }
             return new Location();
         }
@@ -535,7 +551,8 @@ public class ImageFlairs {
                             Integer.parseInt(matches.group(2)), Integer.parseInt(matches.group(2)));
                 }
             } catch (NumberFormatException ignored) {
-
+                // A background-size CSS rule that is not numeric gives the empty
+                // Dimensions returned below.
             }
             return new Dimensions();
         }
@@ -656,7 +673,7 @@ public class ImageFlairs {
                                                 flairLocation.y)
                                         .transform(loadedImage, flairLocation.isPercentage);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtil.e(e, "ImageFlairs.loadingComplete failed");
                     }
                     try {
                         getFlairImageLoader(context)
@@ -668,7 +685,7 @@ public class ImageFlairs {
                                         newBit);
                         count += 1;
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtil.e(e, "ImageFlairs.loadingComplete failed");
                     }
                 }
                 loadedImage.recycle();
@@ -698,30 +715,31 @@ public class ImageFlairs {
 
     public static class FlairImageLoader extends ImageLoader {
 
-        private static volatile FlairImageLoader instance;
+        @Nullable private static volatile FlairImageLoader instance;
 
         /** Returns singleton class instance */
         public static FlairImageLoader getInstance() {
-            if (instance == null) {
+            FlairImageLoader result = instance;
+            if (result == null) {
                 synchronized (ImageLoader.class) {
-                    if (instance == null) {
-                        instance = new FlairImageLoader();
+                    result = instance;
+                    if (result == null) {
+                        result = new FlairImageLoader();
+                        instance = result;
                     }
                 }
             }
-            return instance;
+            return result;
         }
     }
 
     public static FlairImageLoader getFlairImageLoader(Context context) {
-        if (imageLoader == null) {
-            return initFlairImageLoader(context);
-        } else {
-            return imageLoader;
-        }
+        final FlairImageLoader loader = imageLoader;
+        return loader == null ? initFlairImageLoader(context) : loader;
     }
 
-    public static FlairImageLoader imageLoader;
+    /** Built by initFlairImageLoader on first use. */
+    @Nullable public static FlairImageLoader imageLoader;
 
     public static File getCacheDirectory(Context context) {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)
@@ -736,7 +754,7 @@ public class ImageFlairs {
         DiskCache discCache;
         File dir = getCacheDirectory(context);
         discCacheSize *= 100;
-        int threadPoolSize = 7;
+        int threadPoolSize = Constants.IMAGE_LOADER_THREAD_POOL_SIZE;
         if (discCacheSize > 0) {
             try {
                 dir.mkdir();
@@ -760,7 +778,6 @@ public class ImageFlairs {
                         .threadPoolSize(threadPoolSize)
                         .denyCacheImageMultipleSizesInMemory()
                         .diskCache(discCache)
-                        .threadPoolSize(4)
                         .imageDownloader(new OkHttpImageDownloader(context))
                         .defaultDisplayImageOptions(options)
                         .build();
@@ -769,10 +786,12 @@ public class ImageFlairs {
             FlairImageLoader.getInstance().destroy();
         }
 
-        imageLoader = FlairImageLoader.getInstance();
-        imageLoader.init(config);
-        return imageLoader;
+        final FlairImageLoader loader = FlairImageLoader.getInstance();
+        loader.init(config);
+        imageLoader = loader;
+        return loader;
     }
 
-    public static DisplayImageOptions options;
+    /** Built alongside the loader in initFlairImageLoader, and null until then. */
+    @Nullable public static DisplayImageOptions options;
 }

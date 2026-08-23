@@ -4,30 +4,30 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
-
 import com.google.android.material.tabs.TabLayout;
-
+import java.util.ArrayList;
+import java.util.List;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Fragments.WikiPage;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Views.ToggleSwipeViewPager;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
-
+import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.managers.WikiManager;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 9/17/2015. */
+@NullMarked
 public class Wiki extends BaseActivityAnim implements WikiPage.WikiPageListener {
 
     public static final String EXTRA_SUBREDDIT = "subreddit";
@@ -35,39 +35,46 @@ public class Wiki extends BaseActivityAnim implements WikiPage.WikiPageListener 
 
     private TabLayout tabs;
     private ToggleSwipeViewPager pager;
-    private String subreddit;
+    private String subreddit = "";
+    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
     private WikiPagerAdapter adapter;
+    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
     private List<String> pages;
-    private String page;
+    @Nullable private String page;
+    @SuppressWarnings("NullAway.Init") // assigned in createCustomCss
     private static String globalCustomCss;
+    @SuppressWarnings("NullAway.Init") // assigned in createCustomJavaScript
     private static String globalCustomJavaScript;
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         overrideSwipeFromAnywhere();
 
         super.onCreate(savedInstance);
 
-        subreddit = getIntent().getExtras().getString(EXTRA_SUBREDDIT, "");
+        subreddit = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_SUBREDDIT));
 
         applyColorTheme(subreddit);
         createCustomCss();
         createCustomJavaScript();
         setContentView(R.layout.activity_slidetabs);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupSubredditAppBar(R.id.toolbar, "/r/" + subreddit + " wiki", true, subreddit);
 
         if (getIntent().hasExtra(EXTRA_PAGE)) {
-            page = getIntent().getExtras().getString(EXTRA_PAGE);
+            page = getIntent().getStringExtra(EXTRA_PAGE);
             LogUtil.v("Page is " + page);
         } else {
             page = "index";
         }
-        tabs = (TabLayout) findViewById(R.id.sliding_tabs);
+        tabs = (TabLayout) requireViewById(R.id.sliding_tabs);
         tabs.setTabMode(TabLayout.MODE_SCROLLABLE);
         tabs.setSelectedTabIndicatorColor(new ColorPreferences(Wiki.this).getColor("no sub"));
 
-        pager = (ToggleSwipeViewPager) findViewById(R.id.content_view);
-        findViewById(R.id.header).setBackgroundColor(Palette.getColor(subreddit));
+        pager = (ToggleSwipeViewPager) requireViewById(R.id.content_view);
+        requireViewById(R.id.header).setBackgroundColor(Palette.getColor(subreddit));
 
         new AsyncGetWiki().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -123,6 +130,7 @@ public class Wiki extends BaseActivityAnim implements WikiPage.WikiPageListener 
         return globalCustomJavaScript;
     }
 
+    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
     public WikiManager wiki;
 
     @Override
@@ -130,12 +138,11 @@ public class Wiki extends BaseActivityAnim implements WikiPage.WikiPageListener 
         if (pages.contains(wikiPageTitle)) {
             pager.setCurrentItem(pages.indexOf(wikiPageTitle));
         } else {
-            new AlertDialog.Builder(this)
+            DialogUtil.showWithCardBackground(new AlertDialog.Builder(this)
                     .setTitle(R.string.page_not_found)
                     .setMessage(R.string.page_does_not_exist)
                     .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
-                    .create()
-                    .show();
+                    );
         }
     }
 
@@ -169,7 +176,7 @@ public class Wiki extends BaseActivityAnim implements WikiPage.WikiPageListener 
                             @Override
                             public void run() {
                                 try {
-                                    new AlertDialog.Builder(Wiki.this)
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(Wiki.this)
                                             .setTitle(R.string.wiki_err)
                                             .setMessage(R.string.wiki_err_msg)
                                             .setPositiveButton(
@@ -179,9 +186,9 @@ public class Wiki extends BaseActivityAnim implements WikiPage.WikiPageListener 
                                                         finish();
                                                     })
                                             .setOnDismissListener(dialog -> finish())
-                                            .show();
+                                            );
                                 } catch (Exception ignored) {
-
+                                    // Error dialog on a host that is finishing.
                                 }
                             }
                         });
@@ -199,7 +206,7 @@ public class Wiki extends BaseActivityAnim implements WikiPage.WikiPageListener 
                 }
             } else {
                 try {
-                    new AlertDialog.Builder(Wiki.this)
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(Wiki.this)
                             .setTitle(R.string.wiki_err)
                             .setMessage(R.string.wiki_err_msg)
                             .setPositiveButton(
@@ -209,9 +216,9 @@ public class Wiki extends BaseActivityAnim implements WikiPage.WikiPageListener 
                                         finish();
                                     })
                             .setOnDismissListener(dialog -> finish())
-                            .show();
+                            );
                 } catch (Exception e) {
-
+                    // Error dialog on a host that is finishing.
                 }
             }
         }

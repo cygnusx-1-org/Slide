@@ -9,9 +9,13 @@ import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.TypedValue;
+import androidx.annotation.Nullable;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.WeakHashMap;
 import me.edgan.redditslide.Adapters.CommentAdapterHelper;
 import me.edgan.redditslide.Toolbox.ToolboxUI;
 import me.edgan.redditslide.Views.RoundedBackgroundSpan;
@@ -19,29 +23,51 @@ import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.MiscUtil;
+import me.edgan.redditslide.util.PostRecovery;
 import me.edgan.redditslide.util.TimeUtils;
-
 import net.dean.jraw.models.DistinguishedStatus;
+import net.dean.jraw.models.Flair;
 import net.dean.jraw.models.Submission;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.WeakHashMap;
 
 /** Created by carlo_000 on 4/22/2016. */
 public class SubmissionCache {
-    private static WeakHashMap<String, SpannableStringBuilder> titles;
-    private static WeakHashMap<String, SpannableStringBuilder> info;
-    private static WeakHashMap<String, SpannableStringBuilder> crosspost;
+    private static WeakHashMap<String, SpannableStringBuilder> titles = new WeakHashMap<>();
+    private static WeakHashMap<String, SpannableStringBuilder> info = new WeakHashMap<>();
+    private static WeakHashMap<String, SpannableStringBuilder> crosspost = new WeakHashMap<>();
+
+    /** fullname -> {source selftext_html, rendered first-line preview}. See getSelftextPreview. */
+    private static WeakHashMap<String, String[]> selftextPreviews = new WeakHashMap<>();
+
+    /**
+     * The first line of a self post's body, unescaped for the card's preview TextView. Cached
+     * because building it runs a full Html.fromHtml parse, and the feed did that on every bind of
+     * every self post. Keyed on the source html too, so an edited post re-renders on its own.
+     */
+    public static String getSelftextPreview(Submission submission) {
+        final String source = submission.getDataNode().path("selftext_html").asText("");
+        final String[] cached = selftextPreviews.get(submission.getFullName());
+        if (cached != null && cached[0].equals(source)) {
+            return cached[1];
+        }
+
+        final String firstLine =
+                source.substring(0, source.contains("\n") ? source.indexOf("\n") : source.length());
+        final String preview =
+                CompatUtil.fromHtml(firstLine)
+                        .toString()
+                        .replace("<sup>", "<sup><small>")
+                        .replace("</sup>", "</small></sup>");
+        selftextPreviews.put(submission.getFullName(), new String[] {source, preview});
+        return preview;
+    }
 
     public static void cacheSubmissions(
-            List<Submission> submissions, Context mContext, String baseSub) {
+            List<Submission> submissions, Context mContext, @Nullable String baseSub) {
         cacheInfo(submissions, mContext, baseSub);
     }
 
-    public static SpannableStringBuilder getCrosspostLine(Submission s, Context mContext) {
-        if (crosspost == null) crosspost = new WeakHashMap<>();
+    /** Null when the submission is not a crosspost. */
+    @Nullable public static SpannableStringBuilder getCrosspostLine(Submission s, Context mContext) {
         if (crosspost.containsKey(s.getFullName())) {
             return crosspost.get(s.getFullName());
         } else {
@@ -49,19 +75,21 @@ public class SubmissionCache {
         }
     }
 
-    private static void cacheInfo(List<Submission> submissions, Context mContext, String baseSub) {
-        if (titles == null) titles = new WeakHashMap<>();
-        if (info == null) info = new WeakHashMap<>();
-        if (crosspost == null) crosspost = new WeakHashMap<>();
+    private static void cacheInfo(
+            List<Submission> submissions, Context mContext, @Nullable String baseSub) {
 
         for (Submission submission : submissions) {
+            // Re-apply any recovered link before building the spannables so the cached info line
+            // (domain, content-type) reflects the recovery rather than the removed-state node.
+            PostRecovery.reapplyRecoveredLink(submission);
             titles.put(submission.getFullName(), getTitleSpannable(submission, mContext));
             info.put(submission.getFullName(), getInfoSpannable(submission, mContext, baseSub));
             crosspost.put(submission.getFullName(), getCrosspostLine(submission, mContext));
         }
     }
 
-    public static void updateInfoSpannable(Submission changed, Context mContext, String baseSub) {
+    public static void updateInfoSpannable(
+            Submission changed, Context mContext, @Nullable String baseSub) {
         info.put(changed.getFullName(), getInfoSpannable(changed, mContext, baseSub));
     }
 
@@ -69,25 +97,41 @@ public class SubmissionCache {
         titles.put(s.getFullName(), getTitleSpannable(s, flair, c));
     }
 
+    /** Re-render the cached title (e.g. after recovering the original from the archive). */
+    public static void updateTitle(Submission s, Context c) {
+        titles.put(s.getFullName(), getTitleSpannable(s, c));
+    }
+
     public static SpannableStringBuilder getTitleLine(Submission s, Context mContext) {
-        if (titles == null) titles = new WeakHashMap<>();
         if (titles.containsKey(s.getFullName())) {
-            return titles.get(s.getFullName());
+            SpannableStringBuilder title = titles.get(s.getFullName());
+            if (title != null) {
+                return title;
+            }
         } else {
             return getTitleSpannable(s, mContext);
         }
+        SpannableStringBuilder title = getTitleSpannable(s, mContext);
+        titles.put(s.getFullName(), title);
+        return title;
     }
 
     public static SpannableStringBuilder getInfoLine(
-            Submission s, Context mContext, String baseSub) {
-        if (info == null) info = new WeakHashMap<>();
+            Submission s, Context mContext, @Nullable String baseSub) {
         if (info.containsKey(s.getFullName())) {
-            return info.get(s.getFullName());
+            SpannableStringBuilder infoLine = info.get(s.getFullName());
+            if (infoLine != null) {
+                return infoLine;
+            }
         } else {
             return getInfoSpannable(s, mContext, baseSub);
         }
+        SpannableStringBuilder infoLine = getInfoSpannable(s, mContext, baseSub);
+        info.put(s.getFullName(), infoLine);
+        return infoLine;
     }
 
+    @Nullable
     private static SpannableStringBuilder getCrosspostSpannable(Submission s, Context mContext) {
         String spacer = mContext.getString(R.string.submission_properties_seperator);
         SpannableStringBuilder titleString = new SpannableStringBuilder("Crosspost" + spacer);
@@ -100,13 +144,11 @@ public class SubmissionCache {
         json = json.get("crosspost_parent_list").get(0);
 
         if (json.has("subreddit")) {
-            String subname = json.get("subreddit").asText().toLowerCase(Locale.ENGLISH);
+            String subname = json.path("subreddit").asText().toLowerCase(Locale.ENGLISH);
             SpannableStringBuilder subreddit = new SpannableStringBuilder("/r/" + subname + spacer);
 
-            if ((SettingValues.colorSubName
-                            && Palette.getColor(subname) != Palette.getDefaultColor())
-                    || (SettingValues.colorSubName
-                            && Palette.getColor(subname) != Palette.getDefaultColor())) {
+            if (SettingValues.colorSubName
+                    && Palette.getColor(subname) != Palette.getDefaultColor()) {
                 if (!SettingValues.colorEverywhere) {
                     subreddit.setSpan(
                             new ForegroundColorSpan(Palette.getColor(subname)),
@@ -125,9 +167,9 @@ public class SubmissionCache {
         }
 
         SpannableStringBuilder author =
-                new SpannableStringBuilder(json.get("author").asText() + " ");
+                new SpannableStringBuilder(json.path("author").asText() + " ");
 
-        int authorcolor = Palette.getFontColorUser(json.get("author").asText());
+        int authorcolor = Palette.getFontColorUser(json.path("author").asText());
 
         if (authorcolor != 0) {
             author.setSpan(
@@ -138,10 +180,10 @@ public class SubmissionCache {
         }
         titleString.append(author);
 
-        if (UserTags.isUserTagged(json.get("author").asText())) {
+        if (UserTags.isUserTagged(json.path("author").asText())) {
             SpannableStringBuilder pinned =
                     new SpannableStringBuilder(
-                            " " + UserTags.getUserTag(json.get("author").asText()) + " ");
+                            " " + UserTags.getUserTag(json.path("author").asText()) + " ");
             pinned.setSpan(
                     new RoundedBackgroundSpan(
                             mContext, android.R.color.white, R.color.md_blue_500, false),
@@ -151,7 +193,7 @@ public class SubmissionCache {
             titleString.append(pinned);
         }
 
-        if (UserSubscriptions.friends.contains(json.get("author").asText())) {
+        if (SavedUsers.isFriend(json.path("author").asText())) {
             SpannableStringBuilder pinned =
                     new SpannableStringBuilder(
                             " " + mContext.getString(R.string.profile_friend) + " ");
@@ -167,7 +209,7 @@ public class SubmissionCache {
     }
 
     private static SpannableStringBuilder getInfoSpannable(
-            Submission submission, Context mContext, String baseSub) {
+            Submission submission, Context mContext, @Nullable String baseSub) {
         String spacer = mContext.getString(R.string.submission_properties_seperator);
         SpannableStringBuilder titleString = new SpannableStringBuilder();
 
@@ -227,14 +269,16 @@ public class SubmissionCache {
 
         titleString.append(spacer);
 
-        SpannableStringBuilder author =
-                new SpannableStringBuilder(" " + submission.getAuthor() + " ");
-        int authorcolor = Palette.getFontColorUser(submission.getAuthor());
+        // Prefer an author restored by "Recover post": Reddit reports "[deleted]" once the poster
+        // deletes their account, and everything below (badge, colour, tag, friend, Toolbox note)
+        // should key off the real name.
+        final String authorName = PostRecovery.getDisplayAuthor(submission);
+        SpannableStringBuilder author = new SpannableStringBuilder(" " + authorName + " ");
+        int authorcolor = Palette.getFontColorUser(authorName);
 
-        if (submission.getAuthor() != null) {
+        if (authorName != null) {
             if (Authentication.name != null
-                    && submission
-                            .getAuthor()
+                    && authorName
                             .toLowerCase(Locale.ENGLISH)
                             .equals(Authentication.name.toLowerCase(Locale.ENGLISH))) {
                 author.setSpan(
@@ -272,15 +316,50 @@ public class SubmissionCache {
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
             titleString.append(author);
+
+            // The poster's author flair, next to their name. Reddit clears it when the account is
+            // deleted, so "Recover post" restores it from the archive; this also surfaces it for any
+            // ordinary post whose author carries one. JRAW's getAuthorFlair() dereferences both
+            // author_flair_* fields, so guard on their presence — a node without them (e.g. a
+            // crosspost parent) would otherwise NPE on the feed's hot path.
+            JsonNode authorNode = submission.getDataNode();
+            Flair authorFlair =
+                    (authorNode != null
+                                    && authorNode.has("author_flair_text")
+                                    && authorNode.has("author_flair_css_class"))
+                            ? submission.getAuthorFlair()
+                            : null;
+            if (authorFlair != null
+                    && authorFlair.getText() != null
+                    && !authorFlair.getText().isEmpty()) {
+                TypedValue typedValue = new TypedValue();
+                Resources.Theme theme = mContext.getTheme();
+                theme.resolveAttribute(R.attr.activity_background, typedValue, false);
+                int flairBg = typedValue.data;
+                theme.resolveAttribute(R.attr.fontColor, typedValue, false);
+                int flairFont = typedValue.data;
+                SpannableStringBuilder authorFlairChip =
+                        new SpannableStringBuilder(
+                                " " + CompatUtil.fromHtml(authorFlair.getText()) + " ");
+                // Full size (half=false) to match the other byline chips (self/OP/mod, user tag,
+                // friend) and the comment author-flair chip; the title line uses half=true because it
+                // sits beside a large title, but the info line does not.
+                authorFlairChip.setSpan(
+                        new RoundedBackgroundSpan(flairFont, flairBg, false, mContext),
+                        0,
+                        authorFlairChip.length(),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                titleString.append(" ");
+                titleString.append(authorFlairChip);
+            }
         }
 
         /*todo maybe?  titleString.append(((comment.hasBeenEdited() && comment.getEditDate() != null) ? " *" + TimeUtils.getTimeAgo(comment.getEditDate().getTime(), mContext) : ""));
         titleString.append("  ");*/
 
-        if (UserTags.isUserTagged(submission.getAuthor())) {
+        if (UserTags.isUserTagged(authorName)) {
             SpannableStringBuilder pinned =
-                    new SpannableStringBuilder(
-                            " " + UserTags.getUserTag(submission.getAuthor()) + " ");
+                    new SpannableStringBuilder(" " + UserTags.getUserTag(authorName) + " ");
             pinned.setSpan(
                     new RoundedBackgroundSpan(
                             mContext, android.R.color.white, R.color.md_blue_500, false),
@@ -291,7 +370,7 @@ public class SubmissionCache {
             titleString.append(pinned);
         }
 
-        if (UserSubscriptions.friends.contains(submission.getAuthor())) {
+        if (SavedUsers.isFriend(authorName)) {
             SpannableStringBuilder pinned =
                     new SpannableStringBuilder(
                             " " + mContext.getString(R.string.profile_friend) + " ");
@@ -306,7 +385,7 @@ public class SubmissionCache {
         }
 
         ToolboxUI.appendToolboxNote(
-                mContext, titleString, submission.getSubredditName(), submission.getAuthor());
+                mContext, titleString, submission.getSubredditName(), authorName);
 
         /* too big, might add later todo
         if (submission.getAuthorFlair() != null && submission.getAuthorFlair().getText() != null && !submission.getAuthorFlair().getText().isEmpty()) {
@@ -438,7 +517,10 @@ public class SubmissionCache {
                                             mContext.getResources()
                                                     .getQuantityString(
                                                             R.plurals.comments,
-                                                            submission.getCommentCount())));
+                                                            submission.getCommentCount() == null
+                                                                    ? 0
+                                                                    : submission
+                                                                            .getCommentCount())));
             s.setSpan(
                     new StyleSpan(Typeface.BOLD), 0, s.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
@@ -454,7 +536,7 @@ public class SubmissionCache {
             titleString.append(
                     CommentAdapterHelper.createRemovedLine(
                             (submission.getBannedBy() == null)
-                                    ? Authentication.name
+                                    ? Authentication.nameOrEmpty()
                                     : submission.getBannedBy(),
                             mContext));
         } else if (approved.contains(submission.getFullName())
@@ -463,7 +545,7 @@ public class SubmissionCache {
             titleString.append(
                     CommentAdapterHelper.createApprovedLine(
                             (submission.getApprovedBy() == null)
-                                    ? Authentication.name
+                                    ? Authentication.nameOrEmpty()
                                     : submission.getApprovedBy(),
                             mContext));
         }
@@ -472,15 +554,19 @@ public class SubmissionCache {
     }
 
     private static SpannableStringBuilder getTitleSpannable(
-            Submission submission, String flairOverride, Context mContext) {
+            Submission submission, @Nullable String flairOverride, Context mContext) {
         SpannableStringBuilder titleString = new SpannableStringBuilder();
-        titleString.append(CompatUtil.fromHtml(submission.getTitle()));
+        String recoveredTitle = PostRecovery.getRecoveredTitle(submission.getFullName());
+        titleString.append(
+                CompatUtil.fromHtml(
+                        recoveredTitle != null ? recoveredTitle : submission.getTitle()));
 
         if (submission.isStickied()) {
             SpannableStringBuilder pinned =
                     new SpannableStringBuilder(
                             "\u00A0"
-                                    + mContext.getString(R.string.submission_stickied).toUpperCase()
+                                    + mContext.getString(R.string.submission_stickied)
+                                            .toUpperCase(Locale.getDefault())
                                     + "\u00A0");
             pinned.setSpan(
                     new RoundedBackgroundSpan(
@@ -530,7 +616,7 @@ public class SubmissionCache {
             titleString.append(" ");
             titleString.append(pinned);
         }
-        if (submission.getDataNode().get("spoiler").asBoolean()) {
+        if (submission.getDataNode().path("spoiler").asBoolean()) {
             SpannableStringBuilder pinned = new SpannableStringBuilder("\u00A0SPOILER\u00A0");
             pinned.setSpan(
                     new RoundedBackgroundSpan(
@@ -541,7 +627,7 @@ public class SubmissionCache {
             titleString.append(" ");
             titleString.append(pinned);
         }
-        if (submission.getDataNode().get("is_original_content").asBoolean()) {
+        if (submission.getDataNode().path("is_original_content").asBoolean()) {
             SpannableStringBuilder pinned = new SpannableStringBuilder("\u00A0OC\u00A0");
             pinned.setSpan(
                     new RoundedBackgroundSpan(
@@ -553,8 +639,8 @@ public class SubmissionCache {
             titleString.append(pinned);
         }
 
-        if (submission.getSubmissionFlair().getText() != null
-                        && !submission.getSubmissionFlair().getText().isEmpty()
+        if ((submission.getSubmissionFlair().getText() != null
+                        && !submission.getSubmissionFlair().getText().isEmpty())
                 || flairOverride != null
                 || (submission.getSubmissionFlair().getCssClass() != null)) {
             TypedValue typedValue = new TypedValue();

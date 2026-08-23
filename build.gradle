@@ -3,14 +3,18 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://jitpack.io" }
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-        maven { url "https://repository.liferay.com/nexus/content/repositories/public/" }
+        maven { url = "https://jitpack.io" }
+        maven { url = "https://oss.sonatype.org/content/repositories/snapshots" }
+        maven { url = "https://repository.liferay.com/nexus/content/repositories/public/" }
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.7.3'
-        classpath 'com.google.gms:google-services:4.4.2'
+        classpath 'com.android.tools.build:gradle:9.3.0'
+        // AGP's built-in Kotlin support ('com.android.built-in-kotlin', applied in app/build.gradle).
+        // AGP does not depend on it, so the plugin has to be put on the buildscript classpath by
+        // hand; it drags in the matching Kotlin 2.2.10 stdlib and compiler, which is why there is no
+        // separate kotlin-android plugin version to keep in step with AGP.
+        classpath 'com.android.tools.build:gradle-kotlin:9.3.0'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -21,9 +25,9 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://jitpack.io" }
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-        maven { url "https://repository.liferay.com/nexus/content/repositories/public/" }
+        maven { url = "https://jitpack.io" }
+        maven { url = "https://oss.sonatype.org/content/repositories/snapshots" }
+        maven { url = "https://repository.liferay.com/nexus/content/repositories/public/" }
     }
 }
 
@@ -32,13 +36,13 @@ subprojects {
         if (project.hasProperty('android')) {
             project.android {
                 if (namespace == null) {
-                    namespace project.group
+                    namespace = project.group
                 }
                 // Avoid adding android.defaults.buildfeatures.buildconfig=true
                 // to your gradle.properties file because that property is deprecated in AGP 8.0 and is scheduled to be removed in AGP 9.0.
                 buildFeatures {
                     if (buildConfig == null) {
-                        buildConfig true
+                        buildConfig = true
                     }
                 }
             }

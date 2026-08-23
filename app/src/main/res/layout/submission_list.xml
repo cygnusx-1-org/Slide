@@ -2,6 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:cardview="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -41,8 +42,8 @@
                 android:layout_marginLeft="18dp"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
-                android:src="@drawable/chameleon"
-                app:riv_corner_radius="2dp" />
+                tools:src="@drawable/chameleon"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Slide.Corner2dp" />
 
             <ImageView
                 android:id="@+id/secondMenu"
@@ -53,7 +54,7 @@
                 android:layout_alignParentRight="true"
                 android:padding="8dp"
                 android:tag="tint"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:layout_marginLeft="-4dp"
                 app:srcCompat="@drawable/ic_keyboard_arrow_down" />
 
@@ -111,12 +112,11 @@
                 android:labelFor="@+id/score"
                 android:layout_width="15dp"
                 android:layout_height="36dp"
-                android:layout_below="@+id/innerrelative"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="4dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/img_score"
                 app:srcCompat="@drawable/ic_arrow_upward" />
 
@@ -124,7 +124,6 @@
                 android:id="@+id/score"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
-                android:layout_below="@+id/innerrelative"
                 android:textColor="?attr/tintColor"
                 android:layout_gravity="center_vertical"
                 android:layout_toRightOf="@+id/scoreimg"
@@ -138,13 +137,12 @@
                 android:labelFor="@+id/comments"
                 android:layout_width="15dp"
                 android:layout_height="36dp"
-                android:layout_below="@+id/innerrelative"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="4dp"
                 android:layout_toRightOf="@+id/score"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/img_comments"
                 app:srcCompat="@drawable/ic_forum" />
 
@@ -164,11 +162,10 @@
                 style="@style/Ripple.List"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_below="@+id/innerrelative"
                 android:layout_toLeftOf="@+id/save"
                 android:padding="8dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/btn_edit"
                 app:srcCompat="@drawable/ic_edit" />
             <ImageView
@@ -176,11 +173,10 @@
                 style="@style/Ripple.List"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_below="@+id/innerrelative"
                 android:layout_toLeftOf="@+id/hide"
                 android:padding="8dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 app:srcCompat="@drawable/ic_star" />
 
             <ImageView
@@ -188,11 +184,10 @@
                 style="@style/Ripple.List"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_below="@+id/innerrelative"
                 android:layout_toLeftOf="@+id/upvote"
                 android:padding="8dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/btn_mod"
                 app:srcCompat="@drawable/ic_verified_user" />
 
@@ -201,11 +196,10 @@
                 style="@style/Ripple.List"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_below="@+id/innerrelative"
                 android:layout_toLeftOf="@+id/mod"
                 android:padding="8dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/btn_hide"
                 app:srcCompat="@drawable/ic_visibility_off" />
 
@@ -214,11 +208,10 @@
                 style="@style/Ripple.List"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_below="@+id/innerrelative"
                 android:layout_toLeftOf="@+id/downvote"
                 android:padding="8dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/btn_upvote"
                 app:srcCompat="@drawable/ic_arrow_upward" />
 
@@ -228,12 +221,11 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:contentDescription="@string/btn_downvote"
-                android:layout_below="@+id/innerrelative"
 
                 android:layout_toLeftOf="@+id/menu"
                 android:padding="8dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 app:srcCompat="@drawable/ic_arrow_downward" />
 
             <ImageView
@@ -242,10 +234,9 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_alignParentRight="true"
-                android:layout_below="@+id/innerrelative"
                 android:padding="8dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/btn_menu"
                 app:srcCompat="@drawable/ic_more_vert" />
         </me.edgan.redditslide.Views.RevealRelativeLayout>

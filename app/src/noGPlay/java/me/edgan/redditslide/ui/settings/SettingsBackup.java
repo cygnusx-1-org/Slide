@@ -7,31 +7,26 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.util.Log;
-
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.documentfile.provider.DocumentFile;
-
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.snackbar.Snackbar;
 import com.jakewharton.processphoenix.ProcessPhoenix;
-
-import me.edgan.redditslide.Activities.BaseActivityAnim;
-import me.edgan.redditslide.R;
-import me.edgan.redditslide.util.LayoutUtils;
-import me.edgan.redditslide.util.StorageUtil;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import me.edgan.redditslide.Activities.BaseActivityAnim;
+import me.edgan.redditslide.R;
+import me.edgan.redditslide.util.BackupArchive;
+import me.edgan.redditslide.util.BackupPasswordPrompt;
+import me.edgan.redditslide.util.DialogUtil;
+import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.MaterialProgressDialog;
+import me.edgan.redditslide.util.MiscUtil;
+import me.edgan.redditslide.util.StorageUtil;
 
 /**
  * Handles local (SAF-based) backup and restore of app settings, and stripped of all Google Drive
@@ -41,25 +36,44 @@ public class SettingsBackup extends BaseActivityAnim {
 
     private static final String TAG = "SettingsBackup";
 
-    // Request code for the SAF-based "open document" action
+    // Request codes for SAF-based actions
     private static final int RC_OPEN_DOCUMENT = 102;
+    private static final int RC_CREATE_DOCUMENT = 103;
+
+    // Backups are encrypted zips; see BackupArchive.
+    private static final String BACKUP_MIME_TYPE = "application/zip";
 
     // Progress dialog
-    private MaterialDialog progress;
+    private MaterialProgressDialog progress;
 
-    // We’ll store the final URI of the newly created local backup file so we can offer to "View"
-    // it.
+    // We’ll store the final URI of the newly created local backup file so we can offer to "View" it.
     private Uri localBackupFileUri = null;
+
+    // Password for a local backup, held only while the SAF file picker is up. Wiped as soon as the
+    // picker returns, and by onDestroy() if it never does.
+    private @Nullable char[] mPendingFileBackupPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyColorTheme();
         setContentView(R.layout.activity_settings_sync);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, R.string.settings_title_backup, true, true);
 
         // Set up the local backup/restore UI
         setupUI();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mPendingFileBackupPassword != null) {
+            Arrays.fill(mPendingFileBackupPassword, '\0');
+            mPendingFileBackupPassword = null;
+        }
+        super.onDestroy();
     }
 
     /** Initialize button click listeners for local backup/restore only. */
@@ -71,32 +85,72 @@ public class SettingsBackup extends BaseActivityAnim {
         findViewById(R.id.restorefile).setOnClickListener(v -> openRestoreFile());
     }
 
-    /** Ask user for confirmation, then perform local backup to a user-chosen directory via SAF. */
+    /** Ask user for confirmation, then for the password, then where to put the backup. */
     private void showBackupToDirDialog() {
-        new AlertDialog.Builder(this)
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(this)
                 .setTitle(R.string.backup_question)
-                .setPositiveButton(R.string.btn_ok, (dialog, which) -> backupToDir())
+                .setPositiveButton(R.string.btn_ok, (dialog, which) -> askPasswordThenPickFile())
                 .setNeutralButton(R.string.btn_cancel, null)
                 .setCancelable(false)
-                .show();
+                );
     }
 
-    /** Performs the actual local backup using the SAF-chosen directory from StorageUtil. */
-    private void backupToDir() {
-        Uri treeUri = StorageUtil.getStorageUri(this);
+    /**
+     * The password is asked for before the file picker, not after. SAF creates the document as
+     * soon as the user names it, so a prompt that came afterwards would leave an empty file behind
+     * every time it was dismissed.
+     */
+    private void askPasswordThenPickFile() {
+        BackupPasswordPrompt.forNewBackup(
+                this,
+                password -> {
+                    mPendingFileBackupPassword = password;
+                    launchCreateBackupFile();
+                });
+    }
 
-        if (treeUri == null) {
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.err_general)
-                    .setMessage(R.string.set_storage_location)
-                    .setPositiveButton(R.string.btn_ok, (dialog, which) -> {})
-                    .setCancelable(false)
-                    .show();
-            return;
+    /** Launch SAF ACTION_CREATE_DOCUMENT to let the user choose where to save the backup. */
+    private void launchCreateBackupFile() {
+        String timeStamp = new SimpleDateFormat("-yyyy-MM-dd-HH-mm-ss").format(new Date());
+        String fileName = "Slide" + timeStamp + ".zip";
+
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType(BACKUP_MIME_TYPE);
+        intent.putExtra(Intent.EXTRA_TITLE, fileName);
+
+        // If a storage location is configured, use it as the initial directory
+        Uri treeUri = StorageUtil.getStorageUri(this);
+        if (treeUri != null) {
+            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, treeUri);
         }
 
+        startActivityForResult(intent, RC_CREATE_DOCUMENT);
+    }
+
+    /**
+     * Removes a document SAF has created that no backup was written into: a write that failed part
+     * way, or a picker result that came back with the password gone. Without this the user is left
+     * with an empty or truncated file sitting where a real backup should be.
+     */
+    private void discardAbandonedBackupFile(Uri fileUri) {
+        // Off the main thread: the document can belong to a cloud provider, where deleting it is a
+        // network round trip.
+        AsyncTask.execute(
+                () -> {
+                    try {
+                        DocumentsContract.deleteDocument(getContentResolver(), fileUri);
+                        Log.d(TAG, "Removed the abandoned backup file.");
+                    } catch (Exception e) {
+                        Log.w(TAG, "Could not remove the abandoned backup file", e);
+                    }
+                });
+    }
+
+    /** Performs the actual local backup writing to the user-chosen file URI. */
+    private void writeBackupToFile(Uri fileUri, char[] password) {
         progress =
-                new MaterialDialog.Builder(SettingsBackup.this)
+                new MaterialProgressDialog.Builder(SettingsBackup.this)
                         .title(R.string.backup_backing_up)
                         .content(R.string.misc_please_wait)
                         .cancelable(false)
@@ -104,91 +158,26 @@ public class SettingsBackup extends BaseActivityAnim {
                         .build();
         progress.show();
 
+        localBackupFileUri = fileUri;
+
         new AsyncTask<Void, Void, Boolean>() {
             private String errorMessage = null;
 
             @Override
             protected Boolean doInBackground(Void... params) {
-                try {
-                    DocumentFile parentDir = DocumentFile.fromTreeUri(SettingsBackup.this, treeUri);
-                    if (parentDir == null || !parentDir.exists() || !parentDir.isDirectory()) {
-                        errorMessage = "Invalid backup directory.";
-                        return false;
-                    }
-
-                    // Generate a backup filename
-                    String timeStamp =
-                            new SimpleDateFormat("-yyyy-MM-dd-HH-mm-ss").format(new Date());
-                    String fileName = "Slide" + timeStamp + ".txt";
-
-                    // Create the backup file in the chosen directory
-                    DocumentFile backupFile = parentDir.createFile("text/plain", fileName);
-                    if (backupFile == null) {
-                        errorMessage = "Failed to create backup file via SAF.";
-                        return false;
-                    }
-
-                    localBackupFileUri = backupFile.getUri();
-
-                    // Start writing
-                    OutputStream out = getContentResolver().openOutputStream(localBackupFileUri);
+                try (OutputStream out = getContentResolver().openOutputStream(fileUri)) {
                     if (out == null) {
-                        errorMessage = "OutputStream was null for: " + localBackupFileUri;
+                        errorMessage = "OutputStream was null for: " + fileUri;
                         return false;
                     }
-
-                    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(out));
-                    // Start marker
-                    bw.write("Slide_backupEND>");
-
-                    File prefsDir = new File(getApplicationInfo().dataDir, "shared_prefs");
-                    if (!prefsDir.exists() || !prefsDir.isDirectory()) {
-                        Log.w(TAG, "No shared_prefs directory found for local backup.");
-                        bw.close();
-                        return true; // It's "valid" but empty
-                    }
-
-                    String[] list = prefsDir.list();
-                    if (list == null) {
-                        Log.w(TAG, "No preference files found to backup locally.");
-                        bw.close();
-                        return true;
-                    }
-
-                    // Copy the content of each eligible pref file into a single big text file
-                    for (String s : list) {
-                        if (!s.contains("cache")
-                                && !s.contains("ion-cookies")
-                                && !s.contains("albums")
-                                && !s.contains("STACKTRACE")
-                                && !s.contains("com.google")) {
-
-                            File fileToBackup = new File(prefsDir, s);
-                            if (fileToBackup.exists()) {
-                                BufferedReader br =
-                                        new BufferedReader(new FileReader(fileToBackup));
-                                bw.write("<START" + s + ">");
-                                char[] buf = new char[8192];
-                                int read;
-                                while ((read = br.read(buf)) != -1) {
-                                    bw.write(buf, 0, read);
-                                }
-                                bw.write("END>");
-                                br.close();
-                                Log.d(TAG, "Backed up local file: " + s);
-                            }
-                        } else {
-                            Log.d(TAG, "Skipping local file: " + s);
-                        }
-                    }
-
-                    bw.close();
+                    BackupArchive.write(SettingsBackup.this, password, out);
                     return true;
-
                 } catch (IOException e) {
                     Log.e(TAG, "Error creating or writing backup file", e);
                     errorMessage = e.getMessage();
                     return false;
+                } finally {
+                    Arrays.fill(password, '\0');
                 }
             }
 
@@ -199,21 +188,30 @@ public class SettingsBackup extends BaseActivityAnim {
                 }
                 if (!success) {
                     Log.w(TAG, "Local backup failed: " + errorMessage);
-                    showErrorDialog(R.string.err_general, R.string.set_storage_location);
+                    // SAF created the document before the write began, so a failed write leaves a
+                    // truncated file behind that still looks like a backup. Drop it, as a
+                    // cancelled prompt does.
+                    discardAbandonedBackupFile(fileUri);
+                }
+                if (isFinishing() || isDestroyed()) {
+                    return;
+                }
+                if (!success) {
+                    showErrorDialog(R.string.err_general, R.string.err_general);
                     return;
                 }
 
                 // Show success dialog with a "View" button
-                new AlertDialog.Builder(SettingsBackup.this)
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(SettingsBackup.this)
                         .setTitle(R.string.backup_complete)
-                        .setMessage(R.string.backup_saved_downloads) // or a generic success message
+                        .setMessage(R.string.backup_saved_downloads)
                         .setPositiveButton(
                                 R.string.btn_view,
                                 (dialog, which) -> {
                                     if (localBackupFileUri != null) {
                                         // Attempt to open with a viewer
                                         Intent intent = new Intent(Intent.ACTION_VIEW);
-                                        intent.setDataAndType(localBackupFileUri, "text/plain");
+                                        intent.setDataAndType(localBackupFileUri, BACKUP_MIME_TYPE);
                                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
                                         if (intent.resolveActivityInfo(getPackageManager(), 0)
@@ -238,8 +236,7 @@ public class SettingsBackup extends BaseActivityAnim {
                                     }
                                 })
                         .setNegativeButton(R.string.btn_close, null)
-                        .setCancelable(false)
-                        .show();
+                        .setCancelable(false));
             }
         }.execute();
     }
@@ -271,68 +268,145 @@ public class SettingsBackup extends BaseActivityAnim {
 
         if (requestCode == RC_OPEN_DOCUMENT) {
             handleFilePickerResult(resultCode, data);
+        } else if (requestCode == RC_CREATE_DOCUMENT) {
+            handleCreateDocumentResult(resultCode, data);
+        }
+    }
+
+    /** SAF create document result for local backup. */
+    private void handleCreateDocumentResult(int resultCode, Intent data) {
+        char[] password = mPendingFileBackupPassword;
+        mPendingFileBackupPassword = null;
+        if (password == null) {
+            Log.w(TAG, "Document created with no backup password pending.");
+            if (resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
+                // The screen was rebuilt while the picker was up -- the process being killed takes
+                // the password with it. SAF has already created the document by now, so remove it
+                // rather than leave an empty file where a backup should be, and say so instead of
+                // returning to the screen as though nothing had been asked for.
+                discardAbandonedBackupFile(data.getData());
+                showErrorDialog(R.string.err_general, R.string.backup_failed_msg);
+            }
+            return;
+        }
+
+        if (resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
+            Uri fileUri = data.getData();
+            Log.d(TAG, "Created backup file URI: " + fileUri);
+            writeBackupToFile(fileUri, password);
+        } else {
+            Log.w(TAG, "Backup file creation canceled or failed.");
+            Arrays.fill(password, '\0');
         }
     }
 
     /** SAF file picker result for local restore. */
     private void handleFilePickerResult(int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK && data != null) {
+        if (resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
             Uri fileUri = data.getData();
             Log.d(TAG, "Selected local backup file URI: " + fileUri);
-
-            // Start async restore
-            progress =
-                    new MaterialDialog.Builder(this)
-                            .title(R.string.backup_restoring)
-                            .content(R.string.misc_please_wait)
-                            .cancelable(false)
-                            .progress(true, 1)
-                            .build();
-            progress.show();
-
-            new RestoreFromFileAsyncTask(fileUri).execute();
+            new ReadBackupFileAsyncTask(fileUri).execute();
         } else {
             Log.w(TAG, "No file chosen or result not OK.");
             showErrorDialog(R.string.err_file_not_found, R.string.err_file_not_found_msg);
         }
     }
 
-    /** Async task to restore from a local SAF-chosen file (single backup file). */
-    private class RestoreFromFileAsyncTask extends AsyncTask<Void, Void, Boolean> {
+    /**
+     * Reads the chosen file into memory so its format can be told apart before anything is asked of
+     * the user: an encrypted zip needs a password, a legacy plain-text backup does not.
+     */
+    private class ReadBackupFileAsyncTask extends AsyncTask<Void, Void, byte[]> {
         private final Uri fileUri;
 
-        RestoreFromFileAsyncTask(Uri fileUri) {
+        ReadBackupFileAsyncTask(Uri fileUri) {
             this.fileUri = fileUri;
         }
 
         @Override
-        protected Boolean doInBackground(Void... voids) {
-            Log.d(TAG, "RestoreFromFileAsyncTask started for URI: " + fileUri);
-            StringBuilder fw = new StringBuilder();
-            try (InputStream is = getContentResolver().openInputStream(fileUri);
-                    BufferedReader reader =
-                            (is == null) ? null : new BufferedReader(new InputStreamReader(is))) {
-
-                if (reader == null) {
+        protected byte[] doInBackground(Void... voids) {
+            Log.d(TAG, "Reading backup file: " + fileUri);
+            try (InputStream is = getContentResolver().openInputStream(fileUri)) {
+                if (is == null) {
                     Log.e(TAG, "Could not open InputStream for fileUri: " + fileUri);
-                    return false;
+                    return null;
                 }
-
-                char[] buf = new char[8192];
-                int read;
-                while ((read = reader.read(buf)) != -1) {
-                    fw.append(buf, 0, read);
-                }
-
-                String readContent = fw.toString();
-                Log.d(TAG, "Read " + readContent.length() + " characters from backup file.");
-
-                // Use the same parse logic
-                return restoreSharedPrefsFromString(readContent);
-
+                return BackupArchive.readFully(is);
             } catch (Exception e) {
-                Log.e(TAG, "Exception while restoring from fileUri: " + fileUri, e);
+                Log.e(TAG, "Exception while reading fileUri: " + fileUri, e);
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(byte[] backupData) {
+            if (isFinishing() || isDestroyed()) {
+                return;
+            }
+            if (backupData == null || backupData.length == 0) {
+                showErrorDialog(R.string.err_not_valid_backup, R.string.err_not_valid_backup_msg);
+                return;
+            }
+            Log.d(TAG, "Read " + backupData.length + " bytes from backup file.");
+
+            if (BackupArchive.isZip(backupData)) {
+                promptAndRestore(backupData, false);
+            } else {
+                // A backup written before the encrypted format; it carries no password.
+                new RestoreBackupAsyncTask(backupData, null).execute();
+            }
+        }
+    }
+
+    /** Asks for the archive password, re-asking as long as the one given is rejected. */
+    private void promptAndRestore(byte[] backupData, boolean retry) {
+        BackupPasswordPrompt.forRestore(
+                this, retry, password -> new RestoreBackupAsyncTask(backupData, password).execute());
+    }
+
+    /** Applies a backup that has already been read into memory. */
+    private class RestoreBackupAsyncTask extends AsyncTask<Void, Void, Boolean> {
+        private final byte[] backupData;
+        private final @Nullable char[] password;
+        private boolean wrongPassword = false;
+
+        RestoreBackupAsyncTask(byte[] backupData, @Nullable char[] password) {
+            this.backupData = backupData;
+            this.password = password;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            progress =
+                    new MaterialProgressDialog.Builder(SettingsBackup.this)
+                            .title(R.string.backup_restoring)
+                            .content(R.string.misc_please_wait)
+                            .cancelable(false)
+                            .progress(true, 1)
+                            .build();
+            progress.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            try {
+                if (password == null) {
+                    return BackupArchive.restoreLegacyText(
+                            SettingsBackup.this, new String(backupData, StandardCharsets.UTF_8));
+                }
+                BackupArchive.restore(SettingsBackup.this, backupData, password);
+                return true;
+            } catch (BackupArchive.WrongPasswordException e) {
+                Log.w(TAG, "Backup did not decrypt with the password given.");
+                wrongPassword = true;
                 return false;
+            } catch (Exception e) {
+                Log.e(TAG, "Exception while restoring backup", e);
+                return false;
+            } finally {
+                if (password != null) {
+                    Arrays.fill(password, '\0');
+                }
             }
         }
 
@@ -341,8 +415,15 @@ public class SettingsBackup extends BaseActivityAnim {
             if (progress != null) {
                 progress.dismiss();
             }
+            if (isFinishing() || isDestroyed()) {
+                return;
+            }
+            if (wrongPassword) {
+                promptAndRestore(backupData, true);
+                return;
+            }
             if (success) {
-                new AlertDialog.Builder(SettingsBackup.this)
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(SettingsBackup.this)
                         .setTitle(R.string.backup_restore_settings)
                         .setMessage(R.string.backup_restarting)
                         .setOnDismissListener(
@@ -363,7 +444,7 @@ public class SettingsBackup extends BaseActivityAnim {
                                     ProcessPhoenix.triggerRebirth(SettingsBackup.this);
                                 })
                         .setCancelable(false)
-                        .show();
+                        );
             } else {
                 Log.w(TAG, "Restore from local file failed or invalid file.");
                 showErrorDialog(R.string.err_not_valid_backup, R.string.err_not_valid_backup_msg);
@@ -371,60 +452,13 @@ public class SettingsBackup extends BaseActivityAnim {
         }
     }
 
-    /**
-     * Parse the single large backup string, writing each <STARTfilename>…END> block into its
-     * corresponding shared_prefs file.
-     */
-    private boolean restoreSharedPrefsFromString(String data) {
-        try {
-            if (!data.contains("Slide_backupEND>")) {
-                Log.w(
-                        TAG,
-                        "Backup file did not contain 'Slide_backupEND>' marker, likely invalid.");
-                return false;
-            }
-
-            // Example data:
-            // Slide_backupEND><STARTsomefile.xml>filecontentEND><STARTotherfile.xml>filecontentEND>...
-            String[] files = data.split("END>");
-            // files[0] should contain "Slide_backupEND>", skip it
-            for (int i = 1; i < files.length; i++) {
-                String innerFile = files[i];
-                int startIndex = innerFile.indexOf("<START");
-                if (startIndex == -1) {
-                    Log.w(TAG, "Skipping malformed file block: " + innerFile);
-                    continue;
-                }
-
-                // Extract filename
-                String name =
-                        innerFile.substring(startIndex + 6, innerFile.indexOf(">", startIndex));
-                // Extract file content
-                String fileContent = innerFile.substring(innerFile.indexOf(">", startIndex) + 1);
-
-                File newF = new File(getApplicationInfo().dataDir + "/shared_prefs/" + name);
-                Log.d(
-                        TAG,
-                        "Restoring local file: " + name + " (size=" + fileContent.length() + ")");
-                try (BufferedWriter bw = new BufferedWriter(new FileWriter(newF))) {
-                    bw.write(fileContent);
-                }
-            }
-
-        } catch (Exception e) {
-            Log.e(TAG, "Exception while parsing single-file backup data", e);
-            return false;
-        }
-        return true;
-    }
-
     /** Show an error dialog with the specified title and message. */
     private void showErrorDialog(int titleResId, int messageResId) {
-        new AlertDialog.Builder(this)
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(this)
                 .setTitle(titleResId)
                 .setMessage(messageResId)
                 .setPositiveButton(R.string.btn_ok, null)
                 .setCancelable(false)
-                .show();
+                );
     }
 }

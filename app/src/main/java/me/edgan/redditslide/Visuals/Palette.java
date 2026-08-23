@@ -3,11 +3,10 @@ package me.edgan.redditslide.Visuals;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.TypedValue;
-
+import androidx.annotation.Nullable;
+import java.util.Locale;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
-
-import java.util.Locale;
 
 public class Palette {
 
@@ -44,7 +43,7 @@ public class Palette {
      * @param subreddit The subreddit to base the theme on
      * @return Color-int for the status bar
      */
-    public static int getSubredditStatusBarColor(String subreddit) {
+    public static int getSubredditStatusBarColor(final @Nullable String subreddit) {
         return getDarkerColor(getColor(subreddit));
     }
 
@@ -56,7 +55,10 @@ public class Palette {
         }
     }
 
-    public static int getFontColorUser(final String subreddit) {
+    public static int getFontColorUser(final @Nullable String subreddit) {
+        // No username means no per-user colour was ever stored: 0 is what the miss branch below
+        // already returns.
+        if (subreddit == null) return 0;
         if (Reddit.colors.contains("USER" + subreddit.toLowerCase(Locale.ENGLISH))) {
             final int color =
                     Reddit.colors.getInt(
@@ -104,7 +106,7 @@ public class Palette {
         return ints;
     }
 
-    public static int getColor(final String subreddit) {
+    public static int getColor(final @Nullable String subreddit) {
         if (subreddit != null && Reddit.colors.contains(subreddit.toLowerCase(Locale.ENGLISH))) {
             return Reddit.colors.getInt(subreddit.toLowerCase(Locale.ENGLISH), getDefaultColor());
         }

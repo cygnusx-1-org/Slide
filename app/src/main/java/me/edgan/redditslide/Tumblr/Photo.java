@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Tumblr;
 
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,13 +19,13 @@ import java.util.Map;
 public class Photo {
 
     @JsonProperty("caption")
-    private String caption;
+    @Nullable private String caption;
 
     @JsonProperty("alt_sizes")
-    private List<AltSize> altSizes = new ArrayList<AltSize>();
+    @Nullable private List<PhotoSize> altSizes = new ArrayList<PhotoSize>();
 
     @JsonProperty("original_size")
-    private OriginalSize originalSize;
+    @Nullable private PhotoSize originalSize;
 
     @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -31,6 +33,7 @@ public class Photo {
      * @return The caption
      */
     @JsonProperty("caption")
+    @Nullable
     public String getCaption() {
         return caption;
     }
@@ -39,7 +42,7 @@ public class Photo {
      * @param caption The caption
      */
     @JsonProperty("caption")
-    public void setCaption(String caption) {
+    public void setCaption(@Nullable String caption) {
         this.caption = caption;
     }
 
@@ -47,7 +50,8 @@ public class Photo {
      * @return The altSizes
      */
     @JsonProperty("alt_sizes")
-    public List<AltSize> getAltSizes() {
+    @Nullable
+    public List<PhotoSize> getAltSizes() {
         return altSizes;
     }
 
@@ -55,7 +59,7 @@ public class Photo {
      * @param altSizes The alt_sizes
      */
     @JsonProperty("alt_sizes")
-    public void setAltSizes(List<AltSize> altSizes) {
+    public void setAltSizes(@Nullable List<PhotoSize> altSizes) {
         this.altSizes = altSizes;
     }
 
@@ -63,7 +67,8 @@ public class Photo {
      * @return The originalSize
      */
     @JsonProperty("original_size")
-    public OriginalSize getOriginalSize() {
+    @Nullable
+    public PhotoSize getOriginalSize() {
         return originalSize;
     }
 
@@ -71,8 +76,37 @@ public class Photo {
      * @param originalSize The original_size
      */
     @JsonProperty("original_size")
-    public void setOriginalSize(OriginalSize originalSize) {
+    public void setOriginalSize(@Nullable PhotoSize originalSize) {
         this.originalSize = originalSize;
+    }
+
+    /**
+     * Whether this photo has a size to render from. The field has no default, so a photo whose JSON
+     * carried no original_size leaves {@link #getOriginalSize()} null and every dereference of it a
+     * crash.
+     */
+    // @JsonIgnore here is belt-and-braces: Jackson only treats getXxx/isXxx as property accessors,
+    // so a hasXxx method was never a serialization candidate. On getOriginalUrl() below it is
+    // load-bearing.
+    @JsonIgnore
+    public boolean hasOriginalSize() {
+        return originalSize != null && originalSize.getUrl() != null;
+    }
+
+    /**
+     * The original_size url, or null when this photo has none. Prefer this over
+     * {@code getOriginalSize().getUrl()}: the field has no default, so every caller that walks the
+     * chain itself needs its own null guard, and the ones that forgot crashed the album, the pager,
+     * the grid and the peek view. Use {@link #hasOriginalSize()} only when the {@link PhotoSize}
+     * itself is needed, such as for its width and height.
+     *
+     * <p>@JsonIgnore is required, not decorative: this is a getXxx, which Jackson would otherwise
+     * publish as an extra "originalUrl" property when a Photo is serialized.
+     */
+    @JsonIgnore
+    @Nullable
+    public String getOriginalUrl() {
+        return originalSize == null ? null : originalSize.getUrl();
     }
 
     @JsonAnyGetter

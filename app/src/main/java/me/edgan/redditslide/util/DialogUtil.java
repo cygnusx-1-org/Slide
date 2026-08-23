@@ -1,16 +1,26 @@
 package me.edgan.redditslide.util;
 
+import android.app.Dialog;
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.util.Log;
-
+import android.util.TypedValue;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.documentfile.provider.DocumentFile;
-
 import me.edgan.redditslide.R;
+import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.Visuals.Palette;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by TacoTheDank on 07/14/2021. Updated to use Storage Access Framework */
+@NullMarked
 public class DialogUtil {
     private static final String TAG = "DialogUtil";
 
@@ -56,6 +66,79 @@ public class DialogUtil {
                                 })
                         .create();
 
+        matchDialogToCardBackground(dialog);
         dialog.show();
+    }
+
+    /**
+     * Applies a custom accent-colored border to an AlertDialog.
+     * IMPORTANT: This method must be called BEFORE dialog.show() to prevent visual "jumping".
+     *
+     * @param context Context for accessing resources
+     * @param dialog The AlertDialog to apply the border to
+     */
+    public static void applyCustomBorderToAlertDialog(Context context, AlertDialog dialog) {
+        // Only apply the border if the setting is enabled
+        if(SettingValues.dialogColoredBorder) {
+            if (dialog != null && dialog.getWindow() != null) {
+                // Create a GradientDrawable with the accent color
+                GradientDrawable drawable = new GradientDrawable();
+
+                // Get the appropriate background color from the current theme
+                TypedArray ta = context.obtainStyledAttributes(new int[] {android.R.attr.colorBackground});
+                int backgroundColor = ta.getColor(0, Color.BLACK);
+                ta.recycle();
+
+                // Set the drawable properties
+                drawable.setColor(backgroundColor);
+                drawable.setStroke(DisplayUtil.dpToPxVertical(1), Palette.getDarkerColor(Palette.getStatusBarColor()));
+                drawable.setCornerRadius(DisplayUtil.dpToPxVertical(1));
+
+                // Apply the drawable to the dialog window
+                dialog.getWindow().setBackgroundDrawable(drawable);
+            }
+        }
+    }
+
+    /**
+     * Matches an AlertDialog's window (and therefore its button bar) to the app's themed
+     * card_background color. AppCompat dialogs otherwise keep a gray default background that
+     * clashes with the dark/black card content Slide uses, leaving a gray panel behind the
+     * dialog buttons. Call before dialog.show() to avoid a visual flash.
+     *
+     * @param context Context whose theme defines card_background
+     * @param dialog The AlertDialog to recolor
+     */
+    public static void matchDialogToCardBackground(Context context, @Nullable Dialog dialog) {
+        if (dialog == null || dialog.getWindow() == null) {
+            return;
+        }
+        TypedValue cardBackground = new TypedValue();
+        if (context.getTheme().resolveAttribute(R.attr.card_background, cardBackground, true)) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(cardBackground.data));
+        }
+    }
+
+    /** Overload that takes the context from the dialog itself. */
+    public static void matchDialogToCardBackground(@Nullable Dialog dialog) {
+        if (dialog != null) {
+            matchDialogToCardBackground(dialog.getContext(), dialog);
+        }
+    }
+
+    /**
+     * Convenience for the common build-and-show case: creates the dialog from {@code builder},
+     * matches its window to the themed {@link #matchDialogToCardBackground card_background} so it
+     * doesn't show the gray AppCompat default, shows it, and returns it. The context is taken from
+     * the builder, so call sites only need to wrap their existing builder chain.
+     *
+     * @param builder The configured AlertDialog.Builder
+     * @return the shown dialog, for callers that need a reference
+     */
+    public static AlertDialog showWithCardBackground(AlertDialog.Builder builder) {
+        AlertDialog dialog = builder.create();
+        matchDialogToCardBackground(builder.getContext(), dialog);
+        dialog.show();
+        return dialog;
     }
 }

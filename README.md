@@ -1,68 +1,93 @@
-# Current project status
-This project is back with this fork, and is being **maintained**.
+<h1 align="center">Slide</h1>
+<p align="center">
+<img src="app/src/main/res/drawable/ic_launcher.png" width="180">
+</p>
 
-# Setup
-See [SETUP.md](/SETUP.md)
+<hr style="display: inline-block; width: 100%; border: 1px dotted #ff00cc;">
 
-# Android device debugging via USB
-See [DEBUGGING.md](/DEBUGGING.md)
-
-# Updates
-The easiest way, for now, to get updates is
-[Obtainium](https://github.com/ImranR98/Obtainium).
-[Obtainium](https://github.com/ImranR98/Obtainium) can also be found on
-[F-Droid](https://f-droid.org/).
-
-# Slide
-<img src="app/src/main/res/drawable/ic_launcher.png"
-    align="left" width="180" hspace="10" vspace="10">
+<p align="center" style="margin-top: -2em;">
+  <a href="https://discord.gg/vDuSpJEDrW">
+    <picture>
+      <source height="24px" media="(prefers-color-scheme: dark)" srcset="/assets/icons/Discord.png" />
+      <img height="24px" src="/assets/icons/Discord.png" />
+    </picture>
+  </a>&nbsp;&nbsp;&nbsp;
+  <a href="https://old.reddit.com/r/slidereddit/">
+    <picture>
+      <source height="24px" media="(prefers-color-scheme: dark)" srcset="/assets/icons/Reddit.png" />
+      <img height="24px" src="/assets/icons/Reddit.png" />
+    </picture>
+  </a>
+</p>
 
 Slide is an open-source, ad-free [Reddit](https://www.reddit.com) browser for
 Android. It is based around the
 [Java Reddit API Wrapper](https://github.com/mattbdean/JRAW).
 
-Slide is available here on [GitHub](https://github.com/) in
-[releases](https://github.com/edgan/Slide/releases), and [Google Play Store](https://play.google.com/store/apps/details?id=me.edgan.redditslide&hl=en_US). I plan
-[F-Droid](https://f-droid.org/) in the future.
+<hr style="display: inline-block; width: 100%; border: 1px dotted #ff00cc;">
 
-There is an active community for Slide on the
-[/r/slidereddit](https://www.reddit.com/r/slidereddit) subreddit,
-which anybody is welcome to join.
+# Installation
+The easiest way to install Slide or get updates for Slide, outside the
+[Google Play Store](https://play.google.com/store/apps/details?id=me.edgan.redditslide&hl=en_US),
+is [Discoverium](https://github.com/cygnusx-1-org/Discoverium/). It has a search
+function, and lets you add apps to the list for keeping the apps updated.
+<p align="left">
+    <a href="https://play.google.com/store/apps/details?id=me.edgan.redditslide">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="assets/badges/googleplaystore.png" height="68">
+        <img alt="Get it on the Google Play Store" src="assets/badges/googleplaystore.png" height="68">
+      </picture>
+    </a>
+    <a href="https://github.com/cygnusx-1-org/Discoverium/releases/latest">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="assets/badges/discoverium.png" height="60">
+        <img alt="Get it on Discoverium" src="assets/badges/discoverium.png" height="60">
+      </picture>
+    </a>
+  <a href="https://github.com/cygnusx-1-org/Slide/releases/latest">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="assets/badges/github.png" height="60">
+      <img alt="Get it on Github" src="assets/badges/github.png" height="60">
+    </picture>
+  </a>
+</p>
 
-### Issues
+## Verification
+me.edgan.redditslide 4F:34:BF:D2:0C:C4:84:15:10:E7:EF:FB:75:CB:FB:C2:3A:09:C2:CA:92:D0:4C:ED:5B:33:6C:8F:25:A0:D3:E3
+
+You can verify it with [AppVerifier](https://github.com/soupslurpr/AppVerifier).
+
+# Setup
+See [SETUP.md](/docs/SETUP.md)
+
+# Android device debugging via USB
+See [DEBUGGING.md](/docs/DEBUGGING.md)
+
+# Issues
 In any project it's likely that a few bugs will slip through the cracks, so it
 helps greatly if people document any bugs they find to ensure that they get
 fixed promptly.
 
 You can view a list of known issues and feature requests using
-[the issue tracker](https://github.com/edgan/Slide/issues).
+[the issue tracker](https://github.com/cygnusx-1-org/Slide/issues).
 If you don't see your issue (or you aren't sure), feel free to
-[submit it!](https://github.com/edgan/Slide/issues/new).
+[submit it!](https://github.com/cygnusx-1-org/Slide/issues/new).
 
 Where appropriate, a screenshot works wonders to help us see exactly what the
 issue is. You can upload screenshots directly using the GitHub issue tracker or
 by attaching a link (to Imgur, for example), whichever is easier for you.
 
-### Translations
-If you are able to contribute a translation into a language missing from Slide,
-or spot any room for improvement in an existing translation, we greatly
-appreciate anything you can assist with!
-
-This project uses [Crowdin](https://crowdin.com/project/slide-reddit). Not to be
-confused with the original project's
-[Crowdin](https://crowdin.com/project/slide-for-reddit). It is a platform that
-allows anybody to contribute to translating the app with as many words at a time
-as they want. Crowdin provides a nice interface for translating, and no
-knowledge of the code is needed.
-
-### Code
+# Code
 If you are a developer and wish to contribute to the app, please fork the
 project and submit a pull request.
 
 ## Changelog
 The file [CHANGELOG.md](CHANGELOG.md) provides an overview of the changes for a
 release; for a more detailed look at changes to the app,
-[view individual commits](https://github.com/edgan/Slide/commits/master).
+[view individual commits](https://github.com/cygnusx-1-org/Slide/commits/master).
+
+# Related project
+Another [Reddit](https://www.reddit.com/) Android client app is [Continuum](https://github.com/cygnusx-1-org/continuum/). It is a fork of [Infinity for Reddit](https://github.com/Docile-Alligator/Infinity-For-Reddit/), but allows you to enter your own `Client ID` like `Slide`. It is open source, ad-free and completely free.
 
 ## Licensing
 Slide is licensed under the [GNU v3 Public License](LICENSE.txt).

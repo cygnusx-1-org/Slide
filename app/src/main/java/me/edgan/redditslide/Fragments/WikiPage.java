@@ -1,54 +1,52 @@
 package me.edgan.redditslide.Fragments;
 
+import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
-
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.webkit.WebViewClientCompat;
-
+import java.lang.ref.WeakReference;
+import java.util.Locale;
 import me.edgan.redditslide.Activities.Wiki;
 import me.edgan.redditslide.BuildConfig;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Visuals.Palette;
-
 import net.dean.jraw.managers.WikiManager;
-
 import org.apache.commons.text.StringEscapeUtils;
-
-import java.lang.ref.WeakReference;
 
 public class WikiPage extends Fragment {
     private String title;
     private String subreddit;
     private String wikiUrl;
 
-    private WikiPageListener listener;
+    @Nullable private WikiPageListener listener;
 
     private WebView webView;
     private SwipeRefreshLayout ref;
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.justtext, container, false);
     }
 
     @Override
-    public void onViewCreated(@NonNull final View view, Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        ref = view.findViewById(R.id.ref);
-        webView = view.findViewById(R.id.wiki_web_view);
+        ref = view.requireViewById(R.id.ref);
+        webView = view.requireViewById(R.id.wiki_web_view);
 
         setUpRefresh();
         setUpWebView();
@@ -64,7 +62,7 @@ public class WikiPage extends Fragment {
     }
 
     private void setUpRefresh() {
-        ref.setColorSchemeColors(Palette.getColors(subreddit, getActivity()));
+        ref.setColorSchemeColors(Palette.getColors(subreddit, requireActivity()));
 
         // If we use 'findViewById(R.id.header).getMeasuredHeight()', 0 is always returned.
         // So, we estimate the height of the header in dp
@@ -90,16 +88,22 @@ public class WikiPage extends Fragment {
                 new WebViewClientCompat() {
                     @Override
                     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                        if (url.toLowerCase().startsWith(wikiUrl.toLowerCase())
+                        if (url.toLowerCase(Locale.ENGLISH).startsWith(wikiUrl.toLowerCase(Locale.ENGLISH))
                                 && listener != null) {
                             String pagePiece =
-                                    url.toLowerCase()
-                                            .replace(wikiUrl.toLowerCase(), "")
+                                    url.toLowerCase(Locale.ENGLISH)
+                                            .replace(wikiUrl.toLowerCase(Locale.ENGLISH), "")
                                             .split("\\?")[0]
                                             .split("#")[0];
                             listener.embeddedWikiLinkClicked(pagePiece);
                         } else {
-                            OpenRedditLink.openUrl(getContext(), url, true);
+                            // A navigation can be delivered after the page detaches; with no
+                            // context there is nothing to open the link with. Still return true,
+                            // so the detached WebView does not load it itself either.
+                            final Context context = getContext();
+                            if (context != null) {
+                                OpenRedditLink.openUrl(context, url, true);
+                            }
                         }
                         return true;
                     }
@@ -108,16 +112,14 @@ public class WikiPage extends Fragment {
                     public void onPageFinished(WebView webView, String url) {
                         super.onPageFinished(webView, url);
                         if (getView() != null) {
-                            getView().findViewById(R.id.wiki_web_view).setVisibility(View.VISIBLE);
+                            getView().requireViewById(R.id.wiki_web_view).setVisibility(View.VISIBLE);
                             ref.setRefreshing(false);
                             ref.setEnabled(false);
                         }
                     }
                 });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG);
-        }
+        WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG);
     }
 
     private void onDomRetrieved(String dom) {
@@ -134,9 +136,9 @@ public class WikiPage extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle bundle = this.getArguments();
+        Bundle bundle = requireArguments();
         title = bundle.getString("title", "");
         subreddit = bundle.getString("subreddit", "");
         wikiUrl = "https://www.reddit.com/r/" + subreddit + "/wiki/";
@@ -159,7 +161,7 @@ public class WikiPage extends Fragment {
                     ((WikiManager) params[0])
                             .get((String) params[1], (String) params[2])
                             .getDataNode()
-                            .get("content_html")
+                            .path("content_html")
                             .asText());
         }
 
@@ -174,7 +176,9 @@ public class WikiPage extends Fragment {
     private class WikiPageJavaScriptInterface {
         @JavascriptInterface
         public void overflowTouched() {
-            listener.overflowTouched();
+            if (listener != null) {
+                listener.overflowTouched();
+            }
         }
     }
 

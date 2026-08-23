@@ -2,6 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:cardview="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -33,8 +34,8 @@
                 android:layout_marginLeft="18dp"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
-                android:src="@drawable/chameleon"
-                app:riv_corner_radius="2dp" />
+                tools:src="@drawable/chameleon"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Slide.Corner2dp" />
 
             <ImageView
                 android:id="@+id/secondMenu"
@@ -45,7 +46,7 @@
                 android:layout_alignParentBottom="true"
                 android:padding="8dp"
                 android:tag="tint"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 app:srcCompat="@drawable/ic_keyboard_arrow_down" />
 
             <RelativeLayout
@@ -113,7 +114,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="4dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/img_score"
                 app:srcCompat="@drawable/ic_arrow_upward" />
 
@@ -137,7 +138,7 @@
                 android:layout_marginEnd="4dp"
                 android:layout_toRightOf="@id/score"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/img_comments"
                 app:srcCompat="@drawable/ic_forum" />
 
@@ -160,7 +161,7 @@
                 android:layout_toLeftOf="@+id/save"
                 android:padding="8dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/btn_edit"
                 app:srcCompat="@drawable/ic_edit" />
 
@@ -172,7 +173,7 @@
                 android:layout_toLeftOf="@+id/hide"
                 android:padding="8dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/btn_save"
                 app:srcCompat="@drawable/ic_star" />
 
@@ -184,7 +185,7 @@
                 android:layout_toLeftOf="@+id/upvote"
                 android:padding="8dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/btn_mod"
                 app:srcCompat="@drawable/ic_verified_user" />
 
@@ -196,7 +197,7 @@
                 android:layout_toLeftOf="@+id/mod"
                 android:padding="8dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/btn_hide"
                 app:srcCompat="@drawable/ic_visibility_off" />
 
@@ -208,7 +209,7 @@
                 android:layout_toLeftOf="@+id/downvote"
                 android:padding="8dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/btn_upvote"
                 app:srcCompat="@drawable/ic_arrow_upward" />
 
@@ -220,7 +221,7 @@
                 android:layout_toLeftOf="@+id/menu"
                 android:padding="8dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/btn_downvote"
                 app:srcCompat="@drawable/ic_arrow_downward" />
 
@@ -232,7 +233,7 @@
                 android:layout_alignParentRight="true"
                 android:padding="8dp"
                 android:tag="tintactionbar"
-                android:tint="?attr/tintColor"
+                app:tint="?attr/tintColor"
                 android:contentDescription="@string/btn_menu"
                 app:srcCompat="@drawable/ic_more_vert" />
         </me.edgan.redditslide.Views.RevealRelativeLayout>

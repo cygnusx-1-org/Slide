@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "android": {
+      "command": "/usr/bin/uv",
+      "args": ["--directory", "/home/ngrennan/git/android-mcp-server.orig", "run", "server.py"]
+    }
+  }
+}

@@ -3,16 +3,17 @@ package me.edgan.redditslide.Adapters;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.widget.Toast;
-
+import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import me.edgan.redditslide.Activities.MultiredditOverview;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.SortingUtil;
-
 import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.Submission;
@@ -21,16 +22,16 @@ import net.dean.jraw.paginators.SubmissionSearchPaginator;
 import net.dean.jraw.paginators.SubmissionSearchPaginatorMultireddit;
 import net.dean.jraw.paginators.TimePeriod;
 
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-
 /** Created by ccrama on 9/17/2015. */
 public class SubredditSearchPosts extends GeneralPosts {
     private String term;
     private String subreddit = "";
     public boolean loading;
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     private Paginator<Submission> paginator;
+    @SuppressWarnings("NullAway.Init") // assigned in bindAdapter
     public SwipeRefreshLayout refreshLayout;
+    @SuppressWarnings("NullAway.Init") // assigned in bindAdapter/loadMore
     private ContributionAdapter adapter;
 
     public Activity parent;
@@ -169,7 +170,7 @@ public class SubredditSearchPosts extends GeneralPosts {
         }
 
         @Override
-        protected ArrayList<Contribution> doInBackground(String... subredditPaginators) {
+        protected @Nullable ArrayList<Contribution> doInBackground(String... subredditPaginators) {
             ArrayList<Contribution> newSubmissions = new ArrayList<>();
             try {
                 if (reset || paginator == null) {
@@ -218,11 +219,12 @@ public class SubredditSearchPosts extends GeneralPosts {
                 return newSubmissions;
             } catch (Exception e) {
                 error = e;
-                e.printStackTrace();
+                LogUtil.e(e, "SubredditSearchPosts.doInBackground failed");
                 return null;
             }
         }
 
+        @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
         Exception error;
     }
 

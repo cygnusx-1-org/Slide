@@ -4,14 +4,17 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
-
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Activities.MainActivity;
 import me.edgan.redditslide.Activities.SubredditView;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.BuildConfig;
-import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.HasSeen;
 import me.edgan.redditslide.LastComments;
@@ -24,21 +27,15 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionCache;
 import me.edgan.redditslide.Synccit.MySynccitReadTask;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.PhotoLoader;
 import me.edgan.redditslide.util.TimeUtils;
-
 import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.paginators.DomainPaginator;
 import net.dean.jraw.paginators.Paginator;
 import net.dean.jraw.paginators.SubredditPaginator;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * This class is reponsible for loading subreddit specific submissions {@link loadMore(Context,
@@ -49,13 +46,16 @@ import java.util.Locale;
 public class SubredditPosts implements PostLoader {
     public List<Submission> posts;
     public String subreddit;
+    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     public String subredditRandom;
     public boolean nomore = false;
     public boolean offline;
     public boolean forced;
     public boolean loading;
     public boolean error;
+    @SuppressWarnings("NullAway.Init") // assigned in getNextFiltered/onPostExecute
     private Paginator paginator;
+    @SuppressWarnings("NullAway.Init") // set in doInBackground
     public OfflineSubreddit cached;
     Context c;
     boolean force18;
@@ -85,6 +85,7 @@ public class SubredditPosts implements PostLoader {
         loadMore(context, display, reset);
     }
 
+    @SuppressWarnings("NullAway.Init") // assigned in doMainActivityOffline/onPostExecute
     public ArrayList<String> all;
 
     @Override
@@ -100,6 +101,7 @@ public class SubredditPosts implements PostLoader {
     boolean authedOnce = false;
     boolean usedOffline;
     public long currentid;
+    @SuppressWarnings("NullAway.Init") // LoadData's constructor assigns this
     public SubmissionDisplay displayer;
 
     /** Asynchronous task for loading data */
@@ -165,7 +167,7 @@ public class SubredditPosts implements PostLoader {
                 String[] ids = new String[submissions.size()];
                 int i = 0;
                 for (Submission s : submissions) {
-                    ids[i] = s.getId();
+                    ids[i] = MiscUtil.orEmpty(s.getId());
                     i++;
                 }
 
@@ -177,7 +179,7 @@ public class SubredditPosts implements PostLoader {
                 if (subreddit.equals("random")
                         || subreddit.equals("myrandom")
                         || subreddit.equals("randnsfw")) {
-                    subredditRandom = submissions.get(0).getSubredditName();
+                    subredditRandom = MiscUtil.orEmpty(submissions.get(0).getSubredditName());
                 }
 
                 MainActivity.randomoverride = subredditRandom;
@@ -207,7 +209,9 @@ public class SubredditPosts implements PostLoader {
                 }
                 offline = false;
                 usedOffline = false;
-                displayer.updateSuccess(posts, start);
+                // posts was just replaced wholesale from cache, so force a full redraw
+                // (-1) rather than a targeted insert against a now-mismatched offset.
+                displayer.updateSuccess(posts, -1);
             } else {
                 if (!all.isEmpty() && !nomore && SettingValues.cache) {
                     if (context instanceof MainActivity) {
@@ -224,7 +228,7 @@ public class SubredditPosts implements PostLoader {
         }
 
         @Override
-        protected List<Submission> doInBackground(String... subredditPaginators) {
+        protected @Nullable List<Submission> doInBackground(String... subredditPaginators) {
             if (BuildConfig.DEBUG) LogUtil.v("Loading data");
             if ((!NetworkUtil.isConnected(context) && !Authentication.didOnline)
                     || MainActivity.isRestart) {
@@ -257,7 +261,7 @@ public class SubredditPosts implements PostLoader {
                 }
                 paginator.setSorting(SettingValues.getSubmissionSort(subreddit));
                 paginator.setTimePeriod(SettingValues.getSubmissionTimePeriod(subreddit));
-                paginator.setLimit(Constants.PAGINATOR_POST_LIMIT);
+                paginator.setLimit(Paginator.RECOMMENDED_MAX_LIMIT);
             }
 
             List<Submission> filteredSubmissions = getNextFiltered();
@@ -265,7 +269,10 @@ public class SubredditPosts implements PostLoader {
             if (!(SettingValues.noImages
                     && ((!NetworkUtil.isConnectedWifi(c) && SettingValues.lowResMobile)
                             || SettingValues.lowResAlways))) {
-                PhotoLoader.loadPhotos(c, filteredSubmissions);
+                PhotoLoader.loadPhotos(
+                        c,
+                        filteredSubmissions,
+                        subreddit == null ? null : subreddit.toLowerCase(Locale.ENGLISH));
             }
             if (SettingValues.storeHistory) {
                 HasSeen.setHasSeenSubmission(filteredSubmissions);
@@ -277,19 +284,20 @@ public class SubredditPosts implements PostLoader {
                 posts = new ArrayList<>(new LinkedHashSet<>(filteredSubmissions));
                 start = -1;
             } else {
+                int oldSize = posts.size();
                 posts.addAll(filteredSubmissions);
                 posts = new ArrayList<>(new LinkedHashSet<>(posts));
                 offline = false;
+                // Adapter offset of the first newly appended post. The trailing
+                // notifyDataSetChanged backstop has been removed, so this must be
+                // the real insert offset (not the new total).
+                start = oldSize;
             }
 
             if (!usedOffline) {
                 OfflineSubreddit.getSubNoLoad(subreddit.toLowerCase(Locale.ENGLISH))
                         .overwriteSubmissions(posts)
                         .writeToMemory(context);
-            }
-            start = 0;
-            if (posts != null) {
-                start = posts.size() + 1;
             }
 
             return filteredSubmissions;
@@ -323,7 +331,37 @@ public class SubredditPosts implements PostLoader {
                     filteredSubmissions.addAll(getNextFiltered());
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                if (e instanceof NetworkException
+                        && ((NetworkException) e).getResponse().getStatusCode() == 500
+                        && retryCount < 2) {
+                    retryCount++;
+                    int newLimit = Paginator.RECOMMENDED_MAX_LIMIT;
+                    for (int r = 0; r < retryCount; r++) {
+                        newLimit /= 2;
+                    }
+                    String sub = subreddit.toLowerCase(Locale.ENGLISH);
+                    if ((sub.equals("random") || sub.equals("randnsfw"))
+                            && MainActivity.randomoverride != null
+                            && !MainActivity.randomoverride.isEmpty()) {
+                        sub = MainActivity.randomoverride;
+                        MainActivity.randomoverride = "";
+                    }
+                    if (sub.equals("frontpage")) {
+                        paginator = new SubredditPaginator(Authentication.reddit);
+                    } else if (!sub.contains(".")) {
+                        paginator = new SubredditPaginator(Authentication.reddit, sub);
+                    } else {
+                        paginator = new DomainPaginator(Authentication.reddit, sub);
+                    }
+                    paginator.setSorting(SettingValues.getSubmissionSort(subreddit));
+                    paginator.setTimePeriod(SettingValues.getSubmissionTimePeriod(subreddit));
+                    paginator.setLimit(newLimit);
+                    if (force18 && paginator instanceof SubredditPaginator) {
+                        ((SubredditPaginator) paginator).setObeyOver18(false);
+                    }
+                    return getNextFiltered();
+                }
+                LogUtil.e(e, "SubredditPosts.getNextFiltered failed");
                 error = e;
                 if (e.getMessage() != null && e.getMessage().contains("Forbidden")) {
                     Reddit.authentication.updateToken(context);
@@ -332,7 +370,8 @@ public class SubredditPosts implements PostLoader {
             return filteredSubmissions;
         }
 
-        Exception error;
+        int retryCount = 0;
+        @Nullable Exception error;
     }
 
     public void doMainActivityOffline(final Context c, final SubmissionDisplay displayer) {
@@ -356,10 +395,13 @@ public class SubredditPosts implements PostLoader {
             base[i] = s;
             i++;
         }
-        ((MainActivity) c).getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        ((MainActivity) c)
-                .getSupportActionBar()
-                .setListNavigationCallbacks(
+        final ActionBar actionBar = ((MainActivity) c).getSupportActionBar();
+        if (actionBar == null) {
+            return;
+        }
+
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        actionBar.setListNavigationCallbacks(
                         new OfflineSubAdapter(c, android.R.layout.simple_list_item_1, titles),
                         new ActionBar.OnNavigationListener() {
 
@@ -370,6 +412,7 @@ public class SubredditPosts implements PostLoader {
                                 currentid = OfflineSubreddit.currentid;
 
                                 new AsyncTask<Void, Void, Void>() {
+                                    @SuppressWarnings("NullAway.Init") // set in doInBackground
                                     OfflineSubreddit cached;
 
                                     @Override

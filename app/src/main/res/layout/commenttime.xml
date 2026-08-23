@@ -41,16 +41,17 @@
                     android:paddingEnd="20dp"
                     android:paddingTop="8dp">
 
-                    <com.rey.material.widget.Slider
+                    <com.google.android.material.slider.Slider
                         android:id="@+id/landscape"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
                         android:padding="8dp"
-                        app:sl_maxValue="96"
-                        app:sl_minValue="1"
-                        app:sl_secondaryColor="?attr/tintColor"
-                        app:sl_stepValue="15"/>
+                        android:value="600"
+                        android:valueFrom="60"
+                        android:valueTo="18000"
+                        android:stepSize="15"
+                        app:trackColorActive="?attr/tintColor"
+                        app:labelBehavior="gone"/>
                     <TextView
                         android:layout_width="match_parent"
                         android:padding="8dp"

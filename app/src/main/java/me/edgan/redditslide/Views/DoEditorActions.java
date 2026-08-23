@@ -1,7 +1,9 @@
 package me.edgan.redditslide.Views;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -9,27 +11,33 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.text.Editable;
 import android.util.Base64;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
+import android.widget.Toast;
+import androidx.activity.ComponentActivity;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-
-import gun0912.tedimagepicker.builder.TedImagePicker;
-
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import me.edgan.redditslide.Activities.Draw;
+import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Drafts;
 import me.edgan.redditslide.ImgurAlbum.UploadImgur;
 import me.edgan.redditslide.ImgurAlbum.UploadImgurAlbum;
@@ -37,36 +45,50 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.Visuals.ColorPreferences;
+import me.edgan.redditslide.markdown.RedditMarkwon;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.DisplayUtil;
 import me.edgan.redditslide.util.KeyboardUtil;
+import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.SubmissionParser;
-
+import me.edgan.redditslide.util.TranslateUtil;
 import org.apache.commons.text.StringEscapeUtils;
 import org.commonmark.Extension;
 import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
 import org.commonmark.ext.gfm.tables.TablesExtension;
-import org.commonmark.html.HtmlRenderer;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
 import org.json.JSONObject;
-
-import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by carlo_000 on 10/18/2015. */
+@NullMarked
 public class DoEditorActions {
+
+    private static final AtomicInteger registryCounter = new AtomicInteger(0);
 
     public static void doActions(
             final EditText editText,
             final View baseView,
-            final FragmentManager fm,
+            final @Nullable FragmentManager fm,
             final Activity a,
-            final String oldComment,
+            final @Nullable String oldComment,
             @Nullable final String[] authors) {
-        baseView.findViewById(R.id.bold)
+        doActions(editText, baseView, fm, a, oldComment, authors, null);
+    }
+
+    public static void doActions(
+            final EditText editText,
+            final View baseView,
+            final @Nullable FragmentManager fm,
+            final Activity a,
+            final @Nullable String oldComment,
+            @Nullable final String[] authors,
+            @Nullable final ActivityResultLauncher<PickVisualMediaRequest> imageLauncher) {
+        baseView.requireViewById(R.id.bold)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -99,7 +121,7 @@ public class DoEditorActions {
                                             String author = "/u/" + authors[0];
                                             insertBefore(author, editText);
                                         } else {
-                                            new AlertDialog.Builder(a)
+                                            DialogUtil.showWithCardBackground(new AlertDialog.Builder(a)
                                                     .setTitle(R.string.authors_above)
                                                     .setItems(
                                                             authors,
@@ -109,7 +131,7 @@ public class DoEditorActions {
                                                                 insertBefore(author, editText);
                                                             })
                                                     .setNeutralButton(R.string.btn_cancel, null)
-                                                    .show();
+                                                    );
                                         }
                                     }
                                 });
@@ -118,7 +140,7 @@ public class DoEditorActions {
             }
         }
 
-        baseView.findViewById(R.id.italics)
+        baseView.requireViewById(R.id.italics)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -140,7 +162,7 @@ public class DoEditorActions {
                             }
                         });
 
-        baseView.findViewById(R.id.strike)
+        baseView.requireViewById(R.id.strike)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -162,7 +184,7 @@ public class DoEditorActions {
                             }
                         });
 
-        baseView.findViewById(R.id.spoiler)
+        baseView.requireViewById(R.id.spoiler)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -184,7 +206,7 @@ public class DoEditorActions {
                             }
                         });
 
-        baseView.findViewById(R.id.savedraft)
+        baseView.requireViewById(R.id.savedraft)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -192,7 +214,7 @@ public class DoEditorActions {
                                 Drafts.addDraft(editText.getText().toString());
                                 Snackbar s =
                                         Snackbar.make(
-                                                baseView.findViewById(R.id.savedraft),
+                                                baseView.requireViewById(R.id.savedraft),
                                                 "Draft saved",
                                                 Snackbar.LENGTH_SHORT);
                                 View view = s.getView();
@@ -208,10 +230,10 @@ public class DoEditorActions {
                                                 Drafts.deleteDraft(Drafts.getDrafts().size() - 1);
                                             }
                                         });
-                                s.show();
+                                LayoutUtils.showSnackbar(s);
                             }
                         });
-        baseView.findViewById(R.id.draft)
+        baseView.requireViewById(R.id.draft)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -223,13 +245,16 @@ public class DoEditorActions {
                                     draftText[i] = drafts.get(i);
                                 }
                                 if (drafts.isEmpty()) {
-                                    new AlertDialog.Builder(a)
-                                            .setTitle(R.string.dialog_no_drafts)
-                                            .setMessage(R.string.dialog_no_drafts_msg)
-                                            .setPositiveButton(R.string.btn_ok, null)
-                                            .show();
+                                    final AlertDialog noDrafts =
+                                            new AlertDialog.Builder(a)
+                                                    .setTitle(R.string.dialog_no_drafts)
+                                                    .setMessage(R.string.dialog_no_drafts_msg)
+                                                    .setPositiveButton(R.string.btn_ok, null)
+                                                    .create();
+                                    DialogUtil.matchDialogToCardBackground(a, noDrafts);
+                                    noDrafts.show();
                                 } else {
-                                    new AlertDialog.Builder(a)
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(a)
                                             .setTitle(R.string.choose_draft)
                                             .setItems(
                                                     draftText,
@@ -243,7 +268,7 @@ public class DoEditorActions {
                                                     (dialog, which) -> {
                                                         final boolean[] selected =
                                                                 new boolean[drafts.size()];
-                                                        new AlertDialog.Builder(a)
+                                                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(a)
                                                                 .setTitle(R.string.choose_draft)
                                                                 .setNeutralButton(
                                                                         R.string.btn_cancel, null)
@@ -302,41 +327,46 @@ public class DoEditorActions {
                                                                                 isChecked) ->
                                                                                 selected[which12] =
                                                                                         isChecked)
-                                                                .show();
+                                                                );
                                                     })
-                                            .show();
+                                            );
                                 }
                             }
                         });
-        baseView.findViewById(R.id.imagerep)
-                .setOnClickListener(
-                        v -> {
-                            e = editText.getText();
-                            sStart = editText.getSelectionStart();
-                            sEnd = editText.getSelectionEnd();
+        final View imageButton = baseView.requireViewById(R.id.imagerep);
+        imageButtons.put(editText, imageButton);
+        // Reset the button state for reused editors: comments are limited to one inline Reddit
+        // image, so the button is disabled once one has been added.
+        setImageButtonEnabled(
+                imageButton,
+                editText.getId() == R.id.bodytext
+                        || me.edgan.redditslide.util.RedditImageUploads.get(editText).isEmpty());
+        imageButton.setOnClickListener(
+                v -> {
+                    e = editText.getText();
+                    sStart = editText.getSelectionStart();
+                    sEnd = editText.getSelectionEnd();
+                    currentImageTarget = editText;
 
-                            TedImagePicker.with(editText.getContext())
-                                    .title("Choose a photo")
-                                    .start(
-                                            uri -> {
-                                                ArrayList<Uri> uriList = new ArrayList<>();
-                                                uriList.add(uri);
-                                                handleImageIntent(
-                                                        uriList,
-                                                        editText,
-                                                        editText.getContext());
-                                                KeyboardUtil.hideKeyboard(
-                                                        editText.getContext(),
-                                                        editText.getWindowToken(),
-                                                        0);
-                                            });
-                        });
-        baseView.findViewById(R.id.draw)
+                    showImageUploadChoice(
+                            a,
+                            () -> {
+                                uploadToReddit = false;
+                                launchImagePicker(editText, a, imageLauncher);
+                            },
+                            () -> {
+                                uploadToReddit = true;
+                                launchImagePicker(editText, a, imageLauncher);
+                            });
+                });
+        baseView.requireViewById(R.id.draw)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                doDraw(a, editText, fm);
+                                if (fm != null) {
+                                    doDraw(a, editText, fm);
+                                }
                             }
                         });
         /*todo baseView.findViewById(R.id.superscript).setOnClickListener(new View.OnClickListener() {
@@ -345,7 +375,7 @@ public class DoEditorActions {
                 insertBefore("^", editText);
             }
         });*/
-        baseView.findViewById(R.id.size)
+        baseView.requireViewById(R.id.size)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -354,7 +384,7 @@ public class DoEditorActions {
                             }
                         });
 
-        baseView.findViewById(R.id.quote)
+        baseView.requireViewById(R.id.quote)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -367,19 +397,26 @@ public class DoEditorActions {
                                                     oldComment)); // text we get is escaped, we
                                     // don't want that
                                     showText.setTextIsSelectable(true);
+                                    TranslateUtil.addToSelectionMenu(showText);
                                     int sixteen = DisplayUtil.dpToPxVertical(24);
                                     showText.setPadding(sixteen, 0, sixteen, 0);
-                                    MaterialDialog.Builder builder = new MaterialDialog.Builder(a);
-                                    builder.customView(showText, false)
-                                            .title(R.string.editor_actions_quote_comment)
-                                            .cancelable(true)
-                                            .positiveText(a.getString(R.string.btn_select))
-                                            .onPositive(
-                                                    new MaterialDialog.SingleButtonCallback() {
+                                    MaterialAlertDialogBuilder builder =
+                                            new MaterialAlertDialogBuilder(
+                                                    new ContextThemeWrapper(
+                                                            a,
+                                                            new ColorPreferences(a)
+                                                                    .getFontStyle()
+                                                                    .getBaseId()));
+                                    builder.setView(showText)
+                                            .setTitle(R.string.editor_actions_quote_comment)
+                                            .setCancelable(true)
+                                            .setPositiveButton(
+                                                    a.getString(R.string.btn_select),
+                                                    new DialogInterface.OnClickListener() {
                                                         @Override
                                                         public void onClick(
-                                                                @NonNull MaterialDialog dialog,
-                                                                @NonNull DialogAction which) {
+                                                                DialogInterface dialog,
+                                                                int which) {
                                                             String selected =
                                                                     showText.getText()
                                                                             .toString()
@@ -402,7 +439,7 @@ public class DoEditorActions {
                                                                     editText);
                                                         }
                                                     })
-                                            .negativeText(a.getString(R.string.btn_cancel))
+                                            .setNegativeButton(a.getString(R.string.btn_cancel), null)
                                             .show();
                                     KeyboardUtil.hideKeyboard(
                                             editText.getContext(), editText.getWindowToken(), 0);
@@ -412,7 +449,7 @@ public class DoEditorActions {
                             }
                         });
 
-        baseView.findViewById(R.id.bulletlist)
+        baseView.requireViewById(R.id.bulletlist)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -439,7 +476,7 @@ public class DoEditorActions {
                             }
                         });
 
-        baseView.findViewById(R.id.numlist)
+        baseView.requireViewById(R.id.numlist)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -466,34 +503,50 @@ public class DoEditorActions {
                             }
                         });
 
-        baseView.findViewById(R.id.preview)
+        baseView.requireViewById(R.id.preview)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                List<Extension> extensions =
-                                        Arrays.asList(
-                                                TablesExtension.create(),
-                                                StrikethroughExtension.create());
-                                Parser parser = Parser.builder().extensions(extensions).build();
-                                HtmlRenderer renderer =
-                                        HtmlRenderer.builder().extensions(extensions).build();
-                                Node document = parser.parse(editText.getText().toString());
-                                String html = renderer.render(document);
                                 LayoutInflater inflater = a.getLayoutInflater();
                                 final View dialoglayout =
                                         inflater.inflate(R.layout.parent_comment_dialog, null);
-                                setViews(
-                                        html,
-                                        "NO sub",
-                                        dialoglayout.findViewById(R.id.firstTextView),
-                                        dialoglayout.findViewById(R.id.commentOverflow));
+                                final SpoilerRobotoTextView firstTextView =
+                                        dialoglayout.requireViewById(R.id.firstTextView);
 
-                                new AlertDialog.Builder(a).setView(dialoglayout).show();
+                                // Preview through whichever renderer the post/comment will actually
+                                // use, so the preview matches the result (issue #179). The Markwon
+                                // path is the same one MarkdownImages.renderInto drives for live
+                                // new-Reddit comments/self-text.
+                                if (SettingValues.markdownNewReddit) {
+                                    firstTextView.setVisibility(View.VISIBLE);
+                                    RedditMarkwon.setMarkdown(
+                                            firstTextView, "NO sub", editText.getText().toString());
+                                } else {
+                                    List<Extension> extensions =
+                                            Arrays.asList(
+                                                    TablesExtension.create(),
+                                                    StrikethroughExtension.create());
+                                    Parser parser =
+                                            Parser.builder().extensions(extensions).build();
+                                    HtmlRenderer renderer =
+                                            HtmlRenderer.builder().extensions(extensions).build();
+                                    Node document = parser.parse(editText.getText().toString());
+                                    String html = renderer.render(document);
+                                    // Process Reddit-style superscript (^text)
+                                    html = processSuperscript(html);
+                                    setViews(
+                                            html,
+                                            "NO sub",
+                                            firstTextView,
+                                            dialoglayout.requireViewById(R.id.commentOverflow));
+                                }
+
+                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(a).setView(dialoglayout));
                             }
                         });
 
-        baseView.findViewById(R.id.link)
+        baseView.requireViewById(R.id.link)
                 .setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -501,17 +554,6 @@ public class DoEditorActions {
                                 final LayoutInflater inflater = LayoutInflater.from(a);
                                 final LinearLayout layout =
                                         (LinearLayout) inflater.inflate(R.layout.insert_link, null);
-
-                                int[] attrs = {R.attr.fontColor};
-
-                                TypedArray ta =
-                                        baseView.getContext()
-                                                .obtainStyledAttributes(
-                                                        new ColorPreferences(baseView.getContext())
-                                                                .getFontStyle()
-                                                                .getBaseId(),
-                                                        attrs);
-                                ta.recycle();
 
                                 String selectedText = "";
                                 // if the user highlighted text before inputting a URL, use that
@@ -528,26 +570,31 @@ public class DoEditorActions {
 
                                 final boolean selectedTextNotEmpty = !selectedText.isEmpty();
 
-                                final MaterialDialog dialog =
-                                        new MaterialDialog.Builder(editText.getContext())
-                                                .title(R.string.editor_title_link)
-                                                .customView(layout, false)
-                                                .positiveColorAttr(R.attr.tintColor)
-                                                .positiveText(R.string.editor_action_link)
-                                                .onPositive(
-                                                        new MaterialDialog.SingleButtonCallback() {
+                                final AlertDialog dialog =
+                                        new MaterialAlertDialogBuilder(
+                                                        new ContextThemeWrapper(
+                                                                editText.getContext(),
+                                                                new ColorPreferences(
+                                                                                editText.getContext())
+                                                                        .getFontStyle()
+                                                                        .getBaseId()))
+                                                .setTitle(R.string.editor_title_link)
+                                                .setView(layout)
+                                                .setPositiveButton(
+                                                        R.string.editor_action_link,
+                                                        new DialogInterface.OnClickListener() {
                                                             @Override
                                                             public void onClick(
-                                                                    @NonNull MaterialDialog dialog,
-                                                                    @NonNull DialogAction which) {
+                                                                    DialogInterface dialog,
+                                                                    int which) {
                                                                 final EditText urlBox =
                                                                         (EditText)
-                                                                                dialog.findViewById(
+                                                                                layout.findViewById(
                                                                                         R.id
                                                                                                 .url_box);
                                                                 final EditText textBox =
                                                                         (EditText)
-                                                                                dialog.findViewById(
+                                                                                layout.findViewById(
                                                                                         R.id
                                                                                                 .text_box);
                                                                 dialog.dismiss();
@@ -586,25 +633,25 @@ public class DoEditorActions {
                                                                 }
                                                             }
                                                         })
-                                                .build();
+                                                .create();
 
                                 // Tint the hint text if the base theme is Sepia
                                 if (SettingValues.currentTheme == 5) {
-                                    ((EditText) dialog.findViewById(R.id.url_box))
+                                    ((EditText) layout.requireViewById(R.id.url_box))
                                             .setHintTextColor(
                                                     ContextCompat.getColor(
-                                                            dialog.getContext(),
+                                                            layout.getContext(),
                                                             R.color.md_grey_600));
-                                    ((EditText) dialog.findViewById(R.id.text_box))
+                                    ((EditText) layout.requireViewById(R.id.text_box))
                                             .setHintTextColor(
                                                     ContextCompat.getColor(
-                                                            dialog.getContext(),
+                                                            layout.getContext(),
                                                             R.color.md_grey_600));
                                 }
 
                                 // use the selected text as the text for the link
                                 if (!selectedText.isEmpty()) {
-                                    ((EditText) dialog.findViewById(R.id.text_box))
+                                    ((EditText) layout.requireViewById(R.id.text_box))
                                             .setText(selectedText);
                                 }
 
@@ -623,13 +670,7 @@ public class DoEditorActions {
                                     sStart = editText.getSelectionStart();
                                     sEnd = editText.getSelectionEnd();
                                     handleImageIntent(
-                                            new ArrayList<Uri>() {
-                                                {
-                                                    add(content);
-                                                }
-                                            },
-                                            editText,
-                                            a);
+                                            Collections.singletonList(content), editText, a);
                                 }
                             });
         } catch (Exception e) {
@@ -638,47 +679,67 @@ public class DoEditorActions {
         }
     }
 
-    public static Editable e;
+    @Nullable public static Editable e;
     public static int sStart, sEnd;
+    @Nullable public static EditText currentImageTarget;
+    // When true, the next picked image is uploaded to Reddit (inline) instead of Imgur (link).
+    public static boolean uploadToReddit;
+    // The image-toolbar button per editor, so it can be greyed out after a comment's one allowed
+    // Reddit image.
+    private static final java.util.WeakHashMap<EditText, View> imageButtons =
+            new java.util.WeakHashMap<>();
 
     public static void doDraw(final Activity a, final EditText editText, final FragmentManager fm) {
         final Intent intent = new Intent(a, Draw.class);
         KeyboardUtil.hideKeyboard(editText.getContext(), editText.getWindowToken(), 0);
         e = editText.getText();
 
-        TedImagePicker.with(editText.getContext())
-                .title("Choose a photo")
-                .start(
-                        uri -> {
-                            List<Uri> uris = Collections.singletonList(uri);
-                            Draw.uri = uris.get(0);
-                            Fragment auxiliary = new AuxiliaryFragment();
+        if (a instanceof ComponentActivity) {
+            ComponentActivity componentActivity = (ComponentActivity) a;
+            String key = "doEditorDraw_" + registryCounter.getAndIncrement();
+            ActivityResultLauncher<PickVisualMediaRequest> drawLauncher =
+                    componentActivity
+                            .getActivityResultRegistry()
+                            .register(
+                                    key,
+                                    new ActivityResultContracts.PickVisualMedia(),
+                                    uri -> {
+                                        if (uri != null) {
+                                            Draw.uri = uri;
+                                            Fragment auxiliary = new AuxiliaryFragment();
 
-                            sStart = editText.getSelectionStart();
-                            sEnd = editText.getSelectionEnd();
+                                            sStart = editText.getSelectionStart();
+                                            sEnd = editText.getSelectionEnd();
 
-                            fm.beginTransaction().add(auxiliary, "IMAGE_UPLOAD").commit();
-                            fm.executePendingTransactions();
+                                            fm.beginTransaction()
+                                                    .add(auxiliary, "IMAGE_UPLOAD")
+                                                    .commit();
+                                            fm.executePendingTransactions();
 
-                            auxiliary.startActivityForResult(intent, 3333);
-                        });
+                                            auxiliary.startActivityForResult(intent, 3333);
+                                        }
+                                    });
+            drawLauncher.launch(
+                    new PickVisualMediaRequest.Builder()
+                            .setMediaType(
+                                    ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                            .build());
+        }
     }
 
     public static class AuxiliaryFragment extends Fragment {
         @Override
-        public void onActivityResult(int requestCode, int resultCode, final Intent data) {
+        public void onActivityResult(
+                int requestCode, int resultCode, final @Nullable Intent data) {
             super.onActivityResult(requestCode, resultCode, data);
             if (data != null && data.getData() != null) {
-                handleImageIntent(
-                        new ArrayList<Uri>() {
-                            {
-                                add(data.getData());
-                            }
-                        },
-                        e,
-                        getContext());
+                final Editable target = e;
+                if (target != null) {
+                    handleImageIntent(
+                            Collections.singletonList(data.getData()), target, requireContext());
+                }
 
-                getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+                requireActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
             }
         }
     }
@@ -782,7 +843,7 @@ public class DoEditorActions {
         public UploadImgurDEA(Context c) {
             this.c = c;
             dialog =
-                    new MaterialDialog.Builder(c)
+                    new MaterialProgressDialog.Builder(c)
                             .title(c.getString(R.string.editor_uploading_image))
                             .progress(false, 100)
                             .cancelable(false)
@@ -790,6 +851,9 @@ public class DoEditorActions {
         }
 
         @Override
+        // Reading a single themed attribute (R.attr.fontColor) from a specific style via a
+        // manual int[]; lint's @StyleableRes typedef is too strict for this idiom.
+        @SuppressLint("ResourceType")
         protected void onPostExecute(final JSONObject result) {
             dialog.dismiss();
             try {
@@ -822,47 +886,58 @@ public class DoEditorActions {
                 int sixteen = DisplayUtil.dpToPxVertical(16);
                 layout.setPadding(sixteen, sixteen, sixteen, sixteen);
                 layout.addView(descriptionBox);
-                new MaterialDialog.Builder(c)
-                        .title(R.string.editor_title_link)
-                        .customView(layout, false)
-                        .positiveText(R.string.editor_action_link)
-                        .onPositive(
-                                new MaterialDialog.SingleButtonCallback() {
-                                    @Override
-                                    public void onClick(
-                                            @NonNull MaterialDialog dialog,
-                                            @NonNull DialogAction which) {
-                                        dialog.dismiss();
-                                        String s =
-                                                "["
-                                                        + descriptionBox.getText().toString()
-                                                        + "]("
-                                                        + url
-                                                        + ")";
-                                        if (descriptionBox.getText().toString().trim().isEmpty()) {
-                                            s = url + " ";
-                                        }
-                                        int start = Math.max(sStart, 0);
-                                        int end = Math.max(sEnd, 0);
-                                        if (DoEditorActions.e != null) {
-                                            DoEditorActions.e.insert(Math.max(start, end), s);
-                                            DoEditorActions.e.delete(start, end);
-                                            DoEditorActions.e = null;
-                                        }
-                                        sStart = 0;
-                                        sEnd = 0;
-                                    }
-                                })
-                        .canceledOnTouchOutside(false)
-                        .show();
+                final AlertDialog linkDialog =
+                        new MaterialAlertDialogBuilder(
+                                        new ContextThemeWrapper(
+                                                c,
+                                                new ColorPreferences(c).getFontStyle().getBaseId()))
+                                .setTitle(R.string.editor_title_link)
+                                .setView(layout)
+                                .setPositiveButton(
+                                        R.string.editor_action_link,
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(
+                                                    DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                                String s =
+                                                        "["
+                                                                + descriptionBox
+                                                                        .getText()
+                                                                        .toString()
+                                                                + "]("
+                                                                + url
+                                                                + ")";
+                                                if (descriptionBox
+                                                        .getText()
+                                                        .toString()
+                                                        .trim()
+                                                        .isEmpty()) {
+                                                    s = url + " ";
+                                                }
+                                                int start = Math.max(sStart, 0);
+                                                int end = Math.max(sEnd, 0);
+                                                if (DoEditorActions.e != null) {
+                                                    DoEditorActions.e.insert(
+                                                            Math.max(start, end), s);
+                                                    DoEditorActions.e.delete(start, end);
+                                                    DoEditorActions.e = null;
+                                                }
+                                                sStart = 0;
+                                                sEnd = 0;
+                                            }
+                                        })
+                                .create();
+                linkDialog.setCanceledOnTouchOutside(false);
+                linkDialog.show();
 
             } catch (Exception e) {
-                new AlertDialog.Builder(c)
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(c)
                         .setTitle(R.string.err_title)
                         .setMessage(R.string.editor_err_msg)
                         .setPositiveButton(R.string.btn_ok, null)
-                        .show();
-                e.printStackTrace();
+                        );
+                LogUtil.e(e, "DoEditorActions.onClick failed");
             }
         }
     }
@@ -872,7 +947,7 @@ public class DoEditorActions {
         public UploadImgurAlbumDEA(Context c) {
             this.c = c;
             dialog =
-                    new MaterialDialog.Builder(c)
+                    new MaterialProgressDialog.Builder(c)
                             .title(c.getString(R.string.editor_uploading_image))
                             .progress(false, 100)
                             .cancelable(false)
@@ -880,6 +955,9 @@ public class DoEditorActions {
         }
 
         @Override
+        // Reading a single themed attribute (R.attr.fontColor) from a specific style via a
+        // manual int[]; lint's @StyleableRes typedef is too strict for this idiom.
+        @SuppressLint("ResourceType")
         protected void onPostExecute(final String result) {
             dialog.dismiss();
             try {
@@ -909,46 +987,223 @@ public class DoEditorActions {
                 int sixteen = DisplayUtil.dpToPxVertical(16);
                 layout.setPadding(sixteen, sixteen, sixteen, sixteen);
                 layout.addView(descriptionBox);
-                new MaterialDialog.Builder(c)
-                        .title(R.string.editor_title_link)
-                        .customView(layout, false)
-                        .onPositive(
-                                new MaterialDialog.SingleButtonCallback() {
-                                    @Override
-                                    public void onClick(MaterialDialog dialog, DialogAction which) {
-                                        dialog.dismiss();
-                                        String s =
-                                                "["
-                                                        + descriptionBox.getText().toString()
-                                                        + "]("
-                                                        + finalUrl
-                                                        + ")";
-                                        int start = Math.max(sStart, 0);
-                                        int end = Math.max(sEnd, 0);
-                                        DoEditorActions.e.insert(Math.max(start, end), s);
-                                        DoEditorActions.e.delete(start, end);
-                                        DoEditorActions.e = null;
-                                        sStart = 0;
-                                        sEnd = 0;
-                                    }
-                                })
-                        .positiveText(R.string.editor_action_link)
-                        .canceledOnTouchOutside(false)
-                        .show();
+                final AlertDialog linkDialog =
+                        new MaterialAlertDialogBuilder(
+                                        new ContextThemeWrapper(
+                                                c,
+                                                new ColorPreferences(c).getFontStyle().getBaseId()))
+                                .setTitle(R.string.editor_title_link)
+                                .setView(layout)
+                                .setPositiveButton(
+                                        R.string.editor_action_link,
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(
+                                                    DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                                String s =
+                                                        "["
+                                                                + descriptionBox
+                                                                        .getText()
+                                                                        .toString()
+                                                                + "]("
+                                                                + finalUrl
+                                                                + ")";
+                                                int start = Math.max(sStart, 0);
+                                                int end = Math.max(sEnd, 0);
+                                                if (DoEditorActions.e != null) {
+                                                    DoEditorActions.e.insert(
+                                                            Math.max(start, end), s);
+                                                    DoEditorActions.e.delete(start, end);
+                                                    DoEditorActions.e = null;
+                                                }
+                                                sStart = 0;
+                                                sEnd = 0;
+                                            }
+                                        })
+                                .create();
+                linkDialog.setCanceledOnTouchOutside(false);
+                linkDialog.show();
 
             } catch (Exception e) {
-                new AlertDialog.Builder(c)
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(c)
                         .setTitle(R.string.err_title)
                         .setMessage(R.string.editor_err_msg)
                         .setPositiveButton(R.string.btn_ok, null)
-                        .show();
-                e.printStackTrace();
+                        );
+                LogUtil.e(e, "DoEditorActions.onClick failed");
             }
         }
     }
 
     public static void handleImageIntent(List<Uri> uris, EditText ed, Context c) {
-        handleImageIntent(uris, ed.getText(), c);
+        if (uploadToReddit) {
+            uploadToReddit = false;
+            uploadImageToReddit(uris, ed, c);
+        } else {
+            handleImageIntent(uris, ed.getText(), c);
+        }
+    }
+
+    /**
+     * Ask the user whether the selected image should be uploaded to Reddit (rendered inline) or to
+     * Imgur (inserted as a link). When the user is logged out, Reddit upload is not possible so we
+     * go straight to Imgur.
+     */
+    private static void showImageUploadChoice(
+            final Activity a, final Runnable onImgur, final Runnable onReddit) {
+        if (!Authentication.isLoggedIn
+                || Authentication.name == null
+                || Authentication.name.equalsIgnoreCase("LOGGEDOUT")) {
+            onImgur.run();
+            return;
+        }
+
+        new MaterialAlertDialogBuilder(
+                        new ContextThemeWrapper(
+                                a, new ColorPreferences(a).getFontStyle().getBaseId()))
+                .setTitle(R.string.editor_upload_image_title)
+                .setItems(
+                        new CharSequence[] {
+                            a.getString(R.string.editor_upload_reddit),
+                            a.getString(R.string.editor_upload_imgur)
+                        },
+                        (dialog, which) -> {
+                            if (which == 0) {
+                                onReddit.run();
+                            } else {
+                                onImgur.run();
+                            }
+                        })
+                .setNegativeButton(R.string.btn_cancel, null)
+                .show();
+    }
+
+    private static void launchImagePicker(
+            final EditText editText,
+            final Activity a,
+            @Nullable final ActivityResultLauncher<PickVisualMediaRequest> imageLauncher) {
+        if (imageLauncher != null) {
+            imageLauncher.launch(
+                    new PickVisualMediaRequest.Builder()
+                            .setMediaType(
+                                    ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                            .build());
+        } else if (a instanceof ComponentActivity) {
+            ComponentActivity componentActivity = (ComponentActivity) a;
+            String key = "doEditorImage_" + registryCounter.getAndIncrement();
+            ActivityResultLauncher<PickVisualMediaRequest> launcher =
+                    componentActivity
+                            .getActivityResultRegistry()
+                            .register(
+                                    key,
+                                    new ActivityResultContracts.PickVisualMedia(),
+                                    uri -> {
+                                        if (uri != null) {
+                                            ArrayList<Uri> uriList = new ArrayList<>();
+                                            uriList.add(uri);
+                                            handleImageIntent(
+                                                    uriList, editText, editText.getContext());
+                                            KeyboardUtil.hideKeyboard(
+                                                    editText.getContext(),
+                                                    editText.getWindowToken(),
+                                                    0);
+                                        }
+                                    });
+            launcher.launch(
+                    new PickVisualMediaRequest.Builder()
+                            .setMediaType(
+                                    ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                            .build());
+        }
+    }
+
+    public static void uploadImageToReddit(List<Uri> uris, EditText editText, Context c) {
+        if (uris.isEmpty()) {
+            return;
+        }
+        try {
+            new UploadRedditImageTask(c, editText).execute(uris.get(0));
+        } catch (Exception e) {
+            LogUtil.e(e, "DoEditorActions.uploadImageToReddit failed");
+        }
+    }
+
+    private static void setImageButtonEnabled(@Nullable View v, boolean enabled) {
+        if (v == null) {
+            return;
+        }
+        v.setEnabled(enabled);
+        v.setAlpha(enabled ? 1f : 0.4f);
+    }
+
+    /** Inserts a Reddit-uploaded image reference at the editor's cursor, newline-aware. */
+    private static void insertRedditImage(EditText editText, String key) {
+        int start = Math.max(editText.getSelectionStart(), 0);
+        int end = Math.max(editText.getSelectionEnd(), 0);
+        int realStart = Math.min(start, end);
+
+        String insert;
+        if (realStart > 0
+                && editText.getText().toString().charAt(realStart - 1) != '\n') {
+            insert = "\n![](" + key + ")\n";
+        } else {
+            insert = "![](" + key + ")\n";
+        }
+        editText.getText().replace(realStart, Math.max(start, end), insert);
+    }
+
+    private static class UploadRedditImageTask extends android.os.AsyncTask<Uri, Void, Object> {
+        private final Context c;
+        private final EditText editText;
+
+        @SuppressWarnings("NullAway.Init") // assigned in onPreExecute, before doInBackground
+        private MaterialProgressDialog dialog;
+
+        UploadRedditImageTask(Context c, EditText editText) {
+            this.c = c;
+            this.editText = editText;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            dialog =
+                    new MaterialProgressDialog.Builder(c)
+                            .title(c.getString(R.string.editor_uploading_reddit))
+                            .progress(true, 0)
+                            .cancelable(false)
+                            .show();
+        }
+
+        @Override
+        protected Object doInBackground(Uri... uris) {
+            try {
+                return me.edgan.redditslide.util.RedditMediaUpload.upload(c, uris[0]);
+            } catch (Exception e) {
+                LogUtil.e(e, "RedditMediaUpload failed");
+                return e;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Object result) {
+            if (dialog != null) {
+                dialog.dismiss();
+            }
+            if (result instanceof me.edgan.redditslide.markdown.UploadedImage) {
+                me.edgan.redditslide.markdown.UploadedImage image =
+                        (me.edgan.redditslide.markdown.UploadedImage) result;
+                insertRedditImage(editText, image.imageUrlOrKey);
+                me.edgan.redditslide.util.RedditImageUploads.add(editText, image);
+                // Comments allow only one inline Reddit image; grey out the button after the first.
+                if (editText.getId() != R.id.bodytext) {
+                    setImageButtonEnabled(imageButtons.get(editText), false);
+                }
+                Toast.makeText(c, R.string.editor_reddit_upload_success, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(c, R.string.editor_reddit_upload_failed, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     public static void handleImageIntent(List<Uri> uris, Editable ed, Context c) {
@@ -957,15 +1212,25 @@ public class DoEditorActions {
             try {
                 new UploadImgurDEA(c).execute(uris.get(0));
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.e(e, "DoEditorActions.handleImageIntent failed");
             }
         } else {
             // Multiple images
             try {
                 new UploadImgurAlbumDEA(c).execute(uris.toArray(new Uri[0]));
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.e(e, "DoEditorActions.handleImageIntent failed");
             }
         }
+    }
+
+    /**
+     * Processes Reddit-style superscript formatting (^text) and converts it to HTML.
+     * Matches text that starts with ^ and continues until whitespace or end of line.
+     */
+    private static String processSuperscript(String html) {
+        // Pattern to match ^text (caret followed by text until whitespace or end)
+        // This matches Reddit's superscript behavior
+        return html.replaceAll("\\^([^\\s]+)", "<sup><small>$1</small></sup>");
     }
 }

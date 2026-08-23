@@ -2,19 +2,22 @@ package me.edgan.redditslide.test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import android.net.Uri;
-
+import androidx.annotation.Nullable;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.OpenRedditLink.RedditLinkType;
-
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
+@RunWith(RobolectricTestRunner.class)
 public class OpenRedditLinkTest {
 
     // Less characters
-    private String formatURL(String url) {
+    private @Nullable String formatURL(String url) {
         Uri uri = OpenRedditLink.formatRedditUrl(url);
 
         if (uri == null) {
@@ -26,6 +29,7 @@ public class OpenRedditLinkTest {
 
     private OpenRedditLink.RedditLinkType getType(String url) {
         Uri uri = OpenRedditLink.formatRedditUrl(url);
+        assertNotNull("every url this helper is given is a reddit url", uri);
 
         return OpenRedditLink.getRedditLinkType(uri);
     }
@@ -42,6 +46,28 @@ public class OpenRedditLinkTest {
         assertThat(
                 getType("https://www.reddit.com/r/announcements/comments/eorhm//c19qk6j/"),
                 is(RedditLinkType.COMMENT_PERMALINK));
+        // Newer Reddit permalink form: /comments/$post/comment/$comment (no title slug)
+        assertThat(
+                getType(
+                        "https://www.reddit.com/r/oddlysatisfying/comments/1k1hl95/comment/mnn7j9x/?context=3"),
+                is(RedditLinkType.COMMENT_PERMALINK));
+    }
+
+    @Test
+    public void detectsRelativeMentionHrefs() {
+        // The relative hrefs MentionPostProcessor hands to routing for a mention that continues
+        // into a path (issue #356) must resolve to the destination the path names, not just the
+        // subreddit.
+        assertThat(
+                getType("/r/sysadmin/comments/1uvz7ns/telstra_australias_largest_telco/"),
+                is(RedditLinkType.SUBMISSION));
+        assertThat(
+                getType("/r/sysadmin/comments/1uvz7ns/slug/p28dgah/"),
+                is(RedditLinkType.COMMENT_PERMALINK));
+        assertThat(getType("/r/sysadmin/wiki/index"), is(RedditLinkType.WIKI));
+        assertThat(getType("/u/spez/comments/abc/slug/"), is(RedditLinkType.SUBMISSION));
+        assertThat(getType("/r/aa+bb"), is(RedditLinkType.SUBREDDIT));
+        assertThat(getType("/r/reddit.com"), is(RedditLinkType.SUBREDDIT));
     }
 
     @Test
@@ -94,7 +120,7 @@ public class OpenRedditLinkTest {
 
     @Test
     public void detectsShortened() {
-        assertThat(getType("https://reddit.com/comments/eorhm/"), is(RedditLinkType.SHORTENED));
+        assertThat(getType("https://redd.it/eorhm/"), is(RedditLinkType.SHORTENED));
     }
 
     @Test
@@ -109,6 +135,14 @@ public class OpenRedditLinkTest {
     public void detectsSubmissionWithoutSub() {
         assertThat(
                 getType("https://www.reddit.com/comments/eorhm/reddit_30_less_typing/"),
+                is(RedditLinkType.SUBMISSION_WITHOUT_SUB));
+    }
+
+    @Test
+    public void detectsGallery() {
+        // Gallery links carry the submission id and must open in-app, not fall through to a browser
+        assertThat(
+                getType("https://www.reddit.com/gallery/1ufupl8"),
                 is(RedditLinkType.SUBMISSION_WITHOUT_SUB));
     }
 

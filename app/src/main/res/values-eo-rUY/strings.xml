@@ -61,7 +61,6 @@
     <string name="font_size_tiny">Eta</string>
     <!-- For editing the submission card layout -->
     <!-- Settings for Multi-column view -->
-    <string name="multi_column_landscape">Horizontala orientiĝo</string>
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Vi</string>
     <string name="drawer_add_account">Aldoni konton</string>

@@ -5,9 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import me.edgan.redditslide.R;
 
 public class BlankFragment extends Fragment {
@@ -16,9 +15,11 @@ public class BlankFragment extends Fragment {
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.blank_fragment, container, false);
-        v2 = v.findViewById(R.id.back);
+        v2 = v.requireViewById(R.id.back);
         realBack = v;
         return v;
     }

@@ -8,8 +8,10 @@ import com.devspark.robototextview.RobotoTypefaces;
 
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.Visuals.FontPreferences;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by carlo_000 on 1/10/2016. */
+@NullMarked
 public class TitleTextView extends SpoilerRobotoTextView {
     public TitleTextView(Context c) {
         super(c);

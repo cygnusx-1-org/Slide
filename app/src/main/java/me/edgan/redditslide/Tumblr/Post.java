@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Tumblr;
 
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -44,82 +46,82 @@ import java.util.Map;
 public class Post {
 
     @JsonProperty("blog_name")
-    private String blogName;
+    @Nullable private String blogName;
 
     @JsonProperty("id")
-    private Double id;
+    @Nullable private Double id;
 
     @JsonProperty("post_url")
-    private String postUrl;
+    @Nullable private String postUrl;
 
     @JsonProperty("slug")
-    private String slug;
+    @Nullable private String slug;
 
     @JsonProperty("type")
-    private String type;
+    @Nullable private String type;
 
     @JsonProperty("date")
-    private String date;
+    @Nullable private String date;
 
     @JsonProperty("timestamp")
-    private Double timestamp;
+    @Nullable private Double timestamp;
 
     @JsonProperty("state")
-    private String state;
+    @Nullable private String state;
 
     @JsonProperty("format")
-    private String format;
+    @Nullable private String format;
 
     @JsonProperty("reblog_key")
-    private String reblogKey;
+    @Nullable private String reblogKey;
 
     @JsonProperty("tags")
-    private List<String> tags = new ArrayList<String>();
+    @Nullable private List<String> tags = new ArrayList<String>();
 
     @JsonProperty("short_url")
-    private String shortUrl;
+    @Nullable private String shortUrl;
 
     @JsonProperty("summary")
-    private String summary;
+    @Nullable private String summary;
 
     @JsonProperty("recommended_source")
-    private Object recommendedSource;
+    @Nullable private Object recommendedSource;
 
     @JsonProperty("recommended_color")
-    private Object recommendedColor;
+    @Nullable private Object recommendedColor;
 
     @JsonProperty("highlighted")
-    private List<Object> highlighted = new ArrayList<Object>();
+    @Nullable private List<Object> highlighted = new ArrayList<Object>();
 
     @JsonProperty("note_count")
-    private Integer noteCount;
+    @Nullable private Integer noteCount;
 
     @JsonProperty("caption")
-    private String caption;
+    @Nullable private String caption;
 
     @JsonProperty("reblog")
-    private Reblog reblog;
+    @Nullable private Reblog reblog;
 
     @JsonProperty("trail")
-    private List<Trail> trail = new ArrayList<Trail>();
+    @Nullable private List<Trail> trail = new ArrayList<Trail>();
 
     @JsonProperty("photoset_layout")
-    private String photosetLayout;
+    @Nullable private String photosetLayout;
 
     @JsonProperty("photos")
-    private List<Photo> photos = new ArrayList<Photo>();
+    @Nullable private List<Photo> photos = new ArrayList<Photo>();
 
     @JsonProperty("can_send_in_message")
-    private Boolean canSendInMessage;
+    @Nullable private Boolean canSendInMessage;
 
     @JsonProperty("can_like")
-    private Boolean canLike;
+    @Nullable private Boolean canLike;
 
     @JsonProperty("can_reblog")
-    private Boolean canReblog;
+    @Nullable private Boolean canReblog;
 
     @JsonProperty("display_avatar")
-    private Boolean displayAvatar;
+    @Nullable private Boolean displayAvatar;
 
     @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -127,6 +129,7 @@ public class Post {
      * @return The blogName
      */
     @JsonProperty("blog_name")
+    @Nullable
     public String getBlogName() {
         return blogName;
     }
@@ -135,7 +138,7 @@ public class Post {
      * @param blogName The blog_name
      */
     @JsonProperty("blog_name")
-    public void setBlogName(String blogName) {
+    public void setBlogName(@Nullable String blogName) {
         this.blogName = blogName;
     }
 
@@ -143,6 +146,7 @@ public class Post {
      * @return The id
      */
     @JsonProperty("id")
+    @Nullable
     public Double getId() {
         return id;
     }
@@ -151,7 +155,7 @@ public class Post {
      * @param id The id
      */
     @JsonProperty("id")
-    public void setId(Double id) {
+    public void setId(@Nullable Double id) {
         this.id = id;
     }
 
@@ -159,6 +163,7 @@ public class Post {
      * @return The postUrl
      */
     @JsonProperty("post_url")
+    @Nullable
     public String getPostUrl() {
         return postUrl;
     }
@@ -167,7 +172,7 @@ public class Post {
      * @param postUrl The post_url
      */
     @JsonProperty("post_url")
-    public void setPostUrl(String postUrl) {
+    public void setPostUrl(@Nullable String postUrl) {
         this.postUrl = postUrl;
     }
 
@@ -175,6 +180,7 @@ public class Post {
      * @return The slug
      */
     @JsonProperty("slug")
+    @Nullable
     public String getSlug() {
         return slug;
     }
@@ -183,7 +189,7 @@ public class Post {
      * @param slug The slug
      */
     @JsonProperty("slug")
-    public void setSlug(String slug) {
+    public void setSlug(@Nullable String slug) {
         this.slug = slug;
     }
 
@@ -191,6 +197,7 @@ public class Post {
      * @return The type
      */
     @JsonProperty("type")
+    @Nullable
     public String getType() {
         return type;
     }
@@ -199,7 +206,7 @@ public class Post {
      * @param type The type
      */
     @JsonProperty("type")
-    public void setType(String type) {
+    public void setType(@Nullable String type) {
         this.type = type;
     }
 
@@ -207,6 +214,7 @@ public class Post {
      * @return The date
      */
     @JsonProperty("date")
+    @Nullable
     public String getDate() {
         return date;
     }
@@ -215,7 +223,7 @@ public class Post {
      * @param date The date
      */
     @JsonProperty("date")
-    public void setDate(String date) {
+    public void setDate(@Nullable String date) {
         this.date = date;
     }
 
@@ -223,6 +231,7 @@ public class Post {
      * @return The timestamp
      */
     @JsonProperty("timestamp")
+    @Nullable
     public Double getTimestamp() {
         return timestamp;
     }
@@ -231,7 +240,7 @@ public class Post {
      * @param timestamp The timestamp
      */
     @JsonProperty("timestamp")
-    public void setTimestamp(Double timestamp) {
+    public void setTimestamp(@Nullable Double timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -239,6 +248,7 @@ public class Post {
      * @return The state
      */
     @JsonProperty("state")
+    @Nullable
     public String getState() {
         return state;
     }
@@ -247,7 +257,7 @@ public class Post {
      * @param state The state
      */
     @JsonProperty("state")
-    public void setState(String state) {
+    public void setState(@Nullable String state) {
         this.state = state;
     }
 
@@ -255,6 +265,7 @@ public class Post {
      * @return The format
      */
     @JsonProperty("format")
+    @Nullable
     public String getFormat() {
         return format;
     }
@@ -263,7 +274,7 @@ public class Post {
      * @param format The format
      */
     @JsonProperty("format")
-    public void setFormat(String format) {
+    public void setFormat(@Nullable String format) {
         this.format = format;
     }
 
@@ -271,6 +282,7 @@ public class Post {
      * @return The reblogKey
      */
     @JsonProperty("reblog_key")
+    @Nullable
     public String getReblogKey() {
         return reblogKey;
     }
@@ -279,7 +291,7 @@ public class Post {
      * @param reblogKey The reblog_key
      */
     @JsonProperty("reblog_key")
-    public void setReblogKey(String reblogKey) {
+    public void setReblogKey(@Nullable String reblogKey) {
         this.reblogKey = reblogKey;
     }
 
@@ -287,6 +299,7 @@ public class Post {
      * @return The tags
      */
     @JsonProperty("tags")
+    @Nullable
     public List<String> getTags() {
         return tags;
     }
@@ -295,7 +308,7 @@ public class Post {
      * @param tags The tags
      */
     @JsonProperty("tags")
-    public void setTags(List<String> tags) {
+    public void setTags(@Nullable List<String> tags) {
         this.tags = tags;
     }
 
@@ -303,6 +316,7 @@ public class Post {
      * @return The shortUrl
      */
     @JsonProperty("short_url")
+    @Nullable
     public String getShortUrl() {
         return shortUrl;
     }
@@ -311,7 +325,7 @@ public class Post {
      * @param shortUrl The short_url
      */
     @JsonProperty("short_url")
-    public void setShortUrl(String shortUrl) {
+    public void setShortUrl(@Nullable String shortUrl) {
         this.shortUrl = shortUrl;
     }
 
@@ -319,6 +333,7 @@ public class Post {
      * @return The summary
      */
     @JsonProperty("summary")
+    @Nullable
     public String getSummary() {
         return summary;
     }
@@ -327,7 +342,7 @@ public class Post {
      * @param summary The summary
      */
     @JsonProperty("summary")
-    public void setSummary(String summary) {
+    public void setSummary(@Nullable String summary) {
         this.summary = summary;
     }
 
@@ -335,6 +350,7 @@ public class Post {
      * @return The recommendedSource
      */
     @JsonProperty("recommended_source")
+    @Nullable
     public Object getRecommendedSource() {
         return recommendedSource;
     }
@@ -343,7 +359,7 @@ public class Post {
      * @param recommendedSource The recommended_source
      */
     @JsonProperty("recommended_source")
-    public void setRecommendedSource(Object recommendedSource) {
+    public void setRecommendedSource(@Nullable Object recommendedSource) {
         this.recommendedSource = recommendedSource;
     }
 
@@ -351,6 +367,7 @@ public class Post {
      * @return The recommendedColor
      */
     @JsonProperty("recommended_color")
+    @Nullable
     public Object getRecommendedColor() {
         return recommendedColor;
     }
@@ -359,7 +376,7 @@ public class Post {
      * @param recommendedColor The recommended_color
      */
     @JsonProperty("recommended_color")
-    public void setRecommendedColor(Object recommendedColor) {
+    public void setRecommendedColor(@Nullable Object recommendedColor) {
         this.recommendedColor = recommendedColor;
     }
 
@@ -367,6 +384,7 @@ public class Post {
      * @return The highlighted
      */
     @JsonProperty("highlighted")
+    @Nullable
     public List<Object> getHighlighted() {
         return highlighted;
     }
@@ -375,7 +393,7 @@ public class Post {
      * @param highlighted The highlighted
      */
     @JsonProperty("highlighted")
-    public void setHighlighted(List<Object> highlighted) {
+    public void setHighlighted(@Nullable List<Object> highlighted) {
         this.highlighted = highlighted;
     }
 
@@ -383,6 +401,7 @@ public class Post {
      * @return The noteCount
      */
     @JsonProperty("note_count")
+    @Nullable
     public Integer getNoteCount() {
         return noteCount;
     }
@@ -391,7 +410,7 @@ public class Post {
      * @param noteCount The note_count
      */
     @JsonProperty("note_count")
-    public void setNoteCount(Integer noteCount) {
+    public void setNoteCount(@Nullable Integer noteCount) {
         this.noteCount = noteCount;
     }
 
@@ -399,6 +418,7 @@ public class Post {
      * @return The caption
      */
     @JsonProperty("caption")
+    @Nullable
     public String getCaption() {
         return caption;
     }
@@ -407,7 +427,7 @@ public class Post {
      * @param caption The caption
      */
     @JsonProperty("caption")
-    public void setCaption(String caption) {
+    public void setCaption(@Nullable String caption) {
         this.caption = caption;
     }
 
@@ -415,6 +435,7 @@ public class Post {
      * @return The reblog
      */
     @JsonProperty("reblog")
+    @Nullable
     public Reblog getReblog() {
         return reblog;
     }
@@ -423,7 +444,7 @@ public class Post {
      * @param reblog The reblog
      */
     @JsonProperty("reblog")
-    public void setReblog(Reblog reblog) {
+    public void setReblog(@Nullable Reblog reblog) {
         this.reblog = reblog;
     }
 
@@ -431,6 +452,7 @@ public class Post {
      * @return The trail
      */
     @JsonProperty("trail")
+    @Nullable
     public List<Trail> getTrail() {
         return trail;
     }
@@ -439,7 +461,7 @@ public class Post {
      * @param trail The trail
      */
     @JsonProperty("trail")
-    public void setTrail(List<Trail> trail) {
+    public void setTrail(@Nullable List<Trail> trail) {
         this.trail = trail;
     }
 
@@ -447,6 +469,7 @@ public class Post {
      * @return The photosetLayout
      */
     @JsonProperty("photoset_layout")
+    @Nullable
     public String getPhotosetLayout() {
         return photosetLayout;
     }
@@ -455,7 +478,7 @@ public class Post {
      * @param photosetLayout The photoset_layout
      */
     @JsonProperty("photoset_layout")
-    public void setPhotosetLayout(String photosetLayout) {
+    public void setPhotosetLayout(@Nullable String photosetLayout) {
         this.photosetLayout = photosetLayout;
     }
 
@@ -463,6 +486,7 @@ public class Post {
      * @return The photos
      */
     @JsonProperty("photos")
+    @Nullable
     public List<Photo> getPhotos() {
         return photos;
     }
@@ -471,7 +495,7 @@ public class Post {
      * @param photos The photos
      */
     @JsonProperty("photos")
-    public void setPhotos(List<Photo> photos) {
+    public void setPhotos(@Nullable List<Photo> photos) {
         this.photos = photos;
     }
 
@@ -479,6 +503,7 @@ public class Post {
      * @return The canSendInMessage
      */
     @JsonProperty("can_send_in_message")
+    @Nullable
     public Boolean getCanSendInMessage() {
         return canSendInMessage;
     }
@@ -487,7 +512,7 @@ public class Post {
      * @param canSendInMessage The can_send_in_message
      */
     @JsonProperty("can_send_in_message")
-    public void setCanSendInMessage(Boolean canSendInMessage) {
+    public void setCanSendInMessage(@Nullable Boolean canSendInMessage) {
         this.canSendInMessage = canSendInMessage;
     }
 
@@ -495,6 +520,7 @@ public class Post {
      * @return The canLike
      */
     @JsonProperty("can_like")
+    @Nullable
     public Boolean getCanLike() {
         return canLike;
     }
@@ -503,7 +529,7 @@ public class Post {
      * @param canLike The can_like
      */
     @JsonProperty("can_like")
-    public void setCanLike(Boolean canLike) {
+    public void setCanLike(@Nullable Boolean canLike) {
         this.canLike = canLike;
     }
 
@@ -511,6 +537,7 @@ public class Post {
      * @return The canReblog
      */
     @JsonProperty("can_reblog")
+    @Nullable
     public Boolean getCanReblog() {
         return canReblog;
     }
@@ -519,7 +546,7 @@ public class Post {
      * @param canReblog The can_reblog
      */
     @JsonProperty("can_reblog")
-    public void setCanReblog(Boolean canReblog) {
+    public void setCanReblog(@Nullable Boolean canReblog) {
         this.canReblog = canReblog;
     }
 
@@ -527,6 +554,7 @@ public class Post {
      * @return The displayAvatar
      */
     @JsonProperty("display_avatar")
+    @Nullable
     public Boolean getDisplayAvatar() {
         return displayAvatar;
     }
@@ -535,7 +563,7 @@ public class Post {
      * @param displayAvatar The display_avatar
      */
     @JsonProperty("display_avatar")
-    public void setDisplayAvatar(Boolean displayAvatar) {
+    public void setDisplayAvatar(@Nullable Boolean displayAvatar) {
         this.displayAvatar = displayAvatar;
     }
 

@@ -14,12 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.cocosw.bottomsheet.BottomSheet;
 import com.fasterxml.jackson.databind.JsonNode;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import me.edgan.redditslide.Activities.Album;
 import me.edgan.redditslide.Activities.AlbumPager;
 import me.edgan.redditslide.Activities.CommentsScreen;
@@ -36,19 +35,17 @@ import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
-import me.edgan.redditslide.SubmissionViews.PopulateSubmissionViewHolder;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.BottomSheet;
 import me.edgan.redditslide.util.CompatUtil;
+import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.JsonUtil;
 import me.edgan.redditslide.util.LinkUtil;
-
+import me.edgan.redditslide.util.MiscUtil;
+import me.edgan.redditslide.util.SubmissionThumbnailHelper;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Thumbnails;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final Gallery main;
@@ -179,7 +176,7 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             if (main != null) {
                                 BottomSheet.Builder b =
                                         new BottomSheet.Builder(main)
-                                                .title(submission.getUrl())
+                                                .title(MiscUtil.orEmpty(submission.getUrl()))
                                                 .grid();
                                 int[] attrs = new int[] {R.attr.tintColor};
                                 TypedArray ta = main.obtainStyledAttributes(attrs);
@@ -215,21 +212,17 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                                     @Override
                                                     public void onClick(
                                                             DialogInterface dialog, int which) {
-                                                        switch (which) {
-                                                            case R.id.open_link:
-                                                                LinkUtil.openExternally(
-                                                                        submission.getUrl());
-                                                                break;
-                                                            case R.id.share_link:
-                                                                Reddit.defaultShareText(
-                                                                        "",
-                                                                        submission.getUrl(),
-                                                                        main);
-                                                                break;
-                                                            case R.id.copy_link:
-                                                                LinkUtil.copyUrl(
-                                                                        submission.getUrl(), main);
-                                                                break;
+                                                        if (which == R.id.open_link) {
+                                                            LinkUtil.openExternally(
+                                                                    submission.getUrl());
+                                                        } else if (which == R.id.share_link) {
+                                                            Reddit.defaultShareText(
+                                                                    "", submission.getUrl(), main);
+                                                        } else if (which == R.id.copy_link) {
+                                                            LinkUtil.copyUrl(
+                                                                    MiscUtil.orEmpty(
+                                                                            submission.getUrl()),
+                                                                    main);
                                                         }
                                                     }
                                                 })
@@ -255,7 +248,8 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                             myIntent.putExtra(
                                                     MediaView.EXTRA_URL, submission.getUrl());
                                             myIntent.putExtra(
-                                                    EXTRA_SUBMISSION_TITLE, submission.getTitle());
+                                                    EXTRA_SUBMISSION_TITLE,
+                                                    FileUtil.buildDownloadName(submission));
                                             main.startActivity(myIntent);
                                         } else {
                                             LinkUtil.openExternally(submission.getUrl());
@@ -265,7 +259,7 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                     case DEVIANTART:
                                     case XKCD:
                                     case IMAGE:
-                                        PopulateSubmissionViewHolder.openImage(
+                                        SubmissionThumbnailHelper.openImage(
                                                 type,
                                                 main,
                                                 submission,
@@ -278,8 +272,8 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                                     CompatUtil.fromHtml(
                                                                     submission
                                                                             .getDataNode()
-                                                                            .get("media_embed")
-                                                                            .get("content")
+                                                                            .path("media_embed")
+                                                                            .path("content")
                                                                             .asText())
                                                             .toString();
                                             {
@@ -292,7 +286,7 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                         }
                                         break;
                                     case REDDIT:
-                                        PopulateSubmissionViewHolder.openRedditContent(
+                                        SubmissionThumbnailHelper.openRedditContent(
                                                 submission.getUrl(), main);
                                         break;
                                     case LINK:
@@ -309,7 +303,7 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                                 i.putExtra(AlbumPager.SUBREDDIT, subreddit);
                                                 i.putExtra(
                                                         EXTRA_SUBMISSION_TITLE,
-                                                        submission.getTitle());
+                                                        FileUtil.buildDownloadName(submission));
                                                 i.putExtra(Album.EXTRA_URL, submission.getUrl());
                                             } else {
                                                 i = new Intent(main, Album.class);
@@ -317,7 +311,7 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                                 i.putExtra(Album.EXTRA_URL, submission.getUrl());
                                                 i.putExtra(
                                                         EXTRA_SUBMISSION_TITLE,
-                                                        submission.getTitle());
+                                                        FileUtil.buildDownloadName(submission));
                                             }
                                             main.startActivity(i);
                                         } else {
@@ -339,7 +333,8 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                                         submission.getSubredditName());
                                             }
                                             i.putExtra(
-                                                    EXTRA_SUBMISSION_TITLE, submission.getTitle());
+                                                    EXTRA_SUBMISSION_TITLE,
+                                                    FileUtil.buildDownloadName(submission));
 
                                             i.putExtra(
                                                     RedditGallery.SUBREDDIT,
@@ -380,7 +375,7 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                         }
                                         break;
                                     case GIF:
-                                        PopulateSubmissionViewHolder.openGif(
+                                        SubmissionThumbnailHelper.openGif(
                                                 main,
                                                 submission,
                                                 holder.getBindingAdapterPosition());
@@ -418,9 +413,9 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         public AlbumViewHolder(View itemView) {
             super(itemView);
-            comments = itemView.findViewById(R.id.comments);
-            image = itemView.findViewById(R.id.image);
-            type = itemView.findViewById(R.id.type);
+            comments = itemView.requireViewById(R.id.comments);
+            image = itemView.requireViewById(R.id.image);
+            type = itemView.requireViewById(R.id.type);
         }
     }
 }

@@ -11,7 +11,9 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.LinkUtil;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class SettingsRedditFragment {
 
     private final Activity context;
@@ -22,20 +24,20 @@ public class SettingsRedditFragment {
 
     public void Bind() {
         final SwitchCompat wantToSeeNsfwSwitch =
-                context.findViewById(R.id.settings_reddit_wantToSeeNsfwContent);
+                context.requireViewById(R.id.settings_reddit_wantToSeeNsfwContent);
         final SwitchCompat hideAllNsfwSwitch =
-                context.findViewById(R.id.settings_reddit_hideAllNsfw);
+                context.requireViewById(R.id.settings_reddit_hideAllNsfw);
         final TextView hideAllNsfwText =
-                context.findViewById(R.id.settings_reddit_hideAllNsfw_text);
+                context.requireViewById(R.id.settings_reddit_hideAllNsfw_text);
         final SwitchCompat hideNsfwPrevCollectionsSwitch =
-                context.findViewById(R.id.settings_reddit_hideNsfwPreviewCollections);
+                context.requireViewById(R.id.settings_reddit_hideNsfwPreviewCollections);
         final TextView hideNsfwPrevCollectionsText =
-                context.findViewById(R.id.settings_reddit_hideNsfwPreviewCollections_text);
+                context.requireViewById(R.id.settings_reddit_hideNsfwPreviewCollections_text);
         final SwitchCompat ignoreSubMediaPrefsSwitch =
-                context.findViewById(R.id.settings_reddit_ignoreSubMediaPrefs);
+                context.requireViewById(R.id.settings_reddit_ignoreSubMediaPrefs);
 
         final RelativeLayout viewRedditPrefsLayout =
-                context.findViewById(R.id.settings_reddit_viewRedditPrefs);
+                context.requireViewById(R.id.settings_reddit_viewRedditPrefs);
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // * NSFW Content */

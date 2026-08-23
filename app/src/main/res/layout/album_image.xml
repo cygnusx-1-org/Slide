@@ -24,16 +24,23 @@
                 android:background="?android:selectableItemBackground"
                 android:orientation="vertical">
 
+            <!-- Hidden by default: an empty TextView still lays out one line, so a row whose adapter
+                 has no title to show would reserve its padding and line height as blank space. Every
+                 adapter that has a title makes this visible itself. -->
             <me.edgan.redditslide.SpoilerRobotoTextView
                     android:id="@+id/imagetitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="16dp"
                     android:textColor="#fff"
-                    android:textSize="14sp">
+                    android:textSize="14sp"
+                    android:visibility="gone">
 
             </me.edgan.redditslide.SpoilerRobotoTextView>
 
+            <!-- adjustViewBounds is not decorative: when the entry reports no dimensions the adapter
+                 calls setAspectRatio(0), and MaxHeightImageView then falls through to ImageView,
+                 which needs this to derive a height that keeps the image's aspect ratio. -->
             <me.edgan.redditslide.Views.MaxHeightImageView
                     android:id="@+id/image"
                     android:layout_width="match_parent"

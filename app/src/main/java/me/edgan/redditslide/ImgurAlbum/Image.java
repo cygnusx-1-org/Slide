@@ -1,5 +1,7 @@
 package me.edgan.redditslide.ImgurAlbum;
 
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -27,37 +29,37 @@ import java.util.Map;
 public class Image {
 
     @JsonProperty("hash")
-    private String hash;
+    @Nullable private String hash;
 
     @JsonProperty("title")
-    private String title;
+    @Nullable private String title;
 
     @JsonProperty("description")
-    private String description;
+    @Nullable private String description;
 
     @JsonProperty("width")
-    private Integer width;
+    @Nullable private Integer width;
 
     @JsonProperty("height")
-    private Integer height;
+    @Nullable private Integer height;
 
     @JsonProperty("size")
-    private Integer size;
+    @Nullable private Integer size;
 
     @JsonProperty("ext")
-    private String ext;
+    @Nullable private String ext;
 
     @JsonProperty("animated")
-    private Boolean animated;
+    @Nullable private Boolean animated;
 
     @JsonProperty("prefer_video")
-    private Boolean preferVideo;
+    @Nullable private Boolean preferVideo;
 
     @JsonProperty("looping")
-    private Boolean looping;
+    @Nullable private Boolean looping;
 
     @JsonProperty("datetime")
-    private String datetime;
+    @Nullable private String datetime;
 
     @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -65,6 +67,7 @@ public class Image {
      * @return The hash
      */
     @JsonProperty("hash")
+    @Nullable
     public String getHash() {
         return hash;
     }
@@ -73,7 +76,7 @@ public class Image {
      * @param hash The hash
      */
     @JsonProperty("hash")
-    public void setHash(String hash) {
+    public void setHash(@Nullable String hash) {
         this.hash = hash;
     }
 
@@ -81,6 +84,7 @@ public class Image {
      * @return The title
      */
     @JsonProperty("title")
+    @Nullable
     public String getTitle() {
         return title;
     }
@@ -89,7 +93,7 @@ public class Image {
      * @param title The title
      */
     @JsonProperty("title")
-    public void setTitle(String title) {
+    public void setTitle(@Nullable String title) {
         this.title = title;
     }
 
@@ -97,6 +101,7 @@ public class Image {
      * @return The description
      */
     @JsonProperty("description")
+    @Nullable
     public String getDescription() {
         return description;
     }
@@ -105,7 +110,7 @@ public class Image {
      * @param description The description
      */
     @JsonProperty("description")
-    public void setDescription(String description) {
+    public void setDescription(@Nullable String description) {
         this.description = description;
     }
 
@@ -113,6 +118,7 @@ public class Image {
      * @return The width
      */
     @JsonProperty("width")
+    @Nullable
     public Integer getWidth() {
         return width;
     }
@@ -121,7 +127,7 @@ public class Image {
      * @param width The width
      */
     @JsonProperty("width")
-    public void setWidth(Integer width) {
+    public void setWidth(@Nullable Integer width) {
         this.width = width;
     }
 
@@ -129,6 +135,7 @@ public class Image {
      * @return The height
      */
     @JsonProperty("height")
+    @Nullable
     public Integer getHeight() {
         return height;
     }
@@ -137,7 +144,7 @@ public class Image {
      * @param height The height
      */
     @JsonProperty("height")
-    public void setHeight(Integer height) {
+    public void setHeight(@Nullable Integer height) {
         this.height = height;
     }
 
@@ -145,6 +152,7 @@ public class Image {
      * @return The size
      */
     @JsonProperty("size")
+    @Nullable
     public Integer getSize() {
         return size;
     }
@@ -153,7 +161,7 @@ public class Image {
      * @param size The size
      */
     @JsonProperty("size")
-    public void setSize(Integer size) {
+    public void setSize(@Nullable Integer size) {
         this.size = size;
     }
 
@@ -161,6 +169,7 @@ public class Image {
      * @return The ext
      */
     @JsonProperty("ext")
+    @Nullable
     public String getExt() {
         return ext;
     }
@@ -169,30 +178,34 @@ public class Image {
      * @param ext The ext
      */
     @JsonProperty("ext")
-    public void setExt(String ext) {
+    public void setExt(@Nullable String ext) {
         this.ext = ext;
-    }
-
-    /**
-     * @return The animated
-     */
-    @JsonProperty("animated")
-    public Boolean isAnimated() {
-        return animated;
     }
 
     /**
      * @param animated The animated
      */
     @JsonProperty("animated")
-    public void setAnimated(Boolean animated) {
+    public void setAnimated(@Nullable Boolean animated) {
         this.animated = animated;
+    }
+
+    /**
+     * Whether this image is animated, treating an absent flag as false. This is the only reader of
+     * the flag: the raw {@code Boolean} getter it replaced was null for an Imgur entry whose JSON
+     * omitted the field, and every caller unboxed it. {@link #getPreferVideo()} and
+     * {@link #getLooping()} are nullable in the same way and have no caller yet.
+     */
+    @JsonIgnore
+    public boolean animated() {
+        return animated != null && animated;
     }
 
     /**
      * @return The preferVideo
      */
     @JsonProperty("prefer_video")
+    @Nullable
     public Boolean getPreferVideo() {
         return preferVideo;
     }
@@ -201,7 +214,7 @@ public class Image {
      * @param preferVideo The prefer_video
      */
     @JsonProperty("prefer_video")
-    public void setPreferVideo(Boolean preferVideo) {
+    public void setPreferVideo(@Nullable Boolean preferVideo) {
         this.preferVideo = preferVideo;
     }
 
@@ -209,6 +222,7 @@ public class Image {
      * @return The looping
      */
     @JsonProperty("looping")
+    @Nullable
     public Boolean getLooping() {
         return looping;
     }
@@ -217,7 +231,7 @@ public class Image {
      * @param looping The looping
      */
     @JsonProperty("looping")
-    public void setLooping(Boolean looping) {
+    public void setLooping(@Nullable Boolean looping) {
         this.looping = looping;
     }
 
@@ -225,6 +239,7 @@ public class Image {
      * @return The datetime
      */
     @JsonProperty("datetime")
+    @Nullable
     public String getDatetime() {
         return datetime;
     }
@@ -233,7 +248,7 @@ public class Image {
      * @param datetime The datetime
      */
     @JsonProperty("datetime")
-    public void setDatetime(String datetime) {
+    public void setDatetime(@Nullable String datetime) {
         this.datetime = datetime;
     }
 
@@ -247,6 +262,34 @@ public class Image {
         this.additionalProperties.put(name, value);
     }
 
+    /**
+     * Whether this entry has enough to build a real url with. The builders below concatenate
+     * blindly, so a partial entry yields a syntactically valid but meaningless url
+     * ("https://i.imgur.com/nullnull") rather than null — and MediaView does not reject that the way
+     * it rejects an empty one. Ask this before handing either url to anything.
+     *
+     * <p>Not a claim that the current loader produces partial entries: every entry, album or single,
+     * is built by AlbumUtils.convertToSingle, which drops one whose link has no extension and whose
+     * hash step throws rather than returning null. This guards the class's own invariant instead —
+     * hash and ext are independently settable Jackson properties with no default and nothing that
+     * forces them to be set together, so the completeness the url builders depend on is asserted
+     * where they are used rather than assumed from one caller's behaviour.
+     */
+    // hasXxx is not a Jackson accessor naming pattern, so this was never a serialization
+    // candidate; @JsonIgnore states the intent, as it does on animated() above.
+    @JsonIgnore
+    public boolean hasImageUrl() {
+        return hash != null && ext != null;
+    }
+
+    /**
+     * Both url builders concatenate unconditionally and never return null, because their consumers
+     * are not null-tolerant — AlbumPager truncates at lastIndexOf(".") and the save paths pass the
+     * value straight down. The cost is that a partial entry yields a meaningless url rather than
+     * nothing, so entries are screened before they get this far: AlbumUtils.convertToSingle drops
+     * one with no extension, and {@link #hasImageUrl()} skips one the album path left incomplete.
+     * Making these nullable means guarding every consumer first.
+     */
     public String getImageUrl() {
         return "https://i.imgur.com/" + hash + ext;
     }

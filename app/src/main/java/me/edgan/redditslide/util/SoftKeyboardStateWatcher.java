@@ -6,7 +6,9 @@ import android.view.ViewTreeObserver;
 
 import java.util.LinkedList;
 import java.util.List;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class SoftKeyboardStateWatcher implements ViewTreeObserver.OnGlobalLayoutListener {
 
     public interface SoftKeyboardStateListener {

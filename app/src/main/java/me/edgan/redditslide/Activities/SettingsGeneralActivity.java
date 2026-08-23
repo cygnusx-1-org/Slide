@@ -1,26 +1,26 @@
 package me.edgan.redditslide.Activities;
 
-import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import android.util.Log;
 import android.widget.Toast;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class SettingsGeneralActivity extends AppCompatActivity {
 
     private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 1337;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings_general);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
     }
 
     @Override
@@ -37,4 +37,4 @@ public class SettingsGeneralActivity extends AppCompatActivity {
             }
         }
     }
-} 
+}

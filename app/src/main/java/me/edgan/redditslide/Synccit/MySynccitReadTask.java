@@ -1,16 +1,18 @@
 package me.edgan.redditslide.Synccit;
 
 /** Created by carlo_000 on 2/16/2016. */
+import androidx.annotation.Nullable;
+
+import java.util.HashSet;
 import me.edgan.redditslide.Adapters.SubmissionDisplay;
 import me.edgan.redditslide.HasSeen;
 import me.edgan.redditslide.SettingValues;
 
-import java.util.HashSet;
-
 public class MySynccitReadTask extends SynccitReadTask {
 
     private static final String MY_DEV_NAME = "slide_for_reddit";
-    private SubmissionDisplay displayer;
+    /** Left null by the no-arg constructor; onPostExecute already guards for it. */
+    private @Nullable SubmissionDisplay displayer;
 
     public MySynccitReadTask(SubmissionDisplay displayer) {
         super(MY_DEV_NAME);

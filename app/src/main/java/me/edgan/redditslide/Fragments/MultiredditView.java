@@ -1,28 +1,31 @@
 package me.edgan.redditslide.Fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.mikepenz.itemanimators.AlphaInAnimator;
 import com.mikepenz.itemanimators.SlideUpAlphaAnimator;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Activities.MultiredditOverview;
 import me.edgan.redditslide.Activities.Search;
 import me.edgan.redditslide.Activities.Submit;
@@ -39,26 +42,32 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Views.CatchStaggeredGridLayoutManager;
 import me.edgan.redditslide.Views.CreateCardView;
+import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.handler.ToolbarScrollHideHandler;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LayoutUtils;
-
+import me.edgan.redditslide.util.MaterialInputDialog;
+import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.models.MultiReddit;
 import net.dean.jraw.models.MultiSubreddit;
 import net.dean.jraw.models.Submission;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 public class MultiredditView extends Fragment implements SubmissionDisplay {
 
     private static final String EXTRA_PROFILE = "profile";
 
-    public MultiredditAdapter adapter;
-    public MultiredditPosts posts;
+    // rv is bound unconditionally in onCreateView; adapter, posts and fab are bound only inside
+    // its `multireddits != null && !multireddits.isEmpty()` branch, so an account with no
+    // multireddits leaves those three null and every callback below has to tolerate it.
+    @Nullable public MultiredditAdapter adapter;
+
+    @Nullable public MultiredditPosts posts;
+
+    @SuppressWarnings("NullAway.Init") // assigned in createLayoutManager
     public RecyclerView rv;
-    public FloatingActionButton fab;
+
+    @Nullable public FloatingActionButton fab;
     public int diff;
     private SwipeRefreshLayout refreshLayout;
     private int id;
@@ -75,15 +84,17 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_verticalcontent, container, false);
 
-        rv = v.findViewById(R.id.vertical_content);
+        rv = v.requireViewById(R.id.vertical_content);
         final RecyclerView.LayoutManager mLayoutManager =
                 createLayoutManager(
                         LayoutUtils.getNumColumns(
-                                getResources().getConfiguration().orientation, getActivity()));
+                                getResources().getConfiguration().orientation, requireActivity()));
 
         rv.setLayoutManager(mLayoutManager);
         if (SettingValues.fab) {
@@ -94,30 +105,35 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                final ArrayList<String> subs = new ArrayList<>();
-                                for (MultiSubreddit s : posts.multiReddit.getSubreddits()) {
-                                    subs.add(s.getDisplayName());
+                                // A detached fragment has no host here; there is nothing to act on.
+                                final FragmentActivity activity = getActivity();
+                                if (activity == null) {
+                                    return;
                                 }
-                                new MaterialDialog.Builder(getActivity())
-                                        .title(R.string.multi_submit_which_sub)
-                                        .items(subs)
-                                        .itemsCallback(
-                                                new MaterialDialog.ListCallback() {
-                                                    @Override
-                                                    public void onSelection(
-                                                            MaterialDialog dialog,
-                                                            View itemView,
-                                                            int which,
-                                                            CharSequence text) {
-                                                        Intent i =
-                                                                new Intent(
-                                                                        getActivity(),
-                                                                        Submit.class);
-                                                        i.putExtra(
-                                                                Submit.EXTRA_SUBREDDIT,
-                                                                subs.get(which));
-                                                        startActivity(i);
-                                                    }
+                                if (posts == null) return;
+                                final ArrayList<String> subs = new ArrayList<>();
+                                if (posts.multiReddit != null) {
+                                    for (MultiSubreddit s : posts.multiReddit.getSubreddits()) {
+                                        subs.add(s.getDisplayName());
+                                    }
+                                }
+                                final Context contextThemeWrapper =
+                                        new ContextThemeWrapper(
+                                                getActivity(),
+                                                new ColorPreferences(activity)
+                                                        .getFontStyle()
+                                                        .getBaseId());
+                                new MaterialAlertDialogBuilder(contextThemeWrapper)
+                                        .setTitle(R.string.multi_submit_which_sub)
+                                        .setItems(
+                                                subs.toArray(new CharSequence[0]),
+                                                (dialog, which) -> {
+                                                    Intent i =
+                                                            new Intent(getActivity(), Submit.class);
+                                                    i.putExtra(
+                                                            Submit.EXTRA_SUBREDDIT,
+                                                            subs.get(which));
+                                                    startActivity(i);
                                                 })
                                         .show();
                             }
@@ -126,42 +142,39 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
                 fab.setImageResource(R.drawable.ic_search);
                 fab.setOnClickListener(
                         new View.OnClickListener() {
-                            String term;
+                            String term = "";
 
                             @Override
                             public void onClick(View v) {
+                                // A detached fragment has no host here; there is nothing to act on.
+                                final FragmentActivity activity = getActivity();
+                                if (activity == null) {
+                                    return;
+                                }
+                                if (posts == null) return;
+                                final MultiredditPosts searchPosts = posts;
                                 // Set the searchMulti for multireddit search
-                                MultiredditOverview.searchMulti = posts.multiReddit;
+                                MultiredditOverview.searchMulti = searchPosts.multiReddit;
 
-                                MaterialDialog.Builder builder =
-                                        new MaterialDialog.Builder(getActivity())
+                                MaterialInputDialog.Builder builder =
+                                        new MaterialInputDialog.Builder(activity)
                                                 .title(R.string.search_title)
-                                                .alwaysCallInputCallback()
                                                 .input(
                                                         getString(R.string.search_msg),
                                                         "",
-                                                        new MaterialDialog.InputCallback() {
-                                                            @Override
-                                                            public void onInput(
-                                                                    MaterialDialog materialDialog,
-                                                                    CharSequence charSequence) {
-                                                                term = charSequence.toString();
-                                                            }
-                                                        });
+                                                        (dialog, charSequence) ->
+                                                                term = charSequence.toString());
 
                                 // Only set search option for multireddit
-                                builder.positiveText(getString(R.string.search_subreddit, "/m/" + posts.multiReddit.getDisplayName()))
+                                builder.positiveText(getString(R.string.search_subreddit, "/m/" + posts.displayName()))
                                         .onPositive(
-                                                new MaterialDialog.SingleButtonCallback() {
-                                                    @Override
-                                                    public void onClick(
-                                                            @NonNull MaterialDialog materialDialog,
-                                                            @NonNull DialogAction dialogAction) {
-                                                        Intent i = new Intent(getActivity(), Search.class);
-                                                        i.putExtra(Search.EXTRA_TERM, term);
-                                                        i.putExtra(Search.EXTRA_MULTIREDDIT, posts.multiReddit.getDisplayName());
-                                                        startActivity(i);
-                                                    }
+                                                dialog -> {
+                                                    Intent i = new Intent(getActivity(), Search.class);
+                                                    i.putExtra(Search.EXTRA_TERM, term);
+                                                    i.putExtra(
+                                                            Search.EXTRA_MULTIREDDIT,
+                                                            searchPosts.displayName());
+                                                    startActivity(i);
                                                 });
 
                                 builder.show();
@@ -173,8 +186,13 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                // A detached fragment has no host here; there is nothing to act on.
+                                final FragmentActivity activity = getActivity();
+                                if (activity == null) {
+                                    return;
+                                }
                                 if (!Reddit.fabClear) {
-                                    new AlertDialog.Builder(getActivity())
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(activity)
                                             .setTitle(R.string.settings_fabclear)
                                             .setMessage(R.string.settings_fabclear_msg)
                                             .setPositiveButton(
@@ -190,7 +208,7 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
                                                         Reddit.fabClear = true;
                                                         clearSeenPosts(false);
                                                     })
-                                            .show();
+                                            );
                                 } else {
                                     clearSeenPosts(false);
                                 }
@@ -200,8 +218,13 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
                         new View.OnLongClickListener() {
                             @Override
                             public boolean onLongClick(View v) {
+                                // A detached fragment has no host here; there is nothing to act on.
+                                final FragmentActivity activity = getActivity();
+                                if (activity == null) {
+                                    return false;
+                                }
                                 if (!Reddit.fabClear) {
-                                    new AlertDialog.Builder(getActivity())
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(activity)
                                             .setTitle(R.string.settings_fabclear)
                                             .setMessage(R.string.settings_fabclear_msg)
                                             .setPositiveButton(
@@ -217,7 +240,7 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
                                                         Reddit.fabClear = true;
                                                         clearSeenPosts(true);
                                                     })
-                                            .show();
+                                            );
                                 } else {
                                     clearSeenPosts(true);
                                 }
@@ -248,7 +271,7 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
         } else {
             v.findViewById(R.id.post_floating_action_button).setVisibility(View.GONE);
         }
-        refreshLayout = v.findViewById(R.id.activity_main_swipe_refresh_layout);
+        refreshLayout = v.requireViewById(R.id.activity_main_swipe_refresh_layout);
 
         /**
          * If using List view mode, we need to remove the start margin from the SwipeRefreshLayout.
@@ -275,7 +298,7 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
 
         if ((multireddits != null) && !multireddits.isEmpty()) {
             refreshLayout.setColorSchemeColors(
-                    Palette.getColors(multireddits.get(id).getDisplayName(), getActivity()));
+                    Palette.getColors(MiscUtil.orEmpty(multireddits.get(id).getDisplayName()), requireActivity()));
         }
 
         // If we use 'findViewById(R.id.header).getMeasuredHeight()', 0 is always returned.
@@ -294,19 +317,27 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
                 });
 
         if ((multireddits != null) && !multireddits.isEmpty()) {
-            posts = new MultiredditPosts(multireddits.get(id).getDisplayName(), profile);
+            posts = new MultiredditPosts(MiscUtil.orEmpty(multireddits.get(id).getDisplayName()), profile);
 
-            adapter = new MultiredditAdapter(getActivity(), posts, rv, refreshLayout, this);
+            adapter = new MultiredditAdapter(requireActivity(), posts, rv, refreshLayout, this);
             rv.setAdapter(adapter);
             rv.setItemAnimator(
                     new SlideUpAlphaAnimator().withInterpolator(new LinearOutSlowInInterpolator()));
-            posts.loadMore(getActivity(), this, true, adapter);
+            posts.loadMore(requireActivity(), this, true, adapter);
 
             refreshLayout.setOnRefreshListener(
                     new SwipeRefreshLayout.OnRefreshListener() {
                         @Override
                         public void onRefresh() {
-                            posts.loadMore(getActivity(), MultiredditView.this, true, adapter);
+                            // Folded into the existing branch rather than returning above it: that
+                            // branch stops the spinner, and a detached page that skipped it left
+                            // pull-to-refresh spinning forever.
+                            final FragmentActivity activity = getActivity();
+                            if (activity == null || posts == null || adapter == null) {
+                                refreshLayout.setRefreshing(false);
+                                return;
+                            }
+                            posts.loadMore(activity, MultiredditView.this, true, adapter);
 
                             // TODO catch errors
                         }
@@ -318,17 +349,25 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
 
             rv.addOnScrollListener(
                     new ToolbarScrollHideHandler(
-                            (getActivity()).findViewById(R.id.toolbar),
-                            getActivity().findViewById(R.id.header)) {
+                            (requireActivity()).requireViewById(R.id.toolbar),
+                            requireActivity().requireViewById(R.id.header)) {
                         @Override
                         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                             super.onScrolled(recyclerView, dx, dy);
+                            // Below super, not above it: the toolbar hide/show it drives needs no
+                            // host, and only the loadMore at the bottom of this method does.
+                            final FragmentActivity activity = getActivity();
+                            if (activity == null) return;
+                            if (posts == null || adapter == null) return;
 
-                            visibleItemCount = rv.getLayoutManager().getChildCount();
-                            totalItemCount = rv.getLayoutManager().getItemCount();
+                            final RecyclerView.LayoutManager lm = rv.getLayoutManager();
+                            if (lm == null) return;
+
+                            visibleItemCount = lm.getChildCount();
+                            totalItemCount = lm.getItemCount();
 
                             int[] firstVisibleItems =
-                                    ((CatchStaggeredGridLayoutManager) rv.getLayoutManager())
+                                    ((CatchStaggeredGridLayoutManager) lm)
                                             .findFirstVisibleItemPositions(null);
                             if (firstVisibleItems != null && firstVisibleItems.length > 0) {
                                 for (int firstVisibleItem : firstVisibleItems) {
@@ -349,7 +388,7 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
                                         && !posts.nomore) {
                                     posts.loading = true;
                                     posts.loadMore(
-                                            getActivity(), MultiredditView.this, false, adapter);
+                                            activity, MultiredditView.this, false, adapter);
                                 }
                             }
                             if (recyclerView.getScrollState()
@@ -373,32 +412,32 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
         return v;
     }
 
-    private List<Submission> clearSeenPosts(boolean forever) {
-        if (posts.posts != null) {
+    private @Nullable List<Submission> clearSeenPosts(boolean forever) {
+        if (posts == null || adapter == null) return null;
+        final MultiredditPosts loadedPosts = posts;
+        final MultiredditAdapter loadedAdapter = adapter;
+        if (loadedPosts.posts != null) {
 
-            List<Submission> originalDataSetPosts = posts.posts;
+            List<Submission> originalDataSetPosts = loadedPosts.posts;
 
             OfflineSubreddit o =
                     OfflineSubreddit.getSubreddit(
-                            "multi"
-                                    + posts.multiReddit
-                                            .getDisplayName()
-                                            .toLowerCase(Locale.ENGLISH),
+                            "multi_" + loadedPosts.displayName().toLowerCase(Locale.ENGLISH),
                             false,
                             getActivity());
-            for (int i = posts.posts.size(); i > -1; i--) {
+            for (int i = loadedPosts.posts.size(); i > -1; i--) {
                 try {
-                    if (HasSeen.getSeen(posts.posts.get(i))) {
+                    if (HasSeen.getSeen(loadedPosts.posts.get(i))) {
                         if (forever) {
-                            Hidden.setHidden(posts.posts.get(i));
+                            Hidden.setHidden(loadedPosts.posts.get(i));
                         }
-                        o.clearPost(posts.posts.get(i));
-                        posts.posts.remove(i);
-                        if (posts.posts.isEmpty()) {
-                            adapter.notifyDataSetChanged();
+                        o.clearPost(loadedPosts.posts.get(i));
+                        loadedPosts.posts.remove(i);
+                        if (loadedPosts.posts.isEmpty()) {
+                            loadedAdapter.notifyDataSetChanged();
                         } else {
                             rv.setItemAnimator(new AlphaInAnimator());
-                            adapter.notifyItemRemoved(i + 1);
+                            loadedAdapter.notifyItemRemoved(i + 1);
                         }
                     }
                 } catch (IndexOutOfBoundsException e) {
@@ -415,9 +454,9 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle bundle = this.getArguments();
+        Bundle bundle = requireArguments();
         id = bundle.getInt("id", 0);
         profile = bundle.getString(EXTRA_PROFILE, "");
     }
@@ -430,22 +469,38 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
 
         final CatchStaggeredGridLayoutManager mLayoutManager =
                 (CatchStaggeredGridLayoutManager) rv.getLayoutManager();
+        if (mLayoutManager == null) {
+            return;
+        }
 
-        mLayoutManager.setSpanCount(LayoutUtils.getNumColumns(currentOrientation, getActivity()));
+        mLayoutManager.setSpanCount(LayoutUtils.getNumColumns(currentOrientation, requireActivity()));
     }
 
     @Override
     public void updateSuccess(List<Submission> submissions, final int startIndex) {
-        adapter.context.runOnUiThread(
+        // posts and adapter are only built when the account has at least one multireddit
+        // (onCreateView guards on multireddits being non-empty), so every entry point has to
+        // tolerate their absence rather than assume the feed exists.
+        if (adapter == null || posts == null) {
+            // Posted, not called directly, for the reason updateError() below records: onCreateView
+            // queues a setRefreshing(true) on this same view, so a direct stop would run first and
+            // then be undone by that queued runnable.
+            refreshLayout.post(() -> refreshLayout.setRefreshing(false));
+            return;
+        }
+        final MultiredditAdapter loadedAdapter = adapter;
+        final MultiredditPosts loadedPosts = posts;
+        loadedAdapter.context.runOnUiThread(
                 new Runnable() {
                     @Override
                     public void run() {
                         refreshLayout.setRefreshing(false);
 
                         if (startIndex != -1) {
-                            adapter.notifyItemRangeInserted(startIndex + 1, posts.posts.size());
+                            loadedAdapter.notifyItemRangeInserted(
+                                    startIndex + 1, loadedPosts.posts.size() - startIndex);
                         } else {
-                            adapter.notifyDataSetChanged();
+                            loadedAdapter.notifyDataSetChanged();
                         }
                     }
                 });
@@ -453,6 +508,10 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
 
     @Override
     public void updateOffline(List<Submission> submissions, long cacheTime) {
+        if (adapter == null) {
+            refreshLayout.setRefreshing(false);
+            return;
+        }
         adapter.setError(true);
         refreshLayout.setRefreshing(false);
     }
@@ -461,19 +520,35 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
     public void updateOfflineError() {}
 
     @Override
-    public void updateError() {}
+    public void updateError() {
+        // Was empty, which left the spinner running forever on a failed load — including the
+        // multiReddit == null path MultiredditPosts.loadMore reports here rather than crashing in.
+        //
+        // Posted rather than called directly: onCreateView queues a setRefreshing(true) on this
+        // same view, and that loadMore path reports synchronously from inside onCreateView, so a
+        // direct setRefreshing(false) would run first and then be undone by the queued runnable.
+        //
+        // Stopping the spinner is all this does, matching SubmissionsView.updateError. Not
+        // adapter.setError(true): that swaps in an ErrorAdapter, and nothing calls undoSetError
+        // for MultiredditPosts the way SubredditPosts does for SubmissionsView, so a later
+        // successful refresh would notify a detached adapter and leave the error screen up.
+        refreshLayout.post(() -> refreshLayout.setRefreshing(false));
+    }
 
     @Override
     public void updateViews() {
+        if (adapter == null) return;
         try {
             adapter.notifyItemRangeChanged(0, adapter.dataSet.getPosts().size());
         } catch (Exception e) {
-
+            // Range refresh against a list that changed size; the
+            // next bind uses the current data.
         }
     }
 
     @Override
     public void onAdapterUpdated() {
+        if (adapter == null) return;
         adapter.notifyDataSetChanged();
     }
 }

@@ -3,10 +3,11 @@ package me.edgan.redditslide.Activities;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
-
+import java.util.ArrayList;
+import java.util.List;
 import me.edgan.redditslide.Adapters.GalleryView;
 import me.edgan.redditslide.Adapters.MultiredditPosts;
 import me.edgan.redditslide.Adapters.SubmissionDisplay;
@@ -18,39 +19,50 @@ import me.edgan.redditslide.PostLoader;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Views.CatchStaggeredGridLayoutManager;
 import me.edgan.redditslide.util.LayoutUtils;
-
+import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.models.Submission;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 9/17/2015. */
+@NullMarked
 public class Gallery extends FullScreenActivity implements SubmissionDisplay {
     public static final String EXTRA_PROFILE = "profile";
     public static final String EXTRA_PAGE = "page";
     public static final String EXTRA_SUBREDDIT = "subreddit";
     public static final String EXTRA_MULTIREDDIT = "multireddit";
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     public PostLoader subredditPosts;
-    public String subreddit;
+    public String subreddit = "";
 
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     public ArrayList<Submission> baseSubs;
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         overrideSwipeFromAnywhere();
-        subreddit = getIntent().getExtras().getString(EXTRA_SUBREDDIT);
-        String multireddit = getIntent().getExtras().getString(EXTRA_MULTIREDDIT);
-        String profile = getIntent().getExtras().getString(EXTRA_PROFILE, "");
+        Bundle extras = getIntent().getExtras();
+        if (extras == null) {
+            super.onCreate(savedInstance);
+            finish();
+            return;
+        }
+        subreddit = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_SUBREDDIT));
+        String multireddit = getIntent().getStringExtra(EXTRA_MULTIREDDIT);
+        String profile = getIntent().getStringExtra(EXTRA_PROFILE);
         if (multireddit != null) {
-            subredditPosts = new MultiredditPosts(multireddit, profile);
+            subredditPosts =
+                    new MultiredditPosts(multireddit, MiscUtil.orEmpty(profile));
         } else {
             subredditPosts = new SubredditPosts(subreddit, Gallery.this);
         }
-        subreddit = multireddit == null ? subreddit : ("multi" + multireddit);
+        subreddit = multireddit == null ? subreddit : ("multi_" + multireddit);
 
         applyDarkColorTheme(subreddit);
         super.onCreate(savedInstance);
         setContentView(R.layout.gallery);
+
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         getWindow()
                 .getDecorView()
                 .setSystemUiVisibility(
@@ -76,7 +88,7 @@ public class Gallery extends FullScreenActivity implements SubmissionDisplay {
             subredditPosts.getPosts().add(s);
         }
 
-        rv = (RecyclerView) findViewById(R.id.content_view);
+        rv = (RecyclerView) requireViewById(R.id.content_view);
         recyclerAdapter = new GalleryView(this, baseSubs, subreddit);
         RecyclerView.LayoutManager layoutManager =
                 createLayoutManager(
@@ -90,7 +102,7 @@ public class Gallery extends FullScreenActivity implements SubmissionDisplay {
                     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                         super.onScrolled(recyclerView, dx, dy);
                         int[] firstVisibleItems =
-                                ((CatchStaggeredGridLayoutManager) rv.getLayoutManager())
+                                ((CatchStaggeredGridLayoutManager) java.util.Objects.requireNonNull(rv.getLayoutManager()))
                                         .findFirstVisibleItemPositions(null);
                         if (firstVisibleItems != null && firstVisibleItems.length > 0) {
                             for (int firstVisibleItem : firstVisibleItems) {
@@ -116,10 +128,12 @@ public class Gallery extends FullScreenActivity implements SubmissionDisplay {
                 });
     }
 
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     GalleryView recyclerAdapter;
     public int pastVisiblesItems;
     public int visibleItemCount;
     public int totalItemCount;
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     RecyclerView rv;
 
     @Override
@@ -129,7 +143,7 @@ public class Gallery extends FullScreenActivity implements SubmissionDisplay {
         final int currentOrientation = newConfig.orientation;
 
         final CatchStaggeredGridLayoutManager mLayoutManager =
-                (CatchStaggeredGridLayoutManager) rv.getLayoutManager();
+                (CatchStaggeredGridLayoutManager) java.util.Objects.requireNonNull(rv.getLayoutManager());
 
         mLayoutManager.setSpanCount(LayoutUtils.getNumColumns(currentOrientation, Gallery.this));
     }

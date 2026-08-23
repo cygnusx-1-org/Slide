@@ -5,7 +5,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.os.Build;
 import android.util.Pair;
 import android.view.View;
 import android.view.Window;
@@ -16,7 +15,6 @@ import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-
 import androidx.annotation.ArrayRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -26,7 +24,9 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import me.edgan.redditslide.Activities.BaseActivity;
 import me.edgan.redditslide.Activities.Slide;
 import me.edgan.redditslide.Constants;
@@ -39,17 +39,14 @@ import me.edgan.redditslide.databinding.ChooseaccentBinding;
 import me.edgan.redditslide.databinding.ChoosemainBinding;
 import me.edgan.redditslide.databinding.ChoosethemesmallBinding;
 import me.edgan.redditslide.databinding.NightmodeBinding;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
-
 import org.apache.commons.lang3.ArrayUtils;
-
+import org.jspecify.annotations.NullMarked;
 import uz.shift.colorpicker.LineColorPicker;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+@NullMarked
 public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartActivity> {
 
     public static boolean changed;
@@ -62,17 +59,19 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
 
     public void Bind() {
         final RelativeLayout colorTintModeLayout =
-                (RelativeLayout) context.findViewById(R.id.settings_theme_colorTintMode);
+                (RelativeLayout) context.requireViewById(R.id.settings_theme_colorTintMode);
         final TextView currentTintTextView =
-                (TextView) context.findViewById(R.id.settings_theme_tint_current);
+                (TextView) context.requireViewById(R.id.settings_theme_tint_current);
         final SwitchCompat tintEverywhereSwitch =
-                (SwitchCompat) context.findViewById(R.id.settings_theme_tint_everywhere);
+                (SwitchCompat) context.requireViewById(R.id.settings_theme_tint_everywhere);
         final SwitchCompat colorNavbarSwitch =
-                (SwitchCompat) context.findViewById(R.id.settings_theme_colorNavbar);
+                (SwitchCompat) context.requireViewById(R.id.settings_theme_colorNavbar);
         final SwitchCompat alwaysBlackStatusbarSwitch =
-                (SwitchCompat) context.findViewById(R.id.settings_theme_alwaysBlackStatusbar);
+                (SwitchCompat) context.requireViewById(R.id.settings_theme_alwaysBlackStatusbar);
         final SwitchCompat colorIconSwitch =
-                (SwitchCompat) context.findViewById(R.id.settings_theme_colorAppIcon);
+                (SwitchCompat) context.requireViewById(R.id.settings_theme_colorAppIcon);
+        final SwitchCompat dialogColoredBorderSwitch =
+                (SwitchCompat) context.requireViewById(R.id.settings_theme_dialog_colored_border);
 
         back = new ColorPreferences(context).getFontStyle().getThemeType();
 
@@ -94,16 +93,13 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
 
                     popup.setOnMenuItemClickListener(
                             item -> {
-                                switch (item.getItemId()) {
-                                    case R.id.none:
-                                        setTintingMode(false, false);
-                                        break;
-                                    case R.id.background:
-                                        setTintingMode(true, false);
-                                        break;
-                                    case R.id.name:
-                                        setTintingMode(true, true);
-                                        break;
+                                int itemId = item.getItemId();
+                                if (itemId == R.id.none) {
+                                    setTintingMode(false, false);
+                                } else if (itemId == R.id.background) {
+                                    setTintingMode(true, false);
+                                } else if (itemId == R.id.name) {
+                                    setTintingMode(true, true);
                                 }
                                 currentTintTextView.setText(
                                         SettingValues.colorBack
@@ -203,11 +199,19 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
                                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED);
                     }
                 });
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        dialogColoredBorderSwitch.setChecked(SettingValues.dialogColoredBorder);
+        dialogColoredBorderSwitch.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> {
+                    SettingValues.dialogColoredBorder = isChecked;
+                    editSharedBooleanPreference(SettingValues.PREF_DIALOG_COLORED_BORDER, isChecked);
+                });
     }
 
     private void setupSettingsThemePrimary() {
         final LinearLayout mainTheme =
-                (LinearLayout) context.findViewById(R.id.settings_theme_main);
+                (LinearLayout) context.requireViewById(R.id.settings_theme_main);
         mainTheme.setOnClickListener(
                 v -> {
                     final ChoosemainBinding choosemainBinding =
@@ -245,20 +249,18 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
                                 SettingsThemeFragment.changed = true;
                                 title.setBackgroundColor(colorPicker2.getColor());
                                 final Toolbar toolbar =
-                                        (Toolbar) context.findViewById(R.id.toolbar);
+                                        (Toolbar) context.requireViewById(R.id.toolbar);
                                 if (toolbar != null)
                                     toolbar.setBackgroundColor(colorPicker2.getColor());
 
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                    Window window = context.getWindow();
-                                    int color = Palette.getDarkerColor(colorPicker2.getColor());
+                                Window window = context.getWindow();
+                                int color = Palette.getDarkerColor(colorPicker2.getColor());
 
-                                    if (SettingValues.alwaysBlackStatusbar) {
-                                        color = Color.BLACK;
-                                    }
-
-                                    window.setStatusBarColor(color);
+                                if (SettingValues.alwaysBlackStatusbar) {
+                                    color = Color.BLACK;
                                 }
+
+                                window.setStatusBarColor(color);
                                 context.setRecentBar(
                                         context.getString(R.string.title_theme_settings),
                                         colorPicker2.getColor());
@@ -285,13 +287,13 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
                                 context.restartActivity();
                             });
 
-                    new AlertDialog.Builder(context).setView(choosemainBinding.getRoot()).show();
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(context).setView(choosemainBinding.getRoot()));
                 });
     }
 
     private void setupSettingsThemeAccent() {
         final LinearLayout accentLayout =
-                (LinearLayout) context.findViewById(R.id.settings_theme_accent);
+                (LinearLayout) context.requireViewById(R.id.settings_theme_accent);
         accentLayout.setOnClickListener(
                 v -> {
                     final ChooseaccentBinding chooseaccentBinding =
@@ -334,17 +336,19 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
                                         break;
                                     }
                                 }
-                                new ColorPreferences(context).setFontStyle(t);
+                                if (t != null) {
+                                    new ColorPreferences(context).setFontStyle(t);
+                                }
                                 context.restartActivity();
                             });
 
-                    new AlertDialog.Builder(context).setView(chooseaccentBinding.getRoot()).show();
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(context).setView(chooseaccentBinding.getRoot()));
                 });
     }
 
     void setupSettingsThemeBase() {
         final LinearLayout themeBase =
-                (LinearLayout) context.findViewById(R.id.settings_theme_base);
+                (LinearLayout) context.requireViewById(R.id.settings_theme_base);
         themeBase.setOnClickListener(
                 v -> {
                     final ChoosethemesmallBinding choosethemesmallBinding =
@@ -384,13 +388,13 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
                                         });
                     }
 
-                    new AlertDialog.Builder(context).setView(root).show();
+                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(context).setView(root));
                 });
     }
 
     private void setupSettingsThemeNight() {
         final LinearLayout nightMode =
-                (LinearLayout) context.findViewById(R.id.settings_theme_night);
+                (LinearLayout) context.requireViewById(R.id.settings_theme_night);
         nightMode.setOnClickListener(
                 new OnSingleClickListener() {
                     @Override
@@ -402,6 +406,7 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
                         final AlertDialog.Builder builder =
                                 new AlertDialog.Builder(context).setView(root);
                         final Dialog dialog = builder.create();
+                        DialogUtil.matchDialogToCardBackground(dialog);
                         dialog.show();
                         dialog.setOnDismissListener(
                                 dialog1 -> {
@@ -475,16 +480,8 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
                         startSpinner.setEnabled(nightState);
                         endSpinner.setEnabled(nightState);
                         final List<String> timesStart =
-                                new ArrayList<String>() {
-                                    {
-                                        add("6pm");
-                                        add("7pm");
-                                        add("8pm");
-                                        add("9pm");
-                                        add("10pm");
-                                        add("11pm");
-                                    }
-                                };
+                                new ArrayList<>(
+                                        Arrays.asList("6pm", "7pm", "8pm", "9pm", "10pm", "11pm"));
                         nightmodeBinding.startSpinnerLayout.setVisibility(View.VISIBLE);
                         final ArrayAdapter<String> startAdapter =
                                 new ArrayAdapter<>(
@@ -527,21 +524,10 @@ public class SettingsThemeFragment<ActivityType extends BaseActivity & RestartAc
                                 });
 
                         final List<String> timesEnd =
-                                new ArrayList<String>() {
-                                    {
-                                        add("12am");
-                                        add("1am");
-                                        add("2am");
-                                        add("3am");
-                                        add("4am");
-                                        add("5am");
-                                        add("6am");
-                                        add("7am");
-                                        add("8am");
-                                        add("9am");
-                                        add("10am");
-                                    }
-                                };
+                                new ArrayList<>(
+                                        Arrays.asList(
+                                                "12am", "1am", "2am", "3am", "4am", "5am", "6am",
+                                                "7am", "8am", "9am", "10am"));
                         nightmodeBinding.endSpinnerLayout.setVisibility(View.VISIBLE);
                         final ArrayAdapter<String> endAdapter =
                                 new ArrayAdapter<>(

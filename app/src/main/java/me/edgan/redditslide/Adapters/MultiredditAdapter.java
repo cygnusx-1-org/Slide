@@ -4,16 +4,15 @@ package me.edgan.redditslide.Adapters;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Handler;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.google.android.material.snackbar.Snackbar;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Activities.CommentsScreen;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Fragments.MultiredditView;
@@ -22,23 +21,14 @@ import me.edgan.redditslide.SubmissionViews.PopulateSubmissionViewHolder;
 import me.edgan.redditslide.Views.CatchStaggeredGridLayoutManager;
 import me.edgan.redditslide.Views.CreateCardView;
 import me.edgan.redditslide.util.LayoutUtils;
-
+import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.models.Submission;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+public class MultiredditAdapter extends PaginatedListAdapter {
 
-public class MultiredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-        implements BaseAdapter {
-
-    private final RecyclerView listView;
     public Activity context;
     public MultiredditPosts dataSet;
     public List<Submission> seen;
-    private final int LOADING_SPINNER = 5;
-    private final int NO_MORE = 3;
-    private final int SPACER = 6;
     SwipeRefreshLayout refreshLayout;
     MultiredditView baseView;
 
@@ -48,7 +38,7 @@ public class MultiredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             RecyclerView listView,
             SwipeRefreshLayout refreshLayout,
             MultiredditView baseView) {
-        this.listView = listView;
+        super(listView);
         this.dataSet = dataSet;
         this.context = context;
         this.seen = new ArrayList<>();
@@ -56,58 +46,10 @@ public class MultiredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.baseView = baseView;
     }
 
-    @Override
-    public void setError(Boolean b) {
-        listView.setAdapter(new ErrorAdapter());
-    }
 
-    @Override
-    public void undoSetError() {
-        listView.setAdapter(this);
-    }
 
-    @Override
-    public int getItemViewType(int position) {
-        if (position <= 0 && !dataSet.posts.isEmpty()) {
-            return SPACER;
-        } else if (!dataSet.posts.isEmpty()) {
-            position -= (1);
-        }
-        if (position == dataSet.posts.size() && !dataSet.posts.isEmpty() && !dataSet.nomore) {
-            return LOADING_SPINNER;
-        } else if (position == dataSet.posts.size() && dataSet.nomore) {
-            return NO_MORE;
-        }
-        return 1;
-    }
 
-    int tag = 1;
 
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        tag++;
-
-        if (i == SPACER) {
-            View v =
-                    LayoutInflater.from(viewGroup.getContext())
-                            .inflate(R.layout.spacer, viewGroup, false);
-            return new SpacerViewHolder(v);
-
-        } else if (i == LOADING_SPINNER) {
-            View v =
-                    LayoutInflater.from(viewGroup.getContext())
-                            .inflate(R.layout.loadingmore, viewGroup, false);
-            return new SubmissionFooterViewHolder(v);
-        } else if (i == NO_MORE) {
-            View v =
-                    LayoutInflater.from(viewGroup.getContext())
-                            .inflate(R.layout.nomoreposts, viewGroup, false);
-            return new SubmissionFooterViewHolder(v);
-        } else {
-            View v = CreateCardView.CreateView(viewGroup);
-            return new SubmissionViewHolder(v);
-        }
-    }
 
     int clicked;
 
@@ -146,14 +88,13 @@ public class MultiredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void onBindViewHolder(final RecyclerView.ViewHolder holder2, final int pos) {
         int i = (pos != 0) ? (pos - 1) : pos;
 
-        if (holder2 instanceof SubmissionViewHolder) {
-            final SubmissionViewHolder holder = (SubmissionViewHolder) holder2;
+        if (holder2 instanceof CardSubmissionViewHolder holder) {
             final Submission submission = dataSet.posts.get(i);
 
             CreateCardView.colorCard(
-                    submission.getSubredditName().toLowerCase(Locale.ENGLISH),
+                    MiscUtil.orEmpty(submission.getSubredditName()).toLowerCase(Locale.ENGLISH),
                     holder.itemView,
-                    "multi" + dataSet.multiReddit.getDisplayName(),
+                    "multi_" + dataSet.displayName(),
                     true);
             holder.itemView.setOnClickListener(
                     new View.OnClickListener() {
@@ -171,9 +112,9 @@ public class MultiredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                         holder2.getBindingAdapterPosition() - 1);
                                 i2.putExtra(
                                         CommentsScreen.EXTRA_MULTIREDDIT,
-                                        dataSet.multiReddit.getDisplayName());
-                                context.startActivityForResult(i2, 940);
+                                        dataSet.displayName());
                                 i2.putExtra("fullname", submission.getFullName());
+                                context.startActivityForResult(i2, 940);
                                 clicked = holder2.getBindingAdapterPosition();
 
                             } else {
@@ -198,25 +139,17 @@ public class MultiredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                             listView,
                             true,
                             false,
-                            "multi"
-                                    + dataSet.multiReddit
-                                            .getDisplayName()
-                                            .toLowerCase(Locale.ENGLISH),
+                            "multi_" + dataSet.displayName().toLowerCase(Locale.ENGLISH),
                             null);
         }
         if (holder2 instanceof SubmissionFooterViewHolder) {
-            Handler handler = new Handler();
-
-            final Runnable r =
-                    new Runnable() {
-                        public void run() {
-                            notifyItemChanged(
-                                    dataSet.posts.size() + 1); // the loading spinner to replaced by
-                            // nomoreposts.xml
-                        }
-                    };
-
-            handler.post(r);
+            // Only refresh when the footer actually needs to change type (e.g. the
+            // loading spinner replaced by nomoreposts.xml). Posting unconditionally made
+            // the footer re-bind itself on every bind, an endless redraw loop. Compute the
+            // position inside the post so it reflects the list size when it actually runs.
+            if (holder2.getItemViewType() != getItemViewType(dataSet.posts.size() + 1)) {
+                new Handler().post(() -> notifyItemChanged(dataSet.posts.size() + 1));
+            }
             if (holder2.itemView.findViewById(R.id.reload) != null) {
                 holder2.itemView
                         .findViewById(R.id.reload)
@@ -231,10 +164,10 @@ public class MultiredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
         }
         if (holder2 instanceof SpacerViewHolder) {
-            final int height = (context).findViewById(R.id.header).getHeight();
+            final int height = (context).requireViewById(R.id.header).getHeight();
 
             holder2.itemView
-                    .findViewById(R.id.height)
+                    .requireViewById(R.id.height)
                     .setLayoutParams(
                             new LinearLayout.LayoutParams(holder2.itemView.getWidth(), height));
             if (listView.getLayoutManager() instanceof CatchStaggeredGridLayoutManager) {
@@ -247,17 +180,7 @@ public class MultiredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    public static class SubmissionFooterViewHolder extends RecyclerView.ViewHolder {
-        public SubmissionFooterViewHolder(View itemView) {
-            super(itemView);
-        }
-    }
 
-    public static class SpacerViewHolder extends RecyclerView.ViewHolder {
-        public SpacerViewHolder(View itemView) {
-            super(itemView);
-        }
-    }
 
     @Override
     public int getItemCount() {
@@ -267,4 +190,25 @@ public class MultiredditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             return dataSet.posts.size() + 2; // Always account for footer
         }
     }
+    @Override
+    protected boolean isEmpty() {
+        return dataSet.posts.isEmpty();
+    }
+
+    @Override
+    protected int postCount() {
+        return dataSet.posts.size();
+    }
+
+    @Override
+    protected boolean noMore() {
+        return dataSet.nomore;
+    }
+
+    @Override
+    protected RecyclerView.ViewHolder createContentViewHolder(ViewGroup viewGroup) {
+        View v = CreateCardView.CreateView(viewGroup);
+        return new CardSubmissionViewHolder(v);
+    }
+
 }

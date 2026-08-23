@@ -1,182 +1,68 @@
 package me.edgan.redditslide.Fragments;
 
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-
+import java.util.List;
 import me.edgan.redditslide.Activities.ShadowboxComments;
 import me.edgan.redditslide.Adapters.AlbumView;
 import me.edgan.redditslide.Adapters.CommentUrlObject;
 import me.edgan.redditslide.ImgurAlbum.AlbumUtils;
 import me.edgan.redditslide.ImgurAlbum.Image;
 import me.edgan.redditslide.OpenRedditLink;
-import me.edgan.redditslide.R;
 import me.edgan.redditslide.SubmissionViews.PopulateShadowboxInfo;
-
+import me.edgan.redditslide.util.FileUtil;
 import net.dean.jraw.models.Comment;
 
-import java.util.List;
-
 /** Created by ccrama on 6/2/2015. */
-public class AlbumFullComments extends Fragment {
+public class AlbumFullComments extends BaseAlbumFull {
 
-    boolean gallery = false;
-    private View list;
-    private CommentUrlObject s;
-    boolean hidden;
-    View rootView;
+    @Nullable private CommentUrlObject s;
 
     @Override
-    public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.submission_albumcard, container, false);
-        PopulateShadowboxInfo.doActionbar(s.comment, rootView, getActivity(), true);
-
-        String url = s.url;
-
-        if (url.contains("gallery")) {
-            gallery = true;
+    protected void bindActionbar() {
+        if (s != null) {
+            PopulateShadowboxInfo.doActionbar(s.comment, rootView, requireActivity(), true);
         }
+    }
 
-        list = rootView.findViewById(R.id.images);
+    @Override
+    protected @Nullable String getAlbumUrl() {
+        return s == null ? null : s.url;
+    }
 
-        list.setVisibility(View.VISIBLE);
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        ((RecyclerView) list).setLayoutManager(layoutManager);
+    @Override
+    protected void openComments() {
+        // Reached from a click listener, which can outlive attachment.
+        final FragmentActivity activity = getActivity();
+        if (s == null || activity == null) {
+            return;
+        }
+        final Comment c = s.comment.getComment();
+        // link_id is "t3_" + the submission id; without it there is no submission to open.
+        final String linkId = c.getDataNode().path("link_id").asText();
+        if (linkId.length() <= 3) {
+            return;
+        }
+        String url =
+                "https://reddit.com"
+                        + "/r/"
+                        + c.getSubredditName()
+                        + "/comments/"
+                        + linkId.substring(3)
+                        + "/nothing/"
+                        + c.getId()
+                        + "?context=3";
+        OpenRedditLink.openUrl(activity, url, true);
+    }
 
-        ((RecyclerView) list)
-                .addOnScrollListener(
-                        new RecyclerView.OnScrollListener() {
-
-                            @Override
-                            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                                super.onScrolled(recyclerView, dx, dy);
-                                ValueAnimator va = null;
-
-                                if (dy > 0 && !hidden) {
-                                    hidden = true;
-
-                                    if (va != null && va.isRunning()) va.cancel();
-
-                                    final View base = rootView.findViewById(R.id.base);
-                                    va = ValueAnimator.ofFloat(1.0f, 0.2f);
-                                    int mDuration = 250; // in millis
-                                    va.setDuration(mDuration);
-                                    va.addUpdateListener(
-                                            new ValueAnimator.AnimatorUpdateListener() {
-                                                public void onAnimationUpdate(
-                                                        ValueAnimator animation) {
-                                                    Float value =
-                                                            (Float) animation.getAnimatedValue();
-                                                    base.setAlpha(value);
-                                                }
-                                            });
-
-                                    va.start();
-
-                                } else if (hidden && dy <= 0) {
-                                    final View base = rootView.findViewById(R.id.base);
-
-                                    if (va != null && va.isRunning()) va.cancel();
-
-                                    hidden = false;
-                                    va = ValueAnimator.ofFloat(0.2f, 1.0f);
-                                    int mDuration = 250; // in millis
-                                    va.setDuration(mDuration);
-                                    va.addUpdateListener(
-                                            new ValueAnimator.AnimatorUpdateListener() {
-                                                public void onAnimationUpdate(
-                                                        ValueAnimator animation) {
-                                                    Float value =
-                                                            (Float) animation.getAnimatedValue();
-                                                    base.setAlpha(value);
-                                                }
-                                            });
-
-                                    va.start();
-                                }
-                            }
-
-                            @Override
-                            public void onScrollStateChanged(
-                                    RecyclerView recyclerView, int newState) {
-                                super.onScrollStateChanged(recyclerView, newState);
-                            }
-                        });
-
-        final View.OnClickListener openClick =
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ((SlidingUpPanelLayout) rootView.findViewById(R.id.sliding_layout))
-                                .setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
-                    }
-                };
-        rootView.findViewById(R.id.base).setOnClickListener(openClick);
-        final View title = rootView.findViewById(R.id.title);
-        title.getViewTreeObserver()
-                .addOnGlobalLayoutListener(
-                        new ViewTreeObserver.OnGlobalLayoutListener() {
-                            @Override
-                            public void onGlobalLayout() {
-                                ((SlidingUpPanelLayout) rootView.findViewById(R.id.sliding_layout))
-                                        .setPanelHeight(title.getMeasuredHeight());
-                                title.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                            }
-                        });
-        ((SlidingUpPanelLayout) rootView.findViewById(R.id.sliding_layout))
-                .addPanelSlideListener(
-                        new SlidingUpPanelLayout.SimplePanelSlideListener() {
-                            @Override
-                            public void onPanelStateChanged(
-                                    View panel,
-                                    SlidingUpPanelLayout.PanelState previousState,
-                                    SlidingUpPanelLayout.PanelState newState) {
-                                if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
-                                    final Comment c = s.comment.getComment();
-                                    rootView.findViewById(R.id.base)
-                                            .setOnClickListener(
-                                                    new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            String url =
-                                                                    "https://reddit.com"
-                                                                            + "/r/"
-                                                                            + c.getSubredditName()
-                                                                            + "/comments/"
-                                                                            + c.getDataNode()
-                                                                                    .get("link_id")
-                                                                                    .asText()
-                                                                                    .substring(3)
-                                                                            + "/nothing/"
-                                                                            + c.getId()
-                                                                            + "?context=3";
-                                                            OpenRedditLink.openUrl(
-                                                                    getActivity(), url, true);
-                                                        }
-                                                    });
-                                } else {
-                                    rootView.findViewById(R.id.base).setOnClickListener(openClick);
-                                }
-                            }
-                        });
-
-        new LoadIntoRecycler(url, getActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-        return rootView;
+    @Override
+    protected void loadAlbum(String url) {
+        new LoadIntoRecycler(url, requireActivity()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public class LoadIntoRecycler extends AlbumUtils.GetAlbumWithCallback {
@@ -190,24 +76,36 @@ public class AlbumFullComments extends Fragment {
         }
 
         @Override
-        public void doWithData(final List<Image> jsonElements) {
-            super.doWithData(jsonElements);
+        public boolean doWithData(final @Nullable List<Image> jsonElements) {
+            // Nothing usable came back, so there is no album to build; super has already told
+            // onError().
+            if (!super.doWithData(jsonElements) || jsonElements == null) {
+                return false;
+            }
             // May be a bug with downloading multiple comment albums off the same submission
             AlbumView adapter =
                     new AlbumView(
                             baseActivity,
                             jsonElements,
-                            0,
-                            s.getSubredditName(),
-                            s.comment.getComment().getSubmissionTitle());
+                            s == null ? null : s.getSubredditName(),
+                            s == null
+                                    ? null
+                                    : FileUtil.buildDownloadName(s.comment.getComment()));
             ((RecyclerView) list).setAdapter(adapter);
+            return true;
         }
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle bundle = this.getArguments();
-        s = ShadowboxComments.comments.get(bundle.getInt("page", 0));
+        int page = requireArguments().getInt("page", 0);
+        // The backing list is static; after process death it comes back null/empty while
+        // the fragment is recreated with its old page argument.
+        if (ShadowboxComments.comments == null || ShadowboxComments.comments.size() <= page) {
+            requireActivity().finish();
+        } else {
+            s = ShadowboxComments.comments.get(page);
+        }
     }
 }

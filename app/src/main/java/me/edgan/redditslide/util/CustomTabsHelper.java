@@ -24,25 +24,24 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
-
-import me.edgan.redditslide.SettingValues;
-
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import me.edgan.redditslide.SettingValues;
+import org.jspecify.annotations.NullMarked;
 
 /** Helper class for Custom Tabs. */
+@NullMarked
 public class CustomTabsHelper {
     private static final String TAG = "CustomTabsHelper";
     static final String STABLE_PACKAGE = "com.android.chrome";
     static final String BETA_PACKAGE = "com.chrome.beta";
     static final String DEV_PACKAGE = "com.chrome.dev";
     static final String LOCAL_PACKAGE = "com.google.android.apps.chrome";
-    private static final String EXTRA_CUSTOM_TABS_KEEP_ALIVE =
-            "android.support.customtabs.extra.KEEP_ALIVE";
     private static final String ACTION_CUSTOM_TABS_CONNECTION =
             "android.support.customtabs.action.CustomTabsService";
 
-    private static String sPackageNameToUse;
+    @Nullable private static String sPackageNameToUse;
 
     private CustomTabsHelper() {}
 
@@ -54,9 +53,10 @@ public class CustomTabsHelper {
      * <p>This is <strong>not</strong> threadsafe.
      *
      * @param context {@link Context} to use for accessing {@link PackageManager}.
-     * @return The package name recommended to use for connecting to custom tabs related components.
+     * @return The package name recommended to use for connecting to custom tabs related components,
+     *     or null when custom tabs are switched off or no installed browser supports them.
      */
-    public static String getPackageNameToUse(Context context) {
+    @Nullable public static String getPackageNameToUse(Context context) {
         if (SettingValues.linkHandlingMode != LinkHandlingMode.CUSTOM_TABS.getValue()) return null;
         if (SettingValues.selectedBrowser != null) return SettingValues.selectedBrowser;
         if (sPackageNameToUse != null) return sPackageNameToUse;

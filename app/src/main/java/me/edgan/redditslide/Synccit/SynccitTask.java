@@ -3,6 +3,8 @@ package me.edgan.redditslide.Synccit;
 import android.text.TextUtils;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import me.edgan.redditslide.Synccit.http.HttpPostTask;
 
 import org.json.JSONArray;
@@ -36,7 +38,7 @@ public abstract class SynccitTask extends HttpPostTask<SynccitResponse> {
     }
 
     @Override
-    protected SynccitResponse doInBackground(String... linkIds) {
+    protected @Nullable SynccitResponse doInBackground(String... linkIds) {
         if (TextUtils.isEmpty(getUsername()) || TextUtils.isEmpty(getAuth())) {
             Log.i(TAG, "synccit username or auth not set. aborting");
             return null;

@@ -5,16 +5,18 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 import androidx.viewpager.widget.ViewPager;
+import me.edgan.redditslide.util.LogUtil;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * A simple ViewPager subclass that allows swiping between pages to be enabled or disabled at
  * runtime.
  */
+@NullMarked
 public class ToggleSwipeViewPager extends ViewPager {
     private boolean mEnableSwiping = true;
     private boolean swipeLeftOnly = false;
     private boolean mSwipeDisabledUntilRelease = false;
-    private float mStartDragX;
 
     public ToggleSwipeViewPager(Context context) {
         super(context);
@@ -40,7 +42,7 @@ public class ToggleSwipeViewPager extends ViewPager {
         try {
             return (mEnableSwiping || swipeLeftOnly) && super.onInterceptTouchEvent(ev);
         } catch (IllegalArgumentException ex) {
-            ex.printStackTrace();
+            LogUtil.e(ex, "ToggleSwipeViewPager.onInterceptTouchEvent failed");
         }
         return false;
     }

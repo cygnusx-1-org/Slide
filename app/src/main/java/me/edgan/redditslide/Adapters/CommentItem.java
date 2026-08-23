@@ -1,12 +1,13 @@
 package me.edgan.redditslide.Adapters;
 
+import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.models.CommentNode;
 
 /** Created by carlo_000 on 10/27/2015. */
 public class CommentItem extends CommentObject {
     public CommentItem(CommentNode node) {
         comment = node;
-        this.name = comment.getComment().getFullName();
+        this.name = MiscUtil.orEmpty(comment.getComment().getFullName());
     }
 
     @Override

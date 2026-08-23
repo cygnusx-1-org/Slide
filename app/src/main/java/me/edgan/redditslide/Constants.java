@@ -1,14 +1,30 @@
 package me.edgan.redditslide;
 
 import me.edgan.redditslide.util.DisplayUtil;
+import me.edgan.redditslide.util.PrefUtil;
 
 /** Constants used throughout the app */
 public class Constants {
     public static final int DEFAULT_THEME_TYPE = 2;
     public static final String DEFAULT_THEME = "amoled_amber";
 
-    /** Maximum posts to request from Reddit * */
-    public static final int PAGINATOR_POST_LIMIT = 25;
+    /** Default paginator page size, matching JRAW's DEFAULT_LIMIT */
+    public static final int DEFAULT_PAGINATOR_LIMIT = 25;
+
+    /** Number of new subreddits resolved per scroll batch for the Discover "Trending" list */
+    public static final int TRENDING_BATCH_SIZE = 10;
+
+    /**
+     * Thread pool size for the shared Universal Image Loader instances (used by feed, gallery,
+     * album, and flair image loading). This is the maximum number of concurrent image loads.
+     */
+    public static final int IMAGE_LOADER_THREAD_POOL_SIZE = 8;
+
+    /**
+     * Number of off-screen feed RecyclerView items kept bound (with their images attached) so a
+     * short scroll-back reuses them instead of rebinding/reloading. Larger than the default of 2.
+     */
+    public static final int FEED_VIEW_CACHE_SIZE = 16;
 
     /**
      * This is the estimated height of the Tabs view mode in dp. Use this for calculating the
@@ -31,6 +47,9 @@ public class Constants {
     public static final int PTR_OFFSET_TOP = DisplayUtil.dpToPxVertical(40);
 
     public static final int PTR_OFFSET_BOTTOM = DisplayUtil.dpToPxVertical(18);
+
+    // 1000 * 60 * 50 = 50 minutes in milliseconds
+    public static final int EXPIRES_VALUE = 3000000;
 
     /**
      * Drawer swipe edge (navdrawer). The higher the value, the more sensitive the navdrawer swipe
@@ -55,7 +74,7 @@ public class Constants {
     public static final int FAB_SEARCH = 3;
 
     /** Reddit OAuth credentials */
-    private static final String REDDIT_CLIENT_ID_DEFAULT = "KI2Nl9A_ouG9Qw";
+    private static final String REDDIT_CLIENT_ID_DEFAULT = "yH0aTnJEt6qUgGn835B4vg";
 
     /**
      * Gets the Reddit client ID to use for authentication. Returns the user-specified override if
@@ -63,16 +82,63 @@ public class Constants {
      */
     public static String getClientId() {
         // Make sure settings are loaded
-        if (SettingValues.prefs == null) {
+        if (SettingValues.prefs == null || !overridesEnabled()) {
             return REDDIT_CLIENT_ID_DEFAULT;
         }
 
         String override =
-                SettingValues.prefs.getString(SettingValues.PREF_REDDIT_CLIENT_ID_OVERRIDE, "");
+                PrefUtil.getString(
+                        SettingValues.prefs, SettingValues.PREF_REDDIT_CLIENT_ID_OVERRIDE, "");
         return !override.isEmpty() ? override : REDDIT_CLIENT_ID_DEFAULT;
     }
 
-    public static final String REDDIT_REDIRECT_URL = "http://www.ccrama.me";
+    public static final String REDDIT_REDIRECT_URL = "redreader://rr_oauth_redir";
+
+    /**
+     * Gets the Reddit redirect URL to use for authentication. Returns the user-specified override
+     * if set, otherwise returns the default.
+     */
+    public static String getRedirectUrl() {
+        if (SettingValues.prefs == null || !overridesEnabled()) {
+            return REDDIT_REDIRECT_URL;
+        }
+
+        String override =
+                PrefUtil.getString(
+                        SettingValues.prefs, SettingValues.PREF_REDDIT_REDIRECT_URI_OVERRIDE, "");
+        return !override.isEmpty() ? override : REDDIT_REDIRECT_URL;
+    }
+
+    /**
+     * Gets the Reddit user agent string to use for API requests. Returns the user-specified
+     * override if set, otherwise returns the default.
+     */
+    public static String getUserAgent() {
+        if (SettingValues.prefs != null && overridesEnabled()) {
+            String override =
+                    PrefUtil.getString(
+                            SettingValues.prefs,
+                            SettingValues.PREF_REDDIT_USER_AGENT_OVERRIDE,
+                            "");
+            if (!override.isEmpty()) {
+                return override;
+            }
+        }
+
+        return "org.quantumbadger.redreader/1.25.2";
+    }
+
+    /**
+     * Whether the user has opted in to using their own Reddit client ID, redirect URI, and user
+     * agent overrides. Defaults to false so the app uses its built-in defaults unless the user
+     * explicitly enables overrides.
+     */
+    public static boolean overridesEnabled() {
+        if (SettingValues.prefs == null) {
+            return false;
+        }
+        return SettingValues.prefs.getBoolean(SettingValues.PREF_REDDIT_ENABLE_OVERRIDES, false);
+    }
 
     public enum BackButtonBehaviorOptions {
         Default(0),

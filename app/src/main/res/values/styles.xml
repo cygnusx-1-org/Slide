@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- 2dp rounded corners for ShapeableImageView (replaces makeramen riv_corner_radius) -->
+    <style name="ShapeAppearanceOverlay.Slide.Corner2dp" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">2dp</item>
+    </style>
+
+    <!-- Material BottomSheetDialog theme for the cocosw-bottomsheet replacement (util/BottomSheet).
+         Content supplies its own card_background, so the modal surface is transparent and the
+         elevation overlay is disabled to avoid the tinted "olive" surface. -->
+    <style name="Slide.BottomSheetDialog" parent="Theme.MaterialComponents.DayNight.BottomSheetDialog">
+        <item name="elevationOverlayEnabled">false</item>
+        <item name="bottomSheetStyle">@style/Slide.BottomSheetModal</item>
+    </style>
+
+    <style name="Slide.BottomSheetModal" parent="Widget.MaterialComponents.BottomSheet.Modal">
+        <item name="backgroundTint">@android:color/transparent</item>
+    </style>
+
     <!-- From SwipeBackLayout -->
     <style name="SwipeBackLayout">
         <item name="edge_size">50dip</item>
@@ -98,85 +116,6 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style parent="BottomSheet.Dialog" name="BottomSheet.StyleDialog.Light">
-        <item name="android:textColorPrimary">#DE000000</item>
-        <item name="android:textColorSecondary">#8A000000</item>
-        <item name="android:textColorHint">#8A000000</item>
-        <item name="bs_dialogBackground">@android:color/white</item>
-        <item name="bs_dividerColor">@android:color/transparent</item>
-        <item name="bs_listStyle">@style/BottomSheetLight.StyleList</item>
-    </style>
-
-    <style parent="BottomSheet.Dialog" name="BottomSheet.StyleDialog.Sepia">
-        <item name="android:textColorPrimary">#DE3e3d36</item>
-        <item name="android:textColorSecondary">#8A3e3d36</item>
-        <item name="android:textColorHint">#8A3e3d36</item>
-        <item name="bs_dialogBackground">#b1ad9b</item>
-        <item name="bs_dividerColor">@android:color/transparent</item>
-        <item name="bs_listStyle">@style/BottomSheetLight.StyleList</item>
-    </style>
-
-    <style parent="BottomSheet.Dialog.Dark" name="BottomSheet.StyleDialog.AMOLED">
-        <item name="android:textColorPrimary">@android:color/white</item>
-        <item name="android:textColorSecondary">#8Affffff</item>
-        <item name="android:textColorHint">#42ffffff</item>
-        <item name="bs_dialogBackground">@android:color/black</item>
-        <item name="bs_dividerColor">@android:color/transparent</item>
-        <item name="bs_listStyle">@style/BottomSheetDark.StyleList</item>
-    </style>
-
-    <style parent="BottomSheet.Dialog.Dark" name="BottomSheet.StyleDialog.Dark">
-        <item name="android:textColorPrimary">@android:color/white</item>
-        <item name="android:textColorSecondary">#8Affffff</item>
-        <item name="android:textColorHint">#42ffffff</item>
-        <item name="bs_dialogBackground">#424242</item>
-        <item name="bs_dividerColor">@android:color/transparent</item>
-        <item name="bs_listStyle">@style/BottomSheetDark.StyleList</item>
-    </style>
-
-    <style parent="BottomSheet.Dialog.Dark" name="BottomSheet.StyleDialog.Deep">
-        <item name="android:textColorPrimary">@android:color/white</item>
-        <item name="android:textColorSecondary">#8Affffff</item>
-        <item name="android:textColorHint">#42ffffff</item>
-        <item name="bs_dialogBackground">#1f1e26</item>
-        <item name="bs_dividerColor">@android:color/transparent</item>
-        <item name="bs_listStyle">@style/BottomSheetDark.StyleList</item>
-    </style>
-
-    <style parent="BottomSheet.Dialog.Dark" name="BottomSheet.StyleDialog.Dark_Blue">
-        <item name="android:textColorPrimary">@android:color/white</item>
-        <item name="android:textColorSecondary">#8Affffff</item>
-        <item name="android:textColorHint">#42ffffff</item>
-        <item name="bs_dialogBackground">#37474F</item>
-        <item name="bs_dividerColor">@android:color/transparent</item>
-        <item name="bs_listStyle">@style/BottomSheetDark.StyleList</item>
-    </style>
-
-    <style parent="BottomSheet.Dialog.Dark" name="BottomSheet.StyleDialog.PIXEL">
-        <item name="android:textColorPrimary">@android:color/white</item>
-        <item name="android:textColorSecondary">#8Affffff</item>
-        <item name="android:textColorHint">#42ffffff</item>
-        <item name="bs_dialogBackground">#3a3a3a</item>
-        <item name="bs_dividerColor">@android:color/transparent</item>
-        <item name="bs_listStyle">@style/BottomSheetDark.StyleList</item>
-    </style>
-
-    <style parent="BottomSheet.Dialog.Dark" name="BottomSheet.StyleDialog.Night_Red">
-        <item name="android:textColorPrimary">@android:color/white</item>
-        <item name="android:textColorSecondary">#8Affffff</item>
-        <item name="android:textColorHint">#42ffd4d4</item>
-        <item name="bs_dialogBackground">#44302f</item>
-        <item name="bs_dividerColor">@android:color/transparent</item>
-        <item name="bs_listStyle">@style/BottomSheetDark.StyleList</item>
-    </style>
-
-    <style parent="BottomSheet.List" name="BottomSheetLight.StyleList">
-        <item name="android:layoutAnimation">@null</item>
-    </style>
-
-    <style parent="BottomSheet.List.Dark" name="BottomSheetDark.StyleList">
-        <item name="android:layoutAnimation">@null</item>
-    </style>
 
     <style parent="swipestyle" name="AppTheme">
         <item name="android:spinnerItemStyle">@style/spinnerItemStyle</item>
@@ -187,15 +126,10 @@
         <item name="android:alertDialogStyle">@style/AlertDialog.AppCompat</item>
         <item name="android:colorBackground">@android:color/black</item>
         <item name="android:windowBackground">@null</item>
-        <item name="bs_bottomSheetStyle">@style/BottomSheet.StyleDialog.AMOLED</item>
         <item name="card_background">@android:color/black</item>
         <item name="fontColor">#DEFFFFFF</item> <!-- 87% white -->
         <item name="list_background">@android:color/black</item>
-        <item name="md_background_color">@android:color/black</item>
         <item name="tintColor">#8AFFFFFF</item> <!-- 54% white -->
-        <item name="tp_backgroundColor">?attr/card_background</item>
-        <item name="tp_selectionColor">?android:colorAccent</item>
-        <item name="tp_textColor">?attr/fontColor</item>
     </style>
 
     <style parent="swipestyle" name="Theme.AMOLED_lighter">
@@ -203,15 +137,10 @@
         <item name="android:alertDialogStyle">@style/AlertDialog.AppCompat</item>
         <item name="android:colorBackground">#121212</item>
         <item name="android:windowBackground">@null</item>
-        <item name="bs_bottomSheetStyle">@style/BottomSheet.StyleDialog.AMOLED</item>
         <item name="card_background">@android:color/black</item>
         <item name="fontColor">#deffffff</item> <!-- 87% white -->
         <item name="list_background">@android:color/black</item>
-        <item name="md_background_color">#121212</item>
         <item name="tintColor">#8affffff</item> <!-- 54% white -->
-        <item name="tp_backgroundColor">?attr/card_background</item>
-        <item name="tp_selectionColor">?android:colorAccent</item>
-        <item name="tp_textColor">?attr/fontColor</item>
     </style>
 
     <style parent="swipestyle" name="Theme.DARK">
@@ -219,15 +148,10 @@
         <item name="android:alertDialogStyle">@style/AlertDialog.AppCompat</item>
         <item name="android:colorBackground">#303030</item>
         <item name="android:windowBackground">@null</item>
-        <item name="bs_bottomSheetStyle">@style/BottomSheet.StyleDialog.Dark</item>
         <item name="card_background">#303030</item>
         <item name="fontColor">#deffffff</item> <!-- 87% white -->
         <item name="list_background">#212121</item>
-        <item name="md_background_color">#303030</item>
         <item name="tintColor">#8affffff</item> <!-- 54% white -->
-        <item name="tp_backgroundColor">?attr/card_background</item>
-        <item name="tp_selectionColor">?android:colorAccent</item>
-        <item name="tp_textColor">?attr/fontColor</item>
     </style>
 
     <style parent="swipestyle" name="Theme.DARK_BLUE">
@@ -235,15 +159,10 @@
         <item name="android:alertDialogStyle">@style/AlertDialog.AppCompat</item>
         <item name="android:colorBackground">#37474f</item>
         <item name="android:windowBackground">@null</item>
-        <item name="bs_bottomSheetStyle">@style/BottomSheet.StyleDialog.Dark_Blue</item>
         <item name="card_background">#37474f</item>
         <item name="fontColor">#deffffff</item> <!-- 87% white -->
         <item name="list_background">#263238</item>
-        <item name="md_background_color">#37474f</item>
         <item name="tintColor">#8affffff</item> <!-- 54% white -->
-        <item name="tp_backgroundColor">?attr/card_background</item>
-        <item name="tp_selectionColor">?android:colorAccent</item>
-        <item name="tp_textColor">?attr/fontColor</item>
     </style>
 
     <style parent="swipestyle" name="Theme.DEEP">
@@ -251,15 +170,10 @@
         <item name="android:alertDialogStyle">@style/AlertDialog.AppCompat</item>
         <item name="android:colorBackground">#1f1e26</item>
         <item name="android:windowBackground">@null</item>
-        <item name="bs_bottomSheetStyle">@style/BottomSheet.StyleDialog.Deep</item>
         <item name="card_background">#1f1e26</item>
         <item name="fontColor">#deffffff</item> <!-- 87% white -->
         <item name="list_background">#1c1b21</item>
-        <item name="md_background_color">#1f1e26</item>
         <item name="tintColor">#8affffff</item> <!-- 54% white -->
-        <item name="tp_backgroundColor">?attr/card_background</item>
-        <item name="tp_selectionColor">?android:colorAccent</item>
-        <item name="tp_textColor">?attr/fontColor</item>
     </style>
 
     <style parent="swipestyle" name="Theme.PIXEL">
@@ -267,15 +181,10 @@
         <item name="android:alertDialogStyle">@style/AlertDialog.AppCompat</item>
         <item name="android:colorBackground">#2d2d2d</item>
         <item name="android:windowBackground">@null</item>
-        <item name="bs_bottomSheetStyle">@style/BottomSheet.StyleDialog.PIXEL</item>
         <item name="card_background">#2d2d2d</item>
         <item name="fontColor">#deffffff</item> <!-- 87% white -->
         <item name="list_background">#3a3a3a</item>
-        <item name="md_background_color">#2d2d2d</item>
         <item name="tintColor">#8affffff</item> <!-- 54% white -->
-        <item name="tp_backgroundColor">?attr/card_background</item>
-        <item name="tp_selectionColor">?android:colorAccent</item>
-        <item name="tp_textColor">?attr/fontColor</item>
     </style>
 
     <style parent="swipestyle" name="Theme.NIGHT_RED">
@@ -283,15 +192,10 @@
         <item name="android:alertDialogStyle">@style/AlertDialog.AppCompat</item>
         <item name="android:colorBackground">#402c2c</item>
         <item name="android:windowBackground">@null</item>
-        <item name="bs_bottomSheetStyle">@style/BottomSheet.StyleDialog.Night_Red</item>
         <item name="card_background">#402c2c</item>
         <item name="fontColor">#defff7ed</item> <!-- 87% white -->
         <item name="list_background">#261a1a</item>
-        <item name="md_background_color">#402c2c</item>
         <item name="tintColor">#8affebcf</item> <!-- 54% white -->
-        <item name="tp_backgroundColor">?attr/card_background</item>
-        <item name="tp_selectionColor">?android:colorAccent</item>
-        <item name="tp_textColor">?attr/fontColor</item>
     </style>
 
     <style parent="swipestyle" name="Theme.SEPIA">
@@ -304,15 +208,10 @@
         <item name="android:textColorPrimary">#de3e3d36</item> <!-- 87% black -->
         <item name="android:textColorSecondary">#8a3e3d36</item> <!-- 54% black -->
         <item name="android:windowBackground">@null</item>
-        <item name="bs_bottomSheetStyle">@style/BottomSheet.StyleDialog.Sepia</item>
         <item name="card_background">#e2dfd7</item>
         <item name="fontColor">#de3e3d36</item> <!-- 87% black -->
         <item name="list_background">#cac5ad</item>
-        <item name="md_background_color">#e2dfd7</item>
         <item name="tintColor">#8A3e3d36</item> <!-- 54% black -->
-        <item name="tp_backgroundColor">?attr/card_background</item>
-        <item name="tp_selectionColor">?android:colorAccent</item>
-        <item name="tp_textColor">?attr/fontColor</item>
     </style>
 
     <style parent="swipestylelight" name="Theme.LIGHT">
@@ -325,15 +224,10 @@
         <item name="android:textColorPrimary">#de000000</item> <!-- 87% black -->
         <item name="android:textColorSecondary">#8a000000</item> <!-- 54% black -->
         <item name="android:windowBackground">@null</item>
-        <item name="bs_bottomSheetStyle">@style/BottomSheet.StyleDialog.Light</item>
         <item name="card_background">@android:color/white</item>
         <item name="fontColor">#de000000</item> <!-- 87% black -->
         <item name="list_background">#e5e5e5</item>
-        <item name="md_background_color">#e5e5e5</item>
         <item name="tintColor">#8a000000</item> <!-- 54% black -->
-        <item name="tp_backgroundColor">?attr/card_background</item>
-        <item name="tp_selectionColor">?android:colorAccent</item>
-        <item name="tp_textColor">?attr/fontColor</item>
     </style>
 
     <!-- AMOLED Theme Subthemes !-->
@@ -488,7 +382,11 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
-    <style parent="Theme.AppCompat.Light.NoActionBar" name="swipestylelight">
+    <style parent="Theme.MaterialComponents.Light.NoActionBar.Bridge" name="swipestylelight">
+        <!-- Bridge enables Material's dark elevation overlay, which tints colorSurface
+             with colorOnSurface (amber here) and turned dialogs olive. Disable it to
+             keep the previous flat dialog/surface colors. -->
+        <item name="elevationOverlayEnabled">false</item>
         <item name="colorAccent">@color/md_amber_A400</item>
         <!-- We keep colorSurface as #FF000000 here unless changed. -->
         <item name="colorSurface">#FF000000</item>
@@ -506,17 +404,22 @@
         <item name="actionMenuTextColor">#DE000000</item>
         <item name="android:actionMenuTextColor">#DE000000</item>
         <item name="android:colorBackground">#dedede</item>
-        <item name="tp_selectionColor">?android:colorAccent</item>
-        <item name="tp_textColor">?attr/fontColor</item>
-        <item name="tp_backgroundColor">?attr/card_background</item>
     </style>
 
-    <style parent="Theme.AppCompat.NoActionBar" name="swipestyle">
+    <style parent="Theme.MaterialComponents.NoActionBar.Bridge" name="swipestyle">
+        <!-- See swipestylelight: avoid the Material dark elevation overlay tinting surfaces. -->
+        <item name="elevationOverlayEnabled">false</item>
         <item name="colorAccent">@color/md_amber_A400</item>
         <item name="colorSurface">#FF000000</item>
         <item name="colorOnSurface">?android:colorAccent</item>
         <item name="android:windowActivityTransitions">true</item>
     </style>
+
+    <!-- Full Material theme overlay for MaterialTimePicker. The app's base themes
+         are MaterialComponents *.Bridge, which keep AppCompat widget styling and
+         therefore do not define materialTimePickerTheme / the chip & clock styles
+         the picker needs. Pass this explicitly via the picker builder's setTheme(). -->
+    <style name="ThemeOverlay.App.TimePicker" parent="ThemeOverlay.MaterialComponents.TimePicker"/>
 
     <!-- Dark Theme Subthemes !-->
     <!-- Matches parent's android:colorBackground = #212121 -->

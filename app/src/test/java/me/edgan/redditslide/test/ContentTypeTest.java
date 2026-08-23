@@ -6,24 +6,40 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.ContentType.Type;
-import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
-
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-
 public class ContentTypeTest {
+
+    /**
+     * Captured and put back: {@code alwaysExternal} is an app-wide static, and this suite is plain
+     * JUnit — no Robolectric sandbox isolates it, and the test task forks a single JVM for every
+     * class — so a value left behind is visible to whatever class runs next. Captured in the field
+     * initializer, which runs at class load and so before {@code setUp} overwrites it.
+     */
+    private static final Set<String> ALWAYS_EXTERNAL_WAS = SettingValues.alwaysExternal;
 
     @BeforeClass
     public static void setUp() {
         SettingValues.alwaysExternal =
                 new HashSet<>(
                         Arrays.asList("twitter.com", "github.com", "t.co", "example.com/path"));
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        SettingValues.alwaysExternal = ALWAYS_EXTERNAL_WAS;
+        // invalidateTypeCache's contract: it must be called whenever alwaysExternal changes, since
+        // that is what decides whether a url resolves to EXTERNAL. Restoring the set is such a
+        // change, so a resolved type cached under this suite's set would outlive it.
+        ContentType.invalidateTypeCache();
     }
 
     @Test
@@ -73,6 +89,10 @@ public class ContentTypeTest {
     public void detectsGif() {
         assertThat(ContentType.getContentType("https://i.imgur.com/33YIg0B.gifv"), is(Type.GIF));
         assertThat(ContentType.getContentType("https://i.imgur.com/33YIg0B.gif"), is(Type.GIF));
+        assertThat(
+                ContentType.getContentType(
+                        "https://va.media.tumblr.com/tumblr_skj01afM1s1aq68vs.mp4"),
+                is(Type.GIF));
         assertThat(
                 ContentType.getContentType("i.imgur.com/33YIg0B.gif?args=should&not=matter"),
                 is(Type.GIF));
@@ -148,23 +168,6 @@ public class ContentTypeTest {
         assertThat(ContentType.getContentType("google.com"), is(not(Type.NONE)));
         // Protocol relative
         assertThat(ContentType.getContentType("//google.com"), is(not(Type.NONE)));
-    }
-
-    @Test
-    public void detectsVideo() {
-        Reddit.videoPlugin = true;
-        assertThat(
-                ContentType.getContentType("https://www.youtube.com/watch?v=lX_pF03vCSU"),
-                is(Type.VIDEO));
-        assertThat(ContentType.getContentType("https://youtu.be/lX_pF03vCSU"), is(Type.VIDEO));
-
-        assertThat(ContentType.getContentType("https://www.gifyoutube.com/"), is(not(Type.VIDEO)));
-
-        Reddit.videoPlugin = false;
-        assertThat(
-                ContentType.getContentType("https://www.youtube.com/watch?v=lX_pF03vCSU"),
-                is(not(Type.VIDEO)));
-        assertThat(ContentType.getContentType("https://youtu.be/lX_pF03vCSU"), is(not(Type.VIDEO)));
     }
 
     @Test

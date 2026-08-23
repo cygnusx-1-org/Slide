@@ -1,7 +1,9 @@
 package uz.shift.colorpicker;
 
 import android.graphics.Color;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class Palette {
 
     public static int[] DEFAULT;

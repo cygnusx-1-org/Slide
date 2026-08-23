@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Attrs for the in-app SlidingUpPanelLayout shim (replaces com.sothree:AndroidSlidingUpPanel,
+         now backed by Material BottomSheetBehavior). Keeps the umano* attr names the layouts use. -->
+    <declare-styleable name="SlidingUpPanelLayout">
+        <attr name="umanoPanelHeight" format="dimension" />
+        <attr name="umanoShadowHeight" format="dimension" />
+        <attr name="umanoOverlay" format="boolean" />
+    </declare-styleable>
+
     <declare-styleable name="ScrimInsetsView"></declare-styleable>
     <declare-styleable name="FontStyle">
         <attr name="font_cardtitle" format="dimension" />

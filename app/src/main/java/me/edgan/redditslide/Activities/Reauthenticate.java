@@ -3,7 +3,6 @@ package me.edgan.redditslide.Activities;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,34 +10,35 @@ import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
+import android.widget.Toast;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-
-import com.afollestad.materialdialogs.MaterialDialog;
-
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
-
+import me.edgan.redditslide.util.MaterialProgressDialog;
+import me.edgan.redditslide.util.MiscUtil;
 import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.http.oauth.Credentials;
 import net.dean.jraw.http.oauth.OAuthData;
 import net.dean.jraw.http.oauth.OAuthException;
 import net.dean.jraw.http.oauth.OAuthHelper;
 import net.dean.jraw.models.LoggedInAccount;
-
-import java.util.HashSet;
-import java.util.Set;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 5/27/2015. */
+@NullMarked
 public class Reauthenticate extends BaseActivityAnim {
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         super.onCreate(savedInstance);
         applyColorTheme("");
         setContentView(R.layout.activity_login);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
+
         setupAppBar(R.id.toolbar, "Re-authenticate", true, true);
 
         String[] scopes = {
@@ -68,21 +68,25 @@ public class Reauthenticate extends BaseActivityAnim {
             "mysubreddits",
             "wikiedit"
         };
+        if (Authentication.reddit == null) {
+            // Offline at startup: Authentication's offline branch never built a client, and
+            // there is no way to run an OAuth flow without one.
+            Toast.makeText(this, R.string.err_general, Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
         final OAuthHelper oAuthHelper = Authentication.reddit.getOAuthHelper();
         final Credentials credentials =
-                Credentials.installedApp(Constants.getClientId(), Constants.REDDIT_REDIRECT_URL);
+                Credentials.installedApp(Constants.getClientId(), Constants.getRedirectUrl());
         String authorizationUrl =
                 oAuthHelper.getAuthorizationUrl(credentials, true, scopes).toExternalForm();
         authorizationUrl = authorizationUrl.replace("www.", "i.");
         authorizationUrl = authorizationUrl.replace("%3A%2F%2Fi", "://www");
         Log.v(LogUtil.getTag(), "Auth URL: " + authorizationUrl);
         final CookieManager cookieManager = CookieManager.getInstance();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            cookieManager.removeAllCookies(null);
-        } else {
-            cookieManager.removeAllCookie();
-        }
-        final WebView webView = (WebView) findViewById(R.id.web);
+        cookieManager.removeAllCookies(null);
+        final WebView webView = (WebView) requireViewById(R.id.web);
 
         webView.loadUrl(authorizationUrl);
         webView.setWebChromeClient(
@@ -113,7 +117,8 @@ public class Reauthenticate extends BaseActivityAnim {
     private final class UserChallengeTask extends AsyncTask<String, Void, OAuthData> {
         private final OAuthHelper mOAuthHelper;
         private final Credentials mCredentials;
-        private MaterialDialog mMaterialDialog;
+        @SuppressWarnings("NullAway.Init") // assigned in onPreExecute
+        private MaterialProgressDialog mMaterialDialog;
 
         public UserChallengeTask(OAuthHelper oAuthHelper, Credentials credentials) {
             Log.v(LogUtil.getTag(), "UserChallengeTask()");
@@ -124,8 +129,8 @@ public class Reauthenticate extends BaseActivityAnim {
         @Override
         protected void onPreExecute() {
             // Show a dialog to indicate progress
-            MaterialDialog.Builder builder =
-                    new MaterialDialog.Builder(Reauthenticate.this)
+            MaterialProgressDialog.Builder builder =
+                    new MaterialProgressDialog.Builder(Reauthenticate.this)
                             .title(R.string.login_authenticating)
                             .progress(true, 0)
                             .content(R.string.misc_please_wait)
@@ -135,7 +140,11 @@ public class Reauthenticate extends BaseActivityAnim {
         }
 
         @Override
-        protected OAuthData doInBackground(String... params) {
+        protected @Nullable OAuthData doInBackground(String... params) {
+            if (Authentication.reddit == null) {
+                return null;
+            }
+
             try {
                 OAuthData oAuthData = mOAuthHelper.onUserChallenge(params[0], mCredentials);
                 if (oAuthData != null) {
@@ -143,27 +152,11 @@ public class Reauthenticate extends BaseActivityAnim {
                     Authentication.isLoggedIn = true;
                     String refreshToken = Authentication.reddit.getOAuthData().getRefreshToken();
                     SharedPreferences.Editor editor = Authentication.authentication.edit();
-                    Set<String> accounts =
-                            Authentication.authentication.getStringSet(
-                                    "accounts", new HashSet<String>());
                     LoggedInAccount me = Authentication.reddit.me();
-                    String toRemove = "";
-                    for (String s : accounts) {
-                        if (s.contains(me.getFullName())) {
-                            toRemove = s;
-                        }
-                    }
-
-                    if (!toRemove.isEmpty()) accounts.remove(toRemove);
-
-                    accounts.add(me.getFullName() + ":" + refreshToken);
                     Authentication.name = me.getFullName();
-                    editor.putStringSet("accounts", accounts);
-                    Set<String> tokens =
-                            Authentication.authentication.getStringSet(
-                                    "tokens", new HashSet<String>());
-                    tokens.add(refreshToken);
-                    editor.putStringSet("tokens", tokens);
+                    // Replaces the account's previous entry and drops the refresh token it
+                    // carried, which this reauth supersedes.
+                    Authentication.storeAccountToken(editor, me.getFullName(), refreshToken);
                     editor.putString("lasttoken", refreshToken);
                     editor.remove("backedCreds");
                     Reddit.appRestart.edit().remove("back").apply();
@@ -175,7 +168,7 @@ public class Reauthenticate extends BaseActivityAnim {
             } catch (IllegalStateException | NetworkException | OAuthException e) {
                 // Handle me gracefully
                 Log.e(LogUtil.getTag(), "OAuth failed");
-                Log.e(LogUtil.getTag(), e.getMessage());
+                Log.e(LogUtil.getTag(), String.valueOf(e.getMessage()));
             }
             return null;
         }
@@ -185,12 +178,12 @@ public class Reauthenticate extends BaseActivityAnim {
             // Dismiss old progress dialog
             mMaterialDialog.dismiss();
 
-            new AlertDialog.Builder(Reauthenticate.this)
+            DialogUtil.showWithCardBackground(new AlertDialog.Builder(Reauthenticate.this)
                     .setTitle(R.string.reauth_complete)
                     .setPositiveButton(R.string.btn_ok, (dialog, which) -> finish())
                     .setCancelable(false)
                     .setOnCancelListener(dialog -> finish())
-                    .show();
+                    );
         }
     }
 }

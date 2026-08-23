@@ -4,9 +4,17 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import androidx.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by TacoTheDank on 03/15/2021. */
+@NullMarked
 public class DrawableUtil {
+    /**
+     * @return null when {@code drawable} is a {@link BitmapDrawable} holding no bitmap — the case
+     *     {@link #drawableToBitmapShortcut} guards against. Other inputs always yield a bitmap.
+     */
+    @Nullable
     public static Bitmap drawableToBitmap(final Drawable drawable) {
         if (drawable instanceof BitmapDrawable) {
             return ((BitmapDrawable) drawable).getBitmap();

@@ -50,7 +50,7 @@
                         android:visibility="gone"
                         android:imeOptions="actionSearch|flagNoExtractUi"
                         android:singleLine="true"
-                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.+"
+                        android:digits="@string/subreddit_allowed_chars"
                         android:theme="@style/SearchEditTextTheme"
                         style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title" />
 
@@ -66,7 +66,7 @@
                         android:clickable="true"
                         android:visibility="gone"
                         app:srcCompat="@drawable/ic_close"
-                        android:tint="@android:color/white" />
+                        app:tint="@android:color/white" />
                 </RelativeLayout>
             </androidx.appcompat.widget.Toolbar>
 
@@ -81,7 +81,7 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/toolbar_search_suggestions"
             android:layout_width="256dp"
-            android:layout_height="316dp"
+            android:layout_height="match_parent"
             android:visibility="gone"
             android:layout_below="@id/header"
             android:elevation="8dp"

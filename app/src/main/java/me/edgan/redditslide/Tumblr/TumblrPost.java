@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Tumblr;
 
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -9,15 +11,16 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class TumblrPost {
 
     @JsonProperty("meta")
-    private Meta meta;
+    @Nullable private Meta meta;
 
     @JsonProperty("response")
-    private Response response;
+    @Nullable private Response response;
 
     /**
      * @return The meta
      */
     @JsonProperty("meta")
+    @Nullable
     public Meta getMeta() {
         return meta;
     }
@@ -26,7 +29,7 @@ public class TumblrPost {
      * @param meta The meta
      */
     @JsonProperty("meta")
-    public void setMeta(Meta meta) {
+    public void setMeta(@Nullable Meta meta) {
         this.meta = meta;
     }
 
@@ -34,6 +37,7 @@ public class TumblrPost {
      * @return The response
      */
     @JsonProperty("response")
+    @Nullable
     public Response getResponse() {
         return response;
     }
@@ -42,7 +46,7 @@ public class TumblrPost {
      * @param response The response
      */
     @JsonProperty("response")
-    public void setResponse(Response response) {
+    public void setResponse(@Nullable Response response) {
         this.response = response;
     }
 }

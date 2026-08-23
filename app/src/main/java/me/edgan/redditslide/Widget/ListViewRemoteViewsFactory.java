@@ -10,6 +10,9 @@ import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import androidx.annotation.Nullable;
+
+import java.util.ArrayList;
 import me.edgan.redditslide.Activities.OpenContent;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Autocache.AutoCacheScheduler;
@@ -21,8 +24,10 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.NetworkUtil;
+import me.edgan.redditslide.util.PhotoLoader;
 import me.edgan.redditslide.util.TimeUtils;
-
+import net.dean.jraw.RedditClient;
+import net.dean.jraw.models.LoggedInAccount;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Thumbnails;
 import net.dean.jraw.paginators.DomainPaginator;
@@ -31,15 +36,11 @@ import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.SubredditPaginator;
 import net.dean.jraw.paginators.TimePeriod;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
 public class ListViewRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     String subreddit;
     int id;
     private Context mContext;
-    private ArrayList<Submission> records;
+    private ArrayList<Submission> records = new ArrayList<>();
 
     public ListViewRemoteViewsFactory(Context context, Intent intent, String subreddit, int id) {
         mContext = context;
@@ -48,7 +49,7 @@ public class ListViewRemoteViewsFactory implements RemoteViewsService.RemoteView
     }
 
     // Initialize the data set.
-    public void onCreate() {
+    @Override public void onCreate() {
         // In onCreate() you set up any connections / cursors to your data source. Heavy lifting,
         // for example downloading or creating content etc, should be deferred to onDataSetChanged()
         // or getViewAt(). Taking more than 20 seconds in this call will result in an ANR.
@@ -59,8 +60,15 @@ public class ListViewRemoteViewsFactory implements RemoteViewsService.RemoteView
                 protected Void doInBackground(Void... params) {
                     if (Authentication.reddit == null) {
                         new Authentication(mContext.getApplicationContext());
-                        Authentication.me = Authentication.reddit.me();
-                        Authentication.mod = Authentication.me.isMod();
+                        // The constructor only builds a client on its online branch, so it can
+                        // leave this null even here — it re-tests connectivity itself.
+                        final RedditClient client = Authentication.reddit;
+                        if (client == null) {
+                            return null;
+                        }
+                        final LoggedInAccount account = client.me();
+                        Authentication.me = account;
+                        Authentication.mod = account.isMod();
 
                         Authentication.authentication
                                 .edit()
@@ -77,22 +85,12 @@ public class ListViewRemoteViewsFactory implements RemoteViewsService.RemoteView
                             Reddit.autoCache.start();
                         }
 
-                        final String name = Authentication.me.getFullName();
+                        final String name = account.getFullName();
                         Authentication.name = name;
                         LogUtil.v("AUTHENTICATED");
 
-                        if (Authentication.reddit.isAuthenticated()) {
-                            final Set<String> accounts =
-                                    Authentication.authentication.getStringSet(
-                                            "accounts", new HashSet<String>());
-                            if (accounts.contains(name)) { // convert to new system
-                                accounts.remove(name);
-                                accounts.add(name + ":" + Authentication.refresh);
-                                Authentication.authentication
-                                        .edit()
-                                        .putStringSet("accounts", accounts)
-                                        .apply(); // force commit
-                            }
+                        if (client.isAuthenticated()) {
+                            Authentication.migrateAccountToTokenForm(name);
                             Authentication.isLoggedIn = true;
                             Reddit.notFirst = true;
                         }
@@ -157,7 +155,9 @@ public class ListViewRemoteViewsFactory implements RemoteViewsService.RemoteView
                             }
                         }
                     } catch (Exception e) {
-
+                        // A fetch that fails before the assignment above leaves the previous
+                        // records in place; one that fails during the loop leaves the partial list.
+                        // Either way the widget draws rows rather than crashing its host.
                     }
                     return null;
                 }
@@ -180,7 +180,7 @@ public class ListViewRemoteViewsFactory implements RemoteViewsService.RemoteView
 
     // Given the position (index) of a WidgetItem in the array, use the item's text value in
     // combination with the app widget item XML file to construct a RemoteViews object.
-    public RemoteViews getViewAt(int position) {
+    @Override public RemoteViews getViewAt(int position) {
         // position will always range from 0 to getCount() - 1.
         // Construct a RemoteViews item based on the app widget item XML file, and set the
         // text based on the position.
@@ -220,7 +220,7 @@ public class ListViewRemoteViewsFactory implements RemoteViewsService.RemoteView
             rv.setTextViewText(R.id.subreddit, data.getSubredditName());
             rv.setTextColor(R.id.subreddit, Palette.getColor(data.getSubredditName()));
             if (SubredditWidgetProvider.getViewType(id, mContext) == 1) {
-                Thumbnails s = data.getThumbnails();
+                Thumbnails s = PhotoLoader.usableThumbnails(data);
                 rv.setViewVisibility(R.id.thumbimage2, View.GONE);
                 if (s != null && s.getVariations() != null && s.getSource() != null) {
                     rv.setImageViewBitmap(
@@ -228,10 +228,7 @@ public class ListViewRemoteViewsFactory implements RemoteViewsService.RemoteView
                             ((Reddit) mContext.getApplicationContext())
                                     .getImageLoader()
                                     .loadImageSync(
-                                            CompatUtil.fromHtml(
-                                                            data.getThumbnails()
-                                                                    .getSource()
-                                                                    .getUrl())
+                                            CompatUtil.fromHtml(s.getSource().getUrl())
                                                     .toString()));
                     rv.setViewVisibility(R.id.bigpic, View.VISIBLE);
                 } else {
@@ -275,37 +272,40 @@ public class ListViewRemoteViewsFactory implements RemoteViewsService.RemoteView
             activityIntent.setAction(data.getTitle());
             rv.setOnClickFillInIntent(R.id.card, activityIntent);
         } catch (Exception e) {
-
+            // A row that will not build is returned
+            // half-populated rather than crashing the
+            // widget host.
         }
         return rv;
     }
 
-    public int getCount() {
+    @Override public int getCount() {
         return records.size();
     }
 
-    public void onDataSetChanged() {
+    @Override public void onDataSetChanged() {
 
         // Fetching JSON data from server and add them to records arraylist
     }
 
-    public int getViewTypeCount() {
+    @Override public int getViewTypeCount() {
         return 1;
     }
 
-    public long getItemId(int position) {
+    @Override public long getItemId(int position) {
         return position;
     }
 
-    public void onDestroy() {
+    @Override public void onDestroy() {
         records.clear();
     }
 
-    public boolean hasStableIds() {
+    @Override public boolean hasStableIds() {
         return true;
     }
 
-    public RemoteViews getLoadingView() {
+    @Override public @Nullable RemoteViews getLoadingView() {
+        // Null tells the framework to use the default loading view.
         return null;
     }
 }

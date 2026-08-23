@@ -7,27 +7,26 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.animation.LinearInterpolator;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.tabs.TabLayout;
-
 import me.edgan.redditslide.Fragments.SubredditListView;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.MaterialInputDialog;
+import me.edgan.redditslide.util.MiscUtil;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 9/17/2015. */
+@NullMarked
 public class Discover extends BaseActivityAnim {
 
-    public DiscoverPagerAdapter adapter;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -38,79 +37,61 @@ public class Discover extends BaseActivityAnim {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            case R.id.search:
-                {
-                    new MaterialDialog.Builder(Discover.this)
-                            .alwaysCallInputCallback()
-                            .inputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
-                            .inputRange(3, 100)
-                            .input(
-                                    getString(R.string.discover_search),
-                                    null,
-                                    new MaterialDialog.InputCallback() {
-                                        @Override
-                                        public void onInput(
-                                                MaterialDialog dialog, CharSequence input) {
-                                            dialog.getActionButton(DialogAction.POSITIVE)
-                                                    .setEnabled(input.length() >= 3);
-                                        }
-                                    })
-                            .positiveText(R.string.search_all)
-                            .onPositive(
-                                    new MaterialDialog.SingleButtonCallback() {
-                                        @Override
-                                        public void onClick(
-                                                @NonNull MaterialDialog dialog,
-                                                @NonNull DialogAction which) {
-                                            Intent inte =
-                                                    new Intent(
-                                                            Discover.this, SubredditSearch.class);
-                                            inte.putExtra(
-                                                    "term",
-                                                    dialog.getInputEditText().getText().toString());
-                                            Discover.this.startActivity(inte);
-                                        }
-                                    })
-                            .negativeText(R.string.btn_cancel)
-                            .show();
-                }
-                return true;
-            default:
-                return false;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            getOnBackPressedDispatcher().onBackPressed();
+            return true;
+        } else if (itemId == R.id.search) {
+            new MaterialInputDialog.Builder(Discover.this)
+                    .inputType(
+                            InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
+                    .inputRange(3, 100)
+                    .input(getString(R.string.discover_search), null, null)
+                    .positiveText(R.string.search_all)
+                    .onPositive(
+                            dialog -> {
+                                Intent inte = new Intent(Discover.this, SubredditSearch.class);
+                                inte.putExtra(
+                                        "term",
+                                        dialog.getInputEditText().getText().toString());
+                                Discover.this.startActivity(inte);
+                            })
+                    .negativeText(R.string.btn_cancel)
+                    .show();
+            return true;
+        } else {
+            return false;
         }
     }
 
     @Override
-    public void onCreate(Bundle savedInstance) {
+    public void onCreate(@Nullable Bundle savedInstance) {
         overrideSwipeFromAnywhere();
 
         super.onCreate(savedInstance);
 
         applyColorTheme("");
         setContentView(R.layout.activity_multireddits);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
-        ((DrawerLayout) findViewById(R.id.drawer_layout))
+        ((DrawerLayout) requireViewById(R.id.drawer_layout))
                 .setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         setupAppBar(R.id.toolbar, R.string.discover_title, true, false);
-        mToolbar.setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
+        requireToolbar().setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
 
-        findViewById(R.id.header).setBackgroundColor(Palette.getDefaultColor());
-        TabLayout tabs = (TabLayout) findViewById(R.id.sliding_tabs);
+        requireViewById(R.id.header).setBackgroundColor(Palette.getDefaultColor());
+        TabLayout tabs = (TabLayout) requireViewById(R.id.sliding_tabs);
         tabs.setTabMode(TabLayout.MODE_FIXED);
         tabs.setSelectedTabIndicatorColor(new ColorPreferences(Discover.this).getColor("no sub"));
 
-        ViewPager pager = (ViewPager) findViewById(R.id.content_view);
+        ViewPager pager = (ViewPager) requireViewById(R.id.content_view);
         pager.setAdapter(new DiscoverPagerAdapter(getSupportFragmentManager()));
         tabs.setupWithViewPager(pager);
         pager.addOnPageChangeListener(
                 new ViewPager.SimpleOnPageChangeListener() {
                     @Override
                     public void onPageSelected(int position) {
-                        findViewById(R.id.header)
+                        requireViewById(R.id.header)
                                 .animate()
                                 .translationY(0)
                                 .setInterpolator(new LinearInterpolator())

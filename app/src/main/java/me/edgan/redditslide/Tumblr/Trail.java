@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Tumblr;
 
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,22 +17,22 @@ import java.util.Map;
 public class Trail {
 
     @JsonProperty("blog")
-    private Blog_ blog;
+    @Nullable private Blog_ blog;
 
     @JsonProperty("post")
-    private Post_ post;
+    @Nullable private Post_ post;
 
     @JsonProperty("content_raw")
-    private String contentRaw;
+    @Nullable private String contentRaw;
 
     @JsonProperty("content")
-    private String content;
+    @Nullable private String content;
 
     @JsonProperty("is_current_item")
-    private Boolean isCurrentItem;
+    @Nullable private Boolean isCurrentItem;
 
     @JsonProperty("is_root_item")
-    private Boolean isRootItem;
+    @Nullable private Boolean isRootItem;
 
     @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -38,6 +40,7 @@ public class Trail {
      * @return The blog
      */
     @JsonProperty("blog")
+    @Nullable
     public Blog_ getBlog() {
         return blog;
     }
@@ -46,7 +49,7 @@ public class Trail {
      * @param blog The blog
      */
     @JsonProperty("blog")
-    public void setBlog(Blog_ blog) {
+    public void setBlog(@Nullable Blog_ blog) {
         this.blog = blog;
     }
 
@@ -54,6 +57,7 @@ public class Trail {
      * @return The post
      */
     @JsonProperty("post")
+    @Nullable
     public Post_ getPost() {
         return post;
     }
@@ -62,7 +66,7 @@ public class Trail {
      * @param post The post
      */
     @JsonProperty("post")
-    public void setPost(Post_ post) {
+    public void setPost(@Nullable Post_ post) {
         this.post = post;
     }
 
@@ -70,6 +74,7 @@ public class Trail {
      * @return The contentRaw
      */
     @JsonProperty("content_raw")
+    @Nullable
     public String getContentRaw() {
         return contentRaw;
     }
@@ -78,7 +83,7 @@ public class Trail {
      * @param contentRaw The content_raw
      */
     @JsonProperty("content_raw")
-    public void setContentRaw(String contentRaw) {
+    public void setContentRaw(@Nullable String contentRaw) {
         this.contentRaw = contentRaw;
     }
 
@@ -86,6 +91,7 @@ public class Trail {
      * @return The content
      */
     @JsonProperty("content")
+    @Nullable
     public String getContent() {
         return content;
     }
@@ -94,7 +100,7 @@ public class Trail {
      * @param content The content
      */
     @JsonProperty("content")
-    public void setContent(String content) {
+    public void setContent(@Nullable String content) {
         this.content = content;
     }
 
@@ -102,6 +108,7 @@ public class Trail {
      * @return The isCurrentItem
      */
     @JsonProperty("is_current_item")
+    @Nullable
     public Boolean getIsCurrentItem() {
         return isCurrentItem;
     }
@@ -110,7 +117,7 @@ public class Trail {
      * @param isCurrentItem The is_current_item
      */
     @JsonProperty("is_current_item")
-    public void setIsCurrentItem(Boolean isCurrentItem) {
+    public void setIsCurrentItem(@Nullable Boolean isCurrentItem) {
         this.isCurrentItem = isCurrentItem;
     }
 
@@ -118,6 +125,7 @@ public class Trail {
      * @return The isRootItem
      */
     @JsonProperty("is_root_item")
+    @Nullable
     public Boolean getIsRootItem() {
         return isRootItem;
     }
@@ -126,7 +134,7 @@ public class Trail {
      * @param isRootItem The is_root_item
      */
     @JsonProperty("is_root_item")
-    public void setIsRootItem(Boolean isRootItem) {
+    public void setIsRootItem(@Nullable Boolean isRootItem) {
         this.isRootItem = isRootItem;
     }
 

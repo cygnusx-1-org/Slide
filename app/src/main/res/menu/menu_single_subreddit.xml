@@ -4,9 +4,9 @@
       tools:context=".SubredditOverview">
 
     <item
-            android:id="@+id/action_shadowbox"
-            android:icon="@drawable/ic_view_carousel"
-            android:title="@string/general_enable_shadowbox"
+            android:id="@+id/search"
+            android:icon="@drawable/ic_search"
+            android:title="@string/search_title"
             app:showAsAction="ifRoom"/>
 
     <item
@@ -16,28 +16,28 @@
             app:showAsAction="ifRoom"/>
 
     <item
-            android:id="@+id/search"
-            android:icon="@drawable/ic_search"
-            android:title="@string/search_title"
-            app:showAsAction="ifRoom"/>
-
-    <item
             android:id="@+id/action_refresh"
             android:icon="@drawable/ic_refresh"
             android:title="@string/btn_refresh"
             app:showAsAction="ifRoom"/>
 
     <item
+            android:id="@+id/action_shadowbox"
+            android:icon="@drawable/ic_view_carousel"
+            android:title="@string/general_enable_shadowbox"
+            app:showAsAction="never"/>
+
+    <item
             android:id="@+id/gallery"
             android:icon="@drawable/ic_image"
             android:title="@string/gallery_mode"
-            app:showAsAction="ifRoom"/>
+            app:showAsAction="never"/>
 
     <item
             android:id="@+id/sidebar"
             android:icon="@drawable/ic_info"
             android:title="@string/general_open_settings"
-            app:showAsAction="ifRoom"/>
+            app:showAsAction="never"/>
 
     <item
             android:id="@+id/submit"

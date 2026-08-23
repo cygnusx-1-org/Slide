@@ -1,747 +1,823 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-          xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.RUN_USER_INITIATED_JOBS" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+        <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+        <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+        <uses-permission android:name="android.permission.INTERNET"/>
+        <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+        <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED"/>
+        <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+        <uses-permission android:name="android.permission.RUN_USER_INITIATED_JOBS" />
+        <uses-permission android:name="android.permission.WAKE_LOCK"/>
+        <uses-permission android:name="android.permission.CAMERA" />
 
-    <queries>
-        <intent>
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="http" />
-        </intent>
-        <intent>
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="https" />
-        </intent>
-        <intent>
-            <action android:name="android.support.customtabs.action.CustomTabsService" />
-        </intent>
-    </queries>
+        <!-- Camera is used for the QR scanner but is not required; declare it optional so the
+             app remains installable on devices without a camera (e.g. ChromeOS). -->
+        <uses-feature android:name="android.hardware.camera" android:required="false" />
+        <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
 
-    <application
-            android:name=".Reddit"
-            android:allowBackup="true"
-            android:fullBackupContent="true"
-            android:hardwareAccelerated="true"
-            android:icon="@mipmap/ic_launcher"
-            android:installLocation="auto"
-            android:label="@string/app_name"
-            android:requestLegacyExternalStorage="true"
-            android:resizeableActivity="true"
-            android:roundIcon="@mipmap/ic_launcher_round"
-            android:usesCleartextTraffic="true"
-            android:theme="@style/yellow_dark">
-        <provider
-                android:name="androidx.core.content.FileProvider"
-                android:authorities="${applicationId}.provider"
-                android:exported="false"
-                android:grantUriPermissions="true">
-            <meta-data
-                    android:name="android.support.FILE_PROVIDER_PATHS"
-                    android:resource="@xml/filepaths"
-                    tools:replace="android:resource"/>
-        </provider>
-        <activity
-                android:name=".Activities.Slide"
-                android:alwaysRetainTaskState="true"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:icon="@mipmap/ic_launcher"
-                android:label="@string/app_name"
-                android:exported="true"
-                android:roundIcon="@mipmap/ic_launcher_round">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER"/>
-            </intent-filter>
-        </activity>
-        <activity
-                android:name=".Activities.MainActivity"
-                android:alwaysRetainTaskState="true"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:label="@string/app_name"
-                android:exported="true"
-                android:windowSoftInputMode="adjustResize">
-        </activity>
-        <activity-alias
-                android:name=".Activities.SlideDefault"
-                android:enabled="false"
-                android:icon="@mipmap/ic_launcher"
-                android:label="@string/app_name"
-                android:targetActivity=".Activities.Slide"
-                android:exported="true"
-                android:taskAffinity=".Slide">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-        <activity-alias
-                android:name=".Activities.SlideRed"
-                android:enabled="false"
-                android:icon="@mipmap/icon_red"
-                android:label="@string/app_name"
-                android:exported="true"
-                android:targetActivity=".Activities.Slide">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-        <activity-alias
-                android:name=".Activities.SlidePink"
-                android:enabled="false"
-                android:icon="@mipmap/icon_pink"
-                android:label="@string/app_name"
-                android:exported="true"
-                android:targetActivity=".Activities.Slide">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-        <activity-alias
-                android:name=".Activities.SlidePurple"
-                android:enabled="false"
-                android:icon="@mipmap/icon_purple"
-                android:label="@string/app_name"
-                android:exported="true"
-                android:targetActivity=".Activities.Slide">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-        <activity-alias
-                android:name=".Activities.SlideDeepPurple"
-                android:enabled="false"
-                android:icon="@mipmap/icon_deep_purple"
-                android:label="@string/app_name"
-                android:exported="true"
-                android:targetActivity=".Activities.Slide">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-        <activity-alias
-                android:name=".Activities.SlideIndigo"
-                android:enabled="false"
-                android:icon="@mipmap/icon_indigo"
-                android:label="@string/app_name"
-                android:exported="true"
-                android:targetActivity=".Activities.Slide">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-        <activity-alias
-                android:name=".Activities.SlideBlue"
-                android:enabled="false"
-                android:icon="@mipmap/icon_blue"
-                android:label="@string/app_name"
-                android:exported="true"
-                android:targetActivity=".Activities.Slide">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-        <activity-alias
-                android:name=".Activities.SlideLightBlue"
-                android:enabled="false"
-                android:icon="@mipmap/icon_light_blue"
-                android:label="@string/app_name"
-                android:exported="true"
-                android:targetActivity=".Activities.Slide">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-        <activity-alias
-                android:name=".Activities.SlideCyan"
-                android:enabled="false"
-                android:icon="@mipmap/icon_cyan"
-                android:label="@string/app_name"
-                android:exported="true"
-                android:targetActivity=".Activities.Slide">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-        <activity-alias
-                android:name=".Activities.SlideTeal"
-                android:enabled="false"
-                android:icon="@mipmap/icon_teal"
-                android:label="@string/app_name"
-                android:exported="true"
-                android:targetActivity=".Activities.Slide">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-        <activity-alias
-                android:name=".Activities.SlideGreen"
-                android:enabled="false"
-                android:icon="@mipmap/icon_green"
-                android:label="@string/app_name"
-                android:exported="true"
-                android:targetActivity=".Activities.Slide">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-        <activity-alias
-                android:name=".Activities.SlideLightGreen"
-                android:enabled="false"
-                android:icon="@mipmap/icon_light_green"
-                android:label="@string/app_name"
-                android:exported="true"
-                android:targetActivity=".Activities.Slide">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-        <activity-alias
-                android:name=".Activities.SlideLime"
-                android:enabled="false"
-                android:icon="@mipmap/icon_lime"
-                android:label="@string/app_name"
-                android:exported="true"
-                android:targetActivity=".Activities.Slide">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-        <activity-alias
-                android:name=".Activities.SlideYellow"
-                android:enabled="false"
-                android:icon="@mipmap/icon_yellow"
-                android:label="@string/app_name"
-                android:exported="true"
-                android:targetActivity=".Activities.Slide">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-        <activity-alias
-                android:name=".Activities.SlideAmber"
-                android:enabled="false"
-                android:icon="@mipmap/icon_amber"
-                android:label="@string/app_name"
-                android:exported="true"
-                android:targetActivity=".Activities.Slide">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-        <activity-alias
-                android:name=".Activities.SlideOrange"
-                android:enabled="false"
-                android:icon="@mipmap/icon_orange"
-                android:label="@string/app_name"
-                android:exported="true"
-                android:targetActivity=".Activities.Slide">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-        <activity-alias
-                android:name=".Activities.SlideDeepOrange"
-                android:enabled="false"
-                android:icon="@mipmap/icon_deep_orange"
-                android:label="@string/app_name"
-                android:exported="true"
-                android:targetActivity=".Activities.Slide">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-        <activity-alias
-                android:name=".Activities.SlideBrown"
-                android:enabled="false"
-                android:icon="@mipmap/icon_brown"
-                android:label="@string/app_name"
-                android:exported="true"
-                android:targetActivity=".Activities.Slide">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-        <activity-alias
-                android:name=".Activities.SlideBlueGrey"
-                android:enabled="false"
-                android:icon="@mipmap/icon_blue_grey"
-                android:label="@string/app_name"
-                android:exported="true"
-                android:targetActivity=".Activities.Slide">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-        <activity-alias
-                android:name=".Activities.SlideGrey"
-                android:enabled="false"
-                android:icon="@mipmap/icon_grey"
-                android:label="@string/app_name"
-                android:exported="true"
-                android:targetActivity=".Activities.Slide">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
+        <queries>
+                <intent>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" />
+                </intent>
+                <intent>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" />
+                </intent>
+                <intent>
+                <action android:name="android.support.customtabs.action.CustomTabsService" />
+                </intent>
+                <!-- Lets the Translate feature launch the Google Translate app (PROCESS_TEXT)
+                     instead of silently falling back to the web on Android 11+. -->
+                <package android:name="com.google.android.apps.translate" />
+        </queries>
 
-        <activity android:name=".Activities.MakeExternal"/>
-
-        <activity
-                android:name=".ui.settings.SettingsSynccit"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"
-                android:windowSoftInputMode="adjustResize"/>
-        <activity
-                android:name=".ui.settings.ManageOfflineContent"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"
-                android:windowSoftInputMode="adjustResize"/>
-        <activity
-                android:name=".Activities.ForceTouchLink"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:windowSoftInputMode="adjustResize"/>
-        <activity
-                android:name=".Activities.ReaderMode"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:windowSoftInputMode="adjustResize"/>
-        <activity
-                android:name=".Activities.Album"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.RedditGallery"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.RedditGalleryPager"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.Tumblr"
-                android:colorMode="wideColorGamut"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".ui.settings.SettingsViewType"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".ui.settings.SettingsFilter"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name="com.canhub.cropper.CropImageActivity"
-                android:theme="@style/Theme.AppCompat"/>
-        <activity
-                android:name=".Activities.Draw"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/Theme.AppCompat.NoActionBar"/>
-        <activity
-                android:name=".Activities.Gallery"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.Discover"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.ModQueue"
-                android:alwaysRetainTaskState="true"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.MediaView"
-                android:alwaysRetainTaskState="true"
-                android:colorMode="wideColorGamut"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.AlbumPager"
-                android:colorMode="wideColorGamut"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.TumblrPager"
-                android:colorMode="wideColorGamut"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.PostReadLater"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".ui.settings.SettingsComments"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.Loader"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".ui.settings.SettingsFont"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.CommentSearch"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.Website"
-                android:alwaysRetainTaskState="true"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeableweb"/>
-        <activity
-                android:name=".Activities.FullscreenVideo"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+        <application
+                android:name=".Reddit"
+                android:allowBackup="true"
+                android:enableOnBackInvokedCallback="true"
+                android:fullBackupContent="true"
                 android:hardwareAccelerated="true"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.Wiki"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.CommentsScreen"
-                android:alwaysRetainTaskState="true"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"
-                android:windowSoftInputMode="adjustResize"/>
-        <activity
-                android:name=".Activities.Announcement"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"
-                android:windowSoftInputMode="adjustResize"/>
-        <activity
-                android:name=".Activities.SubredditView"
-                android:alwaysRetainTaskState="true"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.MultiredditOverview"
-                android:alwaysRetainTaskState="true"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.Profile"
-                android:alwaysRetainTaskState="true"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".ui.settings.SettingsReddit"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.SendMessage"
-                android:alwaysRetainTaskState="true"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"
-                android:windowSoftInputMode="adjustResize"/>
-        <activity
-                android:name=".Activities.OpenContent"
-                android:theme="@style/Theme.Transparent"
-                android:exported="true"
-                android:label="View content">
-            <intent-filter android:label="@string/app_name" android:autoVerify="false">
-                <action android:name="android.intent.action.VIEW"/>
+                android:icon="@mipmap/ic_launcher"
+                android:installLocation="auto"
+                android:label="@string/app_name"
+                android:requestLegacyExternalStorage="true"
+                android:resizeableActivity="true"
+                android:roundIcon="@mipmap/ic_launcher_round"
+                android:usesCleartextTraffic="true"
+                android:theme="@style/yellow_dark">
+                <provider
+                        android:name="androidx.core.content.FileProvider"
+                        android:authorities="${applicationId}.provider"
+                        android:exported="false"
+                        android:grantUriPermissions="true">
+                        <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/filepaths" tools:replace="android:resource"/>
+                </provider>
+                <activity
+                        android:name=".Activities.Slide"
+                        android:alwaysRetainTaskState="true"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:icon="@mipmap/ic_launcher"
+                        android:label="@string/app_name"
+                        android:exported="true"
+                        android:roundIcon="@mipmap/ic_launcher_round">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"/>
+                                <category android:name="android.intent.category.LAUNCHER"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER"/>
+                        </intent-filter>
+                </activity>
+                <activity
+                        android:name=".Activities.MainActivity"
+                        android:alwaysRetainTaskState="true"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:label="@string/app_name"
+                        android:exported="true"
+                        android:windowSoftInputMode="adjustResize">
+                </activity>
+                <activity-alias
+                        android:name=".Activities.SlideDefault"
+                        android:enabled="false"
+                        android:icon="@mipmap/ic_launcher"
+                        android:label="@string/app_name"
+                        android:targetActivity=".Activities.Slide"
+                        android:exported="true"
+                        android:taskAffinity=".Slide">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"/>
+                                <category android:name="android.intent.category.LAUNCHER"/>
+                        </intent-filter>
+                </activity-alias>
+                <activity-alias
+                        android:name=".Activities.SlideRed"
+                        android:enabled="false"
+                        android:icon="@mipmap/icon_red"
+                        android:label="@string/app_name"
+                        android:exported="true"
+                        android:targetActivity=".Activities.Slide">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"/>
+                                <category android:name="android.intent.category.LAUNCHER"/>
+                        </intent-filter>
+                </activity-alias>
+                <activity-alias
+                        android:name=".Activities.SlidePink"
+                        android:enabled="false"
+                        android:icon="@mipmap/icon_pink"
+                        android:label="@string/app_name"
+                        android:exported="true"
+                        android:targetActivity=".Activities.Slide">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"/>
+                                <category android:name="android.intent.category.LAUNCHER"/>
+                        </intent-filter>
+                </activity-alias>
+                <activity-alias
+                        android:name=".Activities.SlidePurple"
+                        android:enabled="false"
+                        android:icon="@mipmap/icon_purple"
+                        android:label="@string/app_name"
+                        android:exported="true"
+                        android:targetActivity=".Activities.Slide">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"/>
+                                <category android:name="android.intent.category.LAUNCHER"/>
+                        </intent-filter>
+                </activity-alias>
+                <activity-alias
+                        android:name=".Activities.SlideDeepPurple"
+                        android:enabled="false"
+                        android:icon="@mipmap/icon_deep_purple"
+                        android:label="@string/app_name"
+                        android:exported="true"
+                        android:targetActivity=".Activities.Slide">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"/>
+                                <category android:name="android.intent.category.LAUNCHER"/>
+                        </intent-filter>
+                </activity-alias>
+                <activity-alias
+                        android:name=".Activities.SlideIndigo"
+                        android:enabled="false"
+                        android:icon="@mipmap/icon_indigo"
+                        android:label="@string/app_name"
+                        android:exported="true"
+                        android:targetActivity=".Activities.Slide">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"/>
+                                <category android:name="android.intent.category.LAUNCHER"/>
+                        </intent-filter>
+                </activity-alias>
+                <activity-alias
+                        android:name=".Activities.SlideBlue"
+                        android:enabled="false"
+                        android:icon="@mipmap/icon_blue"
+                        android:label="@string/app_name"
+                        android:exported="true"
+                        android:targetActivity=".Activities.Slide">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"/>
+                                <category android:name="android.intent.category.LAUNCHER"/>
+                        </intent-filter>
+                </activity-alias>
+                <activity-alias
+                        android:name=".Activities.SlideLightBlue"
+                        android:enabled="false"
+                        android:icon="@mipmap/icon_light_blue"
+                        android:label="@string/app_name"
+                        android:exported="true"
+                        android:targetActivity=".Activities.Slide">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"/>
+                                <category android:name="android.intent.category.LAUNCHER"/>
+                        </intent-filter>
+                </activity-alias>
+                <activity-alias
+                        android:name=".Activities.SlideCyan"
+                        android:enabled="false"
+                        android:icon="@mipmap/icon_cyan"
+                        android:label="@string/app_name"
+                        android:exported="true"
+                        android:targetActivity=".Activities.Slide">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"/>
+                                <category android:name="android.intent.category.LAUNCHER"/>
+                        </intent-filter>
+                </activity-alias>
+                <activity-alias
+                        android:name=".Activities.SlideTeal"
+                        android:enabled="false"
+                        android:icon="@mipmap/icon_teal"
+                        android:label="@string/app_name"
+                        android:exported="true"
+                        android:targetActivity=".Activities.Slide">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"/>
+                                <category android:name="android.intent.category.LAUNCHER"/>
+                        </intent-filter>
+                </activity-alias>
+                <activity-alias
+                        android:name=".Activities.SlideGreen"
+                        android:enabled="false"
+                        android:icon="@mipmap/icon_green"
+                        android:label="@string/app_name"
+                        android:exported="true"
+                        android:targetActivity=".Activities.Slide">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"/>
+                                <category android:name="android.intent.category.LAUNCHER"/>
+                        </intent-filter>
+                </activity-alias>
+                <activity-alias
+                        android:name=".Activities.SlideLightGreen"
+                        android:enabled="false"
+                        android:icon="@mipmap/icon_light_green"
+                        android:label="@string/app_name"
+                        android:exported="true"
+                        android:targetActivity=".Activities.Slide">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"/>
+                                <category android:name="android.intent.category.LAUNCHER"/>
+                        </intent-filter>
+                </activity-alias>
+                <activity-alias
+                        android:name=".Activities.SlideLime"
+                        android:enabled="false"
+                        android:icon="@mipmap/icon_lime"
+                        android:label="@string/app_name"
+                        android:exported="true"
+                        android:targetActivity=".Activities.Slide">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"/>
+                                <category android:name="android.intent.category.LAUNCHER"/>
+                        </intent-filter>
+                </activity-alias>
+                <activity-alias
+                        android:name=".Activities.SlideYellow"
+                        android:enabled="false"
+                        android:icon="@mipmap/icon_yellow"
+                        android:label="@string/app_name"
+                        android:exported="true"
+                        android:targetActivity=".Activities.Slide">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"/>
+                                <category android:name="android.intent.category.LAUNCHER"/>
+                        </intent-filter>
+                </activity-alias>
+                <activity-alias
+                        android:name=".Activities.SlideAmber"
+                        android:enabled="false"
+                        android:icon="@mipmap/icon_amber"
+                        android:label="@string/app_name"
+                        android:exported="true"
+                        android:targetActivity=".Activities.Slide">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"/>
+                                <category android:name="android.intent.category.LAUNCHER"/>
+                        </intent-filter>
+                </activity-alias>
+                <activity-alias
+                        android:name=".Activities.SlideOrange"
+                        android:enabled="false"
+                        android:icon="@mipmap/icon_orange"
+                        android:label="@string/app_name"
+                        android:exported="true"
+                        android:targetActivity=".Activities.Slide">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"/>
+                                <category android:name="android.intent.category.LAUNCHER"/>
+                        </intent-filter>
+                </activity-alias>
+                <activity-alias
+                        android:name=".Activities.SlideDeepOrange"
+                        android:enabled="false"
+                        android:icon="@mipmap/icon_deep_orange"
+                        android:label="@string/app_name"
+                        android:exported="true"
+                        android:targetActivity=".Activities.Slide">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"/>
+                                <category android:name="android.intent.category.LAUNCHER"/>
+                        </intent-filter>
+                </activity-alias>
+                <activity-alias
+                        android:name=".Activities.SlideBrown"
+                        android:enabled="false"
+                        android:icon="@mipmap/icon_brown"
+                        android:label="@string/app_name"
+                        android:exported="true"
+                        android:targetActivity=".Activities.Slide">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"/>
+                                <category android:name="android.intent.category.LAUNCHER"/>
+                        </intent-filter>
+                </activity-alias>
+                <activity-alias
+                        android:name=".Activities.SlideBlueGrey"
+                        android:enabled="false"
+                        android:icon="@mipmap/icon_blue_grey"
+                        android:label="@string/app_name"
+                        android:exported="true"
+                        android:targetActivity=".Activities.Slide">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"/>
+                                <category android:name="android.intent.category.LAUNCHER"/>
+                        </intent-filter>
+                </activity-alias>
+                <activity-alias
+                        android:name=".Activities.SlideGrey"
+                        android:enabled="false"
+                        android:icon="@mipmap/icon_grey"
+                        android:label="@string/app_name"
+                        android:exported="true"
+                        android:targetActivity=".Activities.Slide">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"/>
+                                <category android:name="android.intent.category.LAUNCHER"/>
+                        </intent-filter>
+                </activity-alias>
 
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <activity android:name=".Activities.MakeExternal"/>
 
-                <data android:scheme="http"/>
-                <data android:scheme="https"/>
-                <data android:host="reddit.com"/>
-                <data android:host="*.reddit.com"/>
-                <data android:host="redd.it"/>
-                <!--Disable this for now
-                <data android:host="reddit.app.link"/>
-                <data android:host="reddit.onelink.me"/>
-                <data android:host="reddit-alternate.app.link"/>
-                <data android:host="click.redditmail.com"/>
-                -->
+                <activity
+                        android:name=".ui.settings.SettingsSynccit"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"
+                        android:windowSoftInputMode="adjustResize"/>
+                <activity
+                        android:name=".ui.settings.ManageOfflineContent"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"
+                        android:windowSoftInputMode="adjustResize"/>
+                <activity
+                        android:name=".Activities.ForceTouchLink"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:windowSoftInputMode="adjustResize"/>
+                <activity
+                        android:name=".Activities.ReaderMode"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:windowSoftInputMode="adjustResize"/>
+                <activity
+                        android:name=".Activities.Album"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.RedditGallery"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.RedditGalleryPager"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.Tumblr"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".ui.settings.SettingsViewType"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".ui.settings.SettingsFilter"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".ui.settings.SettingsFilterList"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name="com.canhub.cropper.CropImageActivity"
+                        android:theme="@style/Theme.AppCompat"/>
+                <activity
+                        android:name=".Activities.Draw"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/Theme.AppCompat.NoActionBar"/>
+                <activity
+                        android:name=".Activities.Gallery"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.Discover"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.ModQueue"
+                        android:alwaysRetainTaskState="true"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.MediaView"
+                        android:alwaysRetainTaskState="true"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.AlbumPager"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.TumblrPager"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.PostReadLater"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.PostLocalSaved"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".ui.settings.SettingsComments"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.Loader"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".ui.settings.SettingsFont"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".ui.settings.SettingsMarkdown"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.CommentSearch"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.Website"
+                        android:alwaysRetainTaskState="true"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeableweb"/>
+                <activity
+                        android:name=".Activities.FullscreenVideo"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:hardwareAccelerated="true"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.Wiki"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.CommentsScreen"
+                        android:alwaysRetainTaskState="true"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"
+                        android:windowSoftInputMode="adjustResize"/>
+                <activity
+                        android:name=".Activities.Announcement"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"
+                        android:windowSoftInputMode="adjustResize"/>
+                <activity
+                        android:name=".Activities.SubredditView"
+                        android:alwaysRetainTaskState="true"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.MultiredditOverview"
+                        android:alwaysRetainTaskState="true"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.Users"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.Profile"
+                        android:alwaysRetainTaskState="true"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".ui.settings.SettingsReddit"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.SendMessage"
+                        android:alwaysRetainTaskState="true"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"
+                        android:windowSoftInputMode="adjustResize"/>
+                <activity
+                        android:name=".Activities.OpenContent"
+                        android:theme="@style/Theme.Transparent"
+                        android:exported="true"
+                        android:label="View content">
+                        <intent-filter android:label="@string/app_name" android:autoVerify="false">
+                                <action android:name="android.intent.action.VIEW"/>
 
-            </intent-filter>
-        </activity>
-        <activity
-                android:name=".ui.settings.SettingsGeneral"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.CommentsScreenSingle"
-                android:alwaysRetainTaskState="true"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"
-                android:windowSoftInputMode="adjustResize"/>
-        <activity
-                android:name=".Activities.Inbox"
-                android:alwaysRetainTaskState="true"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.Submit"
-                android:alwaysRetainTaskState="true"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:label="New Submission"
-                android:theme="@style/swipeable"
-                android:exported="true"
-                android:windowSoftInputMode="adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.BROWSABLE"/>
 
-                <data android:mimeType="image/*"/>
-                <data android:mimeType="text/plain"/>
+                                <data android:scheme="http"/>
+                                <data android:scheme="https"/>
+                                <data android:host="reddit.com"/>
+                                <data android:host="*.reddit.com"/>
+                                <data android:host="redd.it"/>
+                                <!--Disable this for now
+                                <data android:host="reddit.app.link"/>
+                                <data android:host="reddit.onelink.me"/>
+                                <data android:host="reddit-alternate.app.link"/>
+                                <data android:host="click.redditmail.com"/>
+                                -->
 
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
-        <activity
-                android:name=".Activities.Crosspost"
-                android:alwaysRetainTaskState="true"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:label="Crosspost"
-                android:theme="@style/swipeable"
-                android:windowSoftInputMode="adjustResize">
-        </activity>
+                        </intent-filter>
+                </activity>
+                <activity
+                        android:name=".ui.settings.SettingsGeneral"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.CommentsScreenSingle"
+                        android:alwaysRetainTaskState="true"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"
+                        android:windowSoftInputMode="adjustResize"/>
+                <activity
+                        android:name=".Activities.Inbox"
+                        android:alwaysRetainTaskState="true"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.Submit"
+                        android:alwaysRetainTaskState="true"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:label="New Submission"
+                        android:theme="@style/swipeable"
+                        android:exported="true"
+                        android:windowSoftInputMode="adjustResize">
+                        <intent-filter>
+                                <action android:name="android.intent.action.SEND"/>
 
-        <activity
-                android:name=".Activities.Related"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:label="Related Reddit submissions"
-                android:theme="@style/swipeable"
-                android:exported="true"
-                android:windowSoftInputMode="adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND"/>
-                <data android:mimeType="text/plain"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
-        <activity
-                android:name=".Activities.Tutorial"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"/>
-        <activity
-                android:name=".Activities.Shadowbox"
-                android:alwaysRetainTaskState="true"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.ShadowboxComments"
-                android:alwaysRetainTaskState="true"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".ui.settings.SettingsActivity"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"
-                android:exported="true"
-                android:windowSoftInputMode="adjustNothing">
-            <intent-filter>
-                <action android:name="android.intent.action.APPLICATION_PREFERENCES"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
-        <activity
-                android:name=".ui.settings.SettingsTheme"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".ui.settings.SettingsSubreddit"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.SwipeTutorial"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".ui.settings.SettingsAbout"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".ui.settings.SettingsLibs"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.Search"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".ui.settings.SettingsHandling"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".ui.settings.EditCardsLayout"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.SubredditSearch"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".ui.settings.dragSort.ReorderSubreddits"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.Login"
-                android:alwaysRetainTaskState="true"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.Reauthenticate"
-                android:alwaysRetainTaskState="true"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity android:name=".Activities.CancelSubNotifs"/>
-        <activity android:name=".Activities.DeleteFile"/>
-        <activity
-                android:name=".ui.settings.SettingsData"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".ui.settings.SettingsBackup"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".ui.settings.SettingsHistory"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".ui.settings.SettingsModeration"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.LiveThread"
-                android:alwaysRetainTaskState="true"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity
-                android:name=".Activities.SetupWidget"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"
-                android:exported="true"
-                android:windowSoftInputMode="adjustResize">
-            <intent-filter>
-                <action android:name="APPWIDGET_CONFIGURE"/>
-            </intent-filter>
-        </activity>
-        <activity
-                android:name=".Activities.CreateMulti"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-                android:theme="@style/swipeable"/>
-        <activity android:name=".Activities.Shortcut"
-                  android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.CREATE_SHORTCUT"/>
+                                <data android:mimeType="image/*"/>
+                                <data android:mimeType="text/plain"/>
 
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
-        <service
-            android:name=".Notifications.ImageDownloadNotificationService"
-            android:enabled="true"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            android:exported="false"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                        </intent-filter>
+                </activity>
+                <activity
+                        android:name=".Activities.Crosspost"
+                        android:alwaysRetainTaskState="true"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:label="Crosspost"
+                        android:theme="@style/swipeable"
+                        android:windowSoftInputMode="adjustResize">
+                </activity>
 
-        <service
-                android:name=".Adapters.MarkAsReadService"
-                android:enabled="true"
-                android:exported="true"/>
+                <activity
+                        android:name=".Activities.Related"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:label="Related Reddit submissions"
+                        android:theme="@style/swipeable"
+                        android:exported="true"
+                        android:windowSoftInputMode="adjustResize">
+                        <intent-filter>
+                                <action android:name="android.intent.action.SEND"/>
+                                <data android:mimeType="text/plain"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                        </intent-filter>
+                </activity>
+                <activity
+                        android:name=".Activities.Tutorial"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"/>
+                <activity
+                        android:name=".Activities.Shadowbox"
+                        android:alwaysRetainTaskState="true"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.ShadowboxComments"
+                        android:alwaysRetainTaskState="true"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".ui.settings.SettingsActivity"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"
+                        android:exported="true"
+                        android:windowSoftInputMode="adjustNothing">
+                        <intent-filter>
+                                <action android:name="android.intent.action.APPLICATION_PREFERENCES"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                        </intent-filter>
+                </activity>
+                <activity
+                        android:name=".ui.settings.SettingsTheme"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".ui.settings.SettingsSubreddit"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".ui.settings.SettingsAbout"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".ui.settings.SettingsDebug"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".ui.settings.SettingsLibs"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.Search"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".ui.settings.SettingsHandling"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".ui.settings.EditCardsLayout"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.SubredditSearch"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".ui.settings.dragSort.ReorderSubreddits"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.Login"
+                        android:alwaysRetainTaskState="true"
+                        android:launchMode="singleTask"
+                        android:exported="true"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable">
+                        <intent-filter>
+                                <action android:name="android.intent.action.VIEW"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.BROWSABLE"/>
+                                <data android:scheme="http" android:host="www.ccrama.me"/>
+                        </intent-filter>
+                        <intent-filter>
+                                <action android:name="android.intent.action.VIEW"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.BROWSABLE"/>
+                                <data android:scheme="redreader" android:host="rr_oauth_redir"/>
+                        </intent-filter>
+                        <intent-filter>
+                                <action android:name="android.intent.action.VIEW"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.BROWSABLE"/>
+                                <data android:scheme="slide" android:host="localhost"/>
+                                <data android:scheme="slide" android:host="127.0.0.1"/>
+                        </intent-filter>
+                        <intent-filter>
+                                <action android:name="android.intent.action.VIEW"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.BROWSABLE"/>
+                                <data android:scheme="continuum" android:host="localhost"/>
+                                <data android:scheme="continuum" android:host="127.0.0.1"/>
+                        </intent-filter>
+                        <intent-filter>
+                                <action android:name="android.intent.action.VIEW"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.BROWSABLE"/>
+                                <data android:scheme="infinity" android:host="localhost"/>
+                                <data android:scheme="infinity" android:host="127.0.0.1"/>
+                        </intent-filter>
+                        <intent-filter>
+                                <action android:name="android.intent.action.VIEW"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.BROWSABLE"/>
+                                <data android:scheme="redditisfun" android:host="auth"/>
+                        </intent-filter>
+                        <intent-filter>
+                                <action android:name="android.intent.action.VIEW"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.BROWSABLE"/>
+                                <data android:scheme="dbrady" android:host="relay"/>
+                        </intent-filter>
+                        <intent-filter>
+                                <action android:name="android.intent.action.VIEW"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.BROWSABLE"/>
+                                <data android:scheme="http" android:host="rubenmayayo.com"/>
+                        </intent-filter>
+                        <intent-filter>
+                                <action android:name="android.intent.action.VIEW"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.BROWSABLE"/>
+                                <data android:scheme="http" android:host="baconreader.com" android:path="/auth"/>
+                        </intent-filter>
+                        <intent-filter>
+                                <action android:name="android.intent.action.VIEW"/>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                                <category android:name="android.intent.category.BROWSABLE"/>
+                                <data android:scheme="https" android:host="127.0.0.1" android:port="65023" android:path="/authorize_callback"/>
+                        </intent-filter>
+                </activity>
+                <activity
+                        android:name=".Activities.Reauthenticate"
+                        android:alwaysRetainTaskState="true"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity android:name=".Activities.CancelSubNotifs"/>
+                <activity android:name=".Activities.DeleteFile"/>
+                <activity
+                        android:name=".ui.settings.SettingsData"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".ui.settings.SettingsBackup"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".ui.settings.SettingsHistory"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".ui.settings.SettingsModeration"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.LiveThread"
+                        android:alwaysRetainTaskState="true"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.SetupWidget"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"
+                        android:exported="true"
+                        android:windowSoftInputMode="adjustResize">
+                        <intent-filter>
+                                <action android:name="APPWIDGET_CONFIGURE"/>
+                        </intent-filter>
+                </activity>
+                <activity
+                        android:name=".Activities.CreateMulti"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity android:name=".Activities.Shortcut" android:exported="true">
+                        <intent-filter>
+                                <action android:name="android.intent.action.CREATE_SHORTCUT"/>
 
-        <receiver android:name=".Widget.SubredditWidgetProvider"
-                  android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-                <action android:name="me.edgan.redditslide.Widget.SubredditWidgetProvider.SUBMISSION"/>
-                <action android:name="me.edgan.redditslide.Widget.SubredditWidgetProvider.REFRESH"/>
-            </intent-filter>
-            <meta-data
-                    android:name="android.appwidget.provider"
-                    android:resource="@xml/widget_info"/>
-        </receiver>
+                                <category android:name="android.intent.category.DEFAULT"/>
+                        </intent-filter>
+                </activity>
+                <service
+                        android:name=".Notifications.ImageDownloadNotificationService"
+                        android:enabled="true"
+                        android:permission="android.permission.BIND_JOB_SERVICE"
+                        android:exported="false"/>
 
-        <service
-                android:name=".Widget.ListViewWidgetService"
-                android:enabled="true"
-                android:permission="android.permission.BIND_REMOTEVIEWS"/>
+                <service
+                        android:name=".Adapters.MarkAsReadService"
+                        android:enabled="true"
+                        android:exported="true"/>
 
-        <service
-                android:name=".Notifications.NotificationPiggyback"
-                android:enabled="true"
-                android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
-                android:exported="true">
-            <intent-filter>
-                <action android:name="android.service.notification.NotificationListenerService"/>
-            </intent-filter>
-        </service>
+                <receiver android:name=".Widget.SubredditWidgetProvider" android:exported="true">
+                        <intent-filter>
+                                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                                <action android:name="me.edgan.redditslide.Widget.SubredditWidgetProvider.SUBMISSION"/>
+                                <action android:name="me.edgan.redditslide.Widget.SubredditWidgetProvider.REFRESH"/>
+                        </intent-filter>
+                        <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_info"/>
+                </receiver>
 
-        <uses-library
-                android:name="com.sec.android.app.multiwindow"
-                android:required="false"/>
+                <service
+                        android:name=".Widget.ListViewWidgetService"
+                        android:enabled="true"
+                        android:exported="false"
+                        android:permission="android.permission.BIND_REMOTEVIEWS"/>
 
-        <meta-data
-                android:name="com.sec.android.support.multiwindow"
-                android:value="true"/>
-        <meta-data
-                android:name="com.sec.android.multiwindow.DEFAULT_SIZE_W"
-                android:resource="@dimen/app_defaultsize_w"/>
-        <meta-data
-                android:name="com.sec.android.multiwindow.DEFAULT_SIZE_H"
-                android:resource="@dimen/app_defaultsize_h"/>
-        <meta-data
-                android:name="com.sec.android.multiwindow.MINIMUM_SIZE_W"
-                android:resource="@dimen/app_minimumsize_w"/>
+                <service
+                        android:name=".Notifications.NotificationPiggyback"
+                        android:enabled="true"
+                        android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+                        android:exported="true">
+                        <intent-filter>
+                                <action android:name="android.service.notification.NotificationListenerService"/>
+                        </intent-filter>
+                </service>
 
-        <receiver android:name=".Notifications.CheckForMail"></receiver>
-        <receiver android:name=".Notifications.CheckForMailSingle"></receiver>
+                <uses-library
+                        android:name="com.sec.android.app.multiwindow"
+                        android:required="false"/>
 
-        <receiver android:name=".Autocache.CacheAll"></receiver>
+                <meta-data
+                        android:name="com.sec.android.support.multiwindow"
+                        android:value="true"/>
+                <meta-data
+                        android:name="com.sec.android.multiwindow.DEFAULT_SIZE_W"
+                        android:resource="@dimen/app_defaultsize_w"/>
+                <meta-data
+                        android:name="com.sec.android.multiwindow.DEFAULT_SIZE_H"
+                        android:resource="@dimen/app_defaultsize_h"/>
+                <meta-data
+                        android:name="com.sec.android.multiwindow.MINIMUM_SIZE_W"
+                        android:resource="@dimen/app_minimumsize_w"/>
 
-        <meta-data
-                android:name="com.sec.android.multiwindow.MINIMUM_SIZE_H"
-                android:resource="@dimen/app_minimumsize_h"/>
-        <meta-data
-                android:name="com.lge.support.SPLIT_WINDOW"
-                android:value="true"/>
+                <receiver android:name=".Notifications.CheckForMail" android:exported="false"></receiver>
+                <receiver android:name=".Notifications.CheckForMailSingle" android:exported="false"></receiver>
+                <receiver android:name=".Notifications.TokenRefreshReceiver" android:exported="false"></receiver>
 
-        <receiver
-            android:name=".Notifications.StartOnBoot"
-            android:exported="true"
-            android:enabled="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </receiver>
+                <receiver android:name=".Autocache.CacheAll" android:exported="false"></receiver>
 
-    </application>
+                <meta-data
+                        android:name="com.sec.android.multiwindow.MINIMUM_SIZE_H"
+                        android:resource="@dimen/app_minimumsize_h"/>
+                <meta-data
+                        android:name="com.lge.support.SPLIT_WINDOW"
+                        android:value="true"/>
 
+                <receiver android:name=".Notifications.StartOnBoot" android:exported="true" android:enabled="true">
+                        <intent-filter>
+                                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                                <category android:name="android.intent.category.DEFAULT" />
+                        </intent-filter>
+                </receiver>
+        </application>
 </manifest>

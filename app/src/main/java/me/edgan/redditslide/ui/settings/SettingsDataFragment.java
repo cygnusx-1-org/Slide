@@ -9,7 +9,9 @@ import androidx.appcompat.widget.SwitchCompat;
 
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class SettingsDataFragment {
 
     private final Activity context;
@@ -20,17 +22,17 @@ public class SettingsDataFragment {
 
     public void Bind() {
         final RelativeLayout datasavingDataSaveTypeLayout =
-                context.findViewById(R.id.settings_datasaving_datasavetype);
+                context.requireViewById(R.id.settings_datasaving_datasavetype);
         final TextView datasavingLowQualityView =
-                context.findViewById(R.id.settings_datasaving_lowquality);
+                context.requireViewById(R.id.settings_datasaving_lowquality);
 
         final RelativeLayout datasavingDataSaveQualityLayout =
-                context.findViewById(R.id.settings_datasaving_datasavequality);
+                context.requireViewById(R.id.settings_datasaving_datasavequality);
         final TextView datasavingCurrentModeView =
-                context.findViewById(R.id.settings_datasaving_currentmode);
+                context.requireViewById(R.id.settings_datasaving_currentmode);
 
         final SwitchCompat datasavingVideoQualitySwitch =
-                context.findViewById(R.id.settings_datasaving_videoquality);
+                context.requireViewById(R.id.settings_datasaving_videoquality);
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // * Data saving mode */
@@ -40,16 +42,13 @@ public class SettingsDataFragment {
                     popup.getMenuInflater().inflate(R.menu.imagequality_settings, popup.getMenu());
                     popup.setOnMenuItemClickListener(
                             item -> {
-                                switch (item.getItemId()) {
-                                    case R.id.never:
-                                        setImageQualitySettings(false, false);
-                                        break;
-                                    case R.id.mobile:
-                                        setImageQualitySettings(true, false);
-                                        break;
-                                    case R.id.always:
-                                        setImageQualitySettings(true, true);
-                                        break;
+                                int itemId = item.getItemId();
+                                if (itemId == R.id.never) {
+                                    setImageQualitySettings(false, false);
+                                } else if (itemId == R.id.mobile) {
+                                    setImageQualitySettings(true, false);
+                                } else if (itemId == R.id.always) {
+                                    setImageQualitySettings(true, true);
                                 }
                                 datasavingLowQualityView.setText(
                                         SettingValues.lowResMobile
@@ -109,19 +108,15 @@ public class SettingsDataFragment {
                         popup.getMenuInflater().inflate(R.menu.imagequality_mode, popup.getMenu());
                         popup.setOnMenuItemClickListener(
                                 item -> {
-                                    switch (item.getItemId()) {
-                                        case R.id.never:
-                                            setImageQualityMode(true, true, false, false, false);
-                                            break;
-                                        case R.id.low:
-                                            setImageQualityMode(false, true, true, false, false);
-                                            break;
-                                        case R.id.medium:
-                                            setImageQualityMode(false, true, false, true, false);
-                                            break;
-                                        case R.id.high:
-                                            setImageQualityMode(false, true, false, false, true);
-                                            break;
+                                    int itemId = item.getItemId();
+                                    if (itemId == R.id.never) {
+                                        setImageQualityMode(true, true, false, false, false);
+                                    } else if (itemId == R.id.low) {
+                                        setImageQualityMode(false, true, true, false, false);
+                                    } else if (itemId == R.id.medium) {
+                                        setImageQualityMode(false, true, false, true, false);
+                                    } else if (itemId == R.id.high) {
+                                        setImageQualityMode(false, true, false, false, true);
                                     }
                                     datasavingCurrentModeView.setText(
                                             SettingValues.noImages

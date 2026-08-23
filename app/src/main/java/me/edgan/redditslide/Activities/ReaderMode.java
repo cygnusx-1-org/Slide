@@ -6,52 +6,61 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.wuman.jreadability.Readability;
-
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LinkUtil;
-
+import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class ReaderMode extends BaseActivityAnim {
     private int mSubredditColor;
+    @SuppressWarnings("NullAway.Init") // assigned in doInBackground
     public static String html;
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
     SpoilerRobotoTextView v;
-    private String url;
+    private String url = "";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         overrideSwipeFromAnywhere();
         super.onCreate(savedInstanceState);
         applyColorTheme("");
         setContentView(R.layout.activity_reader);
+        MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
-        mSubredditColor =
-                getIntent().getExtras().getInt(LinkUtil.EXTRA_COLOR, Palette.getDefaultColor());
+        Bundle extras = getIntent().getExtras();
+        if (extras == null) {
+            finish();
+            return;
+        }
+        mSubredditColor = extras.getInt(LinkUtil.EXTRA_COLOR, Palette.getDefaultColor());
 
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        setSupportActionBar((Toolbar) requireViewById(R.id.toolbar));
         setupAppBar(R.id.toolbar, "", true, mSubredditColor, R.id.appbar);
 
         if (getIntent().hasExtra("url")) {
-            url = getIntent().getExtras().getString(LinkUtil.EXTRA_URL, "");
-            ((Toolbar) findViewById(R.id.toolbar)).setTitle(url);
+            url = MiscUtil.orEmpty(getIntent().getStringExtra(LinkUtil.EXTRA_URL));
+            ((Toolbar) requireViewById(R.id.toolbar)).setTitle(url);
         }
 
-        v = (SpoilerRobotoTextView) findViewById(R.id.body);
+        v = (SpoilerRobotoTextView) requireViewById(R.id.body);
         final SwipeRefreshLayout mSwipeRefreshLayout =
-                ((SwipeRefreshLayout) ReaderMode.this.findViewById(R.id.refresh));
+                ((SwipeRefreshLayout) ReaderMode.this.requireViewById(R.id.refresh));
         mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors("", this));
 
         // If we use 'findViewById(R.id.header).getMeasuredHeight()', 0 is always returned.
@@ -75,25 +84,27 @@ public class ReaderMode extends BaseActivityAnim {
     private void display(String title, String web) {
         v.setTextHtml(web, "nosub");
         if (title != null && !title.isEmpty()) {
-            ((Toolbar) findViewById(R.id.toolbar)).setTitle(title);
+            ((Toolbar) requireViewById(R.id.toolbar)).setTitle(title);
         } else {
             int index = v.getText().toString().indexOf("\n");
             if (index < 0) {
                 index = 0;
             }
-            ((Toolbar) findViewById(R.id.toolbar))
+            ((Toolbar) requireViewById(R.id.toolbar))
                     .setTitle(v.getText().toString().substring(0, index));
         }
     }
 
     public class AsyncGetArticle extends AsyncTask<Void, Void, Void> {
+        @SuppressWarnings("NullAway.Init") // assigned in doInBackground
         String articleText;
+        @SuppressWarnings("NullAway.Init") // assigned in doInBackground
         String title;
 
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                if (url != null) {
+                if (!url.isEmpty()) {
                     Connection connection = Jsoup.connect(ReaderMode.this.url);
                     Document document = connection.get();
 
@@ -111,20 +122,20 @@ public class ReaderMode extends BaseActivityAnim {
                     articleText = readability.outerHtml();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.e(e, "ReaderMode.doInBackground failed");
             }
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            ((SwipeRefreshLayout) ReaderMode.this.findViewById(R.id.refresh)).setRefreshing(false);
-            ReaderMode.this.findViewById(R.id.refresh).setEnabled(false);
+            ((SwipeRefreshLayout) ReaderMode.this.requireViewById(R.id.refresh)).setRefreshing(false);
+            ReaderMode.this.requireViewById(R.id.refresh).setEnabled(false);
 
             if (articleText != null) {
                 display(title, articleText);
             } else {
-                new AlertDialog.Builder(ReaderMode.this)
+                DialogUtil.showWithCardBackground(new AlertDialog.Builder(ReaderMode.this)
                         .setTitle(R.string.internal_browser_extracting_error)
                         .setPositiveButton(R.string.btn_ok, (dialog, which) -> finish())
                         .setNeutralButton(
@@ -136,7 +147,7 @@ public class ReaderMode extends BaseActivityAnim {
                                     finish();
                                 })
                         .setCancelable(false)
-                        .show();
+                        );
             }
         }
 
@@ -147,7 +158,7 @@ public class ReaderMode extends BaseActivityAnim {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        if (url != null) {
+        if (!url.isEmpty()) {
             inflater.inflate(R.menu.menu_reader, menu);
         }
 
@@ -156,21 +167,21 @@ public class ReaderMode extends BaseActivityAnim {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            case R.id.web:
-                LinkUtil.openUrl(url, mSubredditColor, this);
-                finish();
-                return true;
-            case R.id.share:
-                Reddit.defaultShareText(
-                        ((Toolbar) findViewById(R.id.toolbar)).getTitle().toString(),
-                        url,
-                        ReaderMode.this);
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            finish();
+            return true;
+        } else if (itemId == R.id.web) {
+            LinkUtil.openUrl(url, mSubredditColor, this);
+            finish();
+            return true;
+        } else if (itemId == R.id.share) {
+            Reddit.defaultShareText(
+                    ((Toolbar) requireViewById(R.id.toolbar)).getTitle().toString(),
+                    url,
+                    ReaderMode.this);
 
-                return true;
+            return true;
         }
         return false;
     }

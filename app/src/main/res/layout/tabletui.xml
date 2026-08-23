@@ -41,21 +41,61 @@
                     android:paddingEnd="20dp"
                     android:paddingTop="20dp">
 
-                    <TextView
+                    <LinearLayout
+                        android:id="@+id/portrait"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/multi_column_landscape"
-                        android:id="@+id/progressnumber"
-                        android:textColor="?attr/fontColor"
-                        android:textSize="16sp" />
+                        android:background="?android:selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:orientation="vertical"
+                        android:paddingBottom="8dp"
+                        android:paddingTop="8dp">
 
-                    <androidx.appcompat.widget.AppCompatSeekBar
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/multi_column_portrait_count"
+                            android:textColor="?attr/fontColor"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/portrait_current"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:alpha=".86"
+                            android:textColor="?attr/fontColor"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
                         android:id="@+id/landscape"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:max="5" />
+                        android:background="?android:selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:orientation="vertical"
+                        android:paddingBottom="8dp"
+                        android:paddingTop="8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/multi_column_landscape_count"
+                            android:textColor="?attr/fontColor"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/landscape_current"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:alpha=".86"
+                            android:textColor="?attr/fontColor"
+                            android:textSize="14sp" />
+                    </LinearLayout>
 
                     <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/singlecolumnmultiwindow"
@@ -70,20 +110,6 @@
                             android:text="@string/single_column_multi_window"
                             android:textColor="?attr/fontColor"
                             android:textColorHint="?attr/fontColor" />
-
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/dualcolumns"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginTop="8dp"
-                        android:backgroundTint="?attr/tintColor"
-                        android:button="@null"
-                        android:buttonTint="?attr/tintColor"
-                        android:hapticFeedbackEnabled="true"
-                        android:text="@string/multi_column_portrait"
-                        android:textColor="?attr/fontColor"
-                        android:textColorHint="?attr/fontColor" />
 
                     <androidx.appcompat.widget.SwitchCompat
                         android:id="@+id/fullcomment"

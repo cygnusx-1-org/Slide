@@ -4,11 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.view.View;
+import androidx.annotation.Nullable;
 
 import com.google.android.material.snackbar.Snackbar;
-
 import me.edgan.redditslide.util.LayoutUtils;
-
+import me.edgan.redditslide.util.LogUtil;
 import net.dean.jraw.ApiException;
 import net.dean.jraw.managers.AccountManager;
 import net.dean.jraw.models.PublicContribution;
@@ -18,8 +18,9 @@ import net.dean.jraw.models.VoteDirection;
 public class Vote extends AsyncTask<PublicContribution, Void, Void> {
 
     private final VoteDirection direction;
-    private View v;
-    private Context c;
+    // Cleared once the snackbar has been posted so the finished task stops holding the Activity.
+    @Nullable private View v;
+    @Nullable private Context c;
 
     public Vote(Boolean b, View v, Context c) {
         direction = b ? VoteDirection.UPVOTE : VoteDirection.DOWNVOTE;
@@ -42,7 +43,7 @@ public class Vote extends AsyncTask<PublicContribution, Void, Void> {
                 new AccountManager(Authentication.reddit).vote(sub[0], direction);
             } catch (ApiException | RuntimeException e) {
                 createVoteSnackbar(R.string.vote_err);
-                e.printStackTrace();
+                LogUtil.e(e, "Vote.doInBackground failed");
             }
         } else {
             createVoteSnackbar(R.string.vote_err_login);
@@ -51,15 +52,24 @@ public class Vote extends AsyncTask<PublicContribution, Void, Void> {
     }
 
     private void createVoteSnackbar(final int i) {
-        ((Activity) c)
+        final Context context = c;
+        final View view = v;
+        if (context == null || view == null) {
+            return;
+        }
+        ((Activity) context)
                 .runOnUiThread(
                         () -> {
                             try {
-                                if (v != null && c != null && v.getContext() != null) {
-                                    Snackbar snackbar = Snackbar.make(v, i, Snackbar.LENGTH_SHORT);
+                                if (view.getContext() != null) {
+                                    Snackbar snackbar =
+                                            Snackbar.make(view, i, Snackbar.LENGTH_SHORT);
                                     LayoutUtils.showSnackbar(snackbar);
                                 }
                             } catch (Exception ignored) {
+                                // This bar only ever reports a vote that failed, and it needs a
+                                // view still in a window; a host that went away takes the report
+                                // with it.
                             }
                             c = null;
                             v = null;

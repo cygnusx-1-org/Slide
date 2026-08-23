@@ -5,17 +5,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.fragment.app.Fragment;
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.mikepenz.itemanimators.SlideUpAlphaAnimator;
-
+import java.util.List;
 import me.edgan.redditslide.Activities.BaseActivity;
 import me.edgan.redditslide.Adapters.SubredditAdapter;
 import me.edgan.redditslide.Adapters.SubredditNames;
@@ -26,24 +25,28 @@ import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.handler.ToolbarScrollHideHandler;
 import me.edgan.redditslide.util.LogUtil;
-
 import net.dean.jraw.models.Subreddit;
 
-import java.util.List;
-
 public class SubredditListView extends Fragment {
+    // posts, rv and adapter are all built in onCreateView, before any callback below runs.
+    @SuppressWarnings("NullAway.Init")
     public SubredditNames posts;
+
+    @SuppressWarnings("NullAway.Init") // onCreateView assigns this (line 59) before any callback below runs
     public RecyclerView rv;
     private int visibleItemCount;
     private int pastVisiblesItems;
     private int totalItemCount;
+    @SuppressWarnings("NullAway.Init") // assigned in the run() posted from onCreateView
     public SubredditAdapter adapter;
     public String where;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
 
         final Context contextThemeWrapper =
                 new ContextThemeWrapper(
@@ -53,16 +56,16 @@ public class SubredditListView extends Fragment {
                 LayoutInflater.from(contextThemeWrapper)
                         .inflate(R.layout.fragment_verticalcontent, container, false);
 
-        rv = v.findViewById(R.id.vertical_content);
+        rv = v.requireViewById(R.id.vertical_content);
         final RecyclerView.LayoutManager mLayoutManager =
-                new PreCachingLayoutManager(getActivity());
+                new PreCachingLayoutManager(requireActivity());
 
         rv.setLayoutManager(mLayoutManager);
         rv.setItemAnimator(
                 new SlideUpAlphaAnimator().withInterpolator(new LinearOutSlowInInterpolator()));
 
         mSwipeRefreshLayout = v.findViewById(R.id.activity_main_swipe_refresh_layout);
-        mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors("no sub", getContext()));
+        mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors("no sub", requireContext()));
 
         // If we use 'findViewById(R.id.header).getMeasuredHeight()', 0 is always returned.
         // So, we estimate the height of the header in dp
@@ -71,7 +74,7 @@ public class SubredditListView extends Fragment {
                 Constants.TAB_HEADER_VIEW_OFFSET - Constants.PTR_OFFSET_TOP,
                 Constants.TAB_HEADER_VIEW_OFFSET + Constants.PTR_OFFSET_BOTTOM);
 
-        v.findViewById(R.id.post_floating_action_button).setVisibility(View.GONE);
+        v.requireViewById(R.id.post_floating_action_button).setVisibility(View.GONE);
         doAdapter();
 
         return v;
@@ -88,25 +91,28 @@ public class SubredditListView extends Fragment {
                     }
                 });
 
-        posts = new SubredditNames(where, getContext(), SubredditListView.this);
-        adapter = new SubredditAdapter(getActivity(), posts, rv, where, this);
+        posts = new SubredditNames(where, requireContext(), SubredditListView.this);
+        adapter = new SubredditAdapter(requireActivity(), posts, rv, this);
         rv.setAdapter(adapter);
         posts.loadMore(mSwipeRefreshLayout.getContext(), true, where);
         mSwipeRefreshLayout.setOnRefreshListener(this::refresh);
         rv.addOnScrollListener(
                 new ToolbarScrollHideHandler(
-                        ((BaseActivity) getActivity()).mToolbar,
-                        getActivity().findViewById(R.id.header)) {
+                        ((BaseActivity) requireActivity()).requireToolbar(),
+                        requireActivity().requireViewById(R.id.header)) {
 
                     @Override
                     public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                         super.onScrolled(recyclerView, dx, dy);
                         if (!posts.loading && !posts.nomore) {
-                            visibleItemCount = rv.getLayoutManager().getChildCount();
-                            totalItemCount = rv.getLayoutManager().getItemCount();
+                            final RecyclerView.LayoutManager lm = rv.getLayoutManager();
+                            if (lm == null) return;
+
+                            visibleItemCount = lm.getChildCount();
+                            totalItemCount = lm.getItemCount();
 
                             pastVisiblesItems =
-                                    ((LinearLayoutManager) rv.getLayoutManager())
+                                    ((LinearLayoutManager) lm)
                                             .findFirstVisibleItemPosition();
                             if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
                                 posts.loading = true;
@@ -119,9 +125,9 @@ public class SubredditListView extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle bundle = this.getArguments();
+        Bundle bundle = requireArguments();
         where = bundle.getString("id", "");
     }
 

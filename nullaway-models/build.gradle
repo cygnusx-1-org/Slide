@@ -1,0 +1,19 @@
+plugins {
+    id 'java-library'
+}
+
+// This module is never shipped: it is loaded by NullAway, inside the forked javac that Error Prone
+// runs on the Gradle daemon JDK. Nothing here reaches the APK.
+// --release, not source/targetCompatibility: those emit 17 bytecode while still compiling against
+// the daemon JDK's own API, so a post-17 call would compile here and fail at class-load time.
+// --release pins the API too, which is what makes bumping the daemon safe.
+tasks.withType(JavaCompile).configureEach {
+    options.release = 17
+}
+
+dependencies {
+    // Both are already on the annotation processor path with the app's Error Prone plugin, so this
+    // module must not drag its own copies along. Pinned to match app/build.gradle.
+    compileOnly 'com.uber.nullaway:nullaway:0.13.8'
+    compileOnly 'com.google.guava:guava:33.6.0-jre'
+}

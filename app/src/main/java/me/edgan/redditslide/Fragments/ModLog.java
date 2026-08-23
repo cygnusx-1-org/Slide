@@ -4,11 +4,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import me.edgan.redditslide.Activities.ModQueue;
 import me.edgan.redditslide.Adapters.ModLogAdapter;
 import me.edgan.redditslide.Adapters.ModLogPosts;
@@ -25,20 +24,22 @@ public class ModLog extends Fragment {
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_verticalcontent, container, false);
 
-        RecyclerView rv = v.findViewById(R.id.vertical_content);
-        final PreCachingLayoutManager mLayoutManager = new PreCachingLayoutManager(getActivity());
+        RecyclerView rv = v.requireViewById(R.id.vertical_content);
+        final PreCachingLayoutManager mLayoutManager = new PreCachingLayoutManager(requireActivity());
         rv.setLayoutManager(mLayoutManager);
 
-        v.findViewById(R.id.post_floating_action_button).setVisibility(View.GONE);
+        v.requireViewById(R.id.post_floating_action_button).setVisibility(View.GONE);
 
         final SwipeRefreshLayout mSwipeRefreshLayout =
-                v.findViewById(R.id.activity_main_swipe_refresh_layout);
+                v.requireViewById(R.id.activity_main_swipe_refresh_layout);
 
-        mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors("mod", getActivity()));
+        mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors("mod", requireActivity()));
 
         // If we use 'findViewById(R.id.header).getMeasuredHeight()', 0 is always returned.
         // So, we estimate the height of the header in dp
@@ -55,13 +56,13 @@ public class ModLog extends Fragment {
                     }
                 });
         posts = new ModLogPosts();
-        adapter = new ModLogAdapter(getActivity(), posts, rv);
+        adapter = new ModLogAdapter(requireActivity(), posts, rv);
         rv.setAdapter(adapter);
 
         rv.addOnScrollListener(
                 new ToolbarScrollHideHandler(
-                        ((ModQueue) getActivity()).mToolbar,
-                        (getActivity()).findViewById(R.id.header)));
+                        ((ModQueue) requireActivity()).requireToolbar(),
+                        (requireActivity()).requireViewById(R.id.header)));
 
         posts.bindAdapter(adapter, mSwipeRefreshLayout);
         mSwipeRefreshLayout.setOnRefreshListener(
@@ -75,8 +76,7 @@ public class ModLog extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle bundle = this.getArguments();
     }
 }

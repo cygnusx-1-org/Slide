@@ -17,14 +17,15 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatCheckBox;
-
+import androidx.core.content.ContextCompat;
 import com.devspark.robototextview.RobotoTypefaces;
-
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.ActionStates;
+import me.edgan.redditslide.Adapters.CardSubmissionViewHolder;
 import me.edgan.redditslide.Adapters.ProfileCommentViewHolder;
-import me.edgan.redditslide.Adapters.SubmissionViewHolder;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.ForceTouch.PeekViewActivity;
 import me.edgan.redditslide.OpenRedditLink;
@@ -41,27 +42,25 @@ import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
-
 import net.dean.jraw.models.Account;
 import net.dean.jraw.models.Comment;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Subreddit;
 import net.dean.jraw.models.VoteDirection;
-
-import java.util.List;
-import java.util.Locale;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 3/5/2015. */
+@NullMarked
 public class RedditItemView extends RelativeLayout {
 
-    OpenRedditLink.RedditLinkType contentType;
+    OpenRedditLink.RedditLinkType contentType = OpenRedditLink.RedditLinkType.OTHER;
 
-    public RedditItemView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public RedditItemView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
 
-    public RedditItemView(Context context, AttributeSet attrs) {
+    public RedditItemView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
@@ -76,11 +75,17 @@ public class RedditItemView extends RelativeLayout {
         this.progress = progress;
         Uri uri = OpenRedditLink.formatRedditUrl(url);
 
+        // Not a reddit link: the peek falls back to the plain link view. Returning is not
+        // optional — everything below dereferences the uri.
         if (uri == null) {
             v.doLoadLink(url);
-        } else if (url.startsWith("np")) {
+            return;
+        }
+
+        if (url.startsWith("np") && uri.getHost() != null) {
             uri = uri.buildUpon().authority(uri.getHost().substring(2)).build();
         }
+
         List<String> parts = uri.getPathSegments();
 
         contentType = OpenRedditLink.getRedditLinkType(uri);
@@ -152,7 +157,7 @@ public class RedditItemView extends RelativeLayout {
         }
     }
 
-    ProgressBar progress;
+    @Nullable ProgressBar progress;
 
     public class AsyncLoadProfile extends AsyncTask<Void, Void, Account> {
 
@@ -163,8 +168,11 @@ public class RedditItemView extends RelativeLayout {
         }
 
         @Override
-        protected Account doInBackground(Void... params) {
+        protected @Nullable Account doInBackground(Void... params) {
             try {
+                if (Authentication.reddit == null) {
+                    return null;
+                }
                 return Authentication.reddit.getUser(id);
             } catch (Exception e) {
                 return null;
@@ -172,10 +180,10 @@ public class RedditItemView extends RelativeLayout {
         }
 
         @Override
-        protected void onPostExecute(Account account) {
+        protected void onPostExecute(@Nullable Account account) {
             if (account != null
                     && (account.getDataNode().has("is_suspended")
-                            && !account.getDataNode().get("is_suspended").asBoolean())) {
+                            && !account.getDataNode().path("is_suspended").asBoolean())) {
                 View content =
                         LayoutInflater.from(getContext())
                                 .inflate(R.layout.account_pop, RedditItemView.this, false);
@@ -192,10 +200,10 @@ public class RedditItemView extends RelativeLayout {
 
     private void doUser(Account account, View content) {
         String name = account.getFullName();
-        final TextView title = content.findViewById(R.id.title);
+        final TextView title = content.requireViewById(R.id.title);
         title.setText(name);
 
-        final int currentColor = Palette.getColorUser(name);
+        final int currentColor = Palette.getColorUser(MiscUtil.orEmpty(name));
         title.setBackgroundColor(currentColor);
 
         String info =
@@ -205,11 +213,11 @@ public class RedditItemView extends RelativeLayout {
                                 TimeUtils.getTimeSince(
                                         account.getCreated().getTime(), getContext()));
 
-        ((TextView) content.findViewById(R.id.moreinfo)).setText(info);
+        ((TextView) content.requireViewById(R.id.moreinfo)).setText(info);
 
-        ((TextView) content.findViewById(R.id.commentkarma))
+        ((TextView) content.requireViewById(R.id.commentkarma))
                 .setText(String.format(Locale.getDefault(), "%d", account.getCommentKarma()));
-        ((TextView) content.findViewById(R.id.linkkarma))
+        ((TextView) content.requireViewById(R.id.linkkarma))
                 .setText(String.format(Locale.getDefault(), "%d", account.getLinkKarma()));
     }
 
@@ -222,8 +230,11 @@ public class RedditItemView extends RelativeLayout {
         }
 
         @Override
-        protected Subreddit doInBackground(Void... params) {
+        protected @Nullable Subreddit doInBackground(Void... params) {
             try {
+                if (Authentication.reddit == null) {
+                    return null;
+                }
                 return Authentication.reddit.getSubreddit(id);
             } catch (Exception e) {
                 return null;
@@ -231,7 +242,7 @@ public class RedditItemView extends RelativeLayout {
         }
 
         @Override
-        protected void onPostExecute(Subreddit subreddit) {
+        protected void onPostExecute(@Nullable Subreddit subreddit) {
             if (subreddit != null) {
                 View content =
                         LayoutInflater.from(getContext())
@@ -251,31 +262,31 @@ public class RedditItemView extends RelativeLayout {
         if (Authentication.isLoggedIn
                 ? subreddit.isUserSubscriber()
                 : UserSubscriptions.getSubscriptions(getContext())
-                        .contains(subreddit.getDisplayName().toLowerCase(Locale.ENGLISH))) {
-            ((AppCompatCheckBox) content.findViewById(R.id.subscribed)).setChecked(true);
+                        .contains(MiscUtil.orEmpty(subreddit.getDisplayName()).toLowerCase(Locale.ENGLISH))) {
+            ((AppCompatCheckBox) content.requireViewById(R.id.subscribed)).setChecked(true);
         }
-        content.findViewById(R.id.header_sub)
+        content.requireViewById(R.id.header_sub)
                 .setBackgroundColor(Palette.getColor(subreddit.getDisplayName()));
-        ((TextView) content.findViewById(R.id.sub_infotitle)).setText(subreddit.getDisplayName());
-        if (!subreddit.getPublicDescription().isEmpty()) {
-            content.findViewById(R.id.sub_title).setVisibility(View.VISIBLE);
+        ((TextView) content.requireViewById(R.id.sub_infotitle)).setText(subreddit.getDisplayName());
+        if (!MiscUtil.orEmpty(subreddit.getPublicDescription()).isEmpty()) {
+            content.requireViewById(R.id.sub_title).setVisibility(View.VISIBLE);
             setViews(
-                    subreddit.getDataNode().get("public_description_html").asText(),
-                    subreddit.getDisplayName().toLowerCase(Locale.ENGLISH),
-                    content.findViewById(R.id.sub_title),
-                    content.findViewById(R.id.sub_title_overflow));
+                    subreddit.getDataNode().path("public_description_html").asText(),
+                    MiscUtil.orEmpty(subreddit.getDisplayName()).toLowerCase(Locale.ENGLISH),
+                    content.requireViewById(R.id.sub_title),
+                    content.requireViewById(R.id.sub_title_overflow));
         } else {
-            content.findViewById(R.id.sub_title).setVisibility(View.GONE);
+            content.requireViewById(R.id.sub_title).setVisibility(View.GONE);
         }
         if (subreddit.getDataNode().has("icon_img")
-                && !subreddit.getDataNode().get("icon_img").asText().isEmpty()) {
+                && !subreddit.getDataNode().path("icon_img").asText().isEmpty()) {
             ((Reddit) ((PeekViewActivity) getContext()).getApplication())
                     .getImageLoader()
                     .displayImage(
-                            subreddit.getDataNode().get("icon_img").asText(),
-                            (ImageView) content.findViewById(R.id.subimage));
+                            subreddit.getDataNode().path("icon_img").asText(),
+                            (ImageView) content.requireViewById(R.id.subimage));
         } else {
-            content.findViewById(R.id.subimage).setVisibility(View.GONE);
+            content.requireViewById(R.id.subimage).setVisibility(View.GONE);
         }
         if (findViewById(R.id.sub_banner) != null) {
             String bannerImage = subreddit.getBannerImage();
@@ -288,21 +299,21 @@ public class RedditItemView extends RelativeLayout {
                 findViewById(R.id.sub_banner).setVisibility(View.GONE);
             }
         }
-        ((TextView) content.findViewById(R.id.subscribers))
+        ((TextView) content.requireViewById(R.id.subscribers))
                 .setText(
                         getContext()
                                 .getString(
                                         R.string.subreddit_subscribers_string,
                                         subreddit.getLocalizedSubscriberCount()));
-        content.findViewById(R.id.subscribers).setVisibility(View.VISIBLE);
+        content.requireViewById(R.id.subscribers).setVisibility(View.VISIBLE);
 
-        ((TextView) content.findViewById(R.id.active_users))
+        ((TextView) content.requireViewById(R.id.active_users))
                 .setText(
                         getContext()
                                 .getString(
                                         R.string.subreddit_active_users_string_new,
                                         subreddit.getLocalizedAccountsActive()));
-        content.findViewById(R.id.active_users).setVisibility(View.VISIBLE);
+        content.requireViewById(R.id.active_users).setVisibility(View.VISIBLE);
     }
 
     public class AsyncLoadComment extends AsyncTask<Void, Void, Comment> {
@@ -314,8 +325,11 @@ public class RedditItemView extends RelativeLayout {
         }
 
         @Override
-        protected Comment doInBackground(Void... params) {
+        protected @Nullable Comment doInBackground(Void... params) {
             try {
+                if (Authentication.reddit == null) {
+                    return null;
+                }
                 return (Comment) Authentication.reddit.get("t1_" + id).get(0);
             } catch (Exception e) {
                 return null;
@@ -323,7 +337,7 @@ public class RedditItemView extends RelativeLayout {
         }
 
         @Override
-        protected void onPostExecute(Comment comment) {
+        protected void onPostExecute(@Nullable Comment comment) {
             if (comment != null) {
                 LogUtil.v("Adding view");
                 View content =
@@ -349,8 +363,11 @@ public class RedditItemView extends RelativeLayout {
         }
 
         @Override
-        protected Submission doInBackground(Void... params) {
+        protected @Nullable Submission doInBackground(Void... params) {
             try {
+                if (Authentication.reddit == null) {
+                    return null;
+                }
                 return Authentication.reddit.getSubmission(id);
             } catch (Exception e) {
                 return null;
@@ -358,7 +375,7 @@ public class RedditItemView extends RelativeLayout {
         }
 
         @Override
-        protected void onPostExecute(Submission submission) {
+        protected void onPostExecute(@Nullable Submission submission) {
             if (submission != null) {
                 View content = CreateCardView.CreateView(RedditItemView.this);
                 RelativeLayout.LayoutParams params = (LayoutParams) content.getLayoutParams();
@@ -377,7 +394,7 @@ public class RedditItemView extends RelativeLayout {
         String scoreText;
         if (comment.isScoreHidden()) {
             scoreText =
-                    "[" + getContext().getString(R.string.misc_score_hidden).toUpperCase() + "]";
+                    "[" + getContext().getString(R.string.misc_score_hidden).toUpperCase(Locale.getDefault()) + "]";
         } else {
             scoreText = String.format(Locale.getDefault(), "%d", comment.getScore());
         }
@@ -401,10 +418,10 @@ public class RedditItemView extends RelativeLayout {
         if (Authentication.isLoggedIn) {
             if (ActionStates.getVoteDirection(comment) == VoteDirection.UPVOTE) {
                 holder.score.setTextColor(
-                        getContext().getResources().getColor(R.color.md_orange_500));
+                        ContextCompat.getColor(getContext(), R.color.md_orange_500));
             } else if (ActionStates.getVoteDirection(comment) == VoteDirection.DOWNVOTE) {
                 holder.score.setTextColor(
-                        getContext().getResources().getColor(R.color.md_blue_500));
+                        ContextCompat.getColor(getContext(), R.color.md_blue_500));
             } else {
                 holder.score.setTextColor(holder.time.getCurrentTextColor());
             }
@@ -450,8 +467,10 @@ public class RedditItemView extends RelativeLayout {
 
         holder.time.setText(titleString);
         setViews(
-                comment.getDataNode().get("body_html").asText(),
-                comment.getSubredditName(),
+                SubmissionParser.replaceProcessingImgPlaceholders(
+                        comment.getDataNode().path("body_html").asText(""),
+                        comment.getDataNode()),
+                MiscUtil.orEmpty(comment.getSubredditName()),
                 holder);
 
         int type = new FontPreferences(getContext()).getFontTypeComment().getTypeface();
@@ -499,7 +518,7 @@ public class RedditItemView extends RelativeLayout {
     }
 
     public void doSubmission(Submission submission, View content) {
-        final SubmissionViewHolder holder = new SubmissionViewHolder(content);
+        final CardSubmissionViewHolder holder = new CardSubmissionViewHolder(content);
         CreateCardView.resetColorCard(holder.itemView);
         if (submission.getSubredditName() != null) {
             CreateCardView.colorCard(
@@ -553,11 +572,21 @@ public class RedditItemView extends RelativeLayout {
             } else {
                 commentOverflow.setViews(blocks.subList(startIndex, blocks.size()), subreddit);
             }
-            SidebarLayout sidebar = findViewById(R.id.drawer_layout);
-            for (int i = 0; i < commentOverflow.getChildCount(); i++) {
-                View maybeScrollable = commentOverflow.getChildAt(i);
-                if (maybeScrollable instanceof HorizontalScrollView) {
-                    sidebar.addScrollable(maybeScrollable);
+            // The four other copies of this loop live in activities, where R.id.drawer_layout is
+            // the SidebarLayout at the root of the content view. Here the receiver is this
+            // RedditItemView, so the lookup only searches its own subtree — peek_media_view.xml,
+            // which has no drawer_layout at all. The result was always null and addScrollable
+            // NPE'd on any peeked body containing a table or code block. Registering a scrollable
+            // only matters so a drawer does not steal the horizontal swipe, and the peek overlay
+            // has no drawer, so there is nothing to register with.
+            final View root = findViewById(R.id.drawer_layout);
+            if (root instanceof SidebarLayout) {
+                final SidebarLayout sidebar = (SidebarLayout) root;
+                for (int i = 0; i < commentOverflow.getChildCount(); i++) {
+                    View maybeScrollable = commentOverflow.getChildAt(i);
+                    if (maybeScrollable instanceof HorizontalScrollView) {
+                        sidebar.addScrollable(maybeScrollable);
+                    }
                 }
             }
         } else {

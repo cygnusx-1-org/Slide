@@ -1,25 +1,23 @@
 package me.edgan.redditslide.ui.settings;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import androidx.appcompat.widget.SwitchCompat;
-
-import com.afollestad.materialdialogs.MaterialDialog;
-
+import java.util.ArrayList;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SettingValues.RemovalReasonType;
 import me.edgan.redditslide.SettingValues.ToolboxRemovalMessageType;
 import me.edgan.redditslide.Toolbox.Toolbox;
 import me.edgan.redditslide.UserSubscriptions;
+import me.edgan.redditslide.util.MaterialProgressDialog;
+import org.jspecify.annotations.NullMarked;
 
-import net.dean.jraw.http.NetworkException;
 
+@NullMarked
 public class SettingsModerationFragment {
 
     private final Activity context;
@@ -30,24 +28,24 @@ public class SettingsModerationFragment {
 
     public void Bind() {
         final RelativeLayout removalReasonsLayout =
-                context.findViewById(R.id.settings_moderation_removal_reasons);
+                context.requireViewById(R.id.settings_moderation_removal_reasons);
         final TextView removalReasonsCurrentView =
-                context.findViewById(R.id.settings_moderation_removal_reasons_current);
+                context.requireViewById(R.id.settings_moderation_removal_reasons_current);
 
         final SwitchCompat enableToolboxSwitch =
-                context.findViewById(R.id.settings_moderation_toolbox_enabled);
+                context.requireViewById(R.id.settings_moderation_toolbox_enabled);
         final RelativeLayout removalMessageLayout =
-                context.findViewById(R.id.settings_moderation_toolbox_message);
+                context.requireViewById(R.id.settings_moderation_toolbox_message);
         final TextView removalMessageCurrentView =
-                context.findViewById(R.id.settings_moderation_toolbox_message_current);
+                context.requireViewById(R.id.settings_moderation_toolbox_message_current);
         final SwitchCompat sendMsgAsSubredditSwitch =
-                context.findViewById(R.id.settings_moderation_toolbox_sendMsgAsSubreddit);
+                context.requireViewById(R.id.settings_moderation_toolbox_sendMsgAsSubreddit);
         final SwitchCompat stickyMessageSwitch =
-                context.findViewById(R.id.settings_moderation_toolbox_sticky);
+                context.requireViewById(R.id.settings_moderation_toolbox_sticky);
         final SwitchCompat lockAfterRemovalSwitch =
-                context.findViewById(R.id.settings_moderation_toolbox_lock);
+                context.requireViewById(R.id.settings_moderation_toolbox_lock);
         final RelativeLayout refreshLayout =
-                context.findViewById(R.id.settings_moderation_toolbox_refresh);
+                context.requireViewById(R.id.settings_moderation_toolbox_refresh);
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // * General (Moderation) */
@@ -75,25 +73,23 @@ public class SettingsModerationFragment {
                             .setEnabled(SettingValues.toolboxEnabled);
                     popupMenu.setOnMenuItemClickListener(
                             item -> {
-                                switch (item.getItemId()) {
-                                    case R.id.slide:
-                                        setModRemovalReasonType(
-                                                removalReasonsCurrentView,
-                                                RemovalReasonType.SLIDE.ordinal(),
-                                                R.string.settings_mod_removal_slide);
-                                        break;
-                                    case R.id.toolbox:
-                                        setModRemovalReasonType(
-                                                removalReasonsCurrentView,
-                                                RemovalReasonType.TOOLBOX.ordinal(),
-                                                R.string.settings_mod_removal_toolbox);
-                                        break;
-                                        // For implementing reddit native removal reasons:
-                                        /*case R.id.reddit:
-                                        setModRemovalReasonType(removalReasonsCurrentView,
-                                                RemovalReasonType.REDDIT.ordinal(), R.string.settings_mod_removal_reddit);
-                                        break;*/
+                                int itemId = item.getItemId();
+                                if (itemId == R.id.slide) {
+                                    setModRemovalReasonType(
+                                            removalReasonsCurrentView,
+                                            RemovalReasonType.SLIDE.ordinal(),
+                                            R.string.settings_mod_removal_slide);
+                                } else if (itemId == R.id.toolbox) {
+                                    setModRemovalReasonType(
+                                            removalReasonsCurrentView,
+                                            RemovalReasonType.TOOLBOX.ordinal(),
+                                            R.string.settings_mod_removal_toolbox);
                                 }
+                                // For implementing reddit native removal reasons:
+                                /*else if (itemId == R.id.reddit) {
+                                    setModRemovalReasonType(removalReasonsCurrentView,
+                                            RemovalReasonType.REDDIT.ordinal(), R.string.settings_mod_removal_reddit);
+                                }*/
                                 return true;
                             });
                     popupMenu.show();
@@ -122,7 +118,10 @@ public class SettingsModerationFragment {
                     }
 
                     // download and cache toolbox stuff in the background unless it's already loaded
-                    for (String sub : UserSubscriptions.modOf) {
+                    for (String sub :
+                            UserSubscriptions.modOf == null
+                                    ? new ArrayList<String>()
+                                    : UserSubscriptions.modOf) {
                         Toolbox.ensureConfigCachedLoaded(sub, false);
                         Toolbox.ensureUsernotesCachedLoaded(sub, false);
                     }
@@ -150,31 +149,27 @@ public class SettingsModerationFragment {
                             .inflate(R.menu.settings_toolbox_message, popupMenu.getMenu());
                     popupMenu.setOnMenuItemClickListener(
                             item -> {
-                                switch (item.getItemId()) {
-                                    case R.id.comment:
-                                        setToolboxRemovalMessageType(
-                                                removalMessageCurrentView,
-                                                ToolboxRemovalMessageType.COMMENT.ordinal(),
-                                                R.string.toolbox_removal_comment);
-                                        break;
-                                    case R.id.pm:
-                                        setToolboxRemovalMessageType(
-                                                removalMessageCurrentView,
-                                                ToolboxRemovalMessageType.PM.ordinal(),
-                                                R.string.toolbox_removal_pm);
-                                        break;
-                                    case R.id.both:
-                                        setToolboxRemovalMessageType(
-                                                removalMessageCurrentView,
-                                                ToolboxRemovalMessageType.BOTH.ordinal(),
-                                                R.string.toolbox_removal_both);
-                                        break;
-                                    case R.id.none:
-                                        setToolboxRemovalMessageType(
-                                                removalMessageCurrentView,
-                                                ToolboxRemovalMessageType.NONE.ordinal(),
-                                                R.string.toolbox_removal_none);
-                                        break;
+                                int itemId = item.getItemId();
+                                if (itemId == R.id.comment) {
+                                    setToolboxRemovalMessageType(
+                                            removalMessageCurrentView,
+                                            ToolboxRemovalMessageType.COMMENT.ordinal(),
+                                            R.string.toolbox_removal_comment);
+                                } else if (itemId == R.id.pm) {
+                                    setToolboxRemovalMessageType(
+                                            removalMessageCurrentView,
+                                            ToolboxRemovalMessageType.PM.ordinal(),
+                                            R.string.toolbox_removal_pm);
+                                } else if (itemId == R.id.both) {
+                                    setToolboxRemovalMessageType(
+                                            removalMessageCurrentView,
+                                            ToolboxRemovalMessageType.BOTH.ordinal(),
+                                            R.string.toolbox_removal_both);
+                                } else if (itemId == R.id.none) {
+                                    setToolboxRemovalMessageType(
+                                            removalMessageCurrentView,
+                                            ToolboxRemovalMessageType.NONE.ordinal(),
+                                            R.string.toolbox_removal_none);
                                 }
                                 return true;
                             });
@@ -215,34 +210,34 @@ public class SettingsModerationFragment {
         // Set up force refresh button
         refreshLayout.setEnabled(SettingValues.toolboxEnabled);
         refreshLayout.setOnClickListener(
-                v ->
-                        new MaterialDialog.Builder(context)
-                                .content(R.string.settings_mod_toolbox_refreshing)
-                                .progress(false, UserSubscriptions.modOf.size() * 2)
-                                .showListener(
-                                        dialog ->
-                                                new AsyncRefreshToolboxTask(dialog)
-                                                        .executeOnExecutor(
-                                                                AsyncTask.THREAD_POOL_EXECUTOR))
-                                .cancelable(false)
-                                .show());
+                v -> {
+                    MaterialProgressDialog dialog =
+                            new MaterialProgressDialog.Builder(context)
+                                    .content(R.string.settings_mod_toolbox_refreshing)
+                                    .progress(
+                                            false,
+                                            UserSubscriptions.modOf == null
+                                                    ? 0
+                                                    : UserSubscriptions.modOf.size() * 2)
+                                    .cancelable(false)
+                                    .build();
+                    dialog.show();
+                    new AsyncRefreshToolboxTask(dialog)
+                            .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                });
     }
 
     private void setToolboxRemovalMessageType(
             final TextView textView, final int enumOrdinal, final int string) {
         SettingValues.toolboxMessageType = enumOrdinal;
-        setBaseModerationType(textView, SettingValues.toolboxMessageType, string);
+        editSharedIntPreference(SettingValues.PREF_MOD_TOOLBOX_MESSAGE, enumOrdinal);
+        textView.setText(context.getString(string));
     }
 
     private void setModRemovalReasonType(
             final TextView textView, final int enumOrdinal, final int string) {
         SettingValues.removalReasonType = enumOrdinal;
-        setBaseModerationType(textView, SettingValues.removalReasonType, string);
-    }
-
-    private void setBaseModerationType(
-            final TextView textView, final int moderationType, final int string) {
-        editSharedIntPreference(SettingValues.PREF_MOD_REMOVAL_TYPE, moderationType);
+        editSharedIntPreference(SettingValues.PREF_MOD_REMOVAL_TYPE, enumOrdinal);
         textView.setText(context.getString(string));
     }
 
@@ -256,23 +251,28 @@ public class SettingsModerationFragment {
     }
 
     private static class AsyncRefreshToolboxTask extends AsyncTask<Void, Void, Void> {
-        final MaterialDialog dialog;
+        final MaterialProgressDialog dialog;
 
-        AsyncRefreshToolboxTask(DialogInterface dialog) {
-            this.dialog = (MaterialDialog) dialog;
+        AsyncRefreshToolboxTask(MaterialProgressDialog dialog) {
+            this.dialog = dialog;
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-            for (String sub : UserSubscriptions.modOf) {
+            for (String sub :
+                    UserSubscriptions.modOf == null
+                            ? new ArrayList<String>()
+                            : UserSubscriptions.modOf) {
                 try {
                     Toolbox.downloadToolboxConfig(sub);
-                } catch (NetworkException ignored) {
+                } catch (RuntimeException ignored) {
+                    // Connection failures surface as a bare RuntimeException (not NetworkException)
                 }
                 publishProgress();
                 try {
                     Toolbox.downloadUsernotes(sub);
-                } catch (NetworkException ignored) {
+                } catch (RuntimeException ignored) {
+                    // Connection failures surface as a bare RuntimeException (not NetworkException)
                 }
                 publishProgress();
             }

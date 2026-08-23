@@ -12,11 +12,13 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Px;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * A custom implementation of {@link QuoteSpan} that implements stripe and gap width while
  * maintaining support for APIs 27 and below. Also adds transparent background support.
  */
+@NullMarked
 public class CustomQuoteSpan implements LeadingMarginSpan, LineBackgroundSpan {
 
     @ColorInt private final int mColor;

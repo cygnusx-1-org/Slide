@@ -3,12 +3,16 @@ package me.edgan.redditslide;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.StrictMode;
-
+import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
+import java.util.Objects;
 import me.edgan.redditslide.Activities.CommentsScreenSingle;
 import me.edgan.redditslide.Activities.LiveThread;
 import me.edgan.redditslide.Activities.MainActivity;
@@ -22,13 +26,9 @@ import me.edgan.redditslide.Activities.SubredditView;
 import me.edgan.redditslide.Activities.Website;
 import me.edgan.redditslide.Activities.Wiki;
 import me.edgan.redditslide.Visuals.Palette;
+import me.edgan.redditslide.util.GifUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
-
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.List;
-import java.util.Objects;
 
 public class OpenRedditLink {
 
@@ -61,8 +61,7 @@ public class OpenRedditLink {
      * @param toCompare The value to compare the query parameter value to
      * @see Intent#putExtra(String, boolean)
      */
-    private static void putExtraIfParamEquals(
-            Intent intent, Uri uri, String name, String key, String toCompare) {
+    private static void putExtraIfParamEquals(Intent intent, Uri uri, String name, String key, String toCompare) {
         String param = uri.getQueryParameter(key);
 
         if (param != null && param.equals(toCompare)) {
@@ -70,12 +69,31 @@ public class OpenRedditLink {
         }
     }
 
+    private static void openWebsite(Context context, String url) {
+        if (context instanceof Activity) {
+            GifUtils.AsyncLoadGif.openWebsite((Activity) context, url);
+        } else {
+            // Fallback if context is not an Activity (e.g., Service context)
+            Intent web = new Intent(context, Website.class);
+            web.putExtra(LinkUtil.EXTRA_URL, url);
+            web.putExtra(LinkUtil.EXTRA_COLOR, Color.BLACK); // Or derive color if possible
+            web.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // Needed when starting from non-Activity context
+            context.startActivity(web);
+        }
+    }
+
     // Returns true if link was in fact handled by this method. If false, further action should be
     // taken
-    public static boolean openUrl(Context context, String url, boolean openIfOther) {
+    public static boolean openUrl(Context context, @Nullable String url, boolean openIfOther) {
         boolean np = false;
 
         LogUtil.v("Link is " + url);
+        if (url == null) {
+            // formatRedditUrl(null) returns null, so this is the branch that ran before; hoisting
+            // the test just makes the non-null url visible to everything below.
+            LinkUtil.openExternally(null);
+            return false;
+        }
         Uri uri = formatRedditUrl(url);
 
         if (uri == null) {
@@ -83,39 +101,31 @@ public class OpenRedditLink {
             return false;
         }
 
-        if (uri.getHost().startsWith("np")) {
+        // formatRedditUrl only returns a Uri it could read a host from, so this cannot be null.
+        if (Objects.requireNonNull(uri.getHost()).startsWith("np")) {
             np = true;
             uri = uri.buildUpon().authority("reddit.com").build();
         }
 
         String path = Objects.requireNonNull(uri.getPath());
+        String host = uri.getHost();
 
-        if (path.matches("(?i)/r/[a-z0-9-_.]+/s/.*")) {
-            new Thread(() -> {
-                try {
-                    StrictMode.ThreadPolicy gfgPolicy =
-                            new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                    StrictMode.setThreadPolicy(gfgPolicy);
-                    URL newUrl = new URL(url);
-                    HttpURLConnection ucon = (HttpURLConnection) newUrl.openConnection();
-                    ucon.setInstanceFollowRedirects(false);
-                    String location = ucon.getHeaderField("location");
-                    if (location != null) {
-                        String finalUrl = new URL(location).toString();
-                        Uri finalUri = formatRedditUrl(location);
-                        // Return to main thread to handle the UI
-                        ((Activity) context).runOnUiThread(() -> {
-                            openUrl(context, finalUrl, openIfOther);
-                        });
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }).start();
+        // Some Reddit links don't encode the destination in the URL and instead redirect to it:
+        //   - share links:  reddit.com/r/$sub/s/$id
+        //   - hosted video: v.redd.it/$id -> reddit.com/video/$id -> the post permalink
+        // Resolve the redirect on a background thread and re-open the resulting URL. Each call
+        // follows a single hop, so the video chain recurses (v.redd.it -> /video/ -> post) until
+        // it lands on the post in-app instead of dropping the user into a browser.
+        if (path.matches("(?i)/r/[a-z0-9-_.]+/s/.*")
+                || "v.redd.it".equals(host)
+                || path.matches("(?i)/video/.*")) {
+            resolveRedirectThenOpen(context, url, openIfOther);
             return true;
         }
 
         RedditLinkType type = getRedditLinkType(uri);
+
+        Log.v("OpenRedditLink", "type: " + type);
 
         List<String> parts = uri.getPathSegments();
 
@@ -178,19 +188,12 @@ public class OpenRedditLink {
                     // sharing so we use those
                     putExtraIfParamExists(i, uri, Intent.EXTRA_SUBJECT, "title");
 
-                    // Reddit behavior: If selftext is true or if selftext doesn't exist and text
-                    // does exist then page
-                    // defaults to showing self post page. If selftext is false, or doesn't exist
-                    // and no text then the page
-                    // defaults to showing the link post page.
-                    // We say isSelfText=true for the "no selftext, no text, no url" condition
-                    // because that's slide's
-                    // default behavior for the submit page, whereas reddit's behavior would say
-                    // isSelfText=false.
-                    boolean isSelfText =
-                            uri.getBooleanQueryParameter("selftext", false)
-                                    || uri.getQueryParameter("text") != null
-                                    || !uri.getBooleanQueryParameter("url", false);
+                    // Reddit behavior: If selftext is true or if selftext doesn't exist and text does exist
+                    // then page defaults to showing self post page. If selftext is false, or doesn't exist
+                    // and no text then the page defaults to showing the link post page. We say isSelfText=true
+                    // for the "no selftext, no text, no url" condition, because that's slide's default behavior
+                    // for the submit page, whereas reddit's behavior would say isSelfText=false.
+                    boolean isSelfText = uri.getBooleanQueryParameter("selftext", false) || uri.getQueryParameter("text") != null || !uri.getBooleanQueryParameter("url", false);
 
                     i.putExtra(Submit.EXTRA_IS_SELF, isSelfText);
 
@@ -202,33 +205,36 @@ public class OpenRedditLink {
             case COMMENT_PERMALINK:
                 {
                     i = new Intent(context, CommentsScreenSingle.class);
-                    if (parts.get(0).equalsIgnoreCase("u")
-                            || parts.get(0).equalsIgnoreCase("user")) {
+
+                    if (parts.get(0).equalsIgnoreCase("u") || parts.get(0).equalsIgnoreCase("user")) {
                         // Prepend u_ because user profile posts are made to /r/u_username
                         i.putExtra(CommentsScreenSingle.EXTRA_SUBREDDIT, "u_" + parts.get(2));
                     } else {
                         i.putExtra(CommentsScreenSingle.EXTRA_SUBREDDIT, parts.get(1));
                     }
+
                     i.putExtra(CommentsScreenSingle.EXTRA_SUBMISSION, parts.get(3));
                     i.putExtra(CommentsScreenSingle.EXTRA_NP, np);
+
                     if (parts.size() >= 6) {
                         i.putExtra(CommentsScreenSingle.EXTRA_LOADMORE, true);
                         String end = parts.get(5);
 
-                        if (end.length() >= 3) i.putExtra(CommentsScreenSingle.EXTRA_CONTEXT, end);
+                        if (end.length() >= 3) {
+                            i.putExtra(CommentsScreenSingle.EXTRA_CONTEXT, end);
+                        }
 
-                        putExtraIfParamExists(
-                                i, uri, CommentsScreenSingle.EXTRA_CONTEXT_NUMBER, "context");
+                        putExtraIfParamExists(i, uri, CommentsScreenSingle.EXTRA_CONTEXT_NUMBER, "context");
 
                         try {
                             String contextNumber = uri.getQueryParameter("context");
+
                             if (contextNumber != null) {
-                                i.putExtra(
-                                        CommentsScreenSingle.EXTRA_CONTEXT_NUMBER,
-                                        Integer.parseInt(contextNumber));
+                                i.putExtra(CommentsScreenSingle.EXTRA_CONTEXT_NUMBER, Integer.parseInt(contextNumber));
                             }
                         } catch (NumberFormatException ignored) {
-
+                            // A context= parameter that is not a number is left off the
+                            // intent, and the comment screen uses its default.
                         }
                     }
                     break;
@@ -236,13 +242,14 @@ public class OpenRedditLink {
             case SUBMISSION:
                 {
                     i = new Intent(context, CommentsScreenSingle.class);
-                    if (parts.get(0).equalsIgnoreCase("u")
-                            || parts.get(0).equalsIgnoreCase("user")) {
+
+                    if (parts.get(0).equalsIgnoreCase("u") || parts.get(0).equalsIgnoreCase("user")) {
                         // Prepend u_ because user profile posts are made to /r/u_username
                         i.putExtra(CommentsScreenSingle.EXTRA_SUBREDDIT, "u_" + parts.get(1));
                     } else {
                         i.putExtra(CommentsScreenSingle.EXTRA_SUBREDDIT, parts.get(1));
                     }
+
                     i.putExtra(CommentsScreenSingle.EXTRA_CONTEXT, Reddit.EMPTY_STRING);
                     i.putExtra(CommentsScreenSingle.EXTRA_NP, np);
                     i.putExtra(CommentsScreenSingle.EXTRA_SUBMISSION, parts.get(3));
@@ -293,6 +300,18 @@ public class OpenRedditLink {
                     i = new Intent(context, MainActivity.class);
                     break;
                 }
+            case MEDIA:
+                {
+                    openWebsite(context, url);
+
+                    return true;
+                }
+            case VIDEO:
+                {
+                    openWebsite(context, url);
+
+                    return true;
+                }
             case OTHER:
                 {
                     if (openIfOther) {
@@ -310,8 +329,6 @@ public class OpenRedditLink {
         }
         if (i != null) {
             if (context instanceof OpenContent) {
-                // i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                // i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
                 i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             }
             context.startActivity(i);
@@ -319,7 +336,42 @@ public class OpenRedditLink {
         return true;
     }
 
-    public static void openUrl(Context c, String submission, String subreddit, String id) {
+    /**
+     * Follows a single HTTP redirect for {@code url} on a background thread and re-opens the
+     * resulting location with {@link #openUrl(Context, String, boolean)}. Used for Reddit links
+     * that only resolve to their real destination via a redirect (share links and v.redd.it
+     * videos). Does nothing if the URL doesn't redirect.
+     */
+    private static void resolveRedirectThenOpen(Context context, String url, boolean openIfOther) {
+        new Thread(() -> {
+            try {
+                StrictMode.ThreadPolicy gfgPolicy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                StrictMode.setThreadPolicy(gfgPolicy);
+                URL newUrl = new URL(url);
+                HttpURLConnection ucon = (HttpURLConnection) newUrl.openConnection();
+                ucon.setInstanceFollowRedirects(false);
+                ucon.setRequestProperty("User-Agent", "org.quantumbadger.redreader/1.25.2");
+                ucon.setRequestProperty("Host", newUrl.getHost());
+                String location = ucon.getHeaderField("location");
+
+                if (location != null) {
+                    String finalUrl = new URL(location).toString();
+                    // Return to main thread to handle the UI
+                    ((Activity) context).runOnUiThread(() -> {
+                        openUrl(context, finalUrl, openIfOther);
+                    });
+                }
+            } catch (Exception e) {
+                LogUtil.e(e, "OpenRedditLink.openUrl failed");
+            }
+        }).start();
+    }
+
+    public static void openUrl(
+            Context c,
+            @Nullable String submission,
+            @Nullable String subreddit,
+            @Nullable String id) {
         Intent i = new Intent(c, CommentsScreenSingle.class);
         i.putExtra(CommentsScreenSingle.EXTRA_SUBREDDIT, subreddit);
         i.putExtra(CommentsScreenSingle.EXTRA_CONTEXT, id);
@@ -347,36 +399,47 @@ public class OpenRedditLink {
      * @return Formatted Uri without subdomains, language tags & other unused prefixes
      */
     @Nullable
-    public static Uri formatRedditUrl(String url) {
+    public static Uri formatRedditUrl(@Nullable String url) {
         if (url == null) {
             return null;
         }
 
         Uri uri = LinkUtil.formatURL(url);
 
-        if (uri.getHost().equals("www.google.com")) {
+        // An opaque Uri — "mailto:someone@example.com", which formatURL deliberately leaves alone
+        // — has no host and no path. It is not a reddit link, so report it as one this class does
+        // not handle and let the caller open it externally. Tracked in a local from here on so it
+        // stays in step with uri, which the branches below rebuild.
+        String host = uri.getHost();
+        if (host == null || uri.getPath() == null) {
+            return null;
+        }
+
+        if (host.equals("www.google.com")) {
             String ampURL = uri.getQueryParameter("url");
             if (ampURL != null) {
                 Uri ampURI = Uri.parse(ampURL);
-                String host = ampURI.getHost();
-                if (host != null && host.equals("amp.reddit.com")) {
+                String ampHost = ampURI.getHost();
+                if (ampHost != null && ampHost.equals("amp.reddit.com")) {
                     uri = ampURI;
+                    host = ampHost;
                 }
             }
 
-            if (uri.getPath().startsWith("/amp/s/amp.reddit.com")) {
+            final String path = uri.getPath();
+            if (path != null && path.startsWith("/amp/s/amp.reddit.com")) {
                 List<String> segments = uri.getPathSegments();
                 Uri.Builder builder = uri.buildUpon().authority("reddit.com").path(null);
 
                 appendPathSegments(builder, segments.subList(3, segments.size()));
 
                 uri = builder.build();
+                host = "reddit.com";
             }
         }
 
-        if (uri.getHost().matches("(?i).+\\.reddit\\.com")) { // tests for subdomain
+        if (host.matches("(?i).+\\.reddit\\.com")) { // tests for subdomain
             Uri.Builder builder = uri.buildUpon();
-            String host = uri.getHost();
 
             String subdomain = host.split("\\.", 2)[0];
 
@@ -404,9 +467,7 @@ public class OpenRedditLink {
         // Converts links such as reddit.com/help to reddit.com/r/reddit.com/wiki
         if (!segments.isEmpty() && segments.get(0).matches("w|wiki|help")) {
             Uri.Builder builder = uri.buildUpon().path("/r/reddit.com/wiki");
-
             appendPathSegments(builder, segments.subList(1, segments.size()));
-
             uri = builder.build();
         }
 
@@ -455,6 +516,11 @@ public class OpenRedditLink {
             // Submission without a given subreddit. Format:
             // reddit.com/comments/$post_id/$post_title [optional]
             return RedditLinkType.SUBMISSION_WITHOUT_SUB;
+        } else if (path.matches("(?i)/gallery/\\w+.*")) {
+            // Gallery submission. Format: reddit.com/gallery/$post_id
+            // The id is the submission id, so open it like a subreddit-less submission and let
+            // the post screen render the gallery natively instead of falling through to a browser.
+            return RedditLinkType.SUBMISSION_WITHOUT_SUB;
         } else if (path.matches("(?i)/r/[a-z0-9-_.]+.*")) {
             // Subreddit. Format: reddit.com/r/$subreddit/$sort [optional]
             return RedditLinkType.SUBREDDIT;
@@ -467,6 +533,10 @@ public class OpenRedditLink {
         } else if (path.matches("^/?$")) {
             // Reddit home link
             return RedditLinkType.HOME;
+        } else if (path.matches("^/media.*")) {
+            return RedditLinkType.MEDIA;
+        } else if (path.matches("^/video.*")) {
+            return RedditLinkType.VIDEO;
         } else {
             // Open all links that we can't open in another app
             return RedditLinkType.OTHER;
@@ -487,6 +557,8 @@ public class OpenRedditLink {
         LIVE,
         SUBMIT,
         HOME,
+        MEDIA,
+        VIDEO,
         OTHER
     }
 }

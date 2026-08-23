@@ -20,36 +20,30 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
-
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.devspark.robototextview.RobotoTypefaces;
-
-import me.edgan.redditslide.Authentication;
-import me.edgan.redditslide.R;
-import me.edgan.redditslide.SettingValues;
-import me.edgan.redditslide.UserSubscriptions;
-import me.edgan.redditslide.UserTags;
-import me.edgan.redditslide.Views.RoundedBackgroundSpan;
-import me.edgan.redditslide.Visuals.FontPreferences;
-import me.edgan.redditslide.Visuals.Palette;
-import me.edgan.redditslide.util.CompatUtil;
-import me.edgan.redditslide.util.MiscUtil;
-import me.edgan.redditslide.util.SubmissionParser;
-import me.edgan.redditslide.util.TimeUtils;
-
-import net.dean.jraw.models.Comment;
-import net.dean.jraw.models.CommentNode;
-import net.dean.jraw.models.DistinguishedStatus;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringEscapeUtils;
-
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import me.edgan.redditslide.ActionStates;
+import me.edgan.redditslide.R;
+import me.edgan.redditslide.SavedUsers;
+import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.UserTags;
+import me.edgan.redditslide.Views.RoundedBackgroundSpan;
+import me.edgan.redditslide.Visuals.FontPreferences;
+import me.edgan.redditslide.markdown.MarkdownImages;
+import me.edgan.redditslide.util.CompatUtil;
+import me.edgan.redditslide.util.MiscUtil;
+import me.edgan.redditslide.util.SubmissionParser;
+import me.edgan.redditslide.util.TimeUtils;
+import net.dean.jraw.models.Comment;
+import net.dean.jraw.models.CommentNode;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements Filterable {
@@ -59,6 +53,7 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
     private String search = "";
 
     /// ... other methods
+    @SuppressWarnings("NullAway.Init") // assigned in publishResults
     private List<CommentNode> dataSet;
 
     public CommentAdapterSearch(Context mContext, List<CommentNode> dataSet) {
@@ -90,7 +85,6 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
         SpannableStringBuilder titleString = new SpannableStringBuilder();
 
         SpannableStringBuilder author = new SpannableStringBuilder(comment.getAuthor());
-        final int authorcolor = Palette.getFontColorUser(comment.getAuthor());
 
         author.setSpan(
                 new TypefaceSpan("sans-serif-condensed"),
@@ -102,74 +96,45 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
                 0,
                 author.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        if (comment.getDistinguishedStatus() == DistinguishedStatus.ADMIN) {
-            author.replace(0, author.length(), " " + comment.getAuthor() + " ");
-            author.setSpan(
-                    new RoundedBackgroundSpan(
-                            mContext, android.R.color.white, R.color.md_red_300, false),
-                    0,
-                    author.length(),
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        } else if (comment.getDistinguishedStatus() == DistinguishedStatus.SPECIAL) {
-            author.replace(0, author.length(), " " + comment.getAuthor() + " ");
-            author.setSpan(
-                    new RoundedBackgroundSpan(
-                            mContext, android.R.color.white, R.color.md_red_500, false),
-                    0,
-                    author.length(),
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        } else if (comment.getDistinguishedStatus() == DistinguishedStatus.MODERATOR) {
-            author.replace(0, author.length(), " " + comment.getAuthor() + " ");
-            author.setSpan(
-                    new RoundedBackgroundSpan(
-                            mContext, android.R.color.white, R.color.md_green_300, false),
-                    0,
-                    author.length(),
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        } else if (Authentication.name != null
-                && comment.getAuthor()
-                        .toLowerCase(Locale.ENGLISH)
-                        .equals(Authentication.name.toLowerCase(Locale.ENGLISH))) {
-            author.replace(0, author.length(), " " + comment.getAuthor() + " ");
-            author.setSpan(
-                    new RoundedBackgroundSpan(
-                            mContext, android.R.color.white, R.color.md_deep_orange_300, false),
-                    0,
-                    author.length(),
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        } /* todoelse if (submission != null && comment.getAuthor()
-                  .toLowerCase(Locale.ENGLISH)
-                  .equals(submission.getAuthor().toLowerCase(Locale.ENGLISH)) && !comment.getAuthor().equals("[deleted]")) {
-              author.replace(0, author.length(), " " + comment.getAuthor() + " ");
-              author.setSpan(
-                      new RoundedBackgroundSpan(mContext, android.R.color.white, R.color.md_blue_300, false),
-                      0, author.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-          } */ else if (authorcolor != 0) {
-            author.setSpan(
-                    new ForegroundColorSpan(authorcolor),
-                    0,
-                    author.length(),
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
+        CommentAdapterHelper.styleAuthorBadge(mContext, author, comment, null);
 
         titleString.append(author);
 
         titleString.append(spacer);
 
+        int scoreColor;
+        switch (ActionStates.getVoteDirection(comment)) {
+            case UPVOTE:
+                scoreColor = holder.textColorUp;
+                break;
+            case DOWNVOTE:
+                scoreColor = holder.textColorDown;
+                break;
+            default:
+                scoreColor = holder.textColorRegular;
+                break;
+        }
+
         String scoreText;
         if (comment.isScoreHidden()) {
-            scoreText = "[" + mContext.getString(R.string.misc_score_hidden).toUpperCase() + "]";
+            scoreText = "[" + mContext.getString(R.string.misc_score_hidden).toUpperCase(Locale.getDefault()) + "]";
         } else {
             scoreText = String.format(Locale.getDefault(), "%d", comment.getScore() + offset);
         }
         SpannableStringBuilder score = new SpannableStringBuilder(scoreText);
 
-        titleString.append(score);
         if (!scoreText.contains("[")) {
-            titleString.append(
+            score.append(
                     mContext.getResources()
                             .getQuantityString(R.plurals.points, comment.getScore()));
         }
+        score.setSpan(
+                new ForegroundColorSpan(scoreColor),
+                0,
+                score.length(),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        titleString.append(score);
         titleString.append((comment.isControversial() ? " †" : ""));
 
         titleString.append(spacer);
@@ -187,11 +152,11 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
                         : ""));
         titleString.append("  ");
 
-        if (comment.getDataNode().get("stickied").asBoolean()) {
+        if (comment.getDataNode().path("stickied").asBoolean()) {
             SpannableStringBuilder pinned =
                     new SpannableStringBuilder(
                             "\u00A0"
-                                    + mContext.getString(R.string.submission_stickied).toUpperCase()
+                                    + mContext.getString(R.string.submission_stickied).toUpperCase(Locale.getDefault())
                                     + "\u00A0");
             pinned.setSpan(
                     new RoundedBackgroundSpan(
@@ -238,7 +203,7 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
                     comment.getTimesPlatinized(),
                     R.drawable.platinum);
         }
-        if (UserSubscriptions.friends.contains(comment.getAuthor())) {
+        if (SavedUsers.isFriend(MiscUtil.orEmpty(comment.getAuthor()))) {
             SpannableStringBuilder pinned =
                     new SpannableStringBuilder(
                             "\u00A0" + mContext.getString(R.string.profile_friend) + "\u00A0");
@@ -286,12 +251,13 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
         doScoreText(holder, comment, 0);
 
         if (baseNode.isTopLevel()) {
-            holder.itemView.findViewById(R.id.next).setVisibility(View.VISIBLE);
+            holder.itemView.requireViewById(R.id.next).setVisibility(View.VISIBLE);
         } else {
-            holder.itemView.findViewById(R.id.next).setVisibility(View.GONE);
+            holder.itemView.requireViewById(R.id.next).setVisibility(View.GONE);
         }
 
-        String body = comment.getDataNode().get("body_html").asText();
+        String body = SubmissionParser.replaceProcessingImgPlaceholders(
+                comment.getDataNode().path("body_html").asText(""), comment.getDataNode());
         if (!search.isEmpty() && StringUtils.isAlphanumericSpace(search)) {
             body = body.replaceAll(search, "[[h[" + search + "]h]]");
         }
@@ -305,7 +271,16 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
         }
         holder.firstTextView.setTypeface(typeface);
 
-        setViews(body, comment.getSubredditName(), holder);
+        if (SettingValues.markdownNewReddit) {
+            setViewsMarkdown(
+                    comment.getDataNode().path("body").asText(),
+                    comment.getDataNode().path("body_html").asText(""),
+                    comment.getDataNode(),
+                    MiscUtil.orEmpty(comment.getSubredditName()),
+                    holder);
+        } else {
+            setViews(body, MiscUtil.orEmpty(comment.getSubredditName()), holder);
+        }
 
         holder.childrenNumber.setVisibility(View.GONE);
 
@@ -334,10 +309,9 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
                     }
                 });
 
-        holder.itemView.findViewById(R.id.dot).setVisibility(View.VISIBLE);
+        holder.itemView.requireViewById(R.id.dot).setVisibility(View.VISIBLE);
 
         if (baseNode.getDepth() - 1 > 0) {
-            View v = holder.itemView.findViewById(R.id.dot);
             int i22 = baseNode.getDepth() - 2;
             if (i22 % 5 == 0) {
                 holder.dot.setBackgroundColor(
@@ -358,7 +332,7 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
                 holder.dot.setBackgroundColor(ContextCompat.getColor(mContext, R.color.md_red_500));
             }
         } else {
-            holder.itemView.findViewById(R.id.dot).setVisibility(View.GONE);
+            holder.itemView.requireViewById(R.id.dot).setVisibility(View.GONE);
         }
     }
 
@@ -369,12 +343,36 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
      * @param subredditName
      * @param holder
      */
+    /** New Reddit-style rendering of a search-result comment body via Markwon. Issue #179. */
+    private void setViewsMarkdown(
+            String rawMarkdown,
+            String bodyHtml,
+            JsonNode dataNode,
+            String subredditName,
+            CommentViewHolder holder) {
+        MarkdownImages.renderInto(
+                holder.firstTextView,
+                holder.commentOverflow,
+                subredditName,
+                rawMarkdown,
+                bodyHtml,
+                dataNode,
+                (!search.isEmpty() && StringUtils.isAlphanumericSpace(search)) ? search : null);
+    }
+
     private void setViews(String rawHTML, String subredditName, CommentViewHolder holder) {
         if (rawHTML.isEmpty()) {
             return;
         }
 
         List<String> blocks = SubmissionParser.getBlocks(rawHTML);
+
+        if (blocks.isEmpty()) {
+            holder.firstTextView.setText("");
+            holder.firstTextView.setVisibility(View.GONE);
+            holder.commentOverflow.removeAllViews();
+            return;
+        }
 
         int startIndex = 0;
         // the <div class="md"> case is when the body contains a table or code block first
@@ -434,9 +432,15 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
                         constraint.toString().toLowerCase(Locale.ENGLISH).trim();
 
                 for (final CommentNode user : originalList) {
-                    if (StringEscapeUtils.unescapeHtml4(
-                                    user.getComment().getBody().toLowerCase(Locale.ENGLISH))
-                            .contains(filterPattern)) {
+                    final Comment comment = user.getComment();
+                    final String body =
+                            StringEscapeUtils.unescapeHtml4(
+                                    MiscUtil.orEmpty(comment.getBody()).toLowerCase(Locale.ENGLISH));
+                    final String author =
+                            comment.getAuthor() == null
+                                    ? ""
+                                    : comment.getAuthor().toLowerCase(Locale.ENGLISH);
+                    if (body.contains(filterPattern) || author.contains(filterPattern)) {
                         filteredList.add(user);
                     }
                 }

@@ -3,7 +3,7 @@ package me.edgan.redditslide.util;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
-
+import android.util.DisplayMetrics;
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiskCache;
@@ -12,20 +12,27 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
-
-import me.edgan.redditslide.SettingValues;
-import me.edgan.redditslide.Views.SubsamplingScaleImageView;
-
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import java.io.File;
 import java.io.IOException;
+import me.edgan.redditslide.Constants;
+import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.Views.SubsamplingScaleImageView;
+import org.jspecify.annotations.NullMarked;
 
 /** Created by carlo_000 on 10/19/2015. */
 /*Adapted from https://github.com/Kennyc1012/Opengur */
 
+@NullMarked
 public class ImageLoaderUtils {
 
+    // Both are assigned by initImageLoader(), and every read is preceded by a call to it:
+    // Reddit.getImageLoader() and SettingsGeneralFragment both call it on the line before, and
+    // options is only ever read further down initImageLoader itself.
+    @SuppressWarnings("NullAway.Init")
     public static ImageLoaderUnescape imageLoader;
+
+    @SuppressWarnings("NullAway.Init") // assigned in initImageLoader
     public static DisplayImageOptions options;
 
     private ImageLoaderUtils() {}
@@ -51,7 +58,7 @@ public class ImageLoaderUtils {
         DiskCache discCache;
         File dir = getCacheDirectory(context);
         discCacheSize *= 100;
-        int threadPoolSize = 7;
+        int threadPoolSize = Constants.IMAGE_LOADER_THREAD_POOL_SIZE;
         if (discCacheSize > 0) {
             try {
                 dir.mkdir();
@@ -76,18 +83,29 @@ public class ImageLoaderUtils {
                                         : ImageScaleType.IN_SAMPLE_POWER_OF_2)
                         .cacheInMemory(false)
                         .resetViewBeforeLoading(false)
-                        .displayer(new FadeInBitmapDisplayer(250))
+                        // No fade — images appear instantly instead of animating in.
+                        .displayer(new SimpleBitmapDisplayer())
                         .build();
 
         if (SettingValues.highColorspaceImages) {
             SubsamplingScaleImageView.setPreferredBitmapConfig(Bitmap.Config.ARGB_8888);
         }
+
+        // Cap decoded bitmaps to the screen size. The feed's EXACTLY-scaled lead images were
+        // otherwise decoded at the (very tall) view height — up to ~15 MB each — which made the
+        // in-memory cache hold almost nothing. Full-screen zoom is unaffected: it uses
+        // SubsamplingScaleImageView decoding straight from the disk-cache file, not this path.
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        // Give the memory cache a real budget so nearby scroll-back hits memory instead of disk.
+        int memoryCacheSize = (int) (Runtime.getRuntime().maxMemory() / 4);
+
         ImageLoaderConfiguration config =
                 new ImageLoaderConfiguration.Builder(context)
                         .threadPoolSize(threadPoolSize)
                         .denyCacheImageMultipleSizesInMemory()
+                        .memoryCacheExtraOptions(metrics.widthPixels, metrics.heightPixels)
+                        .memoryCacheSize(memoryCacheSize)
                         .diskCache(discCache)
-                        .threadPoolSize(4)
                         .imageDownloader(new OkHttpImageDownloader(context))
                         .defaultDisplayImageOptions(options)
                         .build();

@@ -5,47 +5,56 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.view.View;
+import android.view.ContextThemeWrapper;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
-
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.commons.R;
-
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import me.edgan.redditslide.R;
+import me.edgan.redditslide.Visuals.ColorPreferences;
+import me.edgan.redditslide.util.MaterialInputDialog;
 
 /**
- * @author Aidan Follestad (afollestad) https://github.com/afollestad/material-dialogs/
- *     <p>Directly based on 0.9.6.0 release source, adapted to support
- *     https://github.com/ccrama/Slide/pull/3144 alongside some miscellaneous code improvements.
+ * Folder picker dialog. Originally adapted from afollestad material-dialogs 0.9.6.0; migrated off
+ * the deprecated {@code MaterialDialog} to a {@link MaterialAlertDialogBuilder}-backed {@link
+ * ListView} so folder navigation updates in place without dismissing.
  */
-public class FolderChooserDialogCreate extends DialogFragment
-        implements MaterialDialog.ListCallback {
+public class FolderChooserDialogCreate extends DialogFragment {
 
     private static final String DEFAULT_TAG = "[MD_FOLDER_SELECTOR]";
 
+    // All three are assigned by onCreateDialog before the dialog is shown, and every use below
+    // runs from that dialog's callbacks.
+    @SuppressWarnings("NullAway.Init")
     private File parentFolder;
-    private File[] parentContents;
-    private boolean canGoUp = false;
-    private FolderCallback callback;
 
-    String[] getContentsArray() {
+    @SuppressWarnings("NullAway.Init") // assigned in onCreateDialog/reload
+    private File[] parentContents;
+
+    private boolean canGoUp = false;
+    @Nullable private FolderCallback callback;
+
+    @SuppressWarnings("NullAway.Init") // assigned in onCreateDialog
+    private ArrayAdapter<String> listAdapter;
+
+    @Nullable String[] getContentsArray() {
         if (parentContents == null) {
             if (canGoUp) {
                 return new String[] {getBuilder().goUpLabel};
@@ -74,22 +83,32 @@ public class FolderChooserDialogCreate extends DialogFragment
             Collections.sort(results, new FolderSorter());
             return results.toArray(new File[0]);
         }
-        return null;
+
+        // An unreadable directory lists as empty rather than null: getContentsArray and the
+        // click handler both index straight into this array.
+        return new File[0];
+    }
+
+    private Context themedContext() {
+        // Both callers are building this dialog's own view, which cannot be done without a
+        // host at all; requireActivity states that rather than inventing a fallback theme.
+        final FragmentActivity activity = requireActivity();
+        return new ContextThemeWrapper(
+                activity, new ColorPreferences(activity).getFontStyle().getBaseId());
     }
 
     @SuppressWarnings("ConstantConditions")
     @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                && ActivityCompat.checkSelfPermission(
-                                getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-            return new MaterialDialog.Builder(getActivity())
-                    .title(R.string.md_error_label)
-                    .content(R.string.md_storage_perm_error)
-                    .positiveText(android.R.string.ok)
-                    .build();
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        if (ActivityCompat.checkSelfPermission(
+                        requireActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            return new MaterialAlertDialogBuilder(themedContext())
+                    .setTitle(R.string.md_error_label)
+                    .setMessage(R.string.md_storage_perm_error)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .create();
         }
         if (getArguments() == null || !getArguments().containsKey("builder")) {
             throw new IllegalStateException(
@@ -98,36 +117,53 @@ public class FolderChooserDialogCreate extends DialogFragment
         if (!getArguments().containsKey("current_path")) {
             getArguments().putString("current_path", getBuilder().initialPath);
         }
-        parentFolder = new File(getArguments().getString("current_path"));
+        parentFolder = new File(getArguments().getString("current_path", getBuilder().initialPath));
         checkIfCanGoUp();
         parentContents = listFiles();
-        final MaterialDialog.Builder builder =
-                new MaterialDialog.Builder(getActivity())
-                        .typeface(getBuilder().mediumFont, getBuilder().regularFont)
-                        .title(parentFolder.getAbsolutePath())
-                        .items(getContentsArray())
-                        .itemsCallback(this)
-                        .onPositive(
+
+        final Context contextThemeWrapper = themedContext();
+        final ListView listView = new ListView(contextThemeWrapper);
+        listAdapter =
+                new ArrayAdapter<>(
+                        contextThemeWrapper,
+                        android.R.layout.simple_list_item_1,
+                        new ArrayList<>(java.util.Arrays.asList(getContentsArray())));
+        listView.setAdapter(listAdapter);
+        listView.setOnItemClickListener((parent, view, position, id) -> onSelection(position));
+
+        final MaterialAlertDialogBuilder builder =
+                new MaterialAlertDialogBuilder(contextThemeWrapper)
+                        .setTitle(parentFolder.getAbsolutePath())
+                        .setView(listView)
+                        .setPositiveButton(
+                                getBuilder().chooseButton,
                                 (dialog, which) -> {
-                                    dialog.dismiss();
+                                    if (callback == null) {
+                                        return;
+                                    }
                                     callback.onFolderSelection(
-                                            FolderChooserDialogCreate.this,
+                                                FolderChooserDialogCreate.this,
                                             parentFolder,
                                             getBuilder().isSaveToLocation);
                                 })
-                        .onNegative((dialog, which) -> dialog.dismiss())
-                        .autoDismiss(false)
-                        .positiveText(getBuilder().chooseButton)
-                        .negativeText(getBuilder().cancelButton);
+                        .setNegativeButton(getBuilder().cancelButton, null);
 
         if (getBuilder().allowNewFolder) {
-            builder.neutralText(getBuilder().newFolderButton);
-            builder.onNeutral((dialog, which) -> createNewFolder());
+            // null listener so the neutral button doesn't auto-dismiss; wired in setOnShowListener.
+            builder.setNeutralButton(getBuilder().newFolderButton, null);
         }
         if ("/".equals(getBuilder().initialPath)) {
             canGoUp = false;
         }
-        return builder.build();
+
+        final AlertDialog dialog = builder.create();
+        if (getBuilder().allowNewFolder) {
+            dialog.setOnShowListener(
+                    d ->
+                            dialog.getButton(DialogInterface.BUTTON_NEUTRAL)
+                                    .setOnClickListener(v -> createNewFolder()));
+        }
+        return dialog;
     }
 
     @Override
@@ -139,14 +175,20 @@ public class FolderChooserDialogCreate extends DialogFragment
     }
 
     private void createNewFolder() {
-        new MaterialDialog.Builder(getActivity())
+        // A detached fragment has no host here; there is nothing to act on.
+        final FragmentActivity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+        new MaterialInputDialog.Builder(activity)
                 .title(getBuilder().newFolderButton)
-                .input(
-                        0,
-                        0,
-                        false,
-                        (dialog, input) -> {
-                            final File newFile = new File(parentFolder, input.toString());
+                .input(null, null, null)
+                .positiveText(android.R.string.ok)
+                .onPositive(
+                        inputDialog -> {
+                            final String input =
+                                    inputDialog.getInputEditText().getText().toString();
+                            final File newFile = new File(parentFolder, input);
                             if (newFile.mkdir()) {
                                 reload();
                             } else {
@@ -159,11 +201,11 @@ public class FolderChooserDialogCreate extends DialogFragment
                                 Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
                             }
                         })
+                .negativeText(android.R.string.cancel)
                 .show();
     }
 
-    @Override
-    public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence s) {
+    private void onSelection(int i) {
         if (canGoUp && i == 0) {
             parentFolder = parentFolder.getParentFile();
             if (parentFolder != null
@@ -193,10 +235,16 @@ public class FolderChooserDialogCreate extends DialogFragment
 
     private void reload() {
         parentContents = listFiles();
-        final MaterialDialog dialog = (MaterialDialog) getDialog();
-        dialog.setTitle(parentFolder.getAbsolutePath());
-        getArguments().putString("current_path", parentFolder.getAbsolutePath());
-        dialog.setItems(getContentsArray());
+        final AlertDialog dialog = (AlertDialog) getDialog();
+        if (dialog != null) {
+            dialog.setTitle(parentFolder.getAbsolutePath());
+        }
+        requireArguments().putString("current_path", parentFolder.getAbsolutePath());
+        if (listAdapter != null) {
+            listAdapter.clear();
+            listAdapter.addAll(getContentsArray());
+            listAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -227,10 +275,12 @@ public class FolderChooserDialogCreate extends DialogFragment
         show(fragmentManager, tag);
     }
 
-    @SuppressWarnings("ConstantConditions")
     @NonNull
     private Builder getBuilder() {
-        return (Builder) getArguments().getSerializable("builder");
+        // onCreateDialog throws if the "builder" argument is missing, so every path that
+        // reaches this has one.
+        return (Builder) java.util.Objects.requireNonNull(
+                requireArguments().getSerializable("builder"));
     }
 
     public interface FolderCallback {
@@ -249,7 +299,7 @@ public class FolderChooserDialogCreate extends DialogFragment
         @StringRes int chooseButton;
         @StringRes int cancelButton;
         String initialPath;
-        String tag;
+        @Nullable String tag;
         boolean allowNewFolder;
         @StringRes int newFolderButton;
         String goUpLabel;

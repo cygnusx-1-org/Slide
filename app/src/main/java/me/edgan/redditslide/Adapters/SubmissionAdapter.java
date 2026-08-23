@@ -1,6 +1,5 @@
 package me.edgan.redditslide.Adapters;
 
-/** Created by ccrama on 3/22/2015. */
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Handler;
@@ -8,14 +7,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.snackbar.Snackbar;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import me.edgan.redditslide.Activities.CommentsScreen;
 import me.edgan.redditslide.Activities.MainActivity;
+import me.edgan.redditslide.Activities.MainPagerAdapterComment;
 import me.edgan.redditslide.Activities.SubredditView;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Fragments.SubmissionsView;
@@ -25,14 +25,12 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionViews.PopulateSubmissionViewHolder;
 import me.edgan.redditslide.Views.CatchStaggeredGridLayoutManager;
 import me.edgan.redditslide.Views.CreateCardView;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LayoutUtils;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
-
+import me.edgan.redditslide.util.PhotoLoader;
 import net.dean.jraw.models.Submission;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements BaseAdapter {
@@ -152,7 +150,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             View v =
                     LayoutInflater.from(viewGroup.getContext())
                             .inflate(R.layout.errorloadingcontent, viewGroup, false);
-            v.findViewById(R.id.retry)
+            v.requireViewById(R.id.retry)
                     .setOnClickListener(
                             new OnSingleClickListener() {
                                 @Override
@@ -164,7 +162,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             return new SubmissionFooterViewHolder(v);
         } else {
             View v = CreateCardView.CreateView(viewGroup);
-            return new SubmissionViewHolder(v);
+            return new CardSubmissionViewHolder(v);
         }
     }
 
@@ -206,12 +204,11 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         int i = pos != 0 ? pos - 1 : pos;
 
-        if (holder2 instanceof SubmissionViewHolder) {
-            final SubmissionViewHolder holder = (SubmissionViewHolder) holder2;
+        if (holder2 instanceof CardSubmissionViewHolder holder) {
 
             final Submission submission = dataSet.posts.get(i);
             CreateCardView.colorCard(
-                    submission.getSubredditName().toLowerCase(Locale.ENGLISH),
+                    MiscUtil.orEmpty(submission.getSubredditName()).toLowerCase(Locale.ENGLISH),
                     holder.itemView,
                     subreddit,
                     (subreddit.equals("frontpage")
@@ -226,6 +223,10 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         public void onSingleClick(View v) {
 
                             if (Authentication.didOnline || submission.getComments() != null) {
+                                // Warm the full-size header image now, during the open transition,
+                                // so the comments-screen header renders in place instead of popping
+                                // in (its own full-width path — never the thumbnail).
+                                PhotoLoader.warmFull(context, submission);
                                 holder.title.setAlpha(0.54f);
                                 holder.body.setAlpha(0.54f);
 
@@ -235,7 +236,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                             && a.commentPager
                                             && a.adapter
                                                     instanceof
-                                                    MainActivity.MainPagerAdapterComment) {
+                                                    MainPagerAdapterComment) {
 
                                         if (a.openingComments != submission) {
                                             clicked = holder2.getBindingAdapterPosition();
@@ -243,16 +244,17 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                             a.toOpenComments = a.pager.getCurrentItem() + 1;
                                             a.currentComment =
                                                     holder.getBindingAdapterPosition() - 1;
-                                            ((MainActivity.MainPagerAdapterComment) (a).adapter)
+                                            ((MainPagerAdapterComment) (a).adapter)
                                                             .storedFragment =
                                                     (a).adapter.getCurrentFragment();
-                                            ((MainActivity.MainPagerAdapterComment) (a).adapter)
+                                            ((MainPagerAdapterComment) (a).adapter)
                                                             .size =
                                                     a.toOpenComments + 1;
                                             try {
                                                 a.adapter.notifyDataSetChanged();
                                             } catch (Exception ignored) {
-
+                                                // notifyDataSetChanged during a layout pass throws;
+                                                // the pager rebinds on the next pass anyway.
                                             }
                                         }
                                         a.pager.postDelayed(
@@ -316,7 +318,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                 }
                             } else {
                                 if (!Reddit.appRestart.contains("offlinepopup")) {
-                                    new AlertDialog.Builder(context)
+                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(context)
                                             .setTitle(R.string.cache_no_comments_found)
                                             .setMessage(R.string.cache_no_comments_found_message)
                                             .setCancelable(false)
@@ -327,7 +329,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                                                     .edit()
                                                                     .putString("offlinepopup", "")
                                                                     .apply())
-                                            .show();
+                                            );
                                 } else {
                                     Snackbar s =
                                             Snackbar.make(
@@ -339,7 +341,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                             new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View v) {
-                                                    new AlertDialog.Builder(context)
+                                                    DialogUtil.showWithCardBackground(new AlertDialog.Builder(context)
                                                             .setTitle(
                                                                     R.string
                                                                             .cache_no_comments_found)
@@ -356,7 +358,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                                                                             "offlinepopup",
                                                                                             "")
                                                                                     .apply())
-                                                            .show();
+                                                            );
                                                 }
                                             });
                                     LayoutUtils.showSnackbar(s);
@@ -379,18 +381,13 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                             null);
         }
         if (holder2 instanceof SubmissionFooterViewHolder) {
-            Handler handler = new Handler();
-
-            final Runnable r =
-                    new Runnable() {
-                        public void run() {
-                            notifyItemChanged(
-                                    dataSet.posts.size() + 1); // the loading spinner to replaced by
-                            // nomoreposts.xml
-                        }
-                    };
-
-            handler.post(r);
+            // Only refresh when the footer actually needs to change type (e.g. the
+            // loading spinner replaced by nomoreposts.xml). Posting unconditionally made
+            // the footer re-bind itself on every bind, an endless redraw loop. Compute the
+            // position inside the post so it reflects the list size when it actually runs.
+            if (holder2.getItemViewType() != getItemViewType(dataSet.posts.size() + 1)) {
+                new Handler().post(() -> notifyItemChanged(dataSet.posts.size() + 1));
+            }
 
             if (holder2.itemView.findViewById(R.id.reload) != null) {
                 holder2.itemView
@@ -405,7 +402,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
         }
         if (holder2 instanceof SpacerViewHolder) {
-            View header = (context).findViewById(R.id.header);
+            View header = (context).requireViewById(R.id.header);
 
             int height = header.getHeight();
 
@@ -413,7 +410,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 header.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
                 height = header.getMeasuredHeight();
                 holder2.itemView
-                        .findViewById(R.id.height)
+                        .requireViewById(R.id.height)
                         .setLayoutParams(
                                 new LinearLayout.LayoutParams(holder2.itemView.getWidth(), height));
 
@@ -426,7 +423,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
             } else {
                 holder2.itemView
-                        .findViewById(R.id.height)
+                        .requireViewById(R.id.height)
                         .setLayoutParams(
                                 new LinearLayout.LayoutParams(holder2.itemView.getWidth(), height));
                 if (listView.getLayoutManager() instanceof CatchStaggeredGridLayoutManager) {

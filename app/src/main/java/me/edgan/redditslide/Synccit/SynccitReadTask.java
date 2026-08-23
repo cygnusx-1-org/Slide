@@ -1,10 +1,11 @@
 package me.edgan.redditslide.Synccit;
 
+import androidx.annotation.Nullable;
+
+import java.util.HashSet;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.HashSet;
 
 /** https://github.com/drakeapps/synccit#example-json-read-call */
 abstract class SynccitReadTask extends SynccitTask {
@@ -21,7 +22,7 @@ abstract class SynccitReadTask extends SynccitTask {
     }
 
     @Override
-    protected SynccitResponse onInput(String in) throws Exception {
+    protected @Nullable SynccitResponse onInput(String in) throws Exception {
         HashSet<String> visitedLinkIds = new HashSet<>();
 
         try {

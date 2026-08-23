@@ -3,15 +3,18 @@ package me.edgan.redditslide;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.net.Uri;
-
-import net.dean.jraw.models.Submission;
-
+import android.util.LruCache;
+import androidx.annotation.Nullable;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Locale;
+import me.edgan.redditslide.util.LogUtil;
+import net.dean.jraw.models.Submission;
 
 /** Created by ccrama on 5/26/2015. */
 public class ContentType {
@@ -25,7 +28,7 @@ public class ContentType {
      * @param bases Any number of hostnames to compare against {@code host}
      * @return If {@code host} contains any of {@code bases}
      */
-    public static boolean hostContains(String host, String... bases) {
+    public static boolean hostContains(@Nullable String host, @Nullable String... bases) {
         if (host == null || host.isEmpty()) return false;
 
         for (String base : bases) {
@@ -40,83 +43,104 @@ public class ContentType {
     }
 
     public static boolean isGif(URI uri) {
-        try {
-            final String host = uri.getHost().toLowerCase(Locale.ENGLISH);
-            final String path = uri.getPath().toLowerCase(Locale.ENGLISH);
-
-            // Special case for redgifs.com - exclude if path ends with jpg/jpeg
-            if (hostContains(host, "redgifs.com")) {
-                return !path.endsWith(".jpg") && !path.endsWith(".jpeg");
-            }
-
-            // Original conditions for other hosts
-            return hostContains(host, "gfycat.com")
-                    || hostContains(host, "v.redd.it")
-                    || path.endsWith(".gif")
-                    || path.endsWith(".gifv")
-                    || path.endsWith(".webm")
-                    || path.endsWith(".mp4");
-        } catch (NullPointerException e) {
+        // java.net.URI answers null from getHost() when the authority is registry-based rather
+        // than server-based, and from getPath() for an opaque URI. Both used to arrive as an NPE
+        // that a catch turned into false; deciding up front is the same answer, stated rather than
+        // caught.
+        final String rawHost = uri.getHost();
+        final String rawPath = uri.getPath();
+        if (rawHost == null || rawPath == null) {
             return false;
         }
+        final String host = rawHost.toLowerCase(Locale.ENGLISH);
+        final String path = rawPath.toLowerCase(Locale.ENGLISH);
+
+        // Special case for redgifs.com - exclude if path ends with jpg/jpeg
+        if (hostContains(host, "redgifs.com")) {
+            return !path.endsWith(".jpg") && !path.endsWith(".jpeg");
+        }
+
+        // Original conditions for other hosts
+        return hostContains(host, "gfycat.com")
+                || hostContains(host, "v.redd.it")
+                || path.endsWith(".gif")
+                || path.endsWith(".gifv")
+                || path.endsWith(".webm")
+                || path.endsWith(".mp4");
     }
 
     public static boolean isImage(URI uri) {
-        try {
-            final String host = uri.getHost().toLowerCase(Locale.ENGLISH);
-            final String path = uri.getPath().toLowerCase(Locale.ENGLISH);
-
-            return host.equals("i.reddituploads.com")
-                    || path.endsWith(".png")
-                    || path.endsWith(".jpg")
-                    || path.endsWith(".jpeg");
-
-        } catch (NullPointerException e) {
+        // java.net.URI answers null from getHost() when the authority is registry-based rather
+        // than server-based, and from getPath() for an opaque URI. Both used to arrive as an NPE
+        // that a catch turned into false; deciding up front is the same answer, stated rather than
+        // caught.
+        final String rawHost = uri.getHost();
+        final String rawPath = uri.getPath();
+        if (rawHost == null || rawPath == null) {
             return false;
         }
+        final String host = rawHost.toLowerCase(Locale.ENGLISH);
+        final String path = rawPath.toLowerCase(Locale.ENGLISH);
+
+        return host.equals("i.reddituploads.com")
+                || path.endsWith(".png")
+                || path.endsWith(".jpg")
+                || path.endsWith(".jpeg");
     }
 
     public static boolean isAlbum(URI uri) {
-        try {
-            final String host = uri.getHost().toLowerCase(Locale.ENGLISH);
-            final String path = uri.getPath().toLowerCase(Locale.ENGLISH);
-
-            return hostContains(host, "imgur.com", "bildgur.de")
-                    && (path.startsWith("/a/")
-                            || path.startsWith("/gallery/")
-                            || path.startsWith("/g/")
-                            || path.contains(","));
-
-        } catch (NullPointerException e) {
+        // java.net.URI answers null from getHost() when the authority is registry-based rather
+        // than server-based, and from getPath() for an opaque URI. Both used to arrive as an NPE
+        // that a catch turned into false; deciding up front is the same answer, stated rather than
+        // caught.
+        final String rawHost = uri.getHost();
+        final String rawPath = uri.getPath();
+        if (rawHost == null || rawPath == null) {
             return false;
         }
+        final String host = rawHost.toLowerCase(Locale.ENGLISH);
+        final String path = rawPath.toLowerCase(Locale.ENGLISH);
+
+        return hostContains(host, "imgur.com", "bildgur.de")
+                && (path.startsWith("/a/")
+                        || path.startsWith("/gallery/")
+                        || path.startsWith("/g/")
+                        || path.contains(","));
     }
 
     public static boolean isVideo(URI uri) {
-        try {
-            final String host = uri.getHost().toLowerCase(Locale.ENGLISH);
-            final String path = uri.getPath().toLowerCase(Locale.ENGLISH);
-
-            return hostContains(host, "youtu.be", "youtube.com", "youtube.co.uk")
-                    && !path.contains("/user/")
-                    && !path.contains("/channel/");
-
-        } catch (NullPointerException e) {
+        // java.net.URI answers null from getHost() when the authority is registry-based rather
+        // than server-based, and from getPath() for an opaque URI. Both used to arrive as an NPE
+        // that a catch turned into false; deciding up front is the same answer, stated rather than
+        // caught.
+        final String rawHost = uri.getHost();
+        final String rawPath = uri.getPath();
+        if (rawHost == null || rawPath == null) {
             return false;
         }
+        final String host = rawHost.toLowerCase(Locale.ENGLISH);
+        final String path = rawPath.toLowerCase(Locale.ENGLISH);
+
+        return hostContains(host, "youtu.be", "youtube.com", "youtube.co.uk")
+                && !path.contains("/user/")
+                && !path.contains("/channel/");
     }
 
     public static boolean isImgurLink(String url) {
         try {
             final URI uri = new URI(url);
-            final String host = uri.getHost().toLowerCase(Locale.ENGLISH);
+            final String rawHost = uri.getHost();
+            if (rawHost == null) {
+                return false;
+            }
+            final String host = rawHost.toLowerCase(Locale.ENGLISH);
 
             return hostContains(host, "imgur.com", "bildgur.de")
                     && !isAlbum(uri)
                     && !isGif(uri)
                     && !isImage(uri);
 
-        } catch (URISyntaxException | NullPointerException e) {
+        } catch (URISyntaxException e) {
             return false;
         }
     }
@@ -124,11 +148,15 @@ public class ContentType {
     public static boolean isRedditGallery(String url) {
         try {
             final URI uri = new URI(url);
-            final String host = uri.getHost().toLowerCase(Locale.ENGLISH);
+            final String rawHost = uri.getHost();
+            if (rawHost == null) {
+                return false;
+            }
+            final String host = rawHost.toLowerCase(Locale.ENGLISH);
 
             return hostContains(host, "reddit.com", "redd.it") && url.contains("/gallery/");
 
-        } catch (URISyntaxException | NullPointerException e) {
+        } catch (URISyntaxException e) {
             return false;
         }
     }
@@ -139,7 +167,11 @@ public class ContentType {
      * @param url URL to get ContentType from
      * @return ContentType of the URL
      */
-    public static Type getContentType(String url) {
+    public static Type getContentType(@Nullable String url) {
+        if (url == null) {
+            // No url to classify. NONE is what an unrecognised url already yields.
+            return Type.NONE;
+        }
         if (!url.startsWith("//")
                 && ((url.startsWith("/") && url.length() < 4)
                         || url.startsWith("#spoiler")
@@ -162,11 +194,20 @@ public class ContentType {
 
         try {
             final URI uri = new URI(url);
-            final String host = uri.getHost().toLowerCase(Locale.ENGLISH);
-            final String scheme = uri.getScheme().toLowerCase(Locale.ENGLISH);
+            final String rawHost = uri.getHost();
+            final String rawScheme = uri.getScheme();
+            if (rawHost == null || rawScheme == null) {
+                // Registry-based authority, or no scheme. This used to arrive as an NPE whose
+                // message matches none of the "malformed" cases in the catch below, so it fell
+                // through to Type.NONE -- the same answer, without the throw/catch round trip.
+                return Type.NONE;
+            }
+            final String host = rawHost.toLowerCase(Locale.ENGLISH);
+            final String scheme = rawScheme.toLowerCase(Locale.ENGLISH);
 
             if (hostContains(host, "v.redd.it")
-                    || (host.equals("reddit.com") && url.contains("reddit.com/video/"))) {
+                    || (host.equals("reddit.com") && url.contains("reddit.com/video/"))
+                    || (host.equals("reddit.com") && url.contains("/link/") && url.contains("/video/"))) {
                 if (url.contains("DASH_")) {
                     return Type.VREDDIT_DIRECT;
                 } else {
@@ -200,8 +241,8 @@ public class ContentType {
                 return Type.IMGUR;
             }
             if (hostContains(host, "xkcd.com")
-                    && !hostContains("imgs.xkcd.com")
-                    && !hostContains("what-if.xkcd.com")) {
+                    && !hostContains(host, "imgs.xkcd.com")
+                    && !hostContains(host, "what-if.xkcd.com")) {
                 return Type.XKCD;
             }
             if (hostContains(host, "tumblr.com") && uri.getPath().contains("post")) {
@@ -219,18 +260,22 @@ public class ContentType {
 
             return Type.LINK;
 
-        } catch (URISyntaxException | NullPointerException e) {
+        } catch (URISyntaxException e) {
             if (e.getMessage() != null
                     && (e.getMessage().contains("Illegal character in fragment")
                             || e.getMessage().contains("Illegal character in query")
+                            || e.getMessage().contains("Illegal character in path")
+                            || e.getMessage().contains("Malformed escape pair")
                             || e.getMessage()
-                                    .contains("Illegal character in path"))) // a valid link but
+                                    .toLowerCase(Locale.ENGLISH)
+                                    .contains("malformed"))) // a valid link but
             // something un-encoded
+            // or malformed
             // in the URL
             {
                 return Type.LINK;
             }
-            e.printStackTrace();
+            LogUtil.e(e, "ContentType.getContentType failed");
             return Type.NONE;
         }
     }
@@ -242,16 +287,64 @@ public class ContentType {
      * @return Content type of the Submission
      * @see #getContentType(String)
      */
-    public static Type getContentType(Submission submission) {
+    /** A submission's resolved type, together with the url it was resolved from. */
+    private static class CachedType {
+        /** Null when the submission carried no url — Submission.getUrl() is JRAW's, unannotated. */
+        @Nullable final String url;
+        final Type type;
+
+        CachedType(@Nullable String url, Type type) {
+            this.url = url;
+            this.type = type;
+        }
+    }
+
+    /**
+     * Resolved content types, keyed by fullname. Resolving one parses the url twice (a URI here and
+     * a URL inside {@link PostMatch#openExternal}) and scans the always-external domain set, which
+     * ran on every feed bind. LruCache is used because this is reached from both the UI thread and
+     * the pagination thread (via {@link PostMatch#doesMatch}); it synchronizes internally.
+     */
+    private static final LruCache<String, CachedType> typeCache = new LruCache<>(500);
+
+    /**
+     * Drop the resolved types. Must be called whenever {@link SettingValues#alwaysExternal} changes,
+     * since that decides whether a url resolves to {@link Type#EXTERNAL}.
+     */
+    public static void invalidateTypeCache() {
+        typeCache.evictAll();
+    }
+
+    public static Type getContentType(@Nullable Submission submission) {
         if (submission == null) {
             return Type.SELF; // hopefully shouldn't be null, but catch it in case
         }
 
+        // Validated against the url, so a post whose link is rewritten later (PostRecovery) is
+        // resolved again rather than served from the cache.
+        final String url = submission.getUrl();
+        final String key = submission.getFullName();
+        final CachedType cached = typeCache.get(key);
+        if (cached != null && (cached.url == null ? url == null : cached.url.equals(url))) {
+            return cached.type;
+        }
+
+        final Type type = computeContentType(submission);
+        typeCache.put(key, new CachedType(url, type));
+        return type;
+    }
+
+    private static Type computeContentType(Submission submission) {
         if (submission.isGallery()) {
             return Type.REDDIT_GALLERY;
         }
 
         if (submission.isSelfPost()) {
+            for (JsonNode entry : submission.getDataNode().path("media_metadata")) {
+                if ("RedditVideo".equals(entry.path("e").asText())) {
+                    return Type.VREDDIT_REDIRECT;
+                }
+            }
             return Type.SELF;
         }
 
@@ -427,7 +520,17 @@ public class ContentType {
         try {
             final PackageManager pm = context.getPackageManager();
             final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(submission.getUrl()));
-            final String packageName = pm.resolveActivity(intent, 0).activityInfo.packageName;
+            // Null when no installed activity handles the url. That used to arrive here as a
+            // NullPointerException the catch below swallowed, which produced the generic
+            // description — so does falling through to the else.
+            final ResolveInfo resolveInfo = pm.resolveActivity(intent, 0);
+            // activityInfo is guarded alongside resolveInfo now that the catch no longer takes
+            // NullPointerException: a ResolveInfo that resolved to something other than an
+            // activity leaves it null, and "android" is the same fallback the null case uses.
+            final String packageName =
+                    (resolveInfo == null || resolveInfo.activityInfo == null)
+                            ? "android"
+                            : resolveInfo.activityInfo.packageName;
             String description;
 
             if (!packageName.equals("android")) {
@@ -443,13 +546,13 @@ public class ContentType {
             // Looking up a package name takes a long time (3~10ms), memoize it
             contentDescriptions.put(domain, description);
             return description;
-        } catch (PackageManager.NameNotFoundException | NullPointerException e) {
+        } catch (PackageManager.NameNotFoundException e) {
             contentDescriptions.put(domain, res.getString(generic));
             return res.getString(generic);
         }
     }
 
-    public static boolean isImgurImage(String lqUrl) {
+    public static boolean isImgurImage(@Nullable String lqUrl) {
         try {
             final URI uri = new URI(lqUrl);
             final String host = uri.getHost().toLowerCase(Locale.ENGLISH);
@@ -463,16 +566,20 @@ public class ContentType {
         }
     }
 
-    public static boolean isImgurHash(String lqUrl) {
+    public static boolean isImgurHash(@Nullable String lqUrl) {
         try {
             final URI uri = new URI(lqUrl);
             final String host = uri.getHost().toLowerCase(Locale.ENGLISH);
             final String path = uri.getPath().toLowerCase(Locale.ENGLISH);
 
-            return (host.contains("imgur.com"))
-                    && (!(path.endsWith(".png")
-                            && !path.endsWith(".jpg")
-                            && !path.endsWith(".jpeg")));
+            // A bare imgur hash/page URL (e.g. imgur.com/abc123) that isn't already a direct image, so
+            // callers append an image extension (.png) to turn it into one. The negation of
+            // isImgurImage's extension check: a URL that already ends in .png/.jpg/.jpeg is a direct
+            // link and is left alone — otherwise a suffix like ".jpg.png" would be produced.
+            return host.contains("imgur.com")
+                    && !(path.endsWith(".png")
+                            || path.endsWith(".jpg")
+                            || path.endsWith(".jpeg"));
 
         } catch (Exception e) {
             return false;

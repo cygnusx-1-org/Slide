@@ -1,5 +1,7 @@
 package me.edgan.redditslide.Tumblr;
 
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,13 +19,13 @@ import java.util.Map;
 public class Response {
 
     @JsonProperty("blog")
-    private Blog blog;
+    @Nullable private Blog blog;
 
     @JsonProperty("posts")
-    private List<Post> posts = new ArrayList<Post>();
+    @Nullable private List<Post> posts = new ArrayList<Post>();
 
     @JsonProperty("total_posts")
-    private Integer totalPosts;
+    @Nullable private Integer totalPosts;
 
     @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -31,6 +33,7 @@ public class Response {
      * @return The blog
      */
     @JsonProperty("blog")
+    @Nullable
     public Blog getBlog() {
         return blog;
     }
@@ -39,7 +42,7 @@ public class Response {
      * @param blog The blog
      */
     @JsonProperty("blog")
-    public void setBlog(Blog blog) {
+    public void setBlog(@Nullable Blog blog) {
         this.blog = blog;
     }
 
@@ -47,6 +50,7 @@ public class Response {
      * @return The posts
      */
     @JsonProperty("posts")
+    @Nullable
     public List<Post> getPosts() {
         return posts;
     }
@@ -55,7 +59,7 @@ public class Response {
      * @param posts The posts
      */
     @JsonProperty("posts")
-    public void setPosts(List<Post> posts) {
+    public void setPosts(@Nullable List<Post> posts) {
         this.posts = posts;
     }
 
@@ -63,6 +67,7 @@ public class Response {
      * @return The totalPosts
      */
     @JsonProperty("total_posts")
+    @Nullable
     public Integer getTotalPosts() {
         return totalPosts;
     }
@@ -71,7 +76,7 @@ public class Response {
      * @param totalPosts The total_posts
      */
     @JsonProperty("total_posts")
-    public void setTotalPosts(Integer totalPosts) {
+    public void setTotalPosts(@Nullable Integer totalPosts) {
         this.totalPosts = totalPosts;
     }
 

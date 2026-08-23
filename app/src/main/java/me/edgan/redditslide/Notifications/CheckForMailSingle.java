@@ -10,31 +10,31 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.text.Html;
-
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-
+import java.util.ArrayList;
+import java.util.List;
 import me.edgan.redditslide.Activities.Inbox;
 import me.edgan.redditslide.Activities.OpenContent;
 import me.edgan.redditslide.Adapters.MarkAsReadService;
 import me.edgan.redditslide.Authentication;
+import me.edgan.redditslide.InboxCount;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
-
+import me.edgan.redditslide.util.LogUtil;
 import net.dean.jraw.models.Message;
 import net.dean.jraw.paginators.InboxPaginator;
-
+import net.dean.jraw.paginators.Paginator;
 import org.apache.commons.text.StringEscapeUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class CheckForMailSingle extends BroadcastReceiver {
 
     public static final String SUBS_TO_GET = "SUBREDDIT_NOTIFS";
+    // Set by onReceive, which is the only entry point into this receiver.
+    @SuppressWarnings("NullAway.Init")
     private Context c;
 
     @Override
@@ -68,7 +68,7 @@ public class CheckForMailSingle extends BroadcastReceiver {
                                         cv);
 
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        LogUtil.e(ex, "CheckForMailSingle.onPostExecute failed");
                     }
                 }
                 Message message = messages.get(0);
@@ -134,107 +134,124 @@ public class CheckForMailSingle extends BroadcastReceiver {
                     notificationManager.notify(0, notification);
                 }
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    NotificationCompat.BigTextStyle notiStyle =
-                            new NotificationCompat.BigTextStyle();
-                    String contentTitle;
-                    if (message.getAuthor() != null) {
-                        notiStyle.setBigContentTitle(
-                                c.getString(
-                                        R.string.mail_notification_msg_from, message.getAuthor()));
-                        contentTitle =
-                                c.getString(
-                                        R.string.mail_notification_author,
-                                        message.getSubject(),
-                                        message.getAuthor());
-                    } else {
-                        notiStyle.setBigContentTitle(
-                                c.getString(
-                                        R.string.mail_notification_msg_via,
-                                        message.getSubreddit()));
-                        contentTitle =
-                                c.getString(
-                                        R.string.mail_notification_subreddit,
-                                        message.getSubject(),
-                                        message.getSubreddit());
-                    }
-                    Intent openPIBase;
-                    if (message.isComment()) {
-                        openPIBase = new Intent(c, OpenContent.class);
-                        String context = message.getDataNode().get("context").asText();
-                        openPIBase.putExtra(
-                                OpenContent.EXTRA_URL,
-                                "https://reddit.com"
-                                        + context.substring(0, context.lastIndexOf("/")));
-                        openPIBase.setAction(message.getSubject());
-                    } else {
-                        openPIBase = new Intent(c, Inbox.class);
-                        openPIBase.putExtra(Inbox.EXTRA_UNREAD, true);
-                    }
-                    openPIBase.setFlags(
-                            Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-                    PendingIntent openPi =
-                            PendingIntent.getActivity(
-                                    c,
-                                    3 + (int) message.getCreated().getTime(),
-                                    openPIBase,
-                                    PendingIntent.FLAG_IMMUTABLE);
-
-                    String unescape =
-                            StringEscapeUtils.unescapeHtml4(
-                                    message.getDataNode().get("body_html").asText());
-                    notiStyle.bigText(Html.fromHtml(unescape, Html.FROM_HTML_MODE_LEGACY));
-
-                    PendingIntent readPISingle =
-                            MarkAsReadService.getMarkAsReadIntent(
-                                    2 + (int) message.getCreated().getTime(),
-                                    c,
-                                    new String[] {message.getFullName()});
-
-                    NotificationCompat.Builder builder =
-                            new NotificationCompat.Builder(c, Reddit.CHANNEL_MAIL)
-                                    .setContentIntent(openPi)
-                                    .setSmallIcon(R.drawable.notif)
-                                    .setTicker(
-                                            res.getQuantityString(
-                                                    R.plurals.mail_notification_title, 1, 1))
-                                    .setWhen(System.currentTimeMillis())
-                                    .setAutoCancel(true)
-                                    .setContentTitle(contentTitle)
-                                    .setContentText(
-                                            Html.fromHtml(unescape, Html.FROM_HTML_MODE_LEGACY))
-                                    .setStyle(notiStyle)
-                                    .setGroup("MESSAGES")
-                                    .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_SUMMARY)
-                                    .addAction(
-                                            R.drawable.ic_done_all,
-                                            c.getString(R.string.mail_mark_read),
-                                            readPISingle);
-                    if (!SettingValues.notifSound) {
-                        builder.setSound(null);
-                    }
-                    Notification notification = builder.build();
-                    notificationManager.notify((int) message.getCreated().getTime(), notification);
+                NotificationCompat.BigTextStyle notiStyle =
+                        new NotificationCompat.BigTextStyle();
+                String contentTitle;
+                if (message.getAuthor() != null) {
+                    notiStyle.setBigContentTitle(
+                            c.getString(
+                                    R.string.mail_notification_msg_from, message.getAuthor()));
+                    contentTitle =
+                            c.getString(
+                                    R.string.mail_notification_author,
+                                    message.getSubject(),
+                                    message.getAuthor());
+                } else {
+                    notiStyle.setBigContentTitle(
+                            c.getString(
+                                    R.string.mail_notification_msg_via,
+                                    message.getSubreddit()));
+                    contentTitle =
+                            c.getString(
+                                    R.string.mail_notification_subreddit,
+                                    message.getSubject(),
+                                    message.getSubreddit());
                 }
+                Intent openPIBase;
+                // lastIndexOf is -1 for an absent context, and substring(0, -1) throws — out of a
+                // BroadcastReceiver, while the notification is being built. A comment with no
+                // context has no permalink to open, so it falls back to the inbox like any other
+                // message.
+                final String context =
+                        message.isComment() ? message.getDataNode().path("context").asText() : "";
+                final int lastSlash = context.lastIndexOf("/");
+                if (lastSlash > 0) {
+                    openPIBase = new Intent(c, OpenContent.class);
+                    openPIBase.putExtra(
+                            OpenContent.EXTRA_URL,
+                            "https://reddit.com" + context.substring(0, lastSlash));
+                    openPIBase.setAction(message.getSubject());
+                } else {
+                    openPIBase = new Intent(c, Inbox.class);
+                    openPIBase.putExtra(Inbox.EXTRA_UNREAD, true);
+                }
+                openPIBase.setFlags(
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+                PendingIntent openPi =
+                        PendingIntent.getActivity(
+                                c,
+                                3 + (int) message.getCreated().getTime(),
+                                openPIBase,
+                                PendingIntent.FLAG_IMMUTABLE);
+
+                String unescape =
+                        StringEscapeUtils.unescapeHtml4(
+                                message.getDataNode().path("body_html").asText(""));
+                notiStyle.bigText(Html.fromHtml(unescape, Html.FROM_HTML_MODE_LEGACY));
+
+                PendingIntent readPISingle =
+                        MarkAsReadService.getMarkAsReadIntent(
+                                2 + (int) message.getCreated().getTime(),
+                                c,
+                                new String[] {message.getFullName()});
+
+                NotificationCompat.Builder builder =
+                        new NotificationCompat.Builder(c, Reddit.CHANNEL_MAIL)
+                                .setContentIntent(openPi)
+                                .setSmallIcon(R.drawable.notif)
+                                .setTicker(
+                                        res.getQuantityString(
+                                                R.plurals.mail_notification_title, 1, 1))
+                                .setWhen(System.currentTimeMillis())
+                                .setAutoCancel(true)
+                                .setContentTitle(contentTitle)
+                                .setContentText(
+                                        Html.fromHtml(unescape, Html.FROM_HTML_MODE_LEGACY))
+                                .setStyle(notiStyle)
+                                .setGroup("MESSAGES")
+                                .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_SUMMARY)
+                                .addAction(
+                                        R.drawable.ic_done_all,
+                                        c.getString(R.string.mail_mark_read),
+                                        readPISingle);
+                if (!SettingValues.notifSound) {
+                    builder.setSound(null);
+                }
+                Notification notification = builder.build();
+                notificationManager.notify((int) message.getCreated().getTime(), notification);
             }
         }
 
         @Override
+        @Nullable
         protected List<Message> doInBackground(Void... params) {
             try {
                 if (Authentication.isLoggedIn && Authentication.didOnline) {
+                    final int generation = InboxCount.generation();
+
                     InboxPaginator unread = new InboxPaginator(Authentication.reddit, "unread");
+                    // The badge's stored unread count is the length of this listing, so ask for
+                    // the page cap: an inbox with more unread than that counts as that many.
+                    unread.setLimit(Paginator.RECOMMENDED_MAX_LIMIT);
 
                     List<Message> messages = new ArrayList<>();
                     if (unread.hasNext()) {
                         messages.addAll(unread.next());
                     }
 
+                    // Written here rather than only on the badge's own fetch so a poll while the
+                    // app is backgrounded still reaches a running drawer, through the same
+                    // observer, without a second request. Dropped if something read mail while
+                    // this was in flight, and stamped either way so a resume straight after a
+                    // poll does not ask reddit for the same listing again.
+                    InboxCount.setFromFetch(Reddit.appRestart, messages.size(), generation);
+                    InboxCount.markFetched();
+
                     return messages;
                 }
             } catch (Exception ignored) {
-                ignored.printStackTrace();
+                LogUtil.e(ignored, "CheckForMailSingle.doInBackground failed");
             }
             return null;
         }

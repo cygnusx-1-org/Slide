@@ -4,17 +4,13 @@ import static me.edgan.redditslide.Notifications.ImageDownloadNotificationServic
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,28 +25,28 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-
-import com.cocosw.bottomsheet.BottomSheet;
 import com.devspark.robototextview.RobotoTypefaces;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-
+import java.util.ArrayList;
+import java.util.List;
 import me.edgan.redditslide.Adapters.ImageGridAdapter;
 import me.edgan.redditslide.Fragments.BlankFragment;
 import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.ImgurAlbum.AlbumUtils;
 import me.edgan.redditslide.ImgurAlbum.Image;
-import me.edgan.redditslide.Notifications.ImageDownloadNotificationService;
+import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
@@ -61,17 +57,16 @@ import me.edgan.redditslide.Views.SubsamplingScaleImageView;
 import me.edgan.redditslide.Views.ToolbarColorizeHelper;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.FontPreferences;
-import me.edgan.redditslide.util.BlendModeUtil;
+import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.GifUtils;
+import me.edgan.redditslide.util.ImageSaveUtils;
 import me.edgan.redditslide.util.LinkUtil;
+import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
-import me.edgan.redditslide.util.ShareUtil;
 import me.edgan.redditslide.util.StorageUtil;
 import me.edgan.redditslide.util.SubmissionParser;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Created by ccrama on 1/25/2016.
@@ -80,22 +75,25 @@ import java.util.List;
  * RecyclerView (horizontal vs vertical). It also supports gifs and progress bars which Album.java
  * doesn't.
  */
+@NullMarked
 public class AlbumPager extends BaseSaveActivity {
     private static int adapterPosition;
     public static final String SUBREDDIT = "subreddit";
 
-    ViewPager p;
-    public List<Image> images;
+    @Nullable ViewPager p;
+    @Nullable public List<Image> images;
 
-    private String lastContentUrl;
+    @Nullable private String lastContentUrl;
     private int lastIndex = -1;
+
+    private static final String TAG = "AlbumPager";
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         if (id == android.R.id.home) {
-            onBackPressed();
+            getOnBackPressedDispatcher().onBackPressed();
         }
         if (id == R.id.vertical) {
             SettingValues.albumSwipe = false;
@@ -117,17 +115,27 @@ public class AlbumPager extends BaseSaveActivity {
             startActivity(i);
             finish();
         }
+
         if (id == R.id.grid) {
-            mToolbar.findViewById(R.id.grid).callOnClick();
+            requireToolbar().requireViewById(R.id.grid).callOnClick();
         }
+
         if (id == R.id.external) {
-            LinkUtil.openExternally(getIntent().getExtras().getString("url", ""));
+            LinkUtil.openExternally(MiscUtil.orEmpty(getIntent().getStringExtra("url")));
         }
 
         if (id == R.id.comments) {
             int adapterPosition = getIntent().getIntExtra(MediaView.ADAPTER_POSITION, -1);
-            finish();
-            SubmissionsView.datachanged(adapterPosition);
+            String submissionPermalink = getIntent().getStringExtra(MediaView.SUBMISSION_URL);
+            boolean openCommentsDirect =
+                    getIntent().getBooleanExtra(MediaView.EXTRA_OPEN_COMMENTS_DIRECT, false);
+            if (openCommentsDirect && submissionPermalink != null) {
+                OpenRedditLink.openUrl(this, "https://reddit.com" + submissionPermalink, false);
+                finish();
+            } else {
+                finish();
+                SubmissionsView.datachanged(adapterPosition);
+            }
         }
 
         if (id == R.id.download && images != null) {
@@ -141,9 +149,9 @@ public class AlbumPager extends BaseSaveActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public String subreddit;
+    public String subreddit = "";
 
-    public void onCreate(Bundle savedInstanceState) {
+    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
         overrideSwipeFromAnywhere();
         super.onCreate(savedInstanceState);
         getTheme()
@@ -151,31 +159,34 @@ public class AlbumPager extends BaseSaveActivity {
                         new ColorPreferences(this)
                                 .getDarkThemeSubreddit(ColorPreferences.FONT_STYLE),
                         true);
+        MiscUtil.applyWideColorGamut(this);
         setContentView(R.layout.album_pager);
 
         // Keep the screen on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         if (getIntent().hasExtra(SUBREDDIT)) {
-            this.subreddit = getIntent().getStringExtra(SUBREDDIT);
+            this.subreddit = MiscUtil.orEmpty(getIntent().getStringExtra(SUBREDDIT));
         }
 
         if (getIntent().hasExtra(EXTRA_SUBMISSION_TITLE)) {
-            this.submissionTitle = getIntent().getStringExtra(EXTRA_SUBMISSION_TITLE);
+            this.submissionTitle = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_SUBMISSION_TITLE));
         }
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar = (Toolbar) requireViewById(R.id.toolbar);
         mToolbar.setTitle(R.string.type_album);
         ToolbarColorizeHelper.colorizeToolbar(mToolbar, Color.WHITE, this);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            java.util.Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        }
 
         mToolbar.setPopupTheme(
                 new ColorPreferences(this).getDarkThemeSubreddit(ColorPreferences.FONT_STYLE));
 
         adapterPosition = getIntent().getIntExtra(MediaView.ADAPTER_POSITION, -1);
 
-        String url = getIntent().getExtras().getString("url", "");
+        String url = MiscUtil.orEmpty(getIntent().getStringExtra("url"));
         pagerLoad = new LoadIntoPager(url, this);
         pagerLoad.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -198,7 +209,7 @@ public class AlbumPager extends BaseSaveActivity {
                         @Override
                         public void run() {
                             try {
-                                new AlertDialog.Builder(AlbumPager.this)
+                                DialogUtil.showWithCardBackground(new AlertDialog.Builder(AlbumPager.this)
                                         .setTitle(R.string.error_album_not_found)
                                         .setMessage(R.string.error_album_not_found_text)
                                         .setNegativeButton(
@@ -214,60 +225,65 @@ public class AlbumPager extends BaseSaveActivity {
                                                     startActivity(i);
                                                     finish();
                                                 })
-                                        .show();
+                                        );
                             } catch (Exception e) {
-
+                                // Dialog on a host that finished while the album loaded.
                             }
                         }
                     });
         }
 
         @Override
-        public void doWithData(final List<Image> jsonElements) {
-            // Call the superclass implementation if needed
-            super.doWithData(jsonElements);
+        public boolean doWithData(final @Nullable List<Image> jsonElements) {
+            // Nothing usable came back, so there are no pages to build; super has already told
+            // onError(), which offers the link in a web view instead.
+            if (!super.doWithData(jsonElements)) {
+                return false;
+            }
 
             // Use runOnUiThread to ensure the following UI code runs on the main thread
             runOnUiThread(
                     new Runnable() {
                         @Override
                         public void run() {
-                            findViewById(R.id.progress).setVisibility(View.GONE);
+                            requireViewById(R.id.progress).setVisibility(View.GONE);
                             images = new ArrayList<>(jsonElements);
+                            // Captured for the nested callbacks below: they run later, so NullAway
+                            // cannot prove the fields are still set by then, and a local can.
+                            final List<Image> loadedImages = images;
 
                             p = (ViewPager) findViewById(R.id.images_horizontal);
+                            final ViewPager loadedPager = p;
+                            // Keep two pages loaded on each side (matches RedditGalleryPager) so that
+                            // at image X the viewer has already warmed X+1 and X+2 — each offscreen
+                            // page's fragment downloads its image eagerly in onCreateView. ViewPager
+                            // only instantiates pages in range [0, count), so near the end (X+2 or even
+                            // X+1 past the last image) it simply loads fewer pages; the "X+2 doesn't
+                            // exist" case needs no explicit guard.
+                            loadedPager.setOffscreenPageLimit(2);
 
                             if (getSupportActionBar() != null) {
-                                getSupportActionBar().setSubtitle(1 + "/" + images.size());
+                                java.util.Objects.requireNonNull(getSupportActionBar()).setSubtitle(1 + "/" + loadedImages.size());
                             }
 
                             AlbumViewPagerAdapter adapter =
                                     new AlbumViewPagerAdapter(getSupportFragmentManager());
-                            p.setAdapter(adapter);
+                            loadedPager.setAdapter(adapter);
 
                             int startPage = 0;
 
                             if (SettingValues.oldSwipeMode) {
                                 startPage = 1;
+                                // Set an opaque background for the ViewPager
+                                MiscUtil.setupOldSwipeModeBackground(AlbumPager.this, p);
                             }
 
-                            p.setCurrentItem(startPage);
+                            loadedPager.setCurrentItem(startPage);
 
-                            p.post(
-                                    new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            // Only try to load positions that exist
-                                            if (adapter.getCount() > 0) {
-                                                adapter.instantiateItem(p, 0);
-                                                // Only try to load position 1 if it exists
-                                                if (adapter.getCount() > 1) {
-                                                    adapter.instantiateItem(p, 1);
-                                                }
-                                            }
-                                        }
-                                    });
-                            findViewById(R.id.grid)
+                            // Reset the currently playing position
+                            Gif.currentlyPlayingPosition = -1;
+
+                            requireViewById(R.id.grid)
                                     .setOnClickListener(
                                             new View.OnClickListener() {
                                                 @Override
@@ -279,10 +295,10 @@ public class AlbumPager extends BaseSaveActivity {
                                                                     null,
                                                                     false);
                                                     GridView gridview =
-                                                            body.findViewById(R.id.images);
+                                                            body.requireViewById(R.id.images);
                                                     gridview.setAdapter(
                                                             new ImageGridAdapter(
-                                                                    AlbumPager.this, images));
+                                                                    AlbumPager.this, loadedImages));
 
                                                     final AlertDialog.Builder b =
                                                             new AlertDialog.Builder(AlbumPager.this)
@@ -290,15 +306,16 @@ public class AlbumPager extends BaseSaveActivity {
                                                     final Dialog d = b.create();
                                                     gridview.setOnItemClickListener(
                                                             new AdapterView.OnItemClickListener() {
-                                                                public void onItemClick(
+                                                                @Override public void onItemClick(
                                                                         AdapterView<?> parent,
                                                                         View v,
                                                                         int position,
                                                                         long id) {
-                                                                    p.setCurrentItem(position + 1);
+                                                                    loadedPager.setCurrentItem(position + 1);
                                                                     d.dismiss();
                                                                 }
                                                             });
+                                                    DialogUtil.matchDialogToCardBackground(d);
                                                     d.show();
                                                 }
                                             });
@@ -313,11 +330,11 @@ public class AlbumPager extends BaseSaveActivity {
                                             if (SettingValues.oldSwipeMode) {
                                                 if (position != 0) {
                                                     if (getSupportActionBar() != null) {
-                                                        getSupportActionBar()
+                                                        java.util.Objects.requireNonNull(getSupportActionBar())
                                                                 .setSubtitle(
                                                                         (position)
                                                                                 + "/"
-                                                                                + images.size());
+                                                                                + loadedImages.size());
                                                     }
                                                 }
                                                 if (position == 0 && positionOffset < 0.2) {
@@ -325,11 +342,29 @@ public class AlbumPager extends BaseSaveActivity {
                                                 }
                                             } else {
                                                 if (getSupportActionBar() != null) {
-                                                    getSupportActionBar()
+                                                    java.util.Objects.requireNonNull(getSupportActionBar())
                                                             .setSubtitle(
                                                                     (position + 1)
                                                                             + "/"
-                                                                            + images.size());
+                                                                            + loadedImages.size());
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onPageSelected(int position) {
+                                            if (adapter != null && adapter.getCount() > 0) {
+                                                int adjustedPosition = position;
+                                                if (SettingValues.oldSwipeMode && position > 0) {
+                                                    adjustedPosition = position - 1;
+                                                }
+                                                FragmentManager fm = getSupportFragmentManager();
+                                                for (int i = 0; i < adapter.getCount(); i++) {
+                                                    String tag = "android:switcher:" + R.id.images_horizontal + ":" + i;
+                                                    Fragment frag = fm.findFragmentByTag(tag);
+                                                    if (frag instanceof Gif) {
+                                                        ((Gif)frag).setPlaybackActive(i == adjustedPosition);
+                                                    }
                                                 }
                                             }
                                         }
@@ -338,6 +373,7 @@ public class AlbumPager extends BaseSaveActivity {
                             adapter.notifyDataSetChanged();
                         }
                     });
+            return true;
         }
     }
 
@@ -364,24 +400,23 @@ public class AlbumPager extends BaseSaveActivity {
                 if (i == 0) {
                     return new BlankFragment();
                 }
-
                 i--;
             }
-
+            if (images == null) {
+                // The album never loaded; getCount answers 0 on that path, so this is unreachable
+                // in practice and BlankFragment is what the oldSwipeMode branch above already uses.
+                return new BlankFragment();
+            }
             Image current = images.get(i);
-
             Fragment f;
-
-            if (current.isAnimated()) {
+            if (current.animated()) {
                 f = new Gif();
             } else {
                 f = new ImageFullNoSubmission();
             }
-
             Bundle args = new Bundle();
             args.putInt("page", i);
             f.setArguments(args);
-
             return f;
         }
 
@@ -404,58 +439,156 @@ public class AlbumPager extends BaseSaveActivity {
         ViewGroup rootView;
         ProgressBar loader;
 
-        @Override
-        public void setUserVisibleHint(boolean isVisibleToUser) {
-            super.setUserVisibleHint(isVisibleToUser);
-            if (this.isVisible()) {
-                if (!isVisibleToUser) // If we are becoming invisible, then...
-                {
-                    ((ExoVideoView) gif).pause();
-                    gif.setVisibility(View.GONE);
-                }
+        // Static tracking of which fragment is currently playing
+        // Use package-private for access from AlbumPager
+        static int currentlyPlayingPosition = -1;
 
-                if (isVisibleToUser) // If we are becoming visible, then...
-                {
+        public void setPlaybackActive(boolean active) {
+            if (gif != null && gif instanceof ExoVideoView) {
+                if (active) {
                     ((ExoVideoView) gif).play();
                     gif.setVisibility(View.VISIBLE);
+                } else {
+                    ((ExoVideoView) gif).stop(); // Stop and release resources
+                    gif.setVisibility(View.GONE);
                 }
             }
         }
 
         @Override
+        public void setUserVisibleHint(boolean isVisibleToUser) {
+            super.setUserVisibleHint(isVisibleToUser);
+            // No-op: playback is now controlled by onPageSelected
+        }
+
+        private int getCurrentPagerPosition() {
+            Activity activity = getActivity();
+            if (activity instanceof AlbumPager) {
+                ViewPager pager = activity.findViewById(R.id.images_horizontal);
+                if (pager != null) {
+                    int pos = pager.getCurrentItem();
+                    if (SettingValues.oldSwipeMode && pos > 0) {
+                        return pos - 1;
+                    } else {
+                        return pos;
+                    }
+                }
+            }
+            return -1;
+        }
+
+        @Override
         public View onCreateView(
-                LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
             rootView =
                     (ViewGroup)
                             inflater.inflate(R.layout.submission_gifcard_album, container, false);
-            loader = rootView.findViewById(R.id.gifprogress);
+            loader = rootView.requireViewById(R.id.gifprogress);
 
             gif = rootView.findViewById(R.id.gif);
 
+            // Set root view to fully opaque to prevent transparency issues
+            rootView.setAlpha(1.0f);
+            rootView.setBackgroundColor(Color.BLACK);
+
             gif.setVisibility(View.VISIBLE);
+
             final ExoVideoView v = (ExoVideoView) gif;
             v.clearFocus();
 
-            final String url = ((AlbumPager) getActivity()).images.get(i).getImageUrl();
+            // Find and hide the play button in the layout
+            ImageView playButton = rootView.findViewById(R.id.playbutton);
+            if (playButton != null) {
+                playButton.setVisibility(View.GONE);
+            }
 
+            // Attach mute button and HQ button if they exist in the layout
+            ImageView muteButton = rootView.findViewById(R.id.mute);
+            if (muteButton != null) {
+                v.attachMuteButton(muteButton);
+            }
+
+            ImageView hqButton = rootView.findViewById(R.id.hq);
+            if (hqButton != null) {
+                v.attachHqButton(hqButton);
+            }
+
+            ImageView speedButton = rootView.findViewById(R.id.speed);
+            if (speedButton != null) {
+                final List<Image> albumImages = ((AlbumPager) requireActivity()).images;
+                if (albumImages != null && albumImages.get(i).animated()) {
+                    speedButton.setVisibility(View.VISIBLE);
+                    v.attachSpeedButton(speedButton, requireActivity());
+                } else {
+                    speedButton.setVisibility(View.GONE);
+                }
+            }
+
+            // Set up rotation buttons for videos
+            ImageView rotateButton = rootView.findViewById(R.id.rotate_right);
+            ImageView rotateLeftButton = rootView.findViewById(R.id.rotate_left);
+
+            if (rotateButton != null && rotateLeftButton != null) {
+                // Show rotation buttons for videos
+                rotateButton.setVisibility(View.VISIBLE);
+                rotateLeftButton.setVisibility(View.VISIBLE);
+
+                rotateButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (v != null) {
+                            v.rotateRight();
+                        }
+                    }
+                });
+
+                rotateLeftButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (v != null) {
+                            v.rotateLeft();
+                        }
+                    }
+                });
+            }
+
+            // Guarded rather than defaulted: an empty url is not a harmless "nothing to show".
+            // AsyncLoadGif builds its Request outside its try block, and okhttp's
+            // Request.Builder.url("") throws IllegalArgumentException, so a default would swap one
+            // crash for another. With no album there is nothing to play, so stop here.
+            final List<Image> albumImages = ((AlbumPager) requireActivity()).images;
+            if (albumImages == null) {
+                loader.setVisibility(View.GONE);
+                return rootView;
+            }
+            final String url = albumImages.get(i).getImageUrl();
+
+            // Important: Always start with autostart=false
+            // We'll control playback manually after load
             new GifUtils.AsyncLoadGif(
-                            getActivity(),
+                            requireActivity(),
                             rootView.findViewById(R.id.gif),
                             loader,
-                            null,
-                            null,
-                            false,
-                            true,
-                            rootView.findViewById(R.id.size),
-                            ((AlbumPager) getActivity()).subreddit,
-                            getActivity().getIntent().getStringExtra(EXTRA_SUBMISSION_TITLE))
+                            false, // closeIfNull
+                            false, // NEVER autostart
+                            rootView.requireViewById(R.id.size),
+                            ((AlbumPager) requireActivity()).subreddit,
+                            requireActivity().getIntent().getStringExtra(EXTRA_SUBMISSION_TITLE))
                     .execute(url);
+
             rootView.findViewById(R.id.more)
                     .setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    ((AlbumPager) getActivity()).showBottomSheetImage(url, true, i);
+                                    // A detached fragment has no host here; there is nothing to act on.
+                                    final FragmentActivity activity = getActivity();
+                                    if (activity == null) {
+                                        return;
+                                    }
+                                    ((AlbumPager) activity).showBottomSheetImage(url, true, i);
                                 }
                             });
             rootView.findViewById(R.id.save)
@@ -463,119 +596,117 @@ public class AlbumPager extends BaseSaveActivity {
                             new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    MediaView.doOnClick.run();
+                                    if (url != null && getActivity() != null) {
+                                        ((AlbumPager) getActivity()).doImageSave(true, url, i);
+                                    } else if (url == null) {
+                                        LogUtil.i("URL is null");
+                                    } else if (getActivity() == null) {
+                                        LogUtil.i("getActivity is null");
+                                    }
                                 }
                             });
             if (!SettingValues.imageDownloadButton) {
                 rootView.findViewById(R.id.save).setVisibility(View.INVISIBLE);
             }
+
+            // Add comment button logic
+            View comments = rootView.findViewById(R.id.comments);
+            if (comments != null) {
+                if (requireActivity().getIntent().hasExtra(MediaView.SUBMISSION_URL)) {
+                    final String submissionPermalink =
+                            requireActivity()
+                                    .getIntent()
+                                    .getStringExtra(MediaView.SUBMISSION_URL);
+                    final boolean openCommentsDirect =
+                            requireActivity()
+                                    .getIntent()
+                                    .getBooleanExtra(
+                                            MediaView.EXTRA_OPEN_COMMENTS_DIRECT, false);
+                    comments.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // A detached fragment has no host here; there is nothing to act on.
+                            final FragmentActivity activity = getActivity();
+                            if (activity == null) {
+                                return;
+                            }
+                            if (openCommentsDirect && submissionPermalink != null) {
+                                OpenRedditLink.openUrl(
+                                        activity,
+                                        "https://reddit.com" + submissionPermalink,
+                                        false);
+                                activity.finish();
+                            } else {
+                                activity.finish();
+                                SubmissionsView.datachanged(adapterPosition);
+                            }
+                        }
+                    });
+                } else {
+                    comments.setVisibility(View.GONE);
+                }
+            }
+
+            // Adjust button sizes for small screens
+            MiscUtil.adjustButtonSizesForSmallScreens(rootView, requireActivity());
+
             return rootView;
         }
 
         @Override
-        public void onCreate(Bundle savedInstanceState) {
+        public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            Bundle bundle = this.getArguments();
+            Bundle bundle = requireArguments();
             i = bundle.getInt("page", 0);
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            // Only play if this fragment is visible and is the current playing position
+            if (getUserVisibleHint() && getCurrentPagerPosition() == i &&
+                gif != null && gif instanceof ExoVideoView) {
+                ((ExoVideoView) gif).play();
+            }
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+            if (gif != null && gif instanceof ExoVideoView) {
+                ((ExoVideoView) gif).pause();
+            }
+        }
+
+        @Override
+        public void onDestroyView() {
+            super.onDestroyView();
+            if (gif != null && gif instanceof ExoVideoView) {
+                ((ExoVideoView) gif).pause();
+            }
         }
     }
 
     public void showBottomSheetImage(
             final String contentUrl, final boolean isGif, final int index) {
-
-        int[] attrs = new int[] {R.attr.tintColor};
-        TypedArray ta = obtainStyledAttributes(attrs);
-
-        int color = ta.getColor(0, Color.WHITE);
-        Drawable external = getResources().getDrawable(R.drawable.ic_open_in_browser);
-        Drawable share = getResources().getDrawable(R.drawable.ic_share);
-        Drawable image = getResources().getDrawable(R.drawable.ic_image);
-        Drawable save = getResources().getDrawable(R.drawable.ic_download);
-
-        final List<Drawable> drawableSet = Arrays.asList(external, share, image, save);
-        BlendModeUtil.tintDrawablesAsSrcAtop(drawableSet, color);
-
-        ta.recycle();
-        BottomSheet.Builder b = new BottomSheet.Builder(this).title(contentUrl);
-
-        b.sheet(2, external, getString(R.string.open_externally));
-        b.sheet(5, share, getString(R.string.submission_link_share));
-        if (!isGif) b.sheet(3, image, getString(R.string.share_image));
-        b.sheet(4, save, getString(R.string.submission_save_image));
-        b.listener(
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case (2):
-                                {
-                                    LinkUtil.openExternally(contentUrl);
-                                }
-                                break;
-                            case (3):
-                                {
-                                    ShareUtil.shareImage(contentUrl, AlbumPager.this);
-                                }
-                                break;
-                            case (5):
-                                {
-                                    Reddit.defaultShareText("", contentUrl, AlbumPager.this);
-                                }
-                                break;
-                            case (4):
-                                {
-                                    doImageSave(isGif, contentUrl, index);
-                                }
-                                break;
-                        }
-                    }
-                });
-
-        b.show();
+        LinkUtil.showImageLinkBottomSheet(
+                this, contentUrl, isGif, () -> doImageSave(isGif, contentUrl, index));
     }
 
-    public void doImageSave(boolean isGif, String contentUrl, int index) {
-        if (!isGif) {
-            // StorageUtil checks for a saved directory URI and valid permissions
-            if (!StorageUtil.hasStorageAccess(this)) {
-                // No storage access yet - save the content details for later
-                lastContentUrl = contentUrl;
-                lastIndex = index;
-                // Launch the system directory picker
-                StorageUtil.showDirectoryChooser(this);
-            } else {
-                // We have storage access - get the saved URI
-                Uri storageUri = StorageUtil.getStorageUri(this);
-                if (storageUri == null) {
-                    Log.e("AlbumPager", "Unexpected null URI despite valid access.");
-                    Toast.makeText(this, R.string.error_no_storage_access, Toast.LENGTH_SHORT)
-                            .show();
-                    return;
-                }
-
-                // Start the download service
-                Intent i = new Intent(this, ImageDownloadNotificationService.class);
-                i.putExtra("actuallyLoaded", contentUrl);
-                i.putExtra("downloadUri", storageUri.toString());
-
-                // Pass along the metadata
-                if (subreddit != null && !subreddit.isEmpty()) {
-                    i.putExtra("subreddit", subreddit);
-                }
-                if (submissionTitle != null) {
-                    i.putExtra(EXTRA_SUBMISSION_TITLE, submissionTitle);
-                }
-                i.putExtra("index", index);
-
-                startService(i);
-            }
-        } else {
-            MediaView.doOnClick.run();
-        }
+    @Override public void doImageSave(boolean isGif, String contentUrl, int index) {
+        ImageSaveUtils.doImageSave(
+                this,
+                isGif,
+                contentUrl,
+                index,
+                subreddit,
+                submissionTitle,
+                this::showFirstDialog
+        );
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         // Handle directory selection
@@ -610,64 +741,132 @@ public class AlbumPager extends BaseSaveActivity {
     }
 
     public static class ImageFullNoSubmission extends Fragment {
+        /** Whether this album holds exactly one image; false when the album never loaded. */
+        private boolean isSingleImageAlbum() {
+            // A detached fragment has no host here; there is nothing to act on.
+            final FragmentActivity activity = getActivity();
+            if (activity == null) {
+                return false;
+            }
+            List<Image> albumImages = ((AlbumPager) activity).images;
+            return albumImages != null && albumImages.size() == 1;
+        }
 
         private int i = 0;
+        private int currentRotation = 0; // Track current rotation in degrees (0, 90, 180, 270)
 
         public ImageFullNoSubmission() {}
 
         @Override
         public View onCreateView(
-                LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
             final ViewGroup rootView =
                     (ViewGroup) inflater.inflate(R.layout.album_image_pager, container, false);
 
-            if (((AlbumPager) getActivity()).images == null) {
-                ((AlbumPager) getActivity()).pagerLoad.onError();
+            if (((AlbumPager) requireActivity()).images == null) {
+                ((AlbumPager) requireActivity()).pagerLoad.onError();
             } else {
-                final Image current = ((AlbumPager) getActivity()).images.get(i);
+                final Image current = ((AlbumPager) requireActivity()).images.get(i);
                 final String url = current.getImageUrl();
                 boolean lq = false;
                 if (SettingValues.loadImageLq
                         && (SettingValues.lowResAlways
-                                || (!NetworkUtil.isConnectedWifi(getActivity())
+                                || (!NetworkUtil.isConnectedWifi(requireActivity())
                                         && SettingValues.lowResMobile))) {
-                    String lqurl =
-                            url.substring(0, url.lastIndexOf("."))
-                                    + (SettingValues.lqLow
-                                            ? "m"
-                                            : (SettingValues.lqMid ? "l" : "h"))
-                                    + url.substring(url.lastIndexOf("."));
+                    String lqurl = MiscUtil.orEmpty(lowQualityUrl(url));
                     loadImage(
-                            rootView, this, lqurl, ((AlbumPager) getActivity()).images.size() == 1);
+                            rootView, this, lqurl, ((AlbumPager) requireActivity()).images.size() == 1);
                     lq = true;
                 } else {
-                    loadImage(rootView, this, url, ((AlbumPager) getActivity()).images.size() == 1);
+                    loadImage(rootView, this, url, ((AlbumPager) requireActivity()).images.size() == 1);
                 }
 
-                {
-                    rootView.findViewById(R.id.more)
-                            .setOnClickListener(
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            ((AlbumPager) getActivity())
-                                                    .showBottomSheetImage(url, false, i);
+                View more = rootView.findViewById(R.id.more);
+                if (more != null) {
+                    more.setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    // A click can arrive after the page detaches.
+                                    final FragmentActivity activity = getActivity();
+                                    if (activity == null) {
+                                        return;
+                                    }
+                                    ((AlbumPager) activity)
+                                            .showBottomSheetImage(url, false, i);
+                                }
+                            });
+                }
+                View save = rootView.findViewById(R.id.save);
+                if (save != null) {
+                    save.setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v2) {
+                                    // A click can arrive after the page detaches.
+                                    final FragmentActivity activity = getActivity();
+                                    if (activity == null) {
+                                        return;
+                                    }
+                                    ((AlbumPager) activity)
+                                            .doImageSave(false, url, i);
+                                }
+                            });
+                    if (!SettingValues.imageDownloadButton) {
+                        save.setVisibility(View.INVISIBLE);
+                    }
+                }
+                View panel = rootView.findViewById(R.id.panel);
+                if (panel != null) {
+                    panel.setVisibility(View.GONE);
+                }
+                View margin = rootView.findViewById(R.id.margin);
+                if (margin != null) {
+                    margin.setPadding(0, 0, 0, 0);
+                }
+                View hq = rootView.findViewById(R.id.hq);
+                if (hq != null) {
+                    hq.setVisibility(View.GONE);
+                }
+                View comments = rootView.findViewById(R.id.comments);
+                if (requireActivity().getIntent().hasExtra(MediaView.SUBMISSION_URL)) {
+                    if (comments != null) {
+                        final String submissionPermalink =
+                                requireActivity()
+                                        .getIntent()
+                                        .getStringExtra(MediaView.SUBMISSION_URL);
+                        final boolean openCommentsDirect =
+                                requireActivity()
+                                        .getIntent()
+                                        .getBooleanExtra(
+                                                MediaView.EXTRA_OPEN_COMMENTS_DIRECT, false);
+                        comments.setOnClickListener(
+                                new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        // A detached fragment has no host here; there is nothing to act on.
+                                        final FragmentActivity activity = getActivity();
+                                        if (activity == null) {
+                                            return;
                                         }
-                                    });
-                    {
-                        rootView.findViewById(R.id.save)
-                                .setOnClickListener(
-                                        new View.OnClickListener() {
-
-                                            @Override
-                                            public void onClick(View v2) {
-                                                ((AlbumPager) getActivity())
-                                                        .doImageSave(false, url, i);
-                                            }
-                                        });
-                        if (!SettingValues.imageDownloadButton) {
-                            rootView.findViewById(R.id.save).setVisibility(View.INVISIBLE);
-                        }
+                                        if (openCommentsDirect && submissionPermalink != null) {
+                                            OpenRedditLink.openUrl(
+                                                    activity,
+                                                    "https://reddit.com" + submissionPermalink,
+                                                    false);
+                                            activity.finish();
+                                        } else {
+                                            activity.finish();
+                                            SubmissionsView.datachanged(adapterPosition);
+                                        }
+                                    }
+                                });
+                    }
+                } else {
+                    if (comments != null) {
+                        comments.setVisibility(View.GONE);
                     }
                 }
                 {
@@ -686,39 +885,39 @@ public class AlbumPager extends BaseSaveActivity {
                         rootView.findViewById(R.id.panel).setVisibility(View.GONE);
                         (rootView.findViewById(R.id.margin)).setPadding(0, 0, 0, 0);
                     } else if (title.isEmpty()) {
-                        LinkUtil.setTextWithLinks(description, rootView.findViewById(R.id.title));
+                        LinkUtil.setTextWithLinks(description, rootView.requireViewById(R.id.title));
                     } else {
-                        LinkUtil.setTextWithLinks(title, rootView.findViewById(R.id.title));
-                        LinkUtil.setTextWithLinks(description, rootView.findViewById(R.id.body));
+                        LinkUtil.setTextWithLinks(title, rootView.requireViewById(R.id.title));
+                        LinkUtil.setTextWithLinks(description, rootView.requireViewById(R.id.body));
                     }
                     {
                         int type =
-                                new FontPreferences(getContext())
+                                new FontPreferences(requireContext())
                                         .getFontTypeComment()
                                         .getTypeface();
                         Typeface typeface;
                         if (type >= 0) {
-                            typeface = RobotoTypefaces.obtainTypeface(getContext(), type);
+                            typeface = RobotoTypefaces.obtainTypeface(requireContext(), type);
                         } else {
                             typeface = Typeface.DEFAULT;
                         }
-                        ((SpoilerRobotoTextView) rootView.findViewById(R.id.body))
+                        ((SpoilerRobotoTextView) rootView.requireViewById(R.id.body))
                                 .setTypeface(typeface);
                     }
                     {
                         int type =
-                                new FontPreferences(getContext()).getFontTypeTitle().getTypeface();
+                                new FontPreferences(requireContext()).getFontTypeTitle().getTypeface();
                         Typeface typeface;
                         if (type >= 0) {
-                            typeface = RobotoTypefaces.obtainTypeface(getContext(), type);
+                            typeface = RobotoTypefaces.obtainTypeface(requireContext(), type);
                         } else {
                             typeface = Typeface.DEFAULT;
                         }
-                        ((SpoilerRobotoTextView) rootView.findViewById(R.id.title))
+                        ((SpoilerRobotoTextView) rootView.requireViewById(R.id.title))
                                 .setTypeface(typeface);
                     }
-                    final SlidingUpPanelLayout l = rootView.findViewById(R.id.sliding_layout);
-                    rootView.findViewById(R.id.title)
+                    final SlidingUpPanelLayout l = rootView.requireViewById(R.id.sliding_layout);
+                    rootView.requireViewById(R.id.title)
                             .setOnClickListener(
                                     new View.OnClickListener() {
                                         @Override
@@ -727,7 +926,7 @@ public class AlbumPager extends BaseSaveActivity {
                                                     SlidingUpPanelLayout.PanelState.EXPANDED);
                                         }
                                     });
-                    rootView.findViewById(R.id.body)
+                    rootView.requireViewById(R.id.body)
                             .setOnClickListener(
                                     new View.OnClickListener() {
                                         @Override
@@ -737,6 +936,33 @@ public class AlbumPager extends BaseSaveActivity {
                                         }
                                     });
                 }
+                View mute = rootView.findViewById(R.id.mute);
+                if (mute != null) {
+                    mute.setVisibility(View.GONE);
+                }
+
+                // Set up rotation buttons
+                View rotateLeft = rootView.findViewById(R.id.rotate_left);
+                View rotateRight = rootView.findViewById(R.id.rotate_right);
+
+                if (rotateLeft != null) {
+                    rotateLeft.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            rotateImageLeft(rootView);
+                        }
+                    });
+                }
+
+                if (rotateRight != null) {
+                    rotateRight.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            rotateImageRight(rootView);
+                        }
+                    });
+                }
+
                 if (lq) {
                     rootView.findViewById(R.id.hq)
                             .setOnClickListener(
@@ -747,37 +973,89 @@ public class AlbumPager extends BaseSaveActivity {
                                                     rootView,
                                                     ImageFullNoSubmission.this,
                                                     url,
-                                                    ((AlbumPager) getActivity()).images.size()
-                                                            == 1);
+                                                    isSingleImageAlbum());
                                             rootView.findViewById(R.id.hq).setVisibility(View.GONE);
                                         }
                                     });
                 } else {
                     rootView.findViewById(R.id.hq).setVisibility(View.GONE);
                 }
+            }
 
-                if (getActivity().getIntent().hasExtra(MediaView.SUBMISSION_URL)) {
-                    rootView.findViewById(R.id.comments)
-                            .setOnClickListener(
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            getActivity().finish();
-                                            SubmissionsView.datachanged(adapterPosition);
-                                        }
-                                    });
-                } else {
-                    rootView.findViewById(R.id.comments).setVisibility(View.GONE);
+            if (currentRotation != 0) {
+                SubsamplingScaleImageView imageView = rootView.findViewById(R.id.image);
+                if (imageView != null) {
+                    imageView.setOrientation(currentRotation);
                 }
             }
+
+            // Adjust button sizes for small screens
+            MiscUtil.adjustButtonSizesForSmallScreens(rootView, requireActivity());
+
             return rootView;
         }
 
         @Override
-        public void onCreate(Bundle savedInstanceState) {
+        public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            Bundle bundle = this.getArguments();
+            Bundle bundle = requireArguments();
             i = bundle.getInt("page", 0);
+            if (savedInstanceState != null) {
+                currentRotation = savedInstanceState.getInt("currentRotation", 0);
+            }
+        }
+
+        @Override
+        public void onSaveInstanceState(@NonNull Bundle outState) {
+            super.onSaveInstanceState(outState);
+            outState.putInt("currentRotation", currentRotation);
+        }
+
+        private void rotateImageLeft(View rootView) {
+            currentRotation = (currentRotation - 90 + 360) % 360;
+            refreshImageWithRotation(rootView);
+        }
+
+        private void rotateImageRight(View rootView) {
+            currentRotation = (currentRotation + 90) % 360;
+            refreshImageWithRotation(rootView);
+        }
+
+        private void refreshImageWithRotation(View rootView) {
+            final SubsamplingScaleImageView imageView = rootView.findViewById(R.id.image);
+            if (imageView != null) {
+                // Set background to black to prevent ghosting
+                imageView.setBackgroundColor(android.graphics.Color.BLACK);
+
+                // Recycle the current image to clear any cached state
+                imageView.recycle();
+
+                // Apply the rotation and reload the image
+                imageView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!isAdded()) return;
+                        AlbumPager activity = (AlbumPager) getActivity();
+                        if (activity == null || activity.images == null) return;
+
+                        imageView.setOrientation(currentRotation);
+
+                        // Reload the image
+                        final Image current = activity.images.get(i);
+                        final String url = current.getImageUrl();
+
+                        if (SettingValues.loadImageLq
+                                && (SettingValues.lowResAlways
+                                        || (!NetworkUtil.isConnectedWifi(activity)
+                                                && SettingValues.lowResMobile))) {
+                            String lqurl = MiscUtil.orEmpty(lowQualityUrl(url));
+                            loadImage(rootView, ImageFullNoSubmission.this, lqurl, activity.images.size() == 1);
+                        } else {
+                            loadImage(rootView, ImageFullNoSubmission.this, url, activity.images.size() == 1);
+                        }
+                    }
+                });
+            }
         }
     }
 
@@ -786,33 +1064,66 @@ public class AlbumPager extends BaseSaveActivity {
 
         image.setMinimumDpi(70);
         image.setMinimumTileDpi(240);
-        ImageView fakeImage = new ImageView(f.getActivity());
-        final TextView size = rootView.findViewById(R.id.size);
-        fakeImage.setLayoutParams(
-                new LinearLayout.LayoutParams(image.getWidth(), image.getHeight()));
+        final TextView size = rootView.requireViewById(R.id.size);
+        // A detached page has no Application to reach the image loader through, so nothing will
+        // load; stop waiting rather than leave the spinner running, matching TumblrPager.
+        final FragmentActivity activity = f.getActivity();
+        if (activity == null) {
+            size.setVisibility(View.GONE);
+            rootView.requireViewById(R.id.progress).setVisibility(View.GONE);
+            return;
+        }
+        ImageView fakeImage = new ImageView(activity);
+        fakeImage.setLayoutParams(new LinearLayout.LayoutParams(image.getWidth(), image.getHeight()));
         fakeImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        DisplayImageOptions options =
-                new DisplayImageOptions.Builder()
-                        .resetViewBeforeLoading(true)
-                        .cacheOnDisk(true)
-                        .imageScaleType(single ? ImageScaleType.NONE : ImageScaleType.NONE_SAFE)
-                        .cacheInMemory(true)
-                        .considerExifParams(true)
-                        .build();
 
-        ((Reddit) f.getActivity().getApplication())
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
+                .resetViewBeforeLoading(true)
+                .cacheOnDisk(true)
+                .imageScaleType(single ? ImageScaleType.NONE : ImageScaleType.NONE_SAFE)
+                .cacheInMemory(true)
+                .considerExifParams(true)
+                .build();
+
+        ((Reddit) activity.getApplication())
                 .getImageLoader()
-                .loadImage(
-                        url,
-                        options,
-                        new SimpleImageLoadingListener() {
-                            @Override
-                            public void onLoadingComplete(
-                                    String imageUri, View view, Bitmap loadedImage) {
-                                size.setVisibility(View.GONE);
-                                image.setImage(ImageSource.bitmap(loadedImage));
-                                rootView.findViewById(R.id.progress).setVisibility(View.GONE);
-                            }
-                        });
+                .loadImage(url, options, new SimpleImageLoadingListener() {
+                    @Override
+                    public void onLoadingComplete(@Nullable String imageUri, @Nullable View view, @Nullable Bitmap loadedImage) {
+                        // Added null‐check to avoid the "Bitmap must not be null" crash
+                        if (loadedImage == null) {
+                            // Graceful fallback, e.g. hide progress or show a placeholder
+                            size.setVisibility(View.GONE);
+                            rootView.requireViewById(R.id.progress).setVisibility(View.GONE);
+                            return;
+                        }
+
+                        size.setVisibility(View.GONE);
+                        image.loader.setImage(ImageSource.bitmap(loadedImage));
+                        rootView.requireViewById(R.id.progress).setVisibility(View.GONE);
+                    }
+                });
     }
+
+    private void showFirstDialog() {
+        runOnUiThread(() -> DialogUtil.showFirstDialog(AlbumPager.this));
+    }
+
+    /**
+     * The low-quality variant of an Imgur url: Imgur serves {@code <hash>m|l|h.<ext>} beside the
+     * original. Returns {@code url} unchanged when there is no extension to insert the suffix before,
+     * since truncating at a missing dot would silently yield a prefix like "https://i".
+     */
+    static @Nullable String lowQualityUrl(final @Nullable String url) {
+        if (url == null) {
+            return null;
+        }
+        final int dot = url.lastIndexOf('.');
+        if (dot < 0) {
+            return url;
+        }
+        final String suffix = SettingValues.lqLow ? "m" : (SettingValues.lqMid ? "l" : "h");
+        return url.substring(0, dot) + suffix + url.substring(dot);
+    }
+
 }

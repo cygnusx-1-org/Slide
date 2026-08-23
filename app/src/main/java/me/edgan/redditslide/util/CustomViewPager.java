@@ -5,11 +5,13 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 import androidx.viewpager.widget.ViewPager;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * A ViewPager that blocks swiping to the previous page (i.e. "left page") only if you're currently
  * on a specified 'entryPageIndex'.
  */
+@NullMarked
 public class CustomViewPager extends ViewPager {
 
     private int entryPageIndex = 0;

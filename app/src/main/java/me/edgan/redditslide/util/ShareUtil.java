@@ -6,16 +6,16 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.view.View;
 import android.widget.Toast;
-
+import androidx.annotation.Nullable;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-
-import me.edgan.redditslide.R;
-import me.edgan.redditslide.Reddit;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import me.edgan.redditslide.R;
+import me.edgan.redditslide.Reddit;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class ShareUtil {
     private ShareUtil() {}
 
@@ -27,7 +27,12 @@ public class ShareUtil {
                         new SimpleImageLoadingListener() {
                             @Override
                             public void onLoadingComplete(
-                                    String imageUri, View view, Bitmap loadedImage) {
+                                    @Nullable String imageUri, @Nullable View view, @Nullable Bitmap loadedImage) {
+                                if (loadedImage == null) {
+                                    // Nothing to write out: shareImage compresses the bitmap
+                                    // straight into a temp file.
+                                    return;
+                                }
                                 shareImage(loadedImage, context);
                             }
                         });
@@ -86,8 +91,8 @@ public class ShareUtil {
                     }
                 }
             }
-        } catch (IOException | NullPointerException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            LogUtil.e(e, "ShareUtil.shareImage failed");
             Toast.makeText(context, context.getString(R.string.err_share_image), Toast.LENGTH_LONG)
                     .show();
         }

@@ -6,16 +6,23 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SwipeLayout.SwipeBackLayout;
 import me.edgan.redditslide.SwipeLayout.Utils;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * @author Yrom
  */
+@NullMarked
 public class SwipeBackActivityHelper {
     private Activity mActivity;
 
+    // Inflated by onActivityCreate, which both call sites run one statement after constructing
+    // this helper — BaseActivity.onCreate and SwipeBackActivity.onCreate.
+    @SuppressWarnings("NullAway.Init")
     private SwipeBackLayout mSwipeBackLayout;
 
     public SwipeBackActivityHelper(Activity activity) {
@@ -47,7 +54,10 @@ public class SwipeBackActivityHelper {
         mSwipeBackLayout.attachToActivity(mActivity);
     }
 
-    public View findViewById(int id) {
+    @Nullable public View findViewById(int id) {
+        // The guard stays: onActivityCreate runs one statement after the constructor, but it is a
+        // promise rather than something the compiler enforces, and a re-entrant lookup from the
+        // window calls it made would land in that gap.
         if (mSwipeBackLayout != null) {
             return mSwipeBackLayout.findViewById(id);
         }

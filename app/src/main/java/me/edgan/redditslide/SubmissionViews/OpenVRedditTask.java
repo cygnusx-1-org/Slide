@@ -2,15 +2,13 @@ package me.edgan.redditslide.SubmissionViews;
 
 import android.app.Activity;
 import android.os.AsyncTask;
-
+import java.lang.ref.WeakReference;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
-
-import java.lang.ref.WeakReference;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 public class OpenVRedditTask extends AsyncTask<String, Void, Void> {
 
@@ -36,11 +34,19 @@ public class OpenVRedditTask extends AsyncTask<String, Void, Void> {
 
             LogUtil.v(secondURL);
 
-            OpenRedditLink.openUrl(contextActivity.get(), secondURL, true);
+            final Activity activity = contextActivity.get();
+            if (activity == null) {
+                return null;
+            }
+
+            OpenRedditLink.openUrl(activity, secondURL, true);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            LinkUtil.openUrl(url, Palette.getColor(subreddit), contextActivity.get());
+            LogUtil.e(e, "OpenVRedditTask.doInBackground failed");
+            final Activity failureActivity = contextActivity.get();
+            if (failureActivity != null) {
+                LinkUtil.openUrl(url, Palette.getColor(subreddit), failureActivity);
+            }
         }
         return null;
     }
