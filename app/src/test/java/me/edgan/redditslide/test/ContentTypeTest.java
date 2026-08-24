@@ -192,4 +192,69 @@ public class ContentTypeTest {
     public void detectsNone() {
         assertThat(ContentType.getContentType(""), is(Type.NONE));
     }
+
+    /**
+     * YouTube is the one host {@code getContentType} answers before it consults the user's
+     * always-external list, so a link that stops being recognised as VIDEO does not fall back to
+     * LINK quietly -- it changes which screen opens. Nothing else in this class asserted the
+     * VIDEO branch, so {@code isVideo}'s whole body could be inverted without a failure.
+     */
+    @Test
+    public void detectsVideo() {
+        assertThat(
+                ContentType.getContentType("https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
+                is(Type.VIDEO));
+        assertThat(ContentType.getContentType("https://youtu.be/dQw4w9WgXcQ"), is(Type.VIDEO));
+        assertThat(
+                ContentType.getContentType("https://m.youtube.com/watch?v=dQw4w9WgXcQ"),
+                is(Type.VIDEO));
+        assertThat(
+                ContentType.getContentType("https://www.youtube.co.uk/watch?v=dQw4w9WgXcQ"),
+                is(Type.VIDEO));
+    }
+
+    /**
+     * A channel or user page is a page, not a video: opening it in the video player shows nothing.
+     * These are the two paths {@code isVideo} excludes by hand.
+     */
+    @Test
+    public void youtubeChannelAndUserPagesAreNotVideo() {
+        assertThat(
+                ContentType.getContentType("https://www.youtube.com/user/PewDiePie"),
+                is(not(Type.VIDEO)));
+        assertThat(
+                ContentType.getContentType("https://www.youtube.com/channel/UCX6OQ3DkcsbYNE6H8uQQuVA"),
+                is(not(Type.VIDEO)));
+    }
+
+    /** A lookalike host must not borrow YouTube's handling. */
+    @Test
+    public void youtubeLookalikeHostIsNotVideo() {
+        assertThat(
+                ContentType.getContentType("https://notyoutube.com/watch?v=dQw4w9WgXcQ"),
+                is(not(Type.VIDEO)));
+    }
+
+    /**
+     * Reddit-hosted galleries are routed by their own detector, which runs before every other
+     * host check. Nothing asserted it, so the detector could return false for every url and the
+     * gallery would open as a plain reddit link instead of the gallery screen.
+     */
+    @Test
+    public void detectsRedditGallery() {
+        assertThat(
+                ContentType.getContentType("https://www.reddit.com/gallery/qwerty"),
+                is(Type.REDDIT_GALLERY));
+        assertThat(
+                ContentType.getContentType("https://redd.it/gallery/qwerty"),
+                is(Type.REDDIT_GALLERY));
+    }
+
+    /** A reddit url that is not a gallery keeps the ordinary reddit handling. */
+    @Test
+    public void aRedditUrlWithoutGalleryInItIsNotAGallery() {
+        assertThat(
+                ContentType.getContentType("https://www.reddit.com/r/pics/comments/qwerty/title/"),
+                is(not(Type.REDDIT_GALLERY)));
+    }
 }

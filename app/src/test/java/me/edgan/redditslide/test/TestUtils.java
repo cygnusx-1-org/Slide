@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.SettingValues;
 import org.apache.commons.io.IOUtils;
 
 public class TestUtils {
@@ -122,5 +123,85 @@ public class TestUtils {
         @Override
         public void unregisterOnSharedPreferenceChangeListener(
                 OnSharedPreferenceChangeListener listener) {}
+    }
+
+    /**
+     * A snapshot of the app-wide {@link SettingValues} statics a filter/theme test has to change to
+     * set up its case.
+     *
+     * <p>The unit-test task forks one JVM for the whole run, so any of these left modified is
+     * visible to every class that runs afterwards — and several of them decide behaviour rather
+     * than just data: a non-null {@code prefs} flips {@code Constants.getClientId()} off its
+     * default branch, and an emptied filter set silently disarms whatever the next class was
+     * relying on. Capture in {@code @Before}, restore in {@code @After}, so a class cannot leave
+     * a value behind whichever of its tests fails.
+     */
+    public static final class SettingValuesSnapshot {
+        private final Set<String> titleFilters;
+        private final Set<String> textFilters;
+        private final Set<String> userFilters;
+        private final Set<String> domainFilters;
+        private final Set<String> subredditFilters;
+        private final Set<String> flairFilters;
+        private final Set<String> alwaysExternal;
+        private final boolean filterOldPosts;
+        private final int filterOldPostsDays;
+        private final boolean subredditFiltersTillRestart;
+        private final boolean subredditFilterPrefixMatching;
+        private final boolean showNSFWContent;
+        @Nullable private final SharedPreferences prefs;
+        private final int nightModeState;
+
+        private SettingValuesSnapshot() {
+            titleFilters = SettingValues.titleFilters;
+            textFilters = SettingValues.textFilters;
+            userFilters = SettingValues.userFilters;
+            domainFilters = SettingValues.domainFilters;
+            subredditFilters = SettingValues.subredditFilters;
+            flairFilters = SettingValues.flairFilters;
+            alwaysExternal = SettingValues.alwaysExternal;
+            filterOldPosts = SettingValues.filterOldPosts;
+            filterOldPostsDays = SettingValues.filterOldPostsDays;
+            subredditFiltersTillRestart = SettingValues.subredditFiltersTillRestart;
+            subredditFilterPrefixMatching = SettingValues.subredditFilterPrefixMatching;
+            showNSFWContent = SettingValues.showNSFWContent;
+            prefs = readPrefs();
+            nightModeState = SettingValues.nightModeState;
+        }
+
+        /** Takes the snapshot. */
+        public static SettingValuesSnapshot capture() {
+            return new SettingValuesSnapshot();
+        }
+
+        /** Puts every captured value back, including the ones the caller never touched. */
+        @SuppressWarnings("NullAway")
+        public void restore() {
+            SettingValues.titleFilters = titleFilters;
+            SettingValues.textFilters = textFilters;
+            SettingValues.userFilters = userFilters;
+            SettingValues.domainFilters = domainFilters;
+            SettingValues.subredditFilters = subredditFilters;
+            SettingValues.flairFilters = flairFilters;
+            SettingValues.alwaysExternal = alwaysExternal;
+            SettingValues.filterOldPosts = filterOldPosts;
+            SettingValues.filterOldPostsDays = filterOldPostsDays;
+            SettingValues.subredditFiltersTillRestart = subredditFiltersTillRestart;
+            SettingValues.subredditFilterPrefixMatching = subredditFilterPrefixMatching;
+            SettingValues.showNSFWContent = showNSFWContent;
+            SettingValues.prefs = prefs;
+            SettingValues.nightModeState = nightModeState;
+        }
+
+        /**
+         * {@code SettingValues.prefs} is declared non-null but is only assigned by the running app,
+         * so in a unit-test JVM it is null until some test assigns it. Read it as nullable rather
+         * than pretending otherwise.
+         */
+        @SuppressWarnings("NullAway")
+        @Nullable
+        private static SharedPreferences readPrefs() {
+            return SettingValues.prefs;
+        }
     }
 }

@@ -189,4 +189,73 @@ public class BackupArchiveTest {
         }
         return out.toByteArray();
     }
+
+    // ---------------------------------------------------------------------
+    // readFully's size cap
+    // ---------------------------------------------------------------------
+
+    /**
+     * The restore picker offers every file on the device, so what reaches {@code readFully} can
+     * just as easily be a video the user tapped by mistake. Reading that whole would exhaust the
+     * heap with an OutOfMemoryError -- which nothing along the restore path catches -- before
+     * anything could reject it, so the cap has to turn that crash into an ordinary IOException the
+     * caller reports as "not a valid backup".
+     *
+     * <p>Nothing exercised the cap: raising it a thousandfold left the whole suite green.
+     */
+    @Test
+    public void aStreamLargerThanTheCapIsRefusedRatherThanRead() throws Exception {
+        final int cap = maxBytes();
+        try {
+            BackupArchive.readFully(new ZeroStream(cap + 1L));
+            fail("a stream past the cap must be refused, not read into the heap");
+        } catch (IOException expected) {
+            assertTrue(
+                    "the failure has to say what it refused: " + expected.getMessage(),
+                    expected.getMessage() != null && expected.getMessage().contains("larger than"));
+        }
+    }
+
+    /** The cap is a ceiling, not a fence one byte short of it: a backup of exactly that size reads. */
+    @Test
+    public void aStreamExactlyAtTheCapIsStillRead() throws Exception {
+        final int cap = maxBytes();
+
+        assertEquals(cap, BackupArchive.readFully(new ZeroStream(cap)).length);
+    }
+
+    /** The cap is private; read it rather than restating it, so this follows a change to it. */
+    private static int maxBytes() throws Exception {
+        java.lang.reflect.Field field = BackupArchive.class.getDeclaredField("MAX_BYTES");
+        field.setAccessible(true);
+        return (int) field.get(null);
+    }
+
+    /**
+     * {@code count} zero bytes, generated rather than allocated -- a real byte[] of the cap would
+     * double this test's peak heap for nothing.
+     */
+    private static final class ZeroStream extends java.io.InputStream {
+        private long remaining;
+
+        ZeroStream(long count) {
+            this.remaining = count;
+        }
+
+        @Override
+        public int read() {
+            if (remaining <= 0) return -1;
+            remaining--;
+            return 0;
+        }
+
+        @Override
+        public int read(byte[] b, int off, int len) {
+            if (remaining <= 0) return -1;
+            int n = (int) Math.min(len, remaining);
+            java.util.Arrays.fill(b, off, off + n, (byte) 0);
+            remaining -= n;
+            return n;
+        }
+    }
 }
