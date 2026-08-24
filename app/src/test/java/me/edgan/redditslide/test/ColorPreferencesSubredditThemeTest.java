@@ -151,6 +151,25 @@ public class ColorPreferencesSubredditThemeTest {
     }
 
     /**
+     * "Reset this subreddit" has to undo what the subreddit screen saved. The setter lowercases the
+     * subreddit before building the key and the remove did not, so a theme saved for
+     * {@code AskReddit} was stored under {@code askreddit} and the remove targeted a key that never
+     * existed -- the row said reset and the accent stayed.
+     */
+    @Test
+    public void resettingASubredditThemeRemovesTheOneItsSetterStored() {
+        prefs.setFontStyle(Theme.light_pink, SUB_AS_DISPLAYED);
+        assertEquals(Theme.light_pink, prefs.getFontStyleSubreddit(SUB_AS_TYPED));
+
+        prefs.removeFontStyle(SUB_AS_DISPLAYED);
+
+        assertNotEquals(
+                "the subreddit is back on the global style",
+                Theme.light_pink,
+                prefs.getFontStyleSubreddit(SUB_AS_TYPED));
+    }
+
+    /**
      * The AMOLED-contrast lookup forces its own base type whatever the subreddit is stored as, so
      * the contrast variant is reached from any starting theme.
      */

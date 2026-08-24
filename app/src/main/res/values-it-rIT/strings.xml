@@ -572,16 +572,6 @@
     <string name="settings_section_data_saving_quality">Qualità risparmio dati</string>
     <string name="settings_comment_color">Indicatori colorati di profondità dei commenti</string>
     <string name="settings_volume_nav_comments">Naviga attraverso i commenti con i pulsanti volume</string>
-    <string name="settings_synccit_remove">Disconnetti Synccit</string>
-    <string name="settings_synccit_auth">Codice di autenticazione</string>
-    <string name="settings_synccit_username">Username</string>
-    <string name="settings_synccit_delete">Vuoi davvero eliminare l\'account di Synccit?</string>
-    <string name="settings_synccit_authenticate">Autenticazione con Synccit</string>
-    <string name="settings_synccit_connected">Connessione riuscita!</string>
-    <string name="settings_synccit_active">Synccit è ora attivo per questo dispositivo</string>
-    <string name="settings_synccit_failed">Errore di autenticazione</string>
-    <string name="settings_synccit_failed_msg">Assicurati che l\'username e il codice di autenticazione siano corretti!</string>
-    <string name="settings_synccit">Integrazione con Synccit</string>
     <string name="settings_commentnav_description">Abilita una barra in basso con frecce di navigazione</string>
     <string name="settings_comment_collapse">Nascondi interamente i commenti</string>
     <string name="settings_comment_collapse_description">Disattiva anche le animazioni dei commenti</string>
@@ -620,7 +610,6 @@
     <string name="settings_right_handed_comment_menu">Menu di risposta dei commenti per destrorsi</string>
     <string name="settings_reddit_description">Queste impostazioni cambiano cosa le API di Reddit ritornano a Slide.\n\nPer vedere le miniature in tutti i subreddit, cambia la Modalità miniatura in \"Mostra sempre\"\n\nPer vedere tutti i contenuti NSFW disattiva \"Nascondi tutte le foto NSFW\" e invece attiva \"Ho più di 18 anni e voglio visualizzare contenuti NSFW\"</string>
     <string name="settings_reddit_media_pref">Ignora le preferenze sui contenuti multimediali del subreddit</string>
-    <string name="settings_description_synccit">Synccit ti permette di sincronizzare la cronologia del post tra i tuoi dispositivi e il browser</string>
     <string name="settings_description_view_type">La scelta della visualizzazione incide sia sulla schermata principale sia su quella di un singolo subreddit.\n\nPannello commenti: i commenti scorrono dal fianco dei post e viene ricordato il punto in cui sei arrivato a leggere\n\nSenza schede: non puoi fare swipe tra i subreddit\n\nSubreddit a schede: fai slide tra i tuoi subreddit</string>
     <string name="settings_comment_hide_selftext_image">Nascondi immagine principale nei post di testo</string>
     <string name="settings_filter_flair">Filtri flair</string>

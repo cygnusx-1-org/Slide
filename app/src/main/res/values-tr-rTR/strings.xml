@@ -559,16 +559,6 @@
     <string name="settings_section_data_saving_mode">Veri tasarruf modu</string>
     <string name="settings_comment_color">Renkli yorum derinliği göstergeleri</string>
     <string name="settings_volume_nav_comments">Yorumlarda ses butonlarını kullanarak gezin</string>
-    <string name="settings_synccit_remove">SYNCCIT BAĞLANTISINI KES</string>
-    <string name="settings_synccit_auth">Doğrulama kodu</string>
-    <string name="settings_synccit_username">Kullanıcı adı</string>
-    <string name="settings_synccit_delete">Synccit hesabı gerçekten silinsin mi?</string>
-    <string name="settings_synccit_authenticate">Synccit ile kimlik doğrulaması yapılıyor</string>
-    <string name="settings_synccit_connected">Bağlantı başarılı!</string>
-    <string name="settings_synccit_active">Synccit bu aygıt için artık etkin</string>
-    <string name="settings_synccit_failed">Kimlik doğrulaması yapılamadı</string>
-    <string name="settings_synccit_failed_msg">Kullanıcı adı ve kimlik doğrulama anahtarının doğru olduğundan emin olun!</string>
-    <string name="settings_synccit">Synccit entegrasyonu</string>
     <string name="settings_commentnav_description">Gezinti oklarının olduğu alt çubuğu etkinleştirir</string>
     <string name="settings_comment_collapse">Yorumları tamamen küçült</string>
     <string name="settings_comment_collapse_description">Yorum animasyonlarını da devre dışı bırakır</string>
@@ -603,7 +593,6 @@
     <string name="settings_right_handed_comment_menu">Sağ el yorum yanıtlama menüsü</string>
     <string name="settings_reddit_description">Bu ayarlar, Reddit API\'sinin Slide\'a ne döndürdüğünü değiştirir.\n\nKüçük resimleri tüm subredditlerde görmek için, \'Subreddit\n\n medya tercihlerini yoksay\' seçeneğini etkinleştirin\n\nTüm NSFW içeriği görmek için \'NSFW fotoğrafları gizle\' seçeneğini kapatın ve \'18 yaşından büyüğüm\' seçeneğini açın</string>
     <string name="settings_reddit_media_pref">Subreddit medya tercihlerini yoksay</string>
-    <string name="settings_description_synccit">Synccit, gönderi geçmişinizi diğer cihazlar ve tarayıcılar ile eşitlemenizi sağlar</string>
     <string name="settings_description_view_type">Görünüm türleri hem ana görünümü hem de tek subreddit görünümlerini etkiler.\n\nYorum bölmesi: yorumlar gönderilerin yanından kayarak gelir ve yorum sayfa durumu kaydedilir (böylece kaldığınız yeri kaybetmezsiniz)\n\n Subreddit sekmeleri yok: subredditler arasında kaydırmayı kapatır\n\n Subreddit sekmeleri: subredditler arasında kaydırmayı açar</string>
     <string name="settings_comment_hide_selftext_image">Metin gönderilerde öne çıkan resmi gizle</string>
     <string name="settings_filter_flair">Etiket filtreleri</string>

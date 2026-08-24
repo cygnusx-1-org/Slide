@@ -566,16 +566,6 @@
     <string name="settings_section_data_saving_quality">データを保存する品質</string>
     <string name="settings_comment_color">カラフルなコメントの深さインジケーター</string>
     <string name="settings_volume_nav_comments">音量ボタンを使用してコメントを移動</string>
-    <string name="settings_synccit_remove">SYNCCIT を切断</string>
-    <string name="settings_synccit_auth">認証コード</string>
-    <string name="settings_synccit_username">ユーザー名</string>
-    <string name="settings_synccit_delete">Synccit アカウントを削除してもよろしいですか?</string>
-    <string name="settings_synccit_authenticate">Synccit と認証中</string>
-    <string name="settings_synccit_connected">正常に接続しました!</string>
-    <string name="settings_synccit_active">Synccit がこのデバイスでアクティブになりました</string>
-    <string name="settings_synccit_failed">認証できませんでした</string>
-    <string name="settings_synccit_failed_msg">ユーザー名と認証キーが正しいかを確認してください!</string>
-    <string name="settings_synccit">Synccit 統合</string>
     <string name="settings_commentnav_description">ナビゲーションの矢印と下部のバーを有効にします</string>
     <string name="settings_comment_collapse">コメントを完全に折りたたむ</string>
     <string name="settings_comment_collapse_description">コメントのアニメーションも無効にします</string>
@@ -614,7 +604,6 @@
     <string name="settings_right_handed_comment_menu">右利き用コメント返信メニュー</string>
     <string name="settings_reddit_description">これらの設定は Reddit API が Slide に返す内容を変更します。\n\nすべての Subreddit でサムネイルを表示するには、「Subreddit メディア設定を無視する」を有効にします\n\nすべての NSFW コンテンツを表示するには、「NSFW 写真を非表示」をオフにして、「私は 18 歳以上です」をオンにします</string>
     <string name="settings_reddit_media_pref">Subreddit メディア設定を無視する</string>
-    <string name="settings_description_synccit">Synccit は、デバイスとお使いのブラウザーの間でサブミッションの履歴を同期することができます</string>
     <string name="settings_description_view_type">表示の種類はメイン画面と単一の Subreddit 画面に影響します。\n\nコメント ペイン: 投稿の横からコメントが引き出され、スワイプで戻った後にコメント ページの状態が保存されます (場所を忘れることはありません) \n\nSubreddit タブなし: Subreddit 間のスワイプを無効にします\n\nSubreddit タブ: Subreddits 間でスライドします</string>
     <string name="settings_comment_hide_selftext_image">自己テキスト投稿で、先頭の画像を非表示</string>
     <string name="settings_filter_flair">フレア フィルター</string>

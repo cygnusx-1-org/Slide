@@ -572,16 +572,6 @@
     <string name="settings_section_data_saving_quality">Jakość oszczędzania danych</string>
     <string name="settings_comment_color">Kolorowa indykacja drzew komentarzy</string>
     <string name="settings_volume_nav_comments">Przeglądaj komentarze przyciskami głośności</string>
-    <string name="settings_synccit_remove">ODŁĄCZ SYNCCIT</string>
-    <string name="settings_synccit_auth">Klucz uwierzytelniania</string>
-    <string name="settings_synccit_username">Nazwa użytkownika</string>
-    <string name="settings_synccit_delete">Naprawdę usunąć konto Synccit?</string>
-    <string name="settings_synccit_authenticate">Uwierzytelnianie z Synccit</string>
-    <string name="settings_synccit_connected">Połączenie udane!</string>
-    <string name="settings_synccit_active">Synccit jest teraz aktywny dla tego urządzenia</string>
-    <string name="settings_synccit_failed">Nie można uwierzytelnić</string>
-    <string name="settings_synccit_failed_msg">Upewnij się, że nazwa użytkownika i klucz są poprawne!</string>
-    <string name="settings_synccit">Integracja Synccit</string>
     <string name="settings_commentnav_description">Włącza dolny pasek z przyciskami nawigacji</string>
     <string name="settings_comment_collapse">Zwiń komentarze w pełni</string>
     <string name="settings_comment_collapse_description">Wyłącza również animacje komentarzy</string>
@@ -620,7 +610,6 @@
     <string name="settings_right_handed_comment_menu">Praworęczne menu akcji komentarza</string>
     <string name="settings_reddit_description">Te ustawienia mają wpływ na to co API Reddit\'a zwraca do Slide.\n\nBy pokazywać podglądy we wszystkich subredditach, włącz \'Ignoruj preferencje mediów subreddita\'\n\nBy pokazywać treści przeznaczone dla dorosłych wyłącz \'Ukrywaj zdjęcia NSFW\' i włącz \'Jestem pełnoletni\'</string>
     <string name="settings_reddit_media_pref">Ignoruj preferencje mediów subreddita</string>
-    <string name="settings_description_synccit">Synccit pozwala synchronizować historię między urządeniami i przeglądarką</string>
     <string name="settings_description_view_type">Dotyczy głównego widoku i pojedynczego widoku subredditów.\n\nPanel komentarzy: komentarze wysuwają się obok postów i stan komentarzy jest zapisywany po cofnięciu\n\nBez zakładek: wyłącza przesuwanie między subredditami\n\nZ zakładkami: przesuwanie między subredditami</string>
     <string name="settings_comment_hide_selftext_image">Ukryj podgląd w postach tekstowych</string>
     <string name="settings_filter_flair">Filtry flar</string>

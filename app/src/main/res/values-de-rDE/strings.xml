@@ -570,16 +570,6 @@ Möchten Sie Slide for Reddit unterstützen?</string>
     <string name="settings_section_data_saving_mode">Datensparmodus</string>
     <string name="settings_comment_color">Farbige Indikatoren für Kommentartiefe</string>
     <string name="settings_volume_nav_comments">Kommentare mit Lautstärketasten navigieren</string>
-    <string name="settings_synccit_remove">SYNCCIT TRENNEN</string>
-    <string name="settings_synccit_auth">Authentifizierungsschlüssel</string>
-    <string name="settings_synccit_username">Benutzername</string>
-    <string name="settings_synccit_delete">Synccit-Account wirklich löschen?</string>
-    <string name="settings_synccit_authenticate">Authentifizierung mit Synccit</string>
-    <string name="settings_synccit_connected">Verbindung erfolgreich!</string>
-    <string name="settings_synccit_active">Synccit ist jetzt aktiv für dieses Gerät</string>
-    <string name="settings_synccit_failed">Konnte nicht authentifizieren</string>
-    <string name="settings_synccit_failed_msg">Stellen Sie sicher, dass ihr Benutzername und Authentifizierungsschlüssel korrekt sind!</string>
-    <string name="settings_synccit">Synccit-Integration</string>
     <string name="settings_commentnav_description">Aktiviert eine Leiste am unteren Rand mit Steuerpfeilen</string>
     <string name="settings_comment_collapse">Kommentare komplett zuklappen</string>
     <string name="settings_comment_collapse_description">Deaktiviert Animationen in den Kommentaren</string>
@@ -614,7 +604,6 @@ Möchten Sie Slide for Reddit unterstützen?</string>
     <string name="settings_right_handed_comment_menu">Rechtshänder Kommentar Menü</string>
     <string name="settings_reddit_description">Diese Einstellungen ändern was die Reddit API zu Slide zurücksendet.\n\nUm Thumbnails in allen Subreddits zu sehen, aktivierte \'Subreddit Medieneinstellungen ignorieren\'\n\nUm alle NSFW Inhalte anzuzeigen, schalte \'NSFW Fotos verbergen\' aus und schalte \'Ich bin über 18\' ein</string>
     <string name="settings_reddit_media_pref">Subreddit Medieneinstellungen ignorieren</string>
-    <string name="settings_description_synccit">Synccit erlaubt dir deinen Beitragsverlauf zwischen Geräten und deinem Browser zu synchronisieren</string>
     <string name="settings_description_view_type">Ansichtstypen beeinflussen die Hauptansicht und auch die Ansicht in Subreddits.\n\nKommentarfenster: Kommentare erscheinen neben Beiträgen durch wischen und werden beim Zurückwechseln automatisch gespeichert, damit du nichts verlierst.\n\nNicht-Subreddit Tabs: Wischen zwischen Subreddits ist deaktiviert\n\nSubreddit Tabs: Wischen um zwischen Subreddits zu wechseln</string>
     <string name="settings_comment_hide_selftext_image">Beitragsbild bei Selftext Beiträgen ausblenden</string>
     <string name="settings_filter_flair">Flair-Filter</string>

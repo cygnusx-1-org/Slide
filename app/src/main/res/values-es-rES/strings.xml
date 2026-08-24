@@ -560,16 +560,6 @@
     <string name="settings_section_data_saving_mode">Modo ahorro de datos</string>
     <string name="settings_comment_color">Indicadores de profundidad de color para comentarios</string>
     <string name="settings_volume_nav_comments">Navegar por los comentarios con las teclas de volumen</string>
-    <string name="settings_synccit_remove">DESCONECTAR SYNCCIT</string>
-    <string name="settings_synccit_auth">Código de autenticación</string>
-    <string name="settings_synccit_username">Nombre de usuario</string>
-    <string name="settings_synccit_delete">Seguro que quiere borrar la cuenta Synccit?</string>
-    <string name="settings_synccit_authenticate">Autenticando con Synccit</string>
-    <string name="settings_synccit_connected">Conectado con éxito!</string>
-    <string name="settings_synccit_active">Synccit ahora está activo en este dispositivo</string>
-    <string name="settings_synccit_failed">No se ha podido autenticar</string>
-    <string name="settings_synccit_failed_msg">Asegúrate que tu nombre de usuario y clave de autenticación sean correctas!</string>
-    <string name="settings_synccit">Integración Synccit</string>
     <string name="settings_commentnav_description">Habilita una barra inferior con flechas de navegación</string>
     <string name="settings_comment_collapse">Colapsar los comentarios completamente</string>
     <string name="settings_comment_collapse_description">También desactiva animaciones de comentarios</string>
@@ -602,7 +592,6 @@
     <string name="settings_general_comment_last_visit">Mostrar número de comentarios desde la última visita</string>
     <string name="settings_fab_create">Muestra el FAB \"crear comentario\"</string>
     <string name="settings_right_handed_comment_menu">Menú de respuesta a comentario para diestros</string>
-    <string name="settings_description_synccit">Synccit te permite sincronizar tu historial de subidas entre tus dispositivos y tu navegador</string>
     <string name="settings_description_view_type">Vista afecta a la vista general y a la vista del subreddit.\n\n Panel de comentarios: los comentarios se deslizan junto a los posts y la página en la que te quedaste de los comentarios se guarda tras deslizar atrás (de esta forma no pierdes tu posición)\n\nSin pestañas de subreddits: desactiva el deslizamiento entre subreddits\n\nPestañas de subreddits: deslízate entre tus subreddits</string>
     <string name="settings_comment_hide_selftext_image">Ocultar imagen principal en posts de texto</string>
     <string name="settings_filter_flair">Filtro de etiquetas</string>

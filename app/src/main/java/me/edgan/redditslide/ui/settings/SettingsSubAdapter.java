@@ -81,7 +81,7 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
                                                     // Remove layout settings
                                                     SettingValues.prefs
                                                             .edit()
-                                                            .remove(Reddit.PREF_LAYOUT + subreddit)
+                                                            .remove(Reddit.getLayoutPrefKey(subreddit))
                                                             .apply();
                                                     // Remove accent / font color settings
                                                     new ColorPreferences(context)
@@ -348,7 +348,7 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
                                                         // Remove layout settings
                                                         SettingValues.prefs
                                                                 .edit()
-                                                                .remove(Reddit.PREF_LAYOUT + sub)
+                                                                .remove(Reddit.getLayoutPrefKey(sub))
                                                                 .apply();
                                                         // Remove accent / font color settings
                                                         new ColorPreferences(context)
@@ -443,7 +443,7 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
                                     // Set layout
                                     SettingValues.prefs
                                             .edit()
-                                            .putBoolean(Reddit.PREF_LAYOUT + sub, true)
+                                            .putBoolean(Reddit.getLayoutPrefKey(sub), true)
                                             .apply();
                                 }
 

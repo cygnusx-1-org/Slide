@@ -469,16 +469,6 @@
     <string name="settings_section_data_saving_mode">Databesparende modus</string>
     <string name="settings_comment_color">Diepte-indicatie tonen bij onderliggende reacties</string>
     <string name="settings_volume_nav_comments">Navigeren door reacties met volumeknoppen</string>
-    <string name="settings_synccit_remove">VERBINDING VERBREKEN MET SYNCIT</string>
-    <string name="settings_synccit_auth">Autorisatiecode</string>
-    <string name="settings_synccit_username">Gebruikersnaam</string>
-    <string name="settings_synccit_delete">Weet je zeker dat je het Synccit-account wil verwijderen?</string>
-    <string name="settings_synccit_authenticate">Bezig het aanmelden bij Synccit</string>
-    <string name="settings_synccit_connected">Succesvol verbonden!</string>
-    <string name="settings_synccit_active">Synccit is nu actief voor dit apparaat</string>
-    <string name="settings_synccit_failed">Aanmelden mislukt</string>
-    <string name="settings_synccit_failed_msg">Controleer of jouw gebruikersnaam en autorisatiecode kloppen!</string>
-    <string name="settings_synccit">Synccit-integratie</string>
     <string name="settings_commentnav_description">Gebruik een navigatiebalk met navigatiepijlen</string>
     <string name="settings_comment_collapse">Reacties volledig inklappen</string>
     <string name="settings_comment_collapse_description">Reactie-animaties ook uitschakelen</string>
@@ -503,7 +493,6 @@
     <string name="settings_layout_show_votes_comments">Toon votes/reacties in de inforegel</string>
     <string name="settings_general_comment_last_visit">Toon aantal nieuwe reacties sinds laatste bezoek</string>
     <string name="settings_right_handed_comment_menu">Rechtshandige reactiereageermenu</string>
-    <string name="settings_description_synccit">Synccit laat toe je submissie-geschiedenis te synchroniseren tussen verschillende toestellen en je browser</string>
     <string name="settings_description_view_type">Weergave Modus verandert zowel de hoofdweergave als weergaven van een enkele subreddit.\n\nReactie deelvenster: reacties glijden uit langs de posts en de staat van de reactiepagina is opgeslagen (zodat je je plaats niet verliest)\n\nGeen subreddit tabbladen: Vermijd het swipen tussen subreddits\n\nSubreddit tabbladen: swipe tussen je subreddits</string>
     <string name="settings_comment_hide_selftext_image">Verberg hoofdafbeelding bij zelfteksten</string>
     <string name="settings_view_type">Weergave</string>

@@ -425,16 +425,6 @@
     <string name="settings_section_other">Altele</string>
     <string name="settings_comment_color">Indicatoare colorate pentru profunditatea comentariilor</string>
     <string name="settings_volume_nav_comments">Navighează între comentarii folosind butoanele de volum</string>
-    <string name="settings_synccit_remove">DECONECTARE SYNCCIT</string>
-    <string name="settings_synccit_auth">Cod de autentificare</string>
-    <string name="settings_synccit_username">Nume de utilizator</string>
-    <string name="settings_synccit_delete">Ești sigur că vrei să ștergi contul Synccit?</string>
-    <string name="settings_synccit_authenticate">Autentificând cu Synccit</string>
-    <string name="settings_synccit_connected">Conectat cu succes!</string>
-    <string name="settings_synccit_active">Synccit a fost activat pe dispozitivul actual</string>
-    <string name="settings_synccit_failed">Nu s-a putut autentifica</string>
-    <string name="settings_synccit_failed_msg">Asigură-te că numele de utilizator și cheia de autentificare sunt corecte!</string>
-    <string name="settings_synccit">Integrare Synccit</string>
     <string name="settings_commentnav_description">Activează bara de jos cu săgeți pentru comentarii</string>
     <string name="settings_comment_collapse">Colapsează complet comentariile</string>
     <string name="settings_comment_collapse_description">Animațiile de comentarii vor fi dezactivate</string>

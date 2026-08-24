@@ -353,8 +353,6 @@
     <string name="settings_section_save_history">Tallenna historia</string>
     <string name="settings_section_clear_history">Tyhjennä historia</string>
     <string name="settings_section_data_saving_mode">Virransäästötila</string>
-    <string name="settings_synccit_username">Käyttäjänimi</string>
-    <string name="settings_synccit_connected">Yhdistetty onnistuneesti!</string>
     <string name="settings_filter_profile">Profiilin suodattimet</string>
     <string name="settings_font_system">Järjestelmä</string>
     <string name="settings_manage_subscriptions">Hallinnoi tilauksiasi</string>

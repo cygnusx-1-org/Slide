@@ -559,16 +559,6 @@
     <string name="settings_section_data_saving_mode">Mode d\'estalvi de dades</string>
     <string name="settings_comment_color">Indicador coloratiu de profunditat del commentari</string>
     <string name="settings_volume_nav_comments">Navegar entre comentaris utilitzant els botons del volum</string>
-    <string name="settings_synccit_remove">DESCONECTAR SYNCCIT</string>
-    <string name="settings_synccit_auth">Codi d\'autenticació</string>
-    <string name="settings_synccit_username">Nom d\'usuari</string>
-    <string name="settings_synccit_delete">Esteu segurs que voleu eliminar el compte de Synccit?</string>
-    <string name="settings_synccit_authenticate">S\'està autenticant amb Synccit</string>
-    <string name="settings_synccit_connected">S\'ha connectat amb èxit!</string>
-    <string name="settings_synccit_active">Synccit és ara operatiu per aquest dispositiu</string>
-    <string name="settings_synccit_failed">No s\'ha pogut autenticar</string>
-    <string name="settings_synccit_failed_msg">Assegureu-vos que el vostre usuari i clau d\'autentificació són correctes!</string>
-    <string name="settings_synccit">Integració amb Synccit</string>
     <string name="settings_commentnav_description">Habilitar una barra inferior amb fletxes de navegació</string>
     <string name="settings_comment_collapse">Col·lapsar comentaris totalment</string>
     <string name="settings_comment_collapse_description">També desactivarà les animacions des comentaris</string>
@@ -603,7 +593,6 @@
     <string name="settings_right_handed_comment_menu">Menú de resposta a comentaris per persones dretanes</string>
     <string name="settings_reddit_description">Aquestes configuracions canviaran allò que l\'API de Reddit retornava Slide.\n\nPer veure les miniatures d\'imatge a tots els subreddits, activi l\'opció \"Ignorar les preferències de multimedia dels subreddits\"\n\nPer veure tot el contingut NSFW, desactiveu l\'opció \"Ocultar les imatges NSFW\" i completeu la conformació \"Tinc més de 18 anys\"</string>
     <string name="settings_reddit_media_pref">Ignorar les preferències de contingut multimèdia de cada subreddit</string>
-    <string name="settings_description_synccit">Synccit us permet sincronitzar el vostre historial de publicacions entre dispositius i navegador</string>
     <string name="settings_description_view_type">Les diferents tipologies de visualització afecten tant la visió general com la de subreddits individuals.\n\nPanell de comentaris: els comentaris llisquen junt amb les publicacions i es desa la vostra localització a la pàgina després de lliscar enrere (per no perdre el vostre progrés)\n\nSense pestanyes de subreddits: inhabilita l\'opció de lliscar entre subreddits\n\nPestanyes de subreddits: llisqui entre els seus subreddits</string>
     <string name="settings_comment_hide_selftext_image">Ocultar la primera imatge en les publicacions escrites</string>
     <string name="settings_filter_flair">Filtrar per banderetes</string>

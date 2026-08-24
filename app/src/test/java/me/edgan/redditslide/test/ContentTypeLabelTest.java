@@ -19,11 +19,10 @@ import org.junit.Test;
  * compared them: the {@code if (nsfw)} that chooses between them could be inverted -- every safe
  * post labelled "NSFW …" and every NSFW post labelled as safe -- with the whole suite still green.
  *
- * <p>The NSFW table covers fewer types than the ordinary one. {@code XKCD}, {@code DEVIANTART},
- * {@code NONE}, {@code REDDIT}, {@code SELF} and {@code STREAMABLE} have an ordinary label but no
- * NSFW one and fall through to the {@code type_link} default, so an NSFW self post is badged
- * "Link". That is a defect in the table, not in these tests, so the pairing below is asserted for
- * the types the NSFW table actually handles; when the missing ones are added, extend this list.
+ * <p>Both tables must name the same types: {@code XKCD}, {@code DEVIANTART}, {@code NONE},
+ * {@code REDDIT}, {@code SELF} and {@code STREAMABLE} once had an ordinary label and no NSFW one,
+ * so an NSFW self post fell through to the {@code type_link} default and was badged "Link".
+ * {@code SPOILER} is the one type neither table names, and both answer "Link" for it.
  */
 public class ContentTypeLabelTest {
 
@@ -32,6 +31,8 @@ public class ContentTypeLabelTest {
             Arrays.asList(
                     Type.ALBUM,
                     Type.REDDIT_GALLERY,
+                    Type.XKCD,
+                    Type.DEVIANTART,
                     Type.EMBEDDED,
                     Type.EXTERNAL,
                     Type.LINK,
@@ -39,6 +40,10 @@ public class ContentTypeLabelTest {
                     Type.IMAGE,
                     Type.TUMBLR,
                     Type.IMGUR,
+                    Type.NONE,
+                    Type.REDDIT,
+                    Type.SELF,
+                    Type.STREAMABLE,
                     Type.VIDEO,
                     Type.VREDDIT_DIRECT,
                     Type.VREDDIT_REDIRECT);
@@ -48,6 +53,9 @@ public class ContentTypeLabelTest {
         assertEquals(R.string.type_nsfw_album, ContentType.getContentID(Type.ALBUM, true));
         assertEquals(
                 R.string.type_nsfw_gallery, ContentType.getContentID(Type.REDDIT_GALLERY, true));
+        assertEquals(R.string.type_nsfw_xkcd, ContentType.getContentID(Type.XKCD, true));
+        assertEquals(
+                R.string.type_nsfw_deviantart, ContentType.getContentID(Type.DEVIANTART, true));
         assertEquals(R.string.type_nsfw_emb, ContentType.getContentID(Type.EMBEDDED, true));
         assertEquals(R.string.type_nsfw_link, ContentType.getContentID(Type.EXTERNAL, true));
         assertEquals(R.string.type_nsfw_link, ContentType.getContentID(Type.LINK, true));
@@ -55,6 +63,11 @@ public class ContentTypeLabelTest {
         assertEquals(R.string.type_nsfw_img, ContentType.getContentID(Type.IMAGE, true));
         assertEquals(R.string.type_nsfw_tumblr, ContentType.getContentID(Type.TUMBLR, true));
         assertEquals(R.string.type_nsfw_imgur, ContentType.getContentID(Type.IMGUR, true));
+        assertEquals(R.string.type_nsfw_title_only, ContentType.getContentID(Type.NONE, true));
+        assertEquals(R.string.type_nsfw_reddit, ContentType.getContentID(Type.REDDIT, true));
+        assertEquals(R.string.type_nsfw_selftext, ContentType.getContentID(Type.SELF, true));
+        assertEquals(
+                R.string.type_nsfw_streamable, ContentType.getContentID(Type.STREAMABLE, true));
         assertEquals(R.string.type_nsfw_video, ContentType.getContentID(Type.VIDEO, true));
         assertEquals(
                 R.string.type_nsfw_video, ContentType.getContentID(Type.VREDDIT_DIRECT, true));

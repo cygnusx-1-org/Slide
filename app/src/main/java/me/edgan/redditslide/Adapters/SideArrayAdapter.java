@@ -45,6 +45,7 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
     public boolean openInSubView = true;
     private final MainActivity mainActivity;
     private final Map<String, String> subProps = new HashMap<>();
+    private final Object objectsLock = new Object();
 
     public SideArrayAdapter(
             MainActivity activity,
@@ -315,13 +316,42 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
         return fitems.size() + 1;
     }
 
+    // getView() inflates two unrelated layouts -- a subreddit row and the trailing spacer -- so the
+    // ListView has to be told there are two row types. Left at the default of one, AbsListView's
+    // RecycleBin pools them together and offers a recycled view of one kind for the other.
+    private static final int TYPE_SUBREDDIT = 0;
+    private static final int TYPE_SPACER = 1;
+
+    @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position < fitems.size() ? TYPE_SUBREDDIT : TYPE_SPACER;
+    }
+
     public void updateHistory(ArrayList<String> history) {
-        for (String s : history) {
-            if (!objects.contains(s)) {
-                objects.add(s);
+        // Guarded because performFiltering copies this list on the Filter's worker thread while
+        // this runs on the UI thread (MainActivity.onResume). An ArrayList copy taken during an
+        // append does not just risk ConcurrentModificationException: it can also come back padded
+        // with nulls, and those nulls become rows.
+        synchronized (objectsLock) {
+            for (String s : history) {
+                if (!objects.contains(s)) {
+                    objects.add(s);
+                }
             }
         }
         notifyDataSetChanged();
+    }
+
+    /** A copy of the filter source, taken without racing {@link #updateHistory}. */
+    private CaseInsensitiveArrayList objectsSnapshot() {
+        synchronized (objectsLock) {
+            return new CaseInsensitiveArrayList(objects);
+        }
     }
 
     private class SubFilter extends Filter {
@@ -336,7 +366,7 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
                 results.count = list.size();
             } else {
                 openInSubView = true;
-                final CaseInsensitiveArrayList list = new CaseInsensitiveArrayList(objects);
+                final CaseInsensitiveArrayList list = objectsSnapshot();
                 final CaseInsensitiveArrayList nlist = new CaseInsensitiveArrayList();
 
                 for (String sub : list) {
@@ -353,15 +383,29 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
             return results;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            fitems = (CaseInsensitiveArrayList) results.values;
+            // The list this adapter renders and the count it reports must change together, under
+            // exactly one notification. The old order assigned fitems first -- which is what
+            // getCount() measures -- and only then called clear() and addAll(), each of which
+            // fires its own notifyDataSetChanged(). That published two intermediate states in
+            // which the reported count did not match the rows the ListView held. Silencing
+            // clear()/addAll() and notifying once, after both the data and fitems are in place,
+            // leaves no such state.
+            //
+            // A null results.values also used to leave fitems null, which getCount(), getView()
+            // and DrawerController's IME-search handler all dereference without a guard.
+            final CaseInsensitiveArrayList newItems =
+                    results.values instanceof CaseInsensitiveArrayList
+                            ? (CaseInsensitiveArrayList) results.values
+                            : new CaseInsensitiveArrayList();
+
+            setNotifyOnChange(false);
             clear();
-            if (fitems != null) {
-                addAll(fitems);
-                notifyDataSetChanged();
-            }
+            addAll(newItems);
+            fitems = newItems;
+            notifyDataSetChanged();
+            setNotifyOnChange(true);
         }
     }
 }

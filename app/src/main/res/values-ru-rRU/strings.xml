@@ -586,16 +586,6 @@
     <string name="settings_section_data_saving_quality">Качество сохраняемых данных</string>
     <string name="settings_comment_color">Цветные индикаторы глубины комментариев</string>
     <string name="settings_volume_nav_comments">Перемещаться между комментариями кнопками громкости</string>
-    <string name="settings_synccit_remove">ОТКЛЮЧИТЬ SYNCCIT</string>
-    <string name="settings_synccit_auth">Код аутентификации</string>
-    <string name="settings_synccit_username">Имя пользователя</string>
-    <string name="settings_synccit_delete">Вы действительно хотите удалить аккаунт Synccit?</string>
-    <string name="settings_synccit_authenticate">Аутентификация через Synccit</string>
-    <string name="settings_synccit_connected">Соединение успешно!</string>
-    <string name="settings_synccit_active">Synccit теперь активен на этом устройстве</string>
-    <string name="settings_synccit_failed">Не удалось аутентифицироваться</string>
-    <string name="settings_synccit_failed_msg">Проверьте, что имя пользователя и ключ аутентификации указаны верно!</string>
-    <string name="settings_synccit">Интеграция с Synccit</string>
     <string name="settings_commentnav_description">Включает внизу панель со стрелками навигации</string>
     <string name="settings_comment_collapse">Сворачивать комментарии полностью</string>
     <string name="settings_comment_collapse_description">Также отключает анимацию комментариев</string>
@@ -634,7 +624,6 @@
     <string name="settings_right_handed_comment_menu">Меню ответа на коментарии для правшей</string>
     <string name="settings_reddit_description">Эти настройки влияют на данные, возвращаемые Reddit API в Slide.\n\nДля отображения превью во всех сабреддитах, включите \'Игнорировать настройки мультимедиа сабреддита\'\n\nДля отображения NSFW контента, отключите \'Скрыть NSFW фото\' и включите \'Я старше 18\'</string>
     <string name="settings_reddit_media_pref">Игнорировать настройки мультимедиа сабреддита</string>
-    <string name="settings_description_synccit">Synccit позволяет синхронизовать историю публикаций между устройствами и вашим браузером</string>
     <string name="settings_description_view_type">Типы просмотра влияют как на главный вид, так и на одиночные сабреддиты.\n\nПанель комментариев: комментарии свайпятся от ближайших в постах и состояние страницы комментария сохраняется после свайпа (так что вы не потеряете свое место)\n\nНет вкладок сабреддитов: отключает свайп между сабреддитами\n\nвкладки сабреддита: слайд между сабреддитами</string>
     <string name="settings_comment_hide_selftext_image">Скрывать изображение в текстовых записях</string>
     <string name="settings_filter_flair">Фильтры флейров</string>

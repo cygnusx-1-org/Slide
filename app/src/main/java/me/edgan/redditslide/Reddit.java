@@ -58,7 +58,6 @@ import me.edgan.redditslide.Notifications.NotificationPiggyback;
 import me.edgan.redditslide.Notifications.TokenRefreshReceiver;
 import me.edgan.redditslide.Tumblr.TumblrUtils;
 import me.edgan.redditslide.Visuals.Palette;
-import me.edgan.redditslide.util.AdBlocker;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.GifCache;
@@ -458,6 +457,14 @@ public class Reddit extends Application implements Application.ActivityLifecycle
     }
 
     /**
+     * The per-subreddit layout-preset key. The subreddit is lowercased here so that the writer,
+     * the probe, the removes and the reader all land on the same entry.
+     */
+    public static String getLayoutPrefKey(String subreddit) {
+        return PREF_LAYOUT + subreddit.toLowerCase(Locale.ENGLISH);
+    }
+
+    /**
      * The shared 256MB media cache, built on first use. SimpleCache throws if a second instance is
      * created for the same directory, so this must be the only construction site.
      */
@@ -538,8 +545,6 @@ public class Reddit extends Application implements Application.ActivityLifecycle
         active = true;
 
         authentication = new Authentication(this);
-
-        AdBlocker.init(this);
 
         Authentication.mod = Authentication.authentication.getBoolean(SHARED_PREF_IS_MOD, false);
 

@@ -434,6 +434,10 @@ public class ContentType {
                     return R.string.type_nsfw_album;
                 case REDDIT_GALLERY:
                     return R.string.type_nsfw_gallery;
+                case XKCD:
+                    return R.string.type_nsfw_xkcd;
+                case DEVIANTART:
+                    return R.string.type_nsfw_deviantart;
                 case EMBEDDED:
                     return R.string.type_nsfw_emb;
                 case EXTERNAL:
@@ -447,6 +451,14 @@ public class ContentType {
                     return R.string.type_nsfw_tumblr;
                 case IMGUR:
                     return R.string.type_nsfw_imgur;
+                case NONE:
+                    return R.string.type_nsfw_title_only;
+                case REDDIT:
+                    return R.string.type_nsfw_reddit;
+                case SELF:
+                    return R.string.type_nsfw_selftext;
+                case STREAMABLE:
+                    return R.string.type_nsfw_streamable;
                 case VIDEO:
                 case VREDDIT_DIRECT:
                 case VREDDIT_REDIRECT:

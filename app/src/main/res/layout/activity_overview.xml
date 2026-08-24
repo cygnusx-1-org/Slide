@@ -96,7 +96,7 @@
         </androidx.cardview.widget.CardView>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <ListView
+    <me.edgan.redditslide.Views.DrawerListView
         android:id="@+id/drawerlistview"
         android:layout_width="300dp"
         android:layout_height="match_parent"

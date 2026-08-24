@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.lusfold.androidkeyvaluestore.KVStore;
 import java.io.InputStream;
 import me.edgan.redditslide.HasSeen;
-import me.edgan.redditslide.Synccit.SynccitRead;
 import net.dean.jraw.models.Submission;
 import org.junit.After;
 import org.junit.Before;
@@ -30,7 +29,8 @@ import org.robolectric.annotation.Config;
  * Reddit's own {@code visited} flag and the user's vote both mean seen, so a post read on another
  * client or voted on here is not shown as new. And {@code addSeenScrolling} is called from
  * {@code onScrolled} -- many times a second during a fling -- so it has to stop after the first
- * time or the Synccit lists collect a duplicate per frame.
+ * time or the first-seen timestamp is rewritten and the visited list collects a duplicate per
+ * frame.
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 33, application = Application.class)
@@ -41,19 +41,17 @@ public class HasSeenTest {
         final Context context = ApplicationProvider.getApplicationContext();
         TestUtils.seedRedditApplication();
         KVStore.init(context, "SEEN");
-        // hasSeen, seenTimes and the Synccit lists are process-wide statics.
+        // hasSeen, seenTimes and newVisited are process-wide statics.
         HasSeen.hasSeen.clear();
         HasSeen.seenTimes.clear();
-        SynccitRead.newVisited.clear();
-        SynccitRead.visitedIds.clear();
+        HasSeen.clearNewVisited();
     }
 
     @After
     public void tearDown() {
         HasSeen.hasSeen.clear();
         HasSeen.seenTimes.clear();
-        SynccitRead.newVisited.clear();
-        SynccitRead.visitedIds.clear();
+        HasSeen.clearNewVisited();
         TestUtils.clearRedditApplication();
     }
 
@@ -105,30 +103,31 @@ public class HasSeenTest {
     }
 
     /**
-     * Comments are not posts; Synccit is a read-history service for links. Note the key rule is
-     * asymmetric on purpose: only a {@code t3_} prefix is stripped, so a comment keeps its own.
+     * Comments are not posts; reddit's visited-posts history only takes submissions. Note the key
+     * rule is asymmetric on purpose: only a {@code t3_} prefix is stripped, so a comment keeps its
+     * own.
      */
     @Test
-    public void aCommentIsNotPushedToSynccit() {
+    public void aCommentIsNotQueuedForVisitedHistory() {
         HasSeen.addSeen("t1_comment1");
 
         assertTrue(
                 "it is still recorded locally, prefix and all",
                 HasSeen.hasSeen.contains("t1_comment1"));
-        assertTrue("but not queued for Synccit", SynccitRead.newVisited.isEmpty());
+        assertTrue("but not queued for storeVisits", HasSeen.newVisitedSnapshot().isEmpty());
     }
 
     @Test
-    public void aSubmissionIsPushedToSynccit() {
+    public void aSubmissionIsQueuedForVisitedHistory() {
         HasSeen.addSeen("t3_seen1");
 
-        assertEquals(1, SynccitRead.newVisited.size());
-        assertEquals("seen1", SynccitRead.newVisited.get(0));
+        assertEquals(1, HasSeen.newVisitedSnapshot().size());
+        assertEquals("seen1", HasSeen.newVisitedSnapshot().get(0));
     }
 
     /**
      * The fling guard. Without it every frame of a scroll appends the same id to an ArrayList that
-     * is never de-duplicated.
+     * is never de-duplicated, and rewrites the first-seen timestamp the "seen" fade reads.
      */
     @Test
     public void scrollingPastTheSamePostRepeatedlyRecordsItOnce() {
@@ -136,8 +135,21 @@ public class HasSeenTest {
             HasSeen.addSeenScrolling("t3_seen1");
         }
 
-        assertEquals("one entry, not one per frame", 1, SynccitRead.newVisited.size());
-        assertEquals(1, SynccitRead.visitedIds.size());
+        assertEquals("one entry, not one per frame", 1, HasSeen.newVisitedSnapshot().size());
+    }
+
+    /**
+     * The other half of the same guard: the recorded time is the first sighting, not the latest
+     * frame, since the "seen" dimming reads it to decide how old the post is.
+     */
+    @Test
+    public void scrollingPastAPostAgainKeepsTheFirstSeenTime() {
+        HasSeen.hasSeen.add("seen1");
+        HasSeen.seenTimes.put("seen1", 1000L);
+
+        HasSeen.addSeenScrolling("t3_seen1");
+
+        assertEquals(1000L, (long) HasSeen.seenTimes.get("seen1"));
     }
 
     @Test
@@ -145,6 +157,6 @@ public class HasSeenTest {
         HasSeen.addSeenScrolling("t3_seen1");
         HasSeen.addSeenScrolling("t3_seen2");
 
-        assertEquals(2, SynccitRead.newVisited.size());
+        assertEquals(2, HasSeen.newVisitedSnapshot().size());
     }
 }

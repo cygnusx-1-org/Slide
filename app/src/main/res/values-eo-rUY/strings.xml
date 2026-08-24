@@ -244,7 +244,6 @@
     <string name="settings_title_comments">Komentoj</string>
     <string name="settings_title_font">Tiparo</string>
     <string name="settings_section_appearance">Aspekto</string>
-    <string name="settings_synccit_username">Uzantnomo</string>
     <string name="settings_section_content">Enhavo</string>
     <!-- Quick setting toggles in the drawer -->
     <string name="toggle_nsfw">Malkaŝi MDPL/NSFW-enhavon</string>

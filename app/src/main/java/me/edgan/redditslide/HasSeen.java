@@ -8,11 +8,13 @@ import android.os.AsyncTask;
 import androidx.annotation.Nullable;
 import com.lusfold.androidkeyvaluestore.KVStore;
 import com.lusfold.androidkeyvaluestore.core.KVManger;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import me.edgan.redditslide.Synccit.SynccitRead;
+import java.util.Set;
 import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.VoteDirection;
@@ -25,6 +27,44 @@ public class HasSeen {
     // strength of having called getSeenTime() first.
     public static final HashSet<String> hasSeen = new HashSet<>();
     public static final HashMap<String, Long> seenTimes = new HashMap<>();
+
+    // Submissions seen since the last time they were pushed to reddit's own visited-posts history
+    // (AccountManager.storeVisits, called from MainActivity.onPause, which then drops the ids it
+    // sent).
+    // Private, and reached only through the synchronized accessors below: the adds happen on the
+    // main thread while the push iterates the list on a background one, so handing that push the
+    // list itself lets an add during the loop throw ConcurrentModificationException at it.
+    private static final ArrayList<String> newVisited = new ArrayList<>();
+
+    private static synchronized void addNewVisited(String fullname) {
+        newVisited.add(fullname);
+    }
+
+    /** Whether a push has anything to send, without copying the list to answer. */
+    public static synchronized boolean hasNewVisited() {
+        return !newVisited.isEmpty();
+    }
+
+    /** A copy, safe to iterate off the main thread while more posts are being marked seen. */
+    public static synchronized List<String> newVisitedSnapshot() {
+        return new ArrayList<>(newVisited);
+    }
+
+    /**
+     * Drops the ids reddit has accepted, and only those. A post marked seen while the push was in
+     * flight is not in {@code pushed}, and clearing the whole queue instead would drop it without
+     * ever sending it -- permanently for one seen by scrolling, since {@code hasSeen} already
+     * holds it and the fling guard in {@link #addSeenScrolling} stops it being queued again.
+     */
+    public static synchronized void clearNewVisited(Collection<String> pushed) {
+        final Set<String> accepted = new HashSet<>(pushed);
+        newVisited.removeIf(accepted::contains);
+    }
+
+    /** Forgets the whole queue, pushed or not. */
+    public static synchronized void clearNewVisited() {
+        newVisited.clear();
+    }
 
     public static void setHasSeenContrib(List<Contribution> submissions) {
         KVManger m = KVStore.getInstance();
@@ -86,11 +126,9 @@ public class HasSeen {
 
     public static boolean getSeen(Submission s) {
         String fullname = seenKey(s.getFullName());
-        // Without a fullname the two set lookups cannot match, but the node and the vote still
+        // Without a fullname the set lookup cannot match, but the node and the vote still
         // answer the question, so they are left to decide it rather than returning false outright.
-        return ((fullname != null
-                        && (hasSeen.contains(fullname)
-                                || SynccitRead.visitedIds.contains(fullname)))
+        return ((fullname != null && hasSeen.contains(fullname))
                 || (s.getDataNode().has("visited") && s.getDataNode().path("visited").asBoolean())
                 || s.getVote() != VoteDirection.NO_VOTE);
     }
@@ -132,8 +170,11 @@ public class HasSeen {
         if (fullname.contains("t3_")) {
             fullname = fullname.substring(3);
         }
+        // Answered before the add, not after: this entry point marks the post seen as well as
+        // reporting on it, so asking the set afterwards can only ever say yes.
+        final boolean alreadySeen = hasSeen.contains(fullname);
         hasSeen.add(fullname);
-        return (hasSeen.contains(fullname) || SynccitRead.visitedIds.contains(fullname));
+        return alreadySeen;
     }
 
     public static long getSeenTime(Submission s) {
@@ -168,8 +209,7 @@ public class HasSeen {
         }
 
         if (!fullname.contains("t1_")) {
-            SynccitRead.newVisited.add(fullname);
-            SynccitRead.visitedIds.add(fullname);
+            addNewVisited(fullname);
         }
     }
 
@@ -180,8 +220,9 @@ public class HasSeen {
         }
 
         // Called from onScrolled, i.e. many times a second while flinging. Everything below only
-        // has to happen the first time a post is seen: insert() is a no-op once the key exists,
-        // and the Synccit lists are ArrayLists that would otherwise collect a duplicate per frame.
+        // has to happen the first time a post is seen: seenTimes must keep the first-seen
+        // timestamp, insert() is a no-op once the key exists, and newVisited is an ArrayList that
+        // would otherwise collect a duplicate per frame.
         if (hasSeen.contains(fullname) && seenTimes.containsKey(fullname)) {
             return;
         }
@@ -195,8 +236,7 @@ public class HasSeen {
         AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> KVStore.getInstance().insert(key, value));
 
         if (!fullname.contains("t1_")) {
-            SynccitRead.newVisited.add(fullname);
-            SynccitRead.visitedIds.add(fullname);
+            addNewVisited(fullname);
         }
     }
 }

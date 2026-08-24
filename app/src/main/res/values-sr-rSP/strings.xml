@@ -543,10 +543,6 @@
     <string name="settings_section_data_saving_mode">Режим штедње података</string>
     <string name="settings_comment_color">Обојени индикатор дубине коментара</string>
     <string name="settings_volume_nav_comments">Кретање кроз коментаре дугмићима за звук</string>
-    <string name="settings_synccit_auth">Ауторизациони код</string>
-    <string name="settings_synccit_username">Корисничко име</string>
-    <string name="settings_synccit_connected">Успешно повезан!</string>
-    <string name="settings_synccit_failed">Провера идентитета није успела</string>
     <string name="settings_comment_collapse">Скроз скупи коментаре</string>
     <string name="settings_comment_collapse_description">Такође искључује и анимацију коментара</string>
     <string name="settings_comment_collapse_default">Подразумевано скупи децу коментаре</string>

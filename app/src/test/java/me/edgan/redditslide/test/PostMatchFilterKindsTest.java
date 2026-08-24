@@ -188,6 +188,24 @@ public class PostMatchFilterKindsTest {
                         post("someone", "", "https://example.com/s", "Spoiler"), SUB, false));
     }
 
+    /**
+     * An entry with nothing after the colon. Java drops trailing empty strings, so
+     * {@code "pics:".split(":")} has one element while the subreddit check in front of it still
+     * passes -- reading {@code split[1]} was an ArrayIndexOutOfBoundsException raised while binding
+     * the post in the feed. Two writers can store one: the post's own "filter this flair" action
+     * concatenates before it trims, so a whitespace-only flair becomes {@code "pics:"}, and the
+     * legacy comma-string migration accepts anything containing a colon.
+     */
+    @Test
+    public void aFlairFilterWithNothingAfterTheColonIsSkipped() throws Exception {
+        SettingValues.flairFilters = set(SUB + ":");
+
+        assertFalse(
+                "an entry with no flair text matches nothing rather than throwing",
+                PostMatch.doesMatch(
+                        post("someone", "", "https://example.com/s", "Spoiler"), SUB, false));
+    }
+
     /** A flair filter written for another subreddit must not reach this one. */
     @Test
     public void aFlairFilterForAnotherSubredditDoesNotApply() throws Exception {

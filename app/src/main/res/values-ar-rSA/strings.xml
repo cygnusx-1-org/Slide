@@ -354,9 +354,6 @@
     <string name="settings_title_filter">فلترة</string>
     <string name="settings_title_font">الخط</string>
     <string name="settings_section_appearance">المظهر</string>
-    <string name="settings_synccit_username">إسم المستخدم</string>
-    <string name="settings_synccit_delete">حذف حساب synccit حقا ؟</string>
-    <string name="settings_synccit_connected">تم الاتصال بنجاح!</string>
     <!-- Quick setting toggles in the drawer -->
     <!-- View types -->
     <!--Search methods -->

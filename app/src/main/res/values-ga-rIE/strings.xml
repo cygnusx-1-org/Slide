@@ -75,7 +75,6 @@
     <string name="search_goto">Téigh go dtí</string>
     <!-- Settings -->
     <!-- Settings titles displayed in settings activity-->
-    <string name="settings_synccit_username">Ainm Úsáideora</string>
     <!-- Quick setting toggles in the drawer -->
     <!-- View types -->
     <!--Search methods -->

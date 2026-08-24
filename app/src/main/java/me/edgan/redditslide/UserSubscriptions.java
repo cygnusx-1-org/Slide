@@ -280,7 +280,7 @@ public class UserSubscriptions {
 
     public static boolean hasSubs() {
         String s = PrefUtil.getString(subscriptions, Authentication.nameOrEmpty(), "");
-        return s.isEmpty();
+        return !s.isEmpty();
     }
 
     // Both are filled in by a network sync that can fail, and loadMultireddits clears

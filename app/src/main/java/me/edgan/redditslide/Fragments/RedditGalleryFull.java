@@ -44,16 +44,9 @@ public class RedditGalleryFull extends BaseAlbumFull {
                             // Create a new object matching GalleryImage's expected structure
                             ObjectNode imageNode = JsonNodeFactory.instance.objectNode();
 
-                            // Add the URL field as "u" instead of "url"
-                            if (s.has("u")) {
-                                imageNode.put("u", s.path("u").asText());
-                            } else if (s.has("mp4")) {
-                                imageNode.put("mp4", s.path("mp4").asText());
-                            }
-
-                            // Add width and height as x and y
-                            imageNode.put("x", s.has("x") ? s.path("x").asInt() : 0);
-                            imageNode.put("y", s.has("y") ? s.path("y").asInt() : 0);
+                            // The url and dimensions go in the nested "s" node below;
+                            // GalleryImage reads that node whenever it is present, so writing
+                            // them at the top level here as well would be dead.
 
                             // Add metadata fields
                             if (mediaItem.has("e")) imageNode.put("e", mediaItem.path("e").asText());

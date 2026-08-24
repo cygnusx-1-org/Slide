@@ -362,16 +362,6 @@
     <string name="settings_section_other">Annet</string>
     <string name="settings_comment_color">Fargerike kommentarindikatorer</string>
     <string name="settings_volume_nav_comments">Navigér i kommentarfeltet ved å bruke volumtastene</string>
-    <string name="settings_synccit_remove">KOBLE FRA SYNCCIT</string>
-    <string name="settings_synccit_auth">Auth-kode</string>
-    <string name="settings_synccit_username">Brukernavn</string>
-    <string name="settings_synccit_delete">Ønsker du å slette Synccit-kontoen?</string>
-    <string name="settings_synccit_authenticate">Autentiserer med Synccit</string>
-    <string name="settings_synccit_connected">Koblet til suksessfullt!</string>
-    <string name="settings_synccit_active">Synccit er nå aktiv for denne enheten</string>
-    <string name="settings_synccit_failed">Kunne ikke autorisere</string>
-    <string name="settings_synccit_failed_msg">Kontroller at brukernavn og autoriseringsnøkkelen er riktig!</string>
-    <string name="settings_synccit">Synccit-integrering</string>
     <string name="settings_comment_collapse">Kollaps kommentarer helt</string>
     <string name="settings_comment_collapse_description">Deaktiverer også kommentaranimasjoner</string>
     <string name="settings_comment_collapse_default">Kollaps barnekommentarer som standard</string>

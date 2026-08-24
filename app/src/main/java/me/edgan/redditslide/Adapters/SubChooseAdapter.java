@@ -216,12 +216,22 @@ public class SubChooseAdapter extends ArrayAdapter<String> {
         @SuppressWarnings("unchecked")
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            fitems = (ArrayList<String>) results.values;
+            // Same rule as SideArrayAdapter: getCount() measures fitems while the rows come from
+            // ArrayAdapter's own list, so both have to move before anything is notified, and once
+            // notified they must already agree. Assigning fitems first published a count with no
+            // rows behind it, and clear()/addAll() then notified twice more from states in
+            // between.
+            final ArrayList<String> newItems =
+                    results.values instanceof ArrayList
+                            ? (ArrayList<String>) results.values
+                            : new ArrayList<>();
+
+            setNotifyOnChange(false);
             clear();
-            if (fitems != null) {
-                addAll(fitems);
-                notifyDataSetChanged();
-            }
+            addAll(newItems);
+            fitems = newItems;
+            notifyDataSetChanged();
+            setNotifyOnChange(true);
         }
     }
 }

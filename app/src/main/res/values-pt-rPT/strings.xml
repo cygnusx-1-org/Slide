@@ -556,16 +556,6 @@
     <string name="settings_section_data_saving_mode">Modo de economia de dados</string>
     <string name="settings_comment_color">Indicadores coloridos para profundidade dos comentários</string>
     <string name="settings_volume_nav_comments">Navegue pelos comentários usando os botões de volume</string>
-    <string name="settings_synccit_remove">DESCONECTAR DO SYNCCIT</string>
-    <string name="settings_synccit_auth">Código de autenticação</string>
-    <string name="settings_synccit_username">Nome de utilizador</string>
-    <string name="settings_synccit_delete">Quer realmente apagar a conta do Synccit?</string>
-    <string name="settings_synccit_authenticate">Autenticando com o Synccit</string>
-    <string name="settings_synccit_connected">Conectado com sucesso!</string>
-    <string name="settings_synccit_active">Synccit agora está ativo para este dispositivo</string>
-    <string name="settings_synccit_failed">Não foi possível autenticar</string>
-    <string name="settings_synccit_failed_msg">Verifique se o seu nome de usuário e chave de autenticação estão corretos!</string>
-    <string name="settings_synccit">Integração com o Synccit</string>
     <string name="settings_commentnav_description">Permite uma barra inferior com setas de navegação</string>
     <string name="settings_comment_collapse">Retrair comentários completamente</string>
     <string name="settings_comment_collapse_description">Também desativa animações de comentários</string>
@@ -598,7 +588,6 @@
     <string name="settings_general_comment_last_visit">Mostrar contagem de comentários desde a última visita</string>
     <string name="settings_fab_create">Mostrar \"criar comentário\" FAB</string>
     <string name="settings_right_handed_comment_menu">Opções da barra de resposta invertidas</string>
-    <string name="settings_description_synccit">Synccit permite sincronizar o seu histórico de publicações entre dispositivos e o seu navegador</string>
     <string name="settings_description_view_type">Modos de visualização afetam tanto a visualização principal quanto a visualização de um único subreddit.\n\nSeparadores de subreddit: deslize lateralmente entre os seus subreddits\n\nSem separadores de subreddit: não permite deslizar entre os seus subreddits\n\nPainel de comentários: comentários deslizam próximo as publicações e o estado da página de comentários é gravado após o deslizar para voltar (para que não perca o lugar em que estava)</string>
     <string name="settings_comment_hide_selftext_image">Ocultar imagem principal em publicações de texto</string>
     <string name="settings_filter_flair">Filtro de categorias</string>

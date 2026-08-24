@@ -81,14 +81,13 @@ import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.ForceTouch.util.DensityUtils;
 import me.edgan.redditslide.Fragments.SubmissionsView;
+import me.edgan.redditslide.HasSeen;
 import me.edgan.redditslide.InboxCount;
 import me.edgan.redditslide.Notifications.CheckForMail;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
-import me.edgan.redditslide.Synccit.MySynccitUpdateTask;
-import me.edgan.redditslide.Synccit.SynccitRead;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Views.CatchStaggeredGridLayoutManager;
 import me.edgan.redditslide.Views.PreCachingLayoutManager;
@@ -369,20 +368,18 @@ public class MainActivity extends BaseActivity
     public void onPause() {
         super.onPause();
         changed = false;
-        if (!SettingValues.synccitName.isEmpty()) {
-            new MySynccitUpdateTask().execute(SynccitRead.newVisited.toArray(new String[0]));
-        }
         if (Authentication.isLoggedIn && Authentication.me != null
                 // This is causing a crash, might not be important since the storeVisits will just
                 // not do anything without gold && Authentication.me.hasGold()
-                && !SynccitRead.newVisited.isEmpty()) {
+                && HasSeen.hasNewVisited()) {
             new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... params) {
                     try {
-                        String[] returned = new String[SynccitRead.newVisited.size()];
+                        List<String> visited = HasSeen.newVisitedSnapshot();
+                        String[] returned = new String[visited.size()];
                         int i = 0;
-                        for (String s : SynccitRead.newVisited) {
+                        for (String s : visited) {
                             if (!s.contains("t3_")) {
                                 s = "t3_" + s;
                             }
@@ -390,7 +387,7 @@ public class MainActivity extends BaseActivity
                             i++;
                         }
                         new AccountManager(Authentication.reddit).storeVisits(returned);
-                        SynccitRead.newVisited = new ArrayList<>();
+                        HasSeen.clearNewVisited(visited);
                     } catch (Exception e) {
                         LogUtil.e(e, "MainActivity.doInBackground failed");
                     }

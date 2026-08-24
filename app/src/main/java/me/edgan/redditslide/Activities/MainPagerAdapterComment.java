@@ -12,7 +12,6 @@ import me.edgan.redditslide.Adapters.SubredditPosts;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Fragments.CommentPage;
 import me.edgan.redditslide.Fragments.SubmissionsView;
-import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.StringUtil;
@@ -112,7 +111,7 @@ public class MainPagerAdapterComment extends MainPagerAdapter {
         if (mainActivity.usedArray == null) {
             return 1;
         } else {
-            if (SettingValues.hideSubredditTabs) {
+            if (hideSubredditTabs) {
                 // Count special subreddits and multi-reddits
                 int count = 0;
                 for (String sub : mainActivity.usedArray) {
@@ -137,7 +136,7 @@ public class MainPagerAdapterComment extends MainPagerAdapter {
             Bundle args = new Bundle();
             String name = ""; // Initialize name
 
-            if (SettingValues.hideSubredditTabs) {
+            if (hideSubredditTabs) {
                 // Find the i-th special subreddit or multi-reddit
                 int specialIndex = 0;
                 boolean found = false;
@@ -250,7 +249,7 @@ public class MainPagerAdapterComment extends MainPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         if (mainActivity.usedArray != null && position != mainActivity.toOpenComments) {
-            if (SettingValues.hideSubredditTabs) {
+            if (hideSubredditTabs) {
                 // Find the position-th special subreddit or multi-reddit
                 int specialIndex = 0;
                 for (String sub : mainActivity.usedArray) {

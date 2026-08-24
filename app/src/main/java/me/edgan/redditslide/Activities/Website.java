@@ -12,7 +12,6 @@ import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
@@ -24,8 +23,6 @@ import androidx.webkit.WebViewClientCompat;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.OpenRedditLink;
@@ -35,7 +32,6 @@ import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
-import me.edgan.redditslide.util.AdBlocker;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
@@ -52,7 +48,7 @@ public class Website extends BaseActivityAnim {
     @SuppressWarnings("NullAway.Init") // assigned in onCreate
     MyWebViewClient client;
     @SuppressWarnings("NullAway.Init") // assigned in onCreate
-    AdBlockWebViewClient webClient;
+    SlideWebViewClient webClient;
     @SuppressWarnings("NullAway.Init") // assigned in onCreate
     ProgressBar p;
 
@@ -216,7 +212,7 @@ public class Website extends BaseActivityAnim {
         v = (WebView) requireViewById(R.id.web);
 
         client = new MyWebViewClient();
-        webClient = new AdBlockWebViewClient();
+        webClient = new SlideWebViewClient();
 
         if (!SettingValues.cookies) {
             final CookieManager cookieManager = CookieManager.getInstance();
@@ -312,7 +308,6 @@ public class Website extends BaseActivityAnim {
                             if (url.contains("/")) {
                                 java.util.Objects.requireNonNull(getSupportActionBar()).setSubtitle(getDomainName(url));
                             }
-                            currentURL = url;
                         }
                     } else {
                         if (getSupportActionBar() != null) {
@@ -364,26 +359,7 @@ public class Website extends BaseActivityAnim {
 
     @Nullable public static ArrayList<String> triedURLS;
 
-    @Nullable public String currentURL;
-
-    // Method adapted from http://www.hidroh.com/2016/05/19/hacking-up-ad-blocker-android/
-    public class AdBlockWebViewClient extends WebViewClientCompat {
-        private Map<String, Boolean> loadedUrls = new HashMap<>();
-
-        @Override
-        public @Nullable WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-            boolean ad;
-            if (!loadedUrls.containsKey(url)) {
-                ad = AdBlocker.isAd(url, Website.this);
-                loadedUrls.put(url, ad);
-            } else {
-                ad = loadedUrls.get(url);
-            }
-            return ad && (currentURL != null && !currentURL.contains("twitter.com"))
-                    ? AdBlocker.createEmptyResource()
-                    : super.shouldInterceptRequest(view, url);
-        }
-
+    public class SlideWebViewClient extends WebViewClientCompat {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             if (url.startsWith("intent://")) {

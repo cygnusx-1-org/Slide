@@ -549,16 +549,6 @@
     <string name="settings_section_data_saving_mode">數據節省模式</string>
     <string name="settings_comment_color">以多種顏色標示不同層次留言</string>
     <string name="settings_volume_nav_comments">使用音量按鈕在留言間移動</string>
-    <string name="settings_synccit_remove">取消與 SYNCCIT 連接</string>
-    <string name="settings_synccit_auth">授權碼</string>
-    <string name="settings_synccit_username">使用者名稱</string>
-    <string name="settings_synccit_delete">你肯定要移除此 Synccit 帳戶嗎？</string>
-    <string name="settings_synccit_authenticate">正在與 Syccit 認證</string>
-    <string name="settings_synccit_connected">已成功連接！</string>
-    <string name="settings_synccit_active">Synccit 已啟動</string>
-    <string name="settings_synccit_failed">認證不成功</string>
-    <string name="settings_synccit_failed_msg">請確定使用者名稱和授權碼正確。</string>
-    <string name="settings_synccit">連接 Synccit</string>
     <string name="settings_commentnav_description">啟用在畫面下方的瀏覽按鈕工具列</string>
     <string name="settings_comment_collapse">完全摺疊留言</string>
     <string name="settings_comment_collapse_description">同時會關閉留言動畫</string>

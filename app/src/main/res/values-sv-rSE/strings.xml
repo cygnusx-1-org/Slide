@@ -369,7 +369,6 @@
     <string name="settings_section_browser">Webbläsare</string>
     <string name="settings_section_save_history">Spara historik</string>
     <string name="settings_section_clear_history">Rensa historik</string>
-    <string name="settings_synccit_username">Användarnamn</string>
     <string name="settings_font_system">System</string>
     <string name="settings_layout_picture_mode">Bildläge</string>
     <string name="settings_section_content">Innehåll</string>

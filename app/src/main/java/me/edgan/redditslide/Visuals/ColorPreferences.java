@@ -636,7 +636,11 @@ public class ColorPreferences {
     }
 
     public void removeFontStyle(String subreddit) {
-        edit().remove(subreddit + USER_THEME_DELIMITER + Authentication.name).commit();
+        edit().remove(
+                        subreddit.toLowerCase(Locale.ENGLISH)
+                                + USER_THEME_DELIMITER
+                                + Authentication.name)
+                .commit();
     }
 
     public int getColor(@Nullable String s) {

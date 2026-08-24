@@ -571,16 +571,6 @@
     <string name="settings_section_data_saving_mode">Úsporný datový režim</string>
     <string name="settings_comment_color">Barevné ukazatele hloubky komentářů</string>
     <string name="settings_volume_nav_comments">Navigovat v komentářích tlačítky hlasitosti</string>
-    <string name="settings_synccit_remove">ODPOJIT SYNCCIT</string>
-    <string name="settings_synccit_auth">Ověřovací kód</string>
-    <string name="settings_synccit_username">Uživatelské jméno</string>
-    <string name="settings_synccit_delete">Opravdu chcete smazat synccit účet?</string>
-    <string name="settings_synccit_authenticate">Ověřuji pomocí Synccitu</string>
-    <string name="settings_synccit_connected">Úspěšně spojeno!</string>
-    <string name="settings_synccit_active">Synccit je nyní aktivní pro toto zařízení</string>
-    <string name="settings_synccit_failed">Nelze ověřit</string>
-    <string name="settings_synccit_failed_msg">Ujistěte se, že vaše uživatelské jméno a ověřovací klíč jsou správné!</string>
-    <string name="settings_synccit">Integrace synccitu</string>
     <string name="settings_commentnav_description">Umožňuje spodní lištu se šipkami navigace</string>
     <string name="settings_comment_collapse">Plně sbalit komentáře</string>
     <string name="settings_comment_collapse_description">Také vypne animace komentářů</string>
@@ -615,7 +605,6 @@
     <string name="settings_right_handed_comment_menu">Menu odpovědi na komentář vpravo</string>
     <string name="settings_reddit_description">Tato nastavení mění to, co Reddit API vrátí Slide.\n\nPro zobrazení náhledů ve všech subredditech, povolte \'Ignorovat nastavení médií subreddit médií\'\n\nChcete-li vidět veškerý NSFW obsah, vypněte \'Skrýt NSFW fotky\' a zapněte \'Jsem více než 18\'</string>
     <string name="settings_reddit_media_pref">Ignorovat nastavení médií subredditu</string>
-    <string name="settings_description_synccit">Synccit umožňuje synchronizovat historii příspěvků mezi zařízeními a prohlížečem</string>
     <string name="settings_description_view_type">Typy zobrazení ovlivňují jak hlavní zobrazení, tak zobrazení subredditu.\n\nKomentář: posunutí komentářů od dalších příspěvků a stav stránky komentáře je uložen po posunutí zpět (takže neztrácíte místo)\n\nŽádné záložky subredditu: zakáže přejetí mezi subreddity\n\nzáložkami Subreddit: posunutí mezi subreddity</string>
     <string name="settings_comment_hide_selftext_image">Skrýt úvodní obrázek na samotextových příspěvcích</string>
     <string name="settings_filter_flair">Flér filtry</string>

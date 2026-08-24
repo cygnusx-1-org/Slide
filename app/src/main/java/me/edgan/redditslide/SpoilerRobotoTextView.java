@@ -108,6 +108,12 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
             Pattern.compile("<a href=\"[#/](?:spoiler|sp|s)\">([^<]*)</a>");
     public static final Pattern nativeSpoilerPattern =
             Pattern.compile("<span class=\"[^\"]*md-spoiler-text+[^\"]*\">([^<]*)</span>");
+    /**
+     * A zero-length anchor, which {@code Html.fromHtml} would drop. Reluctant, so a comment holding
+     * a spoiler anchor and an emote matches each of them on its own -- greedy, the two were one
+     * match, the "/sp" test below skipped the whole span and the emote was thrown away with it.
+     */
+    public static final Pattern htmlEmotePattern = Pattern.compile("<a href=\"/.*?\"></a>");
 
     public SpoilerRobotoTextView(Context context) {
         super(context);
@@ -267,7 +273,6 @@ public class SpoilerRobotoTextView extends RobotoTextView implements ClickableTe
         // Html.fromHtml removes anchors with zero length node text. Find zero length anchors that
         // start
         // with "/" and add "." to them.
-        Pattern htmlEmotePattern = Pattern.compile("<a href=\"/.*\"></a>");
         Matcher htmlEmoteMatcher = htmlEmotePattern.matcher(html);
         while (htmlEmoteMatcher.find()) {
             String newPiece = htmlEmoteMatcher.group();

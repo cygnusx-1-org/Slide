@@ -17,7 +17,6 @@ import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionCache;
-import me.edgan.redditslide.Synccit.MySynccitReadTask;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
@@ -153,15 +152,6 @@ public class MultiredditPosts implements PostLoader {
                             .overwriteSubmissions(posts)
                             .writeToMemory(c);
 
-                String[] ids = new String[submissions.size()];
-                int i = 0;
-                for (Submission s : submissions) {
-                    ids[i] = MiscUtil.orEmpty(s.getId());
-                    i++;
-                }
-                if (!SettingValues.synccitName.isEmpty() && !offline) {
-                    new MySynccitReadTask().execute(ids);
-                }
                 final int finalStart = start;
 
                 // update online

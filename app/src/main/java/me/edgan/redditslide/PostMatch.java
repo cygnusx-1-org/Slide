@@ -203,6 +203,7 @@ public class PostMatch {
         boolean selftexts = isSelftext(baseSubreddit);
         boolean tumblrs = isTumblr(baseSubreddit);
         boolean videos = isVideo(baseSubreddit);
+        boolean nsfwAlbums = isNsfwAlbum(baseSubreddit);
         boolean nsfwGalleries = isNsfwGallery(baseSubreddit);
         boolean nsfwGifs = isNsfwGif(baseSubreddit);
         boolean nsfwImages = isNsfwImage(baseSubreddit);
@@ -219,6 +220,11 @@ public class PostMatch {
                 contentMatch = false;
             } else {
                 switch (contentType) {
+                    case ALBUM:
+                        if (nsfwAlbums) {
+                            contentMatch = true;
+                        }
+                        break;
                     case DEVIANTART:
                     case GIF:
                         if (nsfwGifs) {
@@ -255,6 +261,7 @@ public class PostMatch {
                             contentMatch = true;
                         }
                         break;
+                    case VREDDIT_DIRECT:
                     case VREDDIT_REDIRECT:
                     case STREAMABLE:
                     case VIDEO:
@@ -311,6 +318,7 @@ public class PostMatch {
                             contentMatch = true;
                         }
                         break;
+                    case VREDDIT_DIRECT:
                     case VREDDIT_REDIRECT:
                     case STREAMABLE:
                     case VIDEO:
@@ -326,7 +334,7 @@ public class PostMatch {
             for (String flairText : SettingValues.flairFilters) {
                 if (flairText.toLowerCase(Locale.ENGLISH).startsWith(baseSubreddit)) {
                     String[] split = flairText.split(":");
-                    if (split[0].equalsIgnoreCase(baseSubreddit)) {
+                    if (split.length > 1 && split[0].equalsIgnoreCase(baseSubreddit)) {
                         if (flair.equalsIgnoreCase(split[1].trim())) {
                             contentMatch = true;
                             break;

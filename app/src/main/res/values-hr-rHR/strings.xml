@@ -476,16 +476,6 @@
     <string name="settings_section_data_saving_mode">Način uštede podataka</string>
     <string name="settings_comment_color">Obojani indikatori podređenih komentara</string>
     <string name="settings_volume_nav_comments">Navigacija komentarima pomoću tipki za glasnoću</string>
-    <string name="settings_synccit_remove">ODSPOJITE SE OD SYNCCIT</string>
-    <string name="settings_synccit_auth">Kod za autentifikaciju</string>
-    <string name="settings_synccit_username">Korisničko ime</string>
-    <string name="settings_synccit_delete">Zaista želite izbrisati Synccit račun?</string>
-    <string name="settings_synccit_authenticate">Provjeram autentičnost sa Synccit</string>
-    <string name="settings_synccit_connected">Uspješno povezano!</string>
-    <string name="settings_synccit_active">Synccit je sada aktivan za ovaj uređaj</string>
-    <string name="settings_synccit_failed">Nije bilo moguće provjeriti autentičnost</string>
-    <string name="settings_synccit_failed_msg">Provjerite je li ispravno vaše korisničko ime i autentifikacijski ključ!</string>
-    <string name="settings_synccit">Synccit integracija</string>
     <string name="settings_comment_collapse">Potpuno sažmi komentare</string>
     <string name="settings_comment_collapse_description">Također onemogućuje animacije komentara</string>
     <string name="settings_backup_will_backup">\u0020 će biti spremljen</string>

@@ -88,6 +88,9 @@ public class DrawerController {
         drawerSubList = (ListView) mainActivity.requireViewById(R.id.drawerlistview);
         drawerSubList.setDividerHeight(0);
         drawerSubList.setDescendantFocusability(ListView.FOCUS_BEFORE_DESCENDANTS);
+        // This list carries focusable children -- the search EditText in its header view -- and a
+        // ListView only manages focus among its items once it has been told they can hold it.
+        drawerSubList.setItemsCanFocus(true);
         final LayoutInflater inflater = mainActivity.getLayoutInflater();
         final View header;
 
@@ -968,13 +971,25 @@ public class DrawerController {
             drawerSearch.setOnFocusChangeListener(
                     new View.OnFocusChangeListener() {
                         @Override
-                        public void onFocusChange(View v, boolean hasFocus) {
-                            if (hasFocus) {
-                                mainActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-                                drawerSubList.smoothScrollToPositionFromTop(1, drawerSearch.getHeight(), 100);
-                            } else {
-                                mainActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-                            }
+                        public void onFocusChange(View v, final boolean hasFocus) {
+                            // Posted, not run inline. This EditText lives in drawerSubList's header
+                            // view, so it is a descendant of the list, and ListView.layoutChildren()
+                            // moves focus among its children part-way through a pass -- which can
+                            // deliver this callback from inside that layout. Scrolling the same
+                            // list or resizing the window from there would re-enter a layout that
+                            // is still running, so both wait for the next frame.
+                            v.post(
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (hasFocus) {
+                                                mainActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+                                                drawerSubList.smoothScrollToPositionFromTop(1, drawerSearch.getHeight(), 100);
+                                            } else {
+                                                mainActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+                                            }
+                                        }
+                                    });
                         }
                     });
             drawerSearch.setOnEditorActionListener(
@@ -988,7 +1003,16 @@ public class DrawerController {
                             String searchText = drawerSearch.getText().toString().toLowerCase(Locale.ENGLISH);
                             boolean searchSubFound = mainActivity.usedArray.contains(searchText);
                             int searchSubIndex = mainActivity.usedArray.indexOf(searchText);
-                            int sideArrayAdapterIndex = mainActivity.usedArray.indexOf(sideArrayAdapter.fitems.get(0));
+                            // Read the first suggestion only when there is one. This ran before the
+                            // null check below and threw IndexOutOfBoundsException on an empty
+                            // result list -- which is what the search box holds whenever the typed
+                            // text matches no subreddit, the very case this handler exists for.
+                            int sideArrayAdapterIndex =
+                                    (sideArrayAdapter.fitems == null
+                                                    || sideArrayAdapter.fitems.isEmpty())
+                                            ? -1
+                                            : mainActivity.usedArray.indexOf(
+                                                    sideArrayAdapter.fitems.get(0));
 
                             if (arg1 == EditorInfo.IME_ACTION_SEARCH) {
                                 // If it the input text doesn't match a subreddit from the list exactly, openInSubView is true

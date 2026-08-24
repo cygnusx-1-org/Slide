@@ -90,7 +90,7 @@ public class SettingsSubreddit extends BaseActivityAnim {
                                                         Palette.removeColor(s);
                                                         SettingValues.prefs
                                                                 .edit()
-                                                                .remove(Reddit.PREF_LAYOUT + s)
+                                                                .remove(Reddit.getLayoutPrefKey(s))
                                                                 .apply();
                                                         new ColorPreferences(SettingsSubreddit.this)
                                                                 .removeFontStyle(s);
@@ -279,7 +279,7 @@ public class SettingsSubreddit extends BaseActivityAnim {
 
         for (String s : allSubs) {
             if (Palette.getColor(s) != Palette.getDefaultColor()
-                    || SettingValues.prefs.contains(Reddit.PREF_LAYOUT + s)
+                    || SettingValues.prefs.contains(Reddit.getLayoutPrefKey(s))
                     || colorPrefs.getFontStyleSubreddit(s).getColor() != defaultFont
                     || SettingValues.prefs.contains(
                             "picsenabled" + s.toLowerCase(Locale.ENGLISH))) {

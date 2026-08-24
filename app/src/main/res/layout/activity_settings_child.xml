@@ -481,31 +481,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/settings_child_synccit"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:background="?android:selectableItemBackground"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="56dp"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="16dp"
-                android:padding="16dp"
-                android:src="@drawable/synccit"
-                app:tint="?attr/tintColor" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text="@string/settings_synccit"
-                android:textColor="?attr/fontColor"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-
-        <LinearLayout
             android:id="@+id/settings_child_pro"
             android:layout_width="match_parent"
             android:layout_height="56dp"

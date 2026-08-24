@@ -12,7 +12,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.GridView;
@@ -35,9 +34,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import me.edgan.redditslide.Adapters.ImageGridAdapter;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.ForceTouch.PeekViewActivity;
@@ -48,7 +45,6 @@ import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SecretConstants;
 import me.edgan.redditslide.Tumblr.Photo;
 import me.edgan.redditslide.Tumblr.TumblrUtils;
-import me.edgan.redditslide.util.AdBlocker;
 import me.edgan.redditslide.util.GifUtils;
 import me.edgan.redditslide.util.GsonUtil;
 import me.edgan.redditslide.util.HttpUtil;
@@ -340,23 +336,6 @@ public class PeekMediaView extends RelativeLayout {
                         website.loadUrl(
                                 "javascript:(function() {"
                                     + " document.getElementsByTagName('video')[0].play(); })()");
-                    }
-
-                    private Map<String, Boolean> loadedUrls = new HashMap<>();
-
-                    @Override
-                    public @Nullable WebResourceResponse shouldInterceptRequest(
-                            WebView view, String url) {
-                        boolean ad;
-                        if (!loadedUrls.containsKey(url)) {
-                            ad = AdBlocker.isAd(url, getContext());
-                            loadedUrls.put(url, ad);
-                        } else {
-                            ad = loadedUrls.get(url);
-                        }
-                        return ad
-                                ? AdBlocker.createEmptyResource()
-                                : super.shouldInterceptRequest(view, url);
                     }
                 };
         website.setVisibility(View.VISIBLE);

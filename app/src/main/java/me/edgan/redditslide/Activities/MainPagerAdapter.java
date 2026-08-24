@@ -42,6 +42,22 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
     protected SubmissionsView mCurrentFragment;
     private MainActivity mainActivity;
 
+    // A snapshot of SettingValues.hideSubredditTabs, not a live read of it. The flag decides how
+    // many tabs getCount() reports, and the settings screen flips it the instant the switch is
+    // tapped -- while MainActivity is only PAUSED behind that screen's translucent swipeable
+    // theme, so its ViewPager is still attached and still measuring. Reading the flag live let
+    // the count change under a pager that had not been notified, and the next populate() (a
+    // measure pass is enough) threw IllegalStateException before MainActivity.onResume could
+    // call reloadSubs(). The new value is taken up in notifyDataSetChanged() below, which is
+    // where ViewPager re-reads the count too, so the two can no longer disagree.
+    protected boolean hideSubredditTabs = SettingValues.hideSubredditTabs;
+
+    @Override
+    public void notifyDataSetChanged() {
+        hideSubredditTabs = SettingValues.hideSubredditTabs;
+        super.notifyDataSetChanged();
+    }
+
     static int resolveHeaderColor(Drawable bg, String fallbackSub) {
         if (bg instanceof ColorDrawable) {
             return ((ColorDrawable) bg).getColor();
@@ -181,7 +197,7 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
         if (mainActivity.usedArray == null) {
             return 1;
         } else {
-            if (SettingValues.hideSubredditTabs) {
+            if (hideSubredditTabs) {
                 // Count special subreddits like frontpage, all, etc. and multi-reddits
                 int count = 0;
                 for (String sub : mainActivity.usedArray) {
@@ -203,7 +219,7 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
         Bundle args = new Bundle();
         String name = ""; // Initialize with default empty string
 
-        if (SettingValues.hideSubredditTabs) {
+        if (hideSubredditTabs) {
             int specialIndex = 0;
             boolean found = false;
 
@@ -329,7 +345,7 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         if (mainActivity.usedArray != null) {
-            if (SettingValues.hideSubredditTabs) {
+            if (hideSubredditTabs) {
                 // Find the position-th special subreddit or multi-reddit
                 int specialIndex = 0;
                 for (String sub : mainActivity.usedArray) {

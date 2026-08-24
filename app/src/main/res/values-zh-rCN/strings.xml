@@ -568,16 +568,6 @@
     <string name="settings_section_data_saving_quality">数据节省质量</string>
     <string name="settings_comment_color">多彩的评论深度指标</string>
     <string name="settings_volume_nav_comments">使用音量按钮在评论间移动</string>
-    <string name="settings_synccit_remove">断开 SYNCCIT</string>
-    <string name="settings_synccit_auth">验证码</string>
-    <string name="settings_synccit_username">用户名</string>
-    <string name="settings_synccit_delete">真的删除 Synccit 帐户？</string>
-    <string name="settings_synccit_authenticate">使用 Synccit 进行身份验证</string>
-    <string name="settings_synccit_connected">已成功连接!</string>
-    <string name="settings_synccit_active">Synccit 现在已激活在这个设备</string>
-    <string name="settings_synccit_failed">无法验证</string>
-    <string name="settings_synccit_failed_msg">请确保您的用户名和身份验证密钥正确无误!</string>
-    <string name="settings_synccit">Synccit 集成</string>
     <string name="settings_commentnav_description">启用带有导航箭头的底部栏</string>
     <string name="settings_comment_collapse">完全折叠评论</string>
     <string name="settings_comment_collapse_description">也会禁用评论动画</string>
@@ -616,7 +606,6 @@
     <string name="settings_right_handed_comment_menu">右手评论回复菜单</string>
     <string name="settings_reddit_description">这些设置将更改 Reddit API 返回到 Slide 的内容。\n\n要在所有版块中查看缩略图, 启用 \"忽略版块媒体偏好\" \n\n要查看所有 NSFW 内容, 关闭 \"隐藏 NSFW 照片\" 并打开 \"我已满18岁\"</string>
     <string name="settings_reddit_media_pref">忽略版块媒体偏好</string>
-    <string name="settings_description_synccit">Synccit 允许您在设备和浏览器之间同步提交历史记录</string>
     <string name="settings_description_view_type">视图类型同时影响主视图和单个版块视图。\n\n评论窗格: 评论从帖子旁边滑出, 并且在向后滑动时保存评论页状态 (所以你不会失去你的位置) \n\n 无版块选项卡: 禁用在版块之间滑动 \n\n 版块选项卡: 在你的版块之间滑动</string>
     <string name="settings_comment_hide_selftext_image">隐藏帖文帖子中的主图片</string>
     <string name="settings_filter_flair">签名过滤</string>

@@ -22,15 +22,17 @@ import android.content.SharedPreferences;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import me.edgan.redditslide.Fragments.DrawerItemsDialog;
+import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
 public class UpgradeUtil {
     // Increment for each needed change
-    private static final int VERSION = 3;
+    private static final int VERSION = 4;
 
     private UpgradeUtil() {}
 
@@ -185,6 +187,39 @@ public class UpgradeUtil {
                                 selected | DrawerItemsDialog.SettingsDrawerEnum.USERS.value)
                         .apply();
             }
+        }
+
+        // Per-subreddit layout presets were written under the subreddit as displayed, while the
+        // feed has only ever read the lowercased key, so a preset set for r/AskReddit was stored
+        // where nothing looked for it and the custom layout never applied. The key is built in one
+        // place now (Reddit#getLayoutPrefKey); move what is already stored onto it, so the setting
+        // starts working and the settings screen keeps listing the subreddit as modified.
+        if (CURRENT < 4) {
+            SharedPreferences prefs = context.getSharedPreferences("SETTINGS", 0);
+            SharedPreferences.Editor prefsEditor = prefs.edit();
+
+            for (Map.Entry<String, ?> entry : prefs.getAll().entrySet()) {
+                final String key = entry.getKey();
+                if (!key.startsWith(Reddit.PREF_LAYOUT)
+                        || !(entry.getValue() instanceof Boolean)) {
+                    continue;
+                }
+
+                final String migrated =
+                        Reddit.getLayoutPrefKey(key.substring(Reddit.PREF_LAYOUT.length()));
+                if (migrated.equals(key)) {
+                    continue;
+                }
+
+                prefsEditor.remove(key);
+                // A preset already saved under the lowercased key is the live one; the stale
+                // mixed-case copy is dropped rather than allowed to overwrite it.
+                if (!prefs.contains(migrated)) {
+                    prefsEditor.putBoolean(migrated, (Boolean) entry.getValue());
+                }
+            }
+
+            prefsEditor.apply();
         }
 
         upgradePrefs.edit().putInt("VERSION", VERSION).apply();

@@ -377,6 +377,12 @@
     <string name="type_nsfw_emb">NSFW embedded</string>
     <string name="type_imgur">Imgur content</string>
     <string name="type_nsfw_imgur">NSFW Imgur content</string>
+    <string name="type_nsfw_xkcd">NSFW XKCD</string>
+    <string name="type_nsfw_deviantart">NSFW DeviantArt</string>
+    <string name="type_nsfw_title_only">NSFW title post</string>
+    <string name="type_nsfw_reddit">NSFW Reddit link</string>
+    <string name="type_nsfw_selftext">NSFW selftext</string>
+    <string name="type_nsfw_streamable">NSFW Streamable</string>
     <string name="type_external">External</string>
 
     <!-- Content types plural (Content filters) -->
@@ -766,16 +772,6 @@
     <string name="settings_section_data_saving_quality">Data saving quality</string>
     <string name="settings_comment_color">Colorful comment depth indicators</string>
     <string name="settings_volume_nav_comments">Navigate comments using volume buttons</string>
-    <string name="settings_synccit_remove">DISCONNECT SYNCCIT</string>
-    <string name="settings_synccit_auth">Auth code</string>
-    <string name="settings_synccit_username">Username</string>
-    <string name="settings_synccit_delete">Really delete Synccit account?</string>
-    <string name="settings_synccit_authenticate">Authenticating with Synccit</string>
-    <string name="settings_synccit_connected">Connected successfully!</string>
-    <string name="settings_synccit_active">Synccit is now active for this device</string>
-    <string name="settings_synccit_failed">Could not authenticate</string>
-    <string name="settings_synccit_failed_msg">Make sure your username and authentication key are correct!</string>
-    <string name="settings_synccit">Synccit integration</string>
     <string name="settings_commentnav_description">Enables a bottom bar with navigation arrows</string>
     <string name="settings_comment_collapse">Fully collapse comments</string>
     <string name="settings_comment_collapse_description">Also disables comment animations</string>
@@ -819,7 +815,6 @@
     <string name="settings_right_handed_comment_menu">Right-handed comment reply menu</string>
     <string name="settings_reddit_description">These settings change what the Reddit API returns to Slide.\n\nTo see thumbnails in all subreddits, enable \'Ignore subreddit media preferences\'\n\nTo see all NSFW content, turn off \'Hide NSFW photos\' and turn on \'I am over 18\'</string>
     <string name="settings_reddit_media_pref">Ignore subreddit media preferences</string>
-    <string name="settings_description_synccit">Synccit allows you to sync your submission history between devices and your browser</string>
     <string name="settings_description_view_type">View types affect both the main view and single subreddit views.\n\nComment pane: comments slide out from next to posts and the comment page state is saved after swiping back (so you don\'t lose your place)\n\nNo subreddit tabs: disables swiping between subreddits\n\nSubreddit tabs: slide between your subreddits</string>
     <string name="settings_short_description_view_type">View types affect both the main view and single subreddit views</string>
     <string name="settings_comment_hide_selftext_image">Hide lead image on selftext posts</string>

@@ -119,8 +119,6 @@ public class SettingValues {
     public static final String PREF_THUMBNAIL_FLAGS = "thumbnailFlags";
     public static final String PREF_IMAGE = "image";
     public static final String PREF_SELFTEXT_IMAGE_COMMENT = "selftextImageComment";
-    public static final String SYNCCIT_AUTH = "SYNCCIT_AUTH";
-    public static final String SYNCCIT_NAME = "SYNCCIT_NAME";
     public static final String PREF_BLUR = "blur";
     public static final String PREF_ALBUM_SWIPE = "albumswipe";
     public static final String PREF_GALLERY_GRID = "galleryGrid";
@@ -267,9 +265,6 @@ public class SettingValues {
     public static int linkHandlingMode;
 
     public static int previews;
-
-    public static String synccitName = "";
-    public static String synccitAuth = "";
 
     public static Set<String> titleFilters = new HashSet<>();
     public static Set<String> textFilters = new HashSet<>();
@@ -514,8 +509,6 @@ public class SettingValues {
         storeNSFWHistory = prefs.getBoolean(PREF_STORE_NSFW_HISTORY, false);
         scrollSeen = prefs.getBoolean(PREF_SCROLL_SEEN, false);
         debugBreakReauth = prefs.getBoolean(PREF_DEBUG_BREAK_REAUTH, false);
-        synccitName = PrefUtil.getString(prefs, SYNCCIT_NAME, "");
-        synccitAuth = PrefUtil.getString(prefs, SYNCCIT_AUTH, "");
         notifSound = prefs.getBoolean(PREF_SOUND_NOTIFS, false);
         pauseOnAudioFocus = prefs.getBoolean(PREF_PAUSE_ON_AUDIO_FOCUS, false);
         cookies = prefs.getBoolean(PREF_COOKIES, true);

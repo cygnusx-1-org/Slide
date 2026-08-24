@@ -146,6 +146,24 @@ public class UserSubscriptionsListTest {
         assertEquals(list("pics", "videos"), UserSubscriptions.getSubscriptions(context));
     }
 
+    /**
+     * {@code hasSubs} is the guard on the home pager rebuild that the subreddit-editing screens
+     * ask for when they return, so it has to be true in the case the rebuild exists for: the
+     * account has subscriptions and has just changed them. It answered the opposite of its name --
+     * {@code s.isEmpty()} -- which skipped the rebuild whenever there was anything to rebuild.
+     */
+    @Test
+    public void hasSubsIsTrueForAnAccountWithSubscriptions() {
+        UserSubscriptions.setSubscriptions(list("pics", "videos"));
+
+        assertTrue(UserSubscriptions.hasSubs());
+    }
+
+    @Test
+    public void hasSubsIsFalseForAnAccountWithNone() {
+        assertFalse(UserSubscriptions.hasSubs());
+    }
+
     /** A repeat would give the home pager two identical tabs. */
     @Test
     public void aSubscriptionListWithARepeatIsDeDuplicated() {

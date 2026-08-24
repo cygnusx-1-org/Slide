@@ -25,7 +25,6 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionCache;
-import me.edgan.redditslide.Synccit.MySynccitReadTask;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
@@ -164,13 +163,6 @@ public class SubredditPosts implements PostLoader {
                     ((SubmissionsView) displayer).adapter.undoSetError();
                 }
 
-                String[] ids = new String[submissions.size()];
-                int i = 0;
-                for (Submission s : submissions) {
-                    ids[i] = MiscUtil.orEmpty(s.getId());
-                    i++;
-                }
-
                 // update online
                 displayer.updateSuccess(posts, start);
                 currentid = 0;
@@ -191,10 +183,6 @@ public class SubredditPosts implements PostLoader {
                     ((SubredditView) context).subreddit = subredditRandom;
                     ((SubredditView) context).executeAsyncSubreddit(subredditRandom);
                 }
-                if (!SettingValues.synccitName.isEmpty() && !offline) {
-                    new MySynccitReadTask(displayer).execute(ids);
-                }
-
             } else if (submissions != null) {
                 // end of submissions
                 nomore = true;

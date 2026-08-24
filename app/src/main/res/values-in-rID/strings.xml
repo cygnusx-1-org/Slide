@@ -558,16 +558,6 @@
     <string name="settings_section_data_saving_quality">Kualitas hemat data</string>
     <string name="settings_comment_color">Indikator kedalaman komentar yang tajam</string>
     <string name="settings_volume_nav_comments">Arahkan komentar menggunakan tombol volume</string>
-    <string name="settings_synccit_remove">MEMUTUSKAN SYNCCIT</string>
-    <string name="settings_synccit_auth">Kode otorisasi</string>
-    <string name="settings_synccit_username">Nama pengguna</string>
-    <string name="settings_synccit_delete">Yakin ingin menghapus akun Synccit?</string>
-    <string name="settings_synccit_authenticate">Mengotentikasi dengan Synccit</string>
-    <string name="settings_synccit_connected">Berhasil tersambung!</string>
-    <string name="settings_synccit_active">Synccit sekarang aktif untuk perangkat ini</string>
-    <string name="settings_synccit_failed">Tidak bisa mengotentikasi</string>
-    <string name="settings_synccit_failed_msg">Pastikan nama pengguna dan kunci otentikasi Anda benar!</string>
-    <string name="settings_synccit">Integrasi Synccit</string>
     <string name="settings_commentnav_description">Mengaktifkan bilah bawah dengan panah navigasi</string>
     <string name="settings_comment_collapse">Seluruh komentar gagal</string>
     <string name="settings_comment_collapse_description">Nonaktifkan juga komentar animasi</string>
@@ -604,7 +594,6 @@
     <string name="settings_right_handed_comment_menu">Menu balas komentar sebelah kanan</string>
     <string name="settings_reddit_description">Setelan ini mengubah apa yang API Reddit kembalikan ke Slide.\n\nUntuk melihat pratinjau di semua subreddit, nyalakan \'Abaikan preferensi media subreddit\'\n\nUntuk melihat konten NSFW, matikan \'Sembunyikan foto NSFW\' dan nyalakan \'Saya berusia di atas 18\'</string>
     <string name="settings_reddit_media_pref">Abaikan preferensi media subreddit</string>
-    <string name="settings_description_synccit">Synccit memungkinkan Anda menyinkronkan riwayat pengiriman Anda antara perangkat dan browser Anda</string>
     <string name="settings_description_view_type">Jenis tampilan mempengaruhi tampilan utama dan tampilan subreddit tunggal. \n\n panel Komentar: komentar meluncur dari sebelah posting dan status halaman komentar disimpan setelah digesek kembali (jadi Anda tidak kehilangan tempat Anda) \n\n Tidak ada subreddit tab: menonaktifkan swiping antara subreddits \n\n Subreddit tabs: geser antara subreddit Anda</string>
     <string name="settings_comment_hide_selftext_image">Menyembunyikan gambar utama pada posting selftext</string>
     <string name="settings_filter_flair">Penyaringan</string>

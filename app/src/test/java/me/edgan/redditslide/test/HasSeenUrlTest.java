@@ -8,7 +8,6 @@ import android.content.Context;
 import androidx.test.core.app.ApplicationProvider;
 import com.lusfold.androidkeyvaluestore.KVStore;
 import me.edgan.redditslide.HasSeen;
-import me.edgan.redditslide.Synccit.SynccitRead;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,16 +40,14 @@ public class HasSeenUrlTest {
         KVStore.init(context, "SEEN");
         HasSeen.hasSeen.clear();
         HasSeen.seenTimes.clear();
-        SynccitRead.visitedIds.clear();
-        SynccitRead.newVisited.clear();
+        HasSeen.clearNewVisited();
     }
 
     @After
     public void tearDown() {
         HasSeen.hasSeen.clear();
         HasSeen.seenTimes.clear();
-        SynccitRead.visitedIds.clear();
-        SynccitRead.newVisited.clear();
+        HasSeen.clearNewVisited();
         TestUtils.clearRedditApplication();
     }
 

@@ -574,16 +574,6 @@
     <string name="settings_section_data_saving_quality">Qualidade de economia de dados</string>
     <string name="settings_comment_color">Indicadores coloridos de profundidade de comentários</string>
     <string name="settings_volume_nav_comments">Navegar pelos comentários usando os botões de volume</string>
-    <string name="settings_synccit_remove">DESCONECTAR DO SYNCCIT</string>
-    <string name="settings_synccit_auth">Código de autenticação</string>
-    <string name="settings_synccit_username">Nome de usuário</string>
-    <string name="settings_synccit_delete">Deseja mesmo excluir a conta do Synccit?</string>
-    <string name="settings_synccit_authenticate">Autenticando com o Synccit</string>
-    <string name="settings_synccit_connected">Conectado com sucesso!</string>
-    <string name="settings_synccit_active">Synccit agora está ativo para este dispositivo</string>
-    <string name="settings_synccit_failed">Não foi possível autenticar</string>
-    <string name="settings_synccit_failed_msg">Verifique se o seu nome de usuário e chave de autenticação estão corretos!</string>
-    <string name="settings_synccit">Integração com o Synccit</string>
     <string name="settings_commentnav_description">Ativar barra inferior com setas para navegação</string>
     <string name="settings_comment_collapse">Recolher comentários completamente</string>
     <string name="settings_comment_collapse_description">Também desativa animações de comentários</string>
@@ -622,7 +612,6 @@
     <string name="settings_right_handed_comment_menu">Menu de resposta a comentários para destros</string>
     <string name="settings_reddit_description">Essas configurações alteram o que a API do Reddit retorna ao Slide.\n\nPara ver miniaturas em todos os subreddits, ative \'Ignorar preferências de mídia do subreddit\'\n\nPara ver todo o conteúdo NSFW, desative \'Ocultar todas as fotos NSFW\' e confirme ser maior de 18 anos</string>
     <string name="settings_reddit_media_pref">Ignorar as preferências de mídia do subreddit</string>
-    <string name="settings_description_synccit">Synccit permite sincronizar o histórico de posts entre os dispositivos e seu navegador</string>
     <string name="settings_description_view_type">Modos de visualização afetam tanto a visualização principal quanto a visualização de um único subreddit.\n\nGuias de subreddit: deslize lateralmente entre seus subreddits\n\nSem guias de subreddit: não permite deslizar entre seus subreddits\n\nPainel de comentários: comentários deslizam próximo aos posts e o estado da página de comentários é salvo após o deslizar para voltar (para que você não perca o lugar que estava)</string>
     <string name="settings_comment_hide_selftext_image">Ocultar imagem principal em posts de texto</string>
     <string name="settings_filter_flair">Filtros de flair</string>
