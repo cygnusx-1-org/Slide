@@ -315,7 +315,6 @@
     <string name="mod_ban_reason">Eston syy</string>
     <string name="mod_ban_note_user">Käyttä viesti (valinnainen)</string>
     <string name="mod_remove_hint">Poiston syy</string>
-    <!-- Toolbox-related stuff -->
     <!-- If he did -->
     <!-- Subreddit Wiki -->
     <!-- Subreddits -->
@@ -363,7 +362,6 @@
     <string name="settings_links_force_external">Avaa ulkoisessa selaimessa</string>
     <string name="settings_right_handed_comment_menu">Oikeakätinen kommentti vastausvalikko</string>
     <string name="settings_section_content">Sisältö</string>
-    <string name="settings_mod_toolbox_modmail">Lähetä position syy subredditina?</string>
     <!-- Quick setting toggles in the drawer -->
     <!-- View types -->
     <string name="view_type_comments">Kommentti paneeli</string>

@@ -386,7 +386,6 @@
         <item quantity="few">Pogledaj %d izvješća</item>
         <item quantity="other">Pogledaj %d izvješća</item>
     </plurals>
-    <!-- Toolbox-related stuff -->
     <!-- If he did -->
     <string name="really_pin_submission_message">Objava prikvačena</string>
     <string name="really_unpin_submission_message">Objava otkvačena</string>

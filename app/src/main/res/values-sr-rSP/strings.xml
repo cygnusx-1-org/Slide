@@ -458,8 +458,6 @@
         <item quantity="few">Види %d пријаве</item>
         <item quantity="other">Види %d пријава</item>
     </plurals>
-    <!-- Toolbox-related stuff -->
-    <string name="toolbox_removal_lock">Закључај уклоњену тему</string>
     <!-- If he did -->
     <string name="really_pin_submission_message">Објава закачена</string>
     <string name="really_unpin_submission_message">Објава откачена</string>
@@ -580,7 +578,6 @@
     <string name="settings_about_version_copied_toast">Број верзије копиран у оставу</string>
     <string name="settings_general_inbox_snd">Звук и вибрација</string>
     <string name="settings_enable_notifs">Укључи обавештења за пријемно сандуче</string>
-    <string name="settings_mod_toolbox_lock">Закључај теме пошто се остави разлог уклањања</string>
     <!-- Quick setting toggles in the drawer -->
     <string name="toggle_night_mode">Ноћни режим</string>
     <string name="toggle_immersive_mode">Удубљујући режим</string>

@@ -60,7 +60,6 @@ import me.edgan.redditslide.SavedUsers;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.SubmissionViews.LocalSaved;
-import me.edgan.redditslide.Toolbox.ToolboxUI;
 import me.edgan.redditslide.UserTags;
 import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Views.DoEditorActions;
@@ -947,7 +946,6 @@ final AlertDialog reportDialog =
         final Drawable remove = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_close, color);
         final Drawable ban = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_gavel, color);
         final Drawable spam = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_flag, color);
-        final Drawable note = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_note, color);
         final Drawable removeReason = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_announcement, color);
         final Drawable lock = BlendModeUtil.getTintedDrawable(mContext, R.drawable.ic_lock, color);
 
@@ -969,10 +967,6 @@ final AlertDialog reportDialog =
                     mContext.getResources()
                             .getQuantityString(
                                     R.plurals.mod_btn_reports, reportCount, reportCount));
-        }
-
-        if (SettingValues.toolboxEnabled) {
-            b.sheet(24, note, mContext.getString(R.string.mod_usernotes_view));
         }
 
         b.sheet(1, approve, mContext.getString(R.string.mod_btn_approve));
@@ -1042,46 +1036,7 @@ final AlertDialog reportDialog =
                                 removeComment(mContext, holder, comment, adapter, false);
                                 break;
                             case 7:
-                                if (SettingValues.removalReasonType
-                                                == SettingValues.RemovalReasonType.TOOLBOX.ordinal()
-                                        && ToolboxUI.canShowRemoval(MiscUtil.orEmpty(comment.getSubredditName()))) {
-                                    ToolboxUI.showRemoval(
-                                            mContext,
-                                            comment,
-                                            new ToolboxUI.CompletedRemovalCallback() {
-                                                @Override
-                                                public void onComplete(boolean success) {
-                                                    if (success) {
-                                                        Snackbar s =
-                                                                Snackbar.make(
-                                                                        holder.itemView,
-                                                                        R.string.comment_removed,
-                                                                        Snackbar.LENGTH_LONG);
-                                                        LayoutUtils.showSnackbar(s);
-
-                                                        adapter.removed.add(comment.getFullName());
-                                                        adapter.approved.remove(
-                                                                comment.getFullName());
-                                                        holder.content.setText(
-                                                                CommentAdapterHelper.getScoreString(
-                                                                        comment,
-                                                                        mContext,
-                                                                        holder,
-                                                                        adapter.submission,
-                                                                        adapter));
-                                                    } else {
-                                                        DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
-                                                                .setTitle(R.string.err_general)
-                                                                .setMessage(
-                                                                        R.string.err_retry_later)
-                                                                );
-                                                    }
-                                                }
-                                            });
-                                } else { // Show a Slide reason dialog if we can't show a toolbox or
-                                    // reddit one
-                                    doRemoveCommentReason(mContext, holder, comment, adapter);
-                                }
+                                doRemoveCommentReason(mContext, holder, comment, adapter);
                                 break;
                             case 10:
                                 removeComment(mContext, holder, comment, adapter, true);
@@ -1093,13 +1048,6 @@ final AlertDialog reportDialog =
                                 break;
                             case 23:
                                 showBan(mContext, adapter.listView, comment, "", "", "", "");
-                                break;
-                            case 24:
-                                ToolboxUI.showUsernotes(
-                                        mContext,
-                                        MiscUtil.orEmpty(comment.getAuthor()),
-                                        MiscUtil.orEmpty(comment.getSubredditName()),
-                                        "l," + comment.getParentId() + "," + comment.getId());
                                 break;
                             case 25:
                                 lockUnlockComment(mContext, holder, comment, !locked);
@@ -2051,9 +1999,6 @@ final AlertDialog reportDialog =
                 titleString.append(" ");
             }
         }
-
-        ToolboxUI.appendToolboxNote(
-                mContext, titleString, comment.getSubredditName(), comment.getAuthor());
 
         if (adapter.removed.contains(comment.getFullName())
                 || (comment.getBannedBy() != null

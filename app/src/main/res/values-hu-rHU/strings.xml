@@ -439,12 +439,6 @@
         <item quantity="one">%d jelentés megtekintése</item>
         <item quantity="other">%d jelentés megtekintése</item>
     </plurals>
-    <!-- Toolbox-related stuff -->
-    <string name="toolbox_removal_lock">Az eltávolított szál zárolása</string>
-    <string name="toolbox_logreason_placeholder">Ok naplózása</string>
-    <string name="toolbox_note_text_required">A megjegyzésszöveg kötelező</string>
-    <string name="toolbox_note_text_placeholder">Valami a felhasználóról&#8230;</string>
-    <string name="toolbox_note_default">Nincs típus</string>
     <!-- If he did -->
     <string name="really_pin_submission_message">Poszt kiemelve</string>
     <string name="really_unpin_submission_message">Poszt kiemelése eltávolítva</string>
@@ -519,7 +513,6 @@
     <string name="settings_general_immersive_mode">Intelligens teljes képernyő</string>
     <string name="settings_general_immersive_mode_desc">Az állapotsor és a navigációs sáv elrejtése (kísérleti)</string>
     <string name="settings_general_title_drawer_items">Fiókelemek</string>
-    <string name="settings_moderation">Moderálás</string>
     <!-- Settings titles displayed in settings activity-->
     <string name="settings_title_backup">Mentés &amp; visszaállítás</string>
     <string name="settings_title_default_theme">Alaptéma</string>

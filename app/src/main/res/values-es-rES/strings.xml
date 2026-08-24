@@ -461,24 +461,6 @@
         <item quantity="one">Ver reporte %d</item>
         <item quantity="other">Ver informes %d</item>
     </plurals>
-    <!-- Toolbox-related stuff -->
-    <string name="mod_usernotes_view">Ver notas de usuario</string>
-    <string name="mod_usernotes_title">Notas de usuario para %s</string>
-    <string name="mod_usernotes_add">Añadir una nota de usuario</string>
-    <string name="toolbox_removal_title">Razones de eliminación para %s</string>
-    <string name="toolbox_removal_header">Incluir cabecera</string>
-    <string name="toolbox_removal_footer">Incluye pie de página:</string>
-    <string name="toolbox_removal_comment">Responder con un comentario al elemento eliminado</string>
-    <string name="toolbox_removal_pm">Enviar como MP</string>
-    <string name="toolbox_removal_modmail">Enviar MP como modmail</string>
-    <string name="toolbox_removal_both">Enviar como MP y responder</string>
-    <string name="toolbox_removal_none">Ninguno, sólo registra la eliminación</string>
-    <string name="toolbox_removal_lock">Bloquear el hilo eliminado</string>
-    <string name="toolbox_logreason_placeholder">Razón del registro</string>
-    <string name="toolbox_note_text_placeholder">Algo sobre el usuario&#8230;</string>
-    <string name="toolbox_note_default">Sin tipo</string>
-    <string name="toolbox_wiki_edit_reauth">Para añadir o eliminar las notas de usuario, Slide debe volver a autenticarte</string>
-    <string name="toolbox_wiki_edit_reauth_question">¿Te gustaría volver a iniciar sesión en Slide?</string>
     <!-- If he did -->
     <string name="really_pin_submission_message">Envío fijado</string>
     <string name="really_unpin_submission_message">Envío no fijado</string>
@@ -552,7 +534,6 @@
     <string name="settings_set_storage_location">Las imágenes se guardarán en %s</string>
     <string name="settings_general_immersive_mode">Modo de pantalla completa</string>
     <string name="settings_general_immersive_mode_desc">Esconder la barra de estado y navegación (experimental)</string>
-    <string name="settings_moderation">Moderación</string>
     <!-- Settings titles displayed in settings activity-->
     <string name="settings_title_backup">Copia de seguridad y Restauración</string>
     <string name="settings_title_default_theme">Tema principal</string>
@@ -639,7 +620,6 @@
     <string name="settings_theme_night_end_at">Terminar a las\u0020</string>
     <string name="settings_general_inbox_snd">Sonar y vibrar</string>
     <string name="settings_enable_notifs">Activar notificaciones de Inbox</string>
-    <string name="settings_mod_toolbox_header">Barra de herramientas</string>
     <!-- Quick setting toggles in the drawer -->
     <string name="toggle_night_mode">Modo nocturno</string>
     <string name="toggle_immersive_mode">Modo inmersivo</string>

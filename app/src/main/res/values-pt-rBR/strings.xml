@@ -471,26 +471,6 @@
         <item quantity="one">Visualizar %d denúncia</item>
         <item quantity="other">Visualizar %d denúncias</item>
     </plurals>
-    <!-- Toolbox-related stuff -->
-    <string name="mod_usernotes_view">Ver notas de usuário</string>
-    <string name="mod_usernotes_title">Notas de usuário por %s</string>
-    <string name="mod_usernotes_add">Adicionar uma nota de usuário</string>
-    <string name="toolbox_removal_title">Motivos de remoção por %s</string>
-    <string name="toolbox_removal_header">Incluir cabeçalho:</string>
-    <string name="toolbox_removal_footer">Incluir rodapé:</string>
-    <string name="toolbox_removal_comment">Responder com um comentário ao item que é removido</string>
-    <string name="toolbox_removal_sticky">Fixar o comentário de remoção</string>
-    <string name="toolbox_removal_pm">Enviar como PM</string>
-    <string name="toolbox_removal_modmail">Enviar PM como modmail</string>
-    <string name="toolbox_removal_both">Enviar como PM e resposta</string>
-    <string name="toolbox_removal_none">Nenhum, apenas registrar a remoção</string>
-    <string name="toolbox_removal_lock">Bloquear o tópico removido</string>
-    <string name="toolbox_logreason_placeholder">Motivo do log</string>
-    <string name="toolbox_note_text_required">Um texto é necessário</string>
-    <string name="toolbox_note_text_placeholder">Algo sobre o usuário&#8230;</string>
-    <string name="toolbox_note_default">Nenhum tipo</string>
-    <string name="toolbox_wiki_edit_reauth">Para adicionar ou remover notas de usuário, é necessário re-autenticar-se no Slide</string>
-    <string name="toolbox_wiki_edit_reauth_question">Deseja se reconectar ao Slide agora?</string>
     <!-- If he did -->
     <string name="really_pin_submission_message">Post fixado</string>
     <string name="really_unpin_submission_message">Post desafixado</string>
@@ -567,7 +547,6 @@
     <string name="settings_general_immersive_mode_desc">Ocultar as barras de status e de navegação (experimental)</string>
     <string name="settings_general_title_drawer_items">Itens do Menu</string>
     <string name="settings_general_subtitle_drawer_items">Selecionar itens do menu para exibir</string>
-    <string name="settings_moderation">Moderação</string>
     <!-- Settings titles displayed in settings activity-->
     <string name="settings_title_backup">Backup &amp; restauração</string>
     <string name="settings_title_default_theme">Tema principal</string>
@@ -661,19 +640,6 @@
     <string name="settings_theme_night_end_at">Terminar as\u0020</string>
     <string name="settings_general_inbox_snd">Som e vibração</string>
     <string name="settings_enable_notifs">Ativar notificações de caixa de entrada</string>
-    <string name="settings_mod_toolbox_header">Toolbox</string>
-    <string name="settings_mod_toolbox_enabled">Ativar a funcionalidade Toolbox</string>
-    <string name="settings_mod_toolbox_desc">Pode causar uma leve diminuição de desempenho</string>
-    <string name="settings_mod_removal_reasons">Tipo de motivo de remoção</string>
-    <string name="settings_mod_removal_slide">Slide \"remover com motivo\"</string>
-    <string name="settings_mod_removal_toolbox">Motivos de remoção da Toolbox</string>
-    <string name="settings_mod_removal_reddit">Motivos de remoção do Reddit</string>
-    <string name="settings_mod_toolbox_refresh">Forçar atualização de dados da Toolbox</string>
-    <string name="settings_mod_toolbox_message">Método de envio dos motivos de remoção</string>
-    <string name="settings_mod_toolbox_sticky">Fixar os comentários de remoção</string>
-    <string name="settings_mod_toolbox_lock">Bloquear tópicos depois de deixar um motivo de remoção</string>
-    <string name="settings_mod_toolbox_modmail">Enviar motivos de remoção como um subreddit</string>
-    <string name="settings_mod_toolbox_refreshing">Atualizando os dados da Toolbox para todos os subreddits</string>
     <!-- Quick setting toggles in the drawer -->
     <string name="toggle_night_mode">Modo noturno</string>
     <string name="toggle_immersive_mode">Modo imersivo</string>

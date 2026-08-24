@@ -483,26 +483,6 @@
         <item quantity="many">Просмотреть %d жалоб</item>
         <item quantity="other">Просмотреть %d жалоб</item>
     </plurals>
-    <!-- Toolbox-related stuff -->
-    <string name="mod_usernotes_view">Просмотр заметок</string>
-    <string name="mod_usernotes_title">Заметки для %s</string>
-    <string name="mod_usernotes_add">Добавить заметку</string>
-    <string name="toolbox_removal_title">Причины удаления для %s</string>
-    <string name="toolbox_removal_header">Включить заголовок:</string>
-    <string name="toolbox_removal_footer">Включить футер:</string>
-    <string name="toolbox_removal_comment">Ответ с комментарием к удалённому элементу</string>
-    <string name="toolbox_removal_sticky">Прикрепить комментарий об удалении</string>
-    <string name="toolbox_removal_pm">Отправить как ЛС</string>
-    <string name="toolbox_removal_modmail">Отправить ЛС как модератор</string>
-    <string name="toolbox_removal_both">Отправить как ЛС и ответ</string>
-    <string name="toolbox_removal_none">Нет, только запись в лог</string>
-    <string name="toolbox_removal_lock">Заблокировать удаленное обсуждение</string>
-    <string name="toolbox_logreason_placeholder">Логировать причину</string>
-    <string name="toolbox_note_text_required">Текст заметки обязателен</string>
-    <string name="toolbox_note_text_placeholder">Что-то о пользователе&#8230;</string>
-    <string name="toolbox_note_default">Без типа</string>
-    <string name="toolbox_wiki_edit_reauth">Чтобы добавлять или удалять заметки, Slide должен повторно аутентифицировать вас</string>
-    <string name="toolbox_wiki_edit_reauth_question">Желаете заново войти в Slide сейчас?</string>
     <!-- If he did -->
     <string name="really_pin_submission_message">Публикация прикреплена</string>
     <string name="really_unpin_submission_message">Публикация откреплена</string>
@@ -579,7 +559,6 @@
     <string name="settings_general_immersive_mode_desc">Скрыть панели статуса и навигации (экспериментально)</string>
     <string name="settings_general_title_drawer_items">Элементы Меню</string>
     <string name="settings_general_subtitle_drawer_items">Выберите элементы меню для отображения</string>
-    <string name="settings_moderation">Модерация</string>
     <!-- Settings titles displayed in settings activity-->
     <string name="settings_title_backup">Резервирование &amp; восстановление</string>
     <string name="settings_title_default_theme">Основная тема</string>
@@ -673,19 +652,6 @@
     <string name="settings_theme_night_end_at">Выключать в\u0020</string>
     <string name="settings_general_inbox_snd">Звук и вибрация</string>
     <string name="settings_enable_notifs">Включить уведомления о сообщениях</string>
-    <string name="settings_mod_toolbox_header">Инструменты</string>
-    <string name="settings_mod_toolbox_enabled">Включить функциональность панели инструментов</string>
-    <string name="settings_mod_toolbox_desc">Может привести к незначительному снижению производительности</string>
-    <string name="settings_mod_removal_reasons">Тип причины удаления</string>
-    <string name="settings_mod_removal_slide">Slide \"Удалить по причине\"</string>
-    <string name="settings_mod_removal_toolbox">Причины удаления инструмента</string>
-    <string name="settings_mod_removal_reddit">Причины удаления Reddit</string>
-    <string name="settings_mod_toolbox_refresh">Принудительно обновить данные панели инструментов</string>
-    <string name="settings_mod_toolbox_message">Метод отправки причин удаления</string>
-    <string name="settings_mod_toolbox_sticky">Прикреплённые комментарии удаления</string>
-    <string name="settings_mod_toolbox_lock">Блокировать темы после выхода из причины удаления</string>
-    <string name="settings_mod_toolbox_modmail">Отправить причины удаления как сабреддит</string>
-    <string name="settings_mod_toolbox_refreshing">Обновление данных панели инструментов для всех сабреддитов</string>
     <!-- Quick setting toggles in the drawer -->
     <string name="toggle_night_mode">Ночной режим</string>
     <string name="toggle_immersive_mode">Иммерсивный режим</string>

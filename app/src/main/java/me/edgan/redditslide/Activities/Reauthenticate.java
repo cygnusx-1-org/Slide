@@ -53,6 +53,7 @@ public class Reauthenticate extends BaseActivityAnim {
             "privatemessages",
             "modflair",
             "modlog",
+            "modmail",
             "report",
             "modposts",
             "modwiki",

@@ -465,26 +465,6 @@
     <plurals name="mod_btn_reports">
         <item quantity="other">查看 %d 条举报</item>
     </plurals>
-    <!-- Toolbox-related stuff -->
-    <string name="mod_usernotes_view">查看用户备注</string>
-    <string name="mod_usernotes_title">%s 的用户备注</string>
-    <string name="mod_usernotes_add">添加用户备注</string>
-    <string name="toolbox_removal_title">删除 %s 的原因</string>
-    <string name="toolbox_removal_header">包含标题：</string>
-    <string name="toolbox_removal_footer">包含页脚：</string>
-    <string name="toolbox_removal_comment">回复一条评论给已删除的项目</string>
-    <string name="toolbox_removal_sticky">置顶删除说明</string>
-    <string name="toolbox_removal_pm">作为私信发送</string>
-    <string name="toolbox_removal_modmail">作为版主邮件发送私信</string>
-    <string name="toolbox_removal_both">作为私信和回复发送</string>
-    <string name="toolbox_removal_none">不，只记录移除</string>
-    <string name="toolbox_removal_lock">锁定已删除的帖子</string>
-    <string name="toolbox_logreason_placeholder">记录的原因</string>
-    <string name="toolbox_note_text_required">备注文本是必需的</string>
-    <string name="toolbox_note_text_placeholder">有关&#8230;的事</string>
-    <string name="toolbox_note_default">无类型</string>
-    <string name="toolbox_wiki_edit_reauth">为了添加或删除用户备注，Slide 必须重新验证你的身份</string>
-    <string name="toolbox_wiki_edit_reauth_question">你想现在重新登录到 Slide 吗？</string>
     <!-- If he did -->
     <string name="really_pin_submission_message">帖子已置顶</string>
     <string name="really_unpin_submission_message">提交已取消置顶</string>
@@ -561,7 +541,6 @@
     <string name="settings_general_immersive_mode_desc">隐藏状态和导航栏（实验功能）</string>
     <string name="settings_general_title_drawer_items">抽屉项目</string>
     <string name="settings_general_subtitle_drawer_items">选择要显示的抽屉项目</string>
-    <string name="settings_moderation">版主管理</string>
     <!-- Settings titles displayed in settings activity-->
     <string name="settings_title_backup">备份 &amp; 恢复</string>
     <string name="settings_title_default_theme">主要主题</string>
@@ -655,19 +634,6 @@
     <string name="settings_theme_night_end_at">结束于\u0020</string>
     <string name="settings_general_inbox_snd">提示音和振动</string>
     <string name="settings_enable_notifs">启用收件箱通知</string>
-    <string name="settings_mod_toolbox_header">工具箱</string>
-    <string name="settings_mod_toolbox_enabled">启用工具箱功能</string>
-    <string name="settings_mod_toolbox_desc">可能会导致性能略有下降</string>
-    <string name="settings_mod_removal_reasons">删除原因类型</string>
-    <string name="settings_mod_removal_slide">滑动“以理由删除”</string>
-    <string name="settings_mod_removal_toolbox">工具箱删除原因</string>
-    <string name="settings_mod_removal_reddit">Reddit删除原因</string>
-    <string name="settings_mod_toolbox_refresh">强制刷新工具箱数据</string>
-    <string name="settings_mod_toolbox_message">发送删除原因的方法</string>
-    <string name="settings_mod_toolbox_sticky">置顶删除说明</string>
-    <string name="settings_mod_toolbox_lock">留下删除原因后锁定帖子</string>
-    <string name="settings_mod_toolbox_modmail">作为版块发送删除原因</string>
-    <string name="settings_mod_toolbox_refreshing">刷新所有版块的工具箱数据</string>
     <!-- Quick setting toggles in the drawer -->
     <string name="toggle_night_mode">夜间模式</string>
     <string name="toggle_immersive_mode">沉浸模式</string>

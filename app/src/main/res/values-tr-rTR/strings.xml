@@ -458,26 +458,6 @@
         <item quantity="one">%d raporunu görüntüle</item>
         <item quantity="other">%d raporlarını görüntüle</item>
     </plurals>
-    <!-- Toolbox-related stuff -->
-    <string name="mod_usernotes_view">Kullanıcı notlarını görüntüle</string>
-    <string name="mod_usernotes_title">%s için kullanıcı notları</string>
-    <string name="mod_usernotes_add">Kullanıcı notu ekle</string>
-    <string name="toolbox_removal_title">%s için kaldırma nedenleri</string>
-    <string name="toolbox_removal_header">Başlığı dahil et:</string>
-    <string name="toolbox_removal_footer">Altbilgiyi dahil et:</string>
-    <string name="toolbox_removal_comment">Kaldırılan ögeye yapılan bir yorumla yanıtla</string>
-    <string name="toolbox_removal_sticky">Kaldırma yorumunu sabitle</string>
-    <string name="toolbox_removal_pm">PM olarak gönder</string>
-    <string name="toolbox_removal_modmail">PM\'i modmail olarak gönder</string>
-    <string name="toolbox_removal_both">Hem PM hem cevap olarak gönder</string>
-    <string name="toolbox_removal_none">Hiçbiri, yalnızca kaldırma işlemini logla</string>
-    <string name="toolbox_removal_lock">Kaldırılan konuyu kilitle</string>
-    <string name="toolbox_logreason_placeholder">Log nedeni</string>
-    <string name="toolbox_note_text_required">Not metni gereklidir</string>
-    <string name="toolbox_note_text_placeholder">Kullanıcı hakkında bir şey&#8230;</string>
-    <string name="toolbox_note_default">Tür yok</string>
-    <string name="toolbox_wiki_edit_reauth">Kullanıcı eklemek veya kaldırmak için, Slide sizi yeniden doğrulamalıdır</string>
-    <string name="toolbox_wiki_edit_reauth_question">Slide\'a şimdi yeniden giriş yapmak ister misiniz?</string>
     <!-- If he did -->
     <string name="really_pin_submission_message">Gönderi sabitlendi</string>
     <string name="really_unpin_submission_message">Gönderi sabitlemeden kaldırıldı</string>
@@ -553,7 +533,6 @@
     <string name="settings_general_immersive_mode_desc">Durum ve navigasyon çubuklarını gizle (deneysel)</string>
     <string name="settings_general_title_drawer_items">Çekmece Ögeleri</string>
     <string name="settings_general_subtitle_drawer_items">Hangi çekmece ögelerinin görüntüleneceğini seçin</string>
-    <string name="settings_moderation">Moderasyon</string>
     <!-- Settings titles displayed in settings activity-->
     <string name="settings_title_backup">Yedekleme ve geri yükleme</string>
     <string name="settings_title_default_theme">Ana tema</string>
@@ -642,19 +621,6 @@
     <string name="settings_theme_night_end_at">\u0020da bit</string>
     <string name="settings_general_inbox_snd">Ses ve titreşim</string>
     <string name="settings_enable_notifs">Gelen kutusu bildirimlerini etkinleştir</string>
-    <string name="settings_mod_toolbox_header">Araç kutusu</string>
-    <string name="settings_mod_toolbox_enabled">Araç kutusu işlevselliğini etkinleştir</string>
-    <string name="settings_mod_toolbox_desc">Hafif bir performans azalmasına neden olabilir</string>
-    <string name="settings_mod_removal_reasons">Kaldırma nedeni türü</string>
-    <string name="settings_mod_removal_slide">\"Sebep ile kaldır\"ı kaydırın</string>
-    <string name="settings_mod_removal_toolbox">Araç kutusu kaldırma nedenleri</string>
-    <string name="settings_mod_removal_reddit">Reddit kaldırma nedenleri</string>
-    <string name="settings_mod_toolbox_refresh">Araç kutusu verilerini yenilemeye zorla</string>
-    <string name="settings_mod_toolbox_message">Kaldırma nedenlerini gönderme yöntemi</string>
-    <string name="settings_mod_toolbox_sticky">Kaldırma yorumlarını sabitle</string>
-    <string name="settings_mod_toolbox_lock">Kaldırma nedeni bıraktıktan sonra konuları kilitle</string>
-    <string name="settings_mod_toolbox_modmail">Kaldırma nedenlerini subreddit olarak gönder</string>
-    <string name="settings_mod_toolbox_refreshing">Tüm subredditler için Araç kutusu verilerinin yenilenmesi</string>
     <!-- Quick setting toggles in the drawer -->
     <string name="toggle_night_mode">Gece modu</string>
     <string name="toggle_immersive_mode">Tam ekran modu</string>

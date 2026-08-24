@@ -463,26 +463,6 @@
     <plurals name="mod_btn_reports">
         <item quantity="other">%d件の通報を見る</item>
     </plurals>
-    <!-- Toolbox-related stuff -->
-    <string name="mod_usernotes_view">ユーザーメモを表示</string>
-    <string name="mod_usernotes_title">%s のユーザーメモ</string>
-    <string name="mod_usernotes_add">ユーザーメモを追加</string>
-    <string name="toolbox_removal_title">%s の削除理由</string>
-    <string name="toolbox_removal_header">ヘッダーに含む:</string>
-    <string name="toolbox_removal_footer">フッターに含む:</string>
-    <string name="toolbox_removal_comment">削除されたアイテムへのコメントで返信する</string>
-    <string name="toolbox_removal_sticky">削除コメントに付箋を付ける</string>
-    <string name="toolbox_removal_pm">PMとして送信</string>
-    <string name="toolbox_removal_modmail">モデレーターとしてPMを送信</string>
-    <string name="toolbox_removal_both">PMと返信の両方として送信</string>
-    <string name="toolbox_removal_none">なし。削除のログとしてのみ</string>
-    <string name="toolbox_removal_lock">削除されたスレッドをロック</string>
-    <string name="toolbox_logreason_placeholder">ログの理由</string>
-    <string name="toolbox_note_text_required">メモのテキストが必要です</string>
-    <string name="toolbox_note_text_placeholder">ユーザーについて何か&#8230;</string>
-    <string name="toolbox_note_default">種類なし</string>
-    <string name="toolbox_wiki_edit_reauth">ユーザーメモを追加または削除するため、Slideは再認証する必要があります</string>
-    <string name="toolbox_wiki_edit_reauth_question">今すぐ Slide に再ログインしますか?</string>
     <!-- If he did -->
     <string name="really_pin_submission_message">サブミッションをピン留めしました</string>
     <string name="really_unpin_submission_message">サブミッションのピン留めを解除しました</string>
@@ -559,7 +539,6 @@
     <string name="settings_general_immersive_mode_desc">ステータスとナビゲーション バーを非表示にします (実験的)</string>
     <string name="settings_general_title_drawer_items">ドロワーアイテム</string>
     <string name="settings_general_subtitle_drawer_items">表示するドロワーアイテムを選択</string>
-    <string name="settings_moderation">モデレーション</string>
     <!-- Settings titles displayed in settings activity-->
     <string name="settings_title_backup">バックアップ &amp; 復元</string>
     <string name="settings_title_default_theme">メイン テーマ</string>
@@ -653,19 +632,6 @@
     <string name="settings_theme_night_end_at">終了時刻\u0020</string>
     <string name="settings_general_inbox_snd">サウンドとバイブレーション</string>
     <string name="settings_enable_notifs">受信通知を有効にする</string>
-    <string name="settings_mod_toolbox_header">ツールボックス</string>
-    <string name="settings_mod_toolbox_enabled">ツールボックス機能を有効にする</string>
-    <string name="settings_mod_toolbox_desc">パフォーマンスがわずかに低下する可能性があります</string>
-    <string name="settings_mod_removal_reasons">削除理由の種類</string>
-    <string name="settings_mod_removal_slide">Slide \"理由で削除\"</string>
-    <string name="settings_mod_removal_toolbox">ツールボックス削除理由</string>
-    <string name="settings_mod_removal_reddit">Reddit 削除理由</string>
-    <string name="settings_mod_toolbox_refresh">ツールボックスのデータを強制リフレッシュ</string>
-    <string name="settings_mod_toolbox_message">削除理由を送信する方法</string>
-    <string name="settings_mod_toolbox_sticky">削除コメントに付箋を付ける</string>
-    <string name="settings_mod_toolbox_lock">削除理由を残した後にスレッドをロックする</string>
-    <string name="settings_mod_toolbox_modmail">Subredditとして削除理由を送信</string>
-    <string name="settings_mod_toolbox_refreshing">すべてのSubredditのツールボックスデータを更新します</string>
     <!-- Quick setting toggles in the drawer -->
     <string name="toggle_night_mode">夜間モード</string>
     <string name="toggle_immersive_mode">イマーシブモード</string>

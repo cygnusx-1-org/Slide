@@ -143,12 +143,6 @@ public class SettingValues {
     public static final String PREF_LONG_LINK = "shareLongLink";
     public static final String PREF_SELECTED_BROWSER = "selectedBrowser";
     public static final String PREF_SELECTED_DRAWER_ITEMS = "selectedDrawerItems";
-    public static final String PREF_MOD_REMOVAL_TYPE = "removalReasonType";
-    public static final String PREF_MOD_TOOLBOX_ENABLED = "toolboxEnabled";
-    public static final String PREF_MOD_TOOLBOX_MESSAGE = "toolboxMessageType";
-    public static final String PREF_MOD_TOOLBOX_STICKY = "toolboxSticky";
-    public static final String PREF_MOD_TOOLBOX_LOCK = "toolboxLock";
-    public static final String PREF_MOD_TOOLBOX_MODMAIL = "toolboxModmail";
     public static final String PREF_ALWAYS_SHOW_FAB = "alwaysShowFAB";
     public static final String PREF_HIGH_COLORSPACE_IMAGES = "highMemoryImages";
     public static final String PREF_WIDE_COLOR_GAMUT = "wideColorGamut";
@@ -348,12 +342,6 @@ public class SettingValues {
     public static String selectedBrowser = "";
     public static long selectedDrawerItems;
     public static ForcedState forcedNightModeState = ForcedState.NOT_FORCED;
-    public static boolean toolboxEnabled;
-    public static int removalReasonType;
-    public static int toolboxMessageType;
-    public static boolean toolboxSticky;
-    public static boolean toolboxLock;
-    public static boolean toolboxModmail;
     public static boolean alwaysShowFAB;
     public static boolean alwaysBlackStatusbar;
     public static boolean subredditFiltersTillRestart;
@@ -588,14 +576,6 @@ public class SettingValues {
         selectedBrowser = PrefUtil.getString(prefs, PREF_SELECTED_BROWSER, "");
         selectedDrawerItems = prefs.getLong(PREF_SELECTED_DRAWER_ITEMS, -1);
 
-        toolboxEnabled = prefs.getBoolean(PREF_MOD_TOOLBOX_ENABLED, false);
-        removalReasonType = prefs.getInt(PREF_MOD_REMOVAL_TYPE, RemovalReasonType.SLIDE.ordinal());
-        toolboxMessageType =
-                prefs.getInt(PREF_MOD_TOOLBOX_MESSAGE, ToolboxRemovalMessageType.COMMENT.ordinal());
-        toolboxSticky = prefs.getBoolean(PREF_MOD_TOOLBOX_STICKY, false);
-        toolboxLock = prefs.getBoolean(PREF_MOD_TOOLBOX_LOCK, false);
-        toolboxModmail = prefs.getBoolean(PREF_MOD_TOOLBOX_MODMAIL, false);
-
         subredditFiltersTillRestart = prefs.getBoolean(PREF_SUBREDDIT_FILTERS_TILL_RESTART, true);
         subredditFilterPrefixMatching = prefs.getBoolean(PREF_SUBREDDIT_FILTER_PREFIX_MATCHING, false);
         collapseBlockedUsers = prefs.getBoolean(PREF_COLLAPSE_BLOCKED_USERS, false);
@@ -797,19 +777,6 @@ public class SettingValues {
     public static boolean hasCommentSort(@Nullable String subreddit) {
         if (subreddit == null) return false;
         return prefs.contains("defaultComment" + subreddit.toLowerCase(Locale.ENGLISH));
-    }
-
-    public enum RemovalReasonType {
-        SLIDE,
-        TOOLBOX,
-        REDDIT
-    }
-
-    public enum ToolboxRemovalMessageType {
-        COMMENT,
-        PM,
-        BOTH,
-        NONE
     }
 
     public enum ColorIndicator {

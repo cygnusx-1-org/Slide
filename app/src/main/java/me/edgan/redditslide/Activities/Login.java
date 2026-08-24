@@ -236,6 +236,7 @@ public class Login extends BaseActivityAnim {
             "privatemessages",
             "modflair",
             "modlog",
+            "modmail",
             "report",
             "modposts",
             "modwiki",

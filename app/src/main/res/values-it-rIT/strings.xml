@@ -469,26 +469,6 @@
         <item quantity="one">Leggi %d segnalazione</item>
         <item quantity="other">Leggi %d segnalazioni</item>
     </plurals>
-    <!-- Toolbox-related stuff -->
-    <string name="mod_usernotes_view">Visualizza note utente</string>
-    <string name="mod_usernotes_title">Note utente per %s</string>
-    <string name="mod_usernotes_add">Aggiungi una nota utente</string>
-    <string name="toolbox_removal_title">Motivi di rimozione per %s</string>
-    <string name="toolbox_removal_header">Aggiungi intestazione:</string>
-    <string name="toolbox_removal_footer">Aggiungi a piè di pagina:</string>
-    <string name="toolbox_removal_comment">Rispondi con un commento all\'oggetto che è stato rimosso</string>
-    <string name="toolbox_removal_sticky">Fissa in alto il commento di rimozione</string>
-    <string name="toolbox_removal_pm">Manda come PM</string>
-    <string name="toolbox_removal_modmail">Manda PM come modmail</string>
-    <string name="toolbox_removal_both">Manda sia come PM che come risposta</string>
-    <string name="toolbox_removal_none">Niente, aggiungi solo il log della rimozione</string>
-    <string name="toolbox_removal_lock">Blocca la discussione rimossa</string>
-    <string name="toolbox_logreason_placeholder">Motivo del log</string>
-    <string name="toolbox_note_text_required">È necessario il testo della nota</string>
-    <string name="toolbox_note_text_placeholder">Qualcosa sull\'utente&#8230;</string>
-    <string name="toolbox_note_default">Nessun tipo</string>
-    <string name="toolbox_wiki_edit_reauth">Per aggiungere o rimuovere note utente, Slide deve re-autenticarti</string>
-    <string name="toolbox_wiki_edit_reauth_question">Vuoi effettuare nuovamente l\'accesso a Slide ora?</string>
     <!-- If he did -->
     <string name="really_pin_submission_message">Post fissato in alto</string>
     <string name="really_unpin_submission_message">Post non più fissato in alto</string>
@@ -565,7 +545,6 @@
     <string name="settings_general_immersive_mode_desc">Nascondi le barre di stato e di navigazione (sperimentale)</string>
     <string name="settings_general_title_drawer_items">Elementi del Menu</string>
     <string name="settings_general_subtitle_drawer_items">Seleziona quali elementi del menu visualizzare</string>
-    <string name="settings_moderation">Moderazione</string>
     <!-- Settings titles displayed in settings activity-->
     <string name="settings_title_backup">Backup &amp; ripristino</string>
     <string name="settings_title_default_theme">Tema principale</string>
@@ -659,19 +638,6 @@
     <string name="settings_theme_night_end_at">Fine alle\u0020</string>
     <string name="settings_general_inbox_snd">Suoni e vibrazioni</string>
     <string name="settings_enable_notifs">Abilità le notifiche dei messaggi in arrivo</string>
-    <string name="settings_mod_toolbox_header">Toolbox</string>
-    <string name="settings_mod_toolbox_enabled">Abilita funzionalità Toolbox</string>
-    <string name="settings_mod_toolbox_desc">Può causare una lieve diminuzione delle prestazioni</string>
-    <string name="settings_mod_removal_reasons">Tipologia di ragione dell\'eliminazione</string>
-    <string name="settings_mod_removal_slide">Slide \"rimuovi con motivazione\"</string>
-    <string name="settings_mod_removal_toolbox">Motivi della rimozione della Toolbox</string>
-    <string name="settings_mod_removal_reddit">Motivi della rimozione di Reddit</string>
-    <string name="settings_mod_toolbox_refresh">Forza aggiornamento dati Toolbox</string>
-    <string name="settings_mod_toolbox_message">Metodo di invio dei motivi di rimozione</string>
-    <string name="settings_mod_toolbox_sticky">Fissa in alto il commento di rimozione</string>
-    <string name="settings_mod_toolbox_lock">Blocca i thread dopo aver lasciato un motivo di rimozione</string>
-    <string name="settings_mod_toolbox_modmail">Invia motivi di rimozione come subreddit</string>
-    <string name="settings_mod_toolbox_refreshing">Aggiornamento dati Toolbox per tutti i subreddit</string>
     <!-- Quick setting toggles in the drawer -->
     <string name="toggle_night_mode">Modalità notturna</string>
     <string name="toggle_immersive_mode">Modalità immersiva</string>
