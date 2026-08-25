@@ -46,3 +46,14 @@ changelog_override.txt
 backup/
 
 .kotlin
+
+# Side effects of installing the Java and Kotlin LSPs
+.project
+.settings/
+app/.classpath
+app/.project
+app/.settings
+nullaway-models/.classpath
+nullaway-models/.project
+nullaway-models/.settings
+nullaway-models/bin
