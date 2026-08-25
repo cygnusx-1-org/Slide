@@ -53,6 +53,7 @@ backup/
 app/.classpath
 app/.project
 app/.settings
+app/bin
 nullaway-models/.classpath
 nullaway-models/.project
 nullaway-models/.settings
