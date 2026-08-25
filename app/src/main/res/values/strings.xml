@@ -286,6 +286,7 @@
     <string name="err_loading_content">Error loading content</string>
     <string name="err_general">Uh oh, an error occurred</string>
     <string name="err_no_connection">Reddit could not be reached. Would you like to try again?</string>
+    <string name="err_no_connection_toast">Reddit could not be reached. Try again soon</string>
     <string name="err_retry_later">Try again in a minute!</string>
     <string name="err_permission">Permission was denied</string>
     <string name="err_permission_msg">It looks like you denied Slide access to write to external storage. This will cause image cache, post cache, and saving images to fail :(. \nWould you like to allow Slide to access external storage?</string>

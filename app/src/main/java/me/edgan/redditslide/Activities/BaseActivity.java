@@ -387,10 +387,11 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
     }
 
     @Override
-    public View findViewById(int id) {
-        View v = super.findViewById(id);
+    @SuppressWarnings("unchecked") // The helper is pre-generics and hands back a bare View.
+    public <T extends View> T findViewById(int id) {
+        T v = super.findViewById(id);
         if (v == null && mHelper != null) {
-            View fromHelper = mHelper.findViewById(id);
+            T fromHelper = (T) mHelper.findViewById(id);
             if (fromHelper != null) return fromHelper;
         }
         return v;

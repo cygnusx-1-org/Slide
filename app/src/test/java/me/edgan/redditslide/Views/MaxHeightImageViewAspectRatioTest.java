@@ -25,7 +25,7 @@ import org.robolectric.annotation.Config;
  * asking for a new layout pass when the ratio changes on a recycled view. The second half is a
  * bare side effect -- {@code requestLayout()} returns nothing and changes no field this class
  * exposes -- so nothing observed it, and deleting the call left not just the unit suite but
- * {@code :app:checks} with its screenshot goldens green: a golden inflates a fresh view and
+ * {@code :app:check} with its screenshot goldens green: a golden inflates a fresh view and
  * measures it once, which is exactly the case a missing relayout does not break.
  */
 @RunWith(RobolectricTestRunner.class)

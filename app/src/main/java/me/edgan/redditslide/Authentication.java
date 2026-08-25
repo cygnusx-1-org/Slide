@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.webkit.CookieManager;
 import android.widget.Toast;
@@ -660,14 +662,22 @@ public class Authentication {
                                                     }
                                                 });
                             } catch (Exception e2) {
-                                Toast.makeText(
-                                                context,
-                                                "Reddit could not be reached. Try again soon",
-                                                Toast.LENGTH_SHORT)
-                                        .show();
+                                // Reached when context is not an Activity — the keep-warm refresh
+                                // in TokenRefreshReceiver passes the application context, so the
+                                // cast above throws for it. Hence toastOnMain: this runs on the
+                                // Looper-less REAUTH_EXECUTOR, where building a Toast is fatal.
+                                toastOnMain(
+                                        context,
+                                        context.getString(R.string.err_no_connection_toast),
+                                        Toast.LENGTH_SHORT);
                             }
 
-                            // TODO fail
+                            LogUtil.e(e, "Authentication.doInBackground userless auth failed");
+                            // Same contract as the refresh branch above: a null result means no
+                            // refresh was attempted, so leaving it null here would report the
+                            // stale auth state and hide the failure. One was attempted and it
+                            // failed, so say so and let the reauth snackbar offer Retry.
+                            result = false;
                         }
                     }
                 }
@@ -769,6 +779,22 @@ public class Authentication {
                 && SettingValues.prefs.getBoolean(SettingValues.PREF_DEBUG_BREAK_REAUTH, false);
     }
 
+    /**
+     * Shows a toast from whichever thread calls it. Everything in here runs on {@link
+     * #REAUTH_EXECUTOR}, a plain single-thread executor with no Looper, and {@link Toast} refuses to
+     * be built on such a thread — it throws "Can't toast on a thread that has not called
+     * Looper.prepare()". What that costs depends on the caller: from {@link UpdateToken} it escapes
+     * doInBackground and takes the process down, while inside {@link #doVerify} an enclosing
+     * catch-all swallows it, so the toast silently never appears and the rest of the method is
+     * skipped. The message is still built by the caller on the calling thread; only the display is
+     * posted.
+     */
+    private static void toastOnMain(
+            final Context context, final CharSequence message, final int duration) {
+        new Handler(Looper.getMainLooper())
+                .post(() -> Toast.makeText(context, message, duration).show());
+    }
+
     public static void doVerify(
             String lastToken,
             @Nullable RedditClient baseReddit,
@@ -839,16 +865,13 @@ public class Authentication {
                 } catch (Exception e) {
                     LogUtil.e(e, "Authentication.doVerify failed");
                     if (e instanceof NetworkException) {
-                        Toast.makeText(
-                                        mContext,
-                                        "Error "
-                                                + ((NetworkException) e)
-                                                        .getResponse()
-                                                        .getStatusMessage()
-                                                + ": "
-                                                + (e).getMessage(),
-                                        Toast.LENGTH_LONG)
-                                .show();
+                        toastOnMain(
+                                mContext,
+                                "Error "
+                                        + ((NetworkException) e).getResponse().getStatusMessage()
+                                        + ": "
+                                        + (e).getMessage(),
+                                Toast.LENGTH_LONG);
                     }
                 }
                 didOnline = true;
@@ -879,23 +902,22 @@ public class Authentication {
                 } catch (Exception e) {
                     LogUtil.e(e, "Authentication.doVerify failed");
                     if (e instanceof NetworkException) {
-                        Toast.makeText(
-                                        mContext,
-                                        "Error "
-                                                + ((NetworkException) e)
-                                                        .getResponse()
-                                                        .getStatusMessage()
-                                                + ": "
-                                                + (e).getMessage(),
-                                        Toast.LENGTH_LONG)
-                                .show();
+                        toastOnMain(
+                                mContext,
+                                "Error "
+                                        + ((NetworkException) e).getResponse().getStatusMessage()
+                                        + ": "
+                                        + (e).getMessage(),
+                                Toast.LENGTH_LONG);
                     }
                 }
             }
             if (!single) authedOnce = true;
 
         } catch (Exception e) {
-            // TODO fail
+            // Verification is best-effort — the caller has already stored the token and the next
+            // refresh retries — but swallowing this silently hid every failure in here, so log it.
+            LogUtil.e(e, "Authentication.doVerify failed");
         }
     }
 }

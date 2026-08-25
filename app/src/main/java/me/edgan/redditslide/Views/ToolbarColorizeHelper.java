@@ -110,7 +110,14 @@ public class ToolbarColorizeHelper {
      */
     private static void setOverflowButtonColor(
             final Activity activity, final int toolbarIconsColor) {
-        final String overflowDescription = "More options"; // FIXME edgan
+        // Not a string of ours, so it does not belong in strings.xml: it is the content description
+        // the framework itself puts on the overflow button, and the findViewsWithText call below
+        // searches the decor view for that exact text to get a reference to the button. A
+        // translated copy would stop matching, which is the opposite of what extracting it would
+        // suggest. The properly localised source of the same text is
+        // androidx.appcompat.R.string.abc_action_menu_overflow_description; until this reads from
+        // there, the tint only lands on an English device.
+        final String overflowDescription = "More options";
         final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
         final ViewTreeObserver viewTreeObserver = decorView.getViewTreeObserver();
         viewTreeObserver.addOnGlobalLayoutListener(

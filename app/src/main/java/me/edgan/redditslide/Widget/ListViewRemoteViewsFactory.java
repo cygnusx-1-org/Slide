@@ -96,7 +96,7 @@ public class ListViewRemoteViewsFactory implements RemoteViewsService.RemoteView
                         }
                     }
                     String sub = SubredditWidgetProvider.getSubFromId(id, mContext);
-                    Paginator p;
+                    Paginator<Submission> p;
                     if (sub.equals("frontpage")) {
                         p = new SubredditPaginator(Authentication.reddit);
                     } else if (!sub.contains(".")) {

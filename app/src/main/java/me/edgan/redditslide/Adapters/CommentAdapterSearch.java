@@ -453,8 +453,9 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
 
-            adapter.dataSet = new ArrayList<>();
-            adapter.dataSet.addAll((ArrayList<CommentNode>) results.values);
+            // results.values is the same filteredList this filter just built, but FilterResults
+            // types it as Object; copying the typed field instead avoids casting it back.
+            adapter.dataSet = new ArrayList<>(filteredList);
             adapter.notifyDataSetChanged();
         }
     }
