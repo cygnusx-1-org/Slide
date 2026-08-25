@@ -4,6 +4,11 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.9.3 / 2026-8-25
+============
+* Fixed Improve Consistency for Albums in Shadowbox and Gallery Mode #41
+* Removed dead code like Synccit and Toolbox
+
 7.9.2 / 2026-8-23
 ============
 * Implemented a workaround for Reddit comment caching
