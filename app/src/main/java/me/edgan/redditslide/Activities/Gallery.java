@@ -20,6 +20,7 @@ import me.edgan.redditslide.R;
 import me.edgan.redditslide.Views.CatchStaggeredGridLayoutManager;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.MiscUtil;
+import me.edgan.redditslide.util.PhotoLoader;
 import net.dean.jraw.models.Submission;
 import org.jspecify.annotations.NullMarked;
 
@@ -80,9 +81,7 @@ public class Gallery extends FullScreenActivity implements SubmissionDisplay {
         baseSubs = new ArrayList<>();
 
         for (Submission s : submissions.submissions) {
-            if (s.getThumbnails() != null && s.getThumbnails().getSource() != null) {
-                baseSubs.add(s);
-            } else if (ContentType.getContentType(s) == ContentType.Type.IMAGE) {
+            if (hasGridImage(s)) {
                 baseSubs.add(s);
             }
             subredditPosts.getPosts().add(s);
@@ -101,16 +100,33 @@ public class Gallery extends FullScreenActivity implements SubmissionDisplay {
                     @Override
                     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                         super.onScrolled(recyclerView, dx, dy);
-                        int[] firstVisibleItems =
-                                ((CatchStaggeredGridLayoutManager) java.util.Objects.requireNonNull(rv.getLayoutManager()))
-                                        .findFirstVisibleItemPositions(null);
+                        final CatchStaggeredGridLayoutManager lm =
+                                (CatchStaggeredGridLayoutManager)
+                                        java.util.Objects.requireNonNull(rv.getLayoutManager());
+
+                        // Both counters were declared and never assigned anywhere, which left the
+                        // near-the-end test below reading "pastVisiblesItems + 5 >= 0" — true from
+                        // the first pixel of the first scroll, so every scroll event started
+                        // another page load. Every other loader in the app reads them off the
+                        // layout manager right here; this one alone did not.
+                        visibleItemCount = lm.getChildCount();
+                        totalItemCount = lm.getItemCount();
+
+                        int[] firstVisibleItems = lm.findFirstVisibleItemPositions(null);
                         if (firstVisibleItems != null && firstVisibleItems.length > 0) {
                             for (int firstVisibleItem : firstVisibleItems) {
                                 pastVisiblesItems = firstVisibleItem;
                             }
                         }
 
-                        if ((visibleItemCount + pastVisiblesItems) + 5 >= totalItemCount) {
+                        // hasMore() too, as Shadowbox does: with the paginator exhausted a load
+                        // returns immediately and clears its own loading flag, so the next scroll
+                        // event starts another. That degenerated into a load roughly every 90ms,
+                        // and each one still rebuilds the whole accumulated post list through a
+                        // LinkedHashSet, walks it again in writeToMemory with a File.exists() per
+                        // submission, and hands it back to updateSuccess on the main thread.
+                        if ((visibleItemCount + pastVisiblesItems) + 5 >= totalItemCount
+                                && subredditPosts.hasMore()) {
                             if (subredditPosts instanceof SubredditPosts) {
                                 if (!((SubredditPosts) subredditPosts).loading) {
                                     ((SubredditPosts) subredditPosts).loading = true;
@@ -156,9 +172,7 @@ public class Gallery extends FullScreenActivity implements SubmissionDisplay {
                     public void run() {
                         int startSize = baseSubs.size();
                         for (Submission s : submissions) {
-                            if (!baseSubs.contains(s)
-                                    && s.getThumbnails() != null
-                                    && s.getThumbnails().getSource() != null) {
+                            if (!baseSubs.contains(s) && hasGridImage(s)) {
                                 baseSubs.add(s);
                             }
                         }
@@ -193,6 +207,37 @@ public class Gallery extends FullScreenActivity implements SubmissionDisplay {
     @Override
     public void onAdapterUpdated() {
         recyclerAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Whether this post has an image the grid can show. The thumbnail check covers every post
+     * Reddit built a preview node for; a Reddit gallery has no preview node at all, so its lead
+     * image has to come out of media_metadata instead — the same resolution the feed card and the
+     * preloader use, so all three reference one cache entry.
+     *
+     * <p>Shared by the initial fill and by every page loaded after it: applying different rules in
+     * the two places let a post qualify on page one and be dropped on page two.
+     *
+     * <p>The gallery branch is gated on the content type rather than on gallery data alone, because
+     * that is the gate {@link me.edgan.redditslide.Adapters.GalleryView} binds behind: a post
+     * admitted here that the adapter does not recognise as a gallery would be bound from the
+     * submission url and render as an empty tile. It also keeps the width cap — up to three
+     * uncached binder calls into ConnectivityManager, on the main thread — off every previewless
+     * self post and link in the page.
+     */
+    private boolean hasGridImage(final Submission s) {
+        if (s.getThumbnails() != null && s.getThumbnails().getSource() != null) {
+            return true;
+        }
+        final ContentType.Type type = ContentType.getContentType(s);
+        if (type == ContentType.Type.IMAGE) {
+            return true;
+        }
+        if (type != ContentType.Type.REDDIT_GALLERY) {
+            return false;
+        }
+        return PhotoLoader.getGalleryPreview(s.getDataNode(), PhotoLoader.galleryMaxWidth(this))
+                != null;
     }
 
     @NonNull

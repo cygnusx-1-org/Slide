@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import androidx.recyclerview.widget.RecyclerView;
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,9 +39,10 @@ import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.BottomSheet;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.FileUtil;
-import me.edgan.redditslide.util.JsonUtil;
+import me.edgan.redditslide.util.GalleryTiles;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.MiscUtil;
+import me.edgan.redditslide.util.PhotoLoader;
 import me.edgan.redditslide.util.SubmissionThumbnailHelper;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Thumbnails;
@@ -80,33 +80,50 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             final Submission submission = posts.get(i);
 
-            if (submission.getThumbnails() != null
-                    && submission.getThumbnails().getSource() != null) {
-                ((Reddit) main.getApplicationContext())
-                        .getImageLoader()
-                        .displayImage(
-                                submission.getThumbnails().getSource().getUrl(),
-                                holder.image,
-                                ImageGridAdapter.options);
-            } else {
-                ((Reddit) main.getApplicationContext())
-                        .getImageLoader()
-                        .displayImage(submission.getUrl(), holder.image, ImageGridAdapter.options);
+            final ContentType.Type type = ContentType.getContentType(submission);
+
+            // The image to show, and the dimensions it will arrive at. A preview node covers most
+            // posts; a Reddit gallery has none, so its lead image comes out of media_metadata via
+            // the same helper the feed card uses, which keeps both on one cache entry. Without it
+            // a gallery fell through to the submission url — reddit.com/gallery/xxx, an HTML page
+            // the image loader can only fail on.
+            String imageUrl = null;
+            int sourceWidth = 0;
+            int sourceHeight = 0;
+
+            final Thumbnails thumbnails = submission.getThumbnails();
+            final Thumbnails.Image source = thumbnails == null ? null : thumbnails.getSource();
+            if (source != null) {
+                imageUrl = source.getUrl();
+                sourceWidth = source.getWidth();
+                sourceHeight = source.getHeight();
+            } else if (type == ContentType.Type.REDDIT_GALLERY) {
+                final PhotoLoader.GalleryPreview gallery =
+                        PhotoLoader.getGalleryPreview(
+                                submission.getDataNode(), PhotoLoader.galleryMaxWidth(main));
+                if (gallery != null) {
+                    imageUrl = gallery.url;
+                    sourceWidth = gallery.width;
+                    sourceHeight = gallery.height;
+                }
             }
+            if (imageUrl == null) {
+                imageUrl = submission.getUrl();
+            }
+
+            ((Reddit) main.getApplicationContext())
+                    .getImageLoader()
+                    .displayImage(imageUrl, holder.image, ImageGridAdapter.options);
+
             double h = 0;
             int height = 0;
-            if (submission.getThumbnails() != null) {
-                Thumbnails.Image source = submission.getThumbnails().getSource();
-                if (source != null) {
-                    h =
-                            getHeightFromAspectRatio(
-                                    source.getHeight(), source.getWidth(), holder.image.getWidth());
-                    height = source.getHeight();
-                }
+            if (sourceWidth > 0 && sourceHeight > 0) {
+                h = getHeightFromAspectRatio(sourceHeight, sourceWidth, holder.image.getWidth());
+                height = sourceHeight;
             }
 
             holder.type.setVisibility(View.VISIBLE);
-            switch (ContentType.getContentType(submission)) {
+            switch (type) {
                 case REDDIT_GALLERY:
                 case ALBUM:
                     holder.type.setImageResource(R.drawable.ic_photo_library);
@@ -123,6 +140,8 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 case GIF:
                 case STREAMABLE:
                 case VIDEO:
+                case VREDDIT_DIRECT:
+                case VREDDIT_REDIRECT:
                     holder.type.setImageResource(R.drawable.ic_play_arrow);
                     break;
                 default:
@@ -237,7 +256,6 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            ContentType.Type type = ContentType.getContentType(submission);
                             if (!PostMatch.openExternal(submission.getUrl())
                                     || type == ContentType.Type.VIDEO) {
                                 switch (type) {
@@ -340,12 +358,15 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                                     RedditGallery.SUBREDDIT,
                                                     submission.getSubredditName());
 
-                                            ArrayList<GalleryImage> urls = new ArrayList<>();
-
-                                            JsonNode dataNode = submission.getDataNode();
-                                            if (dataNode.has("gallery_data")) {
-                                                JsonUtil.getGalleryData(dataNode, urls);
-                                            }
+                                            // A crosspost keeps its gallery on the parent, which
+                                            // reading gallery_data off the submission itself
+                                            // misses — it opened the viewer with no images at
+                                            // all. GalleryTiles resolves the parent the way the
+                                            // feed's open path does.
+                                            ArrayList<GalleryImage> urls =
+                                                    new ArrayList<>(
+                                                            GalleryTiles.imagesFor(
+                                                                    submission.getDataNode()));
 
                                             Bundle urlsBundle = new Bundle();
                                             urlsBundle.putSerializable(
@@ -375,6 +396,8 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                         }
                                         break;
                                     case GIF:
+                                    case VREDDIT_DIRECT:
+                                    case VREDDIT_REDIRECT:
                                         SubmissionThumbnailHelper.openGif(
                                                 main,
                                                 submission,
