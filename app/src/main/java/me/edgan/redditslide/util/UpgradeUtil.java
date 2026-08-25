@@ -113,9 +113,13 @@ public class UpgradeUtil {
                                                     .toLowerCase(Locale.ENGLISH)
                                                     .split("[,]+")));
             // verify flairs filters are valid
+            // A flair filter is "<subreddit>:<flair>", and both halves have to be there: an entry
+            // with nothing after the colon matches no flair, and used to crash the feed on the
+            // split. This is the same test SettingsFilterList.addFilter applies to typed entries;
+            // merely containing a colon is not enough.
             HashSet<String> invalid = new HashSet<>();
             for (String s : flairFilters) {
-                if (!s.contains(":")) {
+                if (!s.matches(".+:.+")) {
                     invalid.add(s);
                 }
             }

@@ -1,13 +1,17 @@
 package me.edgan.redditslide.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Application;
 import android.content.Context;
+import android.net.Uri;
 import androidx.test.core.app.ApplicationProvider;
 import com.lusfold.androidkeyvaluestore.KVStore;
 import me.edgan.redditslide.HasSeen;
+import me.edgan.redditslide.OpenRedditLink;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,10 +83,9 @@ public class HasSeenUrlTest {
      * Reddit hands out no-participation links on the {@code np.} subdomain; they point at the same
      * post, so they have to be filed as the same post.
      *
-     * <p>Note what this does <em>not</em> pin. {@code getSeen} rewrites the authority to strip the
-     * {@code np} prefix before classifying the link, but for a permalink the id comes from a path
-     * segment, which the host does not affect — disabling the strip leaves this green. The strip
-     * is therefore unobservable from this entry point and its own gap stays open; see TEST-GAPS.md.
+     * <p>Note what this does <em>not</em> pin. For a permalink the id comes from a path segment,
+     * which the host does not affect, so disabling the strip leaves this green. The strip is
+     * asserted directly instead, below.
      */
     @Test
     public void aNoParticipationPermalinkIsFiledUnderThePostId() {
@@ -91,6 +94,38 @@ public class HasSeenUrlTest {
         assertTrue(
                 "np.reddit.com is reddit.com with a prefix, not a different site",
                 HasSeen.hasSeen.contains(ID));
+    }
+
+    /**
+     * The strip itself. {@code formatRedditUrl} normalises {@code np.reddit.com} to a
+     * {@code npreddit.com} host, and dropping the two-character prefix is what puts the link back
+     * on {@code reddit.com}. Nothing downstream of {@code getSeen} can tell the two apart -- the id
+     * always comes from a path segment and {@code getRedditLinkType} reads the host only to spot
+     * {@code redd.it} -- so it is asserted here on its own; with no seam, deleting it left the
+     * whole suite green.
+     */
+    @Test
+    public void theNoParticipationPrefixIsStrippedFromTheHost() {
+        final Uri np = OpenRedditLink.formatRedditUrl(
+                "https://np.reddit.com/r/pics/comments/" + ID + "/some_title/");
+
+        assertNotNull(np);
+        assertEquals("formatRedditUrl folds the subdomain into the host", "npreddit.com", np.getHost());
+        assertEquals("reddit.com", HasSeen.stripNoParticipation(np).getHost());
+    }
+
+    /** An ordinary reddit host has no prefix to drop, so it comes back untouched. */
+    @Test
+    public void anOrdinaryHostIsLeftAlone() {
+        final Uri ordinary = OpenRedditLink.formatRedditUrl(
+                "https://www.reddit.com/r/pics/comments/" + ID + "/some_title/");
+
+        assertNotNull(ordinary);
+        assertEquals("reddit.com", HasSeen.stripNoParticipation(ordinary).getHost());
+        assertEquals(
+                "the rest of the link is untouched too",
+                ordinary.getPath(),
+                HasSeen.stripNoParticipation(ordinary).getPath());
     }
 
     /** A string that is not a url at all is taken as the fullname itself. */

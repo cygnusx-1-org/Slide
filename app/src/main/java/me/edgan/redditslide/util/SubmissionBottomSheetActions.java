@@ -197,14 +197,22 @@ public class SubmissionBottomSheetActions {
                         break;
                     case 10:
                         String[] choices;
-                        final String flair = submission.getSubmissionFlair().getText() != null ? submission.getSubmissionFlair().getText() : "";
+                        // Trimmed here rather than at each use: a flair of nothing but whitespace
+                        // is no flair to filter on, and it used to reach the writer below and
+                        // store a bare "subreddit:" entry that looks configured and matches
+                        // nothing.
+                        final String flair = submission.getSubmissionFlair().getText() != null ? submission.getSubmissionFlair().getText().trim() : "";
                         // Read once and coalesce, the same way flair above does: these are filter
                         // keys, and "" already means "no such attribute to filter on" here.
                         final String subFilter = MiscUtil.orEmpty(submission.getSubredditName());
                         final String userFilter = MiscUtil.orEmpty(submission.getAuthor());
                         final String domainFilter = MiscUtil.orEmpty(submission.getDomain());
+                        // A flair filter names the subreddit it applies to, so without one there
+                        // is nothing to store: PostMatch matches the entry's first half against
+                        // the subreddit being browsed and an empty half never matches.
+                        final String flairSub = MiscUtil.orEmpty(baseSub);
 
-                        if (flair.isEmpty()) {
+                        if (flair.isEmpty() || flairSub.isEmpty()) {
                             choices = new String[] {
                                 mContext.getString(R.string.filter_posts_sub, subFilter),
                                 mContext.getString(R.string.filter_posts_user, userFilter),
@@ -235,7 +243,7 @@ public class SubmissionBottomSheetActions {
                                 SettingValues.userFilters.contains(userFilter.toLowerCase(Locale.ENGLISH)),
                                 SettingValues.domainFilters.contains(domainFilter.toLowerCase(Locale.ENGLISH)),
                                 SettingValues.alwaysExternal.contains(domainFilter.toLowerCase(Locale.ENGLISH)),
-                                SettingValues.flairFilters.contains(baseSub + ":" + flair.toLowerCase(Locale.ENGLISH).trim())
+                                SettingValues.flairFilters.contains(SettingValues.flairFilterKey(flairSub, flair))
                             };
 
                             oldChosen = chosen.clone();
@@ -293,8 +301,8 @@ public class SubmissionBottomSheetActions {
                                     e.apply();
                                 }
 
-                                if (chosen.length > 4 && !flair.isEmpty()) {
-                                    String s = (baseSub + ":" + flair).toLowerCase(Locale.ENGLISH).trim();
+                                if (chosen.length > 4 && !flair.isEmpty() && !flairSub.isEmpty()) {
+                                    String s = SettingValues.flairFilterKey(flairSub, flair);
 
                                     if (chosen[4] && chosen[4] != oldChosen[4]) {
                                         SettingValues.flairFilters.add(s);

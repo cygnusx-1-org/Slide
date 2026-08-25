@@ -578,6 +578,24 @@ public class SettingValues {
         hideSubredditTabs = prefs.getBoolean(PREF_HIDE_SUBREDDIT_TABS, false);
     }
 
+    /**
+     * The entry a "filter this flair in this subreddit" row is stored under in {@link
+     * #flairFilters}: the subreddit and the flair, each lowercased and trimmed on its own, joined
+     * by a colon.
+     *
+     * <p>One helper for every site on purpose. The read-back that pre-checks the filter dialog's
+     * box and the write behind it used to build this string differently — the write lowercased and
+     * trimmed the joined string, so a flair with leading whitespace ended up under a key the read
+     * never asked for and the box opened unchecked while the filter was live. Trimming each half
+     * before the join also stops a whitespace-only flair from producing a bare {@code
+     * "subreddit:"}, which {@link PostMatch#doesMatch} has to skip.
+     */
+    public static String flairFilterKey(String subreddit, String flair) {
+        return subreddit.toLowerCase(Locale.ENGLISH).trim()
+                + ":"
+                + flair.toLowerCase(Locale.ENGLISH).trim();
+    }
+
     public static void setPicsEnabled(String sub, boolean checked) {
         prefs.edit().putBoolean("picsenabled" + sub.toLowerCase(Locale.ENGLISH), checked).apply();
     }

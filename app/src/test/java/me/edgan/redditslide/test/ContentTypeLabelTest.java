@@ -3,8 +3,6 @@ package me.edgan.redditslide.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import java.util.Arrays;
-import java.util.List;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.ContentType.Type;
 import me.edgan.redditslide.R;
@@ -22,31 +20,10 @@ import org.junit.Test;
  * <p>Both tables must name the same types: {@code XKCD}, {@code DEVIANTART}, {@code NONE},
  * {@code REDDIT}, {@code SELF} and {@code STREAMABLE} once had an ordinary label and no NSFW one,
  * so an NSFW self post fell through to the {@code type_link} default and was badged "Link".
- * {@code SPOILER} is the one type neither table names, and both answer "Link" for it.
+ * {@code SPOILER} was named by neither and both answered "Link" for it; every type in the enum now
+ * has its own entry on both sides, so the tables are complete as well as parallel.
  */
 public class ContentTypeLabelTest {
-
-    /** The types the NSFW table has an entry for. */
-    private static final List<Type> NSFW_TABLE =
-            Arrays.asList(
-                    Type.ALBUM,
-                    Type.REDDIT_GALLERY,
-                    Type.XKCD,
-                    Type.DEVIANTART,
-                    Type.EMBEDDED,
-                    Type.EXTERNAL,
-                    Type.LINK,
-                    Type.GIF,
-                    Type.IMAGE,
-                    Type.TUMBLR,
-                    Type.IMGUR,
-                    Type.NONE,
-                    Type.REDDIT,
-                    Type.SELF,
-                    Type.STREAMABLE,
-                    Type.VIDEO,
-                    Type.VREDDIT_DIRECT,
-                    Type.VREDDIT_REDIRECT);
 
     @Test
     public void anNsfwPostIsLabelledFromTheNsfwTable() {
@@ -66,6 +43,7 @@ public class ContentTypeLabelTest {
         assertEquals(R.string.type_nsfw_title_only, ContentType.getContentID(Type.NONE, true));
         assertEquals(R.string.type_nsfw_reddit, ContentType.getContentID(Type.REDDIT, true));
         assertEquals(R.string.type_nsfw_selftext, ContentType.getContentID(Type.SELF, true));
+        assertEquals(R.string.type_nsfw_spoiler, ContentType.getContentID(Type.SPOILER, true));
         assertEquals(
                 R.string.type_nsfw_streamable, ContentType.getContentID(Type.STREAMABLE, true));
         assertEquals(R.string.type_nsfw_video, ContentType.getContentID(Type.VIDEO, true));
@@ -91,6 +69,7 @@ public class ContentTypeLabelTest {
         assertEquals(R.string.type_title_only, ContentType.getContentID(Type.NONE, false));
         assertEquals(R.string.type_reddit, ContentType.getContentID(Type.REDDIT, false));
         assertEquals(R.string.type_selftext, ContentType.getContentID(Type.SELF, false));
+        assertEquals(R.string.type_spoiler, ContentType.getContentID(Type.SPOILER, false));
         assertEquals(R.string.type_streamable, ContentType.getContentID(Type.STREAMABLE, false));
         assertEquals(R.string.type_youtube, ContentType.getContentID(Type.VIDEO, false));
         assertEquals(R.string.type_vreddit, ContentType.getContentID(Type.VREDDIT_DIRECT, false));
@@ -99,11 +78,13 @@ public class ContentTypeLabelTest {
 
     /**
      * The two tables are chosen by one boolean, so the failure that matters is not a wrong entry
-     * but the wrong table: for every type the NSFW table names, the two answers must differ.
+     * but the wrong table: the two answers must differ for every type. This once had to be scoped
+     * to the types the NSFW table happened to name; both tables are complete now, so it runs over
+     * the whole enum and a type added to one table alone fails here.
      */
     @Test
     public void theNsfwAndOrdinaryLabelsAreNeverTheSameEntry() {
-        for (Type type : NSFW_TABLE) {
+        for (Type type : Type.values()) {
             assertNotEquals(
                     "NSFW and ordinary labels must not collide for " + type,
                     ContentType.getContentID(type, true),

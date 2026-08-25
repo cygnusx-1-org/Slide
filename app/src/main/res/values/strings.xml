@@ -382,6 +382,8 @@
     <string name="type_nsfw_title_only">NSFW title post</string>
     <string name="type_nsfw_reddit">NSFW Reddit link</string>
     <string name="type_nsfw_selftext">NSFW selftext</string>
+    <string name="type_spoiler">Spoiler</string>
+    <string name="type_nsfw_spoiler">NSFW spoiler</string>
     <string name="type_nsfw_streamable">NSFW Streamable</string>
     <string name="type_external">External</string>
 

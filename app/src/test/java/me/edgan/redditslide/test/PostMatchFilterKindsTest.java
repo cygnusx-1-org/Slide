@@ -192,9 +192,8 @@ public class PostMatchFilterKindsTest {
      * An entry with nothing after the colon. Java drops trailing empty strings, so
      * {@code "pics:".split(":")} has one element while the subreddit check in front of it still
      * passes -- reading {@code split[1]} was an ArrayIndexOutOfBoundsException raised while binding
-     * the post in the feed. Two writers can store one: the post's own "filter this flair" action
-     * concatenates before it trims, so a whitespace-only flair becomes {@code "pics:"}, and the
-     * legacy comma-string migration accepts anything containing a colon.
+     * the post in the feed. No writer produces one any more (see {@code FlairFilterKeyTest}), but
+     * entries stored by the two that used to survive an upgrade, so the reader keeps its guard.
      */
     @Test
     public void aFlairFilterWithNothingAfterTheColonIsSkipped() throws Exception {
@@ -202,6 +201,24 @@ public class PostMatchFilterKindsTest {
 
         assertFalse(
                 "an entry with no flair text matches nothing rather than throwing",
+                PostMatch.doesMatch(
+                        post("someone", "", "https://example.com/s", "Spoiler"), SUB, false));
+    }
+
+    /**
+     * The writer's half of the round trip: what {@code SettingValues.flairFilterKey} emits is what
+     * this loop has to parse, for a subreddit as displayed and a flair with padding around it.
+     *
+     * <p>Corroboration rather than a unique kill -- {@code FlairFilterKeyTest} is what reddens on
+     * a mutation to the key's shape, and this loop is case-insensitive and trims {@code split[1]},
+     * so it tolerates more than the writer now produces. It is here to fail if the two halves are
+     * ever changed apart.
+     */
+    @Test
+    public void anEntryBuiltByTheFilterDialogIsMatchedByTheReader() throws Exception {
+        SettingValues.flairFilters = set(SettingValues.flairFilterKey("Pics", "  Spoiler  "));
+
+        assertTrue(
                 PostMatch.doesMatch(
                         post("someone", "", "https://example.com/s", "Spoiler"), SUB, false));
     }

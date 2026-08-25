@@ -457,6 +457,8 @@ public class ContentType {
                     return R.string.type_nsfw_reddit;
                 case SELF:
                     return R.string.type_nsfw_selftext;
+                case SPOILER:
+                    return R.string.type_nsfw_spoiler;
                 case STREAMABLE:
                     return R.string.type_nsfw_streamable;
                 case VIDEO:
@@ -494,6 +496,8 @@ public class ContentType {
                     return R.string.type_reddit;
                 case SELF:
                     return R.string.type_selftext;
+                case SPOILER:
+                    return R.string.type_spoiler;
                 case STREAMABLE:
                     return R.string.type_streamable;
                 case VIDEO:

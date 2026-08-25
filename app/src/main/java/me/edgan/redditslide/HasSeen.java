@@ -133,16 +133,35 @@ public class HasSeen {
                 || s.getVote() != VoteDirection.NO_VOTE);
     }
 
+    /**
+     * Puts a "no participation" link back on the host it is a copy of. Reddit hands those out on
+     * the {@code np.} subdomain, which {@link OpenRedditLink#formatRedditUrl} normalises to a
+     * {@code npreddit.com} host; dropping the prefix leaves {@code reddit.com}, so the link is
+     * classified as the ordinary link it is.
+     *
+     * <p>Extracted from {@link #getSeen(String)} so it can be asserted directly, because it cannot
+     * be asserted through that method's result: every link shape the switch there handles takes
+     * the post id from a path segment, which the host does not affect, and {@link
+     * OpenRedditLink#getRedditLinkType} reads the host only to spot {@code redd.it}. Stripped or
+     * not, those links classify and file identically — so with no seam, deleting the strip left
+     * the whole suite green. See TEST-GAPS.md.
+     */
+    public static Uri stripNoParticipation(Uri uri) {
+        // formatRedditUrl only returns a Uri it could read a host from.
+        String host = Objects.requireNonNull(uri.getHost());
+
+        if (host.startsWith("np")) {
+            return uri.buildUpon().authority(host.substring(2)).build();
+        }
+
+        return uri;
+    }
+
     public static boolean getSeen(String s) {
         Uri uri = formatRedditUrl(s);
         String fullname = s;
         if (uri != null) {
-            // formatRedditUrl only returns a Uri it could read a host from.
-            String host = Objects.requireNonNull(uri.getHost());
-
-            if (host.startsWith("np")) {
-                uri = uri.buildUpon().authority(host.substring(2)).build();
-            }
+            uri = stripNoParticipation(uri);
 
             OpenRedditLink.RedditLinkType type = getRedditLinkType(uri);
             List<String> parts = uri.getPathSegments();
