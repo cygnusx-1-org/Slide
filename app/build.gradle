@@ -578,24 +578,21 @@ tasks.register('auditDialogBackgrounds', Exec) {
 }
 tasks.named('check') { dependsOn 'auditDialogBackgrounds' }
 
-// `checks` — `check` with the Roborazzi screenshot goldens VERIFIED rather than merely
-// captured. Plain `check`/`test` run the screenshot tests in compare-only mode, so a golden
-// mismatch does not fail the build; this task hands the unit-test JVMs the same
-// `roborazzi.test.verify` system property that `-Proborazzi.test.verify=true` sets, so a
-// mismatch fails. Equivalent to `./gradlew :app:check -Proborazzi.test.verify=true`, but done
-// as check + a guarded property rather than a nested `./gradlew`, so the whole run stays a
-// single invocation. The guard keys off the requested task, so running `check` on its own
-// keeps its non-gating behaviour.
-tasks.register('checks') {
-    group = 'verification'
-    description = 'Runs check with Roborazzi screenshot verification (fails on golden mismatch).'
-    dependsOn 'check'
-}
-if (gradle.startParameter.taskNames.any { it == 'checks' || it.endsWith(':checks') }) {
-    tasks.withType(Test).configureEach {
-        systemProperty 'roborazzi.test.verify', 'true'
-    }
-}
+// Roborazzi screenshot goldens, gated. GitHub CI is disabled for this fork, so `check` on a
+// developer's machine is the only gate there is -- a golden mismatch that merely writes a diff
+// image and reports success is a mismatch nobody sees. Depending on the verify task instead
+// switches the unit-test run into verify mode, so layout drift fails the build.
+//
+// withGPlayDebug is the authoritative variant: the goldens were recorded with
+// recordRoborazziWithGPlayDebug (see RoborazziLayoutTest) and every golden in
+// src/test/screenshots belongs to that run. `check` runs both flavours' unit tests, so the
+// noGPlay run stays compare-only; do not add verifyRoborazziNoGPlayDebug beside this one, since
+// two verify tasks over one golden set would fail on any flavour difference that is not a
+// layout change.
+//
+// To accept an intended layout change: ./gradlew :app:recordRoborazziWithGPlayDebug, then
+// review and commit the regenerated PNGs.
+tasks.named('check') { dependsOn 'verifyRoborazziWithGPlayDebug' }
 
 // Custom APK/AAB names, reimplemented on AGP 9's new Variant API (the legacy
 // applicationVariants.outputs.outputFileName / bundle rename was removed by the new DSL).
