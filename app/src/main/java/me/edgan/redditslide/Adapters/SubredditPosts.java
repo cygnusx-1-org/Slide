@@ -22,6 +22,7 @@ import me.edgan.redditslide.OfflineSubreddit;
 import me.edgan.redditslide.PostLoader;
 import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.R;
+import me.edgan.redditslide.Random.RandomSubreddits;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionCache;
@@ -168,25 +169,30 @@ public class SubredditPosts implements PostLoader {
                 currentid = 0;
                 OfflineSubreddit.currentid = currentid;
 
-                if (subreddit.equals("random")
-                        || subreddit.equals("myrandom")
-                        || subreddit.equals("randnsfw")) {
-                    subredditRandom = MiscUtil.orEmpty(submissions.get(0).getSubredditName());
+                if (RandomSubreddits.isRandom(subreddit)) {
+                    // The name is resolved before the fetch now, so this only confirms it. Keep
+                    // the resolved pick when the submission carries no subreddit name, rather
+                    // than blanking it and losing the pick for the retry path.
+                    final String fromSubmission =
+                            MiscUtil.orEmpty(submissions.get(0).getSubredditName());
+                    if (!fromSubmission.isEmpty()) {
+                        subredditRandom = fromSubmission;
+                    }
                 }
 
                 MainActivity.randomoverride = subredditRandom;
 
-                if (context instanceof SubredditView
-                        && (subreddit.equals("random")
-                                || subreddit.equals("myrandom")
-                                || subreddit.equals("randnsfw"))) {
-                    ((SubredditView) context).subreddit = subredditRandom;
-                    ((SubredditView) context).executeAsyncSubreddit(subredditRandom);
-                }
+                handOffResolvedRandom();
             } else if (submissions != null) {
                 // end of submissions
                 nomore = true;
                 displayer.updateSuccess(posts, posts.size() + 1);
+
+                // A random pick can resolve and still return nothing to show — an NSFW subreddit
+                // with NSFW hidden has every post filtered out by PostMatch. The name still has
+                // to reach SubredditView, or the over-18 interstitial that would offer to load it
+                // anyway never runs and the screen stays blank with no way forward.
+                handOffResolvedRandom();
             } else if (MainActivity.isRestart) {
                 posts = new ArrayList<>();
                 cached = OfflineSubreddit.getSubreddit(subreddit, 0L, true, c);
@@ -215,6 +221,92 @@ public class SubredditPosts implements PostLoader {
             SubredditPosts.this.error = !success;
         }
 
+        /**
+         * Turns "random", "myrandom" or "randnsfw" into a real subreddit name before anything is
+         * fetched.
+         *
+         * <p>This used to be a side effect of fetching: Reddit resolved /r/random itself and the
+         * name was read back off the first submission. Those endpoints are gone, so a name is
+         * chosen up front instead and everything downstream of {@code subredditRandom} carries on
+         * unchanged.
+         *
+         * @param fresh true to draw a new subreddit — a first load or a refresh, both of which
+         *     start a new listing and so should land somewhere new. False keeps the current pick,
+         *     which is what the 500-retry below needs: it rebuilds the paginator for the listing
+         *     already on screen and must not move it to a different subreddit.
+         */
+        private String resolveRandom(String sub, boolean fresh) {
+            if (!RandomSubreddits.isRandom(sub)) {
+                return sub;
+            }
+            if (!fresh) {
+                final String current = currentRandomPick(sub);
+                if (!current.isEmpty()) {
+                    subredditRandom = current;
+                    return current;
+                }
+            }
+            final String picked = RandomSubreddits.pick(context, sub);
+            if (picked != null && !picked.isEmpty()) {
+                subredditRandom = picked;
+                MainActivity.randomoverride = picked;
+                return picked;
+            }
+            // Nothing could be resolved: no cached list and no network on a first use, or the
+            // batch check failed. Reuse whatever was already landed on before falling back to the
+            // special name, which Reddit answers with a 404.
+            final String current = currentRandomPick(sub);
+            return current.isEmpty() ? sub : current;
+        }
+
+        /**
+         * The subreddit this random listing is already on, or empty if there is not one yet.
+         *
+         * <p>Three carriers, widest last, because a reload can arrive on a brand new loader: this
+         * loader's own pick; the last pick {@link RandomSubreddits} made for this special name,
+         * which survives the adapter being rebuilt; and finally {@code randomoverride}, which
+         * {@code SubmissionAdapter} clears on construction and so cannot be relied on alone.
+         */
+        private String currentRandomPick(String sub) {
+            if (subredditRandom != null && !subredditRandom.isEmpty()) {
+                return subredditRandom;
+            }
+            final String last = MiscUtil.orEmpty(RandomSubreddits.lastPick(sub));
+            if (!last.isEmpty()) {
+                return last;
+            }
+            return MiscUtil.orEmpty(MainActivity.randomoverride);
+        }
+
+        /**
+         * Hands the subreddit a random name resolved to over to the hosting {@link SubredditView},
+         * so its title, sidebar and over-18 interstitial act on the real subreddit rather than on
+         * "random".
+         *
+         * <p>Called from both the loaded and the empty branch of {@link #onPostExecute}: resolving
+         * a name and having posts to show are independent. A pick that lands on an NSFW subreddit
+         * while NSFW content is hidden returns posts that PostMatch then filters away entirely, and
+         * that is exactly the case where the interstitial needs to run.
+         */
+        private void handOffResolvedRandom() {
+            if (!(context instanceof SubredditView) || !RandomSubreddits.isRandom(subreddit)) {
+                return;
+            }
+            if (subredditRandom == null || subredditRandom.isEmpty()) {
+                return;
+            }
+            final SubredditView view = (SubredditView) context;
+            if (subredditRandom.equalsIgnoreCase(view.subreddit)) {
+                // Already handed off. executeAsyncSubreddit re-raises the over-18 interstitial
+                // every time it runs against an NSFW subreddit, so repeating it here would prompt
+                // again for the very subreddit the user just accepted — and accepting rebuilds the
+                // loader, which lands back here, with no way through to the posts.
+                return;
+            }
+            view.subreddit = subredditRandom;
+            view.executeAsyncSubreddit(subredditRandom);
+        }
+
         @Override
         protected @Nullable List<Submission> doInBackground(String... subredditPaginators) {
             if (BuildConfig.DEBUG) LogUtil.v("Loading data");
@@ -233,13 +325,12 @@ public class SubredditPosts implements PostLoader {
             if (reset || paginator == null) {
                 offline = false;
                 nomore = false;
-                String sub = subredditPaginators[0].toLowerCase(Locale.ENGLISH);
-                if ((sub.equals("random") || sub.equals("randnsfw"))
-                        && MainActivity.randomoverride != null
-                        && !MainActivity.randomoverride.isEmpty()) {
-                    sub = MainActivity.randomoverride;
-                    MainActivity.randomoverride = "";
-                }
+                // force18 means the user just accepted the over-18 interstitial for the
+                // subreddit this listing resolved to, on a loader rebuilt by doAdapter(true).
+                // That is a reload of what they agreed to see, not a request for somewhere new.
+                String sub =
+                        resolveRandom(
+                                subredditPaginators[0].toLowerCase(Locale.ENGLISH), !force18);
                 if (sub.equals("frontpage")) {
                     paginator = new SubredditPaginator(Authentication.reddit);
                 } else if (!sub.contains(".")) {
@@ -327,13 +418,7 @@ public class SubredditPosts implements PostLoader {
                     for (int r = 0; r < retryCount; r++) {
                         newLimit /= 2;
                     }
-                    String sub = subreddit.toLowerCase(Locale.ENGLISH);
-                    if ((sub.equals("random") || sub.equals("randnsfw"))
-                            && MainActivity.randomoverride != null
-                            && !MainActivity.randomoverride.isEmpty()) {
-                        sub = MainActivity.randomoverride;
-                        MainActivity.randomoverride = "";
-                    }
+                    String sub = resolveRandom(subreddit.toLowerCase(Locale.ENGLISH), false);
                     if (sub.equals("frontpage")) {
                         paginator = new SubredditPaginator(Authentication.reddit);
                     } else if (!sub.contains(".")) {

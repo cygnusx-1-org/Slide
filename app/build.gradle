@@ -578,6 +578,53 @@ tasks.register('auditDialogBackgrounds', Exec) {
 }
 tasks.named('check') { dependsOn 'auditDialogBackgrounds' }
 
+// The two random-subreddit lists ship as assets, but the files in src/main/assets are symlinks
+// into the sibling repo (see docs / RANDOM-SUBREDDITS-HANDOFF.md) so they are never duplicated
+// here and a `git pull` there is picked up by the next build.
+//
+// A dangling symlink is the failure mode worth guarding: AGP's asset merge silently skips a link
+// it cannot resolve, so the APK builds, installs and runs, and the omission only shows up as a
+// random subreddit that never resolves on a device with no network. Fail the build instead.
+//
+// Wired into preBuild so it runs before the asset merge on every variant, and into `check` so it
+// is part of the gate even when nothing is being assembled.
+tasks.register('verifyRandomSubredditAssets') {
+    group = 'verification'
+    description = 'Fail if the bundled random-subreddit list assets are missing or dangling symlinks.'
+
+    def assets = ['subreddits-sfw.txt', 'subreddits-nsfw.txt'].collect {
+        new File(projectDir, "src/main/assets/${it}")
+    }
+    // Track the link and its target so a re-pointed or updated list re-runs the check.
+    inputs.files(assets).withPropertyName('listAssets').optional(true)
+
+    doLast {
+        def problems = []
+        assets.each { link ->
+            if (!link.exists()) {
+                // exists() follows the link, so this covers both "absent" and "dangles".
+                def target = java.nio.file.Files.isSymbolicLink(link.toPath())
+                        ? java.nio.file.Files.readSymbolicLink(link.toPath()).toString()
+                        : null
+                problems << (target != null
+                        ? "${link.name}: dangling symlink -> ${target}"
+                        : "${link.name}: missing")
+            } else if (link.length() == 0L) {
+                problems << "${link.name}: resolves but is empty"
+            }
+        }
+        if (problems) {
+            throw new GradleException(
+                    "Random-subreddit list assets are not usable:\n  " + problems.join('\n  ') +
+                    "\n\nThese are symlinks into the sibling subreddit-lists repo. Clone it beside" +
+                    " this one:\n  git clone https://github.com/cygnusx-1-org/subreddit-lists" +
+                    " ${rootDir.parentFile}/subreddit-lists")
+        }
+    }
+}
+tasks.named('preBuild') { dependsOn 'verifyRandomSubredditAssets' }
+tasks.named('check') { dependsOn 'verifyRandomSubredditAssets' }
+
 // Roborazzi screenshot goldens, gated. GitHub CI is disabled for this fork, so `check` on a
 // developer's machine is the only gate there is -- a golden mismatch that merely writes a diff
 // image and reports success is a mismatch nobody sees. Depending on the verify task instead

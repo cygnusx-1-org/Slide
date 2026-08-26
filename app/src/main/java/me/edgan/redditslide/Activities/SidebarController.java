@@ -363,21 +363,31 @@ public class SidebarController {
                                     FlairTemplate currentF = m.getCurrentFlair(subreddit, node);
 
                                     if (currentF != null) {
-                                        if (currentF.getText().isEmpty()) {
-                                            current = ("[" + currentF.getCssClass() + "]");
-                                        } else {
-                                            current = (currentF.getText());
+                                        // getText() is null, not empty, for a flair Reddit serves
+                                        // with no "flair_text" key at all — a css-only flair.
+                                        // Dereferencing it threw an NPE that the catch below
+                                        // swallowed, which abandoned the rest of the list and left
+                                        // the sidebar with no flair picker.
+                                        final String text = MiscUtil.orEmpty(currentF.getText());
+                                        final String css = MiscUtil.orEmpty(currentF.getCssClass());
+                                        if (!text.isEmpty()) {
+                                            current = text;
+                                        } else if (!css.isEmpty()) {
+                                            current = ("[" + css + "]");
                                         }
+                                        // Neither: nothing worth naming. onPostExecute skips a
+                                        // null current, so the row simply carries no label rather
+                                        // than reading "FLAIR: [null]".
                                     }
 
                                     flairText = new ArrayList<>();
 
                                     for (FlairTemplate temp : flairs) {
-                                        if (temp.getText().isEmpty()) {
-                                            flairText.add("[" + temp.getCssClass() + "]");
-                                        } else {
-                                            flairText.add(temp.getText());
-                                        }
+                                        final String text = MiscUtil.orEmpty(temp.getText());
+                                        flairText.add(
+                                                text.isEmpty()
+                                                        ? ("[" + temp.getCssClass() + "]")
+                                                        : text);
                                     }
                                 } catch (Exception e1) {
                                     LogUtil.e(e1, "SidebarController.doInBackground failed");
@@ -432,10 +442,16 @@ public class SidebarController {
                                                                                                     .setFlair(subreddit, t, flair, Authentication.name);
                                                                                                 FlairTemplate currentF = m.getCurrentFlair(subreddit);
 
-                                                                                                if (currentF.getText().isEmpty()) {
-                                                                                                    current = ("[" + currentF.getCssClass() + "]");
-                                                                                                } else {
-                                                                                                    current = (currentF.getText());
+                                                                                                if (currentF != null) {
+                                                                                                    // Null text means a css-only flair; onPostExecute
+                                                                                                    // already skips a null current.
+                                                                                                    final String text = MiscUtil.orEmpty(currentF.getText());
+                                                                                                    final String css = MiscUtil.orEmpty(currentF.getCssClass());
+                                                                                                    if (!text.isEmpty()) {
+                                                                                                        current = text;
+                                                                                                    } else if (!css.isEmpty()) {
+                                                                                                        current = ("[" + css + "]");
+                                                                                                    }
                                                                                                 }
 
                                                                                                 return true;
@@ -483,10 +499,16 @@ public class SidebarController {
                                                                                 new ModerationManager(Authentication.reddit).setFlair(subreddit, t, null, Authentication.name);
                                                                                 FlairTemplate currentF = m.getCurrentFlair(subreddit);
 
-                                                                                if (currentF.getText().isEmpty()) {
-                                                                                    current = ("[" + currentF.getCssClass() + "]");
-                                                                                } else {
-                                                                                    current = (currentF.getText());
+                                                                                if (currentF != null) {
+                                                                                    // Null text means a css-only flair; onPostExecute
+                                                                                    // already skips a null current.
+                                                                                    final String text = MiscUtil.orEmpty(currentF.getText());
+                                                                                    final String css = MiscUtil.orEmpty(currentF.getCssClass());
+                                                                                    if (!text.isEmpty()) {
+                                                                                        current = text;
+                                                                                    } else if (!css.isEmpty()) {
+                                                                                        current = ("[" + css + "]");
+                                                                                    }
                                                                                 }
 
                                                                                 return true;

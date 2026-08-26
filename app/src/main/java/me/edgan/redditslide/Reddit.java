@@ -56,6 +56,7 @@ import me.edgan.redditslide.ImgurAlbum.AlbumUtils;
 import me.edgan.redditslide.Notifications.NotificationJobScheduler;
 import me.edgan.redditslide.Notifications.NotificationPiggyback;
 import me.edgan.redditslide.Notifications.TokenRefreshReceiver;
+import me.edgan.redditslide.Random.RandomSubreddits;
 import me.edgan.redditslide.Tumblr.TumblrUtils;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.CompatUtil;
@@ -567,6 +568,11 @@ public class Reddit extends Application implements Application.ActivityLifecycle
         videoPlugin = isVideoPluginInstalled();
 
         GifCache.init(this);
+
+        // Opportunistic, on app open: re-check the hosted random-subreddit lists when their
+        // cadence says one is due. Only lists already cached are touched, so this is two
+        // preference reads for anyone who has never opened a random subreddit.
+        RandomSubreddits.refreshCachedLists(this);
 
         setupNotificationChannels();
     }
