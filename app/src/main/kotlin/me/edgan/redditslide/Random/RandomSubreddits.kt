@@ -8,8 +8,12 @@ import java.util.Locale
 import java.util.concurrent.ThreadLocalRandom
 import me.edgan.redditslide.Authentication
 import me.edgan.redditslide.Random.RandomSubredditList.Flavour
+import me.edgan.redditslide.SettingValues
 import me.edgan.redditslide.UserSubscriptions
 import me.edgan.redditslide.util.LogUtil
+import net.dean.jraw.paginators.Sorting
+import net.dean.jraw.paginators.SubredditPaginator
+import net.dean.jraw.paginators.TimePeriod
 
 /**
  * Resolves `r/random`, `r/randnsfw` and `r/myrandom` to a real subreddit name.
@@ -44,6 +48,14 @@ object RandomSubreddits {
      * essentially impossible, but an unbounded redraw on a persistently empty result would spin.
      */
     private const val MAX_BATCHES = 3
+
+    /**
+     * How many candidates a single pick may audition before settling for one it could not confirm.
+     * Roughly one subreddit in ten answers with an empty first page — some are genuinely empty,
+     * others are Reddit answering wrong once — so a handful of tries puts a visible blank listing
+     * out of reach without letting a dead network spin here.
+     */
+    private const val MAX_CANDIDATES = 5
 
     /** Validated survivors not yet handed out, per flavour. Guarded by itself. */
     private val pools: MutableMap<Flavour, ArrayDeque<String>> = EnumMap(Flavour::class.java)
@@ -80,18 +92,71 @@ object RandomSubreddits {
     @JvmStatic
     fun pick(context: Context, specialName: String): String? {
         val name = specialName.lowercase(Locale.ENGLISH)
-        val picked =
-            when (name) {
-                // Guest mode, or an account with nothing subscribed, falls through to the general
-                // list rather than leaving the tab dead.
-                MYRANDOM -> pickFromSubscriptions(context) ?: pickValidated(context, Flavour.SFW)
-                RANDNSFW -> pickValidated(context, Flavour.NSFW)
-                else -> pickValidated(context, Flavour.SFW)
+        val sorting = SettingValues.getSubmissionSort(name)
+        val timePeriod = SettingValues.getSubmissionTimePeriod(name)
+
+        // The first candidate drawn, kept as the answer of last resort. Something is badly wrong
+        // when nothing can be confirmed — no network, an expired token — and handing back a name
+        // that may be empty still beats handing back none, which resolves to the special name and
+        // a 404.
+        var fallback: String? = null
+
+        for (attempt in 0 until MAX_CANDIDATES) {
+            val candidate = drawCandidate(context, name) ?: break
+            if (fallback == null) fallback = candidate
+
+            // Confirmed here rather than after the listing comes back empty, so a subreddit with
+            // nothing to show is never handed to the loader: the title, the sidebar and the
+            // over-18 interstitial all act on the resolved name, and a redraw after any of that
+            // has run is a redraw the user watches happen.
+            if (hasPosts(candidate, sorting, timePeriod)) {
+                synchronized(lastPicks) { lastPicks[name] = candidate }
+                return candidate
             }
-        if (!picked.isNullOrEmpty()) {
-            synchronized(lastPicks) { lastPicks[name] = picked }
         }
-        return picked
+
+        if (!fallback.isNullOrEmpty()) {
+            synchronized(lastPicks) { lastPicks[name] = fallback }
+        }
+        return fallback
+    }
+
+    /** One unconfirmed candidate for [name], from whichever source that flavour draws on. */
+    private fun drawCandidate(context: Context, name: String): String? =
+        when (name) {
+            // Guest mode, or an account with nothing subscribed, falls through to the general
+            // list rather than leaving the tab dead.
+            MYRANDOM -> pickFromSubscriptions(context) ?: pickValidated(context, Flavour.SFW)
+            RANDNSFW -> pickValidated(context, Flavour.NSFW)
+            else -> pickValidated(context, Flavour.SFW)
+        }
+
+    /**
+     * Whether [name] has anything to show under the sort this listing will actually use.
+     *
+     * `/api/info` proves a subreddit exists and is neither banned nor private; it says nothing
+     * about whether it holds any posts, and a random pick that resolves to an empty subreddit is
+     * indistinguishable from a broken feature. Asking for a single submission is the cheapest
+     * question that settles it, and asking with the listing's own sort and time period is what
+     * makes the answer mean anything — a subreddit with plenty in `hot` can hold nothing at all
+     * under `top` of the last hour.
+     *
+     * A failure counts as "no", not as "cannot tell": the request that throws here is the same
+     * request the loader is about to make, so a candidate that cannot answer would have shown the
+     * user an error. Drawing somebody else is free.
+     */
+    private fun hasPosts(name: String, sorting: Sorting, timePeriod: TimePeriod): Boolean {
+        val client = Authentication.reddit ?: return true
+        return try {
+            val paginator = SubredditPaginator(client, name)
+            paginator.setSorting(sorting)
+            paginator.setTimePeriod(timePeriod)
+            paginator.setLimit(1)
+            paginator.next().isNotEmpty()
+        } catch (e: Exception) {
+            LogUtil.e(e, "RandomSubreddits.hasPosts failed for $name")
+            false
+        }
     }
 
     /**

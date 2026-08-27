@@ -60,6 +60,20 @@ public class SubredditPosts implements PostLoader {
     Context c;
     boolean force18;
 
+    /**
+     * Which listing the posts in this loader belong to. Bumped by every reset load, on the main
+     * thread, before that load clears {@link #posts}.
+     *
+     * <p>Finishing a listing makes the scroll listener queue an append, and on a slow connection
+     * that append is still in flight when the user refreshes. It knows nothing about the refresh:
+     * it completes against the subreddit it was started for and, not being a reset, adds that
+     * subreddit's next page into the list the refresh has just emptied — which for a random
+     * listing means the old subreddit renders as though it were the new pick, until the real one
+     * lands on top of it a second later. Comparing the generation a load started in against the
+     * current one is what lets those results be dropped instead of merged.
+     */
+    private volatile int generation;
+
     public SubredditPosts(String subreddit, Context c) {
         posts = new ArrayList<>();
         this.subreddit = subreddit;
@@ -109,6 +123,12 @@ public class SubredditPosts implements PostLoader {
         final boolean reset;
         Context context;
 
+        /** The generation this load belongs to, taken in {@link #onPreExecute}. */
+        int loadGeneration;
+
+        /** Set when this load's results were abandoned because a newer listing replaced it. */
+        boolean dropped;
+
         public LoadData(Context context, SubmissionDisplay display, boolean reset) {
             this.context = context;
             displayer = display;
@@ -117,8 +137,19 @@ public class SubredditPosts implements PostLoader {
 
         public int start;
 
+        /** Whether a newer listing has replaced the one this load was started for. */
+        private boolean stale() {
+            return loadGeneration != generation;
+        }
+
         @Override
         public void onPreExecute() {
+            // A reset starts a new listing, so everything already in flight belongs to the old
+            // one. Bumped before the generation is taken so this load reads its own.
+            if (reset) {
+                generation++;
+            }
+            loadGeneration = generation;
             if (reset) {
                 posts.clear();
                 displayer.onAdapterUpdated();
@@ -129,6 +160,17 @@ public class SubredditPosts implements PostLoader {
         public void onPostExecute(final List<Submission> submissions) {
             boolean success = true;
             loading = false;
+
+            if (dropped || stale()) {
+                // Nothing to show and nothing to report: the listing this load belonged to is
+                // gone, and the one that replaced it is either on screen or on its way. Leaving
+                // `error` alone matters — a dropped load is not a failed one.
+                //
+                // Checked again here, not just in doInBackground: a refresh landing between the
+                // merge and this callback leaves a load that passed both earlier tests still
+                // holding the previous listing's posts, and rendering them is the whole defect.
+                return;
+            }
 
             if (error != null) {
                 if (error instanceof NetworkException) {
@@ -310,6 +352,13 @@ public class SubredditPosts implements PostLoader {
         @Override
         protected @Nullable List<Submission> doInBackground(String... subredditPaginators) {
             if (BuildConfig.DEBUG) LogUtil.v("Loading data");
+            if (stale()) {
+                // Queued against a listing that a refresh has already replaced. Bailing here
+                // rather than at the merge below also spares the request, and for a random
+                // listing it means no subreddit is drawn for a listing nobody will see.
+                dropped = true;
+                return null;
+            }
             if ((!NetworkUtil.isConnected(context) && !Authentication.didOnline)
                     || MainActivity.isRestart) {
                 Log.v(LogUtil.getTag(), "Using offline data");
@@ -344,6 +393,18 @@ public class SubredditPosts implements PostLoader {
             }
 
             List<Submission> filteredSubmissions = getNextFiltered();
+
+            if (stale()) {
+                // The refresh landed while this was fetching. The posts are real, but they are
+                // the previous listing's; merging them here is what put the old subreddit on
+                // screen for a second before the new pick replaced it.
+                //
+                // Ahead of the prefetch below, not after it: image-warming a hundred posts
+                // of a listing nobody will see competes for bandwidth with the refresh the
+                // user is waiting on, on exactly the slow connections this guard exists for.
+                dropped = true;
+                return null;
+            }
 
             if (!(SettingValues.noImages
                     && ((!NetworkUtil.isConnectedWifi(c) && SettingValues.lowResMobile)
