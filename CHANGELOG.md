@@ -4,6 +4,10 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.9.5 / 2026-8-26
+============
+* Improved the new random subreddits feature
+
 7.9.4 / 2026-8-26
 ============
 * Restored working r/random, r/randnsfw and r/myrandom with a hosted subreddit list
