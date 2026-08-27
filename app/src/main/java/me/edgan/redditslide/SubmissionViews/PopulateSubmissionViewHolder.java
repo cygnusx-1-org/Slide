@@ -210,9 +210,6 @@ public class PopulateSubmissionViewHolder {
                     }
                 });
 
-        // Use this to offset the submission score
-        int submissionScore = submission.getScore();
-
         final Integer rawCommentCount = submission.getCommentCount();
         final int commentCount = rawCommentCount == null ? 0 : rawCommentCount;
         final int more = LastComments.commentsSince(submission);
@@ -289,10 +286,6 @@ public class PopulateSubmissionViewHolder {
                                     : Palette.getWhiteTintColor();
                     BlendModeUtil.tintImageViewAsSrcAtop(downvotebutton, getTintColor);
                     downvotebutton.setContentDescription(mContext.getString(R.string.btn_downvote));
-                    if (submission.getVote() != VoteDirection.UPVOTE) {
-                        if (submission.getVote() == VoteDirection.DOWNVOTE) ++submissionScore;
-                        ++submissionScore; // offset the score by +1
-                    }
                     break;
                 }
             case DOWNVOTE:
@@ -314,10 +307,6 @@ public class PopulateSubmissionViewHolder {
                                     : Palette.getWhiteTintColor();
                     BlendModeUtil.tintImageViewAsSrcAtop(upvotebutton, getTintColor);
                     upvotebutton.setContentDescription(mContext.getString(R.string.btn_upvote));
-                    if (submission.getVote() != VoteDirection.DOWNVOTE) {
-                        if (submission.getVote() == VoteDirection.UPVOTE) --submissionScore;
-                        --submissionScore; // offset the score by +1
-                    }
                     break;
                 }
             case NO_VOTE:
@@ -341,15 +330,7 @@ public class PopulateSubmissionViewHolder {
                 }
         }
 
-        // if the submission is already at 0pts, keep it at 0pts
-        submissionScore = Math.max(submissionScore, 0);
-        if (submissionScore >= 10000 && SettingValues.abbreviateScores) {
-            holder.score.setText(
-                    String.format(
-                            Locale.getDefault(), "%.1fk", (((double) submissionScore) / 1000)));
-        } else {
-            holder.score.setText(String.format(Locale.getDefault(), "%d", submissionScore));
-        }
+        setScoreText(holder.score, getAdjustedScore(submission));
 
         // submission_fullscreen has no hide button, which is what the old `holder.hide != null`
         // test was really asking. The type says it now.
@@ -1472,43 +1453,46 @@ public class PopulateSubmissionViewHolder {
         }
     }
 
-    private void setSubmissionScoreText(Submission submission, SubmissionViewHolder holder) {
-        int submissionScore = submission.getScore();
-        switch (ActionStates.getVoteDirection(submission)) {
-            case UPVOTE:
-                {
-                    if (submission.getVote() != VoteDirection.UPVOTE) {
-                        if (submission.getVote() == VoteDirection.DOWNVOTE) ++submissionScore;
-                        ++submissionScore; // offset the score by +1
-                    }
-                    break;
-                }
-            case DOWNVOTE:
-                {
-                    if (submission.getVote() != VoteDirection.DOWNVOTE) {
-                        if (submission.getVote() == VoteDirection.UPVOTE) --submissionScore;
-                        --submissionScore; // offset the score by +1
-                    }
-                    break;
-                }
-            case NO_VOTE:
-                if (submission.getVote() == VoteDirection.UPVOTE
-                        && MiscUtil.orEmpty(submission.getAuthor())
-                                .equalsIgnoreCase(Authentication.name)) {
-                    submissionScore--;
-                }
-                break;
+    /**
+     * The score reddit sent, corrected for a vote held in {@link ActionStates} that this Submission
+     * object predates. A feed row keeps the object it was listed with, so a vote cast anywhere else
+     * -- the comments view most of all -- only reaches the row through this offset.
+     */
+    public static int getAdjustedScore(Submission submission) {
+        int score = submission.getScore();
+        final VoteDirection shown = ActionStates.getVoteDirection(submission);
+        final VoteDirection baked = submission.getVote();
+
+        if (shown == baked) {
+            return score;
         }
 
-        // if the submission is already at 0pts, keep it at 0pts
-        submissionScore = Math.max(submissionScore, 0);
-        if (submissionScore >= 10000 && SettingValues.abbreviateScores) {
-            holder.score.setText(
-                    String.format(
-                            Locale.getDefault(), "%.1fk", (((double) submissionScore) / 1000)));
-        } else {
-            holder.score.setText(String.format(Locale.getDefault(), "%d", submissionScore));
+        // Back out the vote baked into getScore(), then apply the one being shown.
+        if (baked == VoteDirection.UPVOTE) {
+            score--;
+        } else if (baked == VoteDirection.DOWNVOTE) {
+            score++;
         }
+        if (shown == VoteDirection.UPVOTE) {
+            score++;
+        } else if (shown == VoteDirection.DOWNVOTE) {
+            score--;
+        }
+        return score;
+    }
+
+    private static void setScoreText(TextView score, int value) {
+        // if the submission is already at 0pts, keep it at 0pts
+        value = Math.max(value, 0);
+        if (value >= 10000 && SettingValues.abbreviateScores) {
+            score.setText(String.format(Locale.getDefault(), "%.1fk", (((double) value) / 1000)));
+        } else {
+            score.setText(String.format(Locale.getDefault(), "%d", value));
+        }
+    }
+
+    private void setSubmissionScoreText(Submission submission, SubmissionViewHolder holder) {
+        setScoreText(holder.score, getAdjustedScore(submission));
     }
 
     /**

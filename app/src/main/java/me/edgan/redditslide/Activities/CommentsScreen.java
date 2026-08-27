@@ -103,32 +103,64 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
 
     public boolean popup;
 
+    /**
+     * The submission a pager position is showing, or -1 for a position showing no submission.
+     *
+     * This is {@link CommentsScreenPagerAdapter#getItem} read backwards, and it has to stay that
+     * way: in {@code oldSwipeMode} everything up to and including {@code firstPage} is a
+     * {@link BlankFragment}, so those positions have no submission at all rather than one an
+     * offset away.
+     */
+    private int submissionIndexFor(int position) {
+        if (SettingValues.oldSwipeMode) {
+            if (position <= firstPage) {
+                return -1;
+            }
+            position = position - 1;
+        }
+        return (position < 0 || position >= currentPosts.size()) ? -1 : position;
+    }
+
+    /**
+     * Publishes the rows the feed should rebind on the way back. A vote cast on this screen only
+     * reaches the feed row through that rebind, so this has to be reported even when the user never
+     * changes pages. {@code lastPage} is left out unless the user actually moved, because the hosts
+     * turn it into a {@code scrollToPositionWithOffset} and backing straight out must not scroll.
+     */
+    private void publishSeenResult(int index, boolean includeLastPage) {
+        if (!seen.contains(index)) {
+            seen.add(index);
+        }
+
+        Bundle conData = new Bundle();
+        conData.putIntegerArrayList("seen", seen);
+        if (includeLastPage) {
+            conData.putInt("lastPage", index);
+        }
+        Intent intent = new Intent();
+        intent.putExtras(conData);
+        setResult(RESULT_OK, intent);
+    }
+
     private class CommonPageChangeListener extends ViewPager.SimpleOnPageChangeListener {
         @Override
         public void onPageSelected(int position) {
-            if (position != firstPage && position < currentPosts.size()) {
-                position = position - 1;
-                if (position < 0) position = 0;
-
-                updateSubredditAndSubmission(currentPosts.get(position));
-
-                if (currentPosts.size() - 2 <= position && subredditPosts.hasMore()) {
-                    subredditPosts.loadMore(
-                            CommentsScreen.this.getApplicationContext(),
-                            CommentsScreen.this,
-                            false);
-                }
-
-                currentPage = position;
-                seen.add(position);
-
-                Bundle conData = new Bundle();
-                conData.putIntegerArrayList("seen", seen);
-                conData.putInt("lastPage", position);
-                Intent intent = new Intent();
-                intent.putExtras(conData);
-                setResult(RESULT_OK, intent);
+            final int index = submissionIndexFor(position);
+            if (index < 0) {
+                return;
             }
+
+            updateSubredditAndSubmission(currentPosts.get(index));
+
+            if (currentPosts.size() - 2 <= index && subredditPosts.hasMore()) {
+                subredditPosts.loadMore(
+                        CommentsScreen.this.getApplicationContext(),
+                        CommentsScreen.this,
+                        false);
+            }
+
+            currentPage = index;
+            publishSeenResult(index, true);
         }
     }
 
@@ -209,6 +241,7 @@ public class CommentsScreen extends BaseActivityAnim implements SubmissionDispla
             pager.setAdapter(comments);
 
             currentPage = firstPage;
+            publishSeenResult(firstPage, false);
 
             if (SettingValues.oldSwipeMode) {
                 pager.setCurrentItem(firstPage + 1);

@@ -124,9 +124,9 @@ public class SubredditView extends BaseActivity {
             pager.setAdapter(new SubredditPagerAdapter(getSupportFragmentManager()));
         } else if (requestCode == 1) {
             restartTheme();
-        } else if (requestCode == 940 && data != null) {
+        } else if (requestCode == 940) {
             if (adapter != null && adapter.getCurrentFragment() != null) {
-                if (resultCode == RESULT_OK) {
+                if (resultCode == RESULT_OK && data != null) {
                     LogUtil.v("Doing hide posts");
                     ArrayList<Integer> posts = data.getIntegerArrayListExtra("seen");
                     if (posts != null) {

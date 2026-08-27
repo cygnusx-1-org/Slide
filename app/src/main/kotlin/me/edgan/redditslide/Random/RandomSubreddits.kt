@@ -50,6 +50,13 @@ object RandomSubreddits {
     private const val MAX_BATCHES = 3
 
     /**
+     * How many posts a candidate must return before it counts as somewhere worth landing. A
+     * subreddit that answers with three posts is technically alive and still reads as a broken
+     * random button, so "not empty" is too low a bar: the check asks for a screenful.
+     */
+    private const val MIN_POSTS = 25
+
+    /**
      * How many candidates a single pick may audition before settling for one it could not confirm.
      * Roughly one subreddit in ten answers with an empty first page — some are genuinely empty,
      * others are Reddit answering wrong once — so a handful of tries puts a visible blank listing
@@ -109,7 +116,7 @@ object RandomSubreddits {
             // nothing to show is never handed to the loader: the title, the sidebar and the
             // over-18 interstitial all act on the resolved name, and a redraw after any of that
             // has run is a redraw the user watches happen.
-            if (hasPosts(candidate, sorting, timePeriod)) {
+            if (hasEnoughPosts(candidate, sorting, timePeriod)) {
                 synchronized(lastPicks) { lastPicks[name] = candidate }
                 return candidate
             }
@@ -132,29 +139,34 @@ object RandomSubreddits {
         }
 
     /**
-     * Whether [name] has anything to show under the sort this listing will actually use.
+     * Whether [name] has at least [MIN_POSTS] to show under the sort this listing will actually
+     * use.
      *
      * `/api/info` proves a subreddit exists and is neither banned nor private; it says nothing
      * about whether it holds any posts, and a random pick that resolves to an empty subreddit is
-     * indistinguishable from a broken feature. Asking for a single submission is the cheapest
+     * indistinguishable from a broken feature. Asking for one page of [MIN_POSTS] is the cheapest
      * question that settles it, and asking with the listing's own sort and time period is what
      * makes the answer mean anything — a subreddit with plenty in `hot` can hold nothing at all
      * under `top` of the last hour.
+     *
+     * A short answer is a rejection, not a pass: Reddit fills a page up to the limit when it can,
+     * so fewer than [MIN_POSTS] back means the subreddit does not have that many, and landing on
+     * one with a handful of posts is the same disappointment as landing on an empty one.
      *
      * A failure counts as "no", not as "cannot tell": the request that throws here is the same
      * request the loader is about to make, so a candidate that cannot answer would have shown the
      * user an error. Drawing somebody else is free.
      */
-    private fun hasPosts(name: String, sorting: Sorting, timePeriod: TimePeriod): Boolean {
+    private fun hasEnoughPosts(name: String, sorting: Sorting, timePeriod: TimePeriod): Boolean {
         val client = Authentication.reddit ?: return true
         return try {
             val paginator = SubredditPaginator(client, name)
             paginator.setSorting(sorting)
             paginator.setTimePeriod(timePeriod)
-            paginator.setLimit(1)
-            paginator.next().isNotEmpty()
+            paginator.setLimit(MIN_POSTS)
+            paginator.next().size >= MIN_POSTS
         } catch (e: Exception) {
-            LogUtil.e(e, "RandomSubreddits.hasPosts failed for $name")
+            LogUtil.e(e, "RandomSubreddits.hasEnoughPosts failed for $name")
             false
         }
     }

@@ -271,9 +271,9 @@ public class MainActivity extends BaseActivity
             // toolbar
         } else if (requestCode == 423 && resultCode == RESULT_OK) {
             ((MainPagerAdapterComment) adapter).mCurrentComments.doResult(data);
-        } else if (requestCode == 940 && data != null) {
+        } else if (requestCode == 940) {
             if (adapter != null && adapter.getCurrentFragment() != null) {
-                if (resultCode == RESULT_OK) {
+                if (resultCode == RESULT_OK && data != null) {
                     ArrayList<Integer> posts = data.getIntegerArrayListExtra("seen");
                     if (posts != null) {
                         ((SubmissionsView) adapter.getCurrentFragment())

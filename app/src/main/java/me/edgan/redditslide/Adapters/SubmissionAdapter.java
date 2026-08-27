@@ -174,24 +174,44 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 new Runnable() {
                     @Override
                     public void run() {
-                        listView.setItemAnimator(a);
+                        // A second refresh landing inside this window captures the null the first
+                        // one wrote, and its restore runs last; skipping a null restore leaves the
+                        // real animator the earlier call put back. MainPagerAdapterComment fires
+                        // two refreshes milliseconds apart for a single swipe back to the feed.
+                        if (a != null) {
+                            listView.setItemAnimator(a);
+                        }
                     }
                 },
                 500);
     }
 
     public void refreshView(ArrayList<Integer> seen) {
-        listView.setItemAnimator(null);
+        // Read before clearing, or the animator restored below is the null just written and the
+        // feed loses its item animations for good.
         final RecyclerView.ItemAnimator a = listView.getItemAnimator();
+        listView.setItemAnimator(null);
 
+        // The indices are positions in CommentsScreen's own list, which pages in further posts
+        // than this feed ever loaded, so an index past the end here names a row that does not
+        // exist rather than one that needs rebinding.
+        final int loaded = dataSet.posts == null ? 0 : dataSet.posts.size();
         for (int i : seen) {
-            notifyItemChanged(i + 1);
+            if (i >= 0 && i < loaded) {
+                notifyItemChanged(i + 1);
+            }
         }
         listView.postDelayed(
                 new Runnable() {
                     @Override
                     public void run() {
-                        listView.setItemAnimator(a);
+                        // A second refresh landing inside this window captures the null the first
+                        // one wrote, and its restore runs last; skipping a null restore leaves the
+                        // real animator the earlier call put back. MainPagerAdapterComment fires
+                        // two refreshes milliseconds apart for a single swipe back to the feed.
+                        if (a != null) {
+                            listView.setItemAnimator(a);
+                        }
                     }
                 },
                 500);
