@@ -743,9 +743,24 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
     }
 
     private void refresh() {
+        // The Activity, not mSwipeRefreshLayout.getContext(): that is a ContextThemeWrapper, so
+        // SubredditPosts' `context instanceof MainActivity` and `instanceof SubredditView` tests
+        // were false on every pull and true on the first load. That is why a refresh silently
+        // skipped the offline fallback, and why handOffResolvedRandom never ran for one -- leaving
+        // the sidebar on whichever subreddit the last non-refresh load had resolved to. Matches
+        // what doAdapter passes.
+        final FragmentActivity activity = getActivity();
+        if (activity == null) {
+            // Detached mid-gesture; there is nothing left to load into.
+            return;
+        }
         posts.forced = true;
         forced = true;
-        posts.loadMore(mSwipeRefreshLayout.getContext(), this, true, id);
+        // A reset is a load like any other, and the scroll listener below only holds off while
+        // `loading` is set. Without this it queues an append the moment onPreExecute empties the
+        // list, so every pull-to-refresh fetched and image-warmed two pages instead of one.
+        posts.loading = true;
+        posts.loadMore(activity, this, true, id);
     }
 
     public void forceRefresh() {
@@ -974,13 +989,23 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                                 // Fetch the next page ~20 rows from the end (was 5) so it downloads +
                                 // warms while the user is still approaching the boundary, instead of
                                 // right as they reach it — fewer page-boundary pop-ins.
-                                if ((visibleItemCount + pastVisiblesItems) + 20 >= totalItemCount) {
-                                    posts.loading = true;
-                                    posts.loadMore(
-                                            mSwipeRefreshLayout.getContext(),
-                                            SubmissionsView.this,
-                                            false,
-                                            posts.subreddit);
+                                // totalItemCount > 0: onPreExecute empties the list on the main
+                                // thread and notifies, so a reset briefly reports zero rows -- and
+                                // an empty list satisfies the boundary test below trivially. There
+                                // is no next page to fetch for a listing that has no rows yet.
+                                if (totalItemCount > 0
+                                        && (visibleItemCount + pastVisiblesItems) + 20
+                                                >= totalItemCount) {
+                                    // The Activity here too, for the same reason as refresh().
+                                    final FragmentActivity activity = getActivity();
+                                    if (activity != null) {
+                                        posts.loading = true;
+                                        posts.loadMore(
+                                                activity,
+                                                SubmissionsView.this,
+                                                false,
+                                                posts.subreddit);
+                                    }
                                 }
                             }
 

@@ -61,6 +61,14 @@ public class SubredditPosts implements PostLoader {
     boolean force18;
 
     /**
+     * How many consecutive fully-filtered pages one load will fetch past before giving up and
+     * reporting the listing as empty. Three is generous for the case this exists for — a page or
+     * two of posts the user's filters happen to exclude — while keeping a subreddit the filters
+     * exclude entirely from paging to its end, one blocking request at a time, on a single load.
+     */
+    private static final int MAX_EMPTY_PAGES = 3;
+
+    /**
      * Which listing the posts in this loader belong to. Bumped by every reset load, on the main
      * thread, before that load clears {@link #posts}.
      *
@@ -249,15 +257,34 @@ public class SubredditPosts implements PostLoader {
                 // (-1) rather than a targeted insert against a now-mismatched offset.
                 displayer.updateSuccess(posts, -1);
             } else {
-                if (!all.isEmpty() && !nomore && SettingValues.cache) {
-                    if (context instanceof MainActivity) {
-                        doMainActivityOffline(context, displayer);
-                    }
-                } else if (!nomore) {
+                // Exactly one display callback has to run on this path, whichever way it goes:
+                // the spinner a pull started is only ever taken down by one, so a branch that
+                // silently renders nothing leaves the listing unrefreshable. Both conditions are
+                // folded into one test for that reason -- a host that is not MainActivity has no
+                // offline chooser, so it belongs with the failures rather than falling through
+                // between the two.
+                if (all != null
+                        && !all.isEmpty()
+                        && !nomore
+                        && SettingValues.cache
+                        && context instanceof MainActivity) {
+                    doMainActivityOffline(context, displayer);
+                    // The chooser doMainActivityOffline installs renders nothing until the user
+                    // picks a snapshot out of it, so the spinner has to come down here.
+                    displayer.updateOffline(posts, currentid);
+                } else {
                     // error
                     LogUtil.v("Setting error");
                     success = false;
                 }
+            }
+
+            if (!success) {
+                // Nothing was rendered and nothing was reported. Without this the spinner the pull
+                // started is never taken down, and SwipeRefreshLayout swallows every drag while it
+                // is still showing -- so one failed load leaves the listing permanently
+                // unrefreshable, which is indistinguishable from the app having hung.
+                displayer.updateError();
             }
 
             SubredditPosts.this.error = !success;
@@ -444,6 +471,18 @@ public class SubredditPosts implements PostLoader {
         }
 
         public ArrayList<Submission> getNextFiltered() {
+            return getNextFiltered(0);
+        }
+
+        /**
+         * @param emptyPages how many consecutive pages {@link PostMatch} has already emptied. A
+         *     page whose every post is filtered out is fetched past rather than shown as a blank
+         *     feed, but that has to stop somewhere: filters strict enough to empty one page tend to
+         *     empty the next as well, and this runs on the page-load thread, one blocking request
+         *     per page. Left unbounded it walks a whole subreddit, which is what {@link
+         *     #MAX_EMPTY_PAGES} caps.
+         */
+        private ArrayList<Submission> getNextFiltered(int emptyPages) {
             ArrayList<Submission> filteredSubmissions = new ArrayList<>();
             ArrayList<Submission> adding = new ArrayList<>();
 
@@ -467,8 +506,11 @@ public class SubredditPosts implements PostLoader {
                         filteredSubmissions.add(s);
                     }
                 }
-                if (paginator != null && paginator.hasNext() && filteredSubmissions.isEmpty()) {
-                    filteredSubmissions.addAll(getNextFiltered());
+                if (paginator != null
+                        && paginator.hasNext()
+                        && filteredSubmissions.isEmpty()
+                        && emptyPages < MAX_EMPTY_PAGES) {
+                    filteredSubmissions.addAll(getNextFiltered(emptyPages + 1));
                 }
             } catch (Exception e) {
                 if (e instanceof NetworkException
@@ -493,7 +535,7 @@ public class SubredditPosts implements PostLoader {
                     if (force18 && paginator instanceof SubredditPaginator) {
                         ((SubredditPaginator) paginator).setObeyOver18(false);
                     }
-                    return getNextFiltered();
+                    return getNextFiltered(0);
                 }
                 LogUtil.e(e, "SubredditPosts.getNextFiltered failed");
                 error = e;

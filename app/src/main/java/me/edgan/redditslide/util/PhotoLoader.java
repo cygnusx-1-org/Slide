@@ -21,6 +21,8 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -742,36 +744,94 @@ public class PhotoLoader {
         }
 
         final ImageLoader loader = ((Reddit) c.getApplicationContext()).getImageLoader();
-        final ExecutorService pool =
-                Executors.newFixedThreadPool(Math.min(WARM_THREADS, Math.max(1, targets.size())));
 
         // Block only on the first screenful; the remaining downloads finish in the background.
         final int blockCount = Math.min(targets.size(), firstScreenTargets);
         final CountDownLatch firstScreen = new CountDownLatch(blockCount);
-        for (int i = 0; i < targets.size(); i++) {
-            final WarmTarget target = targets.get(i);
-            final boolean counted = i < blockCount;
-            pool.execute(
-                    () -> {
-                        try {
-                            loader.loadImageSync(target.url, target.size, target.options(true));
-                        } catch (Throwable ignored) {
-                            // Warming is best-effort, and Throwable covers the OOM a decode
-                            // can raise; the finally below still counts this url down.
-                        } finally {
-                            if (counted) {
-                                firstScreen.countDown();
-                            }
-                        }
-                    });
+
+        synchronized (WARM_POOL) {
+            // Whatever is still queued belongs to a page that is no longer on screen -- a refresh
+            // replaced it, or the user moved on. Finishing those downloads only takes bandwidth
+            // from the page the user is actually waiting on, and they share one OkHttp client with
+            // the API calls, so they slow the next load rather than merely wasting data. Tasks
+            // already running are left to finish; only the backlog is dropped, and each dropped
+            // task releases its own latch so its caller is not left waiting on the timeout.
+            // drainTo, not copy-then-removeAll: a worker can dequeue and start a task between
+            // those two steps, which would leave it running *and* counted as superseded, so its
+            // latch would be released twice and its caller would stop blocking before its first
+            // screenful was actually warm.
+            final ArrayList<Runnable> superseded = new ArrayList<>();
+            WARM_POOL.getQueue().drainTo(superseded);
+            for (final Runnable stale : superseded) {
+                ((WarmTask) stale).skip();
+            }
+
+            for (int i = 0; i < targets.size(); i++) {
+                WARM_POOL.execute(
+                        new WarmTask(loader, targets.get(i), i < blockCount ? firstScreen : null));
+            }
         }
-        // Orderly shutdown lets the already-submitted background warms finish after we return.
-        pool.shutdown();
+
         try {
             firstScreen.await(WARM_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    /**
+     * One image of a page warm.
+     *
+     * <p>A named type rather than a lambda so a superseded batch can be drained out of {@link
+     * #WARM_POOL}'s queue and told to {@link #skip()}, which releases the latch its caller may
+     * still be waiting on.
+     */
+    private static final class WarmTask implements Runnable {
+        private final ImageLoader loader;
+        private final WarmTarget target;
+        /** The first-screen latch, or null for a target the caller does not block on. */
+        private final @Nullable CountDownLatch firstScreen;
+
+        WarmTask(ImageLoader loader, WarmTarget target, @Nullable CountDownLatch firstScreen) {
+            this.loader = loader;
+            this.target = target;
+            this.firstScreen = firstScreen;
+        }
+
+        void skip() {
+            if (firstScreen != null) {
+                firstScreen.countDown();
+            }
+        }
+
+        @Override
+        public void run() {
+            try {
+                loader.loadImageSync(target.url, target.size, target.options(true));
+            } catch (Throwable ignored) {
+                // Warming is best-effort, and Throwable covers the OOM a decode
+                // can raise; the finally below still counts this url down.
+            } finally {
+                skip();
+            }
+        }
+    }
+
+    // One warm pool for the whole app. This was a fresh fixed pool per page load that was only
+    // shutdown() and never shutdownNow(), so every image a load had queued kept downloading after
+    // the load returned: N refreshes in a row left N pools' worth of threads all competing for the
+    // one OkHttp client the Reddit API also uses, and each refresh came back slower than the last.
+    private static final ThreadPoolExecutor WARM_POOL =
+            new ThreadPoolExecutor(
+                    WARM_THREADS,
+                    WARM_THREADS,
+                    30L,
+                    TimeUnit.SECONDS,
+                    new LinkedBlockingQueue<Runnable>());
+
+    static {
+        // Nothing to warm between feeds, so don't hold twelve idle threads open for the app's life.
+        WARM_POOL.allowCoreThreadTimeOut(true);
     }
 
     // Serializes the (JSON/gallery) URL resolution for scroll-ahead prefetch OFF the main thread —
