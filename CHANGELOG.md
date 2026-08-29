@@ -4,6 +4,11 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.9.6 / 2026-8-28
+============
+* Improved the new random subreddits feature again
+* Made comments-view votes update the feed row on the way back
+
 7.9.5 / 2026-8-26
 ============
 * Improved the new random subreddits feature
