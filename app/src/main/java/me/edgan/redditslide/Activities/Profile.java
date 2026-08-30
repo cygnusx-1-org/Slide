@@ -52,6 +52,7 @@ import java.util.Map;
 import java.util.Set;
 import me.edgan.redditslide.Adapters.ContributionAdapter;
 import me.edgan.redditslide.Authentication;
+import me.edgan.redditslide.ContributionRestoreState;
 import me.edgan.redditslide.Fragments.ContributionsView;
 import me.edgan.redditslide.Fragments.HistoryView;
 import me.edgan.redditslide.Fragments.LocalSavedView;
@@ -92,10 +93,20 @@ import uz.shift.colorpicker.OnColorChangedListener;
 public class Profile extends BaseActivityAnim implements HibernateState.Restorable {
 
     /**
-     * The tab this profile was on when the app was closed, or -1. Only the tab: the lists on it are
-     * refetched, so there is no stable row to scroll back to.
+     * Where this profile was when the app was closed: which tab, and where in it. Empty until
+     * {@link #restoreHibernateState} fills it, and consumed one tab at a time by the pager adapter.
      */
+    private final ContributionRestoreState restore = new ContributionRestoreState();
+
+    /** The tab {@link #restore} named, or -1. Read after the intent's own tab extras. */
     private int restoreTab = -1;
+
+    /**
+     * The tab the snapshot currently describes, or -1 when it describes none. It is what lets
+     * {@link #saveHibernateState} tell "the user moved to another tab" from "this tab has not laid
+     * out yet", which need opposite answers.
+     */
+    private int lastCapturedPage = -1;
 
     public static final String EXTRA_PROFILE = "profile";
     public static final String EXTRA_SAVED = "saved";
@@ -282,14 +293,40 @@ public class Profile extends BaseActivityAnim implements HibernateState.Restorab
 
     @Override
     public void saveHibernateState(Bundle out) {
-        if (pager != null) {
-            out.putInt(HibernateState.STATE_PAGE, pager.getCurrentItem());
+        if (pager == null || pagerAdapter == null) {
+            return;
+        }
+        final int current = pager.getCurrentItem();
+        final Fragment live = pagerAdapter.getRegisteredFragment(current);
+        final boolean captured =
+                ContributionRestoreState.capture(
+                        out,
+                        current,
+                        live instanceof ContributionRestoreState.Source
+                                ? (ContributionRestoreState.Source) live
+                                : null,
+                        findViewById(R.id.header));
+        if (!captured && current != lastCapturedPage) {
+            // The tab has no scroll position to record -- an empty History or Gilded tab has no
+            // rows to anchor to, and a tab still laying out has none yet. Writing nothing is right
+            // for the second case and wrong for the first: the snapshot would keep describing the
+            // tab before this one, and the resume would open that tab, at a position in a list the
+            // user is no longer looking at. Which tab it is outranks where in it, so record that
+            // much -- but only when it has actually changed, so an early capture cannot strip the
+            // position off the tab it already describes.
+            out.putInt(HibernateState.STATE_PAGE, current);
+        }
+        if (!out.isEmpty()) {
+            lastCapturedPage = current;
         }
     }
 
     @Override
     public void restoreHibernateState(Bundle in) {
-        restoreTab = in.getInt(HibernateState.STATE_PAGE, -1);
+        restore.read(in);
+        restoreTab = restore.page;
+        // The snapshot already describes this tab, so an empty one is not a tab change.
+        lastCapturedPage = restore.page;
     }
 
     private void setDataSet(String[] data) {
@@ -359,15 +396,28 @@ public class Profile extends BaseActivityAnim implements HibernateState.Restorab
         @NonNull
         @Override
         public Fragment getItem(int i) {
-            // Local Saved sits right after Saved (index 7); History moves to index 9.
+            // Local Saved sits right after Saved (index 7); History moves to index 9. Neither
+            // takes arguments of its own, but both take a restore.
             if (i == 7) {
-                return new LocalSavedView();
+                final Fragment saved = new LocalSavedView();
+                final Bundle savedArgs = new Bundle();
+                if (restore.applyTo(i, savedArgs)) {
+                    saved.setArguments(savedArgs);
+                }
+                return saved;
             } else if (i == 9) {
-                return new HistoryView();
+                final Fragment history = new HistoryView();
+                final Bundle historyArgs = new Bundle();
+                if (restore.applyTo(i, historyArgs)) {
+                    history.setArguments(historyArgs);
+                }
+                return history;
             }
 
             Fragment f = new ContributionsView();
             Bundle args = new Bundle();
+
+            restore.applyTo(i, args);
 
             args.putString("id", name);
             String place;

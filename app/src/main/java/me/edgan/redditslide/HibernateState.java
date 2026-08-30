@@ -108,6 +108,7 @@ public final class HibernateState {
     public static final String STATE_TOOLBAR_HIDDEN = "toolbarHidden";
     public static final String STATE_SUBMISSION = "submission";
     public static final String STATE_SCROLL_Y = "scrollY";
+    public static final String STATE_CONTRIB_KEY = "contribKey";
 
     /**
      * The comment page's own anchor keys. Separate from the feed's rather than shared, because in
@@ -463,6 +464,9 @@ public final class HibernateState {
         loaded = true;
         canSeed = false;
         lastWritten = null;
+        // The cached profile listings go with it: they are the content the snapshot points at, and
+        // an account switch makes them another account's posts.
+        ContributionCache.clear();
         final File file = new File(context.getFilesDir(), FILE_NAME);
         if (file.exists() && !file.delete()) {
             LogUtil.e("HibernateState.clear could not delete " + file);

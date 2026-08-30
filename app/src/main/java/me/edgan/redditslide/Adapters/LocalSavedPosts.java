@@ -5,7 +5,9 @@ import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.util.ArrayList;
 import me.edgan.redditslide.Authentication;
+import me.edgan.redditslide.ContributionCache;
 import me.edgan.redditslide.PostMatch;
+import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionViews.LocalSaved;
 import me.edgan.redditslide.util.LogUtil;
 import net.dean.jraw.models.Contribution;
@@ -26,6 +28,53 @@ public class LocalSavedPosts extends GeneralPosts {
     private ContributionAdapter adapter;
     public boolean loading;
 
+    /**
+     * How much of a hibernated listing has to still be on disk for it to stand in for a fetch. See
+     * {@code ContributionPosts} for why a short blob is rejected rather than shown.
+     */
+    private static final double MIN_RESTORE_FRACTION = 0.5;
+
+    /** True until this tab's one hibernate restore has been attempted. */
+    public boolean restoreFromCache;
+
+    /** Whether that attempt produced the cached list, which is when the anchor still describes it. */
+    public boolean restoredFromCache;
+
+    @Nullable public String restoreCacheKey;
+    public int restoreExpectedCount;
+
+    /** This tab's {@link ContributionCache} key. */
+    public String cacheKey() {
+        return ContributionCache.key(Authentication.nameOrEmpty(), "localsaved", null);
+    }
+
+    /**
+     * The tab as it was last written to disk, or {@code null} when there is nothing usable there.
+     * Runs on the loader's background thread.
+     *
+     * <p>A restore deliberately skips {@link LocalSaved#reconcile()} along with the fetch: that is
+     * the whole point of coming back without a refresh. Any pull-to-refresh reconciles again.
+     */
+    @Nullable
+    private ArrayList<Contribution> rebuildFromCache() {
+        if (!restoreFromCache) {
+            return null;
+        }
+        // One attempt, hit or miss: a later pull-to-refresh must reach the network.
+        restoreFromCache = false;
+        final String key = restoreCacheKey != null ? restoreCacheKey : cacheKey();
+        final ContributionCache.Cached cached = ContributionCache.load(key);
+        if (cached == null) {
+            return null;
+        }
+        if (restoreExpectedCount > 0
+                && cached.posts.size() < restoreExpectedCount * MIN_RESTORE_FRACTION) {
+            return null;
+        }
+        restoredFromCache = true;
+        return cached.posts;
+    }
+
     public void bindAdapter(ContributionAdapter a, SwipeRefreshLayout layout) {
         this.adapter = a;
         this.refreshLayout = layout;
@@ -41,12 +90,22 @@ public class LocalSavedPosts extends GeneralPosts {
     public class LoadData extends AsyncTask<Void, Void, ArrayList<Contribution>> {
         final boolean reset;
 
+        /** Whether this particular load came out of {@link ContributionCache}. */
+        boolean fromHibernateCache;
+
         public LoadData(boolean reset) {
             this.reset = reset;
         }
 
         @Override
         protected @Nullable ArrayList<Contribution> doInBackground(Void... params) {
+            if (reset) {
+                final ArrayList<Contribution> restored = rebuildFromCache();
+                if (restored != null) {
+                    fromHibernateCache = true;
+                    return restored;
+                }
+            }
             try {
                 if (reset) {
                     LocalSaved.reconcile();
@@ -103,6 +162,12 @@ public class LocalSavedPosts extends GeneralPosts {
             // matching ContributionPosts so a search + pull-to-refresh doesn't desync filter state.
             adapter.onDataUpdated();
             adapter.notifyDataSetChanged();
+
+            // Keep the list on disk so a hibernate resume can put it back without re-hydrating
+            // every id over /api/info. The write is queued off this thread.
+            if (SettingValues.hibernate && !fromHibernateCache && !posts.isEmpty()) {
+                ContributionCache.store(cacheKey(), posts, null);
+            }
         }
     }
 }

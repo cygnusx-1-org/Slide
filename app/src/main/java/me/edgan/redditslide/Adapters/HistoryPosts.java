@@ -10,7 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import me.edgan.redditslide.Authentication;
+import me.edgan.redditslide.ContributionCache;
 import me.edgan.redditslide.PostMatch;
+import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.LogUtil;
 import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.Submission;
@@ -25,6 +27,29 @@ public class HistoryPosts extends GeneralPosts {
     private ContributionAdapter adapter;
     public boolean loading;
     String prefix = "";
+
+    /**
+     * How much of a hibernated listing has to still be on disk for it to stand in for a fetch. See
+     * {@code ContributionPosts} for why a short blob is rejected rather than shown.
+     */
+    private static final double MIN_RESTORE_FRACTION = 0.5;
+
+    /** True until this tab's one hibernate restore has been attempted. */
+    public boolean restoreFromCache;
+
+    /** Whether that attempt produced the cached list, which is when the anchor still describes it. */
+    public boolean restoredFromCache;
+
+    @Nullable public String restoreCacheKey;
+    public int restoreExpectedCount;
+
+    /**
+     * The fullname of the last restored row, and so the point the id list has to be resumed after.
+     * History has no {@code after} cursor: {@link FullnamesPaginator} walks a fixed array of ids
+     * built from local storage, and where it had got to is expressible only as a position in that
+     * array.
+     */
+    @Nullable private String resumeAfterFullname;
 
     public HistoryPosts() {}
 
@@ -42,11 +67,56 @@ public class HistoryPosts extends GeneralPosts {
         new LoadData(reset).execute();
     }
 
+    /**
+     * This tab's {@link ContributionCache} key, or {@code null} when the list is not one a resume
+     * can land on. Only the profile's History tab is: {@code ReadLaterView} builds this with a
+     * prefix and lives in {@code PostReadLater}, which no snapshot names, so a blob written for it
+     * could only ever sit in the cache taking a slot from a tab that will be restored.
+     */
+    @Nullable
+    public String cacheKey() {
+        return prefix.isEmpty()
+                ? ContributionCache.key(Authentication.nameOrEmpty(), "history", null)
+                : null;
+    }
+
+    /**
+     * The tab as it was last written to disk, or {@code null} when there is nothing usable there
+     * and the caller must fetch instead. Runs on the loader's background thread.
+     */
+    @Nullable
+    private ArrayList<Contribution> rebuildFromCache() {
+        if (!restoreFromCache) {
+            return null;
+        }
+        // One attempt, hit or miss: a later pull-to-refresh must reach the network.
+        restoreFromCache = false;
+        final String key = restoreCacheKey != null ? restoreCacheKey : cacheKey();
+        if (key == null) {
+            return null;
+        }
+        final ContributionCache.Cached cached = ContributionCache.load(key);
+        if (cached == null) {
+            return null;
+        }
+        if (restoreExpectedCount > 0
+                && cached.posts.size() < restoreExpectedCount * MIN_RESTORE_FRACTION) {
+            return null;
+        }
+        final Contribution last = cached.posts.get(cached.posts.size() - 1);
+        resumeAfterFullname = last == null ? null : last.getFullName();
+        restoredFromCache = true;
+        return cached.posts;
+    }
+
     @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     FullnamesPaginator paginator;
 
     public class LoadData extends AsyncTask<String, Void, ArrayList<Contribution>> {
         final boolean reset;
+
+        /** Whether this particular load came out of {@link ContributionCache}. */
+        boolean fromHibernateCache;
 
         public LoadData(boolean reset) {
             this.reset = reset;
@@ -100,10 +170,34 @@ public class HistoryPosts extends GeneralPosts {
                 adapter.notifyDataSetChanged();
             }
             refreshLayout.setRefreshing(false);
+
+            // Keep the list on disk so a hibernate resume can put it back without re-hydrating
+            // every id over /api/info. The write is queued off this thread. Skipped when the load
+            // failed -- a null result leaves the list as the last write found it -- and when this
+            // list is not one a resume can land on (see cacheKey).
+            final String key = cacheKey();
+            if (SettingValues.hibernate
+                    && submissions != null
+                    && key != null
+                    && !fromHibernateCache
+                    && posts != null
+                    && !posts.isEmpty()) {
+                ContributionCache.store(key, posts, null);
+            }
         }
 
         @Override
         protected @Nullable ArrayList<Contribution> doInBackground(String... subredditPaginators) {
+            if (reset) {
+                final ArrayList<Contribution> restored = rebuildFromCache();
+                if (restored != null) {
+                    fromHibernateCache = true;
+                    return restored;
+                }
+                // A reset is "start from the top", so a resume point left over from a restore that
+                // did not happen must not shorten the id list below.
+                resumeAfterFullname = null;
+            }
             ArrayList<Contribution> newData = new ArrayList<>();
             try {
                 if (reset || paginator == null) {
@@ -148,6 +242,22 @@ public class HistoryPosts extends GeneralPosts {
                         TreeMap<Long, String> result2 = new TreeMap<>(Collections.reverseOrder());
                         result2.putAll(idsSorted);
                         ids.addAll(0, result2.values());
+                    }
+
+                    if (resumeAfterFullname != null) {
+                        final int at = ids.indexOf(resumeAfterFullname);
+                        resumeAfterFullname = null;
+                        if (at >= 0) {
+                            if (at + 1 >= ids.size()) {
+                                // The restored list already reaches the end of the ids.
+                                nomore = true;
+                                return new ArrayList<>();
+                            }
+                            ids = new ArrayList<>(ids.subList(at + 1, ids.size()));
+                        }
+                        // Not in the list at all means the local ordering moved under us -- a post
+                        // viewed in the meantime rewrites it. Load from the top rather than guess
+                        // an offset into a list that is no longer the one that was recorded.
                     }
 
                     paginator =

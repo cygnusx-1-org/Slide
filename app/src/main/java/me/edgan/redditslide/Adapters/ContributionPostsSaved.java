@@ -2,17 +2,15 @@ package me.edgan.redditslide.Adapters;
 
 import androidx.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Map;
 import me.edgan.redditslide.Authentication;
+import me.edgan.redditslide.ContributionCache;
 import me.edgan.redditslide.HasSeen;
 import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.SavedPostCache;
 import me.edgan.redditslide.SettingValues;
-import me.edgan.redditslide.util.NetworkUtil;
-import me.edgan.redditslide.util.PhotoLoader;
 import net.dean.jraw.models.Contribution;
+import net.dean.jraw.models.Listing;
 import net.dean.jraw.models.Submission;
-import net.dean.jraw.paginators.UserSavedPaginator;
 
 /** Created by ccrama on 9/17/2015. */
 public class ContributionPostsSaved extends ContributionPosts {
@@ -30,7 +28,20 @@ public class ContributionPostsSaved extends ContributionPosts {
     }
 
     @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
-    UserSavedPaginator paginator;
+    ResumableUserSavedPaginator paginator;
+
+    /** The Saved tab caches per category, so the category is part of what identifies the list. */
+    @Override
+    public String cacheKey() {
+        return ContributionCache.key(subreddit, where, category);
+    }
+
+    /** This class paginates through its own field, which shadows the one in the superclass. */
+    @Override
+    @Nullable
+    protected Listing<Contribution> currentListing() {
+        return paginator == null ? null : paginator.getCurrentListing();
+    }
 
     @Override
     public void loadMore(ContributionAdapter adapter, String subreddit, boolean reset) {
@@ -67,6 +78,14 @@ public class ContributionPostsSaved extends ContributionPosts {
             if (reset) {
                 bypassCache = false; // one-shot: consume the bypass request
                 nomore = false; // a fresh reset can page again even after a prior "no more"
+                // Ahead of the TTL cache below: a hibernate restore carries the scroll anchor and
+                // the listing cursor that go with this exact list, which the TTL cache does not.
+                final ArrayList<Contribution> restored = rebuildFromCache();
+                if (restored != null) {
+                    fromHibernateCache = true;
+                    return restored;
+                }
+                restoreAfterToken = null;
                 if (!bypass && SavedPostCache.isFresh(Authentication.nameOrEmpty(), category)) {
                     SavedPostCache.Cached cached =
                             SavedPostCache.load(Authentication.nameOrEmpty(), category);
@@ -83,29 +102,24 @@ public class ContributionPostsSaved extends ContributionPosts {
             ArrayList<Contribution> newData = new ArrayList<>();
             try {
                 if (reset || paginator == null) {
-                    // Request post previews/thumbnails the same way the main feed does so they
-                    // show up here regardless of the account's Reddit media preference (#274).
                     paginator =
-                            new UserSavedPaginator(Authentication.reddit, where, subreddit) {
-                                @Override
-                                protected @Nullable Map<String, String> getExtraQueryArgs() {
-                                    Map<String, String> args = super.getExtraQueryArgs();
-                                    args.put("feature", "link_preview");
-                                    args.put("always_show_media", "1");
-                                    args.put("sr_detail", "true");
-                                    return args;
-                                }
-                            };
+                            new ResumableUserSavedPaginator(
+                                    Authentication.reddit, where, subreddit);
                     paginator.setSorting(SettingValues.getSubmissionSort(subreddit));
                     paginator.setTimePeriod(SettingValues.getSubmissionTimePeriod(subreddit));
                     if (category != null) paginator.setCategory(category);
+                    // Picks up where the hibernated session left off; see ContributionPosts.
+                    paginator.setResumeAfter(restoreAfterToken);
                 }
 
                 if (!paginator.hasNext()) {
                     nomore = true;
                     return new ArrayList<>();
                 }
-                for (Contribution c : paginator.next()) {
+                final Listing<Contribution> page = paginator.next();
+                // See ContributionPosts: the paginator's cursor supersedes the restore token.
+                restoreAfterToken = null;
+                for (Contribution c : page) {
                     if (c instanceof Submission) {
                         Submission s = (Submission) c;
                         if (!PostMatch.doesMatch(s)) {
@@ -118,19 +132,7 @@ public class ContributionPostsSaved extends ContributionPosts {
 
                 HasSeen.setHasSeenContrib(newData);
 
-                // Preload thumbnails for submissions (not comments)
-                ArrayList<Submission> submissions = new ArrayList<>();
-                for (Contribution c : newData) {
-                    if (c instanceof Submission) {
-                        submissions.add((Submission) c);
-                    }
-                }
-                if (!(SettingValues.noImages
-                        && ((!NetworkUtil.isConnectedWifi(adapter.mContext)
-                                        && SettingValues.lowResMobile)
-                                || SettingValues.lowResAlways))) {
-                    PhotoLoader.loadPhotos(adapter.mContext, submissions);
-                }
+                warmPreviews(newData);
 
                 return newData;
             } catch (Exception e) {
