@@ -20,6 +20,7 @@ import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Autocache.AutoCacheScheduler;
 import me.edgan.redditslide.ContentGrabber;
 import me.edgan.redditslide.Fragments.InboxPage;
+import me.edgan.redditslide.HibernateState;
 import me.edgan.redditslide.InboxCount;
 import me.edgan.redditslide.Notifications.NotificationJobScheduler;
 import me.edgan.redditslide.R;
@@ -38,7 +39,13 @@ import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 9/17/2015. */
 @NullMarked
-public class Inbox extends BaseActivityAnim {
+public class Inbox extends BaseActivityAnim implements HibernateState.Restorable {
+
+    /**
+     * The tab the inbox was on when the app was closed, or -1. Only the tab: messages are refetched
+     * and the unread ones move, so there is no stable row to scroll back to.
+     */
+    private int restoreTab = -1;
 
     public static final String EXTRA_UNREAD = "unread";
 
@@ -187,6 +194,11 @@ public class Inbox extends BaseActivityAnim {
                         "lastInbox", System.currentTimeMillis() - (60 * 1000 * 60));
         SettingValues.prefs.edit().putLong("lastInbox", System.currentTimeMillis()).apply();
         applyColorTheme("");
+        final Bundle hibernated = HibernateState.claim(this);
+        if (hibernated != null) {
+            restoreHibernateState(hibernated);
+        }
+
         setContentView(R.layout.activity_inbox);
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
         setupAppBar(R.id.toolbar, R.string.title_inbox, true, true);
@@ -203,6 +215,14 @@ public class Inbox extends BaseActivityAnim {
 
         if (getIntent() != null && getIntent().hasExtra(EXTRA_UNREAD)) {
             pager.setCurrentItem(1);
+        }
+        if (restoreTab >= 0) {
+            // After the intent's own tab extra, not before it. A restored inbox replays the intent
+            // it was opened with, so an inbox first opened from an unread notification carries
+            // EXTRA_UNREAD for the rest of its life -- and applying the restore first meant every
+            // resume of that inbox landed back on the unread tab whatever tab the user had moved
+            // to. Profile orders these the same way and for the same reason.
+            pager.setCurrentItem(restoreTab);
         }
 
         tabs.setupWithViewPager(pager);
@@ -223,6 +243,18 @@ public class Inbox extends BaseActivityAnim {
                         }
                     }
                 });
+    }
+
+    @Override
+    public void saveHibernateState(Bundle out) {
+        if (pager != null) {
+            out.putInt(HibernateState.STATE_PAGE, pager.getCurrentItem());
+        }
+    }
+
+    @Override
+    public void restoreHibernateState(Bundle in) {
+        restoreTab = in.getInt(HibernateState.STATE_PAGE, -1);
     }
 
     private class InboxPagerAdapter extends FragmentStatePagerAdapter {

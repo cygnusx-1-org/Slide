@@ -52,6 +52,7 @@ import java.util.Locale;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.CaseInsensitiveArrayList;
 import me.edgan.redditslide.Fragments.DrawerItemsDialog;
+import me.edgan.redditslide.HibernateState;
 import me.edgan.redditslide.Notifications.CheckForMail;
 import me.edgan.redditslide.Notifications.NotificationJobScheduler;
 import me.edgan.redditslide.R;
@@ -381,6 +382,26 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                                     .edit()
                                     .putBoolean(SettingValues.PREF_OLD_SWIPE_MODE, isChecked)
                                     .apply();
+                        });
+            }
+        }
+
+        {
+            SwitchCompat hibernateSwitch = context.findViewById(R.id.settings_general_hibernate);
+            if (hibernateSwitch != null) {
+                hibernateSwitch.setChecked(SettingValues.hibernate);
+                hibernateSwitch.setOnCheckedChangeListener(
+                        (buttonView, isChecked) -> {
+                            SettingValues.hibernate = isChecked;
+                            SettingValues.prefs
+                                    .edit()
+                                    .putBoolean(SettingValues.PREF_HIBERNATE, isChecked)
+                                    .apply();
+                            if (!isChecked) {
+                                // Turning it off should mean the next launch behaves as it always
+                                // did, not that one last saved session comes back first.
+                                HibernateState.clear(context);
+                            }
                         });
             }
         }

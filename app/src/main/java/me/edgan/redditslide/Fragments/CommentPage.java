@@ -109,6 +109,7 @@ import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
 import me.edgan.redditslide.util.PrefUtil;
 import me.edgan.redditslide.util.ReauthNotifier;
+import me.edgan.redditslide.util.ScrollAnchor;
 import me.edgan.redditslide.util.StringUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.SubmissionThumbnailHelper;
@@ -140,6 +141,28 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
     boolean loadMore;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     public RecyclerView rv;
+
+    /**
+     * Fragment arguments that put this page back where the user left it after the app was closed.
+     * The comments themselves are refetched — nothing caches them on an ordinary read — so the
+     * anchor is a comment fullname, matched against the tree that comes back, and the recorded
+     * position is only a fallback for a comment that has since been deleted.
+     */
+    public static final String ARG_RESTORE_ANCHOR_ID = "restoreAnchorId";
+
+    public static final String ARG_RESTORE_ANCHOR_POSITION = "restoreAnchorPosition";
+    public static final String ARG_RESTORE_ANCHOR_OFFSET = "restoreAnchorOffset";
+    public static final String ARG_RESTORE_COLLAPSED = "restoreCollapsed";
+    public static final String ARG_RESTORE_COLLAPSED_ROOTS = "restoreCollapsedRoots";
+    public static final String ARG_RESTORE_TOOLBAR_HIDDEN = "restoreToolbarHidden";
+
+    @Nullable private String restoreAnchorId;
+    private int restoreAnchorPosition = ScrollAnchor.NO_POSITION;
+    private int restoreAnchorOffset;
+    @Nullable private ArrayList<String> restoreCollapsed;
+    @Nullable private ArrayList<String> restoreCollapsedRoots;
+    private boolean restorePending;
+    private boolean restoreToolbarHidden;
     private int page;
     // comments and adapter are both built in onCreateView, before any of the callbacks below
     // can run.
@@ -258,7 +281,19 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
         if (adapter2 != null) adapter2.notifyItemChanged(0);
     }
 
+    /** True when the auto-hiding toolbar is scrolled away, so a restore can put it back that way. */
+    public boolean isToolbarHidden() {
+        final View header = v == null ? null : v.findViewById(R.id.header);
+        return header != null && header.getTranslationY() != 0f;
+    }
+
     public void doRefresh(boolean b) {
+        if (b && restorePending) {
+            // The thread is being fetched to put the user back where they were, not because they
+            // asked for it again. A progress bar across the top reads as a reload of a page they
+            // never left.
+            return;
+        }
         if (b) {
             v.requireViewById(R.id.progress).setVisibility(View.VISIBLE);
         } else {
@@ -378,6 +413,12 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
         rv = v.findViewById(R.id.vertical_content);
         rv.setLayoutManager(mLayoutManager);
         mLayoutManager.scrollToPosition(0);
+        if (restorePending) {
+            // Comments are refetched rather than restored from cache, so there is a wait before
+            // the position can be applied. Hidden from here rather than from the end of that wait,
+            // or the page shows the top of the thread while it loads and then jumps down.
+            ScrollAnchor.hideUntilSettled(rv, ScrollAnchor.FETCH_REVEAL_TIMEOUT_MS);
+        }
 
         toolbar = v.requireViewById(R.id.toolbar);
         toolbar.setPopupTheme(new ColorPreferences(requireActivity()).getFontStyle().getBaseId());
@@ -2229,6 +2270,10 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
 
     public void doAdapter(boolean load) {
         commentSorting = SettingValues.getCommentSorting(subreddit);
+        if (restorePending && loadFromCache()) {
+            if (load) loaded = true;
+            return;
+        }
         if (load) doRefresh(true);
         if (load) loaded = true;
         if (!single
@@ -2244,19 +2289,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
             }
             Submission s = ((CommentsScreen) getActivity()).currentPosts.get(page);
             if (s != null) knownCommentCount = s.getCommentCount();
-            if (s != null
-                    && s.getDataNode().has("suggested_sort")
-                    && !s.getDataNode().path("suggested_sort").asText().equalsIgnoreCase("null")
-                    && !SettingValues.hasCommentSort(s.getSubredditName())) {
-                // Only use suggested sort if user hasn't set a custom preference
-                String sorting = s.getDataNode().path("suggested_sort").asText().toUpperCase(Locale.ENGLISH);
-                sorting = sorting.replace("İ", "I");
-                commentSorting = CommentSort.valueOf(sorting);
-                Log.d("CommentPage", "Using suggested sort: " + commentSorting.name() + " because no custom preference exists");
-            } else if (s != null) {
-                commentSorting = SettingValues.getCommentSorting(s.getSubredditName());
-                Log.d("CommentPage", "Using saved comment sort preference: " + commentSorting.name());
-            }
+            commentSorting = resolveCommentSorting(s);
             if (load) comments.setSorting(commentSorting);
             if (adapter == null) {
                 adapter = new CommentAdapter(this, comments, rv, s, getFragmentManager());
@@ -2267,22 +2300,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                 comments = new SubmissionComments(fullname, this, mSwipeRefreshLayout);
                 Submission s = ((MainActivity) getActivity()).openingComments;
                 if (s != null) knownCommentCount = s.getCommentCount();
-                if (s != null
-                        && s.getDataNode().has("suggested_sort")
-                        && !s.getDataNode()
-                                .path("suggested_sort")
-                                .asText()
-                                .equalsIgnoreCase("null")
-                        && !SettingValues.hasCommentSort(s.getSubredditName())) {
-                    // Only use suggested sort if user hasn't set a custom preference
-                    String sorting = s.getDataNode().path("suggested_sort").asText().toUpperCase(Locale.ENGLISH);
-                    sorting = sorting.replace("İ", "I");
-                    commentSorting = CommentSort.valueOf(sorting);
-                    Log.d("CommentPage", "Using suggested sort: " + commentSorting.name() + " because no custom preference exists");
-                } else if (s != null) {
-                    commentSorting = SettingValues.getCommentSorting(s.getSubredditName());
-                    Log.d("CommentPage", "Using saved comment sort preference: " + commentSorting.name());
-                }
+                commentSorting = resolveCommentSorting(s);
                 if (load) comments.setSorting(commentSorting);
                 if (adapter == null) {
                     adapter = new CommentAdapter(this, comments, rv, s, getFragmentManager());
@@ -2294,7 +2312,8 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                 comments =
                         s == null
                                 ? new SubmissionComments(fullname, this, mSwipeRefreshLayout)
-                                : new SubmissionComments(fullname, this, mSwipeRefreshLayout, s);
+                                : new SubmissionComments(
+                                        fullname, this, mSwipeRefreshLayout, s, commentSorting);
                 if (adapter == null) {
                     adapter = new CommentAdapter(this, comments, rv, s, getFragmentManager());
                     rv.setAdapter(adapter);
@@ -2308,13 +2327,16 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                 fullname.contains("_") ? fullname : "t3_" + fullname,
                                 getContext(),
                                 !NetworkUtil.isConnected(requireActivity()),
-                                new ObjectMapper().reader());
+                                new ObjectMapper().reader(),
+                                commentSorting);
             } catch (IOException e) {
                 LogUtil.e(e, "CommentPage.doAdapter failed");
             }
             if (s != null && s.getComments() != null) {
                 doRefresh(false);
-                comments = new SubmissionComments(fullname, this, mSwipeRefreshLayout, s);
+                comments =
+                        new SubmissionComments(
+                                fullname, this, mSwipeRefreshLayout, s, commentSorting);
                 if (adapter == null) {
 
                     adapter = new CommentAdapter(this, comments, rv, s, getFragmentManager());
@@ -2385,6 +2407,172 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
             }
             adapter.notifyItemChanged(1);
         }
+        applyRestore();
+    }
+
+    /**
+     * The sort this thread's comments should be read and requested with.
+     *
+     * <p>A subreddit can nominate a sort for its own threads, and reddit sends it on the
+     * submission as {@code suggested_sort}. It applies only where the user has expressed no
+     * preference for that subreddit: an explicit choice of theirs is never overridden by the
+     * moderators' one.
+     *
+     * <p>One copy of the rule, because there are now three callers -- the two online branches
+     * below and the cache restore -- and a thread restored under a different sort from the one it
+     * was read under sends that wrong sort to the {@code morechildren} endpoint, so an expanded
+     * branch comes back ordered differently from the replies around it.
+     *
+     * @param s the post this page is showing, as the host activity already holds it, or null when
+     *     the host has none. Null falls back to the preference for this page's subreddit, which is
+     *     the best answer available without a submission to read the suggestion off.
+     */
+    private CommentSort resolveCommentSorting(@Nullable Submission s) {
+        if (s == null) {
+            return SettingValues.getCommentSorting(subreddit);
+        }
+        final String suggested = s.getDataNode().path("suggested_sort").asText();
+        if (s.getDataNode().has("suggested_sort")
+                && !suggested.equalsIgnoreCase("null")
+                && !SettingValues.hasCommentSort(s.getSubredditName())) {
+            // A Turkish locale uppercases "i" to "İ", which is not what the enum is called.
+            final String name = suggested.toUpperCase(Locale.ENGLISH).replace("İ", "I");
+            try {
+                final CommentSort resolved = CommentSort.valueOf(name);
+                Log.d(
+                        "CommentPage",
+                        "Using suggested sort: " + resolved.name() + " because no custom preference exists");
+                return resolved;
+            } catch (IllegalArgumentException e) {
+                // reddit sends names this enum does not have -- "blank" for "no suggestion at
+                // all", and anything added to reddit since this client was built. That is not an
+                // error, it means there is no usable suggestion, so the user's own answer stands.
+                // Left unguarded it throws, and on the restore path that takes the whole resume
+                // down rather than mis-sorting one branch.
+                Log.d("CommentPage", "Ignoring unrecognised suggested sort: " + name);
+            }
+        }
+        final CommentSort preference = SettingValues.getCommentSorting(s.getSubredditName());
+        Log.d("CommentPage", "Using saved comment sort preference: " + preference.name());
+        return preference;
+    }
+
+    /**
+     * The post this page is showing, as the host activity already holds it. The restore path needs
+     * it to resolve the sort before it reads the thread off disk, and taking it from the host is
+     * what makes that free: parsing the blob to find its {@code suggested_sort} and then parsing
+     * it again to build the tree would double the cost of the thing a resume is trying to avoid.
+     */
+    @Nullable
+    private Submission hostSubmission() {
+        final FragmentActivity host = getActivity();
+        if (host instanceof CommentsScreen) {
+            final List<Submission> posts = ((CommentsScreen) host).currentPosts;
+            if (posts != null && page >= 0 && page < posts.size()) {
+                return posts.get(page);
+            }
+        } else if (host instanceof MainActivity) {
+            return ((MainActivity) host).openingComments;
+        }
+        return null;
+    }
+
+    /**
+     * Builds the thread from the copy written to disk when it was last read, with no request at
+     * all, and returns whether that worked.
+     *
+     * <p>Only on a resume. Reopening the app onto a thread the user never left should look like
+     * they never left it: fetching it again means a wait, a progress bar and a jump to the restored
+     * position once it lands, and the comments they had are sitting on disk the whole time. Any
+     * other open goes to the network as before, so the thread is as fresh as it has always been.
+     */
+    private boolean loadFromCache() {
+        final Context ctx = getContext();
+        if (ctx == null) {
+            return false;
+        }
+        // Before the read, not after: the sort is baked into the tree as it is built, and it is
+        // what a later request for more children is sent with.
+        commentSorting = resolveCommentSorting(hostSubmission());
+        final Submission stored;
+        try {
+            stored =
+                    OfflineSubreddit.getSubmissionFromStorage(
+                            fullname.contains("_") ? fullname : "t3_" + fullname,
+                            ctx,
+                            true,
+                            new ObjectMapper().reader(),
+                            commentSorting);
+        } catch (IOException e) {
+            LogUtil.e(e, "CommentPage.loadFromCache failed");
+            return false;
+        }
+        if (stored == null || stored.getComments() == null) {
+            return false;
+        }
+        doRefresh(false);
+        comments = new SubmissionComments(fullname, this, mSwipeRefreshLayout, stored, commentSorting);
+        knownCommentCount = stored.getCommentCount();
+        if (adapter == null) {
+            adapter = new CommentAdapter(this, comments, rv, stored, getFragmentManager());
+            rv.setAdapter(adapter);
+        }
+        doData(true);
+        return true;
+    }
+
+    /**
+     * Puts the page back where the user left it before the app closed: the same threads collapsed,
+     * and the same comment at the same height. Once only — a later refresh is the user asking for
+     * the top of the thread, not for the place they were three sessions ago.
+     */
+    private void applyRestore() {
+        if (!restorePending || adapter == null) {
+            revealList();
+            return;
+        }
+        restorePending = false;
+        if (restoreCollapsed != null && restoreCollapsedRoots != null) {
+            adapter.restoreCollapsed(restoreCollapsed, restoreCollapsedRoots);
+        }
+        int position = ScrollAnchor.NO_POSITION;
+        if (restoreAnchorId != null && !restoreAnchorId.isEmpty()) {
+            position = adapter.adapterPositionOf(restoreAnchorId);
+        }
+        if (position == ScrollAnchor.NO_POSITION) {
+            // The comment is gone -- deleted, or collapsed out of the tree by a different sort.
+            // The recorded row index is the best remaining guess.
+            position = restoreAnchorPosition;
+        }
+        if (position == ScrollAnchor.NO_POSITION || position >= adapter.getItemCount()) {
+            // Nothing to scroll to, so nothing will hand the list back. onCreateView hid it for
+            // the length of a fetch, and leaving it hidden here shows a blank thread for the
+            // whole of that timeout -- the anchor comment being deleted is exactly the case.
+            revealList();
+            return;
+        }
+        ScrollAnchor.applyHidden(
+                rv,
+                position,
+                restoreAnchorOffset,
+                () ->
+                        rv.post(
+                                () -> {
+                                    if (toolbarScroll != null) {
+                                        toolbarScroll.settleAfterJump(restoreToolbarHidden);
+                                    }
+                                }));
+    }
+
+    /**
+     * Undoes the hide {@code onCreateView} applies while a restore is pending, for the paths that
+     * end without a scroll to hand the list back. {@link ScrollAnchor#hideUntilSettled} arms a
+     * timer as a backstop, but it is measured in seconds — long enough to read as a broken screen.
+     */
+    private void revealList() {
+        if (rv != null) {
+            rv.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -2407,6 +2595,17 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
         int subredditStyle = new ColorPreferences(requireActivity()).getThemeSubreddit(subreddit);
         contextThemeWrapper = new ContextThemeWrapper(getActivity(), subredditStyle);
         mLayoutManager = new PreCachingLayoutManagerComments(requireActivity());
+        restoreAnchorId = getArguments() == null ? null : getArguments().getString(ARG_RESTORE_ANCHOR_ID);
+        if (getArguments() != null) {
+            restoreAnchorPosition =
+                    getArguments().getInt(ARG_RESTORE_ANCHOR_POSITION, ScrollAnchor.NO_POSITION);
+            restoreAnchorOffset = getArguments().getInt(ARG_RESTORE_ANCHOR_OFFSET, 0);
+            restoreCollapsed = getArguments().getStringArrayList(ARG_RESTORE_COLLAPSED);
+            restoreCollapsedRoots = getArguments().getStringArrayList(ARG_RESTORE_COLLAPSED_ROOTS);
+            restoreToolbarHidden = getArguments().getBoolean(ARG_RESTORE_TOOLBAR_HIDDEN, false);
+            restorePending =
+                    restoreAnchorId != null || restoreAnchorPosition != ScrollAnchor.NO_POSITION;
+        }
     }
 
     @Override

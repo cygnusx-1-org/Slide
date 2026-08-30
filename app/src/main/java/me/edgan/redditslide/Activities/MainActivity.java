@@ -55,12 +55,15 @@ import androidx.core.graphics.drawable.IconCompat;
 import androidx.core.view.GravityCompat;
 import androidx.customview.widget.ViewDragHelper;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.lusfold.androidkeyvaluestore.KVStore;
 import com.lusfold.androidkeyvaluestore.core.KVManger;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -77,13 +80,17 @@ import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.BuildConfig;
 import me.edgan.redditslide.CaseInsensitiveArrayList;
 import me.edgan.redditslide.CommentCacheAsync;
+import me.edgan.redditslide.CommentRestoreState;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.ContentType;
+import me.edgan.redditslide.FeedRestoreState;
 import me.edgan.redditslide.ForceTouch.util.DensityUtils;
 import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.HasSeen;
+import me.edgan.redditslide.HibernateState;
 import me.edgan.redditslide.InboxCount;
 import me.edgan.redditslide.Notifications.CheckForMail;
+import me.edgan.redditslide.OfflineSubreddit;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
@@ -121,7 +128,7 @@ import org.jspecify.annotations.NullMarked;
 
 @NullMarked
 public class MainActivity extends BaseActivity
-        implements NetworkStateReceiver.NetworkStateReceiverListener {
+        implements NetworkStateReceiver.NetworkStateReceiverListener, HibernateState.Restorable {
     public static final String EXTRA_PAGE_TO = "pageTo";
     public static final String IS_ONLINE = "online";
     // Instance state keys
@@ -138,8 +145,21 @@ public class MainActivity extends BaseActivity
     public static boolean checkedPopups;
     @SuppressWarnings("NullAway.Init") // assigned in reloadSubs/setDataSet
     public static String shouldLoad;
-    public static boolean isRestart;
-    public static int restartPage;
+    /**
+     * The listing to rebuild from cache instead of fetching, and where in it to land. Per-activity,
+     * and consumed by exactly one page: this used to be a pair of statics that whichever
+     * SubmissionsView reported first would claim, which with an offscreen page limit of 1 meant the
+     * neighbouring tab could take the restore meant for the tab the user was actually on.
+     */
+    public final FeedRestoreState restore = new FeedRestoreState();
+
+    /**
+     * The comment page that was open over the feed, in the swipe-to-comments pager mode. In that
+     * mode a thread is a page of this activity rather than a screen of its own, so it is not on the
+     * hibernate stack and nothing else would bring it back.
+     */
+    public final CommentRestoreState commentRestore = new CommentRestoreState();
+
     public final long ANIMATE_DURATION = 250; // duration of animations
     final long ANIMATE_DURATION_OFFSET = 45; // offset for smoothing out the exit animations
     public boolean singleMode;
@@ -1083,7 +1103,22 @@ public class MainActivity extends BaseActivity
 
         if (getIntent() != null && getIntent().hasExtra(EXTRA_PAGE_TO)) {
             toGoto = getIntent().getIntExtra(EXTRA_PAGE_TO, 0);
+            // Taken off again, because restartTheme() writes it onto this activity's own
+            // getIntent() and that intent is what the system persists in the task record. Left in
+            // place, a cold start days later opens on the page the user happened to be on the last
+            // time they changed a theme.
+            getIntent().removeExtra(EXTRA_PAGE_TO);
         }
+        // A snapshot only reaches an activity that has not already been handed one, so on a theme
+        // restart -- where the original launch claimed it -- this is null and the intent extras
+        // written by restartTheme() are the ones that apply.
+        final Bundle hibernated = HibernateState.claim(this);
+        if (hibernated != null) {
+            restoreHibernateState(hibernated);
+        }
+        // No page here: the intent form carries it as EXTRA_PAGE_TO, read above. Taking it from
+        // the restore instead would read a page of 0, which readFromIntent never fills in.
+        restore.readFromIntent(getIntent());
 
         // Route through themeSystemBars() so the system-bar scrims are colored too; under
         // edge-to-edge enforcement (API 35+) a direct window.setStatusBarColor() is a no-op.
@@ -1666,15 +1701,159 @@ public class MainActivity extends BaseActivity
     }
 
     public void restartTheme() {
-        isRestart = true;
-        restartPage = getCurrentPage();
         Intent intent = this.getIntent();
         int page = pager.getCurrentItem();
         if (currentComment == page) page -= 1;
         intent.putExtra(EXTRA_PAGE_TO, page);
+        final Bundle current = new Bundle();
+        saveHibernateState(current);
+        FeedRestoreState.writeToIntent(intent, current);
         finish();
         startActivity(intent);
         overridePendingTransition(R.anim.fade_in_real, R.anim.fading_out_real);
+    }
+
+    /**
+     * Hands the pending restore to the one page it was recorded for, as fragment arguments, and to
+     * no other page. One-shot: it is cleared here so a later {@code reloadSubs()} -- which rebuilds
+     * the adapter and calls {@code getItem} again -- refetches normally instead of putting the
+     * cached listing back on screen.
+     *
+     * @param name the page's subreddit as the adapter resolved it, which for a multireddit is the
+     *     full {@code api/user/<name>/m/<multi>} path rather than the {@code /m/<multi>} the
+     *     snapshot recorded.
+     */
+    public void applyRestoreArgs(String name, Bundle args) {
+        restore.applyTo(name, multiNameToSubsMap.get(restore.subreddit), args);
+    }
+
+    /**
+     * Position of {@code sub} in {@code usedArray}, or -1. CaseInsensitiveArrayList overrides only
+     * {@code contains}, so its {@code indexOf} is the case-sensitive one from ArrayList and cannot
+     * be used here: subreddit names round-trip through prefs and JSON in whatever case they were
+     * written in.
+     */
+    private int indexOfSub(String sub) {
+        if (usedArray == null) {
+            return -1;
+        }
+        for (int i = 0; i < usedArray.size(); i++) {
+            if (sub.equalsIgnoreCase(usedArray.get(i))) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Puts the comment page back over the restored feed, in the swipe-to-comments pager mode.
+     *
+     * <p>Replays exactly what tapping a post does in that mode -- name the submission, add the
+     * extra page, tell the adapter, move to it -- because the page only exists while
+     * {@code openingComments} holds a submission, and that is a live object which dies with the
+     * process. The submission is rebuilt from the same on-disk copy the thread itself is restored
+     * from, so nothing here needs the network.
+     *
+     * <p>Deferred until the pager has built the feed page: {@code storedFragment} is what stops the
+     * adapter tearing that page down when the extra one is added, and there is nothing to store
+     * before it exists.
+     */
+    private void reopenRestoredComments() {
+        final String fullname = commentRestore.submission;
+        if (fullname == null || !(adapter instanceof MainPagerAdapterComment) || pager == null) {
+            return;
+        }
+        Submission stored = null;
+        try {
+            stored =
+                    OfflineSubreddit.getSubmissionFromStorage(
+                            fullname.startsWith("t3_") ? fullname : "t3_" + fullname,
+                            this,
+                            true,
+                            new ObjectMapper().reader(),
+                            // The post's own subreddit is not known until it is parsed, and this
+                            // copy is only the header: the thread on screen is the one CommentPage
+                            // builds, tagged with the sort it resolved. The one branch that does
+                            // display this tree is the offline one, where no request for more
+                            // children can be made at all.
+                            SettingValues.defaultCommentSorting);
+        } catch (IOException e) {
+            LogUtil.e(e, "MainActivity.reopenRestoredComments failed");
+        }
+        if (stored == null) {
+            // The thread was never cached, or the system reclaimed it. The feed underneath is
+            // still restored, which is the half worth keeping.
+            commentRestore.submission = null;
+            return;
+        }
+        final MainPagerAdapterComment commentAdapter = (MainPagerAdapterComment) adapter;
+        openingComments = stored;
+        toOpenComments = pager.getCurrentItem() + 1;
+        currentComment = toOpenComments;
+        commentAdapter.storedFragment = commentAdapter.getCurrentFragment();
+        commentAdapter.size = toOpenComments + 1;
+        try {
+            commentAdapter.notifyDataSetChanged();
+        } catch (Exception ignored) {
+            // notifyDataSetChanged during a layout pass throws; the pager rebinds on the next pass
+            // anyway. Same guard the tap path uses.
+        }
+        // No smooth scroll: the user is being returned to a page they never left, not swiped to a
+        // new one.
+        pager.setCurrentItem(toOpenComments, false);
+    }
+
+    @Override
+    public void saveHibernateState(Bundle out) {
+        if (usedArray == null || usedArray.isEmpty() || pager == null) {
+            return;
+        }
+        int page = pager.getCurrentItem();
+        // The comment pager occupies a page of its own; the feed the user was on is the one before
+        // it, and that is the listing worth restoring.
+        final boolean onCommentPage =
+                commentPager && toOpenComments >= 0 && page == toOpenComments;
+        if (onCommentPage) {
+            page -= 1;
+        }
+        if (page < 0 || page >= usedArray.size()) {
+            return;
+        }
+        // getCurrentFragment stays on the feed even while the comment page is showing -- the pager
+        // adapter tracks the thread separately -- so this is the listing either way.
+        final Fragment current = adapter == null ? null : adapter.getCurrentFragment();
+        // The comment page is only recorded on top of a feed that recorded itself. Without that,
+        // out would carry a thread and no listing to put it back over, and being non-empty it
+        // would still replace the complete state already on disk.
+        if (!FeedRestoreState.capture(
+                out,
+                usedArray.get(page),
+                page,
+                current instanceof SubmissionsView ? (SubmissionsView) current : null,
+                header)) {
+            return;
+        }
+        if (onCommentPage
+                && openingComments != null
+                && adapter instanceof MainPagerAdapterComment) {
+            CommentRestoreState.capture(
+                    out,
+                    openingComments.getFullName(),
+                    ((MainPagerAdapterComment) adapter).currentComments());
+        }
+    }
+
+    @Override
+    public void restoreHibernateState(Bundle in) {
+        commentRestore.read(in);
+        restore.read(in);
+        if (!restore.isPending()) {
+            return;
+        }
+        // usedArray does not exist yet -- it is built by doMainActivitySubs, later in onCreate --
+        // so the page is resolved by name in setDataSet rather than trusted as an index here. The
+        // subscription list is rebuilt from prefs on every launch and its order differs offline.
+        toGoto = restore.page;
     }
 
     public void saveOffline(final List<Submission> submissions, final String subreddit) {
@@ -1742,6 +1921,20 @@ public class MainActivity extends BaseActivity
             pager.setAdapter(adapter);
 
             pager.setOffscreenPageLimit(1);
+            // A restore names the listing it wants rather than its index. usedArray is rebuilt from
+            // the subscription prefs on every launch, and offline it is intersected with whatever
+            // happens to be cached, so the index the user left on can point at a different
+            // subreddit by the time they come back.
+            if (restore.subreddit != null) {
+                final int restored = indexOfSub(restore.subreddit);
+                if (restored >= 0) {
+                    toGoto = restored;
+                } else {
+                    // The subreddit is gone from the list -- unsubscribed on another device, or
+                    // simply not in the offline set. Nothing to restore onto.
+                    restore.subreddit = null;
+                }
+            }
             if (toGoto == -1) {
                 toGoto = 0;
             }
@@ -1784,6 +1977,11 @@ public class MainActivity extends BaseActivity
 
             setRecentBar(usedArray.get(toGoto));
             sidebarController.doSubSidebarNoLoad(usedArray.get(toGoto));
+            if (commentRestore.submission != null) {
+                // Posted so the pager has instantiated the feed page first; see
+                // reopenRestoredComments for why that matters.
+                pager.post(this::reopenRestoredComments);
+            }
         } else if (NetworkUtil.isConnected(this)) {
             UserSubscriptions.doMainActivitySubs(this);
         }

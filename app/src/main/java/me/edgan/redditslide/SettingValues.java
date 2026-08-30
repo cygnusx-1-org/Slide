@@ -58,6 +58,7 @@ public class SettingValues {
     public static final String PREF_DRAFTS = "drafts";
     public static final String PREF_SUBREDDIT_FILTERS = "subredditFilters";
     public static final String PREF_ABBREVIATE_SCORES = "abbreviateScores";
+    public static final String PREF_HIBERNATE = "hibernate";
     public static final String PREF_HIDE_POST_AWARDS = "hidePostAwards";
     public static final String PREF_HIDE_COMMENT_AWARDS = "hideCommentAwards";
     public static final String PREF_FLAIR_FILTERS = "subFlairFilters";
@@ -203,6 +204,13 @@ public class SettingValues {
     public static boolean swap;
     public static boolean album;
     public static boolean cache;
+
+    /**
+     * Resume the whole screen stack, its content and its scroll position on a cold start, instead
+     * of always launching into the first tab with a fresh network load. Off by default: it changes
+     * what the app does on every launch, and a user who has not asked for it should not get it.
+     */
+    public static boolean hibernate;
     public static boolean expandedSettings;
     public static boolean fabComments;
     public static boolean largeDepth;
@@ -504,6 +512,7 @@ public class SettingValues {
         hideSelftextLeadImage = prefs.getBoolean(PREF_SELFTEXT_IMAGE_COMMENT, false);
         image = prefs.getBoolean(PREF_IMAGE, true);
         cache = true;
+        hibernate = prefs.getBoolean(PREF_HIBERNATE, false);
         storeHistory = prefs.getBoolean(PREF_STORE_HISTORY, true);
         upvotePercentage = prefs.getBoolean(PREF_UPVOTE_PERCENTAGE, false);
         storeNSFWHistory = prefs.getBoolean(PREF_STORE_NSFW_HISTORY, false);

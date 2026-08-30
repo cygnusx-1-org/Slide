@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ScrollView;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -18,11 +19,13 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import java.util.Locale;
 import java.util.Map;
 import java.util.WeakHashMap;
 import me.edgan.redditslide.ForceTouch.PeekViewActivity;
+import me.edgan.redditslide.HibernateState;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
@@ -35,6 +38,7 @@ import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.GifUtils;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.ScrollAnchor;
 import org.jspecify.annotations.NullMarked;
 
 /**
@@ -42,11 +46,15 @@ import org.jspecify.annotations.NullMarked;
  * of swiping, setting up the AppBar (toolbar), and coloring of applicable views.
  */
 @NullMarked
-public class BaseActivity extends PeekViewActivity implements SwipeBackActivityBase {
+public class BaseActivity extends PeekViewActivity
+        implements SwipeBackActivityBase, HibernateState.Restorable {
     @Nullable public Toolbar mToolbar;
     @SuppressWarnings("NullAway.Init") // assigned in onCreate
     protected SwipeBackActivityHelper mHelper;
     protected boolean overrideRedditSwipeAnywhere = false;
+
+    /** A restored scroll offset waiting for {@link #applyPendingScroll()}; 0 when there is none. */
+    private int pendingScrollY;
     protected boolean enableSwipeBackLayout = true;
     protected boolean overrideSwipeFromAnywhere = false;
     protected boolean verticalExit = false;
@@ -215,6 +223,16 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
         super.onPostCreate(savedInstanceState);
         if (enableSwipeBackLayout) mHelper.onPostCreate();
         setupEdgeToEdge();
+        // Here rather than in onCreate, and that ordering is the point: a screen that needs its
+        // state before it builds anything -- a feed choosing which tab to open on -- claims it
+        // in its own onCreate, which has already run by now, and a snapshot entry is handed out
+        // once. So this picks up exactly the screens that have not claimed one, which is every
+        // plain scrolling screen that wants nothing more than to come back where it was.
+        final Bundle hibernated = HibernateState.claim(this);
+        if (hibernated != null) {
+            restoreHibernateState(hibernated);
+        }
+        applyPendingScroll();
     }
 
     /**
@@ -704,5 +722,68 @@ public class BaseActivity extends PeekViewActivity implements SwipeBackActivityB
         if (currentGif != null) {
             currentGif.onPause();
         }
+    }
+    /**
+     * Remembers how far down a plain scrolling screen was left, so a hibernate resume brings it
+     * back at the same place rather than at the top. This is the whole of what most screens need —
+     * the settings tree in particular, which is fifteen-odd activities that are each one long
+     * ScrollView — and putting it here is what saves implementing the same three lines on all of
+     * them.
+     *
+     * <p>Screens with more to remember (a feed's listing and anchor post, a comment thread's
+     * collapsed replies, a pager's page) override both of these; a RecyclerView is deliberately not
+     * handled here, because a raw pixel offset into a list whose contents are refetched is
+     * meaningless without an anchor to tie it to.
+     */
+    @Override
+    public void saveHibernateState(Bundle out) {
+        final View scroller = findScrollingContent();
+        if (scroller != null) {
+            // Written even when it is zero, so that an empty bundle keeps its one meaning: this
+            // screen was asked before it had a view to measure. A screen that says nothing has
+            // its previously recorded state kept, which for a list scrolled back to the top would
+            // otherwise restore it back down again.
+            out.putInt(HibernateState.STATE_SCROLL_Y, scroller.getScrollY());
+        }
+    }
+
+    @Override
+    public void restoreHibernateState(Bundle in) {
+        pendingScrollY = in.getInt(HibernateState.STATE_SCROLL_Y, 0);
+    }
+
+    /**
+     * Applies a restored scroll offset, hiding the view until it is in position so the screen never
+     * appears at the top and then jumps.
+     */
+    private void applyPendingScroll() {
+        if (pendingScrollY > 0) {
+            ScrollAnchor.applyScrollY(findScrollingContent(), pendingScrollY);
+            pendingScrollY = 0;
+        }
+    }
+
+    /** The first ScrollView or NestedScrollView in the content view, or null if there is none. */
+    @Nullable
+    private View findScrollingContent() {
+        return firstScroller(findViewById(android.R.id.content));
+    }
+
+    @Nullable
+    private static View firstScroller(@Nullable View view) {
+        if (view instanceof ScrollView || view instanceof NestedScrollView) {
+            return view;
+        }
+        if (!(view instanceof ViewGroup)) {
+            return null;
+        }
+        final ViewGroup group = (ViewGroup) view;
+        for (int i = 0; i < group.getChildCount(); i++) {
+            final View found = firstScroller(group.getChildAt(i));
+            if (found != null) {
+                return found;
+            }
+        }
+        return null;
     }
 }

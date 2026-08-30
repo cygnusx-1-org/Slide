@@ -49,9 +49,11 @@ import java.util.List;
 import java.util.Locale;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Constants;
+import me.edgan.redditslide.FeedRestoreState;
 import me.edgan.redditslide.Fragments.BlankFragment;
 import me.edgan.redditslide.Fragments.CommentPage;
 import me.edgan.redditslide.Fragments.SubmissionsView;
+import me.edgan.redditslide.HibernateState;
 import me.edgan.redditslide.ImageFlairs;
 import me.edgan.redditslide.Notifications.CheckForMail;
 import me.edgan.redditslide.OfflineSubreddit;
@@ -97,9 +99,16 @@ import net.dean.jraw.paginators.UserRecordPaginator;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
-public class SubredditView extends BaseActivity {
+public class SubredditView extends BaseActivity implements HibernateState.Restorable {
 
     public static final String EXTRA_SUBREDDIT = "subreddit";
+
+    /**
+     * The listing to rebuild from cache instead of fetching, and where in it to land, when this
+     * screen is being reopened rather than opened -- a theme restart, or a hibernate resume after
+     * the process died. Empty on an ordinary open.
+     */
+    public final FeedRestoreState restore = new FeedRestoreState();
     public boolean canSubmit = true;
     public String subreddit = "";
     @SuppressWarnings("NullAway.Init") // SubmissionAdapter assigns this before the comments page opens
@@ -199,6 +208,12 @@ public class SubredditView extends BaseActivity {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         setResult(3);
         requireToolbar().setPopupTheme(new ColorPreferences(this).getFontStyle().getBaseId());
+        restore.readFromIntent(getIntent());
+        final Bundle hibernated = HibernateState.claim(this);
+        if (hibernated != null) {
+            restoreHibernateState(hibernated);
+        }
+
         pager = (ToggleSwipeViewPager) requireViewById(R.id.content_view);
         singleMode = SettingValues.single;
         commentPager = false;
@@ -1215,9 +1230,28 @@ public class SubredditView extends BaseActivity {
 
     public static boolean restarting;
 
+    @Override
+    public void saveHibernateState(Bundle out) {
+        final Fragment current = adapter == null ? null : adapter.getCurrentFragment();
+        FeedRestoreState.capture(
+                out,
+                subreddit,
+                0,
+                current instanceof SubmissionsView ? (SubmissionsView) current : null,
+                header);
+    }
+
+    @Override
+    public void restoreHibernateState(Bundle in) {
+        restore.read(in);
+    }
+
     public void restartTheme() {
         Intent intent = this.getIntent();
         intent.putExtra(EXTRA_SUBREDDIT, subreddit);
+        final Bundle current = new Bundle();
+        saveHibernateState(current);
+        FeedRestoreState.writeToIntent(intent, current);
         finish();
         restarting = true;
         overridePendingTransition(0, 0);
@@ -1864,6 +1898,7 @@ public class SubredditView extends BaseActivity {
                 SubmissionsView f = new SubmissionsView();
                 Bundle args = new Bundle();
                 args.putString("id", subreddit);
+                restore.applyTo(subreddit, null, args);
                 f.setArguments(args);
 
                 return f;
@@ -2020,6 +2055,7 @@ public class SubredditView extends BaseActivity {
                 SubmissionsView f = new SubmissionsView();
                 Bundle args = new Bundle();
                 args.putString("id", subreddit);
+                restore.applyTo(subreddit, null, args);
                 f.setArguments(args);
                 return f;
             } else {

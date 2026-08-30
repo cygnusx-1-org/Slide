@@ -16,7 +16,9 @@ import java.util.TreeMap;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Fragments.CommentPage;
 import me.edgan.redditslide.LastComments;
+import me.edgan.redditslide.OfflineSubreddit;
 import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.CommentImageUtil;
 import me.edgan.redditslide.util.CommentLimit;
 import me.edgan.redditslide.util.CommentVideoPreview;
@@ -69,10 +71,24 @@ public class SubmissionComments {
     public boolean online = true;
     int contextNumber = 5;
 
+    /**
+     * A thread that is already in hand, rather than one to be fetched.
+     *
+     * @param sort the sort {@code s} was built under. Recorded rather than applied: the tree keeps
+     *     the order it arrived in. It has to be set here and not through {@link #setSorting},
+     *     which fires a network reload -- the one thing a thread read from cache must not do --
+     *     and without it the next refresh of a restored thread re-fetches it under CONFIDENCE
+     *     whatever the user was reading it by.
+     */
     public SubmissionComments(
-            String fullName, CommentPage commentPage, SwipeRefreshLayout layout, Submission s) {
+            String fullName,
+            CommentPage commentPage,
+            SwipeRefreshLayout layout,
+            Submission s,
+            CommentSort sort) {
         this.fullName = fullName;
         this.page = commentPage;
+        this.defaultSorting = sort;
         online = NetworkUtil.isConnected(page.getActivity());
 
         this.refreshLayout = layout;
@@ -271,6 +287,20 @@ public class SubmissionComments {
 
                 JsonNode node = getSubmissionNode(builder.build());
                 submission = SubmissionSerializer.withComments(node, defaultSorting);
+                if (!single && SettingValues.hibernate) {
+                    // Keep the whole thread on disk, so reopening the app can put it straight back
+                    // on screen instead of fetching it again -- which is a wait, a progress bar,
+                    // and a jump to the restored position once it lands. Only a full thread is
+                    // worth storing: a context or focus fetch is a slice of one, and writing it
+                    // here would replace the complete tree with the slice. Already the format
+                    // CommentCacheAsync writes, so nothing downstream has to learn a new one.
+                    //
+                    // Gated on the setting because it is the only part of this feature that costs
+                    // anything when the feature is off: a few hundred KB of cache dir per thread
+                    // opened, for a resume that will never happen, competing for the same
+                    // reclaimable space as the image cache.
+                    OfflineSubreddit.writeSubmission(node, submission, page.getContext());
+                }
                 CommentNode baseComment = submission.getComments();
                 if (baseComment == null) {
                     // A submission deserialized without a comment tree has nothing to walk.

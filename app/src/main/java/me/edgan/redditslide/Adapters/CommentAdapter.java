@@ -2048,6 +2048,58 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return RecyclerView.NO_POSITION;
     }
 
+    /**
+     * Adapter position of the row for {@code fullName}, whether or not it is on screen, or
+     * {@link RecyclerView#NO_POSITION}. Unlike {@link #visibleAdapterPositionOf} this scans the
+     * whole list, which is what restoring a scroll position needs: the row being looked for is by
+     * definition not on screen yet.
+     */
+    public int adapterPositionOf(String fullName) {
+        for (int p = 0; p < getItemCount(); p++) {
+            if (isCommentAt(p, fullName)) {
+                return p;
+            }
+        }
+        return RecyclerView.NO_POSITION;
+    }
+
+    /** The fullname of the comment at {@code adapterPos}, or null if that row is not a comment. */
+    @Nullable
+    public String fullnameAt(int adapterPos) {
+        if (currentComments == null || adapterPos == RecyclerView.NO_POSITION) {
+            return null;
+        }
+        final int datasetPosition = datasetPositionForAdapterPosition(adapterPos);
+        if (datasetPosition < 0 || datasetPosition >= currentComments.size()) {
+            return null;
+        }
+        final CommentObject o = currentComments.get(datasetPosition);
+        if (!(o instanceof CommentItem) || o.comment == null || o.comment.getComment() == null) {
+            return null;
+        }
+        return o.comment.getComment().getFullName();
+    }
+
+    /** The collapsed rows, by fullname, so the same threads can be collapsed again after a restart. */
+    public ArrayList<String> collapsedNames() {
+        return new ArrayList<>(hidden);
+    }
+
+    /**
+     * Re-applies a collapse state captured by {@link #collapsedNames()} and {@link #hiddenPersons},
+     * replacing whatever this adapter collapsed on its own — the "collapse comments by default"
+     * setting included, since the user's own state is the more specific answer.
+     */
+    public void restoreCollapsed(List<String> collapsed, List<String> collapsedRoots) {
+        hidden.clear();
+        hidden.addAll(collapsed);
+        hiddenPersons.clear();
+        hiddenPersons.addAll(collapsedRoots);
+        positionMapDirty = true;
+        setCollapseAnimator();
+        notifyDataSetChanged();
+    }
+
     public int getRealPosition(int position) {
         if (currentComments == null) {
             return position;

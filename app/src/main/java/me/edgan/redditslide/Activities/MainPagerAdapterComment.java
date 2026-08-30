@@ -87,7 +87,7 @@ public class MainPagerAdapterComment extends MainPagerAdapter {
                             if (page != null && page.adapter != null) {
                                 page.adapter.refreshView();
                                 SubredditPosts p = page.adapter.dataSet;
-                                if (p.offline && !mainActivity.isRestart) {
+                                if (p.offline && !p.restoredFromCache) {
                                     p.doMainActivityOffline(mainActivity, p.displayer);
                                 }
                             }
@@ -96,7 +96,7 @@ public class MainPagerAdapterComment extends MainPagerAdapter {
                                     (SubmissionsView) mainActivity.adapter.getCurrentFragment();
                             if (page != null && page.adapter != null) {
                                 SubredditPosts p = page.adapter.dataSet;
-                                if (p.offline && !mainActivity.isRestart) {
+                                if (p.offline && !p.restoredFromCache) {
                                     p.doMainActivityOffline(mainActivity, p.displayer);
                                 }
                             }
@@ -191,6 +191,7 @@ public class MainPagerAdapterComment extends MainPagerAdapter {
 
             if (!name.isEmpty()) { // Ensure name is not empty before putting in args
                 args.putString("id", name);
+                mainActivity.applyRestoreArgs(name, args);
             }
             f.setArguments(args);
             return f;
@@ -207,6 +208,8 @@ public class MainPagerAdapterComment extends MainPagerAdapter {
             args.putInt("page", mainActivity.currentComment);
             args.putString("subreddit", mainActivity.openingComments.getSubredditName());
             args.putString("baseSubreddit", mainActivity.subToDo);
+            mainActivity.commentRestore.applyTo(
+                    mainActivity.openingComments.getFullName(), args);
             f.setArguments(args);
             return f;
         }
@@ -238,6 +241,12 @@ public class MainPagerAdapterComment extends MainPagerAdapter {
 
     @Override public Fragment getCurrentFragment() {
         return mCurrentFragment;
+    }
+
+    /** The comment page, when one has been opened over the feed; null before that. */
+    @Nullable
+    public CommentPage currentComments() {
+        return mCurrentComments;
     }
 
     @Override

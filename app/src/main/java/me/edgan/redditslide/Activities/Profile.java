@@ -55,6 +55,7 @@ import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Fragments.ContributionsView;
 import me.edgan.redditslide.Fragments.HistoryView;
 import me.edgan.redditslide.Fragments.LocalSavedView;
+import me.edgan.redditslide.HibernateState;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SavedUsers;
@@ -88,7 +89,13 @@ import uz.shift.colorpicker.OnColorChangedListener;
 
 /** Created by ccrama on 9/17/2015. */
 @NullMarked
-public class Profile extends BaseActivityAnim {
+public class Profile extends BaseActivityAnim implements HibernateState.Restorable {
+
+    /**
+     * The tab this profile was on when the app was closed, or -1. Only the tab: the lists on it are
+     * refetched, so there is no stable row to scroll back to.
+     */
+    private int restoreTab = -1;
 
     public static final String EXTRA_PROFILE = "profile";
     public static final String EXTRA_SAVED = "saved";
@@ -131,6 +138,11 @@ public class Profile extends BaseActivityAnim {
         super.onCreate(savedInstance);
 
         name = MiscUtil.orEmpty(getIntent().getStringExtra(EXTRA_PROFILE));
+
+        final Bundle hibernated = HibernateState.claim(this);
+        if (hibernated != null) {
+            restoreHibernateState(hibernated);
+        }
 
         applyColorTheme();
         setContentView(R.layout.activity_profile);
@@ -226,6 +238,11 @@ public class Profile extends BaseActivityAnim {
         if (getIntent().hasExtra(EXTRA_UPVOTE) && name.equals(Authentication.name)) {
             pager.setCurrentItem(4);
         }
+        if (restoreTab >= 0) {
+            // After the intent's own tab extras, which are how the drawer opens a specific tab; a
+            // restore describes where the user actually was, which is the more recent answer.
+            pager.setCurrentItem(restoreTab);
+        }
         isSavedView = pager.getCurrentItem() == 6;
         if (pager.getCurrentItem() != 0) {
             LayoutUtils.scrollToTabAfterLayout(tabs, pager.getCurrentItem());
@@ -261,6 +278,18 @@ public class Profile extends BaseActivityAnim {
                 Log.w(LogUtil.getTag(), "Activity already in background, dialog not shown " + e);
             }
         }
+    }
+
+    @Override
+    public void saveHibernateState(Bundle out) {
+        if (pager != null) {
+            out.putInt(HibernateState.STATE_PAGE, pager.getCurrentItem());
+        }
+    }
+
+    @Override
+    public void restoreHibernateState(Bundle in) {
+        restoreTab = in.getInt(HibernateState.STATE_PAGE, -1);
     }
 
     private void setDataSet(String[] data) {

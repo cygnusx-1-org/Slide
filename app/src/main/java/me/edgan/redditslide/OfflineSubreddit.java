@@ -259,12 +259,16 @@ public class OfflineSubreddit {
                 o.submissions = new ArrayList<>();
                 ObjectMapper mapperBase = new ObjectMapper();
                 ObjectReader reader = mapperBase.reader();
+                // Resolved once, not per post: it is the same listing throughout, and the loop
+                // runs a hundred times on a feed rebuild -- each iteration would repeat a
+                // preference lookup and an enum parse that cannot have changed since the last.
+                final CommentSort sort = SettingValues.getCommentSorting(subreddit);
 
                 for (String s : split) {
                     if (!s.contains("_")) s = "t3_" + s;
                     if (!s.isEmpty()) {
                         try {
-                            Submission sub = getSubmissionFromStorage(s, c, offline, reader);
+                            Submission sub = getSubmissionFromStorage(s, c, offline, reader, sort);
                             if (sub != null) {
                                 o.submissions.add(sub);
                             }
@@ -282,16 +286,29 @@ public class OfflineSubreddit {
         }
     }
 
-    /** Null when the blob is missing or holds no submission data. */
+    /**
+     * Null when the blob is missing or holds no submission data.
+     *
+     * @param sort how the comments in the blob are ordered, for a blob that holds a whole thread.
+     *     It is not used to sort anything -- the tree keeps the order it was written in -- but it
+     *     is the sort {@code CommentNode} sends to the {@code morechildren} endpoint when the user
+     *     expands a collapsed branch, so a wrong one here means the extra replies come back
+     *     ordered differently from the ones around them. There is no sensible default: it belongs
+     *     to whoever is about to display the thread, which is why it is a parameter rather than a
+     *     constant.
+     */
     @Nullable
     public static Submission getSubmissionFromStorage(
-            String fullName, @Nullable Context c, boolean offline, ObjectReader reader)
+            String fullName,
+            @Nullable Context c,
+            boolean offline,
+            ObjectReader reader,
+            CommentSort sort)
             throws IOException {
         String gotten = getStringFromFile(fullName, c);
         if (!gotten.isEmpty()) {
             if (gotten.startsWith("[") && offline) {
-                return (SubmissionSerializer.withComments(
-                        reader.readTree(gotten), CommentSort.CONFIDENCE));
+                return (SubmissionSerializer.withComments(reader.readTree(gotten), sort));
             } else if (gotten.startsWith("[")) {
                 JsonNode elem = reader.readTree(gotten);
                 JsonNode first = elem != null ? elem.get(0) : null;

@@ -736,6 +736,8 @@
     <string name="settings_general_immersive_mode_desc">Hide the status and navigation bars (experimental)</string>
     <string name="settings_general_old_swipe_mode">Old swipe mode</string>
     <string name="settings_general_old_swipe_mode_desc">Old Slide swipe style. Meant for 3-button navigation mode and Samsung gestures.</string>
+    <string name="settings_general_hibernate">Resume where I left off</string>
+    <string name="settings_general_hibernate_desc">Reopen on the same screen, at the same place, showing what was already loaded instead of refreshing</string>
 
     <string name="settings_general_title_drawer_items">Drawer Items</string>
     <string name="settings_general_subtitle_drawer_items">Select which drawer items to display</string>
@@ -765,6 +767,7 @@
     <string name="settings_title_font">Font</string>
     <string name="settings_section_general">General</string>
     <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_section_hibernation">Hibernation</string>
     <string name="settings_section_other">Other</string>
     <string name="settings_section_browser">Browser</string>
     <string name="settings_section_internal_viewers">Internal viewers</string>

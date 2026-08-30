@@ -18,9 +18,11 @@ import androidx.viewpager.widget.ViewPager;
 import java.util.Collections;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Autocache.AutoCacheScheduler;
+import me.edgan.redditslide.CommentRestoreState;
 import me.edgan.redditslide.Fragments.BlankFragment;
 import me.edgan.redditslide.Fragments.CommentPage;
 import me.edgan.redditslide.HasSeen;
+import me.edgan.redditslide.HibernateState;
 import me.edgan.redditslide.LastComments;
 import me.edgan.redditslide.Notifications.NotificationJobScheduler;
 import me.edgan.redditslide.R;
@@ -41,7 +43,11 @@ import org.jspecify.annotations.NullMarked;
  * the Submission object, and then displays the submission with its comments.
  */
 @NullMarked
-public class CommentsScreenSingle extends BaseActivityAnim {
+public class CommentsScreenSingle extends BaseActivityAnim implements HibernateState.Restorable {
+
+    /** Where in the comments the user was when the app was last closed; empty on an ordinary open. */
+    public final CommentRestoreState restore = new CommentRestoreState();
+
     @SuppressWarnings("NullAway.Init") // assigned in setupAdapter
     CommentsScreenSinglePagerAdapter comments;
     boolean np;
@@ -177,9 +183,28 @@ public class CommentsScreenSingle extends BaseActivityAnim {
         }
     }
 
+    @Override
+    public void saveHibernateState(Bundle out) {
+        final Fragment current = comments == null ? null : comments.getCurrentFragment();
+        CommentRestoreState.capture(
+                out,
+                name.startsWith("t3_") ? name : "t3_" + name,
+                current instanceof CommentPage ? (CommentPage) current : null);
+    }
+
+    @Override
+    public void restoreHibernateState(Bundle in) {
+        restore.read(in);
+    }
+
     private void setupAdapter() {
         themeSystemBars(subreddit);
         setRecentBar(subreddit);
+
+        final Bundle hibernated = HibernateState.claim(this);
+        if (hibernated != null) {
+            restoreHibernateState(hibernated);
+        }
 
         pager = (ViewPager) requireViewById(R.id.content_view);
         comments = new CommentsScreenSinglePagerAdapter(getSupportFragmentManager());
@@ -333,6 +358,7 @@ public class CommentsScreenSingle extends BaseActivityAnim {
             args.putString("subreddit", subreddit);
             args.putBoolean("single", getIntent().getBooleanExtra(EXTRA_LOADMORE, true));
             args.putBoolean("np", np);
+            restore.applyTo(name.startsWith("t3_") ? name : "t3_" + name, args);
             f.setArguments(args);
 
             return f;

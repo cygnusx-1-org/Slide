@@ -117,6 +117,39 @@ public class ToolbarScrollHideHandler extends RecyclerView.OnScrollListener {
         mAppBar.setTranslationY(0);
     }
 
+    /**
+     * Puts the toolbar straight into the state a scroll would have left it in, with no animation,
+     * and makes {@link #verticalOffset} agree with it.
+     *
+     * <p>For a list that has been jumped programmatically to somewhere it was before — a restored
+     * scroll position — rather than scrolled there. The jump pushes one large {@code dy} through
+     * {@link #onScrolled} and corrupts the offset tracking, which is what {@link #reset} exists
+     * for; but {@code reset} zeroes the offset, so the toolbar would spring back into view at the
+     * user's first touch even though they are a long way down the list. Setting both halves here
+     * leaves the handler consistent instead.
+     *
+     * @param hidden the state the toolbar was in when the position was recorded.
+     */
+    public void settleAfterJump(boolean hidden) {
+        reset = false;
+        if (hidden) {
+            verticalOffset = tToolbar.getHeight() + 1;
+            mAppBar.setTranslationY(-tToolbar.getHeight());
+            if (extra != null) extra.setTranslationY(-tToolbar.getHeight());
+            // The bar at the other end moves with the toolbar and is tracked by the same offset,
+            // so it has to be settled with it. Left out, a comment screen restored with its
+            // toolbar hidden keeps the comment navigation bar showing, and one restored with the
+            // toolbar out keeps it hidden -- and neither corrects itself, because a programmatic
+            // jump never reaches the idle callback that would.
+            if (opposite != null) opposite.setTranslationY(opposite.getHeight());
+        } else {
+            verticalOffset = 0;
+            toolbarShow();
+            if (extra != null) extra.setTranslationY(0);
+            if (opposite != null) opposite.setTranslationY(0);
+        }
+    }
+
     private void toolbarAnimateShow() {
         toolbarAnimate(0);
     }

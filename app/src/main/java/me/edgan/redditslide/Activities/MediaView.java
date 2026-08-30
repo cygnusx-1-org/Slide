@@ -55,6 +55,7 @@ import java.util.Locale;
 import java.util.UUID;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.Fragments.SubmissionsView;
+import me.edgan.redditslide.HibernateState;
 import me.edgan.redditslide.Notifications.ImageDownloadNotificationService;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
@@ -89,7 +90,7 @@ import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 3/5/2015. */
 @NullMarked
-public class MediaView extends BaseSaveActivity {
+public class MediaView extends BaseSaveActivity implements HibernateState.Restorable {
     public static final String EXTRA_URL = "url";
     public static final String SUBREDDIT = "sub";
     public static final String ADAPTER_POSITION = "adapter_position";
@@ -426,6 +427,18 @@ public class MediaView extends BaseSaveActivity {
         }
     }
 
+    @Override
+    public void saveHibernateState(Bundle out) {
+        out.putLong(
+                HibernateState.STATE_VIDEO_POSITION,
+                videoView != null ? videoView.getCurrentPosition() : stopPosition);
+    }
+
+    @Override
+    public void restoreHibernateState(Bundle in) {
+        stopPosition = in.getLong(HibernateState.STATE_VIDEO_POSITION, 0L);
+    }
+
     public void hideOnLongClick() {
         // Keep the bottom button row static — consume clicks in gaps between buttons
         // so they don't fall through to submission_image (which would close the activity).
@@ -456,6 +469,16 @@ public class MediaView extends BaseSaveActivity {
         gson = new Gson();
         imgurKey = SecretConstants.getImgurApiKey(this);
 
+        // Claimed unconditionally, and before the instance state is read. A hibernate resume
+        // rebuilds this screen from an intent with no instance state to read a position out of, so
+        // the claim has to happen; but it cannot be skipped when there is instance state either,
+        // because an unclaimed entry is picked up by BaseActivity.onPostCreate afterwards and would
+        // overwrite the fresher instance-state position with the older recorded one -- a video
+        // jumping backwards when the system recreates the screen from a live task.
+        final Bundle hibernated = HibernateState.claim(this);
+        if (hibernated != null) {
+            restoreHibernateState(hibernated);
+        }
         if (savedInstanceState != null && savedInstanceState.containsKey("position")) {
             stopPosition = savedInstanceState.getLong("position");
         }

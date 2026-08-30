@@ -178,7 +178,7 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
                         }
                         if (page != null && page.adapter != null) {
                             SubredditPosts p = page.adapter.dataSet;
-                            if (p.offline && !mainActivity.isRestart) {
+                            if (p.offline && !p.restoredFromCache) {
                                 p.doMainActivityOffline(mainActivity, p.displayer);
                             }
                         }
@@ -273,6 +273,7 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
         }
 
         args.putString("id", name);
+        mainActivity.applyRestoreArgs(name, args);
         f.setArguments(args);
 
         return f;

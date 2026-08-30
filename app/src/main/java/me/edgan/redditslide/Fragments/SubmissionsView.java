@@ -56,6 +56,7 @@ import me.edgan.redditslide.Adapters.SubmissionDisplay;
 import me.edgan.redditslide.Adapters.SubredditPosts;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.HasSeen;
+import me.edgan.redditslide.HibernateState;
 import me.edgan.redditslide.Hidden;
 import me.edgan.redditslide.OfflineSubreddit;
 import me.edgan.redditslide.R;
@@ -70,10 +71,26 @@ import me.edgan.redditslide.handler.ToolbarScrollHideHandler;
 import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.PhotoLoader;
+import me.edgan.redditslide.util.ScrollAnchor;
 import net.dean.jraw.models.MultiReddit;
 import net.dean.jraw.models.Submission;
 
 public class SubmissionsView extends Fragment implements SubmissionDisplay {
+    /**
+     * Fragment arguments that turn this page into a restore: rebuild the listing from the cache
+     * instead of fetching it, and land on the row the user left off at. Set by
+     * {@code MainActivity.applyRestoreArgs} for exactly one page, so the offscreen neighbour a
+     * page limit of 1 also builds is loaded normally.
+     */
+    public static final String ARG_RESTORE_FROM_CACHE = "restoreFromCache";
+
+    public static final String ARG_RESTORE_ANCHOR_ID = "restoreAnchorId";
+    public static final String ARG_RESTORE_ANCHOR_POSITION = "restoreAnchorPosition";
+    public static final String ARG_RESTORE_ANCHOR_OFFSET = "restoreAnchorOffset";
+    public static final String ARG_RESTORE_EXPECTED_COUNT = "restoreExpectedCount";
+    public static final String ARG_RESTORE_AFTER_TOKEN = "restoreAfterToken";
+    public static final String ARG_RESTORE_TOOLBAR_HIDDEN = "restoreToolbarHidden";
+
     private static int adapterPosition;
     private static int currentPosition;
     // posts, rv and adapter are all built in onCreateView, before any callback below can run.
@@ -105,6 +122,17 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
     private SwipeRefreshLayout mSwipeRefreshLayout;
     @Nullable private static Submission currentSubmission;
     private int lastRotationAnchor = RecyclerView.NO_POSITION;
+
+    /** True until this page's one restore has been applied; see the ARG_RESTORE_* keys above. */
+    private boolean restoreFromCache;
+
+    @Nullable private String restoreAnchorId;
+    private int restoreAnchorPosition = ScrollAnchor.NO_POSITION;
+    private int restoreAnchorOffset;
+    private int restoreExpectedCount;
+
+    @Nullable private String restoreAfterToken;
+    private boolean restoreToolbarHidden;
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -252,7 +280,11 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
         rv.setLayoutManager(mLayoutManager);
         rv.setItemAnimator(
                 new SlideUpAlphaAnimator().withInterpolator(new LinearOutSlowInInterpolator()));
-        mLayoutManager.scrollToPosition(0);
+        if (!restoreFromCache) {
+            // A restore lands on the row the user left off at, and scrollToPosition here would set
+            // a pending scroll that the first layout resolves to the top before it can.
+            mLayoutManager.scrollToPosition(0);
+        }
 
         mSwipeRefreshLayout = v.findViewById(R.id.activity_main_swipe_refresh_layout);
         mSwipeRefreshLayout.setColorSchemeColors(Palette.getColors(id, requireContext()));
@@ -633,7 +665,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
     }
 
     public void doAdapter() {
-        if (!MainActivity.isRestart) {
+        if (!restoreFromCache) {
             mSwipeRefreshLayout.post(
                     () -> {
                         mSwipeRefreshLayout.setRefreshing(true);
@@ -641,6 +673,9 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
         }
 
         posts = new SubredditPosts(id, requireContext());
+        posts.restoreFromCache = restoreFromCache;
+        posts.restoreExpectedCount = restoreExpectedCount;
+        posts.restoreAfterToken = restoreAfterToken;
         adapter = new SubmissionAdapter(requireActivity(), posts, rv, id, this);
         adapter.setHasStableIds(true);
 
@@ -718,6 +753,13 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
         id = bundle.getString("id", "");
         main = bundle.getBoolean("main", false);
         forceLoad = bundle.getBoolean("load", false);
+        restoreFromCache = bundle.getBoolean(ARG_RESTORE_FROM_CACHE, false);
+        restoreAnchorId = bundle.getString(ARG_RESTORE_ANCHOR_ID);
+        restoreAnchorPosition = bundle.getInt(ARG_RESTORE_ANCHOR_POSITION, ScrollAnchor.NO_POSITION);
+        restoreAnchorOffset = bundle.getInt(ARG_RESTORE_ANCHOR_OFFSET, 0);
+        restoreExpectedCount = bundle.getInt(ARG_RESTORE_EXPECTED_COUNT, 0);
+        restoreAfterToken = bundle.getString(ARG_RESTORE_AFTER_TOKEN);
+        restoreToolbarHidden = bundle.getBoolean(ARG_RESTORE_TOOLBAR_HIDDEN, false);
     }
 
     @Override
@@ -815,8 +857,14 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                                     // stale index as already-warmed and skipping the new rows.
                                     highestWarmedAhead = -1;
                                     warmedTapTargets.clear();
-                                    rv.scrollToPosition(0);
+                                    if (!restoreFromCache) {
+                                        // A restore arrives on this same branch (it reports
+                                        // startIndex -1, the whole list at once), and snapping to
+                                        // the top here is what would undo it.
+                                        rv.scrollToPosition(0);
+                                    }
                                     adapter.notifyDataSetChanged();
+                                    applyRestoreAnchor();
                                     // Re-arm the initial-display sweep: SubredditPosts clears its list
                                     // in place (same reference) so the content-change watcher can't
                                     // see a refresh; warm the fresh top rows once they've laid out.
@@ -828,18 +876,69 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                                 }
                             });
 
-            if (MainActivity.isRestart) {
-                MainActivity.isRestart = false;
-                posts.offline = false;
-                if (rv.getLayoutManager() != null) {
-                    rv.getLayoutManager().scrollToPosition(MainActivity.restartPage + 1);
-                }
-            }
             // startIndex is -1 on a reset/refresh (and 0 for a degenerate first append); reset the
             // scroll/toolbar state on those, not on ordinary pagination. (Under the old start
             // semantics this was `< 10`, which keyed off total post count.)
             if (startIndex <= 0) resetScroll();
         }
+    }
+
+    /**
+     * Lands the restored listing on the row the user left off at, once and only once.
+     *
+     * <p>The row is found by fullname rather than by the index it had last time: the cache is
+     * filtered through {@code PostMatch} on the way back in, and any blob the system reclaimed out
+     * of the cache directory is silently dropped, so the same post is rarely at the same index. The
+     * recorded index is only a fallback for a post that is genuinely gone.
+     *
+     * <p>Must run on the UI thread, after {@code notifyDataSetChanged}: {@link ScrollAnchor} defers
+     * itself through the layout pass that follows, which is the one that would otherwise re-anchor
+     * the list to the top.
+     */
+    private void applyRestoreAnchor() {
+        if (!restoreFromCache) {
+            return;
+        }
+        restoreFromCache = false;
+        if (!posts.restoredFromCache) {
+            // Too little of the cached listing survived, so the loader fetched it instead. These
+            // are fresh posts at fresh positions; the recorded offset describes a different list.
+            return;
+        }
+        posts.restoredFromCache = false;
+        // Pagination is live again from here on: the loader stopped short of the network for this
+        // one load only.
+        posts.offline = false;
+
+        int position = ScrollAnchor.NO_POSITION;
+        final List<Submission> current = posts.posts;
+        if (restoreAnchorId != null && !restoreAnchorId.isEmpty() && current != null) {
+            for (int i = 0; i < current.size(); i++) {
+                if (restoreAnchorId.equals(current.get(i).getFullName())) {
+                    position = i + 1; // adapter position 0 is the spacer header
+                    break;
+                }
+            }
+        }
+        if (position == ScrollAnchor.NO_POSITION) {
+            position = restoreAnchorPosition;
+        }
+        if (position == ScrollAnchor.NO_POSITION || current == null || position > current.size()) {
+            return;
+        }
+        ScrollAnchor.applyHidden(
+                rv,
+                position,
+                restoreAnchorOffset,
+                () ->
+                        // The jump pushes one large dy through ToolbarScrollHideHandler. Posted so
+                        // the repair lands after that dy rather than being overwritten by it.
+                        rv.post(
+                                () -> {
+                                    if (toolbarScroll != null) {
+                                        toolbarScroll.settleAfterJump(restoreToolbarHidden);
+                                    }
+                                }));
     }
 
     @Override
@@ -1068,6 +1167,10 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                             // deduped per post so repeated micro-stops don't re-warm the same rows.
                             if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                                 warmVisibleTapTargets();
+                                final FragmentActivity settled = getActivity();
+                                if (settled != null) {
+                                    HibernateState.onContentSettled(settled);
+                                }
                             }
 
                             // If the toolbar search is open, and the user scrolls in the Main

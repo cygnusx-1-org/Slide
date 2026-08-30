@@ -32,6 +32,7 @@ import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.PhotoLoader;
 import me.edgan.redditslide.util.TimeUtils;
 import net.dean.jraw.http.NetworkException;
+import net.dean.jraw.models.Listing;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.paginators.DomainPaginator;
 import net.dean.jraw.paginators.Paginator;
@@ -51,6 +52,39 @@ public class SubredditPosts implements PostLoader {
     public boolean nomore = false;
     public boolean offline;
     public boolean forced;
+
+    /**
+     * Rebuild this listing from the on-disk cache instead of fetching it, for the first load only.
+     * Set when the app is coming back to a screen the user left -- a theme restart, or a hibernate
+     * resume after the process died -- so the feed they left is the feed they get back, with no
+     * request and no refresh spinner. Cleared by the display once it has drawn the restored list.
+     */
+    public boolean restoreFromCache;
+
+    /**
+     * Set once a load has actually served this listing from the cache, so the display can tell a
+     * restore apart from the fall-back to a normal fetch and only re-anchor the scroll for the
+     * former. Separate from {@link #restoreFromCache}, which is the request rather than the result.
+     */
+    public boolean restoredFromCache;
+
+    /**
+     * How many posts the listing held when it was recorded. A blob in the cache directory can be
+     * reclaimed by the system at any time and {@code OfflineSubreddit} simply skips the ones that
+     * have gone, so a restore can silently come back a fraction of its old length -- at which point
+     * the recorded scroll position means nothing and a normal load is the better answer.
+     */
+    public int restoreExpectedCount;
+
+    /** Fraction of the recorded post count a restore has to reach to be worth showing. */
+    private static final double MIN_RESTORE_FRACTION = 0.5;
+
+    /**
+     * Listing cursor recorded with the restored posts, so the first "load more" after a restore
+     * continues the listing instead of re-fetching page one. Held until a page actually comes back:
+     * a failed request leaves it in place for the retry.
+     */
+    @Nullable public String restoreAfterToken;
     public boolean loading;
     public boolean error;
     @SuppressWarnings("NullAway.Init") // assigned in getNextFiltered/onPostExecute
@@ -99,6 +133,104 @@ public class SubredditPosts implements PostLoader {
     public void loadMore(
             final Context context, final SubmissionDisplay display, final boolean reset) {
         new LoadData(context, display, reset).execute(subreddit);
+    }
+
+    /**
+     * The cursor for the page after the last one fetched, or {@code null} if nothing has been
+     * fetched yet. Recorded alongside a hibernated feed so it can be handed back to
+     * {@link #restoreAfterToken}.
+     */
+    @Nullable
+    public String getAfterToken() {
+        if (paginator == null) {
+            // Restored from cache and not paged since, so there is no paginator to ask -- but the
+            // cursor the restore came with is still the right one. Without this, hibernating twice
+            // in a row without scrolling to the bottom quietly loses it.
+            return restoreAfterToken;
+        }
+        final Listing<Submission> listing = paginator.getCurrentListing();
+        final String after = listing == null ? null : listing.getAfter();
+        return after != null ? after : restoreAfterToken;
+    }
+
+    /**
+     * A paginator for {@code sub}, seeded with {@link #restoreAfterToken} when one is pending. The
+     * token is not cleared here: the paginator drops its own copy once a request has actually
+     * succeeded, so a 500-retry that rebuilds the paginator re-seeds rather than jumping to the top
+     * of the listing.
+     */
+    private Paginator createPaginator(String sub, int limit) {
+        final Paginator built;
+        if (sub.equals("frontpage")) {
+            built = new ResumableSubredditPaginator(Authentication.reddit);
+        } else if (!sub.contains(".")) {
+            built = new ResumableSubredditPaginator(Authentication.reddit, sub);
+        } else {
+            built = new ResumableDomainPaginator(Authentication.reddit, sub);
+        }
+        built.setSorting(SettingValues.getSubmissionSort(subreddit));
+        built.setTimePeriod(SettingValues.getSubmissionTimePeriod(subreddit));
+        built.setLimit(limit);
+        ((ResumablePaginator) built).setResumeAfter(restoreAfterToken);
+        return built;
+    }
+
+    /**
+     * The listing as it was last written to disk, rebuilt and ready to display, or {@code null}
+     * when there is not enough of it left to be worth restoring.
+     *
+     * <p>Everything the online path does to a freshly fetched page has to happen here too. Those
+     * calls used to sit only on the online branch, so an offline listing came back with every post
+     * reading as unseen, no new-comment counts, no recovered titles on removed posts, and no
+     * preview images warmed.
+     *
+     * <p>Runs on the loader's background thread: rebuilding a hundred posts means a hundred file
+     * reads and as many JSON parses, which is not something to do while the user is looking at a
+     * blank screen.
+     */
+    @Nullable
+    private List<Submission> rebuildFromCache(Context context) {
+        final String key = subreddit.toLowerCase(Locale.ENGLISH);
+        // offline=false: read each blob as a bare submission. Reading a post's comments now writes
+        // the whole thread to that same blob, and the true branch would deserialize every one of
+        // those trees -- a listing of a hundred posts pulling in every thread the user has opened,
+        // to build a feed that never looks at a comment. The false branch lifts the submission out
+        // of the listing without walking it.
+        final OfflineSubreddit stored = OfflineSubreddit.getSubreddit(key, 0L, false, c);
+        if (stored == null) {
+            return null;
+        }
+        // What the previous restore path published here; the offline gallery and shadowbox read it
+        // for the snapshot timestamp to open.
+        cached = stored;
+        final List<Submission> restored = new ArrayList<>();
+        for (Submission s : stored.submissions) {
+            if (!PostMatch.doesMatch(s, subreddit, force18)) {
+                restored.add(s);
+            }
+        }
+        if (restored.isEmpty()) {
+            return null;
+        }
+        // A blob in the cache directory can be reclaimed by the system at any point, and the read
+        // back above simply skips the ones that have gone -- silently, and without shortening the
+        // stored name list. Comparing against the count recorded with the scroll position is the
+        // only signal that the listing came back a fraction of what it was.
+        if (restoreExpectedCount > 0
+                && restored.size() < restoreExpectedCount * MIN_RESTORE_FRACTION) {
+            return null;
+        }
+        if (!(SettingValues.noImages
+                && ((!NetworkUtil.isConnectedWifi(c) && SettingValues.lowResMobile)
+                        || SettingValues.lowResAlways))) {
+            PhotoLoader.loadPhotos(c, restored, key);
+        }
+        if (SettingValues.storeHistory) {
+            HasSeen.setHasSeenSubmission(restored);
+            LastComments.setCommentsSince(restored);
+        }
+        SubmissionCache.cacheSubmissions(restored, context, subreddit);
+        return restored;
     }
 
     public void loadMore(
@@ -243,16 +375,17 @@ public class SubredditPosts implements PostLoader {
                 // to reach SubredditView, or the over-18 interstitial that would offer to load it
                 // anyway never runs and the screen stays blank with no way forward.
                 handOffResolvedRandom();
-            } else if (MainActivity.isRestart) {
-                posts = new ArrayList<>();
-                cached = OfflineSubreddit.getSubreddit(subreddit, 0L, true, c);
-                for (Submission s : cached.submissions) {
-                    if (!PostMatch.doesMatch(s, subreddit, force18)) {
-                        posts.add(s);
-                    }
-                }
+            } else if (restoredFromCache) {
+                // The listing was rebuilt from disk on the background thread, so there is nothing
+                // to do here but draw it. Not "offline": the cache stood in for one load, and
+                // pagination from here on is live.
                 offline = false;
                 usedOffline = false;
+                currentid = 0;
+                // CommentsScreen locates the post the user tapped inside the listing keyed by
+                // this, and it is a static that reads 0 after a process death. Setting it here
+                // keeps a restored feed and a comment screen opened from it on the same list.
+                OfflineSubreddit.currentid = currentid;
                 // posts was just replaced wholesale from cache, so force a full redraw
                 // (-1) rather than a targeted insert against a now-mismatched offset.
                 displayer.updateSuccess(posts, -1);
@@ -386,8 +519,21 @@ public class SubredditPosts implements PostLoader {
                 dropped = true;
                 return null;
             }
-            if ((!NetworkUtil.isConnected(context) && !Authentication.didOnline)
-                    || MainActivity.isRestart) {
+            if (restoreFromCache && reset) {
+                final List<Submission> restored = rebuildFromCache(context);
+                if (restored != null) {
+                    posts = restored;
+                    start = -1;
+                    restoreFromCache = false;
+                    restoredFromCache = true;
+                    return null;
+                }
+                // Too little of the recorded listing survived in the cache directory to be worth
+                // showing. Fall through and fetch it: a short feed at a scroll offset that no
+                // longer means anything is worse than a fresh one.
+                restoreFromCache = false;
+            }
+            if (!NetworkUtil.isConnected(context) && !Authentication.didOnline) {
                 Log.v(LogUtil.getTag(), "Using offline data");
                 offline = true;
                 usedOffline = true;
@@ -407,16 +553,12 @@ public class SubredditPosts implements PostLoader {
                 String sub =
                         resolveRandom(
                                 subredditPaginators[0].toLowerCase(Locale.ENGLISH), !force18);
-                if (sub.equals("frontpage")) {
-                    paginator = new SubredditPaginator(Authentication.reddit);
-                } else if (!sub.contains(".")) {
-                    paginator = new SubredditPaginator(Authentication.reddit, sub);
-                } else {
-                    paginator = new DomainPaginator(Authentication.reddit, sub);
+                if (reset) {
+                    // A refresh is a request for the top of the listing, which is the one thing a
+                    // resume token must not do.
+                    restoreAfterToken = null;
                 }
-                paginator.setSorting(SettingValues.getSubmissionSort(subreddit));
-                paginator.setTimePeriod(SettingValues.getSubmissionTimePeriod(subreddit));
-                paginator.setLimit(Paginator.RECOMMENDED_MAX_LIMIT);
+                paginator = createPaginator(sub, Paginator.RECOMMENDED_MAX_LIMIT);
             }
 
             List<Submission> filteredSubmissions = getNextFiltered();
@@ -460,6 +602,9 @@ public class SubredditPosts implements PostLoader {
                 // the real insert offset (not the new total).
                 start = oldSize;
             }
+
+            // The listing has moved on under its own cursor now.
+            restoreAfterToken = null;
 
             if (!usedOffline) {
                 OfflineSubreddit.getSubNoLoad(subreddit.toLowerCase(Locale.ENGLISH))
@@ -522,16 +667,7 @@ public class SubredditPosts implements PostLoader {
                         newLimit /= 2;
                     }
                     String sub = resolveRandom(subreddit.toLowerCase(Locale.ENGLISH), false);
-                    if (sub.equals("frontpage")) {
-                        paginator = new SubredditPaginator(Authentication.reddit);
-                    } else if (!sub.contains(".")) {
-                        paginator = new SubredditPaginator(Authentication.reddit, sub);
-                    } else {
-                        paginator = new DomainPaginator(Authentication.reddit, sub);
-                    }
-                    paginator.setSorting(SettingValues.getSubmissionSort(subreddit));
-                    paginator.setTimePeriod(SettingValues.getSubmissionTimePeriod(subreddit));
-                    paginator.setLimit(newLimit);
+                    paginator = createPaginator(sub, newLimit);
                     if (force18 && paginator instanceof SubredditPaginator) {
                         ((SubredditPaginator) paginator).setObeyOver18(false);
                     }

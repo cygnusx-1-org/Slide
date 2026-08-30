@@ -146,6 +146,11 @@ public class Reddit extends Application implements Application.ActivityLifecycle
 
         appRestart.edit().putBoolean("isRestarting", true).apply();
         isRestarting = true;
+        // Every caller of this is a "the app is not what it was" moment -- an account switch, an
+        // offline-mode toggle, a settings restore, finishing the tutorial. A hibernate snapshot
+        // taken before one of those describes a session that no longer exists, so drop it and let
+        // the rebirth land on a normal first screen.
+        HibernateState.clear(context);
         ProcessPhoenix.triggerRebirth(context, new Intent(context, MainActivity.class));
     }
 
@@ -242,6 +247,7 @@ public class Reddit extends Application implements Application.ActivityLifecycle
     @Override
     public void onActivityPaused(Activity activity) {
         ReauthNotifier.detach(activity);
+        HibernateState.onActivityPaused(this);
     }
 
     /** Pass null to clear the handler: the weak reference then resolves to nothing and the
@@ -423,21 +429,28 @@ public class Reddit extends Application implements Application.ActivityLifecycle
     }
 
     @Override
-    public void onActivityStopped(Activity activity) {}
+    public void onActivityStopped(Activity activity) {
+        HibernateState.onActivityStopped(this);
+    }
 
     @Override
     public void onActivityCreated(Activity activity, @Nullable Bundle savedInstanceState) {
         doLanguages();
+        HibernateState.recordCreated(activity);
     }
 
     @Override
-    public void onActivityStarted(Activity activity) {}
+    public void onActivityStarted(Activity activity) {
+        HibernateState.onActivityStarted();
+    }
 
     @Override
     public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
 
     @Override
-    public void onActivityDestroyed(Activity activity) {}
+    public void onActivityDestroyed(Activity activity) {
+        HibernateState.recordDestroyed(activity);
+    }
 
     @Override
     public void onCreate() {
