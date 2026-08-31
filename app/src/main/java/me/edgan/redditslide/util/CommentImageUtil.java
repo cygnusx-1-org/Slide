@@ -65,7 +65,8 @@ public final class CommentImageUtil {
     /**
      * How long a comment-media preload holds the comment list waiting. Shared with
      * {@link CommentVideoPreview#preloadBlocking}: the two run back to back on the same thread
-     * ahead of the list, so the screen's worst-case wait is this twice over.
+     * ahead of the list, so the screen's worst-case wait is this twice over, plus the much smaller
+     * {@link FlairEmojiUtil} budget that runs between them.
      */
     public static final int PRELOAD_WAIT_SECONDS = 5;
 

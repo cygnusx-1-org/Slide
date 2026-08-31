@@ -28,6 +28,7 @@ import me.edgan.redditslide.Adapters.CommentObject;
 import me.edgan.redditslide.Adapters.MoreChildItem;
 import me.edgan.redditslide.Adapters.MoreCommentViewHolder;
 import me.edgan.redditslide.Authentication;
+import me.edgan.redditslide.Flair.RichFlairParser;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import net.dean.jraw.models.CommentNode;
@@ -355,12 +356,19 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
         try {
             LinkedHashSet<String> urls = new LinkedHashSet<>();
             LinkedHashSet<String> videos = new LinkedHashSet<>();
+            // The emoji of any richtext author flair, warmed alongside the media so the
+            // byline chip paints complete on the first bind.
+            LinkedHashSet<String> flairEmoji = new LinkedHashSet<>();
             for (CommentObject o : built) {
                 if (o == null || !o.isComment() || o.comment == null) {
                     continue;
                 }
                 try {
                     JsonNode dataNode = o.comment.getComment().getDataNode();
+                    flairEmoji.addAll(
+                            RichFlairParser.emojiUrls(
+                                    RichFlairParser.from(
+                                            dataNode, RichFlairParser.AUTHOR_FLAIR_RICHTEXT)));
                     String html =
                             SubmissionParser.replaceProcessingImgPlaceholders(
                                     dataNode.path("body_html").asText(""), dataNode);
@@ -371,6 +379,7 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
                 }
             }
             CommentImageUtil.preloadBlocking(Reddit.getAppContext(), urls);
+            FlairEmojiUtil.preloadBlocking(Reddit.getAppContext(), flairEmoji);
             CommentVideoPreview.preloadBlocking(Reddit.getAppContext(), videos);
         } catch (Exception ignored) {
             // Preloading images is best-effort: on any failure the

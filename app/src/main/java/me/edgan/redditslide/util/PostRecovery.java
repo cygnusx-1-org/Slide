@@ -376,6 +376,10 @@ public final class PostRecovery {
         ObjectNode obj = (ObjectNode) node;
         if (text != null && obj.has("link_flair_text")) obj.put("link_flair_text", text);
         if (css != null && obj.has("link_flair_css_class")) obj.put("link_flair_css_class", css);
+        // The richtext array is rendered in preference to link_flair_text, so leaving the removed
+        // post's copy in place would show the pre-removal flair and silently ignore the recovery.
+        // Emptying it (rather than removing the key) keeps the node's shape unchanged, as above.
+        if (text != null && obj.has("link_flair_richtext")) obj.putArray("link_flair_richtext");
     }
 
     /**
@@ -391,6 +395,8 @@ public final class PostRecovery {
         ObjectNode obj = (ObjectNode) node;
         if (text != null && obj.has("author_flair_text")) obj.put("author_flair_text", text);
         if (css != null && obj.has("author_flair_css_class")) obj.put("author_flair_css_class", css);
+        // Same as the link flair above: the recovered text must win over the stale richtext array.
+        if (text != null && obj.has("author_flair_richtext")) obj.putArray("author_flair_richtext");
     }
 
     /**

@@ -29,6 +29,7 @@ import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionCache;
+import me.edgan.redditslide.Views.RichFlairSpan;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import net.dean.jraw.ApiException;
 import net.dean.jraw.fluent.FlairReference;
@@ -578,6 +579,10 @@ public class SubmissionModActions {
         a.recycle();
 
         holder.title.setText(s);
+
+        // Fetch any richtext-flair emoji this title is still missing (only the screens that skip
+        // the feed's preload ever are) and redraw when they land.
+        RichFlairSpan.refill(holder.title);
 
         // Fixed GitHub issue #11. Force this TextView to recalculate itself and request a new layout pass.
         holder.title.requestLayout();

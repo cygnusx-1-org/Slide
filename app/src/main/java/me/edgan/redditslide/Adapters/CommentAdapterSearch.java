@@ -29,10 +29,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import me.edgan.redditslide.ActionStates;
+import me.edgan.redditslide.Flair.RichFlairParser;
+import me.edgan.redditslide.Flair.Richtext;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SavedUsers;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.UserTags;
+import me.edgan.redditslide.Views.RichFlairSpan;
 import me.edgan.redditslide.Views.RoundedBackgroundSpan;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.markdown.MarkdownImages;
@@ -216,7 +219,26 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
             titleString.append(pinned);
             titleString.append(" ");
         }
-        if (comment.getAuthorFlair() != null
+        // Reddit's modern flair shape, which can mix text runs with emoji images. Only taken when
+        // there is an emoji to draw; a text-only flair keeps the plain pill below unchanged.
+        final List<Richtext> authorSegments =
+                RichFlairParser.from(comment.getDataNode(), RichFlairParser.AUTHOR_FLAIR_RICHTEXT);
+
+        if (RichFlairParser.hasEmoji(authorSegments)) {
+            TypedValue typedValue = new TypedValue();
+            Resources.Theme theme = mContext.getTheme();
+            theme.resolveAttribute(R.attr.activity_background, typedValue, true);
+            int color = typedValue.data;
+
+            titleString.append(
+                    RichFlairSpan.chip(
+                            authorSegments,
+                            holder.firstTextView.getCurrentTextColor(),
+                            color,
+                            false,
+                            mContext));
+            titleString.append(" ");
+        } else if (comment.getAuthorFlair() != null
                 && comment.getAuthorFlair().getText() != null
                 && !comment.getAuthorFlair().getText().isEmpty()) {
             TypedValue typedValue = new TypedValue();
@@ -238,6 +260,7 @@ public class CommentAdapterSearch extends RecyclerView.Adapter<RecyclerView.View
             titleString.append(" ");
         }
         holder.content.setText(titleString);
+        RichFlairSpan.refill(holder.content);
     }
 
     @Override

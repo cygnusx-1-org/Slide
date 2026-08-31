@@ -59,6 +59,7 @@ import me.edgan.redditslide.SubmissionViews.PopulateSubmissionViewHolder;
 import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Views.DoEditorActions;
 import me.edgan.redditslide.Views.PreCachingLayoutManagerComments;
+import me.edgan.redditslide.Views.RichFlairSpan;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.markdown.MarkdownImages;
@@ -339,6 +340,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         holder.content.setText(
                 CommentAdapterHelper.getScoreString(
                         comment, mContext, holder, submission, adapter));
+        RichFlairSpan.refill(holder.content);
     }
 
     public void doTimes() {

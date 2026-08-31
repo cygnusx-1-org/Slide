@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import me.edgan.redditslide.Authentication;
+import me.edgan.redditslide.Flair.RichFlairParser;
 import me.edgan.redditslide.Fragments.CommentPage;
 import me.edgan.redditslide.LastComments;
 import me.edgan.redditslide.OfflineSubreddit;
@@ -22,6 +23,7 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.CommentImageUtil;
 import me.edgan.redditslide.util.CommentLimit;
 import me.edgan.redditslide.util.CommentVideoPreview;
+import me.edgan.redditslide.util.FlairEmojiUtil;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.SubmissionParser;
@@ -355,12 +357,20 @@ public class SubmissionComments {
             try {
                 LinkedHashSet<String> urls = new LinkedHashSet<>();
                 LinkedHashSet<String> videos = new LinkedHashSet<>();
+                // The emoji of any richtext author flair, warmed alongside the media so the
+                // byline chip paints complete on the first bind.
+                LinkedHashSet<String> flairEmoji = new LinkedHashSet<>();
                 for (CommentObject o : built) {
                     if (o == null || !o.isComment() || o.comment == null) {
                         continue;
                     }
                     try {
                         JsonNode dataNode = o.comment.getComment().getDataNode();
+                        flairEmoji.addAll(
+                                RichFlairParser.emojiUrls(
+                                        RichFlairParser.from(
+                                                dataNode,
+                                                RichFlairParser.AUTHOR_FLAIR_RICHTEXT)));
                         String html =
                                 SubmissionParser.replaceProcessingImgPlaceholders(
                                         dataNode.path("body_html").asText(""), dataNode);
@@ -381,11 +391,25 @@ public class SubmissionComments {
                                         SubmissionParser.replaceProcessingImgPlaceholders(
                                                 dataNode.path("selftext_html").asText(""),
                                                 dataNode)));
+                        // The header carries the post's own flair and the poster's, neither of
+                        // which the loop above sees. Opening a post from a link never runs the
+                        // feed's caching pass, so this is the only chance to warm them.
+                        flairEmoji.addAll(
+                                RichFlairParser.emojiUrls(
+                                        RichFlairParser.from(
+                                                dataNode,
+                                                RichFlairParser.LINK_FLAIR_RICHTEXT)));
+                        flairEmoji.addAll(
+                                RichFlairParser.emojiUrls(
+                                        RichFlairParser.from(
+                                                dataNode,
+                                                RichFlairParser.AUTHOR_FLAIR_RICHTEXT)));
                     }
                 } catch (Exception ignored) {
                     // Same as above: the card still reads its frame on bind.
                 }
                 CommentImageUtil.preloadBlocking(Reddit.getAppContext(), urls);
+                FlairEmojiUtil.preloadBlocking(Reddit.getAppContext(), flairEmoji);
                 CommentVideoPreview.preloadBlocking(Reddit.getAppContext(), videos);
             } catch (Exception ignored) {
                 // Preloading images is best-effort: on any failure the

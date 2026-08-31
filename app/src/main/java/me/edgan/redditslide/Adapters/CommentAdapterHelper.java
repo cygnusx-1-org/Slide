@@ -53,6 +53,8 @@ import me.edgan.redditslide.Activities.Profile;
 import me.edgan.redditslide.Activities.Reauthenticate;
 import me.edgan.redditslide.Activities.Website;
 import me.edgan.redditslide.Authentication;
+import me.edgan.redditslide.Flair.RichFlairParser;
+import me.edgan.redditslide.Flair.Richtext;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
@@ -63,6 +65,7 @@ import me.edgan.redditslide.SubmissionViews.LocalSaved;
 import me.edgan.redditslide.UserTags;
 import me.edgan.redditslide.Views.CommentOverflow;
 import me.edgan.redditslide.Views.DoEditorActions;
+import me.edgan.redditslide.Views.RichFlairSpan;
 import me.edgan.redditslide.Views.RoundedBackgroundSpan;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.FontPreferences;
@@ -1409,6 +1412,7 @@ final AlertDialog reportDialog =
                     holder.content.setText(
                             CommentAdapterHelper.getScoreString(
                                     comment, mContext, holder, adapter.submission, adapter));
+                    RichFlairSpan.refill(holder.content);
                     Snackbar.make(holder.itemView, R.string.mod_approved, Snackbar.LENGTH_LONG)
                             .show();
 
@@ -1490,6 +1494,7 @@ final AlertDialog reportDialog =
                     holder.content.setText(
                             CommentAdapterHelper.getScoreString(
                                     comment, mContext, holder, adapter.submission, adapter));
+                    RichFlairSpan.refill(holder.content);
                 } else {
                     DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                             .setTitle(R.string.err_general)
@@ -1577,6 +1582,7 @@ final AlertDialog reportDialog =
                     holder.content.setText(
                             CommentAdapterHelper.getScoreString(
                                     comment, mContext, holder, adapter.submission, adapter));
+                    RichFlairSpan.refill(holder.content);
                 } else {
                     DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
                             .setTitle(R.string.err_general)
@@ -1963,7 +1969,27 @@ final AlertDialog reportDialog =
             titleString.append(pinned);
             titleString.append(" ");
         }
-        if (comment.getAuthorFlair() != null
+        // Reddit's modern flair shape, which can mix text runs with emoji images. Only taken when
+        // there is an emoji to draw; a text-only flair keeps the plain pill below unchanged.
+        final List<Richtext> authorSegments =
+                RichFlairParser.from(
+                        comment.getDataNode(), RichFlairParser.AUTHOR_FLAIR_RICHTEXT);
+
+        if (RichFlairParser.hasEmoji(authorSegments)) {
+            TypedValue typedValue = new TypedValue();
+            Resources.Theme theme = mContext.getTheme();
+            theme.resolveAttribute(R.attr.activity_background, typedValue, true);
+            int color = typedValue.data;
+
+            titleString.append(
+                    RichFlairSpan.chip(
+                            authorSegments,
+                            holder.firstTextView.getCurrentTextColor(),
+                            color,
+                            false,
+                            mContext));
+            titleString.append(" ");
+        } else if (comment.getAuthorFlair() != null
                 && (comment.getAuthorFlair().getText() != null
                         || comment.getAuthorFlair().getCssClass() != null)) {
 

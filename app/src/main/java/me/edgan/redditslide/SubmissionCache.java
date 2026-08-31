@@ -13,14 +13,19 @@ import androidx.annotation.Nullable;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.WeakHashMap;
 import me.edgan.redditslide.Adapters.CommentAdapterHelper;
+import me.edgan.redditslide.Flair.RichFlairParser;
+import me.edgan.redditslide.Flair.Richtext;
+import me.edgan.redditslide.Views.RichFlairSpan;
 import me.edgan.redditslide.Views.RoundedBackgroundSpan;
 import me.edgan.redditslide.Visuals.FontPreferences;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.CompatUtil;
+import me.edgan.redditslide.util.FlairEmojiUtil;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.PostRecovery;
 import me.edgan.redditslide.util.TimeUtils;
@@ -77,14 +82,47 @@ public class SubmissionCache {
     private static void cacheInfo(
             List<Submission> submissions, Context mContext, @Nullable String baseSub) {
 
+        // Re-apply any recovered link before anything else reads these nodes. The cached info line
+        // (domain, content-type) has to reflect the recovery rather than the removed-state node,
+        // and recovery also empties the stale richtext flair — which the warm pass below would
+        // otherwise spend the list's own time downloading emoji for, only to never draw them.
         for (Submission submission : submissions) {
-            // Re-apply any recovered link before building the spannables so the cached info line
-            // (domain, content-type) reflects the recovery rather than the removed-state node.
             PostRecovery.reapplyRecoveredLink(submission);
+        }
+
+        // Warm every richtext-flair emoji in the batch. This runs on the feed's background thread,
+        // so by the time the spannables below are built the bitmaps are in memory and the flair
+        // paints in the same frame as the rest of the card, with no reflow as images arrive.
+        warmFlairEmoji(submissions, mContext);
+
+        for (Submission submission : submissions) {
             titles.put(submission.getFullName(), getTitleSpannable(submission, mContext));
             info.put(submission.getFullName(), getInfoSpannable(submission, mContext, baseSub));
             crosspost.put(submission.getFullName(), getCrosspostLine(submission, mContext));
         }
+    }
+
+    /**
+     * Downloads the emoji of every richtext flair in a batch — the posts' own flair and their
+     * authors' — into the shared image cache. Must be called from a background thread; it blocks.
+     */
+    private static void warmFlairEmoji(List<Submission> submissions, Context mContext) {
+        // Ordered and de-duplicated: a subreddit's flairs reuse the same handful of emoji, so a
+        // page of posts is usually a few distinct URLs however many posts it holds.
+        final LinkedHashSet<String> urls = new LinkedHashSet<>();
+
+        for (Submission submission : submissions) {
+            final JsonNode node = submission.getDataNode();
+
+            urls.addAll(
+                    RichFlairParser.emojiUrls(
+                            RichFlairParser.from(node, RichFlairParser.LINK_FLAIR_RICHTEXT)));
+            urls.addAll(
+                    RichFlairParser.emojiUrls(
+                            RichFlairParser.from(node, RichFlairParser.AUTHOR_FLAIR_RICHTEXT)));
+        }
+
+        FlairEmojiUtil.preloadBlocking(mContext, urls);
     }
 
     public static void updateInfoSpannable(
@@ -328,7 +366,22 @@ public class SubmissionCache {
                                     && authorNode.has("author_flair_css_class"))
                             ? submission.getAuthorFlair()
                             : null;
-            if (authorFlair != null
+            // The richtext form of the same flair, which is where the emoji live.
+            final List<Richtext> authorSegments =
+                    RichFlairParser.from(authorNode, RichFlairParser.AUTHOR_FLAIR_RICHTEXT);
+
+            if (RichFlairParser.hasEmoji(authorSegments)) {
+                TypedValue typedValue = new TypedValue();
+                Resources.Theme theme = mContext.getTheme();
+                theme.resolveAttribute(R.attr.activity_background, typedValue, false);
+                int flairBg = typedValue.data;
+                theme.resolveAttribute(R.attr.fontColor, typedValue, false);
+                int flairFont = typedValue.data;
+
+                titleString.append(" ");
+                titleString.append(
+                        RichFlairSpan.chip(authorSegments, flairFont, flairBg, false, mContext));
+            } else if (authorFlair != null
                     && authorFlair.getText() != null
                     && !authorFlair.getText().isEmpty()) {
                 TypedValue typedValue = new TypedValue();
@@ -635,7 +688,26 @@ public class SubmissionCache {
             titleString.append(pinned);
         }
 
-        if ((submission.getSubmissionFlair().getText() != null
+        // Reddit's modern flair shape, which can mix text runs with emoji images. Only taken when
+        // there is actually an emoji to draw: a text-only flair falls through to the plain branch
+        // below and its pill lands on exactly the same pixels as before.
+        //
+        // A flairOverride comes from updateTitleFlair after the user picks a flair, and that pick
+        // has no richtext until the post is refetched, so an override always wins.
+        final List<Richtext> flairSegments =
+                RichFlairParser.from(submission.getDataNode(), RichFlairParser.LINK_FLAIR_RICHTEXT);
+
+        if (flairOverride == null && RichFlairParser.hasEmoji(flairSegments)) {
+            TypedValue typedValue = new TypedValue();
+            Resources.Theme theme = mContext.getTheme();
+            theme.resolveAttribute(R.attr.activity_background, typedValue, false);
+            int color = typedValue.data;
+            theme.resolveAttribute(R.attr.fontColor, typedValue, false);
+            int font = typedValue.data;
+
+            titleString.append(" ");
+            titleString.append(RichFlairSpan.chip(flairSegments, font, color, true, mContext));
+        } else if ((submission.getSubmissionFlair().getText() != null
                         && !submission.getSubmissionFlair().getText().isEmpty())
                 || flairOverride != null
                 || (submission.getSubmissionFlair().getCssClass() != null)) {
