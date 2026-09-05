@@ -4,6 +4,11 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+7.9.8 / 2026-9-5
+===========
+* Turned the "Settings | General | Resume where I left off" into a feature appearance toggle
+* Added a feed overflow menu option called "Resume where I left off" that acts like a quick toggle
+
 7.9.7 / 2026-8-30
 ============
 * Added a "Settings | General | Hibernate | Resume where I left off" setting
