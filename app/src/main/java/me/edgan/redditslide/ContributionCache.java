@@ -253,6 +253,14 @@ public final class ContributionCache {
      * makes both meaningless, and a blob left behind would be another account's listing.
      */
     public static void clear() {
+        // Queued onto the writer rather than run on the caller's thread, so that a store already
+        // in flight when this is called -- the user unchecking the overflow toggle mid-page is
+        // enough -- finishes before the delete instead of publishing its blob after it. The queue
+        // is single-threaded and FIFO, so ordering is all it takes.
+        WRITER.execute(ContributionCache::clearNow);
+    }
+
+    private static void clearNow() {
         final File dir = directory();
         if (dir == null) {
             return;
