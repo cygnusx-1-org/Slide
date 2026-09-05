@@ -495,6 +495,16 @@ public class MainActivity extends BaseActivity
         super.onPrepareOptionsMenu(menu);
 
         this.menu = menu;
+
+        // The quick toggle only exists once the feature has been enabled in Settings, and reads its
+        // state here rather than in onCreateOptionsMenu so that it is right every time the overflow
+        // is opened.
+        final MenuItem hibernateResume = menu.findItem(R.id.hibernate_resume);
+        if (hibernateResume != null) {
+            hibernateResume.setVisible(SettingValues.hibernate);
+            hibernateResume.setChecked(SettingValues.hibernateResume);
+        }
+
         /**
          * Hide the "Submit" and "Sidebar" menu items if the currently viewed sub is a multi,
          * domain, the frontpage, or /r/all. If the subreddit has a "." in it, we know it's a domain
@@ -595,6 +605,23 @@ public class MainActivity extends BaseActivity
         // Handled independently of the current feed state.
         if (item.getItemId() == R.id.open_clipboard) {
             openClipboardRedditLink();
+            return true;
+        }
+
+        if (item.getItemId() == R.id.hibernate_resume) {
+            final boolean resume = !SettingValues.hibernateResume;
+            SettingValues.hibernateResume = resume;
+            SettingValues.prefs
+                    .edit()
+                    .putBoolean(SettingValues.PREF_HIBERNATE_RESUME, resume)
+                    .apply();
+            item.setChecked(resume);
+            if (!resume) {
+                // Switching it off here means what switching it off in Settings means: the next
+                // launch behaves as it always did, not that one last saved session comes back
+                // first.
+                HibernateState.clear(this);
+            }
             return true;
         }
 

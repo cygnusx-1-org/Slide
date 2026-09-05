@@ -289,7 +289,7 @@ public class SubmissionComments {
 
                 JsonNode node = getSubmissionNode(builder.build());
                 submission = SubmissionSerializer.withComments(node, defaultSorting);
-                if (!single && SettingValues.hibernate) {
+                if (!single && SettingValues.hibernateActive()) {
                     // Keep the whole thread on disk, so reopening the app can put it straight back
                     // on screen instead of fetching it again -- which is a wait, a progress bar,
                     // and a jump to the restored position once it lands. Only a full thread is

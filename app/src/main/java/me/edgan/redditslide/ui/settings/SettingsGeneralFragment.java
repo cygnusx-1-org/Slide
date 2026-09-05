@@ -401,6 +401,14 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                                 // Turning it off should mean the next launch behaves as it always
                                 // did, not that one last saved session comes back first.
                                 HibernateState.clear(context);
+                            } else {
+                                // Enabling the feature has to give a working feature, even for a
+                                // user who had switched it off from the overflow menu earlier.
+                                SettingValues.hibernateResume = true;
+                                SettingValues.prefs
+                                        .edit()
+                                        .putBoolean(SettingValues.PREF_HIBERNATE_RESUME, true)
+                                        .apply();
                             }
                         });
             }

@@ -337,7 +337,7 @@ public final class HibernateState {
 
     /** Ask every live screen for its state and write the snapshot. */
     private static void capture(Context context) {
-        if (!SettingValues.hibernate) {
+        if (!SettingValues.hibernateActive()) {
             return;
         }
         final List<Entry> snapshot = new ArrayList<>();
@@ -432,7 +432,7 @@ public final class HibernateState {
      */
     @Nullable
     public static Bundle claim(Activity activity) {
-        if (!SettingValues.hibernate) {
+        if (!SettingValues.hibernateActive()) {
             return null;
         }
         final List<Entry> stack = load(activity);
@@ -479,7 +479,7 @@ public final class HibernateState {
             return restoring;
         }
         loaded = true;
-        if (!SettingValues.hibernate) {
+        if (!SettingValues.hibernateActive()) {
             return null;
         }
         final File file = new File(context.getFilesDir(), FILE_NAME);

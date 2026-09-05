@@ -282,7 +282,7 @@ public class ContributionPosts extends GeneralPosts {
             // after the callback rather than before it so that the page which ends the search --
             // the callback clears the listener there -- is the one that writes, leaving the cache
             // holding everything the search paged in rather than the prefix from before it.
-            if (SettingValues.hibernate
+            if (SettingValues.hibernateActive()
                     && submissions != null
                     && !fromHibernateCache
                     && loadCompleteListener == null

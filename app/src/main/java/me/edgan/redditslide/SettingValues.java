@@ -59,6 +59,7 @@ public class SettingValues {
     public static final String PREF_SUBREDDIT_FILTERS = "subredditFilters";
     public static final String PREF_ABBREVIATE_SCORES = "abbreviateScores";
     public static final String PREF_HIBERNATE = "hibernate";
+    public static final String PREF_HIBERNATE_RESUME = "hibernateResume";
     public static final String PREF_HIDE_POST_AWARDS = "hidePostAwards";
     public static final String PREF_HIDE_COMMENT_AWARDS = "hideCommentAwards";
     public static final String PREF_FLAIR_FILTERS = "subFlairFilters";
@@ -211,6 +212,14 @@ public class SettingValues {
      * what the app does on every launch, and a user who has not asked for it should not get it.
      */
     public static boolean hibernate;
+
+    /**
+     * The quick toggle in the main overflow menu, which switches resuming off and on without a trip
+     * to Settings. On by default so that enabling the feature in Settings gives a working feature;
+     * it means nothing on its own, only in combination with {@link #hibernate}.
+     */
+    public static boolean hibernateResume;
+
     public static boolean expandedSettings;
     public static boolean fabComments;
     public static boolean largeDepth;
@@ -513,6 +522,7 @@ public class SettingValues {
         image = prefs.getBoolean(PREF_IMAGE, true);
         cache = true;
         hibernate = prefs.getBoolean(PREF_HIBERNATE, false);
+        hibernateResume = prefs.getBoolean(PREF_HIBERNATE_RESUME, true);
         storeHistory = prefs.getBoolean(PREF_STORE_HISTORY, true);
         upvotePercentage = prefs.getBoolean(PREF_UPVOTE_PERCENTAGE, false);
         storeNSFWHistory = prefs.getBoolean(PREF_STORE_NSFW_HISTORY, false);
@@ -629,6 +639,17 @@ public class SettingValues {
         prefs.edit()
                 .putBoolean("cardtextenabled" + sub.toLowerCase(Locale.ENGLISH), checked)
                 .apply();
+    }
+
+    /**
+     * Whether the hibernate/resume feature should act right now: enabled in Settings
+     * ({@link #hibernate}) and not switched off from the main overflow menu
+     * ({@link #hibernateResume}).
+     *
+     * @return true if the app should record and restore where the user left off.
+     */
+    public static boolean hibernateActive() {
+        return hibernate && hibernateResume;
     }
 
     public static boolean getIsNSFWEnabled() {

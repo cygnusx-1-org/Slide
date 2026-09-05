@@ -165,7 +165,7 @@ public class LocalSavedPosts extends GeneralPosts {
 
             // Keep the list on disk so a hibernate resume can put it back without re-hydrating
             // every id over /api/info. The write is queued off this thread.
-            if (SettingValues.hibernate && !fromHibernateCache && !posts.isEmpty()) {
+            if (SettingValues.hibernateActive() && !fromHibernateCache && !posts.isEmpty()) {
                 ContributionCache.store(cacheKey(), posts, null);
             }
         }

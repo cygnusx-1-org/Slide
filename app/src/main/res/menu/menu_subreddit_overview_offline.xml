@@ -17,6 +17,11 @@
         android:title="@string/theme_base"
         app:showAsAction="never" />
     <item
+        android:id="@+id/hibernate_resume"
+        android:checkable="true"
+        android:title="@string/settings_general_hibernate"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/open_clipboard"
         android:title="@string/open_clipboard_reddit_link"
         app:showAsAction="never" />

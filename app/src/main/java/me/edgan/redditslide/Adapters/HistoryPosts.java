@@ -176,7 +176,7 @@ public class HistoryPosts extends GeneralPosts {
             // failed -- a null result leaves the list as the last write found it -- and when this
             // list is not one a resume can land on (see cacheKey).
             final String key = cacheKey();
-            if (SettingValues.hibernate
+            if (SettingValues.hibernateActive()
                     && submissions != null
                     && key != null
                     && !fromHibernateCache
