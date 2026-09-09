@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import me.edgan.redditslide.Adapters.ContributionAdapter;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.ScrollAnchor;
 
@@ -87,7 +88,7 @@ public final class ContributionRestoreState {
      */
     public static boolean capture(
             Bundle out, int page, @Nullable Source source, @Nullable View header) {
-        if (source == null || !source.isRecordable()) {
+        if (source == null || !source.isRecordable() || isSearching(source.getRecyclerView())) {
             return false;
         }
         final ScrollAnchor anchor = ScrollAnchor.capture(source.getRecyclerView());
@@ -117,6 +118,23 @@ public final class ContributionRestoreState {
             }
         }
         return true;
+    }
+
+    /**
+     * Whether a search is narrowing what {@code rv} renders.
+     *
+     * <p>The anchor position below comes from the RecyclerView but is resolved against
+     * {@link Source#getRestorePosts()}, which is the tab's whole listing. Those are the same list
+     * only when nothing is filtering it: with a search active, row n on screen is the nth hit, and
+     * reading the listing at that index names an unrelated post -- which is the one the resume
+     * would then jump to. A search is also not a state the restore can put back, since it rebuilds
+     * the tab from the unfiltered cache; leaving the pre-search snapshot in place is the right
+     * answer either way.
+     */
+    private static boolean isSearching(@Nullable RecyclerView rv) {
+        final RecyclerView.Adapter<?> adapter = rv == null ? null : rv.getAdapter();
+        return adapter instanceof ContributionAdapter
+                && ((ContributionAdapter) adapter).hasActiveFilter();
     }
 
     /** Reads a bundle written by {@link #capture}. */

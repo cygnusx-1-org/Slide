@@ -35,27 +35,40 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/activity_vertical_margin" />
 
-    <!-- Blocks the list while a deep search loads the full history; hidden by default -->
+    <!-- Reports a search still paging the history. Sits under the list rather than over it: the
+         hits found so far are on screen the whole time, and covering them was the bug. -->
     <LinearLayout
-        android:id="@+id/search_loading_overlay"
+        android:id="@+id/search_progress"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:clickable="true"
-        android:focusable="true"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:visibility="gone"
-        android:background="?attr/activity_background">
+        android:background="?attr/card_background">
 
         <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_width="24dp"
+            android:layout_height="24dp" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/search_progress_text"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
             android:textColor="?attr/fontColor"
             android:text="@string/profile_search_loading" />
+
+        <Button
+            android:id="@+id/search_progress_cancel"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_cancel" />
     </LinearLayout>
 </RelativeLayout>

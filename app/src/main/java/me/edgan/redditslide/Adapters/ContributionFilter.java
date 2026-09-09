@@ -2,7 +2,10 @@ package me.edgan.redditslide.Adapters;
 
 import androidx.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.dean.jraw.models.Comment;
 import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.Submission;
@@ -18,11 +21,11 @@ public class ContributionFilter {
      *
      * @param contributions The list of contributions to filter
      * @param query The search query string
-     * @param where The tab/section name (e.g., "overview", "comments", "submitted")
+     * @param where The tab/section name; every tab matches the same way, so it is not read
      * @return A filtered list containing only matching contributions
      */
     public static ArrayList<Contribution> filterContributions(
-            ArrayList<Contribution> contributions, String query, String where) {
+            ArrayList<Contribution> contributions, String query, @Nullable String where) {
 
         if (contributions == null || contributions.isEmpty()) {
             return new ArrayList<>();
@@ -32,9 +35,10 @@ public class ContributionFilter {
             return new ArrayList<>(contributions);
         }
 
-        // Normalize query: trim, lowercase, split into words
-        String normalizedQuery = query.trim().toLowerCase(Locale.getDefault());
-        String[] searchTerms = normalizedQuery.split("\\s+");
+        String[] searchTerms = parseTerms(query);
+        if (searchTerms.length == 0) {
+            return new ArrayList<>(contributions);
+        }
 
         ArrayList<Contribution> filtered = new ArrayList<>();
 
@@ -47,6 +51,36 @@ public class ContributionFilter {
         return filtered;
     }
 
+    /** Matches a "quoted phrase" or a single bare word. */
+    private static final Pattern TERM = Pattern.compile("\"([^\"]*)\"|(\\S+)");
+
+    /**
+     * Splits a query into the terms that must all be present.
+     *
+     * <p>Bare words are separate terms, so {@code too good} still matches a post carrying both
+     * words anywhere. A run wrapped in double quotes is one term instead, so {@code "too good"}
+     * matches the phrase and nothing else -- there was no way to ask for that before.
+     *
+     * @param query The raw search query
+     * @return The lowercased terms, in query order
+     */
+    public static String[] parseTerms(String query) {
+        final List<String> terms = new ArrayList<>();
+        final Matcher matcher = TERM.matcher(query.trim().toLowerCase(Locale.getDefault()));
+        while (matcher.find()) {
+            final String quoted = matcher.group(1);
+            final String bare = matcher.group(2);
+            // An unbalanced quote falls through to the bare branch and would otherwise keep the
+            // quote character as part of the word, which matches nothing.
+            final String term =
+                    quoted != null ? quoted.trim() : (bare == null ? null : bare.replace("\"", ""));
+            if (term != null && !term.isEmpty()) {
+                terms.add(term);
+            }
+        }
+        return terms.toArray(new String[0]);
+    }
+
     /**
      * Checks if a contribution matches all search terms (AND logic).
      *
@@ -55,6 +89,11 @@ public class ContributionFilter {
      * @return true if all search terms are found in the contribution
      */
     private static boolean matchesQuery(Contribution contribution, String[] searchTerms) {
+        // Built once per contribution, not once per term: it concatenates and lowercases the
+        // title, the body and the rest, so rebuilding it for every word of the query re-walked
+        // the whole post text as many times as the query had words.
+        final String searchableText = getSearchableText(contribution);
+
         // AND logic: all terms must be present
         for (String term : searchTerms) {
             boolean termMatched = false;
@@ -70,13 +109,11 @@ public class ContributionFilter {
                 }
 
                 // Also check if the literal "/r/..." appears in titles or comment bodies
-                String searchableText = getSearchableText(contribution);
                 if (searchableText != null && searchableText.contains(term)) {
                     termMatched = true;
                 }
             } else {
                 // Normal search: check all fields
-                String searchableText = getSearchableText(contribution);
                 if (searchableText != null && searchableText.contains(term)) {
                     termMatched = true;
                 }
@@ -122,8 +159,12 @@ public class ContributionFilter {
                 text.append(submission.getTitle()).append(" ");
             }
 
-            // Note: Not searching selftext/body since it's often not visible in card view
-            // and would cause confusing results where the match isn't obvious
+            // Search in the post's own text. It is not always visible in card view, but a term
+            // the user typed is far more often in the body than nowhere at all, and leaving it
+            // out made a self post unfindable by anything but its title.
+            if (submission.getSelftext() != null) {
+                text.append(submission.getSelftext()).append(" ");
+            }
 
             // Search in subreddit name
             if (submission.getSubredditName() != null) {

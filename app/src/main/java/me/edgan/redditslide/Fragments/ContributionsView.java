@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -44,7 +45,8 @@ public class ContributionsView extends Fragment implements ContributionRestoreSt
     private String where;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private View searchOverlay;
+    private View searchProgress;
+    private TextView searchProgressText;
     private ToolbarScrollHideHandler toolbarScroll;
 
     /** True until this tab's one hibernate restore has been applied; see the ARG_RESTORE_* keys. */
@@ -64,7 +66,12 @@ public class ContributionsView extends Fragment implements ContributionRestoreSt
         View v = inflater.inflate(R.layout.fragment_verticalcontent, container, false);
 
         recyclerView = v.requireViewById(R.id.vertical_content);
-        searchOverlay = v.findViewById(R.id.search_loading_overlay);
+        searchProgress = v.findViewById(R.id.search_progress);
+        searchProgressText = v.findViewById(R.id.search_progress_text);
+        final View searchCancel = v.findViewById(R.id.search_progress_cancel);
+        if (searchCancel != null) {
+            searchCancel.setOnClickListener(view -> cancelSearchPaging());
+        }
         final RecyclerView rv = recyclerView;
 
         final PreCachingLayoutManager mLayoutManager = new PreCachingLayoutManager(requireContext());
@@ -175,9 +182,13 @@ public class ContributionsView extends Fragment implements ContributionRestoreSt
                             }
                         }
 
-                        if (!posts.loading) {
-                            if ((visibleItemCount + pastVisiblesItems) + 5 >= totalItemCount
-                                    && !posts.nomore) {
+                        // This runs from RecyclerView.dispatchLayoutStep3, so it fires on every
+                        // layout pass and not only on a real scroll. `error` is what stops a tab
+                        // Reddit answers with a failure from re-requesting the same page forever:
+                        // the failure leaves `nomore` false and swaps in the error view, whose
+                        // layout brings us straight back here. A refresh is how the user retries.
+                        if (!posts.loading && !posts.nomore && !posts.error) {
+                            if ((visibleItemCount + pastVisiblesItems) + 5 >= totalItemCount) {
                                 posts.loading = true;
                                 posts.loadMore(adapter, id, false);
                             }
@@ -314,11 +325,11 @@ public class ContributionsView extends Fragment implements ContributionRestoreSt
     }
 
     /**
-     * A deep search pages the entire listing behind a blocking overlay, and the cache is
-     * deliberately not rewritten while it does. Recording a row count and a scroll position from a
-     * list the blob has not caught up with is what makes the resume reject the blob as
-     * short and refetch; freezing the snapshot alongside the cache keeps the state from before the
-     * search restorable, which is the best answer available while the search is still running.
+     * A deep search pages the whole listing in the background, and the cache is deliberately not
+     * rewritten while it does. Recording a row count and a scroll position from a list the blob has
+     * not caught up with is what makes the resume reject the blob as short and refetch; freezing
+     * the snapshot alongside the cache keeps the state from before the search restorable, which is
+     * the best answer available while the search is still running.
      */
     @Override
     public boolean isRecordable() {
@@ -337,10 +348,14 @@ public class ContributionsView extends Fragment implements ContributionRestoreSt
     }
 
     /**
-     * Runs a search that first loads the entire (paginated) history so posts deep in
-     * the list are found, not just the pages already scrolled into view. The list is
-     * blocked behind a spinner overlay until loading finishes, then the filter is
-     * applied once over the complete set.
+     * Searches the whole (paginated) history, so posts deep in the list are found and not just the
+     * pages already scrolled into view.
+     *
+     * <p>The hits in what is already loaded go on screen at once, and the rest of the history is
+     * paged in behind them, each page's hits joining the list as it arrives. A strip at the bottom
+     * reports how far the scan has got and offers to stop it. It used to block the whole list
+     * behind an opaque overlay until the last page landed, which on an account with a thousand
+     * posts was a minute of spinner with the answer sitting in page one the entire time.
      *
      * @param query The search query string
      * @param searchWhere The tab/section name (e.g., "saved")
@@ -357,18 +372,29 @@ public class ContributionsView extends Fragment implements ContributionRestoreSt
 
         // Bypass toggle on Saved: reload the whole history from the network (ignoring the
         // cache) with a reset load, then filter over the fresh, complete set.
-        boolean forceReload = bypassCache && posts instanceof ContributionPostsSaved;
-        if (forceReload) {
-            ((ContributionPostsSaved) posts).bypassCache = true;
-            posts.nomore = false;
-        } else if (posts.nomore) {
-            // Everything is already loaded (cache hit or prior full load) -- filter immediately.
-            adapter.applyFilter(query, searchWhere);
+        final boolean forceReload = bypassCache && posts instanceof ContributionPostsSaved;
+
+        // Filter what is already loaded first, so the hits on the pages already in hand are on
+        // screen before the first request goes out. A bypass reload is about to replace the list,
+        // and the filter is re-applied to each page of the replacement as it arrives.
+        adapter.applyFilter(query, searchWhere);
+
+        if (!forceReload && (posts.nomore || posts.error)) {
+            // Nothing left to page, or the listing is not answering. Either way what is on screen
+            // is the whole answer. Checked before the bypass is armed below: arming it and then
+            // returning would leave the flag set for whatever ordinary reload came next, which
+            // would silently skip the cache the user had not asked to skip.
+            endSearchPaging();
             return;
         }
 
-        // Block the list and page through the rest of the history before filtering.
-        showSearchOverlay(true);
+        if (forceReload) {
+            ((ContributionPostsSaved) posts).bypassCache = true;
+            posts.nomore = false;
+        }
+
+        // Keep paging in the background, adding each page's hits as they arrive.
+        showSearchProgress(true);
         posts.setOnLoadCompleteListener(
                 success -> {
                     if (!success) {
@@ -376,13 +402,14 @@ public class ContributionsView extends Fragment implements ContributionRestoreSt
                         // unconditional re-fire was an unbounded retry against Reddit with the
                         // blocking overlay never coming down and the search never ending. Stop
                         // here and leave the error the loader put on screen to retry from.
-                        posts.setOnLoadCompleteListener(null);
-                        showSearchOverlay(false);
+                        endSearchPaging();
                     } else if (posts.nomore) {
-                        posts.setOnLoadCompleteListener(null);
+                        endSearchPaging();
                         adapter.applyFilter(query, searchWhere);
-                        showSearchOverlay(false);
                     } else if (!posts.loading) {
+                        // onDataUpdated has already re-filtered this page into the list; just
+                        // refresh the count and ask for the next one.
+                        updateSearchProgress();
                         posts.loading = true;
                         posts.loadMore(adapter, id, false);
                     }
@@ -399,10 +426,48 @@ public class ContributionsView extends Fragment implements ContributionRestoreSt
         }
     }
 
-    private void showSearchOverlay(boolean show) {
-        if (searchOverlay != null) {
-            searchOverlay.setVisibility(show ? View.VISIBLE : View.GONE);
+    /** Stops the background paging a search started, leaving the hits found so far on screen. */
+    public void cancelSearchPaging() {
+        endSearchPaging();
+    }
+
+    private void endSearchPaging() {
+        if (posts != null) {
+            posts.setOnLoadCompleteListener(null);
         }
+        showSearchProgress(false);
+    }
+
+    /**
+     * Shows or hides the strip that reports a search still paging the history.
+     *
+     * <p>It sits at the bottom of the screen rather than over the list, because the hits found so
+     * far are on screen the whole time now and covering them was the bug.
+     */
+    private void showSearchProgress(boolean show) {
+        if (searchProgress == null) {
+            return;
+        }
+        searchProgress.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (show) {
+            updateSearchProgress();
+        }
+    }
+
+    private void updateSearchProgress() {
+        if (searchProgress == null
+                || searchProgress.getVisibility() != View.VISIBLE
+                || searchProgressText == null
+                || adapter == null
+                || !isAdded()) {
+            return;
+        }
+        final int hits = adapter.getResultCount();
+        searchProgressText.setText(
+                getString(
+                        R.string.profile_search_progress,
+                        hits < 0 ? 0 : hits,
+                        posts == null || posts.posts == null ? 0 : posts.posts.size()));
     }
 
     /**
@@ -410,10 +475,7 @@ public class ContributionsView extends Fragment implements ContributionRestoreSt
      */
     public void clearSearchAndReload() {
         // Tear down any in-progress deep-search loading.
-        showSearchOverlay(false);
-        if (posts != null) {
-            posts.setOnLoadCompleteListener(null);
-        }
+        endSearchPaging();
         if (adapter != null) {
             adapter.clearFilter();
         }

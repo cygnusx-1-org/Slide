@@ -57,7 +57,14 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public GeneralPosts dataSet;
 
     // Search/filter state
-    @Nullable private ArrayList<Contribution> originalData = null;
+    /**
+     * The rows a search narrowed the listing down to, or {@code null} when no search is running.
+     *
+     * <p>The listing itself stays in {@code dataSet.posts} throughout. It used to be overwritten
+     * with this subset, which is why a search had to load the whole history before it could filter
+     * anything: the first filtered page became the list the next page appended to, and the rest of
+     * the listing was gone.
+     */
     @Nullable private ArrayList<Contribution> filteredData = null;
     @Nullable private String currentQuery = null;
     @Nullable private String currentWhere = null;
@@ -80,23 +87,27 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     private final int LOADING_SPINNER = 5;
+    /** Shown in place of the footer when a search is active and has matched nothing. */
+    private static final int NO_RESULTS = 7;
     private final int NO_MORE = 3;
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0 && !dataSet.posts.isEmpty()) {
+        final ArrayList<Contribution> rows = visible();
+        if (position == 0) {
             return SPACER;
-        } else if (!dataSet.posts.isEmpty()) {
-            position -= 1;
         }
-        // When filter is active, footer is not shown (handled in getItemCount)
-        // Otherwise show loading spinner or no more message
-        if (position == dataSet.posts.size() && !dataSet.posts.isEmpty() && !dataSet.nomore) {
-            return LOADING_SPINNER;
-        } else if (position == dataSet.posts.size() && dataSet.nomore) {
-            return NO_MORE;
+        position -= 1;
+        if (position == rows.size()) {
+            // "No results" is a conclusion, so it waits until there is nothing left to page. A
+            // search whose first hit is deep in the history would otherwise open by announcing it
+            // had found nothing, while the strip beside it was still counting posts.
+            if (hasActiveFilter() && rows.isEmpty() && dataSet.nomore) {
+                return NO_RESULTS;
+            }
+            return dataSet.nomore ? NO_MORE : LOADING_SPINNER;
         }
-        if (dataSet.posts.get(position) instanceof Comment) return COMMENT;
+        if (rows.get(position) instanceof Comment) return COMMENT;
 
         return 2;
     }
@@ -125,6 +136,11 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     LayoutInflater.from(viewGroup.getContext())
                             .inflate(R.layout.nomoreposts, viewGroup, false);
             return new SubmissionFooterViewHolder(v);
+        } else if (i == NO_RESULTS) {
+            View v =
+                    LayoutInflater.from(viewGroup.getContext())
+                            .inflate(R.layout.nosearchresults, viewGroup, false);
+            return new SubmissionFooterViewHolder(v);
         } else {
             View v = CreateCardView.CreateView(viewGroup);
             return new CardSubmissionViewHolder(v);
@@ -146,7 +162,7 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         int i = pos != 0 ? pos - 1 : pos;
 
         if (firstHolder instanceof CardSubmissionViewHolder holder) {
-            final Submission submission = (Submission) dataSet.posts.get(i);
+            final Submission submission = (Submission) visible().get(i);
             CreateCardView.resetColorCard(holder.itemView);
             if (submission.getSubredditName() != null)
                 CreateCardView.colorCard(
@@ -168,7 +184,7 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     titleText,
                                     firstHolder.itemView,
                                     ContributionAdapter.this,
-                                    dataSet.posts,
+                                    visible(),
                                     listView);
                             return true;
                         }
@@ -180,7 +196,7 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             mContext,
                             false,
                             false,
-                            dataSet.posts,
+                            visible(),
                             listView,
                             false,
                             false,
@@ -202,9 +218,19 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                final int pos = dataSet.posts.indexOf(submission);
-                                final Contribution old = dataSet.posts.get(pos);
-                                dataSet.posts.remove(submission);
+                                final int pos = visible().indexOf(submission);
+                                if (pos < 0) {
+                                    // Already gone -- a page that landed between this bind and
+                                    // this tap re-filtered the list out from under the row.
+                                    return;
+                                }
+                                final Contribution old = visible().get(pos);
+                                visible().remove(submission);
+                                // Unhiding has to drop the row from the listing too, or a search
+                                // that is cleared afterwards puts it straight back on screen.
+                                if (filteredData != null) {
+                                    dataSet.posts.remove(submission);
+                                }
                                 notifyItemRemoved(pos + 1);
 
                                 Hidden.undoHidden(old);
@@ -231,7 +257,7 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         } else if (firstHolder instanceof ProfileCommentViewHolder) {
             // IS COMMENT
             ProfileCommentViewHolder holder = (ProfileCommentViewHolder) firstHolder;
-            final Comment comment = (Comment) dataSet.posts.get(i);
+            final Comment comment = (Comment) visible().get(i);
 
             String scoreText;
             if (comment.isScoreHidden()) {
@@ -305,7 +331,7 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 // Highlight search terms in subreddit name
                 if (hasActiveFilter() && currentQuery != null) {
-                    String[] searchTerms = currentQuery.trim().toLowerCase(Locale.getDefault()).split("\\s+");
+                    String[] searchTerms = ContributionFilter.parseTerms(currentQuery);
                     for (String term : searchTerms) {
                         if (term.isEmpty()) continue;
                         Pattern pattern = Pattern.compile(Pattern.quote(term), Pattern.CASE_INSENSITIVE);
@@ -500,18 +526,31 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 
+    /**
+     * The rows on screen: the search's hits while one is active, otherwise the whole listing.
+     *
+     * <p>Every render path reads through here so that narrowing the view never narrows the listing
+     * the loader is still paging into.
+     */
+    private ArrayList<Contribution> visible() {
+        final ArrayList<Contribution> filtered = filteredData;
+        return filtered != null ? filtered : dataSet.posts;
+    }
+
     @Override
     public int getItemCount() {
-        if (dataSet.posts == null || dataSet.posts.isEmpty()) {
+        if (dataSet.posts == null) {
             return 0;
-        } else {
-            // When filter is active, don't show the loading/no more footer
-            if (hasActiveFilter()) {
-                return dataSet.posts.size() + 1; // Only include spacer, no footer
-            } else {
-                return dataSet.posts.size() + 2; // Include spacer and footer
-            }
         }
+        if (hasActiveFilter()) {
+            // A search that has matched nothing so far still needs a row to say so; without one the
+            // screen is blank, which reads exactly like a search that never finished.
+            return visible().isEmpty() ? 2 : visible().size() + 2;
+        }
+        if (dataSet.posts.isEmpty()) {
+            return 0;
+        }
+        return dataSet.posts.size() + 2; // Include spacer and footer
     }
 
     @Override
@@ -529,16 +568,33 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
      * Re-applies filter if one is active.
      */
     public void onDataUpdated() {
-        if (hasActiveFilter() && currentQuery != null && currentWhere != null) {
-            // Update original data to include newly loaded items
-            if (dataSet.posts != null && !dataSet.posts.isEmpty()) {
-                // Always update originalData with the new unfiltered data
-                originalData = new ArrayList<>(dataSet.posts);
-                // Re-apply filter to the new data
-                filteredData = ContributionFilter.filterContributions(originalData, currentQuery, currentWhere);
-                dataSet.posts = filteredData;
-            }
+        if (hasActiveFilter() && currentQuery != null && dataSet.posts != null) {
+            // Re-filter the listing as it now stands, so each page the loader brings in adds its
+            // hits to what is already on screen.
+            filteredData =
+                    ContributionFilter.filterContributions(
+                            dataSet.posts, currentQuery, currentWhere);
         }
+    }
+
+    /**
+     * As {@link #onDataUpdated()}, for a loader that knows which rows it just appended.
+     *
+     * <p>Filtering runs on the main thread and reads every field of every row, body text included.
+     * Re-filtering the whole listing after each page makes that quadratic in the length of the
+     * history -- a thousand-post tab paged in tens re-walks a hundred thousand rows -- so a load
+     * that only added to the list only filters what it added.
+     *
+     * @param added the rows this load appended, or {@code null} if it replaced the list instead
+     */
+    public void onDataUpdated(@Nullable List<Contribution> added) {
+        if (added == null || filteredData == null || !hasActiveFilter() || currentQuery == null) {
+            onDataUpdated();
+            return;
+        }
+        filteredData.addAll(
+                ContributionFilter.filterContributions(
+                        new ArrayList<>(added), currentQuery, currentWhere));
     }
 
     /**
@@ -557,32 +613,22 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         currentQuery = query;
         currentWhere = where;
 
-        // Store original data if this is the first filter
-        if (originalData == null && dataSet.posts != null && !dataSet.posts.isEmpty()) {
-            originalData = new ArrayList<>(dataSet.posts);
-        }
-
-        // Apply filter if we have data to filter
-        if (originalData != null && !originalData.isEmpty()) {
-            filteredData = ContributionFilter.filterContributions(originalData, query, where);
-            dataSet.posts = filteredData;
-            notifyDataSetChanged();
-        }
-        // If no data yet, the filter will be applied when data loads via onDataUpdated()
+        filteredData =
+                dataSet.posts == null
+                        ? new ArrayList<>()
+                        : ContributionFilter.filterContributions(dataSet.posts, query, where);
+        notifyDataSetChanged();
     }
 
     /**
      * Clears the active search filter and restores original data.
      */
     public void clearFilter() {
-        // Always clear the query state, even if originalData is null
-        // This prevents the filter from being re-applied when new data loads
+        // Always clear the query state, so the filter is not re-applied when new data loads
         currentQuery = null;
         currentWhere = null;
 
-        if (originalData != null) {
-            dataSet.posts = originalData;
-            originalData = null;
+        if (filteredData != null) {
             filteredData = null;
             notifyDataSetChanged();
         }
@@ -640,8 +686,8 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         String textString = text.toString();
 
-        // Split query into individual terms
-        String[] searchTerms = query.trim().toLowerCase(Locale.getDefault()).split("\\s+");
+        // Split the query the same way the matcher does, so a quoted phrase highlights as one run
+        String[] searchTerms = ContributionFilter.parseTerms(query);
 
         // Highlight each term
         for (String term : searchTerms) {

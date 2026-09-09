@@ -8,9 +8,11 @@ import me.edgan.redditslide.HasSeen;
 import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.SavedPostCache;
 import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.util.LogUtil;
 import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.Listing;
 import net.dean.jraw.models.Submission;
+import net.dean.jraw.paginators.Paginator;
 
 /** Created by ccrama on 9/17/2015. */
 public class ContributionPostsSaved extends ContributionPosts {
@@ -45,7 +47,8 @@ public class ContributionPostsSaved extends ContributionPosts {
 
     @Override
     public void loadMore(ContributionAdapter adapter, String subreddit, boolean reset) {
-        new LoadData(reset).execute(subreddit);
+        // See ContributionPosts.LOAD_EXECUTOR.
+        new LoadData(reset).executeOnExecutor(LOAD_EXECUTOR, subreddit);
     }
 
     public class LoadData extends ContributionPosts.LoadData {
@@ -108,6 +111,9 @@ public class ContributionPostsSaved extends ContributionPosts {
                     paginator.setSorting(SettingValues.getSubmissionSort(subreddit));
                     paginator.setTimePeriod(SettingValues.getSubmissionTimePeriod(subreddit));
                     if (category != null) paginator.setCategory(category);
+                    // See ContributionPosts: without this JRAW sends no limit and Reddit pages 25
+                    // at a time, which a whole-history search pays for four times over.
+                    paginator.setLimit(Paginator.RECOMMENDED_MAX_LIMIT);
                     // Picks up where the hibernated session left off; see ContributionPosts.
                     paginator.setResumeAfter(restoreAfterToken);
                 }
@@ -119,23 +125,40 @@ public class ContributionPostsSaved extends ContributionPosts {
                 final Listing<Contribution> page = paginator.next();
                 // See ContributionPosts: the paginator's cursor supersedes the restore token.
                 restoreAfterToken = null;
-                for (Contribution c : page) {
-                    if (c instanceof Submission) {
-                        Submission s = (Submission) c;
-                        if (!PostMatch.doesMatch(s)) {
-                            newData.add(s);
+                int emptyPages = 0;
+                Listing<Contribution> current = page;
+                while (true) {
+                    for (Contribution c : current) {
+                        if (c instanceof Submission) {
+                            Submission s = (Submission) c;
+                            if (!PostMatch.doesMatch(s)) {
+                                newData.add(s);
+                            }
+                        } else {
+                            newData.add(c);
                         }
-                    } else {
-                        newData.add(c);
                     }
+                    // See ContributionPosts: a page the user's filters emptied is not the end of
+                    // the listing, but onPostExecute cannot tell the two apart.
+                    if (!newData.isEmpty()
+                            || current.isEmpty()
+                            || !paginator.hasNext()
+                            || ++emptyPages >= MAX_EMPTY_PAGES) {
+                        break;
+                    }
+                    current = paginator.next();
                 }
 
                 HasSeen.setHasSeenContrib(newData);
 
-                warmPreviews(newData);
+                // See ContributionPosts: nothing a deep search pages past is ever shown.
+                if (!isDeepSearching()) {
+                    warmPreviews(newData);
+                }
 
                 return newData;
             } catch (Exception e) {
+                LogUtil.e(e, "Could not load the saved listing");
                 return null;
             }
         }
