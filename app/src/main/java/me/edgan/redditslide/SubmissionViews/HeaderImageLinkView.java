@@ -50,6 +50,7 @@ import me.edgan.redditslide.Views.TransparentTagTextView;
 import me.edgan.redditslide.util.CachedFirstImageBinder;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.GalleryTiles;
+import me.edgan.redditslide.util.ImageNotFoundException;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
@@ -132,6 +133,19 @@ public class HeaderImageLinkView extends RelativeLayout {
 
     private static final List<String> PLACEHOLDER_URLS =
             Arrays.asList("self", "default", "image", "nsfw", "spoiler", "");
+
+    // Captured per bind so an image failure arriving asynchronously can try the post's other
+    // preview host and, once nothing is left to try, draw the placeholder into the slot this bind
+    // was using. Read only from callbacks that first check bindSeq still holds the value it had
+    // when they were registered.
+    @Nullable private Submission boundSubmission;
+    private boolean boundFull;
+    private boolean boundForceThumb;
+
+    // Bumped by every bind. A post identifier is not enough on its own: a fling can rebind one
+    // holder away from a post and back again inside a frame, and a callback left over from the
+    // first of those binds would then match by name and paint over what the second one loaded.
+    private int bindSeq;
 
     // Reused across all loads — instance-free so it's safe as a singleton.
     private static final ImageLoadingListener TRANSPARENCY_LISTENER =
@@ -216,6 +230,10 @@ public class HeaderImageLinkView extends RelativeLayout {
         setVisibility(View.VISIBLE);
         String url = "";
         boolean forceThumb = false;
+        boundSubmission = submission;
+        boundFull = full;
+        boundForceThumb = forceThumb;
+        bindSeq++;
         thumbImage2.setImageResource(android.R.color.transparent);
         thumbImage2.setContentDescription(null);
         // View recycling: clear any transparency background from the previous bind.
@@ -807,6 +825,24 @@ public class HeaderImageLinkView extends RelativeLayout {
      */
     private void displayImageCachedFirst(
             @Nullable String url, @Nullable ImageView target, @Nullable ImageLoadingListener listener) {
+        if (url == null || url.isEmpty() || target == null) {
+            bindCandidate(url, target, listener);
+            return;
+        }
+
+        // Reddit serves a post's preview from exactly one of its two preview hosts and answers on
+        // the other with a 404, so a failure here is not necessarily the end of the road.
+        final List<String> candidates = PhotoLoader.previewFallbacks(url, boundSubmission, type);
+        if (candidates.isEmpty()) {
+            // Every candidate is already known to be gone; skip straight past the round-trip.
+            scheduleUnavailablePlaceholder();
+            return;
+        }
+        bindCandidateWithFallback(candidates, 0, target, listener);
+    }
+
+    private void bindCandidate(
+            @Nullable String url, @Nullable ImageView target, @Nullable ImageLoadingListener listener) {
         final ImageLoader loader =
                 ((Reddit) getContext().getApplicationContext()).getImageLoader();
         // The synchronous disk decode is worth it for the small thumbnail but not for the big lead
@@ -821,6 +857,110 @@ public class HeaderImageLinkView extends RelativeLayout {
                 listener,
                 PhotoLoader.feedDecodeSize(getContext()),
                 isThumb);
+    }
+
+    /**
+     * Bind {@code candidates.get(index)}, moving on to the next candidate if it fails and drawing
+     * the unavailable placeholder once they are all spent.
+     */
+    private void bindCandidateWithFallback(
+            final List<String> candidates,
+            final int index,
+            final ImageView target,
+            final @Nullable ImageLoadingListener listener) {
+        final String candidate = candidates.get(index);
+        loadedUrl = candidate;
+
+        // The bind this chain belongs to. A failure can arrive long after the holder has been
+        // recycled, and acting on it then would paint over whatever the row shows now.
+        final int seq = bindSeq;
+
+        bindCandidate(
+                candidate,
+                target,
+                new ImageLoadingListener() {
+                    @Override
+                    public void onLoadingStarted(@Nullable String imageUri, @Nullable View view) {
+                        if (listener != null) listener.onLoadingStarted(imageUri, view);
+                    }
+
+                    @Override
+                    public void onLoadingFailed(
+                            String imageUri, @Nullable View view, FailReason failReason) {
+                        if (seq != bindSeq) {
+                            return;
+                        }
+                        // Judge each candidate on its own failure. Reddit saying this one is gone is
+                        // worth remembering; a candidate that merely could not be reached is not, and
+                        // condemning the whole chain on the last one's verdict would blacklist a URL
+                        // that only lost its network.
+                        if (failReason.getCause() instanceof ImageNotFoundException) {
+                            PhotoLoader.markPreviewDead(candidate);
+                        }
+                        if (index + 1 < candidates.size()) {
+                            LogUtil.v(
+                                    "Preview failed for "
+                                            + imageUri
+                                            + "; trying "
+                                            + candidates.get(index + 1));
+                            bindCandidateWithFallback(candidates, index + 1, target, listener);
+                            return;
+                        }
+                        if (listener != null) listener.onLoadingFailed(imageUri, view, failReason);
+                        scheduleUnavailablePlaceholder();
+                    }
+
+                    @Override
+                    public void onLoadingComplete(
+                            @Nullable String imageUri, @Nullable View view, @Nullable Bitmap loadedBitmap) {
+                        if (listener != null) listener.onLoadingComplete(imageUri, view, loadedBitmap);
+                    }
+
+                    @Override
+                    public void onLoadingCancelled(String imageUri, @Nullable View view) {
+                        if (listener != null) listener.onLoadingCancelled(imageUri, view);
+                    }
+                });
+    }
+
+    /**
+     * Draw the placeholder once the bind that failed has finished.
+     *
+     * <p>Not inline: the callers of {@link #displayImageCachedFirst} set the row's visibility
+     * <em>after</em> handing the image over, so applying it during the bind would be silently undone
+     * a line later. Deferring also covers the loader failing a load on the calling thread.
+     */
+    private void scheduleUnavailablePlaceholder() {
+        final int seq = bindSeq;
+        post(
+                () -> {
+                    if (seq == bindSeq) {
+                        applyUnavailablePlaceholder();
+                    }
+                });
+    }
+
+    /**
+     * No image could be loaded for this post: collapse the lead image and mark the thumbnail slot
+     * with the generic tile, exactly as the NSFW and spoiler paths do, so the row lands on the same
+     * pixels those do rather than on a blank box or Reddit's own "probably deleted" graphic.
+     *
+     * <p>Package-private so a test can assert the resulting row without standing up an image loader
+     * and a network to fail against.
+     */
+    void applyUnavailablePlaceholder() {
+        final Submission submission = boundSubmission;
+        if (submission == null) {
+            return;
+        }
+        backdrop.setBackground(null);
+        thumbImage2.setBackground(null);
+        handleSpecialSubmissionType(submission, boundFull, boundForceThumb, R.drawable.web);
+        // handleSpecialSubmissionType hides the thumbnail instead of drawing into it for a self post
+        // on the comments screen, and an unread description on a hidden view is just noise.
+        if (thumbUsed) {
+            thumbImage2.setContentDescription(getContext().getString(R.string.image_unavailable));
+        }
     }
 
     private void handleImageType(Submission submission, @Nullable String baseSub, boolean full, boolean forceThumb, boolean loadLq) {

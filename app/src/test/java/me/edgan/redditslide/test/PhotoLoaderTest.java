@@ -7,7 +7,12 @@ import static org.junit.Assert.assertNotNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Arrays;
+import java.util.List;
+import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.util.PhotoLoader;
+import net.dean.jraw.models.Submission;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -23,6 +28,12 @@ public class PhotoLoaderTest {
 
     private static JsonNode node(String json) throws Exception {
         return MAPPER.readTree(json);
+    }
+
+    /** The dead-preview memo is process-wide, so a leftover entry would skew a later test. */
+    @Before
+    public void forgetDeadPreviews() {
+        PhotoLoader.clearDeadPreviews();
     }
 
     // ---------------------------------------------------------------------
@@ -51,6 +62,96 @@ public class PhotoLoaderTest {
         assertThat(PhotoLoader.getValidThumbnailUrl(node("{}")), is(nullValue()));
         assertThat(PhotoLoader.getValidThumbnailUrl(node("{\"thumbnail\":null}")), is(nullValue()));
         assertThat(PhotoLoader.getValidThumbnailUrl(null), is(nullValue()));
+    }
+
+    // ---------------------------------------------------------------------
+    // previewFallbacks
+    // ---------------------------------------------------------------------
+
+    private static final String PREVIEW =
+            "https://preview.redd.it/abc.jpg?width=216&crop=smart&auto=webp&s=deadbeef";
+    private static final String EXTERNAL =
+            "https://external-preview.redd.it/abc.jpg?width=216&crop=smart&auto=webp&s=deadbeef";
+
+    @Test
+    public void previewFallbacks_offersTheOtherRedditHost() {
+        // Reddit holds a given preview asset on exactly one of the two hosts and 404s on the other,
+        // and which one is not predictable from the post, so both have to be tried.
+        assertThat(
+                PhotoLoader.previewFallbacks(PREVIEW, null, null),
+                is(Arrays.asList(PREVIEW, EXTERNAL)));
+        assertThat(
+                PhotoLoader.previewFallbacks(EXTERNAL, null, null),
+                is(Arrays.asList(EXTERNAL, PREVIEW)));
+    }
+
+    @Test
+    public void previewFallbacks_keepsTheSignatureAndSizing() {
+        // Only the host may change: the s= signature validates on either host, but the sizing
+        // parameters are part of what is signed.
+        final List<String> candidates = PhotoLoader.previewFallbacks(PREVIEW, null, null);
+        assertThat(candidates.size(), is(2));
+        assertThat(
+                candidates.get(1),
+                is("https://external-preview.redd.it/abc.jpg?width=216&crop=smart&auto=webp&s=deadbeef"));
+    }
+
+    @Test
+    public void previewFallbacks_leavesOtherHostsAlone() {
+        final String thumb = "https://b.thumbs.redditmedia.com/x.jpg";
+        assertThat(PhotoLoader.previewFallbacks(thumb, null, null), is(Arrays.asList(thumb)));
+        final String imgur = "https://i.imgur.com/x.png";
+        assertThat(PhotoLoader.previewFallbacks(imgur, null, null), is(Arrays.asList(imgur)));
+    }
+
+    @Test
+    public void previewFallbacks_addsTheOriginalOnlyForImagePosts() throws Exception {
+        final Submission submission =
+                new Submission(
+                        node(
+                                "{\"name\":\"t3_abc\",\"url\":\"https://i.redd.it/abc.jpg\","
+                                        + "\"domain\":\"i.redd.it\",\"saved\":false}"));
+
+        assertThat(
+                PhotoLoader.previewFallbacks(PREVIEW, submission, ContentType.Type.IMAGE),
+                is(Arrays.asList(PREVIEW, EXTERNAL, "https://i.redd.it/abc.jpg")));
+
+        // A link post's own URL is a web page, not an image, so it is not a fallback.
+        assertThat(
+                PhotoLoader.previewFallbacks(PREVIEW, submission, ContentType.Type.LINK),
+                is(Arrays.asList(PREVIEW, EXTERNAL)));
+    }
+
+    @Test
+    public void previewFallbacks_dropsDuplicatesAndPlaceholderValues() throws Exception {
+        // An image post whose preview URL is already the original: one candidate, not two.
+        final Submission submission =
+                new Submission(
+                        node(
+                                "{\"name\":\"t3_abc\",\"saved\":false,\"url\":\""
+                                        + PREVIEW
+                                        + "\"}"));
+        assertThat(
+                PhotoLoader.previewFallbacks(PREVIEW, submission, ContentType.Type.IMAGE),
+                is(Arrays.asList(PREVIEW, EXTERNAL)));
+
+        assertThat(PhotoLoader.previewFallbacks("default", null, null).isEmpty(), is(true));
+        assertThat(PhotoLoader.previewFallbacks("", null, null).isEmpty(), is(true));
+        assertThat(PhotoLoader.previewFallbacks(null, null, null).isEmpty(), is(true));
+    }
+
+    @Test
+    public void previewFallbacks_skipUrlsThatAlreadyFailed() {
+        assertThat(PhotoLoader.isPreviewDead(PREVIEW), is(false));
+        PhotoLoader.markPreviewDead(PREVIEW);
+        assertThat(PhotoLoader.isPreviewDead(PREVIEW), is(true));
+
+        // Only the recorded URL is skipped; its twin is still worth a try on a fresh card.
+        assertThat(
+                PhotoLoader.previewFallbacks(PREVIEW, null, null), is(Arrays.asList(EXTERNAL)));
+
+        PhotoLoader.markPreviewDead(EXTERNAL);
+        assertThat(PhotoLoader.previewFallbacks(PREVIEW, null, null).isEmpty(), is(true));
     }
 
     // ---------------------------------------------------------------------

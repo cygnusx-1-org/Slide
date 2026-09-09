@@ -16,7 +16,9 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -439,6 +441,96 @@ public class PhotoLoader {
         return null;
     }
 
+    // --- Preview fallbacks ----------------------------------------------------------------------
+
+    private static final String PREVIEW_HOST = "://preview.redd.it/";
+    private static final String EXTERNAL_PREVIEW_HOST = "://external-preview.redd.it/";
+
+    /**
+     * URLs Reddit has said are gone, so a re-bind of the same card skips straight past them instead
+     * of repeating the same 404 on every scroll-back. Only a genuine not-found puts a URL here — a
+     * URL that merely failed to load is retried, or a tunnel would blank the feed until restart.
+     *
+     * <p>Bounded, oldest inserted evicted first. {@code contains} does not count as an access for
+     * LinkedHashMap's access ordering, so insertion order is what this can actually maintain; the
+     * cap is generous next to a feed page and irrelevant beside the image caches either way.
+     */
+    private static final Set<String> DEAD_PREVIEW_URLS =
+            Collections.synchronizedSet(
+                    Collections.newSetFromMap(
+                            new LinkedHashMap<String, Boolean>(64, 0.75f, false) {
+                                @Override
+                                protected boolean removeEldestEntry(
+                                        final Map.Entry<String, Boolean> eldest) {
+                                    return size() > 512;
+                                }
+                            }));
+
+    /** Record that every candidate for {@code url} failed, so later binds don't retry them. */
+    public static void markPreviewDead(final @Nullable String url) {
+        if (url != null && !url.isEmpty()) {
+            DEAD_PREVIEW_URLS.add(url);
+        }
+    }
+
+    /** Whether {@code url} is known to have exhausted its fallbacks. Visible for testing. */
+    public static boolean isPreviewDead(final @Nullable String url) {
+        return url != null && DEAD_PREVIEW_URLS.contains(url);
+    }
+
+    /** Visible for testing: the dead-URL memo is process-wide and outlives an individual test. */
+    public static void clearDeadPreviews() {
+        DEAD_PREVIEW_URLS.clear();
+    }
+
+    /**
+     * Every URL worth trying for {@code url}, in order, most likely first.
+     *
+     * <p>Reddit serves a post's preview asset from exactly one of preview.redd.it and
+     * external-preview.redd.it — never both — and which one is not predictable from the post: recent
+     * and year-old posts land on either host. The missing host answers with an HTTP 404 whose body is
+     * a PNG reading "If you are looking for an image, it was probably deleted.", so guessing wrong
+     * used to render Reddit's error page as the post's picture.
+     *
+     * <p>{@link JsonUtil#normalizeRedditPreviewHost} still picks the primary, which keeps today's
+     * behaviour for the posts it already got right; this adds the other host behind it, plus the
+     * post's own image URL for image posts, whose preview can be missing while the original is fine.
+     * The signature and any sizing parameters ride along unchanged — they are accepted by both hosts.
+     */
+    public static List<String> previewFallbacks(
+            final @Nullable String url,
+            final @Nullable Submission submission,
+            final @Nullable ContentType.Type type) {
+        final List<String> candidates = new ArrayList<>(3);
+        addCandidate(candidates, url);
+
+        if (url != null) {
+            if (url.contains(PREVIEW_HOST)) {
+                addCandidate(candidates, url.replace(PREVIEW_HOST, EXTERNAL_PREVIEW_HOST));
+            } else if (url.contains(EXTERNAL_PREVIEW_HOST)) {
+                addCandidate(candidates, url.replace(EXTERNAL_PREVIEW_HOST, PREVIEW_HOST));
+            }
+        }
+
+        // An image post whose preview is gone still has its original upload. Last, because it is the
+        // full-resolution file where the others are display-sized previews.
+        if (submission != null && type == ContentType.Type.IMAGE) {
+            addCandidate(candidates, submission.getUrl());
+        }
+
+        return candidates;
+    }
+
+    private static void addCandidate(final List<String> candidates, final @Nullable String url) {
+        if (url != null
+                && !url.isEmpty()
+                && !PLACEHOLDER_URLS.contains(url)
+                && !candidates.contains(url)
+                && !DEAD_PREVIEW_URLS.contains(url)) {
+            candidates.add(url);
+        }
+    }
+
     // --- Shared feed-image URL selection ---------------------------------------------------------
     // HeaderImageLinkView delegates to these so the preloader warms exactly the entry the card
     // displays. Keep the two in lock-step; divergence reintroduces first-view pop-in.
@@ -661,6 +753,11 @@ public class PhotoLoader {
 
     private static void loadImage(
             final Context context, final WarmTarget target, final boolean warmMemory) {
+        // Warming a URL Reddit has already said is gone just repeats its 404 on every page load,
+        // and it can never populate the cache the bind is about to look in.
+        if (isPreviewDead(target.url)) {
+            return;
+        }
         final Reddit appContext = (Reddit) context.getApplicationContext();
         appContext
                 .getImageLoader()
@@ -685,7 +782,7 @@ public class PhotoLoader {
         }
         final int fullW = feedImageWidth(context, true);
         final String url = resolveFeedImageUrl(context, submission, false, fullW);
-        if (url == null || PLACEHOLDER_URLS.contains(url)) {
+        if (url == null || PLACEHOLDER_URLS.contains(url) || isPreviewDead(url)) {
             return;
         }
         ((Reddit) context.getApplicationContext())

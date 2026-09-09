@@ -69,6 +69,10 @@ public class ImageLoaderUtils {
         } else {
             discCache = new UnlimitedDiskCache(dir);
         }
+        // Every read of the cache goes through this, so a copy of Reddit's deleted-image graphic
+        // left over from before the downloader started rejecting 404s is dropped once, wherever it
+        // is first asked for, and refetched rather than displayed or saved.
+        discCache = new PlaceholderFilteringDiskCache(discCache);
 
         options =
                 new DisplayImageOptions.Builder()

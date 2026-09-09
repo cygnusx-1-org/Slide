@@ -185,6 +185,104 @@ public class HeaderImageLinkViewTest {
         assertThat(holder.thumbimage.getVisibility(), is(View.GONE));
     }
 
+    @Test
+    public void anUnloadableImageCollapsesToThePlaceholderThumbnail() throws Exception {
+        // Reddit answers a missing preview with a 404 whose body is a PNG reading "If you are
+        // looking for an image, it was probably deleted."; once that is refused and the other
+        // preview host has been tried, the row shows the generic tile instead of a blank box.
+        final TestActivity activity = createActivity();
+        final SubmissionViewHolder holder = inflateHolder(activity, R.layout.submission_list, false);
+        final ObjectNode node = (ObjectNode) readFixture("tumblrVideoNoPreview.json").deepCopy();
+        node.put("name", "t3_dead_preview");
+        node.put("url", "https://www.reddit.com/r/pics/comments/abc/title/");
+        node.put("url_overridden_by_dest", "https://www.reddit.com/r/pics/comments/abc/title/");
+        node.put("domain", "reddit.com");
+        final Submission submission = new Submission(node);
+
+        holder.leadImage.setSubmission(
+                submission,
+                false,
+                submission.getSubredditName(),
+                ContentType.getContentType(submission));
+        holder.leadImage.applyUnavailablePlaceholder();
+
+        final ImageView thumbnail = (ImageView) holder.thumbimage;
+        assertThat(holder.leadImage.getVisibility(), is(View.GONE));
+        assertThat(thumbnail.getVisibility(), is(View.VISIBLE));
+        assertThat(
+                thumbnail.getContentDescription().toString(),
+                is(activity.getString(R.string.image_unavailable)));
+        final Drawable drawable = thumbnail.getDrawable();
+        assertNotNull(drawable);
+        final ShadowDrawable shadowDrawable = Shadow.extract(drawable);
+        assertThat(shadowDrawable.getCreatedFromResId(), is(R.drawable.web));
+        // A tap still has somewhere to go.
+        assertThat(holder.leadImage.loadedUrl, is(submission.getUrl()));
+    }
+
+    @Test
+    public void thePlaceholderLandsOnTheSamePixelsAsAnNsfwRow() throws Exception {
+        // Two states of one row: the placeholder reuses the NSFW/spoiler path precisely so the
+        // thumbnail does not move between them.
+        final TestActivity activity = createActivity();
+        final SubmissionViewHolder holder = inflateHolder(activity, R.layout.submission_list, false);
+        final ObjectNode node = (ObjectNode) readFixture("tumblrVideoNoPreview.json").deepCopy();
+        node.put("name", "t3_nsfw_row");
+        node.put("url", "https://example.org/article");
+        node.put("url_overridden_by_dest", "https://example.org/article");
+        node.put("domain", "example.org");
+        node.put("over_18", true);
+        final Submission nsfw = new Submission(node);
+
+        SettingValues.hideNSFWCollection = false;
+        holder.leadImage.setSubmission(
+                nsfw, false, nsfw.getSubredditName(), ContentType.getContentType(nsfw));
+        final ImageView thumbnail = (ImageView) holder.thumbimage;
+        final int nsfwVisibility = thumbnail.getVisibility();
+        final int nsfwLeadVisibility = holder.leadImage.getVisibility();
+
+        final ObjectNode deadNode = (ObjectNode) node.deepCopy();
+        deadNode.put("name", "t3_dead_row");
+        deadNode.put("over_18", false);
+        final Submission dead = new Submission(deadNode);
+        holder.leadImage.setSubmission(
+                dead, false, dead.getSubredditName(), ContentType.getContentType(dead));
+        holder.leadImage.applyUnavailablePlaceholder();
+
+        assertThat(thumbnail.getVisibility(), is(nsfwVisibility));
+        assertThat(holder.leadImage.getVisibility(), is(nsfwLeadVisibility));
+        assertThat(thumbnail.getLayoutParams().width, is(activity.getResources()
+                .getDimensionPixelSize(R.dimen.big_thumbnail_width)));
+    }
+
+    @Test
+    public void thePlaceholderFollowsTheRecycledRowsCurrentPost() throws Exception {
+        // The failure that triggers the placeholder arrives asynchronously, so it must describe the
+        // post the holder is bound to now, not the one that was on screen when the load started.
+        final TestActivity activity = createActivity();
+        final SubmissionViewHolder holder = inflateHolder(activity, R.layout.submission_list, false);
+
+        final ObjectNode firstNode = (ObjectNode) readFixture("tumblrVideoNoPreview.json").deepCopy();
+        firstNode.put("name", "t3_first");
+        firstNode.put("url", "https://example.org/first");
+        firstNode.put("url_overridden_by_dest", "https://example.org/first");
+        firstNode.put("domain", "example.org");
+        final Submission first = new Submission(firstNode);
+        holder.leadImage.setSubmission(
+                first, false, first.getSubredditName(), ContentType.getContentType(first));
+
+        final ObjectNode secondNode = (ObjectNode) firstNode.deepCopy();
+        secondNode.put("name", "t3_second");
+        secondNode.put("url", "https://example.org/second");
+        secondNode.put("url_overridden_by_dest", "https://example.org/second");
+        final Submission second = new Submission(secondNode);
+        holder.leadImage.setSubmission(
+                second, false, second.getSubredditName(), ContentType.getContentType(second));
+
+        holder.leadImage.applyUnavailablePlaceholder();
+        assertThat(holder.leadImage.loadedUrl, is(second.getUrl()));
+    }
+
     private static TestActivity createActivity() {
         final ActivityController<TestActivity> controller =
                 Robolectric.buildActivity(TestActivity.class);
