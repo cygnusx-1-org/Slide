@@ -6,9 +6,7 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 7.9.9 / 2026-9-8
 ===========
-* Added a "Settings | General | Hibernate | Resume where I left off" setting
-
-This new feature, when active, doesn't take you to the first tab with an auto-refresh when the app is closed and re-opened. It takes you back to exactly where you were in the app before. This means the feed/tab, comments, settings, the multireddit screen, You, etc. It also covers the scrolling position. So if you are deep in the feed or the comments you don't lose your place.
+* Fixed some posts displaying a deleted image message
 
 7.9.8 / 2026-9-5
 ===========
