@@ -645,13 +645,22 @@ tasks.named('check') { dependsOn 'verifyRoborazziWithGPlayDebug' }
 // applicationVariants.outputs.outputFileName / bundle rename was removed by the new DSL).
 // Naming rules preserved from before: withGPlay -> "slide-<versionName>", noGPlay ->
 // "slide-noGPlay-<versionName>". versionName is androidGitVersion.name(), constant across variants.
+// Debug builds get a "-debug" tag so they can't be mistaken for (or overwrite) a release file. It
+// goes before androidGitVersion's trailing "-dirty" (default format %tag%%-count%%-gcommit%%-dirty%)
+// so the name reads slide-<version>-debug-dirty rather than slide-<version>-dirty-debug.
 def bundleBaseNames = [:]
 androidComponents {
     onVariants(selector().all()) { variant ->
         def flavor = variant.flavorName
+        def versionName = android.defaultConfig.versionName
+        if (variant.buildType == "debug") {
+            versionName = versionName.endsWith("-dirty")
+                ? versionName.substring(0, versionName.length() - "-dirty".length()) + "-debug-dirty"
+                : "${versionName}-debug".toString()
+        }
         def baseName = (flavor != null && flavor.contains("withGPlay"))
-            ? "slide-${android.defaultConfig.versionName}".toString()
-            : "slide-${flavor}-${android.defaultConfig.versionName}".toString()
+            ? "slide-${versionName}".toString()
+            : "slide-${flavor}-${versionName}".toString()
         bundleBaseNames[variant.name] = baseName
 
         // Rename the APK (Slide ships a single universal APK per variant; no ABI splits).
