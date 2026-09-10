@@ -192,8 +192,6 @@
     <string name="type_nsfw_album">NSWF-album</string>
     <string name="type_img">Billede</string>
     <string name="type_nsfw_video">NSWF-video</string>
-    <string name="type_emb">Indlejret</string>
-    <string name="type_nsfw_emb">NSWF-indlejring</string>
     <string name="type_imgur">Imgur-indhold</string>
     <string name="type_nsfw_imgur">NSWF-indhold fra Imgur</string>
     <string name="type_external">Ekstern</string>

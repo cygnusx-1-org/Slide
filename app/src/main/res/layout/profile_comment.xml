@@ -100,16 +100,48 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:visibility="invisible" />
-        <ImageView
-                android:id="@+id/mod"
-                style="@style/Ripple.List"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:visibility="gone"
-                android:layout_marginLeft="-8dp"
-                android:padding="8dp"
-                android:tag="tintactionbar"
-                app:tint="?attr/tintColor"
-                app:srcCompat="@drawable/ic_verified_user" />
+        <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="-16dp">
+
+            <ImageView
+                    android:id="@+id/mod"
+                    style="@style/Ripple.List"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:visibility="gone"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="-8dp"
+                    android:padding="8dp"
+                    android:tag="tintactionbar"
+                    app:tint="?attr/tintColor"
+                    app:srcCompat="@drawable/ic_verified_user" />
+
+            <!--
+                Same overflow the submission cards carry (submission_list.xml @id/menu): same size,
+                padding, tint and icon, so a comment row and a post row put it on the same pixels.
+                Gone by default because ModeratorAdapter inflates this layout too and has no sheet
+                to open; ContributionAdapter is what shows it.
+
+                The wrapper's negative right margin cancels this card's 16dp content padding,
+                which the submission cards do not have. Without it the comment's overflow sits
+                16dp left of the post's and the column of buttons visibly steps in and out down
+                the list. It goes on the wrapper rather than the button because a button pushed
+                past its parent's edge is clipped instead of moved.
+            -->
+            <ImageView
+                    android:id="@+id/menu"
+                    style="@style/Ripple.List"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:visibility="gone"
+                    android:layout_alignParentRight="true"
+                    android:padding="8dp"
+                    android:tag="tintactionbar"
+                    app:tint="?attr/tintColor"
+                    android:contentDescription="@string/btn_menu"
+                    app:srcCompat="@drawable/ic_more_vert" />
+        </RelativeLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

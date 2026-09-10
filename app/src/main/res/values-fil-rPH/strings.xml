@@ -203,8 +203,6 @@
     <string name="type_img">Imahe</string>
     <string name="type_videos">Mga video</string>
     <string name="type_nsfw_video">NSFW na video</string>
-    <string name="type_emb">Naka-embed</string>
-    <string name="type_nsfw_emb">Naka-embed na NSFW</string>
     <string name="type_imgur">Nilalaman ng Imgur</string>
     <string name="type_nsfw_imgur">NSFW na nilalaman ng Imgur</string>
     <string name="type_external">Panlabas</string>

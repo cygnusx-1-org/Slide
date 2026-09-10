@@ -271,8 +271,6 @@
     <string name="type_img">Imagem</string>
     <string name="type_videos">Vídeos</string>
     <string name="type_nsfw_video">Vídeo NSFW</string>
-    <string name="type_emb">Incorporado</string>
-    <string name="type_nsfw_emb">NSFW incorporado</string>
     <string name="type_imgur">Conteúdo imgur</string>
     <string name="type_nsfw_imgur">Conteúdo NSFW Imgur</string>
     <string name="type_external">Externo</string>
@@ -355,7 +353,6 @@
     <string name="btn_reset">Restaurar</string>
     <string name="btn_save">Gravar</string>
     <string name="btn_submit">Enviar</string>
-    <string name="btn_sure">Claro!</string>
     <string name="btn_undo">Desfazer</string>
     <string name="btn_yes">Sim</string>
     <string name="btn_yes_exclaim">Sim!</string>
@@ -655,12 +652,6 @@
     <string name="reorder_loading_title">A carregar os seus subreddits</string>
     <string name="reorder_url_err">URL inválido</string>
     <!-- Save categories -->
-    <string name="category_set_name">Definir nome da categoria</string>
-    <string name="category_set_name_hint">Nome da categoria</string>
-    <string name="category_categorize">CATEGORIZAR</string>
-    <string name="category_set_error">Erro ao definir categoria</string>
-    <string name="profile_category_loading">A carregar categorias</string>
-    <string name="profile_category_select">Selecionar categoria</string>
     <!-- Setting subheaders -->
     <string name="sorting">Ordenação</string>
     <string name="display">Ecrã</string>
@@ -880,9 +871,6 @@
     <string name="save_for_offline_viewing">Gravar a publicação para visualização offline</string>
     <string name="btn_collapse_children_all">Retrair comentários subsequentes</string>
     <string name="btn_open_content">Abrir conteúdo</string>
-    <string name="load_videos_internally">Abrir vídeos internamente</string>
-    <string name="load_videos_internally_content">Gostaria de experimentar o plugin de vídeo do Slide? Isso permitirá ver os vídeos (como YouTube) internamente!</string>
-    <string name="do_not_show_again">Não mostrar novamente</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Escrever texto a filtrar (subreddit:flair_text), pressione enviar para adicionar</string>
     <string name="datasave_always">Dados móveis e acesso Wi-Fi</string>
     <string name="datasave_mobile">Dados móveis</string>

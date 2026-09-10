@@ -271,8 +271,6 @@
     <string name="type_img">Resim</string>
     <string name="type_videos">Videolar</string>
     <string name="type_nsfw_video">NSFW video</string>
-    <string name="type_emb">Gömülmüş</string>
-    <string name="type_nsfw_emb">NSFW gömülü</string>
     <string name="type_imgur">Imgur içeriği</string>
     <string name="type_nsfw_imgur">NSFW Imgur içeriği</string>
     <string name="type_external">Harici</string>
@@ -355,7 +353,6 @@
     <string name="btn_reset">Sıfırla</string>
     <string name="btn_save">Kaydet</string>
     <string name="btn_submit">Gönder</string>
-    <string name="btn_sure">Olur!</string>
     <string name="btn_undo">Geri al</string>
     <string name="btn_yes">Evet</string>
     <string name="btn_yes_exclaim">Evet!</string>
@@ -665,13 +662,6 @@
     <string name="reorder_loading_title">Subredditleriniz yükleniyor</string>
     <string name="reorder_url_err">Adres geçersiz</string>
     <!-- Save categories -->
-    <string name="category_set_name">Kategori adını belirle</string>
-    <string name="category_set_name_hint">Kategori adı</string>
-    <string name="category_categorize">KATEGORİLERE AYIR</string>
-    <string name="category_set_error">Kategori ayarlanırken hata oluştu</string>
-    <string name="profile_category_loading">Kategoriler yükleniyor</string>
-    <string name="profile_category_select">Kategori seç</string>
-    <string name="profile_saved_categories">Kayıtlı kategoriler</string>
     <!-- Setting subheaders -->
     <string name="sorting">Sıralama</string>
     <string name="display">Görünüm</string>
@@ -899,9 +889,6 @@
     <string name="save_for_offline_viewing">Çevrimdışı görüntüleme için gönderileri kaydedin</string>
     <string name="btn_collapse_children_all">Alt yorumları daralt</string>
     <string name="btn_open_content">İçeriği aç</string>
-    <string name="load_videos_internally">Videoları uygulama içinde yükle</string>
-    <string name="load_videos_internally_content">Slayt Video eklentisini denemek ister misiniz? Bu eklenti video (YouTube gibi) uygulama içinde görüntülemenize olanak sağlayacak!</string>
-    <string name="do_not_show_again">Tekrar gösterme</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Filtrelemek için metin girin (subreddit:etiket_metin), eklemek için tıklayın</string>
     <string name="datasave_always">Mobil veri ve Wi-Fi</string>
     <string name="datasave_mobile">Mobil veri</string>

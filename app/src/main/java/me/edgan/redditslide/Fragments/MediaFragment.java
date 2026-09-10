@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import me.edgan.redditslide.Activities.Album;
 import me.edgan.redditslide.Activities.AlbumPager;
 import me.edgan.redditslide.Activities.CommentsScreen;
-import me.edgan.redditslide.Activities.FullscreenVideo;
 import me.edgan.redditslide.Activities.GalleryImage;
 import me.edgan.redditslide.Activities.MediaView;
 import me.edgan.redditslide.Activities.RedditGallery;
@@ -198,7 +197,6 @@ public class MediaFragment extends BaseMediaFragment {
             case SELF:
                 typeImage.setImageResource(R.drawable.ic_text_fields);
                 break;
-            case EMBEDDED:
             case VIDEO:
                 typeImage.setImageResource(R.drawable.ic_play_arrow);
                 rootView.findViewById(R.id.submission_image).setAlpha(0.5f);
@@ -353,28 +351,9 @@ public class MediaFragment extends BaseMediaFragment {
                                     } else {
                                         LinkUtil.openExternally(submission.getUrl());
                                     }
-
-                                case EMBEDDED:
-                                    String data =
-                                            submission
-                                                    .getDataNode()
-                                                    .path("media_embed")
-                                                    .path("content")
-                                                    .asText();
-                                    // No media_embed content to play: FullscreenVideo would show a
-                                    // blank WebView, so leave it to openExternally below.
-                                    if (SettingValues.video && !data.isEmpty()) {
-                                        LinkUtil.openExternally(submission.getUrl());
-                                        {
-                                            Intent i =
-                                                    new Intent(
-                                                            contextActivity, FullscreenVideo.class);
-                                            i.putExtra(FullscreenVideo.EXTRA_HTML, data);
-                                            contextActivity.startActivity(i);
-                                        }
-                                    } else {
-                                        LinkUtil.openExternally(submission.getUrl());
-                                    }
+                                    // Streamable used to fall through into the case below it,
+                                    // which opened the url a second time. It has always been its
+                                    // own case; now it ends like one.
                                     break;
                                 case REDDIT:
                                     SubmissionThumbnailHelper.openRedditContent(

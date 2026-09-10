@@ -21,7 +21,6 @@ import java.util.List;
 import me.edgan.redditslide.Activities.Album;
 import me.edgan.redditslide.Activities.AlbumPager;
 import me.edgan.redditslide.Activities.CommentsScreen;
-import me.edgan.redditslide.Activities.FullscreenVideo;
 import me.edgan.redditslide.Activities.Gallery;
 import me.edgan.redditslide.Activities.GalleryImage;
 import me.edgan.redditslide.Activities.MediaView;
@@ -37,7 +36,6 @@ import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.BottomSheet;
-import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.GalleryTiles;
 import me.edgan.redditslide.util.LinkUtil;
@@ -136,7 +134,6 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 case SELF:
                     holder.type.setImageResource(R.drawable.ic_text_fields);
                     break;
-                case EMBEDDED:
                 case GIF:
                 case STREAMABLE:
                 case VIDEO:
@@ -283,25 +280,6 @@ public class GalleryView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                                 submission,
                                                 null,
                                                 holder.getBindingAdapterPosition());
-                                        break;
-                                    case EMBEDDED:
-                                        if (SettingValues.video) {
-                                            String data =
-                                                    CompatUtil.fromHtml(
-                                                                    submission
-                                                                            .getDataNode()
-                                                                            .path("media_embed")
-                                                                            .path("content")
-                                                                            .asText())
-                                                            .toString();
-                                            {
-                                                Intent i = new Intent(main, FullscreenVideo.class);
-                                                i.putExtra(FullscreenVideo.EXTRA_HTML, data);
-                                                main.startActivity(i);
-                                            }
-                                        } else {
-                                            LinkUtil.openExternally(submission.getUrl());
-                                        }
                                         break;
                                     case REDDIT:
                                         SubmissionThumbnailHelper.openRedditContent(

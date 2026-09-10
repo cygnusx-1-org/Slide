@@ -33,7 +33,6 @@ public class ContentTypeLabelTest {
         assertEquals(R.string.type_nsfw_xkcd, ContentType.getContentID(Type.XKCD, true));
         assertEquals(
                 R.string.type_nsfw_deviantart, ContentType.getContentID(Type.DEVIANTART, true));
-        assertEquals(R.string.type_nsfw_emb, ContentType.getContentID(Type.EMBEDDED, true));
         assertEquals(R.string.type_nsfw_link, ContentType.getContentID(Type.EXTERNAL, true));
         assertEquals(R.string.type_nsfw_link, ContentType.getContentID(Type.LINK, true));
         assertEquals(R.string.type_nsfw_gif, ContentType.getContentID(Type.GIF, true));
@@ -59,7 +58,6 @@ public class ContentTypeLabelTest {
         assertEquals(R.string.type_gallery, ContentType.getContentID(Type.REDDIT_GALLERY, false));
         assertEquals(R.string.type_xkcd, ContentType.getContentID(Type.XKCD, false));
         assertEquals(R.string.type_deviantart, ContentType.getContentID(Type.DEVIANTART, false));
-        assertEquals(R.string.type_emb, ContentType.getContentID(Type.EMBEDDED, false));
         assertEquals(R.string.type_external, ContentType.getContentID(Type.EXTERNAL, false));
         assertEquals(R.string.type_gif, ContentType.getContentID(Type.GIF, false));
         assertEquals(R.string.type_img, ContentType.getContentID(Type.IMAGE, false));

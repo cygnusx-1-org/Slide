@@ -512,10 +512,6 @@ public class SubmissionCache {
                     text = mContext.getString(R.string.type_vid);
                     break;
 
-                case EMBEDDED:
-                    text = mContext.getString(R.string.type_emb);
-                    break;
-
                 case NONE_URL:
                     text = mContext.getString(R.string.type_link);
                     break;

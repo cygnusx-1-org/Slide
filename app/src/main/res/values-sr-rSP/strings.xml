@@ -270,8 +270,6 @@
     <string name="type_img">Слика</string>
     <string name="type_videos">Видео снимци</string>
     <string name="type_nsfw_video">NSFW видео</string>
-    <string name="type_emb">Уграђен</string>
-    <string name="type_nsfw_emb">Уграђени NSFW</string>
     <string name="type_imgur">Imgur садржај</string>
     <string name="type_nsfw_imgur">NSFW Imgur садржај</string>
     <string name="type_external">Спољни</string>
@@ -356,7 +354,6 @@
     <string name="btn_reset">Ресетуј</string>
     <string name="btn_save">Сачувај</string>
     <string name="btn_submit">Пошаљи</string>
-    <string name="btn_sure">Наравно!</string>
     <string name="btn_undo">Опозови</string>
     <string name="btn_yes">Да</string>
     <string name="btn_yes_exclaim">Да!</string>
@@ -615,12 +612,6 @@
     <string name="reorder_loading_title">Учитавање Ваших субредита</string>
     <string name="reorder_url_err">Неисправна адреса</string>
     <!-- Save categories -->
-    <string name="category_set_name">Постави име категорије</string>
-    <string name="category_set_name_hint">Име категорије</string>
-    <string name="category_categorize">КАТЕГОРИШИ</string>
-    <string name="category_set_error">Грешка у постављању категорија</string>
-    <string name="profile_category_loading">Учитавам категорије</string>
-    <string name="profile_category_select">Одаберите категорију</string>
     <!-- Setting subheaders -->
     <string name="sorting">Сортирање</string>
     <string name="display">Приказ</string>
@@ -798,8 +789,6 @@
     <string name="save_for_offline_viewing">Сачувај објаву за гледање без интернета</string>
     <string name="btn_collapse_children_all">Сажми коментаре испод овог</string>
     <string name="btn_open_content">Отвори садржај</string>
-    <string name="load_videos_internally">Видео записи</string>
-    <string name="do_not_show_again">Не приказуј поново</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Унесите текст филтра (субредит:текст значке), кликните enter да га додате</string>
     <string name="datasave_always">На мобилној мрежи и на Wi-Fi-у</string>
     <string name="datasave_mobile">Само на мобилној мрежи</string>

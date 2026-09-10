@@ -761,7 +761,6 @@ public class HeaderImageLinkView extends RelativeLayout {
 
     static boolean isPlayablePlaceholderType(ContentType.Type type) {
         switch (type) {
-            case EMBEDDED:
             case GIF:
             case STREAMABLE:
             case VIDEO:

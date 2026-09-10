@@ -56,6 +56,5 @@ public class ContentTypeDisplayTest {
         assertFalse(ContentType.fullImage(Type.EXTERNAL));
         assertFalse(ContentType.fullImage(Type.NONE));
         assertFalse(ContentType.fullImage(Type.REDDIT));
-        assertFalse(ContentType.fullImage(Type.EMBEDDED));
     }
 }

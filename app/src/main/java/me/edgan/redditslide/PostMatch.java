@@ -239,7 +239,6 @@ public class PostMatch {
                         }
                         break;
                     case REDDIT:
-                    case EMBEDDED:
                     case LINK:
                         if (nsfwLinks) {
                             contentMatch = true;
@@ -296,7 +295,6 @@ public class PostMatch {
                         }
                         break;
                     case REDDIT:
-                    case EMBEDDED:
                     case LINK:
                         if (links) {
                             contentMatch = true;

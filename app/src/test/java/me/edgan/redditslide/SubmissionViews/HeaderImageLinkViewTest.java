@@ -74,8 +74,6 @@ public class HeaderImageLinkViewTest {
                 HeaderImageLinkView.isPlayablePlaceholderType(ContentType.Type.STREAMABLE));
         assertTrue(
                 HeaderImageLinkView.isPlayablePlaceholderType(ContentType.Type.VIDEO));
-        assertTrue(
-                HeaderImageLinkView.isPlayablePlaceholderType(ContentType.Type.EMBEDDED));
     }
 
     @Test

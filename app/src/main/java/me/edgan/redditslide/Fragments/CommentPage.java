@@ -54,7 +54,6 @@ import me.edgan.redditslide.Activities.Album;
 import me.edgan.redditslide.Activities.AlbumPager;
 import me.edgan.redditslide.Activities.CommentSearch;
 import me.edgan.redditslide.Activities.CommentsScreen;
-import me.edgan.redditslide.Activities.FullscreenVideo;
 import me.edgan.redditslide.Activities.GalleryImage;
 import me.edgan.redditslide.Activities.MainActivity;
 import me.edgan.redditslide.Activities.MediaView;
@@ -1150,27 +1149,6 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                     }
                                     i2.putExtra(MediaView.EXTRA_URL, adapter.submission.getUrl());
                                     activity.startActivity(i2);
-                                    break;
-                                case EMBEDDED:
-                                    String data =
-                                            adapter.submission
-                                                    .getDataNode()
-                                                    .path("media_embed")
-                                                    .path("content")
-                                                    .asText();
-                                    // No media_embed content to play: FullscreenVideo would show a
-                                    // blank WebView, so treat it as an ordinary link.
-                                    if (SettingValues.video && !data.isEmpty()) {
-                                        {
-                                            Intent i =
-                                                    new Intent(
-                                                            getActivity(), FullscreenVideo.class);
-                                            i.putExtra(FullscreenVideo.EXTRA_HTML, data);
-                                            activity.startActivity(i);
-                                        }
-                                    } else {
-                                        LinkUtil.openExternally(adapter.submission.getUrl());
-                                    }
                                     break;
                                 case REDDIT_GALLERY:
                                     // Instead of opening externally, parse the gallery and open RedditGallery or RedditGalleryPager in-app

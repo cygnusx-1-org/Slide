@@ -268,8 +268,6 @@
     <string name="type_img">Kép</string>
     <string name="type_videos">Videók</string>
     <string name="type_nsfw_video">Kifogásolható videó</string>
-    <string name="type_emb">Beágyazott</string>
-    <string name="type_nsfw_emb">Kifogásolható beágyazott tartalom</string>
     <string name="type_imgur">Imgur tartalom</string>
     <string name="type_nsfw_imgur">Kifogásolható Imgur tartalom</string>
     <string name="type_external">Külső</string>
@@ -351,7 +349,6 @@
     <string name="btn_reset">Alaphelyzet</string>
     <string name="btn_save">Mentés</string>
     <string name="btn_submit">Küldés</string>
-    <string name="btn_sure">Persze!</string>
     <string name="btn_undo">Visszavonás</string>
     <string name="btn_yes">Igen</string>
     <string name="btn_yes_exclaim">Igen!</string>
@@ -703,9 +700,6 @@
     <string name="sub_content_filter">Alreddit tartalomszűrő</string>
     <string name="submission_share_reddit_url">Hozzászólások megosztása</string>
     <string name="filter_content">E tartalom szűrése</string>
-    <string name="load_videos_internally">Videók betöltése az alkalmazáson belül</string>
-    <string name="load_videos_internally_content">Ki szeretnéd próbálni a Slide videó bővítményt? Ez lehetővé teszi a videók (pl: YouTube) megtekintését az alkalmazáson belül!</string>
-    <string name="do_not_show_again">Ne mutasd többször</string>
     <string name="datasave_always">Mobiladat és WiFi</string>
     <string name="datasave_mobile">Mobiladat</string>
     <string name="never">Soha</string>

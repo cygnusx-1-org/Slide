@@ -1,6 +1,5 @@
 package me.edgan.redditslide.util;
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -47,6 +46,7 @@ import me.edgan.redditslide.OfflineSubreddit;
 import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.SavedTags;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.SubmissionCache;
@@ -103,8 +103,9 @@ public class SubmissionBottomSheetActions {
         Drawable history = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_history, null);
         Drawable translate = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_translate, null);
         Drawable readAloud = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_volume_on, null);
+        Drawable tags = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_folder, null);
 
-        final List<Drawable> drawableSet = Arrays.asList(profile, sub, saved, hide, report, copy, open, link, reddit, readLater, filter, crosspost, viewmode, history, translate, readAloud);
+        final List<Drawable> drawableSet = Arrays.asList(profile, sub, saved, hide, report, copy, open, link, reddit, readLater, filter, crosspost, viewmode, history, translate, readAloud, tags);
         BlendModeUtil.tintDrawablesAsSrcAtop(drawableSet, color);
 
         ta.recycle();
@@ -126,6 +127,12 @@ public class SubmissionBottomSheetActions {
             }
             if (Authentication.isLoggedIn) {
                 b.sheet(3, saved, save);
+                // Only on the Saved screen. Tagging something while looking at a list of saved
+                // items is the case that needs a row here; everywhere else the post-save snackbar
+                // already offers it, and this sheet is shared with the feed and subreddit view.
+                if (mContext instanceof Profile && ActionStates.isSaved(submission)) {
+                    b.sheet(64, tags, mContext.getString(R.string.profile_tag_select));
+                }
             }
         }
 
@@ -368,6 +375,10 @@ public class SubmissionBottomSheetActions {
                         break;
                     case 3:
                         saveSubmission(submission, mContext, holder, full);
+
+                        break;
+                    case 64:
+                        categorizeSaved(submission, holder.itemView, mContext);
 
                         break;
                     case 5:
@@ -810,16 +821,14 @@ final AlertDialog reportDialog =
                         BlendModeUtil.tintImageViewAsSrcAtop((ImageView) holder.save, ContextCompat.getColor(mContext, R.color.md_amber_500));
                         holder.save.setContentDescription(mContext.getString(R.string.btn_unsave));
                         s = Snackbar.make(holder.itemView, R.string.submission_info_saved, Snackbar.LENGTH_LONG);
-                        if (Authentication.me != null && Authentication.me.hasGold()) {
-                            s.setAction(
-                                    R.string.category_categorize,
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            categorizeSaved(submission, holder.itemView, mContext);
-                                        }
-                                    });
-                        }
+                        s.setAction(
+                                R.string.tag_tag_action,
+                                new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        categorizeSaved(submission, holder.itemView, mContext);
+                                    }
+                                });
 
                         AnimatorUtil.setFlashAnimation(holder.itemView, holder.save, ContextCompat.getColor(mContext, R.color.md_amber_500));
                     } else {
@@ -844,122 +853,24 @@ final AlertDialog reportDialog =
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    /**
+     * Tag a saved submission. Reddit's saved-categories feature is gone, so this no longer writes
+     * anything to the network -- it edits Slide's own store. See {@link SavedTags}.
+     */
     public static void categorizeSaved(
-            final Submission submission, View itemView, final Context mContext) {
-        new AsyncTask<Void, Void, List<String>>() {
-
-            @SuppressWarnings("NullAway.Init") // assigned in onPreExecute, before doInBackground
-            Dialog d;
-
-            @Override
-            public void onPreExecute() {
-                d = new MaterialProgressDialog.Builder(mContext).progress(true, 100).title(R.string.profile_category_loading).content(R.string.misc_please_wait).show().getDialog();
-            }
-
-            @Override
-            protected List<String> doInBackground(Void... params) {
-                try {
-                    List<String> categories = new ArrayList<String>(new net.dean.jraw.managers.AccountManager(Authentication.reddit).getSavedCategories());
-                    categories.add("New category");
-                    return categories;
-                } catch (Exception e) {
-                    LogUtil.e(e, "SubmissionBottomSheetActions.doInBackground failed");
-                    return Collections.singletonList("New category");
-                    // sub probably has no flairs?
-                }
-            }
-
-            @Override
-            public void onPostExecute(final List<String> data) {
-                try {
-                    new MaterialAlertDialogBuilder(new ContextThemeWrapper(mContext, new ColorPreferences(mContext).getFontStyle().getBaseId())).setTitle(R.string.sidebar_select_flair).setItems(data.toArray(new CharSequence[0]), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface listDialog, int which) {
-                            final String t = data.get(which);
-                            if (which == data.size() - 1) {
-                                new MaterialInputDialog.Builder(mContext)
-                                    .title(R.string.category_set_name)
-                                    .input(mContext.getString(R.string.category_set_name_hint), null, null)
-                                    .positiveText(R.string.btn_set)
-                                    .onPositive(
-                                        new MaterialInputDialog.ButtonCallback() {
-                                            @Override
-                                            public void onClick(MaterialInputDialog dialog) {
-                                                final String flair = dialog.getInputEditText().getText().toString();
-                                                new AsyncTask<Void, Void, Boolean>() {
-                                                    @Override
-                                                    protected Boolean doInBackground(Void... params) {
-                                                        try {
-                                                            new net.dean.jraw.managers.AccountManager(Authentication.reddit).save(submission, flair);
-                                                            return true;
-                                                        } catch (ApiException | RuntimeException e) {
-                                                            LogUtil.e(e, "SubmissionBottomSheetActions.doInBackground failed");
-
-                                                            return false;
-                                                        }
-                                                    }
-
-                                                    @Override
-                                                    protected void onPostExecute(Boolean done) {
-                                                        Snackbar s;
-                                                        if (done) {
-                                                            if (itemView != null) {
-                                                                s = Snackbar.make(itemView, R.string.submission_info_saved, Snackbar.LENGTH_SHORT);
-                                                                LayoutUtils.showSnackbar(s);
-                                                            }
-                                                        } else {
-                                                            if (itemView != null) {
-                                                                s = Snackbar.make(itemView, R.string.category_set_error, Snackbar.LENGTH_SHORT);
-                                                                LayoutUtils.showSnackbar(s);
-                                                            }
-                                                        }
-                                                    }
-                                                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                                            }
-                                        }).negativeText(R.string.btn_cancel).show();
-                            } else {
-                                new AsyncTask<Void, Void, Boolean>() {
-                                    @Override
-                                    protected Boolean doInBackground(Void... params) {
-                                        try {
-                                            new net.dean.jraw.managers.AccountManager(Authentication.reddit).save(submission, t);
-
-                                            return true;
-                                        } catch (ApiException | RuntimeException e) {
-                                            LogUtil.e(e, "SubmissionBottomSheetActions.doInBackground failed");
-
-                                            return false;
-                                        }
-                                    }
-
-                                    @Override
-                                    protected void onPostExecute(Boolean done) {
-                                        Snackbar s;
-                                        if (done) {
-                                            if (itemView != null) {
-                                                s = Snackbar.make(itemView, R.string.submission_info_saved, Snackbar.LENGTH_SHORT);
-                                                LayoutUtils.showSnackbar(s);
-                                            }
-                                        } else {
-                                            if (itemView != null) {
-                                                s = Snackbar.make(itemView, R.string.category_set_error, Snackbar.LENGTH_SHORT);
-                                                LayoutUtils.showSnackbar(s);
-                                            }
-                                        }
-                                    }
-                                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                            }
-                        }
-                    }).show();
-
-                    if (d != null) {
-                        d.dismiss();
+            final Submission submission, @Nullable View itemView, final Context mContext) {
+        SavedTagDialogs.showTagPicker(
+                mContext,
+                submission,
+                () -> {
+                    if (itemView != null) {
+                        LayoutUtils.showSnackbar(
+                                Snackbar.make(
+                                        itemView,
+                                        R.string.submission_info_saved,
+                                        Snackbar.LENGTH_SHORT));
                     }
-                } catch (Exception e) {
-                    LogUtil.e(e, "Failed to dismiss flair dialog");
-                }
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                });
     }
 
     public static <T extends Contribution> void hideSubmission(final Submission submission, final List<T> posts, final @Nullable String baseSub, final @Nullable RecyclerView recyclerview, Context c) {

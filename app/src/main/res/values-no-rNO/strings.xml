@@ -183,8 +183,6 @@
     <string name="type_nsfw_album">NSFW-album</string>
     <string name="type_img">Bilde</string>
     <string name="type_nsfw_video">NSFW-video</string>
-    <string name="type_emb">Innebygget</string>
-    <string name="type_nsfw_emb">NSFW-innebygd</string>
     <string name="type_imgur">Imgur-innhold</string>
     <string name="type_nsfw_imgur">NSFW Imgur-innhold</string>
     <string name="type_external">Ekstern</string>
@@ -246,7 +244,6 @@
     <string name="btn_reset">Tilbakestill</string>
     <string name="btn_save">Lagre</string>
     <string name="btn_submit">Send</string>
-    <string name="btn_sure">Ja!</string>
     <string name="btn_undo">Angre</string>
     <string name="btn_yes">Ja</string>
     <string name="btn_refresh">Oppdater</string>

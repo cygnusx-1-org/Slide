@@ -3,17 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".Activities.Profile">
+    <!--
+        One button for the whole tag list: it both picks the Saved tab's filter and edits the tags.
+        Not ic_edit, because the search item swaps to that same pencil while a search is active
+        (Profile.onCreateOptionsMenu) and two identical icons would sit side by side.
+    -->
     <item
-        android:id="@+id/category"
-        android:icon="@drawable/ic_folder"
-        android:title="@string/profile_saved_categories"
+        android:id="@+id/tag_filter"
+        android:icon="@drawable/ic_local_offer"
+        android:title="@string/profile_saved_tags"
         app:showAsAction="always"/>
 
     <item
         android:id="@+id/search"
         android:icon="@drawable/ic_search"
         android:title="@string/profile_search"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/sort"

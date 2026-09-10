@@ -203,7 +203,6 @@
     <string name="type_album">Album</string>
     <string name="type_xkcd">XKCD</string>
     <string name="type_img">Bild</string>
-    <string name="type_emb">Inbäddad</string>
     <string name="type_imgur">Innehåll från Imgur</string>
     <!-- Content types plural (Content filters) -->
     <string name="type_albums">Album</string>
@@ -259,7 +258,6 @@
     <string name="btn_reset">Återställ</string>
     <string name="btn_save">Spara</string>
     <string name="btn_submit">Skicka</string>
-    <string name="btn_sure">Självklart!</string>
     <string name="btn_undo">Ångra</string>
     <string name="btn_yes">Ja</string>
     <string name="btn_yes_exclaim">Ja!</string>
@@ -388,11 +386,6 @@
     <string name="deleting">Tar bort&#8230;</string>
     <string name="subscribe_caps">PRENUMERERA</string>
     <!-- Save categories -->
-    <string name="category_set_name_hint">Kategorinamn</string>
-    <string name="category_categorize">KATEGORISERA</string>
-    <string name="profile_category_loading">Laddar kategorier</string>
-    <string name="profile_category_select">Välj kategori</string>
-    <string name="profile_saved_categories">Sparade kategorier</string>
     <!-- Setting subheaders -->
     <string name="images">Bilder</string>
     <!-- Titles displayed in action bar / head / recents overview-->
@@ -455,7 +448,6 @@
     <string name="mode_bigpic">Stor bild</string>
     <string name="submission_share_reddit_url">Dela kommentarer</string>
     <string name="btn_open_content">Öppna innehåll</string>
-    <string name="do_not_show_again">Visa inte igen</string>
     <string name="datasave_mobile">Mobildata</string>
     <string name="never">Aldrig</string>
     <string name="btn_open_comments">Öppna kommentarer</string>

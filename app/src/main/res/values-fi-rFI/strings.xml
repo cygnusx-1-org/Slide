@@ -237,7 +237,6 @@
     <!-- Content types -->
     <string name="type_reddit">Reddit linkki</string>
     <string name="type_videos">Videot</string>
-    <string name="type_emb">Upotettu</string>
     <string name="type_imgur">Imgur-sisältö</string>
     <string name="type_external">Ulkoinen</string>
     <!-- Content types plural (Content filters) -->

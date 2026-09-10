@@ -283,8 +283,6 @@
     <string name="type_img">Изображение</string>
     <string name="type_videos">Видео</string>
     <string name="type_nsfw_video">NSFW видео</string>
-    <string name="type_emb">Встроенное</string>
-    <string name="type_nsfw_emb">Встроенный NSFW-контент</string>
     <string name="type_imgur">Контент с Imgur</string>
     <string name="type_nsfw_imgur">NSFW-контент с Imgur</string>
     <string name="type_external">Внешний</string>
@@ -372,7 +370,6 @@
     <string name="btn_reset">Сброс</string>
     <string name="btn_save">Сохранить</string>
     <string name="btn_submit">Опубликовать</string>
-    <string name="btn_sure">Конечно!</string>
     <string name="btn_undo">Отменить</string>
     <string name="btn_yes">Да</string>
     <string name="btn_yes_exclaim">Да!</string>
@@ -697,13 +694,6 @@
     <string name="reorder_loading_title">Загружаем ваши сабреддиты</string>
     <string name="reorder_url_err">Неверный URL</string>
     <!-- Save categories -->
-    <string name="category_set_name">Изменить название категории</string>
-    <string name="category_set_name_hint">Название категории</string>
-    <string name="category_categorize">КАТЕГОРИЗОВАТЬ</string>
-    <string name="category_set_error">Ошибка при установке категории</string>
-    <string name="profile_category_loading">Загружаем категории</string>
-    <string name="profile_category_select">Выбрать категории</string>
-    <string name="profile_saved_categories">Сохраненные категории</string>
     <!-- Setting subheaders -->
     <string name="sorting">Сортировка</string>
     <string name="display">Показать</string>
@@ -950,9 +940,6 @@
     <string name="save_for_offline_viewing">Сохранить публикации для автономного просмотра</string>
     <string name="btn_collapse_children_all">Свернуть дочерние комментарии</string>
     <string name="btn_open_content">Открыть содержимое</string>
-    <string name="load_videos_internally">Загружать видео во встроенном проигрывателе</string>
-    <string name="load_videos_internally_content">Хотите ли вы попробовать плагин Slide Video? Он позволит вам смотреть видео (например, с YouTube) не выходя из приложения!</string>
-    <string name="do_not_show_again">Не показывать снова</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Введите текст фильтра (сабреддит:флейр), нажмите \'Enter\' чтобы добавить</string>
     <string name="datasave_always">Мобильное подключение и Wi-Fi</string>
     <string name="datasave_mobile">Мобильное подключение</string>

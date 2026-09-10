@@ -254,8 +254,6 @@
     <string name="type_img">صورة</string>
     <string name="type_videos">مقاطع فيديو</string>
     <string name="type_nsfw_video">فيديو غير صالح للعمل</string>
-    <string name="type_emb">مضمّن</string>
-    <string name="type_nsfw_emb">غير صالح للعمل مضمّن</string>
     <string name="type_imgur">محتوى Imgur</string>
     <string name="type_nsfw_imgur">محتوى Imgur غير صالح للعمل</string>
     <string name="type_external">خارجي</string>
@@ -303,7 +301,6 @@
     <string name="btn_reset">اعادة ضبط</string>
     <string name="btn_save">حفظ</string>
     <string name="btn_submit">ارسال</string>
-    <string name="btn_sure">بالتأكيد!</string>
     <string name="btn_undo">ارجع</string>
     <string name="btn_yes">نعم</string>
     <string name="btn_refresh">تحديث</string>

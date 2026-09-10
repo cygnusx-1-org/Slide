@@ -274,8 +274,6 @@
     <string name="type_img">图片</string>
     <string name="type_videos">视频</string>
     <string name="type_nsfw_video">NSFW 视频</string>
-    <string name="type_emb">内嵌</string>
-    <string name="type_nsfw_emb">NSFW 嵌入內容</string>
     <string name="type_imgur">Imgur 内容</string>
     <string name="type_nsfw_imgur">NSFW Imgur 内容</string>
     <string name="type_external">外部的</string>
@@ -357,7 +355,6 @@
     <string name="btn_reset">重置</string>
     <string name="btn_save">保存</string>
     <string name="btn_submit">提交</string>
-    <string name="btn_sure">好的！</string>
     <string name="btn_undo">撤销</string>
     <string name="btn_yes">是</string>
     <string name="btn_yes_exclaim">是</string>
@@ -679,13 +676,6 @@
     <string name="reorder_loading_title">正在加载你的版块</string>
     <string name="reorder_url_err">URL 无效</string>
     <!-- Save categories -->
-    <string name="category_set_name">设置类别名称</string>
-    <string name="category_set_name_hint">类别名称</string>
-    <string name="category_categorize">类别</string>
-    <string name="category_set_error">设置类别时出错</string>
-    <string name="profile_category_loading">加载类别中</string>
-    <string name="profile_category_select">选择类别</string>
-    <string name="profile_saved_categories">已保存类别</string>
     <!-- Setting subheaders -->
     <string name="sorting">排序</string>
     <string name="display">显示</string>
@@ -905,9 +895,6 @@
     <string name="save_for_offline_viewing">保存提交以离线查看</string>
     <string name="btn_collapse_children_all">折叠下级评论</string>
     <string name="btn_open_content">打开内容</string>
-    <string name="load_videos_internally">在内部加载视频</string>
-    <string name="load_videos_internally_content">你想尝试 Slide 视频插件吗？这将允许你在内部查看视频（如YouTube）！</string>
-    <string name="do_not_show_again">不再显示</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">输入文本以过滤(subreddit:flair_text)，单击输入以添加</string>
     <string name="datasave_always">移动数据和WIFI</string>
     <string name="datasave_mobile">移动数据</string>

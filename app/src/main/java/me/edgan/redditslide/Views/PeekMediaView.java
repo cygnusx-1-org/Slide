@@ -119,7 +119,6 @@ public class PeekMediaView extends RelativeLayout {
                 doLoadTumblr(url);
                 progress.setIndeterminate(true);
                 break;
-            case EMBEDDED:
             case EXTERNAL:
             case LINK:
             case VIDEO:

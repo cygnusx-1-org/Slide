@@ -39,6 +39,7 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.markdown.MarkdownImages;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.MiscUtil;
+import me.edgan.redditslide.util.SavedCommentActions;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
 import net.dean.jraw.models.Comment;
@@ -102,7 +103,7 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             // "No results" is a conclusion, so it waits until there is nothing left to page. A
             // search whose first hit is deep in the history would otherwise open by announcing it
             // had found nothing, while the strip beside it was still counting posts.
-            if (hasActiveFilter() && rows.isEmpty() && dataSet.nomore) {
+            if (isNarrowed() && rows.isEmpty() && dataSet.nomore) {
                 return NO_RESULTS;
             }
             return dataSet.nomore ? NO_MORE : LOADING_SPINNER;
@@ -419,6 +420,29 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 holder.title.setText(CompatUtil.fromHtml(comment.getAuthor()));
             }
 
+            // Comment rows had no menu at all before this, so a saved comment could never be
+            // tagged after the fact. The button is the same one the submission cards carry, in the
+            // same place; long-press opens it too, matching how a submission row behaves.
+            // An unsave only takes the row out of a listing that is the saved listing; on the
+            // profile's other comment tabs the row belongs there either way.
+            final SavedCommentActions.OnUnsaved onUnsaved =
+                    dataSet instanceof ContributionPostsSaved
+                            ? ContributionAdapter.this::removeContribution
+                            : null;
+            final View.OnClickListener openSheet =
+                    v ->
+                            SavedCommentActions.showBottomSheet(
+                                    mContext, comment, firstHolder.itemView, onUnsaved);
+            holder.menu.setVisibility(View.VISIBLE);
+            holder.menu.setOnClickListener(openSheet);
+            holder.itemView.setOnLongClickListener(
+                    new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            openSheet.onClick(v);
+                            return true;
+                        }
+                    });
             holder.itemView.setOnClickListener(
                     new View.OnClickListener() {
                         @Override
@@ -534,20 +558,64 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
      */
     private ArrayList<Contribution> visible() {
         final ArrayList<Contribution> filtered = filteredData;
-        return filtered != null ? filtered : dataSet.posts;
+        if (filtered != null) {
+            return filtered;
+        }
+        // The loader only assigns dataSet.posts on a page that brought rows back, so a filter that
+        // has matched nothing leaves it null indefinitely -- not just before the first load.
+        // Answering with an empty list rather than null keeps that state readable as "nothing to
+        // show", which is what it is, instead of an NPE waiting at every caller.
+        final ArrayList<Contribution> all = dataSet.posts;
+        return all != null ? all : new ArrayList<>();
+    }
+
+    /**
+     * Drop a row the user acted itself out of -- unsaving a comment from the Saved tab. Mirrors the
+     * unhide path: when a search filter is active the item has to leave the backing listing too, or
+     * clearing the search puts it straight back on screen.
+     */
+    private void removeContribution(Contribution contribution) {
+        final int pos = visible().indexOf(contribution);
+        if (pos < 0) {
+            // Already gone -- a reload landed between the sheet opening and the tap.
+            return;
+        }
+        visible().remove(contribution);
+        if (filteredData != null) {
+            dataSet.posts.remove(contribution);
+        }
+        if (visible().isEmpty()) {
+            // Emptying the list changes more than one row. Unnarrowed it reports zero rows, so the
+            // spacer and footer go with the last item and a lone notifyItemRemoved would leave
+            // RecyclerView expecting two rows the adapter no longer has -- which it reports as
+            // corruption. Narrowed the count holds at two, but the footer becomes the "no results"
+            // row, which is a different view type at the same position. A full rebind is the one
+            // answer that is right for both.
+            notifyDataSetChanged();
+        } else {
+            notifyItemRemoved(pos + 1);
+        }
     }
 
     @Override
     public int getItemCount() {
-        if (dataSet.posts == null) {
-            return 0;
+        if (isNarrowed()) {
+            // This sits above the null check below on purpose: a filter that matched nothing never
+            // got dataSet.posts assigned, so that check would answer "no rows at all" and swallow
+            // the "no results" row.
+            if (visible().isEmpty()) {
+                // A search that has matched nothing so far still needs a row to say so; without
+                // one the screen is blank, which reads exactly like a search that never finished.
+                //
+                // A loader-side filter is the other way round. It narrows on a fresh load, where
+                // the refresh layout is already spinning, so a footer spinner here would put a
+                // second one on screen beside it -- that case waits until there is a conclusion
+                // to state, and draws only the "no results" row.
+                return hasActiveFilter() || dataSet.nomore ? 2 : 0;
+            }
+            return visible().size() + 2;
         }
-        if (hasActiveFilter()) {
-            // A search that has matched nothing so far still needs a row to say so; without one the
-            // screen is blank, which reads exactly like a search that never finished.
-            return visible().isEmpty() ? 2 : visible().size() + 2;
-        }
-        if (dataSet.posts.isEmpty()) {
+        if (dataSet.posts == null || dataSet.posts.isEmpty()) {
             return 0;
         }
         return dataSet.posts.size() + 2; // Include spacer and footer
@@ -641,6 +709,18 @@ public class ContributionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
      */
     public boolean hasActiveFilter() {
         return currentQuery != null && !currentQuery.trim().isEmpty();
+    }
+
+    /**
+     * Whether the rows on screen are a narrowed view of the listing -- by the search box here, or
+     * by a filter the loader applied before the rows ever arrived. Either way an empty result is an
+     * answer rather than a list that has not loaded, so it gets the "no results" row.
+     *
+     * <p>Only the row count and the footer's type read this. Search highlighting still keys off
+     * {@link #hasActiveFilter()}, because there is no query to highlight in the loader's case.
+     */
+    private boolean isNarrowed() {
+        return hasActiveFilter() || dataSet.isNarrowed();
     }
 
     /**

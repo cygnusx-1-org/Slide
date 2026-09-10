@@ -272,8 +272,6 @@
     <string name="type_img">画像</string>
     <string name="type_videos">動画</string>
     <string name="type_nsfw_video">NSFWビデオ</string>
-    <string name="type_emb">埋め込み</string>
-    <string name="type_nsfw_emb">NSFWコンテンツが埋め込まれました。</string>
     <string name="type_imgur">Imgur コンテンツ</string>
     <string name="type_nsfw_imgur">ImgurのNSFWコンテンツ</string>
     <string name="type_external">外部</string>
@@ -355,7 +353,6 @@
     <string name="btn_reset">リセット</string>
     <string name="btn_save">保存</string>
     <string name="btn_submit">送信</string>
-    <string name="btn_sure">はい!</string>
     <string name="btn_undo">元に戻す</string>
     <string name="btn_yes">はい</string>
     <string name="btn_yes_exclaim">はい!</string>
@@ -677,13 +674,6 @@
     <string name="reorder_loading_title">Subreddit を読み込み中</string>
     <string name="reorder_url_err">URL が正しくありません</string>
     <!-- Save categories -->
-    <string name="category_set_name">カテゴリー名を設定</string>
-    <string name="category_set_name_hint">カテゴリー名</string>
-    <string name="category_categorize">カテゴライズ</string>
-    <string name="category_set_error">カテゴリーの設定時にエラーが発生しました</string>
-    <string name="profile_category_loading">カテゴリーの読み込み中</string>
-    <string name="profile_category_select">カテゴリーを選択</string>
-    <string name="profile_saved_categories">保存したカテゴリー</string>
     <!-- Setting subheaders -->
     <string name="sorting">ソート設定</string>
     <string name="display">画面表示</string>
@@ -903,9 +893,6 @@
     <string name="save_for_offline_viewing">オフラインで表示するためにサブミッションを保存</string>
     <string name="btn_collapse_children_all">子コメントを畳む</string>
     <string name="btn_open_content">コンテンツを開く</string>
-    <string name="load_videos_internally">動画をアプリ内で読み込む</string>
-    <string name="load_videos_internally_content">Slideアプリの動画プラグインを試してみますか? このプラグインで動画(例えばyoutube) を当アプリ内で閲覧できます!</string>
-    <string name="do_not_show_again">次回から表示しない</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">フィルターするテキストを入力 (subreddit:flair_text)。Enter をクリックして追加します</string>
     <string name="datasave_always">モバイル データ通信と Wi-Fi</string>
     <string name="datasave_mobile">モバイル データ通信</string>

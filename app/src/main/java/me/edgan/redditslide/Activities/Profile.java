@@ -2,7 +2,6 @@ package me.edgan.redditslide.Activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -42,10 +41,10 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -59,6 +58,8 @@ import me.edgan.redditslide.Fragments.LocalSavedView;
 import me.edgan.redditslide.HibernateState;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.SavedTagStore;
+import me.edgan.redditslide.SavedTags;
 import me.edgan.redditslide.SavedUsers;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.UserSubscriptions;
@@ -71,8 +72,8 @@ import me.edgan.redditslide.util.LayoutUtils;
 import me.edgan.redditslide.util.LinkUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialInputDialog;
-import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
+import me.edgan.redditslide.util.SavedTagDialogs;
 import me.edgan.redditslide.util.SortingUtil;
 import me.edgan.redditslide.util.TimeUtils;
 import net.dean.jraw.fluent.FluentRedditClient;
@@ -127,7 +128,7 @@ public class Profile extends BaseActivityAnim implements HibernateState.Restorab
     @SuppressWarnings("NullAway.Init") // assigned in onCreateOptionsMenu
     private MenuItem sortItem;
     @SuppressWarnings("NullAway.Init") // assigned in onCreateOptionsMenu
-    private MenuItem categoryItem;
+    private MenuItem tagFilterItem;
     @SuppressWarnings("NullAway.Init") // assigned in onCreateOptionsMenu
     private MenuItem searchItem;
     @SuppressWarnings("NullAway.Init") // assigned in onMenuItemClick/setDataSet
@@ -217,11 +218,8 @@ public class Profile extends BaseActivityAnim implements HibernateState.Restorab
                         if (sortItem != null) {
                             sortItem.setVisible(position < 3);
                         }
-                        if (categoryItem != null
-                                && Authentication.me != null
-                                && Authentication.me.hasGold() != null
-                                && Authentication.me.hasGold()) {
-                            categoryItem.setVisible(position == 6);
+                        if (tagFilterItem != null) {
+                            tagFilterItem.setVisible(position == 6);
                         }
                         if (searchItem != null) {
                             searchItem.setVisible(true);
@@ -718,8 +716,46 @@ public class Profile extends BaseActivityAnim implements HibernateState.Restorab
         popup.show();
     }
 
-    // @Nullable already exempts this from the initialization check; the suppression was dead.
-    @Nullable public String category;
+    /** The custom tags the Saved tab is filtered by; empty when only built-ins narrow it. */
+    public Set<String> tags = new LinkedHashSet<>();
+
+    /**
+     * The built-in tags the Saved tab is filtered by. {@link SavedTags.Builtin#ALL} on its own is
+     * the default and means no filter at all.
+     */
+    public Set<SavedTags.Builtin> builtinTags = EnumSet.of(SavedTags.Builtin.ALL);
+
+    /**
+     * Open the tag list: one dialog that both picks what the Saved tab shows and edits the tags.
+     *
+     * <p>Reads straight from {@link SavedTagStore}, so unlike the saved-categories dialog this
+     * replaces there is no network call and no "loading" spinner to sit through.
+     */
+    private void showTagListDialog() {
+        SavedTagDialogs.showTagList(
+                this,
+                tags,
+                builtinTags,
+                (userTags, builtins) -> {
+                    tags = userTags;
+                    builtinTags = builtins;
+                    rebuildPager();
+                });
+    }
+
+    /**
+     * Swap in a fresh pager so the tabs re-read the filter. The current tab is preserved; its
+     * fragment is rebuilt, which is the point -- the Saved tab reads {@link #tags} when it binds.
+     */
+    private void rebuildPager() {
+        final int current = pager.getCurrentItem();
+        pagerAdapter = new ProfilePagerAdapter(getSupportFragmentManager());
+        pager.setAdapter(pagerAdapter);
+        pager.setOffscreenPageLimit(1);
+
+        tabs.setupWithViewPager(pager);
+        pager.setCurrentItem(current);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -727,18 +763,19 @@ public class Profile extends BaseActivityAnim implements HibernateState.Restorab
         inflater.inflate(R.menu.menu_profile, menu);
         // used to hide the sort item on certain Profile tabs
         sortItem = menu.findItem(R.id.sort);
-        categoryItem = menu.findItem(R.id.category);
+        tagFilterItem = menu.findItem(R.id.tag_filter);
         searchItem = menu.findItem(R.id.search);
-        categoryItem.setVisible(false);
+        tagFilterItem.setVisible(false);
         sortItem.setVisible(false);
 
         int position = pager == null ? 0 : pager.getCurrentItem();
         if (sortItem != null) {
             sortItem.setVisible(position < 3);
         }
-        if (categoryItem != null && Authentication.me != null) {
-            Boolean hasGold = Authentication.me.hasGold();
-            categoryItem.setVisible(position == 6 && hasGold != null && hasGold);
+        // Saved tags are Slide's own, so there is no account tier to gate them on -- only the tab
+        // they apply to.
+        if (tagFilterItem != null) {
+            tagFilterItem.setVisible(position == 6);
         }
         if (searchItem != null) {
             // Show ic_edit when search is active, ic_search when not active
@@ -753,74 +790,8 @@ public class Profile extends BaseActivityAnim implements HibernateState.Restorab
         int itemId = item.getItemId();
         if (itemId == android.R.id.home) {
             getOnBackPressedDispatcher().onBackPressed();
-        } else if (itemId == R.id.category) {
-            new AsyncTask<Void, Void, List<String>>() {
-                    @SuppressWarnings("NullAway.Init") // assigned in onPreExecute
-                    Dialog d;
-
-                    @Override
-                    public void onPreExecute() {
-                        d =
-                                new MaterialProgressDialog.Builder(Profile.this)
-                                        .progress(true, 100)
-                                        .content(R.string.misc_please_wait)
-                                        .title(R.string.profile_category_loading)
-                                        .show()
-                                        .getDialog();
-                    }
-
-                    @Override
-                    protected List<String> doInBackground(Void... params) {
-                        try {
-                            List<String> categories =
-                                    new ArrayList<>(
-                                            new AccountManager(Authentication.reddit)
-                                                    .getSavedCategories());
-                            categories.add(0, "No category");
-                            return categories;
-                        } catch (Exception e) {
-                            LogUtil.e(e, "Profile.doInBackground failed");
-                            // probably has no categories?
-                            return Collections.singletonList("No category");
-                        }
-                    }
-
-                    @Override
-                    public void onPostExecute(final List<String> data) {
-                        try {
-                            final Context contextThemeWrapper =
-                                    new ContextThemeWrapper(
-                                            Profile.this,
-                                            new ColorPreferences(Profile.this)
-                                                    .getFontStyle()
-                                                    .getBaseId());
-                            new MaterialAlertDialogBuilder(contextThemeWrapper)
-                                    .setTitle(R.string.profile_category_select)
-                                    .setItems(
-                                            data.toArray(new CharSequence[0]),
-                                            (dialog, which) -> {
-                                                final String t = data.get(which);
-                                                if (which == 0) category = null;
-                                                else category = t;
-                                                int current = pager.getCurrentItem();
-                                                ProfilePagerAdapter adapter =
-                                                        new ProfilePagerAdapter(
-                                                                getSupportFragmentManager());
-                                                pager.setAdapter(adapter);
-                                                pager.setOffscreenPageLimit(1);
-
-                                                tabs.setupWithViewPager(pager);
-                                                pager.setCurrentItem(current);
-                                            })
-                                    .show();
-                            if (d != null) {
-                                d.dismiss();
-                            }
-                        } catch (Exception ignored) {
-                            // Category dialog on a host that is finishing.
-                        }
-                    }
-                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else if (itemId == R.id.tag_filter) {
+            showTagListDialog();
         } else if (itemId == R.id.info) {
             if (account != null && trophyCase != null) {
                     LayoutInflater inflater = getLayoutInflater();

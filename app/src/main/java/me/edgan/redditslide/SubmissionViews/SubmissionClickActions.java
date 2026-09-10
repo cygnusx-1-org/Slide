@@ -11,7 +11,6 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import me.edgan.redditslide.Activities.Album;
 import me.edgan.redditslide.Activities.AlbumPager;
-import me.edgan.redditslide.Activities.FullscreenVideo;
 import me.edgan.redditslide.Activities.GalleryImage;
 import me.edgan.redditslide.Activities.MainActivity;
 import me.edgan.redditslide.Activities.MediaView;
@@ -32,7 +31,6 @@ import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.Palette;
-import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.FileUtil;
 import me.edgan.redditslide.util.GalleryTiles;
 import me.edgan.redditslide.util.LayoutUtils;
@@ -167,20 +165,6 @@ public class SubmissionClickActions {
                                         case XKCD:
                                         case IMAGE:
                                             SubmissionThumbnailHelper.openImage(type, contextActivity, submission, holder.leadImage, holder.getBindingAdapterPosition());
-                                            break;
-                                        case EMBEDDED:
-                                            String data = CompatUtil.fromHtml(submission.getDataNode().path("media_embed").path("content").asText()).toString();
-                                            // No media_embed content to play: FullscreenVideo would
-                                            // show a blank WebView, so treat it as an ordinary link.
-                                            if (SettingValues.video && !data.isEmpty()) {
-                                                {
-                                                    Intent i = new Intent(contextActivity, FullscreenVideo.class);
-                                                    i.putExtra(FullscreenVideo.EXTRA_HTML, data);
-                                                    contextActivity.startActivity(i);
-                                                }
-                                            } else {
-                                                LinkUtil.openExternally(submission.getUrl());
-                                            }
                                             break;
                                         case REDDIT:
                                             SubmissionThumbnailHelper.openRedditContent(submission.getUrl(), contextActivity);

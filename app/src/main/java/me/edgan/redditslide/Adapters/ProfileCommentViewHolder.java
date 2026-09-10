@@ -19,6 +19,9 @@ public class ProfileCommentViewHolder extends RecyclerView.ViewHolder {
     public final SpoilerRobotoTextView content;
     public final CommentOverflow overflow;
 
+    /** The card's own overflow button, the same one the submission cards carry. */
+    public final View menu;
+
     public ProfileCommentViewHolder(View v) {
         super(v);
         title = v.requireViewById(R.id.title);
@@ -28,5 +31,6 @@ public class ProfileCommentViewHolder extends RecyclerView.ViewHolder {
         gild = v.requireViewById(R.id.gildtext);
         content = v.requireViewById(R.id.content);
         overflow = v.requireViewById(R.id.commentOverflow);
+        menu = v.requireViewById(R.id.menu);
     }
 }

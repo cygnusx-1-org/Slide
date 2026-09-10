@@ -271,8 +271,6 @@
     <string name="type_img">Imatge</string>
     <string name="type_videos">Vídeos</string>
     <string name="type_nsfw_video">Vídeo NSFW</string>
-    <string name="type_emb">Incrustat</string>
-    <string name="type_nsfw_emb">NSFW incrustat</string>
     <string name="type_imgur">Contingut del Imgur</string>
     <string name="type_nsfw_imgur">Contingut NFSW d\'Imgur</string>
     <string name="type_external">Extern</string>
@@ -355,7 +353,6 @@
     <string name="btn_reset">Reestablir</string>
     <string name="btn_save">Desar</string>
     <string name="btn_submit">Enviar</string>
-    <string name="btn_sure">Clar!</string>
     <string name="btn_undo">Desfer</string>
     <string name="btn_yes">Sí</string>
     <string name="btn_yes_exclaim">Sí!</string>
@@ -665,13 +662,6 @@
     <string name="reorder_loading_title">Carregant els seus subreddits</string>
     <string name="reorder_url_err">Enllaç invalid</string>
     <!-- Save categories -->
-    <string name="category_set_name">Establir nom de la categoria</string>
-    <string name="category_set_name_hint">Nom de la categoria</string>
-    <string name="category_categorize">CATEGORITZAR</string>
-    <string name="category_set_error">Error establint la categoria</string>
-    <string name="profile_category_loading">Carregant categories</string>
-    <string name="profile_category_select">Seleccionant categories</string>
-    <string name="profile_saved_categories">Categories desades</string>
     <!-- Setting subheaders -->
     <string name="sorting">Classificant</string>
     <string name="display">Mostrar</string>
@@ -899,9 +889,6 @@
     <string name="save_for_offline_viewing">Desar publicacions per a veure-les fora de línia</string>
     <string name="btn_collapse_children_all">Col·lapsar comentaris secundaris</string>
     <string name="btn_open_content">Obrir contingut</string>
-    <string name="load_videos_internally">Carregar vídeos internament</string>
-    <string name="load_videos_internally_content">Voldrieu provar el complement Slide Video? Us permetrà visionar vídeos (com ara YouTube) de manera interna!</string>
-    <string name="do_not_show_again">No tornis a mostrar-ho</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Introduiu el text a filtrar (subreddit:text_bandereta), premeu entar per tal d\'afegir-lo</string>
     <string name="datasave_always">Dades mòbils i Wi-Fi</string>
     <string name="datasave_mobile">Dades mòbils</string>

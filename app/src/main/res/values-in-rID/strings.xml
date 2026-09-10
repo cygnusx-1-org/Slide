@@ -272,8 +272,6 @@
     <string name="type_img">Gambar</string>
     <string name="type_videos">Video</string>
     <string name="type_nsfw_video">Video NSFW</string>
-    <string name="type_emb">Tertanam</string>
-    <string name="type_nsfw_emb">Tertanam NSFW</string>
     <string name="type_imgur">Konten Imgur</string>
     <string name="type_nsfw_imgur">Konten Imgur NSFW</string>
     <string name="type_external">Eksternal</string>
@@ -355,7 +353,6 @@
     <string name="btn_reset">Set ulang</string>
     <string name="btn_save">Simpan</string>
     <string name="btn_submit">Kirim</string>
-    <string name="btn_sure">Yakin!</string>
     <string name="btn_undo">Urungkan</string>
     <string name="btn_yes">Ya</string>
     <string name="btn_yes_exclaim">Ya!</string>
@@ -667,13 +664,6 @@
     <string name="reorder_loading_title">Memuat subreddits anda</string>
     <string name="reorder_url_err">URL tidak sah</string>
     <!-- Save categories -->
-    <string name="category_set_name">Mengatur nama kategori</string>
-    <string name="category_set_name_hint">Nama Kategori</string>
-    <string name="category_categorize">MENGKATEGORIKAN</string>
-    <string name="category_set_error">Kesalahan pengaturan Kategori</string>
-    <string name="profile_category_loading">Memuat Kategori</string>
-    <string name="profile_category_select">Pilih kategori</string>
-    <string name="profile_saved_categories">Kategori tersimpan</string>
     <!-- Setting subheaders -->
     <string name="sorting">Mengurutkan</string>
     <string name="display">Tampilan</string>
@@ -893,9 +883,6 @@
     <string name="save_for_offline_viewing">Simpan kiriman pos untuk akses luring</string>
     <string name="btn_collapse_children_all">Tutup komentar anak</string>
     <string name="btn_open_content">Buka konten</string>
-    <string name="load_videos_internally">Muat video secara internal</string>
-    <string name="load_videos_internally_content">Apakah Anda ingin mencoba plugin Slide Video? Ini akan memungkinkan Anda melihat video (seperti YouTube) secara internal!</string>
-    <string name="do_not_show_again">Jangan tampilkan lagi</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Masukkan teks untuk disaring (subreddit: flair_text), klik enter untuk menambahkan</string>
     <string name="datasave_always">Data seluler dan Wi-Fi</string>
     <string name="datasave_mobile">Data Seluler</string>

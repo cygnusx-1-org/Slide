@@ -268,8 +268,6 @@
     <string name="type_img">圖片</string>
     <string name="type_videos">影片</string>
     <string name="type_nsfw_video">NSFW 影片</string>
-    <string name="type_emb">内嵌</string>
-    <string name="type_nsfw_emb">NSFW 嵌入內容</string>
     <string name="type_imgur">Imgur 内容</string>
     <string name="type_nsfw_imgur">NSFW Imgur 內容</string>
     <string name="type_external">外部</string>
@@ -350,7 +348,6 @@
     <string name="btn_reset">重設</string>
     <string name="btn_save">儲存</string>
     <string name="btn_submit">提交貼文</string>
-    <string name="btn_sure">好的！</string>
     <string name="btn_undo">撤消</string>
     <string name="btn_yes">是</string>
     <string name="btn_yes_exclaim">是！</string>
@@ -609,11 +606,6 @@
     <string name="reorder_loading_title">正在載入您的 Subreddit</string>
     <string name="reorder_url_err">無效網址</string>
     <!-- Save categories -->
-    <string name="category_set_name">設定分類名稱</string>
-    <string name="category_set_name_hint">分類名稱</string>
-    <string name="profile_category_loading">正在載入類別</string>
-    <string name="profile_category_select">選擇類別</string>
-    <string name="profile_saved_categories">保存類別</string>
     <!-- Setting subheaders -->
     <string name="sorting">排序</string>
     <string name="display">顯示</string>
@@ -770,9 +762,6 @@
     <string name="content_to_hide">在 %1$s 隱藏的內容</string>
     <string name="btn_collapse_children_all">摺疊下層留言</string>
     <string name="btn_open_content">開啟內容</string>
-    <string name="load_videos_internally">內部載入視頻</string>
-    <string name="load_videos_internally_content">你想試試幻燈片視頻外掛程式嗎？這將允許您在內部觀賞視頻（比如 YouTube）！</string>
-    <string name="do_not_show_again">不要再顯示</string>
     <string name="datasave_always">流動數據及 Wi-Fi</string>
     <string name="datasave_mobile">流動數據</string>
     <string name="never">永不</string>

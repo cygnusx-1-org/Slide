@@ -375,8 +375,6 @@
     <string name="type_img">Image</string>
     <string name="type_videos">Videos</string>
     <string name="type_nsfw_video">NSFW video</string>
-    <string name="type_emb">Embedded</string>
-    <string name="type_nsfw_emb">NSFW embedded</string>
     <string name="type_imgur">Imgur content</string>
     <string name="type_nsfw_imgur">NSFW Imgur content</string>
     <string name="type_nsfw_xkcd">NSFW XKCD</string>
@@ -496,7 +494,6 @@
     <string name="btn_retry">Retry</string>
     <string name="btn_save">Save</string>
     <string name="btn_submit">Submit</string>
-    <string name="btn_sure">Sure!</string>
     <string name="btn_undo">Undo</string>
     <string name="btn_yes">Yes</string>
     <string name="btn_yes_exclaim">Yes!</string>
@@ -901,14 +898,26 @@
     <string name="reorder_loading_title">Loading your subreddits</string>
     <string name="reorder_url_err">URL Invalid</string>
 
-    <!-- Save categories -->
-    <string name="category_set_name">Set category name</string>
-    <string name="category_set_name_hint">Category name</string>
-    <string name="category_categorize">CATEGORIZE</string>
-    <string name="category_set_error">Error setting category</string>
-    <string name="profile_category_loading">Loading categories</string>
-    <string name="profile_category_select">Select category</string>
-    <string name="profile_saved_categories">Saved categories</string>
+    <!-- Saved tags -->
+    <string name="tag_set_name_hint">Tag name</string>
+    <string name="tag_tag_action">TAG</string>
+    <string name="profile_tag_select">Tags</string>
+    <string name="profile_saved_tags">Saved tags</string>
+    <string name="tag_builtin_all">All</string>
+    <string name="tag_builtin_posts">Posts</string>
+    <string name="tag_builtin_comments">Comments</string>
+    <string name="tag_types_header">Types</string>
+    <string name="tag_post_types_header">Post types</string>
+    <string name="tag_custom_header">Custom tags</string>
+    <string name="tag_new">New tag</string>
+    <string name="tag_manage">Manage tags</string>
+    <string name="tag_add">Add tag</string>
+    <string name="tag_none_yet">No tags yet</string>
+    <string name="tag_rename">Rename</string>
+    <string name="tag_delete_confirm">Are you sure you want to delete \"%1$s\"? Items with this tag will not be deleted.</string>
+    <string name="tag_name_used_title">Name already used</string>
+    <string name="tag_name_used">A tag already exists with that name, please choose a unique name.</string>
+    <string name="tag_name_reserved">That name is reserved, please choose another.</string>
 
     <!-- Setting subheaders -->
     <string name="sorting">Sorts</string>
@@ -1176,9 +1185,6 @@
     <string name="save_for_offline_viewing">Save submissions for offline viewing</string>
     <string name="btn_collapse_children_all">Collapse child comments</string>
     <string name="btn_open_content">Open content</string>
-    <string name="load_videos_internally">Load videos internally</string>
-    <string name="load_videos_internally_content">Would you like to try out the Slide Video plugin? This will allow you to view videos (like YouTube) internally!</string>
-    <string name="do_not_show_again">Don\'t show again</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Enter text to filter (subreddit:flair_text), click enter to add</string>
     <plurals name="filter_count">
         <item quantity="one">%1$d filter (%2$d max shown)</item>

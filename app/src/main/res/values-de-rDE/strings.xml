@@ -282,8 +282,6 @@ Möchten Sie Slide for Reddit unterstützen?</string>
     <string name="type_img">Bild</string>
     <string name="type_videos">Videos</string>
     <string name="type_nsfw_video">NSFW-Video</string>
-    <string name="type_emb">Eingebettet</string>
-    <string name="type_nsfw_emb">NSFW-Eingebettet</string>
     <string name="type_imgur">Imgur-Inhalt</string>
     <string name="type_nsfw_imgur">NSFW-Imgur-Inhalt</string>
     <string name="type_external">Extern</string>
@@ -366,7 +364,6 @@ Möchten Sie Slide for Reddit unterstützen?</string>
     <string name="btn_reset">Zurücksetzen</string>
     <string name="btn_save">Speichern</string>
     <string name="btn_submit">Senden</string>
-    <string name="btn_sure">Sicher!</string>
     <string name="btn_undo">Rückgängig</string>
     <string name="btn_yes">Ja</string>
     <string name="btn_yes_exclaim">Ja!</string>
@@ -676,13 +673,6 @@ Möchten Sie Slide for Reddit unterstützen?</string>
     <string name="reorder_loading_title">Subreddits werden geladen</string>
     <string name="reorder_url_err">URL ungültig</string>
     <!-- Save categories -->
-    <string name="category_set_name">Name der Kategorie festlegen</string>
-    <string name="category_set_name_hint">Kategoriename</string>
-    <string name="category_categorize">KATEGORISIEREN</string>
-    <string name="category_set_error">Fehler beim Festlegen der Kategorie</string>
-    <string name="profile_category_loading">Lade Kategorien</string>
-    <string name="profile_category_select">Kategorie auswählen</string>
-    <string name="profile_saved_categories">Gespeicherte Kategorien</string>
     <!-- Setting subheaders -->
     <string name="sorting">Sortierung</string>
     <string name="display">Anzeige</string>
@@ -910,9 +900,6 @@ Möchten Sie Slide for Reddit unterstützen?</string>
     <string name="save_for_offline_viewing">Einreichungen für die Offlineansicht speichern</string>
     <string name="btn_collapse_children_all">Untergeordnete Kommentare zuklappen</string>
     <string name="btn_open_content">Inhalt öffnen</string>
-    <string name="load_videos_internally">Videos intern laden</string>
-    <string name="load_videos_internally_content">Möchtest du das Slide Video Plugin ausprobieren? Es erlaubt Dir Videos (z.B. YouTube) in der App anzuzeigen!</string>
-    <string name="do_not_show_again">Nicht erneut anzeigen</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Gib den Filtertext ein (subreddit:flair_text), klicke Enter zum Hinzufügen</string>
     <string name="datasave_always">Mobile Daten und Wlan</string>
     <string name="datasave_mobile">Mobile Daten</string>

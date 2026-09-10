@@ -105,7 +105,10 @@ public class ContributionsView extends Fragment implements ContributionRestoreSt
         if (where.equals("saved") && getActivity() instanceof Profile)
             posts =
                     new ContributionPostsSaved(
-                            id, where, ((Profile) getActivity()).category);
+                            id,
+                            where,
+                            ((Profile) getActivity()).tags,
+                            ((Profile) getActivity()).builtinTags);
         else posts = new ContributionPosts(id, where);
 
         if (where.equals("hidden")) adapter = new ContributionAdapter(requireActivity(), posts, rv, true);

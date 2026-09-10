@@ -224,8 +224,6 @@
     <string name="type_img">Afbeelding</string>
     <string name="type_videos">Video\'s</string>
     <string name="type_nsfw_video">NSFW-video</string>
-    <string name="type_emb">Ingesloten</string>
-    <string name="type_nsfw_emb">NSFW-ingesloten</string>
     <string name="type_imgur">Imgur-inhoud</string>
     <string name="type_nsfw_imgur">NSFW-Imgur-inhoud</string>
     <string name="type_external">Extern</string>
@@ -304,7 +302,6 @@
     <string name="btn_reset">Resetten</string>
     <string name="btn_save">Opslaan</string>
     <string name="btn_submit">Versturen</string>
-    <string name="btn_sure">Is goed!</string>
     <string name="btn_undo">Ongedaan maken</string>
     <string name="btn_yes">Ja</string>
     <string name="btn_refresh">Vernieuwen</string>
@@ -665,9 +662,6 @@
     <string name="content_to_hide">Inhoud om te verbergen in %1$s</string>
     <string name="btn_collapse_children_all">Onderliggende reacties inklappen</string>
     <string name="btn_open_content">Open inhoud</string>
-    <string name="load_videos_internally">Video\'s intern laden</string>
-    <string name="load_videos_internally_content">Wil je de Slide Video Plugin proberen? Hiermee kan je onder andere YouTube-video\'s intern laden!</string>
-    <string name="do_not_show_again">Niet meer tonen</string>
     <string name="datasave_always">Mobiele data en Wi-Fi</string>
     <string name="datasave_mobile">Mobiele data</string>
     <string name="never">Nooit</string>

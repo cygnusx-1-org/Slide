@@ -237,8 +237,6 @@
     <string name="type_img">Slika</string>
     <string name="type_videos">Videozapisi</string>
     <string name="type_nsfw_video">NSFW video</string>
-    <string name="type_emb">Ugrađeno</string>
-    <string name="type_nsfw_emb">NSFW ugrađen</string>
     <string name="type_imgur">Imgur sadržaj</string>
     <string name="type_nsfw_imgur">NSFW Imgur sadržaj</string>
     <string name="type_external">Vanjski</string>
@@ -315,7 +313,6 @@
     <string name="btn_reset">Vrati izvorno</string>
     <string name="btn_save">Spremi</string>
     <string name="btn_submit">Pošalji</string>
-    <string name="btn_sure">Naravno!</string>
     <string name="btn_undo">Poništi</string>
     <string name="btn_yes">Da</string>
     <string name="btn_yes_exclaim">Da!</string>
@@ -536,11 +533,6 @@
     <string name="reorder_sync_complete">Sinkronizacija dovršena</string>
     <string name="reorder_url_err">URL nije valjan</string>
     <!-- Save categories -->
-    <string name="category_set_name">Postavi ime kategorije</string>
-    <string name="category_set_name_hint">Ime kategorije</string>
-    <string name="category_categorize">KATEGORIZIRAJ</string>
-    <string name="profile_category_loading">Učitavanje kategorija</string>
-    <string name="profile_category_select">Odaberi kategoriju</string>
     <!-- Setting subheaders -->
     <string name="sorting">Sortiranje</string>
     <string name="display">Prikaz</string>
@@ -729,7 +721,6 @@
     <string name="submission_share_reddit_url">Podijeli komentare</string>
     <string name="filter_content">Filtriraj ovaj sadržaj</string>
     <string name="btn_open_content">Otvori sadržaj</string>
-    <string name="do_not_show_again">Ne prikazuj ponovno</string>
     <string name="datasave_always">Mobilni podaci i Wi-Fi</string>
     <string name="datasave_mobile">Mobilni podaci</string>
     <string name="never">Nikada</string>

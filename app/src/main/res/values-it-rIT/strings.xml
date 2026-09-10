@@ -275,8 +275,6 @@
     <string name="type_img">Immagine</string>
     <string name="type_videos">Video</string>
     <string name="type_nsfw_video">Video NSFW</string>
-    <string name="type_emb">Incorporato</string>
-    <string name="type_nsfw_emb">NSFW incorporato</string>
     <string name="type_imgur">Contenuto Imgur</string>
     <string name="type_nsfw_imgur">Contenuto Imgur NSFW</string>
     <string name="type_external">Esterno</string>
@@ -360,7 +358,6 @@
     <string name="btn_reset">Azzera</string>
     <string name="btn_save">Salva</string>
     <string name="btn_submit">Invia</string>
-    <string name="btn_sure">Certo!</string>
     <string name="btn_undo">Annulla azione</string>
     <string name="btn_yes">Sì</string>
     <string name="btn_yes_exclaim">Sì!</string>
@@ -683,13 +680,6 @@
     <string name="reorder_loading_title">Caricando i tuoi subreddit</string>
     <string name="reorder_url_err">URL non valido</string>
     <!-- Save categories -->
-    <string name="category_set_name">Imposta il nome della categoria</string>
-    <string name="category_set_name_hint">Nome della categoria</string>
-    <string name="category_categorize">CATEGORIZZARE</string>
-    <string name="category_set_error">Si è verificato un errore inpostando la categoria</string>
-    <string name="profile_category_loading">Caricando categorie</string>
-    <string name="profile_category_select">Seleziona la categoria</string>
-    <string name="profile_saved_categories">Categorie salvate</string>
     <!-- Setting subheaders -->
     <string name="sorting">Ordine</string>
     <string name="display">Mostra</string>
@@ -918,9 +908,6 @@
     <string name="save_for_offline_viewing">Salva il post per la visualizzazione offline</string>
     <string name="btn_collapse_children_all">Nascondi i commenti figli</string>
     <string name="btn_open_content">Apri contenuto</string>
-    <string name="load_videos_internally">Carica video internamente</string>
-    <string name="load_videos_internally_content">Vorresti provare il plugin Slide Video? Ti permetterà di visualizzare i video (come quelli di YouTube) internamente!</string>
-    <string name="do_not_show_again">Non mostrare ancora</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Immetti il testo da filtrare (subreddit:flair_text), premi invio per aggiungere</string>
     <string name="datasave_always">Dati cellulare e Wi-Fi</string>
     <string name="datasave_mobile">Dati cellulare</string>

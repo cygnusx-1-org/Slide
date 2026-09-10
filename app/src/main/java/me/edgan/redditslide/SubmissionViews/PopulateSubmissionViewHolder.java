@@ -113,7 +113,6 @@ public class PopulateSubmissionViewHolder {
             case VREDDIT_REDIRECT:
             case STREAMABLE:
             case TUMBLR:
-            case EMBEDDED:
                 colorRes = R.color.post_type_flag_video;
                 break;
             case LINK:

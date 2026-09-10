@@ -44,7 +44,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -58,6 +57,7 @@ import me.edgan.redditslide.Flair.Richtext;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.SavedTags;
 import me.edgan.redditslide.SavedUsers;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SpoilerRobotoTextView;
@@ -85,6 +85,7 @@ import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.ReadAloudUtil;
+import me.edgan.redditslide.util.SavedTagDialogs;
 import me.edgan.redditslide.util.SubmissionParser;
 import me.edgan.redditslide.util.TimeUtils;
 import me.edgan.redditslide.util.TranslateUtil;
@@ -701,16 +702,14 @@ final AlertDialog reportDialog =
                                             holder.itemView,
                                             R.string.submission_comment_saved,
                                             Snackbar.LENGTH_LONG);
-                            if (Authentication.me != null && Authentication.me.hasGold()) {
-                                s.setAction(
-                                        R.string.category_categorize,
-                                        new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                categorizeComment(comment, mContext);
-                                            }
-                                        });
-                            }
+                            s.setAction(
+                                    R.string.tag_tag_action,
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            categorizeComment(comment, mContext);
+                                        }
+                                    });
                         } else {
                             s =
                                     Snackbar.make(
@@ -727,204 +726,12 @@ final AlertDialog reportDialog =
         }.execute();
     }
 
-    private static void categorizeComment(final Comment comment, final Context mContext) {
-        new AsyncTask<Void, Void, List<String>>() {
-
-            @SuppressWarnings("NullAway.Init") // assigned in onPreExecute
-            Dialog d;
-
-            @Override
-            public void onPreExecute() {
-                d =
-                        new MaterialProgressDialog.Builder(mContext)
-                                .progress(true, 100)
-                                .content(R.string.misc_please_wait)
-                                .title(R.string.profile_category_loading)
-                                .show()
-                                .getDialog();
-            }
-
-            @Override
-            protected List<String> doInBackground(Void... params) {
-                try {
-                    List<String> categories =
-                            new ArrayList<String>(
-                                    new AccountManager(Authentication.reddit).getSavedCategories());
-                    categories.add("New category");
-                    return categories;
-                } catch (Exception e) {
-                    LogUtil.e(e, "CommentAdapterHelper.doInBackground failed");
-                    return Collections.singletonList("New category");
-                }
-            }
-
-            @Override
-            public void onPostExecute(final List<String> data) {
-                try {
-                    final View itemView =
-                            ((android.app.Activity) mContext)
-                                    .findViewById(android.R.id.content);
-                    new MaterialAlertDialogBuilder(
-                                    new ContextThemeWrapper(
-                                            mContext,
-                                            new ColorPreferences(mContext)
-                                                    .getFontStyle()
-                                                    .getBaseId()))
-                            .setTitle(R.string.sidebar_select_flair)
-                            .setItems(
-                                    data.toArray(new CharSequence[0]),
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(
-                                                DialogInterface listDialog, int which) {
-                                            final String t = data.get(which);
-                                            if (which == data.size() - 1) {
-                                                new MaterialInputDialog.Builder(mContext)
-                                                        .title(R.string.category_set_name)
-                                                        .input(
-                                                                mContext.getString(
-                                                                        R.string
-                                                                                .category_set_name_hint),
-                                                                null,
-                                                                null)
-                                                        .positiveText(R.string.btn_set)
-                                                        .onPositive(
-                                                                new MaterialInputDialog
-                                                                        .ButtonCallback() {
-                                                                    @Override
-                                                                    public void onClick(
-                                                                            MaterialInputDialog
-                                                                                    dialog) {
-                                                                        final String flair =
-                                                                                dialog.getInputEditText()
-                                                                                        .getText()
-                                                                                        .toString();
-                                                                        new AsyncTask<
-                                                                                Void,
-                                                                                Void,
-                                                                                Boolean>() {
-                                                                            @Override
-                                                                            protected Boolean
-                                                                                    doInBackground(
-                                                                                            Void...
-                                                                                                    params) {
-                                                                                try {
-                                                                                    new AccountManager(
-                                                                                                    Authentication
-                                                                                                            .reddit)
-                                                                                            .save(
-                                                                                                    comment,
-                                                                                                    flair);
-                                                                                    return true;
-                                                                                } catch (
-                                                                                        ApiException
-                                                                                                e) {
-                                                                                    LogUtil.e(e, "CommentAdapterHelper.doInBackground failed");
-                                                                                    return false;
-                                                                                }
-                                                                            }
-
-                                                                            @Override
-                                                                            protected void
-                                                                                    onPostExecute(
-                                                                                            Boolean
-                                                                                                    done) {
-                                                                                Snackbar s;
-                                                                                if (done) {
-                                                                                    if (itemView
-                                                                                            != null) {
-                                                                                        s =
-                                                                                                Snackbar
-                                                                                                        .make(
-                                                                                                                itemView,
-                                                                                                                R
-                                                                                                                        .string
-                                                                                                                        .submission_info_saved,
-                                                                                                                Snackbar
-                                                                                                                        .LENGTH_SHORT);
-                                                                                        LayoutUtils
-                                                                                                .showSnackbar(
-                                                                                                        s);
-                                                                                    }
-                                                                                } else {
-                                                                                    if (itemView
-                                                                                            != null) {
-                                                                                        s =
-                                                                                                Snackbar
-                                                                                                        .make(
-                                                                                                                itemView,
-                                                                                                                R
-                                                                                                                        .string
-                                                                                                                        .category_set_error,
-                                                                                                                Snackbar
-                                                                                                                        .LENGTH_SHORT);
-                                                                                        LayoutUtils
-                                                                                                .showSnackbar(
-                                                                                                        s);
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                        }.execute();
-                                                                    }
-                                                                })
-                                                        .negativeText(R.string.btn_cancel)
-                                                        .show();
-                                            } else {
-                                                new AsyncTask<Void, Void, Boolean>() {
-                                                    @Override
-                                                    protected Boolean doInBackground(
-                                                            Void... params) {
-                                                        try {
-                                                            new AccountManager(
-                                                                            Authentication.reddit)
-                                                                    .save(comment, t);
-                                                            return true;
-                                                        } catch (ApiException | RuntimeException e) {
-                                                            LogUtil.e(e, "CommentAdapterHelper.doInBackground failed");
-                                                            return false;
-                                                        }
-                                                    }
-
-                                                    @Override
-                                                    protected void onPostExecute(Boolean done) {
-                                                        Snackbar s;
-                                                        if (done) {
-                                                            if (itemView != null) {
-                                                                s =
-                                                                        Snackbar.make(
-                                                                                itemView,
-                                                                                R.string
-                                                                                        .submission_info_saved,
-                                                                                Snackbar
-                                                                                        .LENGTH_SHORT);
-                                                                LayoutUtils.showSnackbar(s);
-                                                            }
-                                                        } else {
-                                                            if (itemView != null) {
-                                                                s =
-                                                                        Snackbar.make(
-                                                                                itemView,
-                                                                                R.string
-                                                                                        .category_set_error,
-                                                                                Snackbar
-                                                                                        .LENGTH_SHORT);
-                                                                LayoutUtils.showSnackbar(s);
-                                                            }
-                                                        }
-                                                    }
-                                                }.execute();
-                                            }
-                                        }
-                                    })
-                            .show();
-                    if (d != null) {
-                        d.dismiss();
-                    }
-                } catch (Exception ignored) {
-                    // Dialog on a host that is finishing.
-                }
-            }
-        }.execute();
+    /**
+     * Tag a saved comment. Reddit's saved-categories feature is gone, so this no longer writes
+     * anything to the network -- it edits Slide's own store. See {@link SavedTags}.
+     */
+    public static void categorizeComment(final Comment comment, final Context mContext) {
+        SavedTagDialogs.showTagPicker(mContext, comment, null);
     }
 
     public static void showModBottomSheet(

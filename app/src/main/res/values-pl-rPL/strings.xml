@@ -269,8 +269,6 @@
     <string name="type_img">Obraz</string>
     <string name="type_videos">Filmy</string>
     <string name="type_nsfw_video">Wideo NSFW</string>
-    <string name="type_emb">W aplikacji</string>
-    <string name="type_nsfw_emb">W aplikacji NSFW</string>
     <string name="type_imgur">Imgur</string>
     <string name="type_nsfw_imgur">Imgur NSFW</string>
     <string name="type_external">Zewnętrzny</string>
@@ -358,7 +356,6 @@
     <string name="btn_reset">Domyślne</string>
     <string name="btn_save">Zapisz</string>
     <string name="btn_submit">Dodaj</string>
-    <string name="btn_sure">Oczywiście!</string>
     <string name="btn_undo">Cofnij</string>
     <string name="btn_yes">Tak</string>
     <string name="btn_yes_exclaim">Tak!</string>
@@ -683,13 +680,6 @@
     <string name="reorder_loading_title">Ładowanie twoich subredditów</string>
     <string name="reorder_url_err">Nieproawidłowy link</string>
     <!-- Save categories -->
-    <string name="category_set_name">Ustaw nazwę kategorii</string>
-    <string name="category_set_name_hint">Nazwa kategorii</string>
-    <string name="category_categorize">KATEGORYZUJ</string>
-    <string name="category_set_error">Błąd ustawiania kategorii</string>
-    <string name="profile_category_loading">Ładowanie kategorii</string>
-    <string name="profile_category_select">Wybierz kategorię</string>
-    <string name="profile_saved_categories">Zapisz kategorie</string>
     <!-- Setting subheaders -->
     <string name="sorting">Sortowanie</string>
     <string name="display">Wyświetlanie</string>
@@ -929,9 +919,6 @@
     <string name="save_for_offline_viewing">Zapisz do przeglądania offline</string>
     <string name="btn_collapse_children_all">Zwiń komentarze</string>
     <string name="btn_open_content">Otwórz zawartość</string>
-    <string name="load_videos_internally">Ładuj filmy w aplikacji</string>
-    <string name="load_videos_internally_content">Chcesz wypróbować Video Plugin? Pozwala na oglądanie filmów (np. YouTube) w aplikacji!</string>
-    <string name="do_not_show_again">Nie pokazuj ponownie</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Wpisz tekst do filtrowania (subreddit:tekst_flary), kliknij enter, aby dodać</string>
     <string name="datasave_always">Dane mobilne i Wi-Fi</string>
     <string name="datasave_mobile">Dane mobilne</string>

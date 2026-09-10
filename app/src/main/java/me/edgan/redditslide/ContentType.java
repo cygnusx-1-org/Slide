@@ -387,7 +387,6 @@ public class ContentType {
             case VREDDIT_REDIRECT:
                 return true;
 
-            case EMBEDDED:
             case EXTERNAL:
             case LINK:
             case NONE:
@@ -438,8 +437,6 @@ public class ContentType {
                     return R.string.type_nsfw_xkcd;
                 case DEVIANTART:
                     return R.string.type_nsfw_deviantart;
-                case EMBEDDED:
-                    return R.string.type_nsfw_emb;
                 case EXTERNAL:
                 case LINK:
                     return R.string.type_nsfw_link;
@@ -476,8 +473,6 @@ public class ContentType {
                     return R.string.type_xkcd;
                 case DEVIANTART:
                     return R.string.type_deviantart;
-                case EMBEDDED:
-                    return R.string.type_emb;
                 case EXTERNAL:
                     return R.string.type_external;
                 case GIF:
@@ -606,7 +601,6 @@ public class ContentType {
         ALBUM,
         REDDIT_GALLERY,
         DEVIANTART,
-        EMBEDDED,
         EXTERNAL,
         GIF,
         VREDDIT_DIRECT,

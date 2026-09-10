@@ -277,8 +277,6 @@
     <string name="type_img">Obrázek</string>
     <string name="type_videos">Videa</string>
     <string name="type_nsfw_video">NSFW video</string>
-    <string name="type_emb">Vnořené</string>
-    <string name="type_nsfw_emb">NSFW vnořené</string>
     <string name="type_imgur">Obsah Imgur</string>
     <string name="type_nsfw_imgur">Obsah Imgur NSFW</string>
     <string name="type_external">Externí</string>
@@ -365,7 +363,6 @@
     <string name="btn_reset">Resetovat</string>
     <string name="btn_save">Uložit</string>
     <string name="btn_submit">Odeslat</string>
-    <string name="btn_sure">Jistě!</string>
     <string name="btn_undo">Zpět</string>
     <string name="btn_yes">Ano</string>
     <string name="btn_yes_exclaim">Ano!</string>
@@ -677,13 +674,6 @@
     <string name="reorder_loading_title">Načítání subredditů</string>
     <string name="reorder_url_err">Neplatná adresa URL</string>
     <!-- Save categories -->
-    <string name="category_set_name">Zadejte název kategorie</string>
-    <string name="category_set_name_hint">Název kategorie</string>
-    <string name="category_categorize">ZAŘADIT DO KATEGORIE</string>
-    <string name="category_set_error">Chyba při nastavení kategorie</string>
-    <string name="profile_category_loading">Načítám kategorie</string>
-    <string name="profile_category_select">Vybrat kategorii</string>
-    <string name="profile_saved_categories">Uložené kategorie</string>
     <!-- Setting subheaders -->
     <string name="sorting">Třídění</string>
     <string name="display">Zobrazení</string>
@@ -929,9 +919,6 @@
     <string name="save_for_offline_viewing">Uložit příspěvky pro offline prohlížení</string>
     <string name="btn_collapse_children_all">Sbalit podřízené komentáře</string>
     <string name="btn_open_content">Otevřít obsah</string>
-    <string name="load_videos_internally">Načíst videa interně</string>
-    <string name="load_videos_internally_content">Chcete vyzkoušet Slide Video plugin? To vám umožní interně prohlížet videa (jako YouTube)!</string>
-    <string name="do_not_show_again">Příště již neukázat</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Zadejte text pro filtrování (subreddit:flair_text), klikněte enter pro přidání</string>
     <string name="datasave_always">Mobilní data a Wi-Fi</string>
     <string name="datasave_mobile">Mobilní data</string>
