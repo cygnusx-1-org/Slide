@@ -334,6 +334,105 @@
                         android:textColorHint="?attr/fontColor" />
                 </RelativeLayout>
 
+                <!-- Only shown while the "Show self text" switch above is on -->
+                <LinearLayout
+                        android:id="@+id/selftext_mode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                    <View
+                            android:layout_width="match_parent"
+                            android:layout_height="0.25dp"
+                            android:alpha=".25"
+                            android:background="?attr/tintColor" />
+
+                    <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="?android:selectableItemBackground"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingStart="32dp"
+                            android:paddingTop="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingBottom="16dp">
+
+                        <LinearLayout
+                                android:layout_marginEnd="64dp"
+                                android:layout_marginRight="64dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/settings_card_selftext_paragraph"
+                                android:textColor="?attr/fontColor"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:id="@+id/selftext_paragraph"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:backgroundTint="?attr/tintColor"
+                            android:button="@null"
+                            android:buttonTint="?attr/tintColor"
+                            android:hapticFeedbackEnabled="true"
+                            android:textColor="?attr/fontColor"
+                            android:textColorHint="?attr/fontColor" />
+                    </RelativeLayout>
+
+                    <View
+                            android:layout_width="match_parent"
+                            android:layout_height="0.25dp"
+                            android:alpha=".25"
+                            android:background="?attr/tintColor" />
+
+                    <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="?android:selectableItemBackground"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingStart="32dp"
+                            android:paddingTop="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingBottom="16dp">
+
+                        <LinearLayout
+                                android:layout_marginEnd="64dp"
+                                android:layout_marginRight="64dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/settings_card_selftext_ellipsize"
+                                android:textColor="?attr/fontColor"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:id="@+id/selftext_ellipsize"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:backgroundTint="?attr/tintColor"
+                            android:button="@null"
+                            android:buttonTint="?attr/tintColor"
+                            android:hapticFeedbackEnabled="true"
+                            android:textColor="?attr/fontColor"
+                            android:textColorHint="?attr/fontColor" />
+                    </RelativeLayout>
+                </LinearLayout>
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.25dp"

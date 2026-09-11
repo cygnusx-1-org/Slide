@@ -565,7 +565,6 @@
     <string name="settings_filter_flair">Филтери значака</string>
     <string name="settings_view_type">Тип приказа</string>
     <string name="settings_data">Штедња података</string>
-    <string name="settings_card_show_selftext">Прикажи први пасус selftext-а</string>
     <string name="settings_handling_enterdomain">Унесите домен или део домена</string>
     <string name="settings_section_content">Садржај</string>
     <string name="settings_about_version_copied_toast">Број верзије копиран у оставу</string>

@@ -573,7 +573,6 @@
     <string name="settings_comment_hide_selftext_image">在文字貼文中隱藏主圖片</string>
     <string name="settings_view_type">檢視種類</string>
     <string name="settings_data">節省數據</string>
-    <string name="settings_card_show_selftext">顯示文字貼文首段</string>
     <string name="settings_handling_external_desc">以下所輸入的域名會使用其他 App 中開啟</string>
     <string name="settings_handling_enterdomain">輸入域名或域名的一部分</string>
     <string name="settings_section_content">內容</string>

@@ -595,7 +595,6 @@
     <string name="settings_filter_flair">Etiket filtreleri</string>
     <string name="settings_view_type">Görünüm türü</string>
     <string name="settings_data">Veri tasarrufu</string>
-    <string name="settings_card_show_selftext">Metnin ilk paragrafını göster</string>
     <string name="settings_handling_external_desc">Aşağıda girili alan adları her zaman başka uygulamalarla açılacak</string>
     <string name="settings_handling_enterdomain">Alan adının tamamını veya bir kısmını girin</string>
     <string name="settings_section_content">Içerik</string>

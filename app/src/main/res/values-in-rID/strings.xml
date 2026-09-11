@@ -596,7 +596,6 @@
     <string name="settings_filter_flair">Penyaringan</string>
     <string name="settings_view_type">Tipe arah</string>
     <string name="settings_data">Penghematan data</string>
-    <string name="settings_card_show_selftext">Tampilkan paragraf pertama dari selftext</string>
     <string name="settings_handling_external_desc">Domain yang masuk di bawah ini akan selalu terbuka eksternal</string>
     <string name="settings_handling_enterdomain">Masukkan domain atau bagian dari domain</string>
     <string name="settings_section_content">Konten</string>

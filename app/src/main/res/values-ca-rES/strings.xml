@@ -595,7 +595,6 @@
     <string name="settings_filter_flair">Filtrar per banderetes</string>
     <string name="settings_view_type">Tipus de vista</string>
     <string name="settings_data">Estalviant dades</string>
-    <string name="settings_card_show_selftext">Mostrar el primer paràgraf del text</string>
     <string name="settings_handling_external_desc">Els dominis introduïts a continuació s\'obriran sempre externament</string>
     <string name="settings_handling_enterdomain">Insereixi un domini o part d\'aquest</string>
     <string name="settings_section_content">Contingut</string>

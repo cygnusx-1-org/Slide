@@ -608,7 +608,6 @@
     <string name="settings_filter_flair">签名过滤</string>
     <string name="settings_view_type">视图类型</string>
     <string name="settings_data">节省数据</string>
-    <string name="settings_card_show_selftext">显示帖文的第一段</string>
     <string name="settings_handling_external_desc">下面输入的域名将始终在外部打开</string>
     <string name="settings_handling_enterdomain">输入域名或域名的一部分</string>
     <string name="settings_section_content">内容</string>

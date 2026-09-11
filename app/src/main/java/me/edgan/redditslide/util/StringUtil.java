@@ -65,6 +65,52 @@ public class StringUtil {
         return input.trim();
     }
 
+    /**
+     * Cuts an html fragment down to its first {@code maxChars} characters of text and appends an
+     * ellipsis, or returns it whole when the text is no longer than that. Only text is counted:
+     * tags contribute nothing, an entity such as {@code &#39;} is the one character it stands for
+     * and a surrogate pair is one character, so the cut can never split any of them. Whitespace
+     * left at the cut is dropped so the ellipsis sits against the last word.
+     */
+    public static String ellipsizeHtml(final String html, final int maxChars) {
+        final int n = html.length();
+        int chars = 0;
+        int cutAt = 0; // just past the last counted character
+        int i = 0;
+        while (i < n) {
+            final char c = html.charAt(i);
+            if (c == '<') {
+                final int end = html.indexOf('>', i);
+                if (end < 0) break;
+                i = end + 1;
+            } else if (chars == maxChars) {
+                // Text past the limit: the cut stands.
+                while (cutAt > 0 && Character.isWhitespace(html.charAt(cutAt - 1))) cutAt--;
+                return html.substring(0, cutAt) + "\u2026";
+            } else {
+                if (c == '&') {
+                    i = skipEntity(html, i);
+                } else if (Character.isHighSurrogate(c)
+                        && i + 1 < n
+                        && Character.isLowSurrogate(html.charAt(i + 1))) {
+                    i += 2;
+                } else {
+                    i++;
+                }
+                chars++;
+                cutAt = i;
+            }
+        }
+        return html;
+    }
+
+    /** Index just past the entity starting at {@code i}, or {@code i + 1} if it isn't one. */
+    private static int skipEntity(final String html, final int i) {
+        final int end = html.indexOf(';', i);
+        // Entities are short; a far-off ';' means this '&' is a bare ampersand in the text.
+        return end > i && end - i <= 10 ? end + 1 : i + 1;
+    }
+
     public static String sanitizeString(final String input) {
         final char[] allowed =
                 "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_".toCharArray();

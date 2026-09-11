@@ -590,7 +590,6 @@
     <string name="settings_filter_flair">Filtro de categorias</string>
     <string name="settings_view_type">Tipo de visualização</string>
     <string name="settings_data">Economia de dados</string>
-    <string name="settings_card_show_selftext">Mostrar o primeiro parágrafo do selftext</string>
     <string name="settings_handling_external_desc">Domínios introduzidos abaixo serão abertos sempre externamente</string>
     <string name="settings_handling_enterdomain">Insira um domínio ou parte de um domínio</string>
     <string name="settings_section_content">Conteúdo</string>

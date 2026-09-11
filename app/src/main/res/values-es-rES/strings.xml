@@ -594,7 +594,6 @@
     <string name="settings_filter_flair">Filtro de etiquetas</string>
     <string name="settings_view_type">Vista</string>
     <string name="settings_data">Ahorro de datos</string>
-    <string name="settings_card_show_selftext">Ver el primer párrafo de posts de texto</string>
     <string name="settings_handling_external_desc">Los dominios introducidos debajo siempre se abrirán externamente</string>
     <string name="settings_handling_enterdomain">Escriba un dominio o una parte de un dominio</string>
     <string name="settings_section_content">Contenido</string>

@@ -380,7 +380,6 @@
     <string name="settings_comment_hide_selftext_image">Skjul hovedbilde i selvtekst-innlegg</string>
     <string name="settings_view_type">Visningstype</string>
     <string name="settings_data">Datalagring</string>
-    <string name="settings_card_show_selftext">Vis første avsnitt av selvtekster</string>
     <string name="settings_handling_external_desc">Domener angitt nedenfor åpnes alltid eksternt</string>
     <string name="settings_handling_enterdomain">Angi et domene eller en del av et domene</string>
     <!-- Quick setting toggles in the drawer -->

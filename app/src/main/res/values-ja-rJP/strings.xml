@@ -606,7 +606,6 @@
     <string name="settings_filter_flair">フレア フィルター</string>
     <string name="settings_view_type">表示の種類</string>
     <string name="settings_data">データの節約</string>
-    <string name="settings_card_show_selftext">自分が投稿した文章の最初の段落を表示</string>
     <string name="settings_handling_external_desc">下部に入力されたドメインは常に外部ブラウザ等で開かれます</string>
     <string name="settings_handling_enterdomain">ドメインもしくはその一部を入力</string>
     <string name="settings_section_content">コンテンツ</string>

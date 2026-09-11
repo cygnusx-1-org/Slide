@@ -89,6 +89,7 @@ public class SettingValues {
     public static final String PREF_HIDE_SUBREDDIT_TABS = "hideSubredditTabs";
     public static final String PREF_SHOW_DOMAIN = "showDomain";
     public static final String PREF_CARD_TEXT = "cardText";
+    public static final String PREF_CARD_TEXT_ELLIPSIZE = "cardTextEllipsize";
     public static final String PREF_ZOOM_DEFAULT = "zoomDefault";
     public static final String PREF_SUBREDDIT_SEARCH_METHOD = "subredditSearchMethod";
     public static final String PREF_BACK_BUTTON_BEHAVIOR = "backButtonBehavior";
@@ -331,6 +332,10 @@ public class SettingValues {
     public static boolean oldSwipeMode;
     public static boolean showDomain;
     public static boolean cardText;
+    // The card's self text preview: false shows the whole first paragraph, true ellipsizes it to
+    // its first CARD_TEXT_ELLIPSIZE_CHARS characters.
+    public static boolean cardTextEllipsize;
+    public static final int CARD_TEXT_ELLIPSIZE_CHARS = 128;
     public static boolean alwaysZoom;
     // volatile: read from the background feed-preload thread (PhotoLoader.getLowQualityUrl selects
     // the low-res variation) as well as the main thread, so both must observe the current value.
@@ -460,6 +465,7 @@ public class SettingValues {
         autoTime = prefs.getBoolean(PREF_AUTOTHEME, false);
         colorBack = prefs.getBoolean(PREF_COLOR_BACK, false);
         cardText = prefs.getBoolean(PREF_CARD_TEXT, false);
+        cardTextEllipsize = prefs.getBoolean(PREF_CARD_TEXT_ELLIPSIZE, false);
         colorNavBar = prefs.getBoolean(PREF_COLOR_NAV_BAR, false);
         shareLongLink = prefs.getBoolean(PREF_LONG_LINK, false);
         colorEverywhere = prefs.getBoolean(PREF_COLOR_EVERYWHERE, true);

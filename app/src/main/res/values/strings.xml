@@ -826,7 +826,9 @@
     <string name="settings_filter_flair">Flair filters</string>
     <string name="settings_view_type">View type</string>
     <string name="settings_data">Data saving</string>
-    <string name="settings_card_show_selftext">Show first paragraph of selftext</string>
+    <string name="settings_card_show_selftext">Show self text</string>
+    <string name="settings_card_selftext_paragraph">Show first paragraph</string>
+    <string name="settings_card_selftext_ellipsize">Elliptize to the first 128 characters</string>
     <string name="settings_handling_external_desc">Domains entered below will always open externally</string>
     <string name="settings_handling_enterdomain">Enter a domain or part of a domain</string>
     <string name="settings_section_content">Content</string>

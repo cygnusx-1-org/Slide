@@ -626,7 +626,6 @@
     <string name="settings_filter_flair">Фильтры флейров</string>
     <string name="settings_view_type">Режим просмотра</string>
     <string name="settings_data">Экономия трафика</string>
-    <string name="settings_card_show_selftext">Показывать первый абзац текстовых записей</string>
     <string name="settings_handling_external_desc">Домены, указанные внизу, будут всегда открываться во внешнем браузере</string>
     <string name="settings_handling_enterdomain">Введите домен или часть домена</string>
     <string name="settings_section_content">Содержимое</string>

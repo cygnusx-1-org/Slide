@@ -607,7 +607,6 @@
     <string name="settings_filter_flair">Flér filtry</string>
     <string name="settings_view_type">Typ zobrazení</string>
     <string name="settings_data">Úspora přenosových dat</string>
-    <string name="settings_card_show_selftext">Zobrazit první odstavec samotextu</string>
     <string name="settings_handling_external_desc">Domény zadané níže budou vždy otevřeny externě</string>
     <string name="settings_handling_enterdomain">Zadejte doménu nebo část domény</string>
     <string name="settings_section_content">Obsah</string>

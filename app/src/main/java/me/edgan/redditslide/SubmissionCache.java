@@ -28,6 +28,7 @@ import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.FlairEmojiUtil;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.PostRecovery;
+import me.edgan.redditslide.util.StringUtil;
 import me.edgan.redditslide.util.TimeUtils;
 import net.dean.jraw.models.DistinguishedStatus;
 import net.dean.jraw.models.Flair;
@@ -39,29 +40,36 @@ public class SubmissionCache {
     private static WeakHashMap<String, SpannableStringBuilder> info = new WeakHashMap<>();
     private static WeakHashMap<String, SpannableStringBuilder> crosspost = new WeakHashMap<>();
 
-    /** fullname -> {source selftext_html, rendered first-line preview}. See getSelftextPreview. */
+    /** fullname -> {source selftext_html, mode, rendered preview}. See getSelftextPreview. */
     private static WeakHashMap<String, String[]> selftextPreviews = new WeakHashMap<>();
 
     /**
-     * The first line of a self post's body, unescaped for the card's preview TextView. Cached
+     * The first line of a self post's body — ellipsized to its first {@link
+     * SettingValues#CARD_TEXT_ELLIPSIZE_CHARS} characters when {@link
+     * SettingValues#cardTextEllipsize} is on — unescaped for the card's preview TextView. Cached
      * because building it runs a full Html.fromHtml parse, and the feed did that on every bind of
-     * every self post. Keyed on the source html too, so an edited post re-renders on its own.
+     * every self post. Keyed on the source html and the mode too, so an edited post or a flipped
+     * setting re-renders on its own.
      */
     public static String getSelftextPreview(Submission submission) {
         final String source = submission.getDataNode().path("selftext_html").asText("");
+        final String mode = SettingValues.cardTextEllipsize ? "ellipsized" : "paragraph";
         final String[] cached = selftextPreviews.get(submission.getFullName());
-        if (cached != null && cached[0].equals(source)) {
-            return cached[1];
+        if (cached != null && cached[0].equals(source) && cached[1].equals(mode)) {
+            return cached[2];
         }
 
         final String firstLine =
                 source.substring(0, source.contains("\n") ? source.indexOf("\n") : source.length());
-        final String preview =
+        String preview =
                 CompatUtil.fromHtml(firstLine)
                         .toString()
                         .replace("<sup>", "<sup><small>")
                         .replace("</sup>", "</small></sup>");
-        selftextPreviews.put(submission.getFullName(), new String[] {source, preview});
+        if (SettingValues.cardTextEllipsize) {
+            preview = StringUtil.ellipsizeHtml(preview, SettingValues.CARD_TEXT_ELLIPSIZE_CHARS);
+        }
+        selftextPreviews.put(submission.getFullName(), new String[] {source, mode, preview});
         return preview;
     }
 

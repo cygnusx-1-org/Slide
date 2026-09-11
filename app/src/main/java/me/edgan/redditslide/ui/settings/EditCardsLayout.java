@@ -276,17 +276,46 @@ public class EditCardsLayout extends BaseActivityAnim {
 
         {
             SwitchCompat single = (SwitchCompat) requireViewById(R.id.selftext);
+            final View mode = requireViewById(R.id.selftext_mode);
 
             single.setChecked(SettingValues.cardText);
+            mode.setVisibility(SettingValues.cardText ? View.VISIBLE : View.GONE);
             single.setOnCheckedChangeListener(
                     new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                             SettingValues.cardText = isChecked;
+                            mode.setVisibility(isChecked ? View.VISIBLE : View.GONE);
                             SettingValues.prefs
                                     .edit()
                                     .putBoolean(SettingValues.PREF_CARD_TEXT, isChecked)
                                     .apply();
+                        }
+                    });
+        }
+
+        {
+            // Whole first paragraph vs ellipsized: exactly one is on. Flipping either switch (on
+            // or off) moves the choice to the other one; a single pref holds which.
+            final SwitchCompat paragraph = (SwitchCompat) requireViewById(R.id.selftext_paragraph);
+            final SwitchCompat ellipsize = (SwitchCompat) requireViewById(R.id.selftext_ellipsize);
+
+            paragraph.setChecked(!SettingValues.cardTextEllipsize);
+            ellipsize.setChecked(SettingValues.cardTextEllipsize);
+            paragraph.setOnCheckedChangeListener(
+                    new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            ellipsize.setChecked(!isChecked);
+                            setCardTextEllipsize(!isChecked);
+                        }
+                    });
+            ellipsize.setOnCheckedChangeListener(
+                    new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            paragraph.setChecked(!isChecked);
+                            setCardTextEllipsize(isChecked);
                         }
                     });
         }
@@ -682,5 +711,13 @@ public class EditCardsLayout extends BaseActivityAnim {
                         layout.addView(CreateCardView.setSwitchThumb(isChecked, layout));
                     }
                 });
+    }
+
+    private static void setCardTextEllipsize(boolean ellipsize) {
+        SettingValues.cardTextEllipsize = ellipsize;
+        SettingValues.prefs
+                .edit()
+                .putBoolean(SettingValues.PREF_CARD_TEXT_ELLIPSIZE, ellipsize)
+                .apply();
     }
 }

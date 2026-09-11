@@ -605,7 +605,6 @@
     <string name="settings_filter_flair">Filtres de flair</string>
     <string name="settings_view_type">Type d\'affichage</string>
     <string name="settings_data">Économie de données mobile</string>
-    <string name="settings_card_show_selftext">Voir le premier paragraphe des publications texte</string>
     <string name="settings_handling_external_desc">Les domaines inscrits ci-dessous seront toujours ouverts en externe</string>
     <string name="settings_handling_enterdomain">Entrez un domaine ou une partie d\'un domaine</string>
     <string name="settings_section_content">Contenu</string>

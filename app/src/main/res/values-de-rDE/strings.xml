@@ -606,7 +606,6 @@ Möchten Sie Slide for Reddit unterstützen?</string>
     <string name="settings_filter_flair">Flair-Filter</string>
     <string name="settings_view_type">Ansichtstyp</string>
     <string name="settings_data">Datenverbrauch</string>
-    <string name="settings_card_show_selftext">Zeige ersten Paragraph vom Selftext</string>
     <string name="settings_handling_external_desc">Eingegebene Domains werden immer extern geöffnet</string>
     <string name="settings_handling_enterdomain">Gib einen Domainnamen oder einen Teil eines Domainnamens ein</string>
     <string name="settings_section_content">Inhalt</string>

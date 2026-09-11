@@ -612,7 +612,6 @@
     <string name="settings_filter_flair">Filtry flar</string>
     <string name="settings_view_type">Tryb widoku</string>
     <string name="settings_data">Oszczędzanie danych</string>
-    <string name="settings_card_show_selftext">Pokaż pierwszy akapit postu tekstowego</string>
     <string name="settings_handling_external_desc">Domeny poniżej będą zawsze otwierane zewnętrznie</string>
     <string name="settings_handling_enterdomain">Wpisz domenę lub jej część</string>
     <string name="settings_section_content">Zawartość</string>

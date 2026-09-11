@@ -564,7 +564,6 @@
     <string name="settings_comment_hide_selftext_image">Címlapkép elrejtése önálló szöveg esetén</string>
     <string name="settings_view_type">Nézettípus</string>
     <string name="settings_data">Adatmegtakarítás</string>
-    <string name="settings_card_show_selftext">Az önálló szöveg első bekezdésének megjelenítése</string>
     <string name="settings_section_content">Tartalom</string>
     <!-- Quick setting toggles in the drawer -->
     <!-- View types -->

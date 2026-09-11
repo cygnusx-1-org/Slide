@@ -494,7 +494,6 @@
     <string name="settings_comment_hide_selftext_image">Verberg hoofdafbeelding bij zelfteksten</string>
     <string name="settings_view_type">Weergave</string>
     <string name="settings_data">Databesparing</string>
-    <string name="settings_card_show_selftext">Toon de eerste paragraaf van zelfteksten</string>
     <string name="settings_handling_external_desc">Onderstaande domeinen worden altijd extern geopend</string>
     <string name="settings_handling_enterdomain">Voer (gedeelte van) een domein in</string>
     <string name="settings_section_content">Inhoud</string>

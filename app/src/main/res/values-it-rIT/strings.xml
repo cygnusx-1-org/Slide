@@ -612,7 +612,6 @@
     <string name="settings_filter_flair">Filtri flair</string>
     <string name="settings_view_type">Modalità di visualizzazione</string>
     <string name="settings_data">Risparmio dati</string>
-    <string name="settings_card_show_selftext">Mostra primo paragrafo del testo</string>
     <string name="settings_handling_external_desc">I domini inseriti sotto verranno aperti sempre esternamente</string>
     <string name="settings_handling_enterdomain">Inserisci un dominio o parte di esso</string>
     <string name="settings_section_content">Contenuto</string>
