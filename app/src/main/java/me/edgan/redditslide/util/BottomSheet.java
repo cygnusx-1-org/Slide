@@ -60,6 +60,7 @@ public class BottomSheet {
         private @Nullable CharSequence title;
         private boolean grid;
         private @Nullable DialogInterface.OnClickListener listener;
+        private @Nullable DialogInterface.OnClickListener longListener;
         private final List<Item> items = new ArrayList<>();
 
         public Builder(Context context) {
@@ -109,6 +110,15 @@ public class BottomSheet {
 
         public Builder listener(DialogInterface.OnClickListener listener) {
             this.listener = listener;
+            return this;
+        }
+
+        /**
+         * Called with the item's id on a long press, after which the sheet is dismissed just as
+         * for a click. Without one, items do not react to long presses at all.
+         */
+        public Builder longListener(DialogInterface.OnClickListener longListener) {
+            this.longListener = longListener;
             return this;
         }
 
@@ -288,6 +298,16 @@ public class BottomSheet {
                         }
                         dialog.dismiss();
                     });
+            if (longListener != null) {
+                view.setOnLongClickListener(
+                        v -> {
+                            if (longListener != null) {
+                                longListener.onClick(dialog, id);
+                            }
+                            dialog.dismiss();
+                            return true;
+                        });
+            }
         }
 
         private static void applyIcon(ImageView iv, @Nullable Drawable icon, int tintColor) {

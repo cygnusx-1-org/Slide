@@ -527,6 +527,16 @@ final AlertDialog reportDialog =
                         }
                     }
                 });
+        // Long press on the author: the profile's user options (message, follow, block...).
+        b.longListener(
+                (dialog, which) -> {
+                    if (which == 1) {
+                        Intent i = new Intent(mContext, Profile.class);
+                        i.putExtra(Profile.EXTRA_PROFILE, author);
+                        i.putExtra(Profile.EXTRA_USER_OPTIONS, true);
+                        mContext.startActivity(i);
+                    }
+                });
         b.show();
     }
 

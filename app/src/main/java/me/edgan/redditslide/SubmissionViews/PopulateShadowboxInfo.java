@@ -768,6 +768,16 @@ final AlertDialog reportDialog =
                                         break;
                                 }
                             }
+                        })
+                // Long press on the author: the profile's user options (message, follow, block...).
+                .longListener(
+                        (dialog, which) -> {
+                            if (which == 1) {
+                                Intent i = new Intent(mContext, Profile.class);
+                                i.putExtra(Profile.EXTRA_PROFILE, submission.getAuthor());
+                                i.putExtra(Profile.EXTRA_USER_OPTIONS, true);
+                                mContext.startActivity(i);
+                            }
                         });
 
         b.show();

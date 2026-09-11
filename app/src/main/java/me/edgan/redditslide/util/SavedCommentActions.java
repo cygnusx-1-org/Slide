@@ -152,6 +152,16 @@ public final class SavedCommentActions {
                         }
                     }
                 });
+        // Long press on the author: the profile's user options (message, follow, block...).
+        b.longListener(
+                (dialog, which) -> {
+                    if (which == 1 && author != null) {
+                        final Intent i = new Intent(context, Profile.class);
+                        i.putExtra(Profile.EXTRA_PROFILE, author);
+                        i.putExtra(Profile.EXTRA_USER_OPTIONS, true);
+                        context.startActivity(i);
+                    }
+                });
         b.show();
     }
 

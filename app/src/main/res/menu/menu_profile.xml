@@ -31,4 +31,10 @@
         android:icon="@drawable/ic_info"
         android:title="@string/profile_info"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/user_options"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/profile_options"
+        app:showAsAction="always" />
 </menu>

@@ -115,6 +115,8 @@ public class Profile extends BaseActivityAnim implements HibernateState.Restorab
     public static final String EXTRA_SUBMIT = "submitted";
     public static final String EXTRA_UPVOTE = "upvoted";
     public static final String EXTRA_HISTORY = "history";
+    /** Boolean extra: open straight into the user options dialog (the toolbar gear). */
+    public static final String EXTRA_USER_OPTIONS = "user_options";
     private String name = "";
     @Nullable private Account account;
     @Nullable private List<Trophy> trophyCase;
@@ -255,6 +257,14 @@ public class Profile extends BaseActivityAnim implements HibernateState.Restorab
         isSavedView = pager.getCurrentItem() == 6;
         if (pager.getCurrentItem() != 0) {
             LayoutUtils.scrollToTabAfterLayout(tabs, pager.getCurrentItem());
+        }
+
+        // A long press on the author in a post's or comment's sheet lands here. Fresh launches
+        // only: a rotation or a hibernate replay carries the same intent and must not reopen it.
+        if (savedInstance == null
+                && hibernated == null
+                && getIntent().getBooleanExtra(EXTRA_USER_OPTIONS, false)) {
+            showUserOptionsDialog();
         }
     }
 
@@ -840,95 +850,7 @@ public class Profile extends BaseActivityAnim implements HibernateState.Restorab
 
                     ((TextView) dialoglayout.requireViewById(R.id.moreinfo)).setText(info);
 
-                    String tag = UserTags.getUserTag(name);
-                    if (tag.isEmpty()) {
-                        tag = getString(R.string.profile_tag_user);
-                    } else {
-                        tag = getString(R.string.profile_tag_user_existing, tag);
-                    }
-
-                    ((TextView) dialoglayout.requireViewById(R.id.tagged)).setText(tag);
                     LinearLayout l = dialoglayout.requireViewById(R.id.trophies_inner);
-
-                    dialoglayout
-                            .requireViewById(R.id.tag)
-                            .setOnClickListener(
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            MaterialInputDialog.Builder b =
-                                                    new MaterialInputDialog.Builder(Profile.this)
-                                                            .title(
-                                                                    getString(
-                                                                            R.string
-                                                                                    .profile_tag_set,
-                                                                            name))
-                                                            .input(
-                                                                    getString(R.string.profile_tag),
-                                                                    UserTags.getUserTag(name),
-                                                                    null)
-                                                            .positiveText(R.string.profile_btn_tag)
-                                                            .neutralText(R.string.btn_cancel);
-
-                                            if (UserTags.isUserTagged(name)) {
-                                                b.negativeText(R.string.profile_btn_untag);
-                                            }
-                                            b.onPositive(
-                                                            dialog -> {
-                                                                UserTags.setUserTag(
-                                                                        name,
-                                                                        dialog.getInputEditText()
-                                                                                .getText()
-                                                                                .toString());
-                                                                String tag =
-                                                                        UserTags.getUserTag(name);
-                                                                if (tag.isEmpty()) {
-                                                                    tag =
-                                                                            getString(
-                                                                                    R.string
-                                                                                            .profile_tag_user);
-                                                                } else {
-                                                                    tag =
-                                                                            getString(
-                                                                                    R.string
-                                                                                            .profile_tag_user_existing,
-                                                                                    tag);
-                                                                }
-                                                                ((TextView)
-                                                                                dialoglayout
-                                                                                        .findViewById(
-                                                                                                R.id
-                                                                                                        .tagged))
-                                                                        .setText(tag);
-                                                            })
-                                                    .onNeutral(null)
-                                                    .onNegative(
-                                                            dialog -> {
-                                                                UserTags.removeUserTag(name);
-                                                                String tag =
-                                                                        UserTags.getUserTag(name);
-                                                                if (tag.isEmpty()) {
-                                                                    tag =
-                                                                            getString(
-                                                                                    R.string
-                                                                                            .profile_tag_user);
-                                                                } else {
-                                                                    tag =
-                                                                            getString(
-                                                                                    R.string
-                                                                                            .profile_tag_user_existing,
-                                                                                    tag);
-                                                                }
-                                                                ((TextView)
-                                                                                dialoglayout
-                                                                                        .findViewById(
-                                                                                                R.id
-                                                                                                        .tagged))
-                                                                        .setText(tag);
-                                                            })
-                                                    .show();
-                                        }
-                                    });
 
                     if (trophyCase.isEmpty()) {
                         dialoglayout.requireViewById(R.id.trophies).setVisibility(View.GONE);
@@ -965,325 +887,6 @@ public class Profile extends BaseActivityAnim implements HibernateState.Restorab
                             l.addView(view);
                         }
                     }
-                    if (Authentication.isLoggedIn) {
-                        dialoglayout
-                                .requireViewById(R.id.pm)
-                                .setOnClickListener(
-                                        new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                Intent i =
-                                                        new Intent(Profile.this, SendMessage.class);
-                                                i.putExtra(SendMessage.EXTRA_NAME, name);
-                                                startActivity(i);
-                                            }
-                                        });
-
-                        final TextView blockButton = (TextView) dialoglayout.requireViewById(R.id.block);
-                        SpannableStringBuilder initialBuilder = new SpannableStringBuilder();
-                        initialBuilder.append(getString(R.string.profile_block_user));
-                        initialBuilder.append("\n");
-                        String description = getString(R.string.profile_block_user_description);
-                        initialBuilder.append(description);
-                        initialBuilder.setSpan(new RelativeSizeSpan(0.5f),
-                            getString(R.string.profile_block_user).length() + 1,
-                            initialBuilder.length(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        blockButton.setText(initialBuilder);
-                        updateBlockButtonState(blockButton);
-                        dialoglayout
-                                .requireViewById(R.id.block_body)
-                                .setOnClickListener(
-                                        new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                checkBlockStatusAndToggle(blockButton);
-                                            }
-                                        });
-
-                        // Follow/Unfollow: subscribe to the user's profile subreddit (u_username)
-                        // and add it to the subreddit list, like any other subreddit.
-                        final String userSub = "u_" + name.toLowerCase(Locale.ENGLISH);
-                        following = UserSubscriptions.getSubscriptions(Profile.this).contains(userSub);
-                        ((TextView) dialoglayout.requireViewById(R.id.follow))
-                                .setText(
-                                        following
-                                                ? R.string.profile_unfollow_user
-                                                : R.string.profile_follow_user);
-                        dialoglayout
-                                .requireViewById(R.id.follow_body)
-                                .setOnClickListener(
-                                        new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                new AsyncTask<Void, Void, Boolean>() {
-                                                    @Override
-                                                    protected Boolean doInBackground(Void... params) {
-                                                        if (Authentication.reddit == null) {
-                                                            return false;
-                                                        }
-
-                                                        try {
-                                                            AccountManager m =
-                                                                    new AccountManager(
-                                                                            Authentication.reddit);
-                                                            if (following) {
-                                                                m.unsubscribe(
-                                                                        Authentication.reddit
-                                                                                .getSubreddit(
-                                                                                        "u_" + name));
-                                                            } else {
-                                                                m.subscribe(
-                                                                        Authentication.reddit
-                                                                                .getSubreddit(
-                                                                                        "u_" + name));
-                                                            }
-                                                            return true;
-                                                        } catch (Exception e) {
-                                                            return false;
-                                                        }
-                                                    }
-
-                                                    @Override
-                                                    public void onPostExecute(Boolean success) {
-                                                        if (!success) {
-                                                            return;
-                                                        }
-                                                        if (following) {
-                                                            UserSubscriptions.removeSubreddit(
-                                                                    userSub, Profile.this);
-                                                            following = false;
-                                                        } else {
-                                                            UserSubscriptions.addSubreddit(
-                                                                    userSub, Profile.this);
-                                                            following = true;
-                                                        }
-                                                        ((TextView)
-                                                                        dialoglayout.requireViewById(
-                                                                                R.id.follow))
-                                                                .setText(
-                                                                        following
-                                                                                ? R.string
-                                                                                        .profile_unfollow_user
-                                                                                : R.string
-                                                                                        .profile_follow_user);
-                                                        Toast.makeText(
-                                                                        Profile.this,
-                                                                        following
-                                                                                ? R.string
-                                                                                        .misc_subscribed
-                                                                                : R.string
-                                                                                        .misc_unsubscribed,
-                                                                        Toast.LENGTH_SHORT)
-                                                                .show();
-                                                    }
-                                                }.executeOnExecutor(
-                                                        AsyncTask.THREAD_POOL_EXECUTOR);
-                                            }
-                                        });
-                    } else {
-                        dialoglayout.requireViewById(R.id.pm).setVisibility(View.GONE);
-                        dialoglayout.requireViewById(R.id.follow_body).setVisibility(View.GONE);
-                    }
-
-                    // Add/Remove user: unlike Follow above it stays available logged out, because
-                    // the list itself is local. Removing is not purely local though -- if the name
-                    // is marked as a friend, SavedUsers.removeUser also ends that friendship on
-                    // reddit, or the next sync would put the name straight back into the list.
-                    final TextView addUser = (TextView) dialoglayout.requireViewById(R.id.add_user);
-                    addUser.setText(
-                            SavedUsers.contains(name)
-                                    ? R.string.profile_remove_user
-                                    : R.string.profile_add_user);
-                    dialoglayout
-                            .requireViewById(R.id.add_user_body)
-                            .setOnClickListener(
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            final boolean saved = SavedUsers.contains(name);
-
-                                            if (saved) {
-                                                SavedUsers.removeUser(name);
-                                            } else {
-                                                SavedUsers.addUser(name);
-                                            }
-
-                                            addUser.setText(
-                                                    saved
-                                                            ? R.string.profile_add_user
-                                                            : R.string.profile_remove_user);
-                                            Toast.makeText(
-                                                            Profile.this,
-                                                            getString(
-                                                                    saved
-                                                                            ? R.string.users_removed
-                                                                            : R.string.users_added,
-                                                                    name),
-                                                            Toast.LENGTH_SHORT)
-                                                    .show();
-                                        }
-                                    });
-
-                    dialoglayout
-                            .requireViewById(R.id.multi_body)
-                            .setOnClickListener(
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            Intent inte =
-                                                    new Intent(
-                                                            Profile.this,
-                                                            MultiredditOverview.class);
-                                            inte.putExtra(EXTRA_PROFILE, name);
-                                            Profile.this.startActivity(inte);
-                                        }
-                                    });
-
-                    final View body = dialoglayout.requireViewById(R.id.body2);
-                    body.setVisibility(View.INVISIBLE);
-
-                    final View center = dialoglayout.requireViewById(R.id.colorExpandFrom);
-                    dialoglayout
-                            .requireViewById(R.id.color)
-                            .setOnClickListener(
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            int cx = center.getWidth() / 2;
-                                            int cy = center.getHeight() / 2;
-
-                                            int finalRadius =
-                                                    Math.max(body.getWidth(), body.getHeight());
-
-                                            if (Build.VERSION.SDK_INT
-                                                    >= Build.VERSION_CODES.LOLLIPOP) {
-                                                Animator anim =
-                                                        ViewAnimationUtils.createCircularReveal(
-                                                                body, cx, cy, 0, finalRadius);
-                                                body.setVisibility(View.VISIBLE);
-                                                anim.start();
-                                            } else {
-                                                body.setVisibility(View.VISIBLE);
-                                            }
-                                        }
-                                    });
-
-                    LineColorPicker colorPicker = dialoglayout.requireViewById(R.id.picker);
-                    final LineColorPicker colorPicker2 = dialoglayout.requireViewById(R.id.picker2);
-
-                    colorPicker.setColors(ColorPreferences.getBaseColors(Profile.this));
-
-                    colorPicker.setOnColorChangedListener(
-                            new OnColorChangedListener() {
-                                @Override
-                                public void onColorChanged(int c) {
-
-                                    colorPicker2.setColors(
-                                            ColorPreferences.getColors(getBaseContext(), c));
-                                    colorPicker2.setSelectedColor(c);
-                                }
-                            });
-
-                    for (int i : colorPicker.getColors()) {
-                        for (int i2 : ColorPreferences.getColors(getBaseContext(), i)) {
-                            if (i2 == currentColor) {
-                                colorPicker.setSelectedColor(i);
-                                colorPicker2.setColors(
-                                        ColorPreferences.getColors(getBaseContext(), i));
-                                colorPicker2.setSelectedColor(i2);
-                                break;
-                            }
-                        }
-                    }
-
-                    colorPicker2.setOnColorChangedListener(
-                            new OnColorChangedListener() {
-                                @Override
-                                public void onColorChanged(int i) {
-                                    requireViewById(R.id.header)
-                                            .setBackgroundColor(colorPicker2.getColor());
-                                    if (mToolbar != null)
-                                        mToolbar.setBackgroundColor(colorPicker2.getColor());
-                                    Window window = getWindow();
-                                    int color = Palette.getDarkerColor(colorPicker2.getColor());
-
-                                    if (SettingValues.alwaysBlackStatusbar) {
-                                        color = Color.BLACK;
-                                    }
-
-                                    window.setStatusBarColor(color);
-                                    title.setBackgroundColor(colorPicker2.getColor());
-                                }
-                            });
-
-                    {
-                        TextView dialogButton = dialoglayout.requireViewById(R.id.ok);
-
-                        // if button is clicked, close the custom dialog
-                        dialogButton.setOnClickListener(
-                                new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        Palette.setColorUser(name, colorPicker2.getColor());
-
-                                        int cx = center.getWidth() / 2;
-                                        int cy = center.getHeight() / 2;
-
-                                        int initialRadius = body.getWidth();
-                                        Animator anim =
-                                                ViewAnimationUtils.createCircularReveal(
-                                                        body, cx, cy, initialRadius, 0);
-
-                                        anim.addListener(
-                                                new AnimatorListenerAdapter() {
-                                                    @Override
-                                                    public void onAnimationEnd(Animator animation) {
-                                                        super.onAnimationEnd(animation);
-                                                        body.setVisibility(View.GONE);
-                                                    }
-                                                });
-                                        anim.start();
-                                    }
-                                });
-                    }
-                    {
-                        final TextView dialogButton = dialoglayout.requireViewById(R.id.reset);
-
-                        // if button is clicked, close the custom dialog
-                        dialogButton.setOnClickListener(
-                                new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        Palette.removeUserColor(name);
-
-                                        Snackbar.make(
-                                                        dialogButton,
-                                                        "User color removed",
-                                                        Snackbar.LENGTH_SHORT)
-                                                .show();
-
-                                        int cx = center.getWidth() / 2;
-                                        int cy = center.getHeight() / 2;
-
-                                        int initialRadius = body.getWidth();
-                                        Animator anim =
-                                                ViewAnimationUtils.createCircularReveal(
-                                                        body, cx, cy, initialRadius, 0);
-
-                                        anim.addListener(
-                                                new AnimatorListenerAdapter() {
-                                                    @Override
-                                                    public void onAnimationEnd(Animator animation) {
-                                                        super.onAnimationEnd(animation);
-                                                        body.setVisibility(View.GONE);
-                                                    }
-                                                });
-                                        anim.start();
-                                    }
-                                });
-                    }
-
                     ((TextView) dialoglayout.requireViewById(R.id.commentkarma))
                             .setText(
                                     String.format(
@@ -1308,23 +911,12 @@ public class Profile extends BaseActivityAnim implements HibernateState.Restorab
                             new ColorPreferences(Profile.this).getFontStyle().getBaseId());
 
                     new MaterialAlertDialogBuilder(contextThemeWrapper)
-                            .setOnDismissListener(
-                                    dialogInterface -> {
-                                        requireViewById(R.id.header).setBackgroundColor(currentColor);
-                                        if (mToolbar != null)
-                                            mToolbar.setBackgroundColor(currentColor);
-                                        Window window = getWindow();
-                                        int color = Palette.getDarkerColor(currentColor);
-
-                                        if (SettingValues.alwaysBlackStatusbar) {
-                                            color = Color.BLACK;
-                                        }
-
-                                        window.setStatusBarColor(color);
-                                    })
                             .setView(dialoglayout)
                             .show();
             }
+            return true;
+        } else if (itemId == R.id.user_options) {
+            showUserOptionsDialog();
             return true;
         } else if (itemId == R.id.search) {
             openSearchDialog();
@@ -1334,6 +926,450 @@ public class Profile extends BaseActivityAnim implements HibernateState.Restorab
             return true;
         }
         return false;
+    }
+
+    /**
+     * The per-user actions (message, follow, add, multireddits, colour, tag, block), split out of
+     * the info dialog. Needs only {@link #name}, so it works before the profile has loaded.
+     */
+    private void showUserOptionsDialog() {
+        LayoutInflater inflater = getLayoutInflater();
+        final View dialoglayout = inflater.inflate(R.layout.profile_options, null);
+        final TextView title = dialoglayout.requireViewById(R.id.title);
+        title.setText(name);
+
+        final int currentColor = Palette.getColorUser(name);
+        title.setBackgroundColor(currentColor);
+
+        String tag = UserTags.getUserTag(name);
+        if (tag.isEmpty()) {
+            tag = getString(R.string.profile_tag_user);
+        } else {
+            tag = getString(R.string.profile_tag_user_existing, tag);
+        }
+
+        ((TextView) dialoglayout.requireViewById(R.id.tagged)).setText(tag);
+
+        dialoglayout
+                .requireViewById(R.id.tag)
+                .setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                MaterialInputDialog.Builder b =
+                                        new MaterialInputDialog.Builder(Profile.this)
+                                                .title(
+                                                        getString(
+                                                                R.string
+                                                                        .profile_tag_set,
+                                                                name))
+                                                .input(
+                                                        getString(R.string.profile_tag),
+                                                        UserTags.getUserTag(name),
+                                                        null)
+                                                .positiveText(R.string.profile_btn_tag)
+                                                .neutralText(R.string.btn_cancel);
+
+                                if (UserTags.isUserTagged(name)) {
+                                    b.negativeText(R.string.profile_btn_untag);
+                                }
+                                b.onPositive(
+                                                dialog -> {
+                                                    UserTags.setUserTag(
+                                                            name,
+                                                            dialog.getInputEditText()
+                                                                    .getText()
+                                                                    .toString());
+                                                    String tag =
+                                                            UserTags.getUserTag(name);
+                                                    if (tag.isEmpty()) {
+                                                        tag =
+                                                                getString(
+                                                                        R.string
+                                                                                .profile_tag_user);
+                                                    } else {
+                                                        tag =
+                                                                getString(
+                                                                        R.string
+                                                                                .profile_tag_user_existing,
+                                                                        tag);
+                                                    }
+                                                    ((TextView)
+                                                                    dialoglayout
+                                                                            .findViewById(
+                                                                                    R.id
+                                                                                            .tagged))
+                                                            .setText(tag);
+                                                })
+                                        .onNeutral(null)
+                                        .onNegative(
+                                                dialog -> {
+                                                    UserTags.removeUserTag(name);
+                                                    String tag =
+                                                            UserTags.getUserTag(name);
+                                                    if (tag.isEmpty()) {
+                                                        tag =
+                                                                getString(
+                                                                        R.string
+                                                                                .profile_tag_user);
+                                                    } else {
+                                                        tag =
+                                                                getString(
+                                                                        R.string
+                                                                                .profile_tag_user_existing,
+                                                                        tag);
+                                                    }
+                                                    ((TextView)
+                                                                    dialoglayout
+                                                                            .findViewById(
+                                                                                    R.id
+                                                                                            .tagged))
+                                                            .setText(tag);
+                                                })
+                                        .show();
+                            }
+                        });
+
+        if (Authentication.isLoggedIn) {
+            dialoglayout
+                    .requireViewById(R.id.pm)
+                    .setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent i =
+                                            new Intent(Profile.this, SendMessage.class);
+                                    i.putExtra(SendMessage.EXTRA_NAME, name);
+                                    startActivity(i);
+                                }
+                            });
+
+            final TextView blockButton = (TextView) dialoglayout.requireViewById(R.id.block);
+            SpannableStringBuilder initialBuilder = new SpannableStringBuilder();
+            initialBuilder.append(getString(R.string.profile_block_user));
+            initialBuilder.append("\n");
+            String description = getString(R.string.profile_block_user_description);
+            initialBuilder.append(description);
+            initialBuilder.setSpan(new RelativeSizeSpan(0.5f),
+                getString(R.string.profile_block_user).length() + 1,
+                initialBuilder.length(),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            blockButton.setText(initialBuilder);
+            updateBlockButtonState(blockButton);
+            dialoglayout
+                    .requireViewById(R.id.block_body)
+                    .setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    checkBlockStatusAndToggle(blockButton);
+                                }
+                            });
+
+            // Follow/Unfollow: subscribe to the user's profile subreddit (u_username)
+            // and add it to the subreddit list, like any other subreddit.
+            final String userSub = "u_" + name.toLowerCase(Locale.ENGLISH);
+            following = UserSubscriptions.getSubscriptions(Profile.this).contains(userSub);
+            ((TextView) dialoglayout.requireViewById(R.id.follow))
+                    .setText(
+                            following
+                                    ? R.string.profile_unfollow_user
+                                    : R.string.profile_follow_user);
+            dialoglayout
+                    .requireViewById(R.id.follow_body)
+                    .setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    new AsyncTask<Void, Void, Boolean>() {
+                                        @Override
+                                        protected Boolean doInBackground(Void... params) {
+                                            if (Authentication.reddit == null) {
+                                                return false;
+                                            }
+
+                                            try {
+                                                AccountManager m =
+                                                        new AccountManager(
+                                                                Authentication.reddit);
+                                                if (following) {
+                                                    m.unsubscribe(
+                                                            Authentication.reddit
+                                                                    .getSubreddit(
+                                                                            "u_" + name));
+                                                } else {
+                                                    m.subscribe(
+                                                            Authentication.reddit
+                                                                    .getSubreddit(
+                                                                            "u_" + name));
+                                                }
+                                                return true;
+                                            } catch (Exception e) {
+                                                return false;
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onPostExecute(Boolean success) {
+                                            if (!success) {
+                                                return;
+                                            }
+                                            if (following) {
+                                                UserSubscriptions.removeSubreddit(
+                                                        userSub, Profile.this);
+                                                following = false;
+                                            } else {
+                                                UserSubscriptions.addSubreddit(
+                                                        userSub, Profile.this);
+                                                following = true;
+                                            }
+                                            ((TextView)
+                                                            dialoglayout.requireViewById(
+                                                                    R.id.follow))
+                                                    .setText(
+                                                            following
+                                                                    ? R.string
+                                                                            .profile_unfollow_user
+                                                                    : R.string
+                                                                            .profile_follow_user);
+                                            Toast.makeText(
+                                                            Profile.this,
+                                                            following
+                                                                    ? R.string
+                                                                            .misc_subscribed
+                                                                    : R.string
+                                                                            .misc_unsubscribed,
+                                                            Toast.LENGTH_SHORT)
+                                                    .show();
+                                        }
+                                    }.executeOnExecutor(
+                                            AsyncTask.THREAD_POOL_EXECUTOR);
+                                }
+                            });
+        } else {
+            dialoglayout.requireViewById(R.id.pm).setVisibility(View.GONE);
+            dialoglayout.requireViewById(R.id.follow_body).setVisibility(View.GONE);
+            dialoglayout.requireViewById(R.id.block_body).setVisibility(View.GONE);
+        }
+
+        // Add/Remove user: unlike Follow above it stays available logged out, because
+        // the list itself is local. Removing is not purely local though -- if the name
+        // is marked as a friend, SavedUsers.removeUser also ends that friendship on
+        // reddit, or the next sync would put the name straight back into the list.
+        final TextView addUser = (TextView) dialoglayout.requireViewById(R.id.add_user);
+        addUser.setText(
+                SavedUsers.contains(name)
+                        ? R.string.profile_remove_user
+                        : R.string.profile_add_user);
+        dialoglayout
+                .requireViewById(R.id.add_user_body)
+                .setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                final boolean saved = SavedUsers.contains(name);
+
+                                if (saved) {
+                                    SavedUsers.removeUser(name);
+                                } else {
+                                    SavedUsers.addUser(name);
+                                }
+
+                                addUser.setText(
+                                        saved
+                                                ? R.string.profile_add_user
+                                                : R.string.profile_remove_user);
+                                Toast.makeText(
+                                                Profile.this,
+                                                getString(
+                                                        saved
+                                                                ? R.string.users_removed
+                                                                : R.string.users_added,
+                                                        name),
+                                                Toast.LENGTH_SHORT)
+                                        .show();
+                            }
+                        });
+
+        dialoglayout
+                .requireViewById(R.id.multi_body)
+                .setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent inte =
+                                        new Intent(
+                                                Profile.this,
+                                                MultiredditOverview.class);
+                                inte.putExtra(EXTRA_PROFILE, name);
+                                Profile.this.startActivity(inte);
+                            }
+                        });
+
+        final View body = dialoglayout.requireViewById(R.id.body2);
+        body.setVisibility(View.INVISIBLE);
+
+        final View center = dialoglayout.requireViewById(R.id.colorExpandFrom);
+        dialoglayout
+                .requireViewById(R.id.color)
+                .setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                int cx = center.getWidth() / 2;
+                                int cy = center.getHeight() / 2;
+
+                                int finalRadius =
+                                        Math.max(body.getWidth(), body.getHeight());
+
+                                if (Build.VERSION.SDK_INT
+                                        >= Build.VERSION_CODES.LOLLIPOP) {
+                                    Animator anim =
+                                            ViewAnimationUtils.createCircularReveal(
+                                                    body, cx, cy, 0, finalRadius);
+                                    body.setVisibility(View.VISIBLE);
+                                    anim.start();
+                                } else {
+                                    body.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        });
+
+        LineColorPicker colorPicker = dialoglayout.requireViewById(R.id.picker);
+        final LineColorPicker colorPicker2 = dialoglayout.requireViewById(R.id.picker2);
+
+        colorPicker.setColors(ColorPreferences.getBaseColors(Profile.this));
+
+        colorPicker.setOnColorChangedListener(
+                new OnColorChangedListener() {
+                    @Override
+                    public void onColorChanged(int c) {
+
+                        colorPicker2.setColors(
+                                ColorPreferences.getColors(getBaseContext(), c));
+                        colorPicker2.setSelectedColor(c);
+                    }
+                });
+
+        for (int i : colorPicker.getColors()) {
+            for (int i2 : ColorPreferences.getColors(getBaseContext(), i)) {
+                if (i2 == currentColor) {
+                    colorPicker.setSelectedColor(i);
+                    colorPicker2.setColors(
+                            ColorPreferences.getColors(getBaseContext(), i));
+                    colorPicker2.setSelectedColor(i2);
+                    break;
+                }
+            }
+        }
+
+        colorPicker2.setOnColorChangedListener(
+                new OnColorChangedListener() {
+                    @Override
+                    public void onColorChanged(int i) {
+                        requireViewById(R.id.header)
+                                .setBackgroundColor(colorPicker2.getColor());
+                        if (mToolbar != null)
+                            mToolbar.setBackgroundColor(colorPicker2.getColor());
+                        Window window = getWindow();
+                        int color = Palette.getDarkerColor(colorPicker2.getColor());
+
+                        if (SettingValues.alwaysBlackStatusbar) {
+                            color = Color.BLACK;
+                        }
+
+                        window.setStatusBarColor(color);
+                        title.setBackgroundColor(colorPicker2.getColor());
+                    }
+                });
+
+        {
+            TextView dialogButton = dialoglayout.requireViewById(R.id.ok);
+
+            // if button is clicked, close the custom dialog
+            dialogButton.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Palette.setColorUser(name, colorPicker2.getColor());
+
+                            int cx = center.getWidth() / 2;
+                            int cy = center.getHeight() / 2;
+
+                            int initialRadius = body.getWidth();
+                            Animator anim =
+                                    ViewAnimationUtils.createCircularReveal(
+                                            body, cx, cy, initialRadius, 0);
+
+                            anim.addListener(
+                                    new AnimatorListenerAdapter() {
+                                        @Override
+                                        public void onAnimationEnd(Animator animation) {
+                                            super.onAnimationEnd(animation);
+                                            body.setVisibility(View.GONE);
+                                        }
+                                    });
+                            anim.start();
+                        }
+                    });
+        }
+        {
+            final TextView dialogButton = dialoglayout.requireViewById(R.id.reset);
+
+            // if button is clicked, close the custom dialog
+            dialogButton.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Palette.removeUserColor(name);
+
+                            Snackbar.make(
+                                            dialogButton,
+                                            "User color removed",
+                                            Snackbar.LENGTH_SHORT)
+                                    .show();
+
+                            int cx = center.getWidth() / 2;
+                            int cy = center.getHeight() / 2;
+
+                            int initialRadius = body.getWidth();
+                            Animator anim =
+                                    ViewAnimationUtils.createCircularReveal(
+                                            body, cx, cy, initialRadius, 0);
+
+                            anim.addListener(
+                                    new AnimatorListenerAdapter() {
+                                        @Override
+                                        public void onAnimationEnd(Animator animation) {
+                                            super.onAnimationEnd(animation);
+                                            body.setVisibility(View.GONE);
+                                        }
+                                    });
+                            anim.start();
+                        }
+                    });
+        }
+
+        final Context contextThemeWrapper = new ContextThemeWrapper(Profile.this,
+                new ColorPreferences(Profile.this).getFontStyle().getBaseId());
+
+        new MaterialAlertDialogBuilder(contextThemeWrapper)
+                .setOnDismissListener(
+                        dialogInterface -> {
+                            requireViewById(R.id.header).setBackgroundColor(currentColor);
+                            if (mToolbar != null)
+                                mToolbar.setBackgroundColor(currentColor);
+                            Window window = getWindow();
+                            int color = Palette.getDarkerColor(currentColor);
+
+                            if (SettingValues.alwaysBlackStatusbar) {
+                                color = Color.BLACK;
+                            }
+
+                            window.setStatusBarColor(color);
+                        })
+                .setView(dialoglayout)
+                .show();
     }
 
     /**
