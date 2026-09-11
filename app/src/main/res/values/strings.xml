@@ -1266,7 +1266,7 @@
     <string name="rate_slide">Rate Slide</string>
     <string name="edit_query">Edit query</string>
     <string name="share_slide">Share Slide</string>
-    <string name="open_clipboard_reddit_link">Open Reddit link in clipboard</string>
+    <string name="open_clipboard_reddit_link">Open Reddit link in the clipboard</string>
     <string name="clipboard_no_reddit_link">No Reddit link in clipboard</string>
     <string name="create_folder">Create folder</string>
     <string name="folder_name">Folder name</string>
