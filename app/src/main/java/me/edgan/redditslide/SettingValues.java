@@ -332,7 +332,7 @@ public class SettingValues {
     public static boolean oldSwipeMode;
     public static boolean showDomain;
     public static boolean cardText;
-    // The card's self text preview: false shows the whole first paragraph, true ellipsizes it to
+    // The card's selftext preview: false shows the whole first paragraph, true ellipsizes it to
     // its first CARD_TEXT_ELLIPSIZE_CHARS characters.
     public static boolean cardTextEllipsize;
     public static final int CARD_TEXT_ELLIPSIZE_CHARS = 128;

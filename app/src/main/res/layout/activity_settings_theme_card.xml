@@ -334,7 +334,7 @@
                         android:textColorHint="?attr/fontColor" />
                 </RelativeLayout>
 
-                <!-- Only shown while the "Show self text" switch above is on -->
+                <!-- Only shown while the "Show selftext" switch above is on -->
                 <LinearLayout
                         android:id="@+id/selftext_mode"
                         android:layout_width="match_parent"
