@@ -11,19 +11,19 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 * Added Saved tags for filtering posts and comments
 * Fixed slow profile search and made it show live results
 
-The "Show first paragraph of selftext" settings in "Settings | Post Layout" is
-now "Show selftext". It now has two child settings, "Show first paragraph" and
+The `Show first paragraph of selftext` settings in `Settings | Post Layout` is
+now `Show selftext`. It now has two child settings, `Show first paragraph` and
 Elliptize to the first 128 characters". You can only pick one of them. When
 you enable one, it disables the other one.
 
 The info button dialog in the Profile screen has been broken into two dialogs.
 The original is the one with information about the account like its cake day
 and badges. The other, behind the gear icon, were all the choices like
-"Private message" through "Block user". In the `overflow`/`...` menu of posts
+`Private message` through `Block user`. In the `overflow`/`...` menu of posts
 and comments if you long-press the username it will now take you to the new dialog
-with the options. The goal being to make "Tag User" easier to access.
+with the options. The goal being to make `Tag User` easier to access.
 
-There is now a tags feature in "You | Saved". It is a way to filter posts and
+There is now a tags feature in `You | Saved`. It is a way to filter posts and
 comments in Saved. It allows you to create custom tags, use built-in tags, and
 apply more than one tag at a time. The original goal was to allow
 categorization, but tags are a more flexible form.
