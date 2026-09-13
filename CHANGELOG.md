@@ -4,11 +4,6 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
-8.0.1 / 2026-9-13
-============
-* Turned the "Settings | General | Resume where I left off" into a feature appearance toggle
-* Added a feed overflow menu option called "Resume where I left off" that acts like a quick toggle
-
 8.0.0 / 2026-9-11
 ============
 * Implemented Feature Request: Option to show only the first few lines of selftext #93
