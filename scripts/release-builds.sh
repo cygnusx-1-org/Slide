@@ -93,22 +93,8 @@ Updated ${CHANGELOG_FILENAME}"
   git push --tags
 }
 
-# Section 2: the gradle bundle build.
+# Section : everything else
 2() {
-  # Creating bundle/.aab in app/build/outputs/bundle/withGPlayRelease
-  #./gradlew bundleWithGPlayRelease
-
-  #RC="${?}"
-
-  # Check return code, and exit with the return code if it is not zero.
-  #if [ "${RC}" -ne 0 ]; then
-  #  exit "${RC}"
-  #fi
-  :
-}
-
-# Section 3: everything after the gradle build.
-3() {
   # Creating .apk in app/build/outputs/apk/withGPlay, and uploading it to git repository in GitHub as a new release.
   scripts/release-github.sh "${RELEVANT_COMMIT_MESSAGES}"
 
@@ -120,11 +106,9 @@ Updated ${CHANGELOG_FILENAME}"
 case "${1}" in
   1) 1 ;;
   2) 2 ;;
-  3) 3 ;;
   ""|all)
     1
     2
-    3
     ;;
   *)
     echo "Usage: ${0} [1|2|3|all]"
