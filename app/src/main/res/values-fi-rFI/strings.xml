@@ -5,9 +5,9 @@
     <string name="general_confirm_exit">Vahvista poistuminen</string>
     <string name="general_confirm_exit_msg">Haluatko varmasti poistua?</string>
     <string name="general_enable_shadowbox">Ota Shadowbox-tila käyttöön</string>
-    <string name="pro_upgrade_msg">Päivitä Slide for Reddit Pro:hon nauttiaksesi mahtavia uusia ominaisuuksia kuten esimerkiksi:\n\n-Mainosten Esto ja Lukijatila\n- Kuvien Rajaaminen ja Piirtäminen\n- Tabletin sarakkeiden muokkaaminen\n- Automaattinen yötila\n- Varjolaatikkon ja Gallerian sisältönäkymä\n Kommentin Varjolaatikon Näkymä\n- Tiedostoon/Google Driveen Varmuuskopiointi ja Palauttaminen\n- Mainosvapaan ja avoin lähdekoodin ohjelmiston tukeminen!\n\nHaluaisitko tukea Slide for Reddit:ta?</string>
     <string name="general_open_settings">Avaa Subreddit asetukset</string>
     <string name="general_sub_sync">Synkronoidaan tilauksia</string>
+
     <!-- Used when viewing a thread -->
     <string name="submission_info_unsaved">Viestiä ei tallentanut</string>
     <string name="submission_info_saved">Viesti tallennettu</string>
@@ -25,9 +25,9 @@
     <string name="submission_gild">Avaa selaimessa</string>
     <string name="submission_save">Tallenna postaus</string>
     <string name="submission_save_image">Tallenna kuva</string>
+    <string name="submission_save_video">Tallenna video</string>
     <string name="submission_load_full">Lataa koko lanka</string>
     <string name="submission_np_link">Tämä on np-linkki. Älä äänestä tai kommentoi.</string>
-    <string name="submission_tap_gif">Lataa GIF</string>
     <string name="submission_not_found">Ohhoh, viesti kateissa!</string>
     <string name="submission_not_found_msg">Pahoittelut, Viestiä ei löytynyt</string>
     <string name="submission_copy_text">Kopioi teksti</string>
@@ -38,7 +38,16 @@
     <string name="submission_text_copied">Viesti kopioitu</string>
     <string name="submission_nocontent">Syöte on tyhjä</string>
     <string name="submission_link_copied">Linkki kopioitu</string>
+    <string name="translate_with_google">Käännä</string>
+    <string name="translate_no_app">Käännökseen ei ole saatavilla sovellusta</string>
+    <string name="read_aloud">Lue ääneen</string>
+    <string name="read_aloud_unavailable">Tekstistä puheeksi ei ole käytettävissä</string>
     <string name="submission_removed">Viesti poistettiin</string>
+
+    <plurals name="new_messages">
+        <item quantity="one">%d uusi viesti</item>
+        <item quantity="other">%d uutta viestiä</item>
+    </plurals>
     <plurals name="points">
         <item quantity="one">pst</item>
         <item quantity="other">pst</item>
@@ -47,6 +56,7 @@
         <item quantity="one">kmt</item>
         <item quantity="other">kmta</item>
     </plurals>
+
     <!-- Theme settings -->
     <string name="theme_light">Vaalea</string>
     <string name="theme_dark">Tumma</string>
@@ -64,6 +74,7 @@
     <string name="theme_sepia">Seepia</string>
     <string name="theme_amoled_contrast">AMOLED kontrasti</string>
     <string name="theme_night">Yö-teema</string>
+
     <!-- Font settings -->
     <string name="font_size_comment">Fontin koko</string>
     <string name="font_size_post">Fontin koko</string>
@@ -74,13 +85,18 @@
     <string name="font_size_small">Pieni</string>
     <string name="font_size_smaller">Pienempi</string>
     <string name="font_size_tiny">Erittäin pieni</string>
+
     <!-- For editing the submission card layout -->
     <string name="card_hide_post_button">\"Piilota viesti\" painike toimintovalikossa</string>
     <string name="card_tint_outside">Värjää vain subredditin ulkopuolella</string>
     <string name="card_save_button">\"Tallenna viesti\" nappi Action Barissa</string>
+
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Usean sarakkeen asetukset</string>
+    <string name="multi_column_portrait_count">Sarakkeet pystytilassa</string>
+    <string name="multi_column_landscape_count">Sarakkeet vaakatilassa</string>
     <string name="single_column_multi_window">Yksi sarake moni-ikkuna tilassa</string>
+
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Sinä</string>
     <string name="drawer_support">Hanki Pro</string>
@@ -88,19 +104,25 @@
     <string name="drawer_add_account">Lisää tili</string>
     <string name="drawer_hello">Hei,</string>
     <string name="drawer_search">Etsi subreddittiä</string>
+    <!-- Subreddit name when submitting/crossposting: a single subreddit only (no multireddit, no dot). -->
+    <!-- Message recipient: a username or an /r/ or /u/ path. -->
+    <!-- Settings search field. The trailing space is intentional, so the value is quoted to preserve it. -->
     <string name="drawer_moderation">Moderointi</string>
     <string name="drawer_offline">Slide on offline-tilassa</string>
     <string name="drawer_offline_retry">Yritä päästä online-tilaan</string>
     <string name="drawer_guest_mode">Selaa vieraana</string>
+
     <!-- Sidebar items (That's the one on the right) -->
     <string name="sidebar_wiki">Subredditin wiki</string>
     <string name="sidebar_mods">Subredditin moderaattorit</string>
+
     <!-- User profile -->
     <string name="profile_karma_total">Karma:n summa</string>
     <string name="profile_karma_link">Lähetyksen karma</string>
     <string name="profile_karma_comment">kommentti karma</string>
     <string name="profile_message">Yksityisviesti</string>
     <string name="profile_saved">tallennettu</string>
+    <string name="local_saved">Paikallisesti tallennetut</string>
     <string name="profile_read_later">Lue myöhemmin</string>
     <string name="profile_upvoted">Äänestetty</string>
     <string name="profile_err_title">Käyttäjää ei löytynyt</string>
@@ -114,6 +136,10 @@
     <string name="profile_friend">Kaveri</string>
     <string name="profile_add_friend">Lisää kaveri</string>
     <string name="profile_remove_friend">Poista kaveri</string>
+    <string name="profile_follow_user">Seuraa</string>
+    <string name="profile_unfollow_user">Lopeta seuraaminen</string>
+    <string name="profile_add_user">Lisää käyttäjä</string>
+    <string name="profile_remove_user">Poista käyttäjä</string>
     <string name="profile_remove_account">Haluatko todella poistaa tämän tilin?</string>
     <string name="profile_remove">Poista tili</string>
     <string name="profile_history">Historia</string>
@@ -126,7 +152,21 @@
     <string name="profile_btn_tag">Aseta tagi</string>
     <string name="profile_btn_untag">Poista tagi</string>
     <string name="profile_info">Profiilitiedot</string>
+    <string name="profile_options">Käyttäjän asetukset</string>
     <string name="profile_block_user">Estä käyttäjä</string>
+    <string name="profile_block_user_description">Estää käyttäjän viestit, julkaisut ja profiilin</string>
+    <string name="profile_unblock_user">Poista käyttäjän esto</string>
+    <string name="profile_unblock_user_description">Poistaa käyttäjän viestien, julkaisujen ja profiilin eston</string>
+    <string name="profile_search">Hae</string>
+    <string name="profile_search_title">Hae kohteesta %1$s</string>
+    <string name="profile_search_hint">Hae otsikoista ja tekstistä…</string>
+    <string name="profile_search_no_results">Tuloksia ei löytynyt</string>
+    <string name="profile_search_clear">Tyhjennä haku</string>
+    <string name="profile_search_cleared">Haku tyhjennetty</string>
+    <string name="profile_search_loading">Haetaan…</string>
+    <string name="profile_search_progress">%1$d tulosta · %2$d haettu</string>
+    <string name="profile_search_bypass_cache">Ohita välimuisti</string>
+
     <!-- Comment text options -->
     <string name="comment_gild">Palkitse kommentti</string>
     <string name="comment_share">Jaa kommentti</string>
@@ -136,14 +176,15 @@
     <string name="comment_delete_err_msg">Haluaisitko yrittää uudelleen?</string>
     <string name="comment_deleted">[poistettu]</string>
     <string name="comment_unsave">Peruuta tallenne</string>
-    <string name="comment_load_more">Lataa %1$d lisää</string>
-    <string name="comment_load_more_string_new">Lataa %1$s lisää</string>
     <string name="comment_loading_more">Ladataan lisää kommentteja&#8230;</string>
     <string name="comment_permalink">Lataa kommentin ikilinkki</string>
     <string name="comment_parent">Näytä kommentoitu viesti</string>
+    <string name="comment_video_play">Toista video</string>
+
     <!-- Welcome view (first time setup) -->
     <string name="welcome_start">Aloita</string>
     <string name="welcome_personalize">Personalisoi</string>
+
     <!-- Sorting options -->
     <string name="sorting_choose">Valitse lajittelun tyyppi</string>
     <string name="sorting_time_choose">Valitse aikaväli</string>
@@ -163,6 +204,7 @@
     <string name="sorting_year">vuosi</string>
     <string name="sorting_all">koko ajalta</string>
     <string name="sorting_defaultfor">Oletusarvo /r/%1$s</string>
+
     <!-- Editor (save/submit a post) actions -->
     <string name="editor_url">URL</string>
     <string name="editor_text">Teksti</string>
@@ -171,14 +213,31 @@
     <string name="editor_title">Otsikko</string>
     <string name="editor_err_msg">Yritä uudelleen muutaman sekunnin kuluttua.</string>
     <string name="editor_uploading_image">Kuva ladataan Imguriin</string>
-    <string name="editor_upload_image_question">Lataa kuva Imguriin?</string>
+    <string name="editor_upload_image_title">Lähetä kuva</string>
+    <string name="editor_upload_reddit">Reddit (upotettu kuva)</string>
+    <string name="editor_upload_imgur">Imgur (linkki)</string>
+    <string name="editor_uploading_reddit">Lähetetään kuvaa Redditiin</string>
+    <string name="editor_reddit_upload_success">Kuva lähetetty</string>
+    <string name="editor_reddit_upload_failed">Kuvan lähetys epäonnistui</string>
+    <string name="submit_image_host_imgur">Imgur</string>
+    <string name="submit_image_host_reddit">Reddit</string>
+    <string name="submit_change_img">Vaihda kuva</string>
+    <string name="submit_select_gallery">Lisää kuvia</string>
+    <string name="submit_gallery_caption_hint">Kuvateksti (valinnainen)</string>
+    <string name="submit_gallery_count">%1$d valittu</string>
+    <string name="submit_uploading_gallery">Lähetetään kuvaa %1$d / %2$d</string>
     <string name="editor_select_img">Valitse kuva</string>
     <string name="editor_hint_optional_body">Teksti (valinnainen)</string>
     <string name="editor_submit">Tee postaus</string>
     <string name="editor_hint_subreddit">Subredditti</string>
     <string name="editor_finding_title">Haetaan otsikkoa</string>
+    <string name="submit_findingflairs">Etsitään flaireja</string>
+    <string name="submit_flairchoices">Subredditin /r/%s flairit</string>
+
     <string name="edit_selftext">Muokkaa selftext</string>
     <string name="delete_submission">Poista lähetys</string>
+    <string name="set_submission_flair">Aseta julkaisun flair</string>
+
     <!-- Editor buttons -->
     <string name="editor_save_draft">Tallenna luonnos</string>
     <string name="editor_chose_draft">Valitse luonnos</string>
@@ -194,20 +253,26 @@
     <string name="editor_size">Suuri fontti</string>
     <string name="editor_strike">Yliviivaus</string>
     <string name="editor_spoiler">Spoileri</string>
+
     <!-- General information / information without a category -->
     <string name="info_photo_saved">Kuva tallennettu</string>
     <string name="gif_saved">GIF:i tallennettu</string>
+
     <!-- General errors / errors without a category -->
     <string name="err_title">Hups, jotain meni pieleen!</string>
     <string name="err_invalid_url">Virheellinen URL</string>
     <string name="err_loading_content">Virhe sisällön lataamisessa</string>
     <string name="err_general">Hups, virhe tapahtui</string>
     <string name="err_no_connection">Ei voinut saavuttaa Redditia. Haluatko yrittää uudelleen?</string>
+    <string name="err_no_connection_toast">Redditiin ei saatu yhteyttä. Yritä pian uudelleen</string>
     <string name="err_retry_later">Kokeile hetken päästä uudelleen!</string>
-    <string name="err_permission">Lupa evätty</string>
     <string name="err_authentication">Tunnistautuminen epäonnistui</string>
     <string name="err_submit_restricted">Tää subredditi on rajoitettu</string>
     <string name="err_submit_restricted_text">Sinulla ei ole oikeutta lähettää tähän. Valitse toinen subredditi</string>
+    <string name="err_crosspost_disallowed_text">/r/%s ei salli ristiinjulkaisuja. Valitse toinen subreddit.</string>
+    <string name="err_crosspost_not_subscribed">Sinun on tilattava /r/%s ennen ristiinjulkaisua.</string>
+    <string name="err_crosspost_sub_not_found">/r/%s ei ole olemassa.</string>
+    <string name="crosspost_flair_required_short">Flair vaaditaan — valitse sellainen ennen julkaisua.</string>
     <string name="error_video_not_found">Videota ei löytynyt</string>
     <string name="error_video_message">Tapahtui virhe videota ladatessa</string>
     <string name="error_album_not_found">Albumia ei löydy</string>
@@ -220,30 +285,86 @@
     <string name="err_couldnt_save_choose_new">Slide ei voinut tallenta valittuun kansioon. Haluatko valita uuden tallennuspaikan?</string>
     <string name="err_share_image">Virhe jakaessa kuvaa</string>
     <string name="err_file_not_found">Tiedostoa ei löydy</string>
-    <string name="err_not_valid_backup">Pätemätön Slide:i varmuuskopiotiedosto.</string>
-    <string name="err_not_valid_backup_msg">Valittu tiedosto ei ole kelvollinen Slide:i varmuuskopiotiedosto.</string>
+    <string name="err_file_not_found_msg">Valittua tiedostoa ei löytynyt. Varmista, että se on olemassa ja että Slidella on oikeus käyttää kyseistä tiedostoa tai kansiota</string>
     <string name="err_comment_post">Hups, kommentin lähettäminen epäonnistui!</string>
     <string name="err_comment_post_reason">Syy: %1$s</string>
     <string name="err_comment_post_message">\n\nViestisi on tallennettu luonnoksena. Yritä uudelleen myöhemmin.</string>
     <string name="err_connection_failed_msg">Yhteys Redditiin epäonnistui. Tarkista verkkoyhteyden tila ja yritä uudelleen, tai siirry offline-tilaan.</string>
-    <string name="err_block_user">Virhe estämässä käyttäjä</string>
+    <string name="err_block_user">Virhe käyttäjän estämisessä. Poistitko tämän käyttäjän eston äskettäin?</string>
+
     <!-- Gif -->
     <string name="gif_err_title">GIF:iä ei löytynyt</string>
+    <string name="gif_err_msg">Tämän GIF-kuvan lataamisessa tapahtui virhe. Avaa GIF uudelleen ja yritä uudestaan.</string>
+    <string name="gif_load_failed">GIF-kuvan lataus epäonnistui</string>
+    <string name="gif_download_failed">GIF-kuvan lataaminen epäonnistui</string>
+
     <!-- Multireddits -->
     <string name="multireddit_err_title">Ei multiredditejä (vielä)!</string>
     <string name="multireddit_err_msg">Haluatko luoda uuden multiredditin?</string>
     <string name="public_multireddit_err_title">Ei multiredditejä!</string>
+    <string name="public_multireddit_err_msg">Tällä käyttäjällä ei ole julkisia multireddittejä.</string>
+    <string name="multireddit_title_empty">Otsikko ei voi olla tyhjä</string>
+    <string name="multireddit_title_empty_msg">Anna multiredditillesi otsikko</string>
+    <string name="multireddit_no_subs">Yhtään subredditiä ei ole lisätty</string>
+    <string name="multireddit_save_err">Tämän multiredditin otsikko on jo olemassa tai tänne ei mahdu enempää subreddittejä</string>
+    <string name="multireddit_no_subs_msg">Lisää subreddittejä napsauttamalla +-painiketta!</string>
+    <string name="multireddit_selector">Valitse lisättävät subredditit</string>
+    <string name="multireddit_create_hint">Multiredditin nimi</string>
+    <string name="multireddit_invalid_name">Virheellinen multiredditin nimi</string>
+    <string name="multireddit_invalid_name_msg">Multiredditin nimessä saa olla vain kirjaimia, numeroita ja alaviivoja</string>
     <string name="multi_add_to">Lisää /r/%s multiredditiin</string>
+    <string name="multi_subreddit_added">Subreddit lisätty kohteeseen /m/%1$s</string>
+    <string name="multi_error">Tapahtui virhe, yritä myöhemmin uudelleen</string>
+    <string name="btn_import_multi">Tuo multireddit</string>
+    <string name="multi_submit_which_sub">Mihin subiin haluat julkaista?</string>
+    <string name="multi_saved_successfully">Tallennettu</string>
+    <string name="delete_multireddit_title">Haluatko varmasti poistaa multiredditin /m/%1$s?</string>
+    <string name="multi_save_option">Haluatko tallentaa tämän multiredditin?</string>
+
     <!-- Content types -->
+    <string name="type_nsfw_img">NSFW-kuva</string>
+    <string name="type_nsfw_gif">NSFW-GIF</string>
     <string name="type_reddit">Reddit linkki</string>
+    <string name="type_link">Linkki</string>
+    <string name="type_nsfw_link">NSFW-linkki</string>
+    <string name="type_gif">GIF</string>
+    <string name="type_title_only">Pelkkä otsikko</string>
+    <string name="type_album">Albumi</string>
+    <string name="type_xkcd">XKCD</string>
+    <string name="type_nsfw_album">NSFW-albumi</string>
+    <string name="type_nsfw_gallery">NSFW-galleria</string>
+    <string name="type_nsfw_albums">NSFW-albumit</string>
+    <string name="type_nsfw_galleries">NSFW-galleriat</string>
+    <string name="type_nsfw_gifs">NSFW-GIFit</string>
+    <string name="type_nsfw_images">NSFW-kuvat</string>
+    <string name="type_nsfw_links">NSFW-linkit</string>
+    <string name="type_nsfw_selftexts">NSFW-tekstijulkaisut</string>
+    <string name="type_nsfw_tumblrs">NSFW-Tumblr-julkaisut</string>
+    <string name="type_nsfw_videos">NSFW-videot</string>
+    <string name="type_gallery">Galleria</string>
+    <string name="type_galleries">Galleriat</string>
+    <string name="type_img">Kuva</string>
     <string name="type_videos">Videot</string>
+    <string name="type_nsfw_video">NSFW-video</string>
     <string name="type_imgur">Imgur-sisältö</string>
+    <string name="type_nsfw_imgur">NSFW-Imgur-sisältö</string>
+    <string name="type_nsfw_xkcd">NSFW-XKCD</string>
+    <string name="type_nsfw_deviantart">NSFW-DeviantArt</string>
+    <string name="type_nsfw_title_only">NSFW-julkaisu pelkällä otsikolla</string>
+    <string name="type_nsfw_reddit">NSFW-Reddit-linkki</string>
+    <string name="type_nsfw_selftext">NSFW-tekstijulkaisu</string>
+    <string name="type_spoiler">Spoileri</string>
+    <string name="type_nsfw_spoiler">NSFW-spoileri</string>
+    <string name="type_nsfw_streamable">NSFW-Streamable</string>
     <string name="type_external">Ulkoinen</string>
+
     <!-- Content types plural (Content filters) -->
     <string name="type_gifs">GIF-tiedostot</string>
     <string name="type_albums">Albumit</string>
     <string name="type_links">Linkit</string>
+
     <!-- Inbox/mail -->
+    <string name="mail_tab_inbox">Saapuneet</string>
     <string name="mail_tab_unread">Lukemattomat</string>
     <string name="mail_tab_messages">Viestit</string>
     <string name="mail_tab_sent">Lähetetty</string>
@@ -254,31 +375,76 @@
     <string name="mail_hint_body">Teksti</string>
     <string name="mail_send_to">Lähetä uusi viesti henkilölle %1$s</string>
     <string name="mail_send">Lähetä viesti</string>
+    <string name="mail_notification_msg_from">Uusi viesti käyttäjältä %1$s</string>
+    <string name="mail_notification_msg_via">Uusi viesti subredditin /r/%1$s kautta</string>
+    <string name="mod_mail_notification_msg">Uusi modmail käyttäjältä %1$s</string>
     <string name="mail_reply_to">Vastaa %1$s</string>
+    <string name="mail_notification_author">%1$s lähteestä %2$s</string>
+    <string name="mail_notification_subreddit">%1$s subredditin /r/%2$s kautta</string>
+    <string name="mail_theirs">Näytä heidän viestinsä</string>
+    <string name="mail_re">vs: %1$s</string>
     <string name="mail_mark_read">Merkitse luetuksi</string>
-    <string name="mail_mark_unread">Merkitse lukemattomaksi</string>
     <string name="mail_view_full_thread">Lataa koko lanka</string>
     <string name="mail_message_copied">Viesti kopioitu</string>
+    <plurals name="mail_notification_title">
+        <item quantity="one">Sinulla on %d uusi viesti!</item>
+        <item quantity="other">Sinulla on %d uutta viestiä!</item>
+    </plurals>
+    <plurals name="mod_mail_notification_title">
+        <item quantity="one">Sinulla on %d uusi modmail!</item>
+        <item quantity="other">Sinulla on %d uutta modmailia!</item>
+    </plurals>
+
     <!-- Miscellaneous/generic things that don't have a category or strings that are used for multiple categories -->
     <string name="misc_err">Virhe</string>
     <string name="misc_none">Ei mitään</string>
     <string name="misc_retry">Haluatko yrittää uudelleen?</string>
+    <string name="misc_retry_draft">Haluatko yrittää uudelleen? \nJulkaisustasi on tallennettu luonnos</string>
     <string name="misc_score_hidden">pisteet piilotettu</string>
     <string name="misc_subscribed">Tilatut</string>
     <string name="misc_continue">Jatka</string>
     <string name="misc_unsubscribed">Tilaus peruutettu</string>
+    <string name="misc_no_more_posts">Ei enempää julkaisuja!</string>
     <string name="misc_please_wait">Odota hetki&#8230;</string>
+    <string name="misc_img_share">Jaa kuva sovelluksella</string>
     <string name="misc_copy_text">Kopioi teksti</string>
     <string name="misc_maybe_later">Ehkä myöhemmin</string>
     <string name="misc_try_again">Yritä uudelleen</string>
     <string name="misc_please_try_again">Yritä uudelleen</string>
     <string name="misc_please_try_again_soon">Yritä pian uudelleen</string>
+    <string name="misc_setting_up">Valmistellaan muutamaa asiaa…</string>
+    <string name="misc_setting_up_message">Älä poistu tältä näytöltä. Tämä ei kestä kauan!</string>
     <string name="misc_more_info">Lisätietoja</string>
+    <string name="misc_captcha_incorrect">Virheellinen captcha, yritä uudelleen</string>
+
     <!-- Goto User -->
+    <string name="user_enter">Anna käyttäjänimi</string>
+    <string name="user_btn_goto">Siirry käyttäjään</string>
+    <string name="user_btn_gotomultis">Siirry käyttäjän multireddittehin</string>
+
+    <!-- Saved users list -->
+    <string name="users_empty">Ei tallennettuja käyttäjiä</string>
+    <string name="users_btn_add">Lisää käyttäjä</string>
+    <string name="users_btn_remove">Poista käyttäjä</string>
+    <string name="users_added">%s lisätty käyttäjiin</string>
+    <string name="users_removed">%s poistettu käyttäjistä</string>
+    <string name="users_already_added">%s on jo käyttäjissä</string>
+    <string name="users_copied">%s kopioitu</string>
+    <string name="users_checking">Tarkistetaan käyttäjänimeä</string>
+    <string name="users_invalid_title">Käyttäjää ei voi lisätä</string>
+    <string name="users_invalid">%s ei ole Reddit-käyttäjä</string>
+    <string name="users_check_failed">Ei voitu tarkistaa, onko %s olemassa. Tarkista yhteytesi ja yritä uudelleen.</string>
+    <string name="users_friend_added">%s lisätty ystäväksi</string>
+    <string name="users_friend_removed">%s poistettu ystävistä</string>
+    <string name="users_friend_failed">Käyttäjän %s ystävätilaa ei voitu päivittää</string>
+    <string name="btn_fab_add_user">Lisää käyttäjä</string>
+
     <!-- Buttons -->
     <string name="btn_add">Lisää</string>
     <string name="btn_cancel">Peru</string>
     <string name="btn_close">Sulje</string>
+    <string name="btn_toggle">Vaihda</string>
+    <string name="btn_open">Avaa</string>
     <string name="btn_discard">Hylkää</string>
     <string name="btn_done">Valmis</string>
     <string name="btn_go_back">Takaisin</string>
@@ -287,126 +453,951 @@
     <string name="btn_remove">Poista</string>
     <string name="btn_reply">Vastaa</string>
     <string name="btn_reset">Resetoi</string>
+    <string name="btn_retry">Yritä uudelleen</string>
     <string name="btn_save">Tallenna</string>
     <string name="btn_submit">Lähetä</string>
     <string name="btn_undo">Kumoa</string>
     <string name="btn_yes">Kyllä</string>
     <string name="btn_refresh">Päivitä</string>
+    <string name="btn_cache">Tallenna kommentit välimuistiin</string>
+    <string name="btn_delete">Poista</string>
+    <string name="btn_time">Aikaväli</string>
     <string name="btn_message">Viesti</string>
+    <string name="btn_select">Valitse</string>
+    <string name="btn_view">NÄYTÄ</string>
+    <string name="btn_changelog">Muutosloki</string>
+    <string name="btn_set">ASETA</string>
     <string name="btn_create">Luo</string>
+    <string name="btn_new">Uusi</string>
+
     <!-- Buttons Content labels for TalkBack accessibility-->
+    <string name="btn_edit">Muokkaa</string>
+    <string name="btn_hide">Piilota</string>
+    <string name="btn_mod">Moderoi</string>
+    <string name="btn_upvote">Äänestä ylös</string>
+    <string name="btn_downvote">Äänestä alas</string>
+    <string name="btn_menu">Valikko</string>
+    <string name="img_score">Pisteet</string>
+    <string name="img_comments">Kommentit</string>
+    <string name="btn_expand">Laajenna</string>
+    <string name="btn_nav_up">Siirry ylös</string>
+    <string name="btn_nav_mode">Aseta navigointitila</string>
+    <string name="btn_nav_collapse_expand">Tiivistä/laajenna</string>
+    <string name="btn_nav_down">Siirry alas</string>
+    <string name="btn_fab_reply">Vastaa</string>
+    <string name="btn_fab_post">Luo uusi julkaisu</string>
+    <string name="btn_fab_hide">Piilota katsotut julkaisut</string>
+    <string name="btn_fab_search">Hae julkaisuja</string>
+
     <!-- Buttons Content labels for TalkBack accessibility active states-->
+    <string name="btn_upvoted">Äänestetty ylös</string>
+    <string name="btn_downvoted">Äänestetty alas</string>
+    <string name="btn_unsave">Poista tallennetuista</string>
+    <string name="btn_collapse">Tiivistä</string>
+
     <!-- Backup -->
+    <string name="backup_success">Varmuuskopiointi onnistui!</string>
+    <string name="backup_restoring">Palautetaan asetuksiasi</string>
+    <string name="backup_backing_up">Varmuuskopioidaan asetuksiasi</string>
+    <string name="backup_restore_settings">Asetusten palautus onnistui!</string>
+    <string name="backup_restarting">Sovellus käynnistyy nyt uudelleen</string>
+    <string name="backup_info">Slide varmuuskopioi kaikki tietosi yksityiseen Google Drive -kansioon. Voit synkronoida nämä tiedot laitteiden välillä (tai samalle laitteelle), eivätkä tietosi kulje koskaan kolmannen osapuolen palvelun tai palvelimen kautta. Varmuuskopiot salataan valitsemallasi salasanalla.</string>
     <string name="backup_btn">Varmuuskopioi</string>
+    <string name="backup_btn_restore">Palauta</string>
+    <string name="backup_btn_file">Varmuuskopioi zip-tiedostoon</string>
+    <string name="backup_btn_restore_file">Palauta tiedostosta tai zip-tiedostosta</string>
+    <string name="backup_confirm">Haluatko varmasti varmuuskopioida? Aiempi varmuuskopiosi korvataan</string>
+    <string name="backup_restore_confirm">Haluatko varmasti palauttaa? Nykyiset asetuksesi korvataan</string>
+    <string name="backup_failed_msg">Varmuuskopiointi epäonnistui. Yritä myöhemmin uudelleen.</string>
+    <string name="backup_restore_failed_msg">Palautus epäonnistui. Varmista, että kelvollinen varmuuskopio on olemassa, ja yritä uudelleen.</string>
+    <string name="backup_local_title">Paikallinen varmuuskopio</string>
+    <string name="backup_drive_title">Google Drive -varmuuskopio</string>
+    <string name="backup_button">Luo varmuuskopio</string>
+    <string name="restore_button">Palauta varmuuskopio</string>
+    <string name="backup_question">Varmuuskopioidaanko?</string>
+    <string name="backup_complete">Varmuuskopiointi valmis!</string>
+    <string name="err_not_valid_backup">Pätemätön Slide:i varmuuskopiotiedosto.</string>
+    <string name="err_not_valid_backup_msg">Valittu tiedosto ei ole kelvollinen Slide:i varmuuskopiotiedosto.</string>
+    <string name="backup_password_title">Aseta varmuuskopion salasana</string>
+    <string name="backup_password_message">Varmuuskopiosi sisältää Reddit-tilisi tunnistetiedot, joten se salataan. Valitse %1$d–%2$d merkin salasana. Tarvitset sitä palautukseen, eikä sitä voi palauttaa.</string>
+    <string name="backup_password_hint">Salasana</string>
+    <string name="restore_password_title">Anna varmuuskopion salasana</string>
+    <string name="restore_password_message">Anna salasana, jolla tämä varmuuskopio salattiin.</string>
+    <string name="restore_password_wrong">Väärä salasana. Yritä uudelleen.</string>
+    <string name="drive_authorization_failed">Google Driven valtuutus epäonnistui</string>
+    <string name="drive_authorization_failed_msg">Slide ei saanut pääsyä yksityiseen Google Drive -kansioonsa. Yritä uudelleen.</string>
+    <string name="drive_authorization_denied">Google Drive -käyttöoikeus vaaditaan</string>
+    <string name="drive_authorization_denied_msg">Slide tarvitsee pääsyn yksityiseen Google Drive -kansioonsa varmuuskopioidakseen tai palauttaakseen asetuksesi.</string>
+
     <!-- Vote -->
+    <string name="vote_err">Virhe äänestämisessä!</string>
     <string name="vote_err_login">Sinun pitää kirjautua sisään äänestääksesi!</string>
     <string name="vote_removed">Ääni poistettu</string>
+
+    <!-- Subscribing -->
+    <string name="subscribe_err_login">Sinun on kirjauduttava sisään tilataksesi!</string>
+
     <!-- Moderation tools -->
+    <string name="mod_mail">Modmail</string>
+    <string name="mod_mail_unread">Lukematon modmail</string>
+    <string name="modmail_internal_note">(sisäinen muistiinpano)</string>
+    <string name="modmail_scope_missing">Modmail vaatii uudelleentodennuksen. Kirjaudu uudelleen sisään (Asetukset &#8594; tili) ottaaksesi sen käyttöön.</string>
+    <string name="modmail_reply_sent">Vastaus lähetetty!</string>
+    <string name="modmail_reply_failed">Lähetys epäonnistui! Vastaus tallennettiin luonnokseksi.</string>
+    <plurals name="modmail_message_count">
+        <item quantity="one">%d viesti</item>
+        <item quantity="other">%d viestiä</item>
+    </plurals>
     <string name="mod_modqueue">Modqueue</string>
     <string name="mod_unmoderated">Tarkastamaton</string>
     <string name="mod_reports">Raportit</string>
     <string name="mod_approved">Julkaisu hyväksytty</string>
+    <string name="mod_flair_hint">Flair-teksti</string>
+    <string name="mod_no_reports">Ei ilmoituksia</string>
     <string name="mod_btn_approve">Hyväksy</string>
+    <string name="mod_btn_submission_flair">Aseta flair</string>
+    <string name="mod_btn_submission_flair_text">Aseta flair-teksti</string>
+    <string name="mod_btn_mark_nsfw">Merkitse NSFW:ksi</string>
+    <string name="mod_btn_unmark_nsfw">Poista NSFW-merkintä</string>
+    <string name="mod_btn_mark_spoiler">Merkitse spoileriksi</string>
+    <string name="mod_btn_unmark_spoiler">Poista spoilerimerkintä</string>
+    <string name="mod_btn_lock_thread">Lukitse ketju</string>
+    <string name="mod_btn_unlock_thread">Avaa ketjun lukitus</string>
+    <string name="mod_btn_lock_comment">Lukitse kommentti</string>
+    <string name="mod_btn_unlock_comment">Avaa kommentin lukitus</string>
+    <string name="mod_locked">Lukittu</string>
+    <string name="mod_unlocked">Lukitus avattu</string>
+    <string name="mod_btn_pin">Kiinnitä</string>
+    <string name="mod_btn_unpin">Poista kiinnitys</string>
+    <string name="mod_btn_remove">Poista</string>
+    <string name="mod_btn_remove_reason">Poista syyn kanssa</string>
+    <string name="mod_btn_spam">Merkitse roskapostiksi</string>
+    <string name="mod_btn_author">Kirjoittajan profiili</string>
     <string name="mod_btn_ban">Porttikielto</string>
     <string name="mod_ban_user">Estä käyttäjä</string>
     <string name="mod_ban_reauth">Estääksesi käyttäjiä, Sliden täytyy todentaa sinut uudelleen</string>
+    <string name="mod_ban_reauth_question">Haluatko kirjautua Slideen uudelleen nyt?</string>
     <string name="mod_ban_success">Käyttäjä estetty!</string>
+    <string name="mod_ban_fail">Virhe porttikiellon antamisessa</string>
     <string name="mod_ban_reason">Eston syy</string>
+    <string name="mod_ban_note_mod">Moderaattorin muistiinpano (valinnainen)</string>
     <string name="mod_ban_note_user">Käyttä viesti (valinnainen)</string>
+    <string name="mod_ban_time">Porttikiellon kesto - jätä tyhjäksi pysyvää varten</string>
+    <string name="mod_ban_title">Anna käyttäjälle /u/%1$s porttikielto</string>
+    <string name="mod_remove_template">Poistettu syystä\u0020</string>
     <string name="mod_remove_hint">Poiston syy</string>
+    <string name="mod_remove_title">Mikä on syy tämän julkaisun poistamiseen?</string>
+    <string name="mod_remove_insert_draft">Lisää luonnos</string>
+    <string name="mod_flair_none_found">Tälle subredditille ei löytynyt flaireja</string>
+    <string name="mod_distinguish">Korosta</string>
+    <string name="mod_undistinguish">Poista korostus</string>
+    <string name="mod_sticky">Kiinnitä</string>
+    <string name="mod_unsticky">Poista kiinnitys</string>
+    <string name="reauth_complete">Uudelleentodennus valmis!</string>
+    <string name="reauth_in_progress">Todennetaan uudelleen…</string>
+    <string name="reauth_failed">Uudelleentodennus epäonnistui</string>
+
+    <plurals name="mod_btn_reports">
+        <item quantity="one">Näytä %d ilmoitus</item>
+        <item quantity="other">Näytä %d ilmoitusta</item>
+    </plurals>
+
     <!-- If he did -->
+    <string name="really_pin_submission_message">Julkaisu kiinnitetty</string>
+    <string name="really_unpin_submission_message">Julkaisun kiinnitys poistettu</string>
+
     <!-- Subreddit Wiki -->
+    <string name="wiki_err">Wikiä ei löytynyt</string>
+    <string name="wiki_err_msg">Tällä subredditillä ei ole wikiä!</string>
+
     <!-- Subreddits -->
+    <string name="subreddit_subscribers_string">%1$s tilaajaa</string>
+    <string name="subreddit_active_users_string_new">%1$s paikalla nyt</string>
+    <string name="subreddit_err_msg">Subredditiä %1$s ei löytynyt. Ehkä se on kirjoitettu väärin?</string>
+    <string name="subreddit_err_msg_new">Subredditiä %1$s ei löytynyt. Ehkä se on kirjoitettu väärin tai sinulla ei ole pääsyä siihen.</string>
     <string name="subreddit_err">Subredditiä ei löydy</string>
+
     <!-- Search -->
     <string name="search_comments_hint">Etsi kommentteja</string>
+    <string name="search_goto">Siirry</string>
     <string name="search_title">Etsi</string>
+    <string name="search_msg">Mitä etsit?</string>
     <string name="search_all">Etsi kaikki</string>
     <string name="search_subreddit">Etsi %1$s</string>
+    <string name="search_relevance">Osuvuus</string>
     <string name="search_top">Parhaat</string>
     <string name="search_new">Uudet</string>
     <string name="search_comments">Kommentit</string>
+    <string name="no_posts_found">Julkaisuja ei löytynyt</string>
+
     <!-- Settings -->
     <string name="settings_reddit_prefs">Redditin asetukset</string>
     <string name="settings_accent_title">Muokkaa aksenttiväriä</string>
+    <string name="settings_delete_sub_settings">Haluatko varmasti poistaa asetukset kohteelle %1$s?</string>
+    <string name="settings_layout_default">Julkaisun asettelu</string>
+    <string name="settings_link_album">Sisäinen albuminäkymä</string>
+    <string name="settings_link_peek">Kurkista sisältöön</string>
+    <string name="settings_link_peek_description">Poistaa käytöstä pitkän painalluksen esikatselukuvassa</string>
+    <string name="settings_link_gif">Sisäinen GIF-näkymä</string>
+    <string name="settings_link_hqgif">Korkealaatuiset Gfycat-videot</string>
     <string name="settings_link_handling">Linkkien käsittely</string>
+    <string name="settings_link_image">Sisäinen kuvanäkymä</string>
     <string name="settings_mail_check">Tarkista uudet viestit</string>
     <string name="settings_mail_info">Mitä useammin uudet viestit tarkistetaan, sitä enemmän Slide kuluttaa laitteesi akkua taustalla!</string>
     <string name="settings_main_color_title">Muokkaa pääväriä</string>
     <string name="settings_notification">Tarkista uudet viestit joka %1$s</string>
+    <string name="settings_notification_newline">Tarkista uudet viestit\n%1$s välein</string>
+    <string name="settings_notification_short">Tarkista %1$s välein</string>
+    <string name="settings_disable_nsfw_photo">Piilota kaikki NSFW-kuvat</string>
     <string name="settings_store_history">Tallenna historia</string>
+    <string name="settings_store_nsfw_history">Tallenna NSFW-historia</string>
+    <string name="settings_commentnav">Siirry ylätason kommenttien välillä</string>
     <string name="share_link">Jaa linkki</string>
+    <string name="posts_hidden_forever">Julkaisut piilotettu pysyvästi</string>
     <string name="share_image">Jaa kuva</string>
     <string name="settings_libs">Avoimen lähdekoodin kirjastot</string>
+    <string name="settings_about_libs">Tietoja kirjastoista</string>
+    <string name="settings_privacy">Tietosuojakäytäntö</string>
     <string name="settings_bugs">Ilmoita virheestä</string>
     <string name="settings_changelog">Näytä muutosloki</string>
-    <string name="settings_google">Yhdistetään Googleen</string>
+    <string name="settings_fabclear_msg">Tyhjennyspainikkeen napautus poistaa julkaisut nykyisestä näkymästä, mutta ei piilota niitä pysyvästi. \nPainikkeen pitkä painallus piilottaa julkaisut pysyvästi!</string>
+    <string name="settings_fabclear">Kelluvan painikkeen tyhjennystoiminnot</string>
     <string name="settings_notifdisabled">Ilmoitukset pois käytöstä</string>
     <string name="settings_colored_navigation_bar">Värjää navigointipalkki</string>
+    <string name="settings_always_black_statusbar">Musta tilapalkki (ilmoituspalkki)</string>
+    <string name="settings_colored_icon">Väritä sovelluskuvake (kokeellinen)</string>
+    <string name="settings_colored_icon_desc">Voi vaatia puhelimen uudelleenkäynnistyksen. Tämä poistaa kuvakkeen myös aloitusnäytöltäsi.</string>
     <string name="settings_filter_domain">Suodata verkkotunnuksia</string>
+    <string name="settings_filter_selfttext">Julkaisutekstin suodattimet</string>
+    <string name="settings_filter_title">Otsikkosuodattimet</string>
+    <string name="settings_prefs_reddit">Näytä kaikki reddit.com-asetukset</string>
+    <string name="settings_font_post">Julkaisun otsikon fontti</string>
+    <string name="settings_font_comment">Kommenttien fontti</string>
     <string name="settings_comment_crop">Rajaa pääkuvan kommenttinäkymässä</string>
+    <string name="settings_general_scroll_read">Merkitse julkaisut nähdyiksi vieritettäessä ohi</string>
+    <string name="settings_link_chrome">Mukautetut välilehdet</string>
+    <string name="settings_storage_location">Valitse tallennuspaikka</string>
+    <string name="settings_storage_location_unset">Ei vielä asetettu</string>
+    <string name="settings_set_storage_location">Tiedostot tallennetaan kohteeseen %s</string>
+    <string name="settings_general_immersive_mode">Mukaansatempaava koko näytön tila</string>
+    <string name="settings_general_immersive_mode_desc">Piilota tila- ja navigointipalkit (kokeellinen)</string>
+    <string name="settings_general_old_swipe_mode">Vanha pyyhkäisytila</string>
+    <string name="settings_general_old_swipe_mode_desc">Sliden vanha pyyhkäisytyyli. Tarkoitettu 3 painikkeen navigointiin ja Samsungin eleisiin.</string>
+    <string name="settings_general_hibernate">Jatka siitä mihin jäin</string>
+    <string name="settings_general_hibernate_desc">Avaa saman näytön samasta kohdasta ja näyttää jo ladatun sisällön päivittämisen sijaan. Kun tämä otetaan käyttöön, lisävalikkoon lisätään valintaruutu, jolla jatkamisen voi kytkeä päälle ja pois palaamatta tänne.</string>
+
+    <string name="settings_general_title_drawer_items">Vetolaatikon kohteet</string>
+    <string name="settings_general_subtitle_drawer_items">Valitse, mitkä vetolaatikon kohteet näytetään</string>
+
     <!-- Settings titles displayed in settings activity-->
+    <string name="settings_title_backup">Varmuuskopiointi &amp; palautus</string>
+    <string name="settings_title_default_theme">Pääteema</string>
+    <string name="settings_title_general">Yleiset</string>
+    <string name="settings_title_history">Historia</string>
+    <string name="settings_title_notifications">Ilmoitukset</string>
+    <string name="settings_title_pro">Hanki Pro</string>
+    <string name="settings_title_sub_theme">Subredditien teemat</string>
+    <string name="settings_title_sort">Oletuslajittelu</string>
+    <string name="settings_title_sort_frontpage">Etusivun lajittelu</string>
+    <string name="settings_title_about">Tietoja</string>
+    <string name="settings_title_debug">Virheenkorjaus</string>
+    <string name="settings_section_debug_reauth">Uudelleentodennus</string>
+    <string name="settings_debug_break_reauth">Riko uudelleentodennus</string>
+    <string name="settings_debug_break_reauth_desc">Pysäyttää uudelleentodennuksen, jotta siihen liittyvä ilmoitus voidaan testata. Palautettavissa: kytke tämä pois ja käynnistä sitten uudelleentodennus.</string>
+    <string name="settings_debug_trigger_reauth">Käynnistä uudelleentodennus</string>
+    <string name="settings_debug_trigger_reauth_desc">Käynnistä uudelleentodennus nyt. Käytä tätä palautuaksesi kytkimen pois kytkemisen jälkeen.</string>
     <string name="settings_title_multi_column">Usea sarakka</string>
+    <string name="settings_title_fab">Kelluva toimintopainike</string>
+    <string name="settings_title_comments">Kommentit</string>
+    <string name="settings_title_filter">Suodattimet</string>
     <string name="settings_title_font">Fontti</string>
     <string name="settings_section_general">Yleiset</string>
+    <string name="settings_section_appearance">Ulkoasu</string>
+    <string name="settings_section_hibernation">Lepotila</string>
+    <string name="settings_section_other">Muut</string>
+    <string name="settings_section_browser">Selain</string>
+    <string name="settings_section_internal_viewers">Sisäiset katselimet</string>
+    <string name="settings_section_custom_domains">Mukautetut verkkotunnukset</string>
     <string name="settings_section_save_history">Tallenna historia</string>
     <string name="settings_section_clear_history">Tyhjennä historia</string>
     <string name="settings_section_data_saving_mode">Virransäästötila</string>
+    <string name="settings_section_data_saving_quality">Datansäästön laatu</string>
+    <string name="settings_comment_color">Värikkäät kommenttien syvyysmerkit</string>
+    <string name="settings_volume_nav_comments">Selaa kommentteja äänenvoimakkuuspainikkeilla</string>
+    <string name="settings_commentnav_description">Ottaa käyttöön alapalkin navigointinuolineen</string>
+    <string name="settings_comment_collapse">Tiivistä kommentit kokonaan</string>
+    <string name="settings_comment_collapse_description">Poistaa käytöstä myös kommenttien animaatiot</string>
+    <string name="settings_comment_collapse_default">Tiivistä alakommentit oletuksena</string>
+    <string name="settings_data_enable">Ota datansäästöasetukset käyttöön</string>
+    <string name="settings_data_video_quality">Suosi heikkolaatuisia videoita, kun datansäästö on käytössä</string>
+    <string name="settings_comments_collapse_deleted">Tiivistä poistetut kommentit oletuksena</string>
+    <string name="settings_comments_collapse_sticky">Tiivistä kiinnitetty kommentti aina kokonaan</string>
+    <string name="settings_comments_collapse_blocked_users">Tiivistä estettyjen käyttäjien kommentit</string>
+    <string name="settings_comments_collapse_blocked_users_description">Ottaa käyttöön myös Tiivistä kommentit kokonaan</string>
+    <string name="settings_backup_occurs">Varmuuskopio otetaan klo %1$s</string>
+    <string name="settings_backup_none">Yhtään subredditiä ei varmuuskopioida</string>
+    <string name="settings_backup_will_backup">\u0020varmuuskopioidaan</string>
+    <string name="settings_backup_submission_only">vain julkaisu</string>
+    <string name="settings_backup_comments">\u0020(kommentit)</string>
     <string name="settings_filter_profile">Profiilin suodattimet</string>
+    <string name="settings_subreddit_content_filters_till_restart">Subredditin sisältösuodattimet uudelleenkäynnistykseen asti</string>
+    <string name="settings_subredditspecific_selftext">Näytä aina julkaisutekstin esikatselu tässä subredditissä</string>
     <string name="settings_font_system">Järjestelmä</string>
     <string name="settings_manage_subscriptions">Hallinnoi tilauksiasi</string>
+    <string name="settings_comments_swap_long">Vaihda pitkän painalluksen ja napautuksen toiminnot</string>
     <string name="settings_redditprefs_over18">Olen yli 18-vuotias ja tahdon nähdä NSFW-sisällön</string>
+    <string name="settings_layout_view">Näkymätila</string>
+    <string name="settings_subredditspecific_bigpic">Näytä aina suuret kuvat tässä subredditissä</string>
+    <string name="settings_layout_picture_mode">Kuvatila</string>
+    <string name="settings_general_expanded_toolbar">Laajennettu työkalupalkin valikko</string>
+    <string name="settings_general_expanded_toolbar_desc">Näytä lisää vaihtoehtoja subredditin työkalupalkissa</string>
+    <string name="settings_always_show_floating_action_button">Näytä kelluva toimintopainike aina</string>
+    <string name="settings_always_show_floating_action_button_desc">Älä koskaan piilota kelluvaa toimintopainiketta vieritettäessä</string>
+    <string name="settings_theme_tinting">Julkaisujen väritystila</string>
+    <string name="settings_layout_actionbar_mode">Toimintopalkin tila</string>
+    <string name="settings_theme_tint_outside_desc">Väritä tausta vain multiredditeissä, etusivulla ja kaikissa</string>
+    <string name="settings_layout_small_content_tag">Pienempi sisältömerkki</string>
     <string name="settings_links_force_external">Avaa ulkoisessa selaimessa</string>
+    <string name="settings_layout_show_domain">Näytä verkkotunnus tietorivillä</string>
+    <string name="settings_layout_show_content_type">Näytä sisältötyyppi tietorivillä</string>
+    <string name="settings_layout_thumbnail_flags">Näytä värilliset kulmamerkit pikkukuvissa</string>
+    <string name="settings_layout_show_votes_comments">Näytä äänet/kommentit tietorivillä</string>
+    <string name="settings_general_comment_last_visit">Näytä kommenttien määrä edellisen käynnin jälkeen</string>
+    <string name="settings_fab_create">Näytä \"luo kommentti\" -kelluva painike</string>
     <string name="settings_right_handed_comment_menu">Oikeakätinen kommentti vastausvalikko</string>
+    <string name="settings_reddit_description">Nämä asetukset muuttavat sitä, mitä Redditin API palauttaa Slidelle.\n\nNähdäksesi pikkukuvat kaikissa subredditeissä ota käyttöön \'Ohita subredditin media-asetukset\'\n\nNähdäksesi kaiken NSFW-sisällön poista käytöstä \'Piilota NSFW-kuvat\' ja ota käyttöön \'Olen yli 18-vuotias\'</string>
+    <string name="settings_reddit_media_pref">Ohita subredditin media-asetukset</string>
+    <string name="settings_description_view_type">Näkymätyypit vaikuttavat sekä päänäkymään että yksittäisten subredditien näkymiin.\n\nKommenttipaneeli: kommentit liukuvat esiin julkaisujen vierestä ja kommenttisivun tila säilyy, kun pyyhkäiset takaisin (jotta et menetä paikkaasi)\n\nEi subreddit-välilehtiä: poistaa käytöstä pyyhkäisyn subredditien välillä\n\nSubreddit-välilehdet: pyyhkäise subredditiesi välillä</string>
+    <string name="settings_short_description_view_type">Näkymätyypit vaikuttavat sekä päänäkymään että yksittäisten subredditien näkymiin</string>
+    <string name="settings_comment_hide_selftext_image">Piilota pääkuva tekstijulkaisuissa</string>
+    <string name="settings_filter_flair">Flair-suodattimet</string>
+    <string name="settings_view_type">Näkymätyyppi</string>
+    <string name="settings_data">Datansäästö</string>
+    <string name="settings_card_show_selftext">Näytä julkaisuteksti</string>
+    <string name="settings_card_selftext_paragraph">Näytä ensimmäinen kappale</string>
+    <string name="settings_card_selftext_ellipsize">Lyhennä ensimmäiseen 128 merkkiin</string>
+    <string name="settings_handling_external_desc">Alle syötetyt verkkotunnukset avataan aina ulkoisesti</string>
+    <string name="settings_handling_enterdomain">Syötä verkkotunnus tai sen osa</string>
     <string name="settings_section_content">Sisältö</string>
+    <string name="settings_backup_view">Näytä varmuuskopio</string>
+    <string name="settings_backup_err_no_explorer">Tiedostoselainta ei löytynyt, tiedosto sijaitsee kohteessa %1$s</string>
+    <string name="settings_about_version_copied_toast">Versionumero kopioitu leikepöydälle</string>
+    <string name="settings_theme_night_start_at">Alkaa klo\u0020</string>
+    <string name="settings_theme_night_end_at">Päättyy klo\u0020</string>
+    <string name="settings_general_inbox_snd">Ääni ja värinä</string>
+    <string name="settings_enable_notifs">Ota saapuneiden ilmoitukset käyttöön</string>
+
     <!-- Quick setting toggles in the drawer -->
+    <string name="toggle_night_mode">Yötila</string>
+    <string name="toggle_immersive_mode">Mukaansatempaava tila</string>
+    <string name="toggle_nsfw">Näytä NSFW-sisältö</string>
+    <string name="toggle_right_thumbnails">Oikealle tasatut pikkukuvat</string>
+    <string name="toggle_reader_mode">Käytä lukutilaa</string>
+
     <!-- View types -->
+    <string name="view_type_tabs">Subreddit-välilehdet</string>
+    <string name="view_type_none">Ei subreddit-välilehtiä</string>
     <string name="view_type_comments">Kommentti paneeli</string>
+
     <!--Search methods -->
+    <string name="subreddit_search_method_title">Subredditien hakutapa</string>
+    <string name="subreddit_search_method_drawer">Hakupalkki vetolaatikossa</string>
+    <string name="subreddit_search_method_toolbar">Pitkä painallus työkalupalkin otsikossa</string>
+    <string name="subreddit_search_method_both">Sekä vetolaatikko että työkalupalkin otsikko</string>
+
     <!-- Back button behavior -->
+    <string name="back_button_behavior_title">Takaisin-painikkeen toiminta</string>
+    <string name="back_button_behavior_default">Sulje sovellus</string>
+    <string name="back_button_behavior_confirm_exit">Poistumisen vahvistusikkuna</string>
+    <string name="back_button_behavior_drawer">Avaa vetolaatikko</string>
+
     <!-- Subscription managing -->
+    <string name="reorder_add_domain">Lisää verkkotunnus</string>
+    <string name="reorder_add_subreddit">Lisää subreddit</string>
+    <string name="reorder_fab_collection">Multireddit</string>
+    <string name="reorder_fab_domain">Verkkotunnus</string>
+    <string name="reorder_fab_subreddit">Subreddit</string>
+    <string name="reorder_add_subscribe">Lisää &amp; tilaa</string>
+    <string name="reorder_remove_unsubscribe">Poista &amp; lopeta tilaus</string>
+    <string name="reorder_move">Siirrä ylimmäksi</string>
+    <string name="reorder_domain_placeholder">\u0020(vain verkkotunnuksen nimi)</string>
+    <string name="reorder_not_found_err">Subredditiä ei löytynyt, tässä muutama ehdotus</string>
+    <string name="reorder_subscribed_toast">Tilattu /r/%1$s</string>
+    <string name="reorder_unsubscribed_toast">Tilaus lopetettu: /r/%1$s</string>
+    <string name="sorting_faq"><b>Miten päivitän subredditit?</b>\nPäivitä subredditit napsauttamalla päivityskuvaketta työkalupalkissa!\n\n<b>Lopetin joidenkin subredditien tilauksen, mutta ne ovat yhä listalla!</b>\nSlide muuntaa selaimessa lopetetut tilaukset epävirallisiksi tilauksiksi. Poista ne painamalla subredditiä pitkään ja napsauttamalla poista!\n\n<b>Miten käytän kokoelmia?</b>\nLuo kokoelma napsauttamalla + -kelluvaa painiketta ja valitsemalla \'Luo kokoelma\'. Näin useat subit voivat toimia yhtenä subredditinä päänäytöllä!</string>
+    <string name="alphabetize_subreddits">Järjestä subredditit aakkosjärjestykseen</string>
+    <string name="sync_subscriptions">Synkronoi tilaukset</string>
+    <string name="cannot_be_undone">Tätä ei voi kumota.</string>
     <string name="deleting">Poistetaan&#8230;</string>
+    <string name="create_or_import_multi">Haluatko luoda uuden multiredditin vai tuoda sellaisen?</string>
+    <string name="sub_added">Subreddit lisätty!</string>
+    <string name="reorder_subs_FAQ">Subredditien järjestämisen UKK</string>
+    <string name="subscribe_to">Tilaa /r/%1$s</string>
+    <string name="unsubscribe_from">Lopeta tilaus: /r/%1$s</string>
+    <string name="btn_add_to_sublist">LISÄÄ SUB-LISTALLE</string>
+    <string name="btn_remove_from_sublist">POISTA SUB-LISTALTA</string>
+    <string name="just_unsub">VAIN LOPETA TILAUS</string>
     <string name="subscribe_caps">TILAA</string>
     <string name="unsubscribe_caps">PERUUTA TILAUS</string>
     <string name="reorder_subreddits_title">Valitse lisättävä subredditti</string>
+    <string name="reorder_add_or_search_subreddit">Lisää subreddit tai hae sellaista</string>
     <string name="reorder_subreddit_name">Subredditin nimi</string>
     <string name="reorder_remove_title">Poistetaanko tämä subredditti?</string>
-    <!-- Save categories -->
+    <string name="reorder_sync_complete">Synkronointi valmis</string>
+    <string name="reorder_loading_title">Ladataan subredditejäsi</string>
+    <string name="reorder_url_err">Virheellinen URL</string>
+
+    <!-- Saved tags -->
+    <string name="tag_set_name_hint">Merkinnän nimi</string>
+    <string name="tag_tag_action">MERKITSE</string>
+    <string name="profile_tag_select">Merkinnät</string>
+    <string name="profile_saved_tags">Tallennetut merkinnät</string>
+    <string name="tag_builtin_all">Kaikki</string>
+    <string name="tag_builtin_posts">Julkaisut</string>
+    <string name="tag_builtin_comments">Kommentit</string>
+    <string name="tag_types_header">Tyypit</string>
+    <string name="tag_post_types_header">Julkaisutyypit</string>
+    <string name="tag_custom_header">Mukautetut merkinnät</string>
+    <string name="tag_new">Uusi merkintä</string>
+    <string name="tag_manage">Hallitse merkintöjä</string>
+    <string name="tag_add">Lisää merkintä</string>
+    <string name="tag_none_yet">Ei vielä merkintöjä</string>
+    <string name="tag_rename">Nimeä uudelleen</string>
+    <string name="tag_delete_confirm">Haluatko varmasti poistaa merkinnän \"%1$s\"? Tämän merkinnän sisältäviä kohteita ei poisteta.</string>
+    <string name="tag_name_used_title">Nimi on jo käytössä</string>
+    <string name="tag_name_used">Tämän niminen merkintä on jo olemassa, valitse yksilöllinen nimi.</string>
+    <string name="tag_name_reserved">Tämä nimi on varattu, valitse toinen.</string>
+
     <!-- Setting subheaders -->
+    <string name="sorting">Lajittelut</string>
     <string name="display">Näyttö</string>
+    <string name="images">Kuvat</string>
+    <string name="storage">Tallennustila</string>
+    <string name="app_theme">Sovelluksen teema</string>
+    <string name="tinting">Väritys</string>
+    <string name="post_info">Julkaisun tiedot</string>
+    <string name="post_buttons">Julkaisun painikkeet</string>
+    <string name="navigation">Navigointi</string>
+    <string name="collapse_comments">Tiivistystoiminnot</string>
+    <string name="nsfw">NSFW-sisältö</string>
+    <string name="view_reddit_settings">Avaa Redditin asetukset selaimessa</string>
+    <string name="font_styles">Fonttityylit</string>
+
     <!-- Titles displayed in action bar / head / recents overview-->
+    <string name="title_subreddit_settings">Subredditien teemat &amp; asettelut</string>
+    <string name="title_edit_theme">Muokkaa teemaa</string>
+    <string name="title_submit_post">Tee julkaisu</string>
+    <string name="title_crosspost">Ristiinjulkaisu</string>
+    <string name="title_settings">Asetukset</string>
     <string name="title_share">Jaa</string>
     <string name="title_login">Kirjaudu Reddittiin</string>
     <string name="title_multireddits">Multiredditit</string>
+    <string name="title_users">Käyttäjät</string>
     <string name="title_inbox">Postilaatikko</string>
     <string name="title_theme_settings">Teema</string>
     <string name="title_create_multi">Luo multiredditti</string>
+
     <!-- Offline mode -->
+    <string name="offline_msg">Siirry online-tilaan ja päivitä subreddit tehdäksesi sen</string>
+    <string name="offline_last_update">Viimeksi päivitetty %1$s</string>
+    <string name="offline_comments_not_loaded">Siirry takaisin online-tilaan ja valitse ‘Tallenna kommentit välimuistiin’ kolmen pisteen valikosta lukeaksesi kommentteja offline-tilassa</string>
+    <string name="offline_no_content_found">Offline-sisältöä ei löytynyt</string>
+    <string name="offline_enter_online">Siirry online-tilaan</string>
+    <string name="offline_caching_title">Tallennetaan välimuistiin: %1$s</string>
+    <string name="offline_caching_complete">Välimuistiin tallennus valmis</string>
+
     <!-- Website -->
     <string name="website_external">Avaa ulkoisessa selaimessa</string>
+
+    <plurals name="reorder_subs_added">
+        <item quantity="one">%d subreddit lisätty</item>
+        <item quantity="other">%d subredditiä lisätty</item>
+    </plurals>
+
     <!-- Time -->
+    <string name="time_just_now">Juuri nyt</string>
+    <plurals name="time_years">
+        <item quantity="one">%d vuosi</item>
+        <item quantity="other">%d vuotta</item>
+    </plurals>
+    <plurals name="time_months">
+        <item quantity="one">%d kuukausi</item>
+        <item quantity="other">%d kuukautta</item>
+    </plurals>
+    <plurals name="time_days">
+        <item quantity="one">%d päivä</item>
+        <item quantity="other">%d päivää</item>
+    </plurals>
+    <plurals name="time_hours">
+        <item quantity="one">%d tunti</item>
+        <item quantity="other">%d tuntia</item>
+    </plurals>
+    <plurals name="time_minutes">
+        <item quantity="one">%d minuutti</item>
+        <item quantity="other">%d minuuttia</item>
+    </plurals>
+    <plurals name="time_seconds">
+        <item quantity="one">%d sekunti</item>
+        <item quantity="other">%d sekuntia</item>
+    </plurals>
+
     <!-- Time: shorthand durations for example 1 hour → 1h -->
+    <string name="time_years_short">%dv</string>
+    <string name="time_days_short">%dpv</string>
+    <string name="time_hours_short">%dt</string>
+    <string name="time_minutes_short">%dmin</string>
+
     <!-- Strings present during the login process -->
+    <string name="login_subscribe_rslideforreddit">Tilataanko /r/slidereddit?</string>
+    <string name="login_subscribe_rslideforreddit_desc">Haluatko tilata /r/slidereddit saadaksesi uusimmat uutiset ja ilmoittaaksesi ongelmista?</string>
+    <string name="login_sync_colors">Synkronoidaanko värit nyt?</string>
+    <string name="login_sync_colors_desc">Haluatko synkronoida subredditiesi värit nyt? Tämän voi tehdä myöhemmin kohdassa Asetukset → Subredditien teemat</string>
+    <string name="login_authenticating">Slide todentaa</string>
+    <string name="login_starting">Valmistellaan!</string>
+    <string name="login_starting_desc">Tämän pitäisi kestää vain hetken…</string>
+
     <!-- Over 18 prompt when visiting a NSFW subreddit -->
-    <!-- Subreddit color synchronization - https://redd.it/41054l -->
+    <string name="over18_title">/r/%1$s sisältää aikuisille tarkoitettua sisältöä</string>
+    <string name="over18_desc">Oletko yli kahdeksantoistavuotias ja haluatko nähdä aikuisille tarkoitettua sisältöä?</string>
+    <string name="over18_desc_loggedout">Kirjaudu sisään poistaaksesi tämän varoituksen pysyvästi</string>
+    <string name="over18_desc_loggedin">Voit poistaa tämän pysyvästi kohdassa Asetukset → Redditin asetukset → Näytä NSFW-sisältö</string>
+
+    <!-- Subreddit color synchronization - https://reddit.com/comments/41054l -->
     <string name="color_sync_complete">Synkronointi valmis</string>
+    <plurals name="color_sync_colored">
+        <item quantity="one">%d subreddit väritettiin</item>
+        <item quantity="other">%d subredditiä väritettiin</item>
+    </plurals>
+
     <!-- Discover section: find -->
+    <string name="discover_title">Löydä</string>
+    <string name="discover_search">Hakusana tai aihe</string>
+    <string name="discover_popular">Suosittu</string>
+    <string name="discover_trending">Nousussa</string>
+
     <!-- Subreddit post notifications -->
+    <string name="sub_post_notifs_title">Haluatko ilmoituksia uusista julkaisuista subredditissä\n/r/%1$s?</string>
+    <string name="sub_post_notifs_title_settings">Haluatko ilmoituksia uusista julkaisuista?</string>
+    <string name="sub_post_notify">Ilmoita</string>
+    <string name="sub_post_notifs_threshold">Pisteraja</string>
+    <string name="sub_post_notifs_err">Voit lisätä ilmoituksia vain yksittäisiin subredditeihin</string>
+    <string name="sub_post_notifs_settings_none">Ei subreddittejä ilmoitettavaksi</string>
+    <string name="sub_post_notifs_settings_search">Hae subin nimeä</string>
+    <string name="sub_post_notifs_notification_title">Uusi julkaisu subredditissä /r/%1$s</string>
+    <string name="sub_post_notifs_notification_btn">Lopeta subredditin /r/%1$s seuraaminen</string>
+    <string name="title_sub_post_notifs">Subredditien julkaisuilmoitukset</string>
+
     <!-- Internal browser -->
+    <string name="internal_browser_extracting_error">Valitettavasti artikkelia ei voitu hakea</string>
+    <string name="internal_browser_storecookies">Tallenna sivustojen evästeet</string>
+    <string name="internal_browser_readermode">Lukutila</string>
+
     <!-- Live thread -->
+    <string name="livethread_loading_title">Ladataan live-ketjua…</string>
+    <string name="livethread_not_found">Live-ketjua ei löytynyt</string>
+    <string name="livethread_recents_title">Live-ketju: %1$s</string>
+
     <!-- Used when viewing media -->
+    <string name="mediaview_notif_title">Ladataan kuvaa…</string>
+    <string name="mediaview_notif_video">Ladataan videota…</string>
+    <string name="mediaview_notif_text">Lataus käynnissä</string>
+    <string name="mediaview_save">Tallenna %1$s</string>
+    <string name="mediaview_saving">Tallennetaan %1$s</string>
+
     <!-- Drafts -->
+    <string name="choose_draft">Valitse luonnos</string>
+    <string name="dialog_no_drafts">Ei vielä luonnoksia</string>
+    <string name="dialog_no_drafts_msg">Voit lisätä luonnoksen napsauttamalla \'tallenna\'-kuvaketta muokkauspalkissa!</string>
+    <string name="msg_save_draft">Viesti tallennettu luonnokseksi</string>
+    <string name="manage_drafts">Hallitse luonnoksia</string>
+    <string name="really_delete_drafts">Poistetaanko nämä luonnokset varmasti?</string>
+
     <!-- Strings for widgets -->
+    <string name="widget_theme_dark">TUMMA</string>
+    <string name="widget_theme_light">VAALEA</string>
+    <string name="widget_theme_clear">LÄPINÄKYVÄ</string>
+    <string name="widget_posttype_title">Julkaisun tyyppi</string>
+    <string name="widget_posttype_list">LISTA</string>
+    <string name="widget_posttype_bigpic">SUURI KUVA</string>
+    <string name="widget_posttype_compact">TIIVIS</string>
+    <string name="widget_subname_hint">Subredditin nimi</string>
+    <string name="widget_visuals">Ulkoasu</string>
+    <string name="widget_content">Sisältö</string>
+    <string name="widget_loading">Ladataan…</string>
+    <string name="widget_creation_title">Uusi widget</string>
+    <string name="shortcut_creation_title">Uusi pikakuvake</string>
+
     <!-- Strings for alert dialogs -->
+    <string name="force_change_subscription">Tilausta ei voitu muuttaa</string>
+    <string name="force_change_subscription_desc">Haluatko silti muuttaa sen paikallisesti?</string>
+    <string name="never_load_images">Älä lataa kuvia lainkaan</string>
+    <string name="load_low_quality">Lataa heikkolaatuiset kuvat (enint. 320x320)</string>
+    <string name="load_medium_quality">Lataa keskilaatuiset kuvat (enint. 640x640)</string>
+    <string name="load_high_quality">Lataa korkealaatuiset kuvat (enint. 1080x1080)</string>
+    <string name="choose_color_title">Valitse väri</string>
+    <string name="enter_text_to_filter_click_enter_to_add">Kirjoita hakuteksti, lisää suodatin painamalla enter</string>
+    <string name="mode_desktop_compact">Työpöytä tiivis</string>
+    <string name="show_content_type_text_beside_links">Näytä sisältötyypin teksti linkkien vieressä</string>
+    <string name="comment_shadowbox">Kommenttien Shadowbox</string>
+
     <!-- Sidebar strings (multis, flairs) -->
+    <string name="sidebar_select_flair">Valitse flair</string>
+    <string name="sidebar_select_flair_text">Aseta flair-teksti</string>
+    <string name="sidebar_findingmods">Etsitään moderaattoreita</string>
+    <string name="snackbar_flair_success">Flair asetettu</string>
+    <string name="snackbar_flair_error">Virhe flairin asettamisessa, yritä pian uudelleen</string>
+    <string name="sidebar_submods">Subredditin /r/%s moderaattorit</string>
+    <string name="sidebar_flair">Flair: %1$s</string>
+    <string name="sidebar_notfound">Sivupalkkia ei löytynyt</string>
+    <plurals name="reorder_selected">
+        <item quantity="one">"%d valittu"</item>
+        <item quantity="other">"%d valittu"</item>
+    </plurals>
+
     <!--Filtering dialog -->
+    <string name="filter_title">Mitä haluat suodattaa?</string>
+    <string name="filter_posts_sub">Julkaisut subredditistä /r/%1$s</string>
+    <string name="filter_posts_user">Käyttäjän /u/%1$s julkaisut</string>
+    <string name="filter_posts_urls">Julkaisut, jotka linkittävät kohteeseen %1$s</string>
+    <string name="filter_open_externally">Avaa %s-linkit ulkoisesti</string>
+    <string name="filter_posts_flair">Flair \"%1$s\" lähteestä %2$s</string>
+    <string name="filter_btn">Suodata</string>
+
     <!-- Caching -->
+    <string name="cache_no_comments_found">Kommentteja ei löytynyt</string>
+    <string name="cache_no_comments_found_snackbar">Välimuistiin tallennettuja kommentteja ei löytynyt</string>
+    <string name="cache_no_comments_found_message">Tällä julkaisulla ei ole välimuistiin tallennettuja kommentteja. Tallentaaksesi kommentteja jatkossa napsauta kolmen pisteen valikkoa päänäytöllä ja valitse \'Tallenna kommentit välimuistiin\', tai ota automaattinen tallennus käyttöön navigointilaatikon Offline-sisältö-välilehdellä</string>
+    <string name="autocache_subreddits">Automaattisesti tallennettavat subredditit</string>
+    <string name="autocache_time">Automaattisen tallennuksen ajankohta</string>
+    <string name="cache_subreddits_now">Tallenna subredditit välimuistiin nyt</string>
+    <string name="cache_wifi_only">Tallenna vain Wi-Fi-yhteydellä</string>
+    <string name="comments_depth">Välimuistiin tallennettavien kommenttien syvyys</string>
+    <string name="comments_count">Välimuistiin tallennettavien kommenttien määrä</string>
+
     <!-- Saving location setting -->
+    <string name="set_save_location">Aseta median tallennuspaikka</string>
+    <string name="set_save_location_msg">Sliden median tallennuspaikkaa ei ole asetettu.</string>
+
     <!-- Report flow -->
     <string name="btn_report">Ilmoita</string>
+    <string name="report_post">Ilmianna julkaisu</string>
+    <string name="report_comment">Ilmianna kommentti</string>
+    <string name="report_loading">Ladataan syitä…</string>
+    <string name="report_sub_rules">Subredditin /r/%s säännöt</string>
+    <string name="report_site_rules">Redditin säännöt</string>
+    <string name="report_another_reason">Muu syy</string>
+    <string name="report_other">Muu</string>
+    <string name="input_reason_for_report">Ilmiannon syy</string>
+    <string name="msg_report_sent">Ilmianto lähetetty</string>
+
     <!-- Unsorted ¯\\_(ツ)_/¯ -->
     <string name="comment_load_more_number_unknown">Lataa lisää kommentteja</string>
+    <string name="card_right_thumb">Oikealle tasattu pikkukuva</string>
+    <string name="setting_filter_subreddits">Subreddit-suodattimet</string>
+    <string name="subreddit_theme">Subredditin teema</string>
+    <string name="dialog_choose_subreddits_to_edit">Valitse muokattavat subredditit</string>
+    <string name="dialog_color_sync_title">Värien synkronointi</string>
+    <string name="dialog_color_sync_message">Tämä yrittää hakea moderaattoreiden asettaman subredditin ‘pääväri’. Se ei korvaa jo väritettyjä subredditejä.</string>
+    <string name="fab_hide">Piilota katsotut julkaisut</string>
+    <string name="fab_create">Luo uusi julkaisu</string>
+    <string name="fab_disabled">Poistettu käytöstä</string>
+    <string name="fab_search">Hae julkaisuja</string>
+    <string name="handling_internal_browser">Sisäinen selain</string>
+    <string name="handling_external_browser">Ulkoinen selain</string>
+    <string name="mode_list">Lista</string>
+    <string name="mode_centered">Kortti keskitetyllä kuvalla</string>
+    <string name="mode_card">Kortti</string>
+    <string name="mode_thumbnail">Pikkukuva</string>
+    <string name="mode_no_thumbnails">Ei pikkukuvaa</string>
+    <string name="mode_big_thumbnails">Leveät pikkukuvat</string>
+    <string name="mode_cropped">Rajattu suuri kuva</string>
+    <string name="mode_letterbox">Suuri kuva palkkien kanssa</string>
+    <string name="mode_bigpic">Suuri kuva</string>
+    <string name="press_actionbar">Paina nuolta näyttääksesi toimintopalkin</string>
+    <string name="show_top_right">Näytä oikeassa yläkulmassa</string>
+    <string name="show_bottom_right">Näytä oikeassa alakulmassa</string>
+    <string name="small_tag_disabled">Poistettu käytöstä</string>
+    <string name="tap_actionbar">Pitkä painallus toimintopalkille</string>
+    <string name="always_actionbar">Näytä toimintopalkki aina</string>
+    <string name="sub_content_filter">Subredditin sisältösuodatin</string>
     <string name="submission_share_reddit_url">Jaa kommentit</string>
     <string name="filter_content">Suodata sisältöä</string>
+    <string name="content_to_show">Kohteessa %1$s näytettävä sisältö</string>
+    <string name="save_for_offline_viewing">Tallenna julkaisut offline-lukemista varten</string>
+    <string name="btn_collapse_children_all">Tiivistä alakommentit</string>
+    <string name="btn_open_content">Avaa sisältö</string>
+    <string name="enter_text_to_filter_click_enter_to_add_flair">Kirjoita suodatettava teksti (subreddit:flair_text), lisää painamalla enter</string>
+    <plurals name="filter_count">
+        <item quantity="one">%1$d suodatin (enint. %2$d näytetään)</item>
+        <item quantity="other">%1$d suodatinta (enint. %2$d näytetään)</item>
+    </plurals>
+    <string name="filter_limit_reached">Näytetään ensimmäiset %1$d / %2$d. Rajaa tuloksia hakemalla.</string>
+    <string name="datasave_always">Mobiilidata ja Wi-Fi</string>
+    <string name="datasave_mobile">Mobiilidata</string>
+    <string name="never">Ei koskaan</string>
+    <string name="multi_column_force_full">Pakota täysi kommenttinäkymä</string>
+    <string name="submission_info_locked">Tämä on lukittu julkaisu. Et voi kommentoida.</string>
+    <string name="card_background_tint">Kortin tausta</string>
+    <string name="subreddit_name_tint">Subredditin nimi</string>
+    <string name="login_failed_err_decline">Varmista, ettet valinnut ‘Hylkää’ edellisellä näytöllä, ja yritä uudelleen minuutin kuluttua</string>
+    <string name="login_unsupported_redirect_uri">Määritettyä uudelleenohjaus-URI:tä (%1$s) ei voi vastaanottaa selaimessa, joten kirjautumista ei voi viimeistellä. Käytä sen sijaan sovelluksen sisäistä WebView-kirjautumista tai aseta tuettu uudelleenohjaus-URI asetuksissa.</string>
+    <string name="login_unsupported_redirect_uri_title">Kirjautuminen epäonnistui</string>
+    <string name="login_failed_oauth_error_page">Kirjautuminen epäonnistui — Reddit palautti virheen kirjautumisen viimeistelyn sijaan. Tarkista asiakastunnuksesi ja uudelleenohjaus-URI asetuksissa.</string>
+    <string name="tutorial_swipe_navigation">Pyyhkäisynavigointi</string>
+    <string name="tutorial_swipe_description">Poistu pyyhkäisemällä vasemmasta reunasta.\n\nTämä koskee kuvia, GIFejä, albumeita, asetuksia ja paljon muuta!</string>
+    <string name="handling_browser">Verkkoselain</string>
+    <string name="submit_replies_to_inbox">Lähetä vastaukset saapuneisiin</string>
+    <string name="btn_open_comments">Avaa kommentit</string>
+    <string name="btn_preview">Esikatselu</string>
+    <string name="default_comment_sort">Kommenttien oletuslajittelu</string>
     <string name="content_deleted">[poistettu]</string>
+    <string name="thread_continue">Jatka tätä ketjua</string>
+    <string name="type_selftext">Tekstijulkaisu</string>
+    <string name="type_selftexts">Tekstijulkaisut</string>
+    <string name="submission_unhide">Näytä julkaisu uudelleen</string>
+    <string name="submission_info_unhidden">Julkaisu näkyy taas</string>
+    <string name="msg_sent_success">Viesti lähetetty</string>
+    <string name="msg_sent_failure">Viestin lähetys epäonnistui</string>
+    <string name="msg_send_user_dne">Kyseistä käyttäjää ei ole olemassa</string>
+    <string name="editor_actions_quote_comment">Valitse lainattava teksti</string>
+    <string name="guest">Vieras</string>
+    <string name="album_slide_view">Liukuva albuminäkymä</string>
+    <string name="album_grid">Albumiruudukko</string>
+    <string name="open_externally">Avaa ulkoisesti</string>
+    <string name="vertical_album_view">Pystysuora albuminäkymä</string>
+    <string name="download_album">Lataa albumi</string>
+    <string name="download_gallery">Lataa galleria</string>
+    <string name="compose_message">Kirjoita viesti</string>
+    <string name="mark_all_as_read">Merkitse kaikki luetuiksi</string>
+    <string name="clear_subreddit_history">Tyhjennä subreddit-historia</string>
+    <string name="clear_submission_history">Tyhjennä julkaisuhistoria</string>
+    <string name="alert_history_cleared">Historia tyhjennetty!</string>
+    <string name="manage_offline_content">Hallitse offline-sisältöä</string>
+    <string name="go_offline">Siirry offline-tilaan</string>
+    <string name="sidebar_edit_flair">Muokkaa flairiasi</string>
+    <string name="go_online_view_content">Siirry online-tilaan nähdäksesi tämän sisällön</string>
+    <string name="help">Ohje</string>
+    <string name="upvote_percentage">Näytä ylösäänestysprosentti</string>
+    <string name="view_subreddits">Näytä subredditit</string>
+    <string name="clear_saved_subreddits">Tyhjennä kaikki tallennetut subredditit</string>
+    <string name="download_the_slide_video_player_plugin">Lataa Slide Video Player -laajennus</string>
+    <string name="btn_suggest_title">Ehdota otsikkoa</string>
+    <string name="navigate_comments_since">Kommentit uudempia kuin…</string>
+    <string name="btn_offline">Siirry offline-tilaan</string>
+    <string name="discard_comment_title">Hylätäänkö kommentti?</string>
+    <string name="comment_discard_msg">Haluatko varmasti hylätä kommenttisi?</string>
+    <string name="backup_saved_downloads">Varmuuskopio tallennettu lataukset-kansioon</string>
+    <string name="really_remove_subreddit_title">Poistetaanko tämä subreddit varmasti?</string>
+    <string name="choose_sync_time">Valitse synkronointiaika</string>
+    <string name="account_suspended">Tämä tili on jäädytetty</string>
+    <string name="clear_all_sub_themes">Tyhjennetäänkö kaikki subredditien teemat?</string>
+    <string name="clear_all_sub_themes_msg">Et voi kumota tätä toimintoa</string>
+    <string name="title_not_found">Otsikkoa ei löytynyt</string>
+    <string name="really_delete_submission">Poistetaanko tämä julkaisu varmasti? Tätä ei voi kumota</string>
+    <string name="comment_unstickied">Kommentin kiinnitys poistettu</string>
+    <string name="comment_stickied">Kommentti kiinnitetty</string>
+    <string name="comment_undistinguished">Kommentin korostus poistettu</string>
+    <string name="comment_distinguished">Kommentti korostettu</string>
+    <string name="comment_removed">Kommentti poistettu</string>
+    <string name="set_nav_mode">Aseta navigointitila</string>
+    <string name="auto_hide_the_comment_nav_bar">Piilota kommenttien navigointipalkki automaattisesti</string>
+    <string name="rate_slide">Arvioi Slide</string>
+    <string name="edit_query">Muokkaa hakua</string>
+    <string name="share_slide">Jaa Slide</string>
+    <string name="open_clipboard_reddit_link">Avaa leikepöydällä oleva Reddit-linkki</string>
+    <string name="clipboard_no_reddit_link">Leikepöydällä ei ole Reddit-linkkiä</string>
+    <string name="open_links_externally">Avaa tämä isäntä aina ulkoisesti</string>
+    <string name="hide_read_posts">Piilota luetut julkaisut</string>
+    <string name="gallery_mode">Galleriatila</string>
+    <string name="settings_gallery_grid">Näytä galleriajulkaisut ruudukkona</string>
+    <string name="gallery_grid_image">Gallerian kuva %1$d / %2$d</string>
+    <string name="gallery_grid_overflow">+%1$d</string>
+    <string name="friends_sort_error">/r/friends ei ole lajiteltavissa</string>
+    <string name="shadowbox_comments_nolinks">Kommenteista ei löytynyt linkkejä</string>
+    <string name="draw_undo">Kumoa</string>
+    <string name="empty_preview_text">Täällä ei ole mitään ¯\\_(ツ)_/¯</string>
+    <string name="theme_red_shift">Punasiirtymä</string>
+    <string name="view_sub_sidebar">Näytä subin sivupalkki</string>
+    <string name="mod_log">Modiloki</string>
+    <string name="navigation_bar_vote_gestures">Navigointipalkin äänestyseleet</string>
+    <string name="nav_gestures_description">Äänestä ylös ja alas pyyhkäisemällä kommenttien navigointinuolia</string>
+    <string name="subreddit_sidebar_progress">Haetaan sivupalkkia…</string>
+    <string name="manage_your_subreddits">Hallitse subredditejäsi</string>
+    <string name="enlarge_links">Suurenna linkkejä</string>
+    <string name="enlarge_links_warning">Voi tehdä joistakin riveistä muita suurempia, mutta linkkejä on helpompi osua</string>
+    <string name="type_tumblr">Tumblr</string>
+    <string name="type_tumblrs">Tumblr-julkaisut</string>
+    <string name="type_nsfw_tumblr">NSFW-Tumblr</string>
+    <string name="submission_info_contest">Tämä ketju on kilpailutilassa. Et voi muuttaa lajittelua.</string>
+    <string name="sub_post_notifs_msg">Slide tarkistaa uudet julkaisut samalla kun se tarkistaa postin (postin ilmoitusten on oltava käytössä)</string>
+    <string name="mod_ban_reason_required">Syy on pakollinen</string>
+    <string name="settings_abbreviate_post_scores">Lyhennä julkaisujen pisteet (esim. 24.0k)</string>
+    <string name="settings_wide_depth_indicators">Leveät kommenttien syvyysmerkit</string>
+    <string name="settings_link_reader_mode_title">Käytä lukutilaa</string>
+    <string name="settings_link_reader_mode_description">Avaa kaikki linkit lukutilassa. Selaintyyppiä käytetään, kun avaat lukutilasta.</string>
+    <string name="settings_link_reader_night">Yhdistä lukutila ja yötila</string>
+    <string name="theme_pixel">Pixel</string>
+    <string name="save_images_to_subreddit_specific_subfolders">Tallenna kuvat subreddit-kohtaisiin alikansioihin</string>
+    <string name="description_save_subfolders">Toimii julkaisu- ja kommenttinäkymissä</string>
+    <string name="save_media_to_type_specific_subfolders">Tallenna media tyyppikohtaisiin alikansioihin</string>
+    <string name="description_save_type_subfolders">Kuvat menevät kansioon \"images\", videot ja GIFit kansioon \"videos\"</string>
+    <string name="show_image_download_button">Latauspikakuvake</string>
+    <string name="description_image_download_button">Näytä latauspainike kuvakatselimessa</string>
+    <string name="content_settings">Sisältöasetukset</string>
+    <string name="setting_titleTop">Näytä otsikko tietorivin yläpuolella</string>
+    <string name="setting_notification_piggybacking">Redditin ilmoitusten hyödyntäminen</string>
+    <string name="setting_notification_piggybacking_desc">Tarkista posti vain, kun virallinen Reddit-sovellus saa push-ilmoituksen</string>
+    <string name="install_notif_piggyback">Asenna virallinen Reddit-sovellus ottaaksesi ilmoitusten hyödyntämisen käyttöön</string>
+    <string name="success_block_user">Käyttäjä estetty</string>
+    <string name="err_unblock_user">Virhe käyttäjän eston poistamisessa</string>
+    <string name="success_unblock_user">Käyttäjän esto poistettu</string>
+    <string name="settings_highlight_time_desc">Vaatii, että \'Näytä kommenttien määrä edellisen käynnin jälkeen\' on käytössä kohdassa Asetukset &gt; Julkaisun asettelu</string>
+    <string name="settings_colored_time">Värillinen aikakupla uusille kommenteille</string>
+    <string name="theme_deep">Syvä</string>
+    <string name="type_vreddit">Reddit-video</string>
+    <string name="authors_above">Kirjoittajat yläpuolella</string>
+    <string name="btn_crosspost">Ristiinjulkaise</string>
+    <string name="btn_reset_color">NOLLAA VÄRI</string>
+    <string name="settings_shortlink_description">Linkit jaetaan muodossa \'https://reddit.com/comments/\'</string>
+    <string name="settings_shortlink">Jaa Redditin lyhytlinkki, kun mahdollista</string>
+    <string name="disable_replies_comment">Poista kommentin vastaukset saapuneista</string>
+    <string name="replies_disabled_comment">Kommenttien vastaukset poistettu käytöstä</string>
+    <string name="replies_enabled_comment">Kommenttien vastaukset otettu käyttöön</string>
+    <string name="replies_switch_accounts">Vaihda toiseen tiliin</string>
+    <string name="search_settings">Hae asetuksista</string>
+    <string name="show_collapse_expand_nav_bar">Näytä tiivistä/laajenna-painike kommenttien navigointipalkissa</string>
+    <string name="page_not_found">Sivua ei löytynyt</string>
+    <string name="page_does_not_exist">Pyytämääsi sivua ei ole olemassa</string>
+    <string name="back_button_behavior_goto_first">Siirry ensimmäiseen subredditiin</string>
+    <string name="settings_hide_post_awards">Piilota palkinnot</string>
+    <string name="settings_hide_comment_awards">Piilota palkinnot</string>
+    <string name="settings_title_markdown">Markdown</string>
+    <string name="settings_markdown_new_reddit">Uuden Redditin tyylinen Markdown</string>
+    <string name="settings_markdown_new_reddit_desc">Näyttää koodilohkot ja muotoilun kuten uusi Reddit (pois päältä käyttää vanhan Redditin näyttötapaa)</string>
+    <string name="comment_render_other">Näytä toinen esitystapa</string>
+    <string name="recover_post">Palauta julkaisu</string>
+    <string name="recover_loading">Haetaan alkuperäistä arkistosta…</string>
+    <string name="recover_post_failed">Tätä julkaisua ei voitu palauttaa</string>
+    <string name="recover_comment">Palauta kommentti</string>
+    <string name="recover_comment_failed">Tätä kommenttia ei voitu palauttaa</string>
+    <string name="markdown_preview_new_reddit">Uuden Redditin esitystapa</string>
+    <string name="markdown_preview_old_reddit">Vanhan Redditin esitystapa</string>
+    <string name="high_colorspace_images">Laajan väriavaruuden kuvat</string>
+    <string name="description_high_colorspace">Lataa kuvat täydellä väriavaruudella, mikä voi lisätä muistinkäyttöä</string>
+    <string name="wide_color_gamut">Laaja väriskaala</string>
+    <string name="description_wide_color_gamut">Näyttää mediakatselimet laajalla väriskaalalla. Voi haalistaa värejä joissakin OLED-näytöissä</string>
+    <string name="comment_emote_animation">Kommenttien emote-animaatio</string>
+    <string name="description_comment_emote_animation">Määrittää, animoidaanko muut kuin Giphy-emotet kommenteissa</string>
+    <string name="comment_image_size">Kommenttien kuvien koko</string>
+    <string name="description_comment_image_size">Kuinka suurina upotetut kuvat näytetään kommenteissa</string>
+    <string name="comment_image_size_small">Pieni</string>
+    <string name="comment_image_size_medium">Keskikokoinen</string>
+    <string name="comment_image_size_large">Suuri</string>
+    <string name="no_preview_image_longclick">Ei pitkiä painalluksia minkään sisältötyypin esikatselukuvissa</string>
+    <string name="description_no_preview_image_longclick">Määrittää, toimivatko pitkät painallukset minkä tahansa sisältötyypin esikatselukuvissa. Poistaa käytöstä sisällön kurkistustoiminnon.</string>
+    <string name="editor_btn_select_flair">Valitse flair</string>
+    <string name="submit_selected_flair">Valittu flair: %s</string>
+    <string name="mediaview_downloading">Ladataan kuvaa&#8230;</string>
+    <string name="err_save_image">Virhe kuvan tallentamisessa</string>
+    <string name="error_directory_not_selected">Kansiota ei valittu. Yritä uudelleen.</string>
+
+    <!-- Backup Operations -->
+
+    <!-- Additional Backup Operations -->
+    <string name="select_backup_file">Valitse varmuuskopiotiedosto</string>
+
+    <string name="read_later">Lue myöhemmin</string>
+    <string name="mark_as_read">Merkitse luetuksi</string>
+
+    <string name="reddit_client_id">Redditin asiakastunnus</string>
+    <string name="click_custom_client_id">Napauta asettaaksesi mukautetun asiakastunnuksen</string>
+    <string name="client_id_scan_qr">Skannaa QR-koodi</string>
+    <string name="client_id_scan_prompt">Skannaa QR-koodi, joka sisältää Reddit-asiakastunnuksesi</string>
+    <string name="camera_permission_denied">QR-koodien skannaus vaatii kameraluvan</string>
+    <string name="client_id_invalid_length">Virheellinen asiakastunnus: sen on oltava täsmälleen 22 merkkiä</string>
+
+    <!-- Notification permission strings -->
+    <string name="notifications_permission_title">Ota ilmoitukset käyttöön</string>
+    <string name="notifications_permission_message">Slide tarvitsee ilmoitusluvan kertoakseen uusista viesteistä, julkaisuista ja muista Redditin päivityksistä. Voit hallita ilmoitusasetuksia myöhemmin.</string>
+    <string name="notification_listener_permission_title">Ota ilmoitusten käyttöoikeus käyttöön</string>
+    <string name="notification_listener_permission_message">Slide tarvitsee ilmoitusten käyttöoikeuden siepatakseen Redditin ilmoitukset ja tarjotakseen paremman kokemuksen. Ota ilmoitusten käyttöoikeus käyttöön Slidelle seuraavalla näytöllä.</string>
+
+
+    <string name="reddit_redirect_uri_override">Redditin uudelleenohjaus-URI:n ohitus</string>
+    <string name="click_custom_redirect_uri">Napauta asettaaksesi mukautetun uudelleenohjaus-URI:n</string>
+    <string name="settings_reddit_redirect_uri_invalid">Virheellinen uudelleenohjaus-URI: sen on oltava muotoa skeema://isäntänimi</string>
+    <string name="reddit_user_agent_override">Redditin user agentin ohitus</string>
+    <string name="click_custom_user_agent">Napauta asettaaksesi mukautetun user agentin</string>
+    <string name="settings_enable_overrides">Ota ohitukset käyttöön</string>
+    <string name="settings_enable_overrides_desc">Käytä omaa asiakastunnustasi, uudelleenohjaus-URI:tä ja user agentia sovelluksen oletusarvojen sijaan. Jätä pois päältä, ellet tiedä tarvitsevasi sitä.</string>
+
+    <string name="settings_section_sound">Ääni</string>
+    <string name="settings_unmute_default">Poista videoiden mykistys oletuksena</string>
+
+    <string name="settings_subreddit_filter_prefix_matching">Ota etuliitteen täsmäytys käyttöön subreddit-suodattimissa</string>
+    <string name="settings_subreddit_filter_prefix_matching_description">Etuliite on koko subredditin nimi, vähintään kuusi merkkiä. Esimerkkejä: subreddit social estää subredditin socialanxiety. Subreddit pokemongo estää subredditin pokemongoraids.</string>
+
+    <string name="settings_filter_old_posts">Suodata julkaisut, jotka ovat vanhempia kuin</string>
+    <plurals name="settings_filter_old_posts_days">
+        <item quantity="one">%1$d päivä</item>
+        <item quantity="other">%1$d päivää</item>
+    </plurals>
+    <string name="settings_filter_old_posts_description">Ei käytössä, kun katsellaan yksittäistä subredditiä tai lajitellaan Top- tai Controversial-järjestykseen</string>
+
+    <!-- Pause on audio focus ducking setting -->
+    <string name="settings_pause_on_duck_title">Keskeytä video äänen hiljentämisen sijaan</string>
+    <string name="settings_pause_on_duck_desc">Keskeyttää videot, kun muut sovellukset toistavat ääntä. Hiljentäminen tarkoittaa äänenvoimakkuuden laskemista videon keskeyttämisen sijaan.</string>
+
+    <!-- Add this string resource for the play button content description -->
+    <string name="btn_play">Toista</string>
+
+    <string name="multireddit_name_title">Multiredditin nimi</string>
+    <string name="multireddit_name_hint">Multiredditin nimi</string>
+    <string name="multireddit_err_empty_name">Multiredditin nimi ei voi olla tyhjä</string>
+    <string name="multireddit_err_no_valid_subs">Kelvollisia subreddittejä ei valittu. Valitse vähintään yksi.</string>
+    <string name="multireddit_progress_title">Luodaan multiredditiä</string>
+    <string name="multireddit_progress_message">Odota, kun luomme multiredditiäsi...</string>
+    <string name="multireddit_created_success">Multireddit luotu</string>
+    <string name="multireddit_created_error">Multiredditin luominen epäonnistui. Yritä uudelleen.</string>
+    <string name="multireddit_json_error">Multireddit-tietojesi valmistelussa tapahtui virhe</string>
+
+    <string name="settings_dialog_colored_border">Lisää värillinen reunus valintaikkunoiden ympärille</string>
+    <string name="settings_dialog_colored_border_desc">Näyttää ohuen värillisen reunuksen joidenkin valintaikkunoiden ympärillä.</string>
+
+    <string name="misc_err_sync_failed">Subredditien synkronointi epäonnistui. Eikö tilauksia ole?</string>
+
+    <string name="mod_btn_distinguish">Korosta</string>
+    <string name="mod_btn_undistinguish">Poista korostus</string>
+
+    <string name="nsfw_status_removed">NSFW-merkintä poistettu</string>
+    <string name="nsfw_status_set">NSFW-merkintä asetettu</string>
+
+    <string name="spoiler_status_removed">Spoilerimerkintä poistettu</string>
+    <string name="spoiler_status_set">Spoilerimerkintä asetettu</string>
+
+    <string name="submission_distinguished">Julkaisu korostettu</string>
+    <string name="submission_distinguished_removed">Julkaisun korostus poistettu</string>
+
+    <string name="settings_general_hide_subreddit_tabs">Piilota tilattujen subredditien välilehdet</string>
+    <string name="settings_general_hide_subreddit_tabs_desc">Piilottaa tilatut subredditit välilehtinä, mutta säilyttää navigointipainikkeet</string>
+
+    <!-- Video playback speed control -->
+    <string name="video_speed">Nopeus</string>
+    <string name="video_speed_0_25x">0.25x</string>
+    <string name="video_speed_0_5x">0.5x</string>
+    <string name="video_speed_0_75x">0.75x</string>
+    <string name="video_speed_1x">Normaali</string>
+    <string name="video_speed_1_25x">1.25x</string>
+    <string name="video_speed_1_5x">1.5x</string>
+    <string name="video_speed_2x">2x</string>
+    <string name="video_speed_control_content_desc">Toistonopeuden säätö</string>
+    <string name="image_unavailable">Kuva ei ole käytettävissä</string>
+    <string name="image_rotate_content_desc">Käännä kuvaa 90 astetta myötäpäivään</string>
+    <string name="image_rotate_left_content_desc">Käännä kuvaa 90 astetta vastapäivään</string>
+
+    <!-- Folder chooser dialog (formerly provided by afollestad material-dialogs commons) -->
+    <string name="md_error_label">Virhe</string>
+    <string name="md_storage_perm_error">Tämä toiminto vaatii tallennustilan käyttöoikeuden, jota ei ole myönnetty.</string>
+    <string name="md_choose_label">VALITSE</string>
+    <string name="new_folder">Uusi kansio</string>
 </resources>

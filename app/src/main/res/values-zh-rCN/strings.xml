@@ -5,9 +5,9 @@
     <string name="general_confirm_exit">确认退出</string>
     <string name="general_confirm_exit_msg">你真的想退出 Slide 吗？</string>
     <string name="general_enable_shadowbox">启用 Shadowbox 模式</string>
-    <string name="pro_upgrade_msg">升级到 Slide for Reddit Pro，享受以下高级功能：\n\n- 网站广告拦截和阅读模式\n- 上传图片时的编辑功能\n- 平版模式的定制列功能\n- 自动夜间模式\n- 内容视图的图库功能\n- 评论视图\n- 备份和恢复，支持 Google Drive 和文件\n- 支持开源和无广告软件\n\n你愿意支持 Slide for Reddit 吗？</string>
     <string name="general_open_settings">侧栏</string>
     <string name="general_sub_sync">正在同步订阅</string>
+
     <!-- Used when viewing a thread -->
     <string name="submission_info_unsaved">提交未保存</string>
     <string name="submission_info_saved">提交已保存</string>
@@ -25,9 +25,9 @@
     <string name="submission_gild">在浏览器中打开</string>
     <string name="submission_save">保存帖子</string>
     <string name="submission_save_image">保存图片</string>
+    <string name="submission_save_video">保存视频</string>
     <string name="submission_load_full">加载完整帖子</string>
     <string name="submission_np_link">这是一个不参与链接。请不要投票或评论。</string>
-    <string name="submission_tap_gif">点击加载 GIF</string>
     <string name="submission_not_found">噢，帖子未找到！</string>
     <string name="submission_not_found_msg">抱歉，此帖未找到</string>
     <string name="submission_copy_text">复制文本</string>
@@ -38,7 +38,12 @@
     <string name="submission_text_copied">帖文已复制</string>
     <string name="submission_nocontent">提交没有内容</string>
     <string name="submission_link_copied">链接已复制</string>
+    <string name="translate_with_google">翻译</string>
+    <string name="translate_no_app">没有可用于翻译的应用</string>
+    <string name="read_aloud">朗读</string>
+    <string name="read_aloud_unavailable">文字转语音不可用</string>
     <string name="submission_removed">提交已删除</string>
+
     <plurals name="new_messages">
         <item quantity="other">%d 条新信息</item>
     </plurals>
@@ -48,6 +53,7 @@
     <plurals name="comments">
         <item quantity="other">条评论</item>
     </plurals>
+
     <!-- Theme settings -->
     <string name="theme_light">浅色</string>
     <string name="theme_dark">暗</string>
@@ -65,6 +71,7 @@
     <string name="theme_sepia">棕色</string>
     <string name="theme_amoled_contrast">带对比度的 AMOLED</string>
     <string name="theme_night">夜间主题</string>
+
     <!-- Font settings -->
     <string name="font_size_comment">评论字体大小</string>
     <string name="font_size_post">帖子字体大小</string>
@@ -75,13 +82,18 @@
     <string name="font_size_small">小</string>
     <string name="font_size_smaller">更小</string>
     <string name="font_size_tiny">最小</string>
+
     <!-- For editing the submission card layout -->
     <string name="card_hide_post_button">操作栏添加“隐藏帖子”按钮</string>
     <string name="card_tint_outside">只在版块之外着色</string>
     <string name="card_save_button">操作栏添加 “保存帖子” 按钮</string>
+
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">多列设置</string>
+    <string name="multi_column_portrait_count">竖屏列数</string>
+    <string name="multi_column_landscape_count">横屏列数</string>
     <string name="single_column_multi_window">在多窗口模式下使用单列布局</string>
+
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">你</string>
     <string name="drawer_support">升级为专业版</string>
@@ -89,19 +101,25 @@
     <string name="drawer_add_account">添加帐户</string>
     <string name="drawer_hello">你好，</string>
     <string name="drawer_search">前往版块</string>
+    <!-- Subreddit name when submitting/crossposting: a single subreddit only (no multireddit, no dot). -->
+    <!-- Message recipient: a username or an /r/ or /u/ path. -->
+    <!-- Settings search field. The trailing space is intentional, so the value is quoted to preserve it. -->
     <string name="drawer_moderation">版主管理</string>
     <string name="drawer_offline">Slide 现正在离线模式</string>
     <string name="drawer_offline_retry">尝试进入在线模式</string>
     <string name="drawer_guest_mode">以游客身份浏览</string>
+
     <!-- Sidebar items (That's the one on the right) -->
     <string name="sidebar_wiki">版块维基</string>
     <string name="sidebar_mods">版块版主</string>
+
     <!-- User profile -->
     <string name="profile_karma_total">总 karma 值</string>
     <string name="profile_karma_link">帖子 karma</string>
     <string name="profile_karma_comment">评论 karma</string>
     <string name="profile_message">私人信息</string>
     <string name="profile_saved">已保存</string>
+    <string name="local_saved">本地已保存</string>
     <string name="profile_read_later">稍后读</string>
     <string name="profile_upvoted">已赞同</string>
     <string name="profile_err_title">用户未找到</string>
@@ -115,6 +133,10 @@
     <string name="profile_friend">好友</string>
     <string name="profile_add_friend">添加好友</string>
     <string name="profile_remove_friend">删除好友</string>
+    <string name="profile_follow_user">关注</string>
+    <string name="profile_unfollow_user">取消关注</string>
+    <string name="profile_add_user">添加用户</string>
+    <string name="profile_remove_user">移除用户</string>
     <string name="profile_remove_account">您确定要删除此帐户吗？</string>
     <string name="profile_remove">删除帐户</string>
     <string name="profile_history">浏览历史</string>
@@ -127,7 +149,21 @@
     <string name="profile_btn_tag">设置标签</string>
     <string name="profile_btn_untag">移除标签</string>
     <string name="profile_info">个人主页</string>
+    <string name="profile_options">用户选项</string>
     <string name="profile_block_user">屏蔽用户</string>
+    <string name="profile_block_user_description">屏蔽该用户的私信、帖子和主页</string>
+    <string name="profile_unblock_user">解除屏蔽用户</string>
+    <string name="profile_unblock_user_description">解除对该用户私信、帖子和主页的屏蔽</string>
+    <string name="profile_search">搜索</string>
+    <string name="profile_search_title">在 %1$s 中搜索</string>
+    <string name="profile_search_hint">搜索标题和正文…</string>
+    <string name="profile_search_no_results">未找到结果</string>
+    <string name="profile_search_clear">清除搜索</string>
+    <string name="profile_search_cleared">已清除搜索</string>
+    <string name="profile_search_loading">正在搜索…</string>
+    <string name="profile_search_progress">%1$d 条结果 · 已搜索 %2$d 条</string>
+    <string name="profile_search_bypass_cache">绕过缓存</string>
+
     <!-- Comment text options -->
     <string name="comment_gild">奖励评论</string>
     <string name="comment_share">分享评论</string>
@@ -137,14 +173,15 @@
     <string name="comment_delete_err_msg">您想再试一次吗？</string>
     <string name="comment_deleted">[deleted]</string>
     <string name="comment_unsave">取消保存</string>
-    <string name="comment_load_more">继续加载%1$d </string>
-    <string name="comment_load_more_string_new">再加载 %1$s 条</string>
     <string name="comment_loading_more">正在加载更多评论&#8230;</string>
     <string name="comment_permalink">加载评论永久链接</string>
     <string name="comment_parent">显示上级评论</string>
+    <string name="comment_video_play">播放视频</string>
+
     <!-- Welcome view (first time setup) -->
     <string name="welcome_start">开始使用</string>
     <string name="welcome_personalize">个性化</string>
+
     <!-- Sorting options -->
     <string name="sorting_choose">选择排序方式</string>
     <string name="sorting_time_choose">选择时间框架</string>
@@ -164,6 +201,7 @@
     <string name="sorting_year">年</string>
     <string name="sorting_all">全部时间</string>
     <string name="sorting_defaultfor">默认为 /r/%1$s</string>
+
     <!-- Editor (save/submit a post) actions -->
     <string name="editor_url">链接</string>
     <string name="editor_text">文本</string>
@@ -172,7 +210,19 @@
     <string name="editor_title">标题</string>
     <string name="editor_err_msg">请在几秒钟后再试</string>
     <string name="editor_uploading_image">将图片上传至 Imgur</string>
-    <string name="editor_upload_image_question">上传图片到 Imgur？</string>
+    <string name="editor_upload_image_title">上传图片</string>
+    <string name="editor_upload_reddit">Reddit（内嵌图片）</string>
+    <string name="editor_upload_imgur">Imgur（链接）</string>
+    <string name="editor_uploading_reddit">正在将图片上传到 Reddit</string>
+    <string name="editor_reddit_upload_success">图片已上传</string>
+    <string name="editor_reddit_upload_failed">图片上传失败</string>
+    <string name="submit_image_host_imgur">Imgur</string>
+    <string name="submit_image_host_reddit">Reddit</string>
+    <string name="submit_change_img">更换图片</string>
+    <string name="submit_select_gallery">添加图片</string>
+    <string name="submit_gallery_caption_hint">说明文字（可选）</string>
+    <string name="submit_gallery_count">已选择 %1$d 张</string>
+    <string name="submit_uploading_gallery">正在上传第 %1$d 张，共 %2$d 张</string>
     <string name="editor_select_img">选择图片</string>
     <string name="editor_hint_optional_body">内容（可选）</string>
     <string name="editor_submit">提交一个帖子</string>
@@ -180,9 +230,11 @@
     <string name="editor_finding_title">查找标题</string>
     <string name="submit_findingflairs">正在查找签名</string>
     <string name="submit_flairchoices">/r/%s 签名</string>
+
     <string name="edit_selftext">编辑帖文</string>
     <string name="delete_submission">删除提交</string>
     <string name="set_submission_flair">设置提交的签名</string>
+
     <!-- Editor buttons -->
     <string name="editor_save_draft">保存草稿</string>
     <string name="editor_chose_draft">选择草稿</string>
@@ -198,21 +250,26 @@
     <string name="editor_size">大字体</string>
     <string name="editor_strike">删除线</string>
     <string name="editor_spoiler">剧透</string>
+
     <!-- General information / information without a category -->
     <string name="info_photo_saved">图片已保存</string>
     <string name="gif_saved">动图已保存</string>
+
     <!-- General errors / errors without a category -->
     <string name="err_title">不好，出问题了！</string>
     <string name="err_invalid_url">无效网址</string>
     <string name="err_loading_content">载入内容出错</string>
     <string name="err_general">不好，出现错误了</string>
     <string name="err_no_connection">Reddit 不能访问。你想再试一遍吗？</string>
+    <string name="err_no_connection_toast">无法连接到 Reddit。请稍后重试</string>
     <string name="err_retry_later">一分钟后再试！</string>
-    <string name="err_permission">权限被拒绝</string>
-    <string name="err_permission_msg">似乎您拒绝了 Slide 在外置存储的写入权限。这会引起图片缓存、帖子缓存和保存图片失败 :(。\n您想让 Slide 访问外部存储吗？</string>
     <string name="err_authentication">验证失败</string>
     <string name="err_submit_restricted">此版块受限制</string>
     <string name="err_submit_restricted_text">你不允许在这里发帖。请选择其他版块</string>
+    <string name="err_crosspost_disallowed_text">/r/%s 不允许转帖。请选择其他 subreddit。</string>
+    <string name="err_crosspost_not_subscribed">转帖前必须先订阅 /r/%s。</string>
+    <string name="err_crosspost_sub_not_found">/r/%s 不存在。</string>
+    <string name="crosspost_flair_required_short">需要标签 — 请在发布前选择一个标签。</string>
     <string name="error_video_not_found">未找到视频</string>
     <string name="error_video_message">加载此视频时出错</string>
     <string name="error_album_not_found">未找到相册</string>
@@ -225,17 +282,19 @@
     <string name="err_couldnt_save_choose_new">Slide 无法保存到选定的目录。是否要选择新的保存位置？</string>
     <string name="err_share_image">分享图片时出错</string>
     <string name="err_file_not_found">未找到文件</string>
-    <string name="err_not_valid_backup">不是有效的 Slide 备份文件</string>
-    <string name="err_not_valid_backup_msg">所选文件不是有效的 Slide 备份文件</string>
     <string name="err_file_not_found_msg">找不到选定的文件。请确保它存在, 并且 Slide 具有访问该文件/文件夹的权限</string>
     <string name="err_comment_post">哎呀，发表评论失败了！</string>
     <string name="err_comment_post_reason">原因: %1$s</string>
     <string name="err_comment_post_message">\n\n你的信息已保存为草稿。请稍后再试。</string>
     <string name="err_connection_failed_msg">连接 Reddit 失败。请检查网络连接，或使用离线模式。</string>
-    <string name="err_block_user">屏蔽用户时发生错误</string>
+    <string name="err_block_user">屏蔽用户时发生错误。您最近是否解除了对此用户的屏蔽？</string>
+
     <!-- Gif -->
     <string name="gif_err_title">动图未找到</string>
     <string name="gif_err_msg">载入此动图时出现错误。请将其重新打开并再试。</string>
+    <string name="gif_load_failed">GIF 加载失败</string>
+    <string name="gif_download_failed">GIF 下载失败</string>
+
     <!-- Multireddits -->
     <string name="multireddit_err_title">（还）没有多版块！</string>
     <string name="multireddit_err_msg">你想创建一个新的多版块吗？</string>
@@ -258,6 +317,7 @@
     <string name="multi_saved_successfully">已成功保存</string>
     <string name="delete_multireddit_title">你真要删除 /m/%1$s 吗？</string>
     <string name="multi_save_option">你想要保存这个由多个 reddit 子版集合成的部分吗？</string>
+
     <!-- Content types -->
     <string name="type_nsfw_img">NSFW 图片</string>
     <string name="type_nsfw_gif">NSFW 动图</string>
@@ -270,18 +330,36 @@
     <string name="type_xkcd">XKCD</string>
     <string name="type_nsfw_album">NSFW 相册</string>
     <string name="type_nsfw_gallery">NSFW 图库</string>
+    <string name="type_nsfw_albums">NSFW 相册</string>
+    <string name="type_nsfw_galleries">NSFW 图集</string>
+    <string name="type_nsfw_gifs">NSFW GIF</string>
+    <string name="type_nsfw_images">NSFW 图片</string>
+    <string name="type_nsfw_links">NSFW 链接</string>
+    <string name="type_nsfw_selftexts">NSFW 文字帖</string>
+    <string name="type_nsfw_tumblrs">NSFW Tumblr</string>
+    <string name="type_nsfw_videos">NSFW 视频</string>
     <string name="type_gallery">图库</string>
+    <string name="type_galleries">图集</string>
     <string name="type_img">图片</string>
     <string name="type_videos">视频</string>
     <string name="type_nsfw_video">NSFW 视频</string>
     <string name="type_imgur">Imgur 内容</string>
     <string name="type_nsfw_imgur">NSFW Imgur 内容</string>
+    <string name="type_nsfw_xkcd">NSFW XKCD</string>
+    <string name="type_nsfw_deviantart">NSFW DeviantArt</string>
+    <string name="type_nsfw_title_only">NSFW 纯标题帖</string>
+    <string name="type_nsfw_reddit">NSFW Reddit 链接</string>
+    <string name="type_nsfw_selftext">NSFW 文字帖</string>
+    <string name="type_spoiler">剧透</string>
+    <string name="type_nsfw_spoiler">NSFW 剧透</string>
+    <string name="type_nsfw_streamable">NSFW Streamable</string>
     <string name="type_external">外部的</string>
+
     <!-- Content types plural (Content filters) -->
     <string name="type_gifs">动图</string>
     <string name="type_albums">相册</string>
-    <string name="type_nsfw_content">NSFW 内容</string>
     <string name="type_links">链接</string>
+
     <!-- Inbox/mail -->
     <string name="mail_tab_inbox">站内信</string>
     <string name="mail_tab_unread">未读</string>
@@ -303,7 +381,6 @@
     <string name="mail_theirs">查看他们的消息</string>
     <string name="mail_re">re: %1$s</string>
     <string name="mail_mark_read">标记为已读</string>
-    <string name="mail_mark_unread">标记为未读</string>
     <string name="mail_view_full_thread">查看完整帖子</string>
     <string name="mail_message_copied">信息已复制</string>
     <plurals name="mail_notification_title">
@@ -312,6 +389,7 @@
     <plurals name="mod_mail_notification_title">
         <item quantity="other">你有 %d 条新的版主邮件！</item>
     </plurals>
+
     <!-- Miscellaneous/generic things that don't have a category or strings that are used for multiple categories -->
     <string name="misc_err">错误</string>
     <string name="misc_none">无</string>
@@ -332,32 +410,49 @@
     <string name="misc_setting_up">设置一些东西&#8230;</string>
     <string name="misc_setting_up_message">请不要离开这个界面。不需要太久!</string>
     <string name="misc_more_info">更多信息</string>
-    <string name="misc_rate_title">喜欢 Slide？</string>
-    <string name="misc_rate_msg">给它评分！</string>
     <string name="misc_captcha_incorrect">验证码不正确，请重试</string>
+
     <!-- Goto User -->
     <string name="user_enter">输入用户名</string>
     <string name="user_btn_goto">前往用户信息</string>
     <string name="user_btn_gotomultis">转到用户的多版块</string>
+
+    <!-- Saved users list -->
+    <string name="users_empty">没有已保存的用户</string>
+    <string name="users_btn_add">添加用户</string>
+    <string name="users_btn_remove">移除用户</string>
+    <string name="users_added">已将 %s 添加到用户</string>
+    <string name="users_removed">已将 %s 从用户中移除</string>
+    <string name="users_already_added">%s 已在用户列表中</string>
+    <string name="users_copied">已复制 %s</string>
+    <string name="users_checking">正在检查用户名</string>
+    <string name="users_invalid_title">无法添加用户</string>
+    <string name="users_invalid">%s 不是 Reddit 用户</string>
+    <string name="users_check_failed">无法检查 %s 是否存在。请检查网络连接后重试。</string>
+    <string name="users_friend_added">已将 %s 加为好友</string>
+    <string name="users_friend_removed">已将 %s 从好友中移除</string>
+    <string name="users_friend_failed">无法更新 %s 的好友状态</string>
+    <string name="btn_fab_add_user">添加用户</string>
+
     <!-- Buttons -->
     <string name="btn_add">添加</string>
     <string name="btn_cancel">取消</string>
     <string name="btn_close">关闭</string>
+    <string name="btn_toggle">切换</string>
     <string name="btn_open">打开</string>
     <string name="btn_discard">丢弃</string>
     <string name="btn_done">完成</string>
     <string name="btn_go_back">返回</string>
-    <string name="btn_no_thanks">不，谢谢</string>
     <string name="btn_no">否</string>
     <string name="btn_ok">好</string>
     <string name="btn_remove">移除</string>
     <string name="btn_reply">回复</string>
     <string name="btn_reset">重置</string>
+    <string name="btn_retry">重试</string>
     <string name="btn_save">保存</string>
     <string name="btn_submit">提交</string>
     <string name="btn_undo">撤销</string>
     <string name="btn_yes">是</string>
-    <string name="btn_yes_exclaim">是</string>
     <string name="btn_refresh">刷新</string>
     <string name="btn_cache">缓存评论</string>
     <string name="btn_delete">删除</string>
@@ -369,7 +464,7 @@
     <string name="btn_set">设置</string>
     <string name="btn_create">创建</string>
     <string name="btn_new">新建</string>
-    <string name="btn_upload">上传</string>
+
     <!-- Buttons Content labels for TalkBack accessibility-->
     <string name="btn_edit">编辑</string>
     <string name="btn_hide">隐藏</string>
@@ -388,11 +483,13 @@
     <string name="btn_fab_post">新建帖子</string>
     <string name="btn_fab_hide">隐藏看过的帖子</string>
     <string name="btn_fab_search">搜索帖子</string>
+
     <!-- Buttons Content labels for TalkBack accessibility active states-->
     <string name="btn_upvoted">已赞同</string>
     <string name="btn_downvoted">已踩</string>
     <string name="btn_unsave">取消保存</string>
     <string name="btn_collapse">折叠</string>
+
     <!-- Backup -->
     <string name="backup_success">备份成功！</string>
     <string name="backup_restoring">正在恢复你的设置</string>
@@ -406,13 +503,45 @@
     <string name="backup_btn_restore_file">从文件恢复</string>
     <string name="backup_confirm">您是否想备份？您的先前备份将被覆盖</string>
     <string name="backup_restore_confirm">您是否想恢复？您的当前设置将被覆盖</string>
+    <string name="backup_failed_msg">备份失败。请稍后重试。</string>
+    <string name="backup_restore_failed_msg">恢复失败。请确认存在有效的备份后重试。</string>
+    <string name="backup_local_title">本地备份</string>
+    <string name="backup_drive_title">Google 云端硬盘备份</string>
+    <string name="backup_button">创建备份</string>
+    <string name="restore_button">恢复备份</string>
+    <string name="backup_question">要备份吗？</string>
+    <string name="backup_complete">备份完成!</string>
+    <string name="err_not_valid_backup">不是有效的 Slide 备份文件</string>
+    <string name="err_not_valid_backup_msg">所选文件不是有效的 Slide 备份文件</string>
+    <string name="backup_password_title">设置备份密码</string>
+    <string name="backup_password_message">备份中包含您的 Reddit 账号凭据，因此会被加密。请设置一个 %1$d 到 %2$d 个字符的密码。恢复时需要用到它，且无法找回。</string>
+    <string name="backup_password_hint">密码</string>
+    <string name="restore_password_title">输入备份密码</string>
+    <string name="restore_password_message">请输入用于加密此备份的密码。</string>
+    <string name="restore_password_wrong">密码不正确。请重试。</string>
+    <string name="drive_authorization_failed">Google 云端硬盘授权失败</string>
+    <string name="drive_authorization_failed_msg">Slide 无法访问其专用的 Google 云端硬盘文件夹。请重试。</string>
+    <string name="drive_authorization_denied">需要 Google 云端硬盘访问权限</string>
+    <string name="drive_authorization_denied_msg">Slide 需要访问其专用的 Google 云端硬盘文件夹，才能备份或恢复您的设置。</string>
+
     <!-- Vote -->
     <string name="vote_err">投票失败！</string>
     <string name="vote_err_login">你必须登录后才能投票！</string>
     <string name="vote_removed">投票已移除</string>
+
+    <!-- Subscribing -->
+    <string name="subscribe_err_login">必须登录后才能订阅！</string>
+
     <!-- Moderation tools -->
     <string name="mod_mail">版主邮件</string>
     <string name="mod_mail_unread">未读的版主邮件</string>
+    <string name="modmail_internal_note">（内部备注）</string>
+    <string name="modmail_scope_missing">版务信箱需要重新认证。请重新登录（设置 &#8594; 账号）以启用。</string>
+    <string name="modmail_reply_sent">回复已发送！</string>
+    <string name="modmail_reply_failed">发送失败！回复已保存为草稿。</string>
+    <plurals name="modmail_message_count">
+        <item quantity="other">%d 条消息</item>
+    </plurals>
     <string name="mod_modqueue">审核队列</string>
     <string name="mod_unmoderated">未审核</string>
     <string name="mod_reports">举报</string>
@@ -459,21 +588,28 @@
     <string name="mod_sticky">置顶</string>
     <string name="mod_unsticky">取消置顶</string>
     <string name="reauth_complete">重新认证完成！</string>
+    <string name="reauth_in_progress">正在重新认证…</string>
+    <string name="reauth_failed">无法重新认证</string>
+
     <plurals name="mod_btn_reports">
         <item quantity="other">查看 %d 条举报</item>
     </plurals>
+
     <!-- If he did -->
     <string name="really_pin_submission_message">帖子已置顶</string>
     <string name="really_unpin_submission_message">提交已取消置顶</string>
+
     <!-- Subreddit Wiki -->
     <string name="wiki_err">未找到 Wiki</string>
     <string name="wiki_err_msg">此版块没有 wiki！</string>
+
     <!-- Subreddits -->
     <string name="subreddit_subscribers_string">%1$s 名订阅者</string>
     <string name="subreddit_active_users_string_new">%1$s 名用户正在浏览</string>
     <string name="subreddit_err_msg">版块 %1$s 未找到。是不是写错了？</string>
     <string name="subreddit_err_msg_new">找不到版块 %1$s。也许是拼写错误, 或者您没有权限访问此版块。</string>
     <string name="subreddit_err">版块未找到</string>
+
     <!-- Search -->
     <string name="search_comments_hint">搜索评论</string>
     <string name="search_goto">前往</string>
@@ -486,6 +622,7 @@
     <string name="search_new">最新</string>
     <string name="search_comments">评论数</string>
     <string name="no_posts_found">找不到帖子</string>
+
     <!-- Settings -->
     <string name="settings_reddit_prefs">Reddit 首选项</string>
     <string name="settings_accent_title">修改强调色</string>
@@ -493,6 +630,7 @@
     <string name="settings_layout_default">帖子布局</string>
     <string name="settings_link_album">内部查看相册</string>
     <string name="settings_link_peek">预览内容（实验功能）</string>
+    <string name="settings_link_peek_description">禁用在预览图上的长按</string>
     <string name="settings_link_gif">内部查看动图</string>
     <string name="settings_link_hqgif">优质 Gfycat视频</string>
     <string name="settings_link_handling">链接处理方式</string>
@@ -501,7 +639,7 @@
     <string name="settings_mail_info">频率越高，Slide 在后台可能的用电量也就越高！</string>
     <string name="settings_main_color_title">修改主颜色</string>
     <string name="settings_notification">每 %1$s 检查新信息</string>
-    <string name="settings_notification_newline">每隔 %1$s 检查新消息</string>
+    <string name="settings_notification_newline">每隔\n%1$s 检查一次新消息</string>
     <string name="settings_notification_short">每 %1$s 检查一次</string>
     <string name="settings_disable_nsfw_photo">隐藏所有 NSFW 图片</string>
     <string name="settings_store_history">保存浏览记录</string>
@@ -512,14 +650,14 @@
     <string name="share_image">分享图片</string>
     <string name="settings_libs">开源库</string>
     <string name="settings_about_libs">关于开源库</string>
+    <string name="settings_privacy">隐私政策</string>
     <string name="settings_bugs">提交 bug</string>
     <string name="settings_changelog">查看更改日志</string>
-    <string name="settings_google">正在连接至 Google</string>
-    <string name="settings_google_msg">Slide 正在连接至 Google。几秒钟后再试！</string>
     <string name="settings_fabclear_msg">触摸清除按钮会将当前视图中的帖子移除，但不会永久将其隐藏起来。 \n长按按钮会将帖子永久隐藏！</string>
     <string name="settings_fabclear">悬浮按钮清除操作</string>
     <string name="settings_notifdisabled">通知已停用</string>
     <string name="settings_colored_navigation_bar">导航栏变色</string>
+    <string name="settings_always_black_statusbar">黑色状态栏（通知栏）</string>
     <string name="settings_colored_icon">彩色应用图标 (实验)</string>
     <string name="settings_colored_icon_desc">可能需要重启手机。并且这项设置会从桌面移除图标。</string>
     <string name="settings_filter_domain">域名过滤</string>
@@ -536,8 +674,14 @@
     <string name="settings_set_storage_location">图片将被保存到 %s</string>
     <string name="settings_general_immersive_mode">沉浸式全屏模式</string>
     <string name="settings_general_immersive_mode_desc">隐藏状态和导航栏（实验功能）</string>
+    <string name="settings_general_old_swipe_mode">旧版滑动模式</string>
+    <string name="settings_general_old_swipe_mode_desc">Slide 的旧版滑动方式。适用于三按钮导航模式和三星手势。</string>
+    <string name="settings_general_hibernate">从上次离开的地方继续</string>
+    <string name="settings_general_hibernate_desc">重新打开同一屏幕的同一位置，显示已加载的内容而不是刷新。启用后会在溢出菜单中添加一个复选框，无需回到这里即可开关继续功能。</string>
+
     <string name="settings_general_title_drawer_items">抽屉项目</string>
     <string name="settings_general_subtitle_drawer_items">选择要显示的抽屉项目</string>
+
     <!-- Settings titles displayed in settings activity-->
     <string name="settings_title_backup">备份 &amp; 恢复</string>
     <string name="settings_title_default_theme">主要主题</string>
@@ -547,7 +691,14 @@
     <string name="settings_title_pro">升级为专业版</string>
     <string name="settings_title_sub_theme">版块主题</string>
     <string name="settings_title_sort">默认排序</string>
+    <string name="settings_title_sort_frontpage">首页排序</string>
     <string name="settings_title_about">关于</string>
+    <string name="settings_title_debug">调试</string>
+    <string name="settings_section_debug_reauth">重新认证</string>
+    <string name="settings_debug_break_reauth">中断重新认证</string>
+    <string name="settings_debug_break_reauth_desc">使重新认证卡住，以便测试重新认证提示条。可恢复：关闭此项，然后触发一次重新认证。</string>
+    <string name="settings_debug_trigger_reauth">触发重新认证</string>
+    <string name="settings_debug_trigger_reauth_desc">立即开始一次重新认证。关闭开关后可用此项恢复。</string>
     <string name="settings_title_multi_column">多列显示</string>
     <string name="settings_title_fab">浮动操作按钮</string>
     <string name="settings_title_comments">评论</string>
@@ -555,6 +706,7 @@
     <string name="settings_title_font">字体</string>
     <string name="settings_section_general">常用</string>
     <string name="settings_section_appearance">外观</string>
+    <string name="settings_section_hibernation">休眠</string>
     <string name="settings_section_other">其它</string>
     <string name="settings_section_browser">浏览器</string>
     <string name="settings_section_internal_viewers">内部查看器</string>
@@ -572,12 +724,16 @@
     <string name="settings_data_enable">启用节省数据设置</string>
     <string name="settings_data_video_quality">启用数据节省时偏好低质量视频</string>
     <string name="settings_comments_collapse_deleted">默认折叠已删除的评论</string>
+    <string name="settings_comments_collapse_sticky">始终完全折叠置顶评论</string>
+    <string name="settings_comments_collapse_blocked_users">折叠已屏蔽用户的评论</string>
+    <string name="settings_comments_collapse_blocked_users_description">同时启用“完全折叠评论”</string>
     <string name="settings_backup_occurs">备份将发生在%1$s</string>
     <string name="settings_backup_none">没有版块会备份</string>
     <string name="settings_backup_will_backup">\u0020会备份</string>
     <string name="settings_backup_submission_only">仅提交</string>
     <string name="settings_backup_comments">\u0020(评论)</string>
     <string name="settings_filter_profile">用户过滤</string>
+    <string name="settings_subreddit_content_filters_till_restart">重启前有效的 subreddit 内容过滤器</string>
     <string name="settings_subredditspecific_selftext">在此版块中始终显示帖文预览</string>
     <string name="settings_font_system">系统</string>
     <string name="settings_manage_subscriptions">管理您的订阅</string>
@@ -597,6 +753,7 @@
     <string name="settings_links_force_external">强制使用外部浏览器</string>
     <string name="settings_layout_show_domain">在信息行中显示域名</string>
     <string name="settings_layout_show_content_type">在信息行中显示内容类型</string>
+    <string name="settings_layout_thumbnail_flags">在缩略图角落显示彩色标记</string>
     <string name="settings_layout_show_votes_comments">在信息行显示投票/评论</string>
     <string name="settings_general_comment_last_visit">显示自上次访问以来的评论数</string>
     <string name="settings_fab_create">显示 \"创建评论\" FAB</string>
@@ -604,41 +761,49 @@
     <string name="settings_reddit_description">这些设置将更改 Reddit API 返回到 Slide 的内容。\n\n要在所有版块中查看缩略图, 启用 \"忽略版块媒体偏好\" \n\n要查看所有 NSFW 内容, 关闭 \"隐藏 NSFW 照片\" 并打开 \"我已满18岁\"</string>
     <string name="settings_reddit_media_pref">忽略版块媒体偏好</string>
     <string name="settings_description_view_type">视图类型同时影响主视图和单个版块视图。\n\n评论窗格: 评论从帖子旁边滑出, 并且在向后滑动时保存评论页状态 (所以你不会失去你的位置) \n\n 无版块选项卡: 禁用在版块之间滑动 \n\n 版块选项卡: 在你的版块之间滑动</string>
+    <string name="settings_short_description_view_type">视图类型同时影响主界面和单个 subreddit 界面</string>
     <string name="settings_comment_hide_selftext_image">隐藏帖文帖子中的主图片</string>
     <string name="settings_filter_flair">签名过滤</string>
     <string name="settings_view_type">视图类型</string>
     <string name="settings_data">节省数据</string>
+    <string name="settings_card_show_selftext">显示正文</string>
+    <string name="settings_card_selftext_paragraph">显示第一段</string>
+    <string name="settings_card_selftext_ellipsize">截断至前 128 个字符</string>
     <string name="settings_handling_external_desc">下面输入的域名将始终在外部打开</string>
     <string name="settings_handling_enterdomain">输入域名或域名的一部分</string>
     <string name="settings_section_content">内容</string>
     <string name="settings_backup_view">查看备份</string>
     <string name="settings_backup_err_no_explorer">找不到文件资源管理器, 文件位于%1$s</string>
     <string name="settings_about_version_copied_toast">版本号已复制到剪贴板</string>
-    <string name="settings_support_slide">升级Pro版以支持 Slide for Reddit</string>
     <string name="settings_theme_night_start_at">开始于\u0020</string>
     <string name="settings_theme_night_end_at">结束于\u0020</string>
     <string name="settings_general_inbox_snd">提示音和振动</string>
     <string name="settings_enable_notifs">启用收件箱通知</string>
+
     <!-- Quick setting toggles in the drawer -->
     <string name="toggle_night_mode">夜间模式</string>
     <string name="toggle_immersive_mode">沉浸模式</string>
     <string name="toggle_nsfw">显示 NSFW 内容</string>
     <string name="toggle_right_thumbnails">右对齐缩略图</string>
     <string name="toggle_reader_mode">使用阅读模式</string>
+
     <!-- View types -->
     <string name="view_type_tabs">版块选项卡</string>
     <string name="view_type_none">无版块选项卡</string>
     <string name="view_type_comments">评论窗格</string>
+
     <!--Search methods -->
     <string name="subreddit_search_method_title">版块搜索方法</string>
     <string name="subreddit_search_method_drawer">抽屉中的搜索栏</string>
     <string name="subreddit_search_method_toolbar">长按工具栏标题</string>
     <string name="subreddit_search_method_both">抽屉和工具栏标题</string>
+
     <!-- Back button behavior -->
     <string name="back_button_behavior_title">返回键行为</string>
     <string name="back_button_behavior_default">关闭应用程序</string>
     <string name="back_button_behavior_confirm_exit">确认退出对话框</string>
     <string name="back_button_behavior_drawer">打开抽屉</string>
+
     <!-- Subscription managing -->
     <string name="reorder_add_domain">添加域名</string>
     <string name="reorder_add_subreddit">添加版块</string>
@@ -674,11 +839,33 @@
     <string name="reorder_sync_complete">同步完成</string>
     <string name="reorder_loading_title">正在加载你的版块</string>
     <string name="reorder_url_err">URL 无效</string>
-    <!-- Save categories -->
+
+    <!-- Saved tags -->
+    <string name="tag_set_name_hint">标记名称</string>
+    <string name="tag_tag_action">标记</string>
+    <string name="profile_tag_select">标记</string>
+    <string name="profile_saved_tags">已保存的标记</string>
+    <string name="tag_builtin_all">全部</string>
+    <string name="tag_builtin_posts">帖子</string>
+    <string name="tag_builtin_comments">评论</string>
+    <string name="tag_types_header">类型</string>
+    <string name="tag_post_types_header">帖子类型</string>
+    <string name="tag_custom_header">自定义标记</string>
+    <string name="tag_new">新建标记</string>
+    <string name="tag_manage">管理标记</string>
+    <string name="tag_add">添加标记</string>
+    <string name="tag_none_yet">暂无标记</string>
+    <string name="tag_rename">重命名</string>
+    <string name="tag_delete_confirm">确定要删除“%1$s”吗？带有此标记的项目不会被删除。</string>
+    <string name="tag_name_used_title">名称已被使用</string>
+    <string name="tag_name_used">已存在同名标记，请选择一个唯一的名称。</string>
+    <string name="tag_name_reserved">该名称为保留名称，请另选一个。</string>
+
     <!-- Setting subheaders -->
     <string name="sorting">排序</string>
     <string name="display">显示</string>
     <string name="images">图片</string>
+    <string name="storage">存储</string>
     <string name="app_theme">应用程序主题</string>
     <string name="tinting">着色</string>
     <string name="post_info">帖子信息</string>
@@ -688,6 +875,7 @@
     <string name="nsfw">NSFW 内容</string>
     <string name="view_reddit_settings">在浏览器中打开 Reddit 设置</string>
     <string name="font_styles">字体样式</string>
+
     <!-- Titles displayed in action bar / head / recents overview-->
     <string name="title_subreddit_settings">版块主题&amp;布局</string>
     <string name="title_edit_theme">编辑主题</string>
@@ -697,9 +885,11 @@
     <string name="title_share">分享通过</string>
     <string name="title_login">登录到 Reddit</string>
     <string name="title_multireddits">多版块</string>
+    <string name="title_users">用户</string>
     <string name="title_inbox">站内信</string>
     <string name="title_theme_settings">主题设置</string>
     <string name="title_create_multi">创建多版块</string>
+
     <!-- Offline mode -->
     <string name="offline_msg">请转为在线并刷新版块</string>
     <string name="offline_last_update">最后更新于 %1$s</string>
@@ -708,11 +898,14 @@
     <string name="offline_enter_online">进入在线模式</string>
     <string name="offline_caching_title">缓存中 %1$s</string>
     <string name="offline_caching_complete">缓存完成</string>
+
     <!-- Website -->
     <string name="website_external">在外部浏览器中打开</string>
+
     <plurals name="reorder_subs_added">
         <item quantity="other">已添加 %d 个版块</item>
     </plurals>
+
     <!-- Time -->
     <string name="time_just_now">现在</string>
     <plurals name="time_years">
@@ -733,11 +926,13 @@
     <plurals name="time_seconds">
         <item quantity="other">%d 秒</item>
     </plurals>
+
     <!-- Time: shorthand durations for example 1 hour → 1h -->
     <string name="time_years_short">%d年</string>
     <string name="time_days_short">%d日</string>
     <string name="time_hours_short">%d时</string>
     <string name="time_minutes_short">%d分</string>
+
     <!-- Strings present during the login process -->
     <string name="login_subscribe_rslideforreddit">订阅 /r/slidereddit？</string>
     <string name="login_subscribe_rslideforreddit_desc">你想订阅 /r/slidereddit 以获得最新消息和报告问题？</string>
@@ -746,21 +941,25 @@
     <string name="login_authenticating">Slide 正在验证</string>
     <string name="login_starting">开始设置</string>
     <string name="login_starting_desc">这应该只需要一秒钟...</string>
+
     <!-- Over 18 prompt when visiting a NSFW subreddit -->
     <string name="over18_title">/r/%1$s 含有成人內容</string>
     <string name="over18_desc">你已年满十八并愿意看到成人内容吗？</string>
     <string name="over18_desc_loggedout">登录以永久禁用此警告</string>
     <string name="over18_desc_loggedin">你可以永久禁用此选项，在设置→ Reddit 首选项→显示 NSFW 内容</string>
+
     <!-- Subreddit color synchronization - https://reddit.com/comments/41054l -->
     <string name="color_sync_complete">同步完成</string>
     <plurals name="color_sync_colored">
         <item quantity="other">%d 个版块已上色</item>
     </plurals>
+
     <!-- Discover section: find -->
     <string name="discover_title">发现</string>
     <string name="discover_search">搜索字词或主题</string>
     <string name="discover_popular">流行</string>
     <string name="discover_trending">趋势</string>
+
     <!-- Subreddit post notifications -->
     <string name="sub_post_notifs_title">被新帖子通知在\n/r/%1$s?</string>
     <string name="sub_post_notifs_title_settings">新帖通知?</string>
@@ -772,19 +971,24 @@
     <string name="sub_post_notifs_notification_title">新帖子在 /r/%1$s</string>
     <string name="sub_post_notifs_notification_btn">停止跟踪 /r/%1$s</string>
     <string name="title_sub_post_notifs">版块帖子通知</string>
+
     <!-- Internal browser -->
     <string name="internal_browser_extracting_error">对不起，文章无法提取</string>
     <string name="internal_browser_storecookies">存储网站 cookies</string>
     <string name="internal_browser_readermode">阅读模式</string>
+
     <!-- Live thread -->
     <string name="livethread_loading_title">正在加载实时主题帖&#8230;</string>
     <string name="livethread_not_found">未找到实时主题帖</string>
     <string name="livethread_recents_title">实时主题帖：%1$s</string>
+
     <!-- Used when viewing media -->
     <string name="mediaview_notif_title">正在下载图片&#8230;</string>
+    <string name="mediaview_notif_video">正在下载视频…</string>
     <string name="mediaview_notif_text">正在下载</string>
     <string name="mediaview_save">保存 %1$s</string>
     <string name="mediaview_saving">保存中 %1$s</string>
+
     <!-- Drafts -->
     <string name="choose_draft">选择草稿</string>
     <string name="dialog_no_drafts">还没草稿</string>
@@ -792,6 +996,7 @@
     <string name="msg_save_draft">信息已存为草稿</string>
     <string name="manage_drafts">管理草稿</string>
     <string name="really_delete_drafts">真的删除这些草稿？</string>
+
     <!-- Strings for widgets -->
     <string name="widget_theme_dark">黑暗</string>
     <string name="widget_theme_light">明亮</string>
@@ -806,6 +1011,7 @@
     <string name="widget_loading">加载中...</string>
     <string name="widget_creation_title">新键小部件</string>
     <string name="shortcut_creation_title">新建快捷方式</string>
+
     <!-- Strings for alert dialogs -->
     <string name="force_change_subscription">无法更改订阅</string>
     <string name="force_change_subscription_desc">你还想在本地改变它吗？</string>
@@ -818,6 +1024,7 @@
     <string name="mode_desktop_compact">桌面紧凑型</string>
     <string name="show_content_type_text_beside_links">在链接旁边显示内容类型</string>
     <string name="comment_shadowbox">shadowbox 评论</string>
+
     <!-- Sidebar strings (multis, flairs) -->
     <string name="sidebar_select_flair">选择签名</string>
     <string name="sidebar_select_flair_text">设置签名文本</string>
@@ -830,6 +1037,7 @@
     <plurals name="reorder_selected">
         <item quantity="other">"已选择 %d"</item>
     </plurals>
+
     <!--Filtering dialog -->
     <string name="filter_title">你想要过滤什么？</string>
     <string name="filter_posts_sub">帖子从 /r/%1$s</string>
@@ -838,6 +1046,7 @@
     <string name="filter_open_externally">在外部打开 %s URLs</string>
     <string name="filter_posts_flair">签名 \"%1$s\" 来自 %2$s</string>
     <string name="filter_btn">过滤</string>
+
     <!-- Caching -->
     <string name="cache_no_comments_found">未找到评论</string>
     <string name="cache_no_comments_found_snackbar">未找到已缓存的评论</string>
@@ -848,9 +1057,11 @@
     <string name="cache_wifi_only">仅在使用 WiFi 时缓存</string>
     <string name="comments_depth">要缓存的评论深度</string>
     <string name="comments_count">要缓存的评论数</string>
+
     <!-- Saving location setting -->
     <string name="set_save_location">设置图片保存位置</string>
     <string name="set_save_location_msg">Slide 的图片保存位置还没设置，你想现在设置吗？</string>
+
     <!-- Report flow -->
     <string name="btn_report">举报</string>
     <string name="report_post">举报帖子</string>
@@ -862,6 +1073,7 @@
     <string name="report_other">其它</string>
     <string name="input_reason_for_report">举报原因</string>
     <string name="msg_report_sent">举报已发送</string>
+
     <!-- Unsorted ¯\\_(ツ)_/¯ -->
     <string name="comment_load_more_number_unknown">加载更多评论</string>
     <string name="card_right_thumb">右对齐缩略图</string>
@@ -883,18 +1095,26 @@
     <string name="mode_no_thumbnails">无缩略图</string>
     <string name="mode_big_thumbnails">宽缩略图</string>
     <string name="mode_cropped">裁剪大图</string>
+    <string name="mode_letterbox">带黑边的大图</string>
     <string name="mode_bigpic">大图</string>
     <string name="press_actionbar">按箭头显示操作栏</string>
+    <string name="show_top_right">显示在右上角</string>
+    <string name="show_bottom_right">显示在右下角</string>
+    <string name="small_tag_disabled">已禁用</string>
     <string name="tap_actionbar">长按显示操作栏</string>
     <string name="always_actionbar">总是显示操作栏</string>
     <string name="sub_content_filter">版块内容过滤</string>
     <string name="submission_share_reddit_url">分享评论</string>
     <string name="filter_content">过滤此内容</string>
-    <string name="content_to_hide">在%1$s隐藏的内容</string>
+    <string name="content_to_show">在 %1$s 上显示的内容</string>
     <string name="save_for_offline_viewing">保存提交以离线查看</string>
     <string name="btn_collapse_children_all">折叠下级评论</string>
     <string name="btn_open_content">打开内容</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">输入文本以过滤(subreddit:flair_text)，单击输入以添加</string>
+    <plurals name="filter_count">
+        <item quantity="other">%1$d 个过滤器（最多显示 %2$d 个）</item>
+    </plurals>
+    <string name="filter_limit_reached">正在显示 %2$d 条中的前 %1$d 条。请搜索以缩小结果范围。</string>
     <string name="datasave_always">移动数据和WIFI</string>
     <string name="datasave_mobile">移动数据</string>
     <string name="never">从不</string>
@@ -903,6 +1123,9 @@
     <string name="card_background_tint">卡片背景</string>
     <string name="subreddit_name_tint">版块名称</string>
     <string name="login_failed_err_decline">请确保你在最后一个屏幕上没有选择 \"拒绝\", 然后再试</string>
+    <string name="login_unsupported_redirect_uri">配置的重定向 URI（%1$s）无法被浏览器接收，因此无法完成登录。请改用应用内 WebView 登录方式，或在设置中指定受支持的重定向 URI。</string>
+    <string name="login_unsupported_redirect_uri_title">登录失败</string>
+    <string name="login_failed_oauth_error_page">登录失败 — Reddit 返回了错误而不是完成登录。请在设置中检查您的客户端 ID 和重定向 URI。</string>
     <string name="tutorial_swipe_navigation">滑动浏览</string>
     <string name="tutorial_swipe_description">从左边缘滑动以退出。\n\n 此适用于图片、动图、相册、设置等！</string>
     <string name="handling_browser">网页浏览器</string>
@@ -913,6 +1136,7 @@
     <string name="content_deleted">[deleted]</string>
     <string name="thread_continue">继续此主题帖</string>
     <string name="type_selftext">帖文</string>
+    <string name="type_selftexts">文字帖</string>
     <string name="submission_unhide">取消隐藏帖子</string>
     <string name="submission_info_unhidden">已取消隐藏提交</string>
     <string name="msg_sent_success">消息已发送</string>
@@ -925,6 +1149,7 @@
     <string name="open_externally">外部打开</string>
     <string name="vertical_album_view">垂直相册视图</string>
     <string name="download_album">下载相册</string>
+    <string name="download_gallery">下载图集</string>
     <string name="compose_message">撰写信息</string>
     <string name="mark_all_as_read">标记全部为已读</string>
     <string name="clear_subreddit_history">清除版块历史记录</string>
@@ -944,7 +1169,6 @@
     <string name="btn_offline">进入离线模式</string>
     <string name="discard_comment_title">放弃评论？</string>
     <string name="comment_discard_msg">你真的想放弃你的评论吗？</string>
-    <string name="backup_complete">备份完成!</string>
     <string name="backup_saved_downloads">备份保存到下载目录</string>
     <string name="really_remove_subreddit_title">真的删除此版块吗？</string>
     <string name="choose_sync_time">选择同步时间</string>
@@ -963,14 +1187,16 @@
     <string name="rate_slide">给 Slide 评分</string>
     <string name="edit_query">编辑查询</string>
     <string name="share_slide">分享 Slide</string>
-    <string name="create_folder">新建文件夹</string>
-    <string name="folder_name">文件夹名称</string>
+    <string name="open_clipboard_reddit_link">打开剪贴板中的 Reddit 链接</string>
+    <string name="clipboard_no_reddit_link">剪贴板中没有 Reddit 链接</string>
     <string name="open_links_externally">始终在外部打开此链接</string>
     <string name="hide_read_posts">隐藏已读帖子</string>
     <string name="gallery_mode">图库模式</string>
+    <string name="settings_gallery_grid">以网格形式显示图集帖子</string>
+    <string name="gallery_grid_image">图集图片 %1$d / %2$d</string>
+    <string name="gallery_grid_overflow">+%1$d</string>
     <string name="friends_sort_error">/r/ 朋友是不可排序</string>
     <string name="shadowbox_comments_nolinks">在评论中找不到链接</string>
-    <string name="pro_previews">预览 (%d)</string>
     <string name="draw_undo">撤销</string>
     <string name="empty_preview_text">这里没什么可看的 ¯\\_(ツ)_/¯</string>
     <string name="theme_red_shift">红移</string>
@@ -983,6 +1209,7 @@
     <string name="enlarge_links">放大链接</string>
     <string name="enlarge_links_warning">可能会导致一些线比其他线条更大, 但使链接更容易接触</string>
     <string name="type_tumblr">Tumblr</string>
+    <string name="type_tumblrs">Tumblr</string>
     <string name="type_nsfw_tumblr">NSFW Tumblr</string>
     <string name="submission_info_contest">此主题帖处于争论模式。不能更改排序。</string>
     <string name="sub_post_notifs_msg">在检查邮件时，Slide 将检查新帖子 (必须启用邮件通知)</string>
@@ -995,6 +1222,8 @@
     <string name="theme_pixel">像素</string>
     <string name="save_images_to_subreddit_specific_subfolders">将图片保存到特定版块的子文件夹</string>
     <string name="description_save_subfolders">在提交和评论视图中工作</string>
+    <string name="save_media_to_type_specific_subfolders">按类型将媒体保存到各自的子文件夹</string>
+    <string name="description_save_type_subfolders">图片保存到 \"images\"，视频和 GIF 保存到 \"videos\"</string>
     <string name="show_image_download_button">下载快捷方式</string>
     <string name="description_image_download_button">在图像查看器中显示下载按钮</string>
     <string name="content_settings">内容设置</string>
@@ -1003,6 +1232,8 @@
     <string name="setting_notification_piggybacking_desc">只有在官方Reddit应用程序获得推送通知时才能检查邮件</string>
     <string name="install_notif_piggyback">安装官方的 Reddit 应用程序以启用通知捎带</string>
     <string name="success_block_user">用户已屏蔽</string>
+    <string name="err_unblock_user">解除屏蔽用户时出错</string>
+    <string name="success_unblock_user">已成功解除屏蔽用户</string>
     <string name="settings_highlight_time_desc">需要在设置 &gt; 帖子布局中启用“显示上次查看后的评论数量”</string>
     <string name="settings_colored_time">为新评论使用彩色时间气泡</string>
     <string name="theme_deep">深色</string>
@@ -1023,8 +1254,132 @@
     <string name="back_button_behavior_goto_first">转到第一个子版块</string>
     <string name="settings_hide_post_awards">隐藏奖励</string>
     <string name="settings_hide_comment_awards">隐藏奖励</string>
+    <string name="settings_title_markdown">Markdown</string>
+    <string name="settings_markdown_new_reddit">新版 Reddit 风格的 Markdown</string>
+    <string name="settings_markdown_new_reddit_desc">按新版 Reddit 的方式渲染代码块和格式（关闭时使用旧版 Reddit 的渲染器）</string>
+    <string name="comment_render_other">显示另一种渲染</string>
+    <string name="recover_post">恢复帖子</string>
+    <string name="recover_loading">正在从存档获取原文…</string>
+    <string name="recover_post_failed">无法恢复此帖子</string>
+    <string name="recover_comment">恢复评论</string>
+    <string name="recover_comment_failed">无法恢复此评论</string>
+    <string name="markdown_preview_new_reddit">新版 Reddit 渲染</string>
+    <string name="markdown_preview_old_reddit">旧版 Reddit 渲染</string>
     <string name="high_colorspace_images">高色彩空间图像</string>
     <string name="description_high_colorspace">载入图像的完整的色彩空间，可能导致更高的内存用量</string>
+    <string name="wide_color_gamut">广色域</string>
+    <string name="description_wide_color_gamut">以广色域渲染媒体查看器。在部分 OLED 屏幕上可能使颜色发白</string>
+    <string name="comment_emote_animation">评论表情动画</string>
+    <string name="description_comment_emote_animation">设置评论中非 Giphy 表情是否播放动画</string>
+    <string name="comment_image_size">评论图片大小</string>
+    <string name="description_comment_image_size">评论中内嵌图片的显示大小</string>
+    <string name="comment_image_size_small">小</string>
+    <string name="comment_image_size_medium">中</string>
+    <string name="comment_image_size_large">大</string>
+    <string name="no_preview_image_longclick">任何内容类型的预览图均不响应长按</string>
+    <string name="description_no_preview_image_longclick">设置长按是否在任何内容类型的预览图上生效。这会禁用内容速览功能。</string>
     <string name="editor_btn_select_flair">选择签名</string>
     <string name="submit_selected_flair">选定的签名： %s</string>
+    <string name="mediaview_downloading">正在下载图片&#8230;</string>
+    <string name="err_save_image">保存图片时出错</string>
+    <string name="error_directory_not_selected">未选择目录。请重试。</string>
+
+    <!-- Backup Operations -->
+
+    <!-- Additional Backup Operations -->
+    <string name="select_backup_file">选择备份文件</string>
+
+    <string name="read_later">稍后阅读</string>
+    <string name="mark_as_read">标记为已读</string>
+
+    <string name="reddit_client_id">Reddit 客户端 ID</string>
+    <string name="click_custom_client_id">点按以设置自定义客户端 ID</string>
+    <string name="client_id_scan_qr">扫描二维码</string>
+    <string name="client_id_scan_prompt">扫描包含您 Reddit 客户端 ID 的二维码</string>
+    <string name="camera_permission_denied">扫描二维码需要相机权限</string>
+    <string name="client_id_invalid_length">客户端 ID 无效：必须正好为 22 个字符</string>
+
+    <!-- Notification permission strings -->
+    <string name="notifications_permission_title">启用通知</string>
+    <string name="notifications_permission_message">Slide 需要通知权限，才能提醒您新的私信、帖子及来自 Reddit 的其他更新。您可以稍后管理通知设置。</string>
+    <string name="notification_listener_permission_title">启用通知访问权限</string>
+    <string name="notification_listener_permission_message">Slide 需要通知访问权限，以便拦截 Reddit 的通知并提供更好的通知体验。请在接下来的界面中为 Slide 启用通知访问权限。</string>
+
+
+    <string name="reddit_redirect_uri_override">Reddit 重定向 URI 覆盖</string>
+    <string name="click_custom_redirect_uri">点按以设置自定义重定向 URI</string>
+    <string name="settings_reddit_redirect_uri_invalid">重定向 URI 无效：必须为 scheme://hostname 格式</string>
+    <string name="reddit_user_agent_override">Reddit User Agent 覆盖</string>
+    <string name="click_custom_user_agent">点按以设置自定义 User Agent</string>
+    <string name="settings_enable_overrides">启用覆盖</string>
+    <string name="settings_enable_overrides_desc">使用您自定义的客户端 ID、重定向 URI 和 User Agent，而不是应用的默认值。除非确有需要，否则请保持关闭。</string>
+
+    <string name="settings_section_sound">声音</string>
+    <string name="settings_unmute_default">默认取消视频静音</string>
+
+    <string name="settings_subreddit_filter_prefix_matching">启用 subreddit 过滤器前缀匹配</string>
+    <string name="settings_subreddit_filter_prefix_matching_description">前缀为完整的 subreddit 名称，且至少六个字符。例如：subreddit social 会屏蔽 socialanxiety。subreddit pokemongo 会屏蔽 pokemongoraids。</string>
+
+    <string name="settings_filter_old_posts">过滤早于此时间的帖子</string>
+    <plurals name="settings_filter_old_posts_days">
+        <item quantity="other">%1$d 天</item>
+    </plurals>
+    <string name="settings_filter_old_posts_description">查看单个 subreddit 时，或按 Top、Controversial 排序时不生效</string>
+
+    <!-- Pause on audio focus ducking setting -->
+    <string name="settings_pause_on_duck_title">暂停视频而不是降低音量</string>
+    <string name="settings_pause_on_duck_desc">当其他应用播放音频时暂停视频。降低音量是指调小音量而不是暂停视频。</string>
+
+    <!-- Add this string resource for the play button content description -->
+    <string name="btn_play">播放</string>
+
+    <string name="multireddit_name_title">Multireddit 名称</string>
+    <string name="multireddit_name_hint">Multireddit 名称</string>
+    <string name="multireddit_err_empty_name">Multireddit 名称不能为空</string>
+    <string name="multireddit_err_no_valid_subs">未选择有效的 subreddit。请至少选择一个 subreddit。</string>
+    <string name="multireddit_progress_title">正在创建 Multireddit</string>
+    <string name="multireddit_progress_message">正在创建您的 Multireddit，请稍候...</string>
+    <string name="multireddit_created_success">Multireddit 创建成功</string>
+    <string name="multireddit_created_error">创建 Multireddit 失败。请重试。</string>
+    <string name="multireddit_json_error">准备 Multireddit 数据时出错</string>
+
+    <string name="settings_dialog_colored_border">为对话框添加彩色边框</string>
+    <string name="settings_dialog_colored_border_desc">在部分对话框周围显示一条细彩色边框。</string>
+
+    <string name="misc_err_sync_failed">同步 subreddit 失败。没有已订阅的 subreddit？</string>
+
+    <string name="mod_btn_distinguish">标注身份</string>
+    <string name="mod_btn_undistinguish">取消标注身份</string>
+
+    <string name="nsfw_status_removed">已移除 NSFW 标记</string>
+    <string name="nsfw_status_set">已设置 NSFW 标记</string>
+
+    <string name="spoiler_status_removed">已移除剧透标记</string>
+    <string name="spoiler_status_set">已设置剧透标记</string>
+
+    <string name="submission_distinguished">帖子已标注身份</string>
+    <string name="submission_distinguished_removed">已移除帖子的身份标注</string>
+
+    <string name="settings_general_hide_subreddit_tabs">隐藏已订阅 subreddit 的标签页</string>
+    <string name="settings_general_hide_subreddit_tabs_desc">隐藏作为标签页的已订阅 subreddit，但保留导航按钮</string>
+
+    <!-- Video playback speed control -->
+    <string name="video_speed">速度</string>
+    <string name="video_speed_0_25x">0.25x</string>
+    <string name="video_speed_0_5x">0.5x</string>
+    <string name="video_speed_0_75x">0.75x</string>
+    <string name="video_speed_1x">正常</string>
+    <string name="video_speed_1_25x">1.25x</string>
+    <string name="video_speed_1_5x">1.5x</string>
+    <string name="video_speed_2x">2x</string>
+    <string name="video_speed_control_content_desc">播放速度控制</string>
+    <string name="image_unavailable">图片不可用</string>
+    <string name="image_rotate_content_desc">将图片顺时针旋转 90 度</string>
+    <string name="image_rotate_left_content_desc">将图片逆时针旋转 90 度</string>
+
+    <!-- Folder chooser dialog (formerly provided by afollestad material-dialogs commons) -->
+    <string name="md_error_label">错误</string>
+    <string name="md_storage_perm_error">此功能需要存储权限，但尚未授予。</string>
+    <string name="md_choose_label">选择</string>
+    <string name="new_folder">新建文件夹</string>
 </resources>

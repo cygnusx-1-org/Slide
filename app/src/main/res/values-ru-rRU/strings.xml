@@ -5,9 +5,9 @@
     <string name="general_confirm_exit">Подтвердите выход</string>
     <string name="general_confirm_exit_msg">Вы действительно хотите выйти из Slide?</string>
     <string name="general_enable_shadowbox">Включить Shadowbox Mode</string>
-    <string name="pro_upgrade_msg">Обновите Slide for Reddit Pro, чтобы насладиться потрясающими новыми функциями, в том числе: \n\n- Блокировка рекламы и режим чтения в режиме просмотра веб-сайта\n- Обрезка и рисование на изображениях для загрузки\n - Настраиваемый режим столбцов на планшете\n - Автоматический ночной режим\n - Представления содержимого Shadow галереи \n- Комментарий Shadowbox view \n- Резервное копирование и восстановление на Google Диск и в файл \n- Поддержка программного обеспечения с открытым исходным кодом и без рекламы! \n \nВы хотите поддержать Slide for Reddit?</string>
     <string name="general_open_settings">Боковая панель</string>
     <string name="general_sub_sync">Синхронизация Подписок</string>
+
     <!-- Used when viewing a thread -->
     <string name="submission_info_unsaved">Несохранённый пост</string>
     <string name="submission_info_saved">Публикация сохранена</string>
@@ -25,9 +25,9 @@
     <string name="submission_gild">Открыть в браузере</string>
     <string name="submission_save">Сохранить запись</string>
     <string name="submission_save_image">Сохранить изображение</string>
+    <string name="submission_save_video">Сохранить видео</string>
     <string name="submission_load_full">Загрузить полное обсуждение</string>
     <string name="submission_np_link">Здесь нет ссылки для участия. Пожалуйста, не голосуйте и не комментируйте</string>
-    <string name="submission_tap_gif">Нажмите для загрузки GIF</string>
     <string name="submission_not_found">Ох, пост не найден!</string>
     <string name="submission_not_found_msg">Извините, пост не может быть найден</string>
     <string name="submission_copy_text">Копировать текст</string>
@@ -38,7 +38,12 @@
     <string name="submission_text_copied">Selftext скопирован</string>
     <string name="submission_nocontent">Пост пуст</string>
     <string name="submission_link_copied">Ссылка скопирована</string>
+    <string name="translate_with_google">Перевести</string>
+    <string name="translate_no_app">Нет приложения для перевода</string>
+    <string name="read_aloud">Прочитать вслух</string>
+    <string name="read_aloud_unavailable">Синтез речи недоступен</string>
     <string name="submission_removed">Пост удален</string>
+
     <plurals name="new_messages">
         <item quantity="one">%d новое сообщение</item>
         <item quantity="few">%d новых сообщения</item>
@@ -57,6 +62,7 @@
         <item quantity="many">кмт-ев</item>
         <item quantity="other">кмт-ев</item>
     </plurals>
+
     <!-- Theme settings -->
     <string name="theme_light">Светлая</string>
     <string name="theme_dark">Тёмная</string>
@@ -74,6 +80,7 @@
     <string name="theme_sepia">Сепия</string>
     <string name="theme_amoled_contrast">AMOLED с контрастом</string>
     <string name="theme_night">Ночная тема</string>
+
     <!-- Font settings -->
     <string name="font_size_comment">Размер шрифта комментариев</string>
     <string name="font_size_post">Размер шрифта поста</string>
@@ -84,13 +91,18 @@
     <string name="font_size_small">Маленький</string>
     <string name="font_size_smaller">Меньше</string>
     <string name="font_size_tiny">Мелкий</string>
+
     <!-- For editing the submission card layout -->
     <string name="card_hide_post_button">\"Скрыть запись\" в панели действий</string>
     <string name="card_tint_outside">Только вне оттенка сабреддита</string>
     <string name="card_save_button">Кнопка «Сохранить пост» в actionbar</string>
+
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Многоколоночный</string>
+    <string name="multi_column_portrait_count">Столбцы в портретной ориентации</string>
+    <string name="multi_column_landscape_count">Столбцы в альбомной ориентации</string>
     <string name="single_column_multi_window">Одна колонка в многооконном режиме</string>
+
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Вы</string>
     <string name="drawer_support">Перейти на Pro</string>
@@ -98,19 +110,25 @@
     <string name="drawer_add_account">Добавить аккаунт</string>
     <string name="drawer_hello">Привет,</string>
     <string name="drawer_search">Перейти в сабреддит</string>
+    <!-- Subreddit name when submitting/crossposting: a single subreddit only (no multireddit, no dot). -->
+    <!-- Message recipient: a username or an /r/ or /u/ path. -->
+    <!-- Settings search field. The trailing space is intentional, so the value is quoted to preserve it. -->
     <string name="drawer_moderation">Модерация</string>
     <string name="drawer_offline">Slide находится в автономном режиме</string>
     <string name="drawer_offline_retry">Попробуйте ввести в режиме онлайн</string>
     <string name="drawer_guest_mode">Смотреть как гость</string>
+
     <!-- Sidebar items (That's the one on the right) -->
     <string name="sidebar_wiki">Сабреддит-wiki</string>
     <string name="sidebar_mods">Модераторы сабреддита</string>
+
     <!-- User profile -->
     <string name="profile_karma_total">Общая карма</string>
     <string name="profile_karma_link">Карма поста</string>
     <string name="profile_karma_comment">Карма коммента</string>
     <string name="profile_message">Личное сообщение</string>
     <string name="profile_saved">Сохранено</string>
+    <string name="local_saved">Сохранено локально</string>
     <string name="profile_read_later">Прочитать потом</string>
     <string name="profile_upvoted">Заплюсовано</string>
     <string name="profile_err_title">Пользователь не найден</string>
@@ -124,6 +142,10 @@
     <string name="profile_friend">Друг</string>
     <string name="profile_add_friend">Добавить в друзья</string>
     <string name="profile_remove_friend">Удалить из друзей</string>
+    <string name="profile_follow_user">Подписаться</string>
+    <string name="profile_unfollow_user">Отписаться</string>
+    <string name="profile_add_user">Добавить пользователя</string>
+    <string name="profile_remove_user">Удалить пользователя</string>
     <string name="profile_remove_account">Вы действительно хотите удалить этот аккаунт?</string>
     <string name="profile_remove">Удалить аккаунт</string>
     <string name="profile_history">История</string>
@@ -136,7 +158,21 @@
     <string name="profile_btn_tag">Установить тег</string>
     <string name="profile_btn_untag">Удалить тег</string>
     <string name="profile_info">Данные пользователя</string>
+    <string name="profile_options">Параметры пользователя</string>
     <string name="profile_block_user">Заблокировать пользователя</string>
+    <string name="profile_block_user_description">Блокирует сообщения, посты и профиль пользователя</string>
+    <string name="profile_unblock_user">Разблокировать пользователя</string>
+    <string name="profile_unblock_user_description">Разблокирует сообщения, посты и профиль пользователя</string>
+    <string name="profile_search">Поиск</string>
+    <string name="profile_search_title">Поиск в %1$s</string>
+    <string name="profile_search_hint">Поиск по заголовкам и тексту…</string>
+    <string name="profile_search_no_results">Ничего не найдено</string>
+    <string name="profile_search_clear">Очистить поиск</string>
+    <string name="profile_search_cleared">Поиск очищен</string>
+    <string name="profile_search_loading">Поиск…</string>
+    <string name="profile_search_progress">%1$d результатов · просмотрено %2$d</string>
+    <string name="profile_search_bypass_cache">В обход кэша</string>
+
     <!-- Comment text options -->
     <string name="comment_gild">Наградить комментарий</string>
     <string name="comment_share">Поделиться комментарием</string>
@@ -146,14 +182,15 @@
     <string name="comment_delete_err_msg">Хотите попробовать еще раз?</string>
     <string name="comment_deleted">[deleted]</string>
     <string name="comment_unsave">Не сохранено</string>
-    <string name="comment_load_more">Загрузить больше %1$d</string>
-    <string name="comment_load_more_string_new">Загрузить ещё %1$s</string>
     <string name="comment_loading_more">Загрузить больше комментариев&#8230;</string>
     <string name="comment_permalink">Загрузить постоянную ссылку на комментарий</string>
     <string name="comment_parent">Показать родительский комментарий</string>
+    <string name="comment_video_play">Воспроизвести видео</string>
+
     <!-- Welcome view (first time setup) -->
     <string name="welcome_start">Приступить</string>
     <string name="welcome_personalize">Персонализация</string>
+
     <!-- Sorting options -->
     <string name="sorting_choose">Выберите тип сортировки</string>
     <string name="sorting_time_choose">Выбрать временные рамки</string>
@@ -173,6 +210,7 @@
     <string name="sorting_year">год</string>
     <string name="sorting_all">всё время</string>
     <string name="sorting_defaultfor">По умолчанию для /r/%1$s</string>
+
     <!-- Editor (save/submit a post) actions -->
     <string name="editor_url">Ссылка</string>
     <string name="editor_text">Текст</string>
@@ -181,7 +219,19 @@
     <string name="editor_title">Заголовок</string>
     <string name="editor_err_msg">Пожалуйста, повторите попытку через несколько секунд</string>
     <string name="editor_uploading_image">Загрузка изображения на imgur</string>
-    <string name="editor_upload_image_question">Загрузить изображение на Imgur?</string>
+    <string name="editor_upload_image_title">Загрузить изображение</string>
+    <string name="editor_upload_reddit">Reddit (встроенное изображение)</string>
+    <string name="editor_upload_imgur">Imgur (ссылка)</string>
+    <string name="editor_uploading_reddit">Загрузка изображения на Reddit</string>
+    <string name="editor_reddit_upload_success">Изображение загружено</string>
+    <string name="editor_reddit_upload_failed">Не удалось загрузить изображение</string>
+    <string name="submit_image_host_imgur">Imgur</string>
+    <string name="submit_image_host_reddit">Reddit</string>
+    <string name="submit_change_img">Изменить изображение</string>
+    <string name="submit_select_gallery">Добавить изображения</string>
+    <string name="submit_gallery_caption_hint">Подпись (необязательно)</string>
+    <string name="submit_gallery_count">Выбрано: %1$d</string>
+    <string name="submit_uploading_gallery">Загрузка изображения %1$d из %2$d</string>
     <string name="editor_select_img">Выберите изображение</string>
     <string name="editor_hint_optional_body">Текст (по выбору)</string>
     <string name="editor_submit">Сделать запись</string>
@@ -189,9 +239,11 @@
     <string name="editor_finding_title">Поиск по названию выполняется</string>
     <string name="submit_findingflairs">Поиск флейров</string>
     <string name="submit_flairchoices">/r/%s флейров</string>
+
     <string name="edit_selftext">Редактировать описание</string>
     <string name="delete_submission">Удалить подписку</string>
     <string name="set_submission_flair">Установить флейр подписки</string>
+
     <!-- Editor buttons -->
     <string name="editor_save_draft">Сохранить черновик</string>
     <string name="editor_chose_draft">Выбрать черновик</string>
@@ -207,21 +259,26 @@
     <string name="editor_size">Крупный шрифт</string>
     <string name="editor_strike">Зачеркнутый</string>
     <string name="editor_spoiler">Спойлер</string>
+
     <!-- General information / information without a category -->
     <string name="info_photo_saved">Фото сохранено</string>
     <string name="gif_saved">GIF сохранен</string>
+
     <!-- General errors / errors without a category -->
     <string name="err_title">Ох, что-то пошло не так!</string>
     <string name="err_invalid_url">Неверный URL-адрес</string>
     <string name="err_loading_content">Ошибка при загрузке содержимого</string>
     <string name="err_general">Ох, произошла ошибка</string>
     <string name="err_no_connection">Реддит не отвечает. Попробовать снова?</string>
+    <string name="err_no_connection_toast">Не удалось связаться с Reddit. Повторите попытку позже</string>
     <string name="err_retry_later">Попробуйте ещё через минуту!</string>
-    <string name="err_permission">Отказано в доступе</string>
-    <string name="err_permission_msg">Похоже, вы отказали Slide в записи данных во внешнее хранилище. Это не даст возможности сохранять кэш и изображения :(. \nОткрыть Slide доступ к внешнему хранилищу?</string>
     <string name="err_authentication">Ошибка аутентификации</string>
     <string name="err_submit_restricted">Это закрытый сабреддит</string>
     <string name="err_submit_restricted_text">У вас нет прав писать в этом сабреддите. Выберите какой-нибудь другой</string>
+    <string name="err_crosspost_disallowed_text">/r/%s не разрешает кросспосты. Выберите другой сабреддит.</string>
+    <string name="err_crosspost_not_subscribed">Прежде чем делать кросспост, нужно подписаться на /r/%s.</string>
+    <string name="err_crosspost_sub_not_found">/r/%s не существует.</string>
+    <string name="crosspost_flair_required_short">Требуется флейр — выберите его перед публикацией.</string>
     <string name="error_video_not_found">Видео не найдено</string>
     <string name="error_video_message">При загрузке этого видео произошла ошибка</string>
     <string name="error_album_not_found">Альбом не найден</string>
@@ -234,17 +291,19 @@
     <string name="err_couldnt_save_choose_new">Сохранить по указанному пути не получается. Выбрать другой?</string>
     <string name="err_share_image">Ошибка при попытке поделиться изображением</string>
     <string name="err_file_not_found">Файл не найден</string>
-    <string name="err_not_valid_backup">Неверный файл резервной копии</string>
-    <string name="err_not_valid_backup_msg">Этот файл не похож на файл резервной копии Slide</string>
     <string name="err_file_not_found_msg">Не получается найти указанный файл. Проверьте, что он существует, а у Slide есть доступ к директории с этим файлом</string>
     <string name="err_comment_post">Ох! Добавить комментарий не получается!</string>
     <string name="err_comment_post_reason">Причина: %1$s</string>
     <string name="err_comment_post_message">\n\nВаше сообщение было сохранено как черновик. Пожалуйста попробуйте отправить его ещё раз позже.</string>
     <string name="err_connection_failed_msg">Сбой подключения к Reddit. Пожалуйста проверьте подключение к интернету и повторите попытку, или войдите в автономный режим.</string>
-    <string name="err_block_user">Ошибка при блокировке пользователя</string>
+    <string name="err_block_user">Ошибка при блокировке пользователя. Вы недавно разблокировали этого пользователя?</string>
+
     <!-- Gif -->
     <string name="gif_err_title">GIF не найден</string>
     <string name="gif_err_msg">Произошла ошибка при загрузке этого GIF. Пожалуйста, откройте GIF заново и повторите попытку.</string>
+    <string name="gif_load_failed">Не удалось загрузить GIF</string>
+    <string name="gif_download_failed">Не удалось скачать GIF</string>
+
     <!-- Multireddits -->
     <string name="multireddit_err_title">Нет мультиреддитов (пока)!</string>
     <string name="multireddit_err_msg">Хотите создать новый мультиреддит?</string>
@@ -267,6 +326,7 @@
     <string name="multi_saved_successfully">Успешно сохранено</string>
     <string name="delete_multireddit_title">Вы действительно хотите удалить /m/%1$s?</string>
     <string name="multi_save_option">Вы хотите сохранить этот мультиреддит?</string>
+
     <!-- Content types -->
     <string name="type_nsfw_img">NSFW изображение</string>
     <string name="type_nsfw_gif">NSFW GIF</string>
@@ -279,18 +339,36 @@
     <string name="type_xkcd">XKCD</string>
     <string name="type_nsfw_album">NSFW альбом</string>
     <string name="type_nsfw_gallery">NSFW Галерея</string>
+    <string name="type_nsfw_albums">Альбомы NSFW</string>
+    <string name="type_nsfw_galleries">Галереи NSFW</string>
+    <string name="type_nsfw_gifs">GIF NSFW</string>
+    <string name="type_nsfw_images">Изображения NSFW</string>
+    <string name="type_nsfw_links">Ссылки NSFW</string>
+    <string name="type_nsfw_selftexts">Текстовые посты NSFW</string>
+    <string name="type_nsfw_tumblrs">Tumblr NSFW</string>
+    <string name="type_nsfw_videos">Видео NSFW</string>
     <string name="type_gallery">Галерея</string>
+    <string name="type_galleries">Галереи</string>
     <string name="type_img">Изображение</string>
     <string name="type_videos">Видео</string>
     <string name="type_nsfw_video">NSFW видео</string>
     <string name="type_imgur">Контент с Imgur</string>
     <string name="type_nsfw_imgur">NSFW-контент с Imgur</string>
+    <string name="type_nsfw_xkcd">XKCD NSFW</string>
+    <string name="type_nsfw_deviantart">DeviantArt NSFW</string>
+    <string name="type_nsfw_title_only">Пост только с заголовком NSFW</string>
+    <string name="type_nsfw_reddit">Ссылка Reddit NSFW</string>
+    <string name="type_nsfw_selftext">Текстовый пост NSFW</string>
+    <string name="type_spoiler">Спойлер</string>
+    <string name="type_nsfw_spoiler">Спойлер NSFW</string>
+    <string name="type_nsfw_streamable">Streamable NSFW</string>
     <string name="type_external">Внешний</string>
+
     <!-- Content types plural (Content filters) -->
     <string name="type_gifs">GIF</string>
     <string name="type_albums">Альбомы</string>
-    <string name="type_nsfw_content">NSFW-контент</string>
     <string name="type_links">Ссылки</string>
+
     <!-- Inbox/mail -->
     <string name="mail_tab_inbox">Входящие</string>
     <string name="mail_tab_unread">Непрочитанные</string>
@@ -312,7 +390,6 @@
     <string name="mail_theirs">Просмотреть их сообщение</string>
     <string name="mail_re">re: %1$s</string>
     <string name="mail_mark_read">Отметить как прочитанное</string>
-    <string name="mail_mark_unread">Отметить как непрочитанное</string>
     <string name="mail_view_full_thread">Просмотр полного потока</string>
     <string name="mail_message_copied">Сообщение скопировано</string>
     <plurals name="mail_notification_title">
@@ -323,10 +400,11 @@
     </plurals>
     <plurals name="mod_mail_notification_title">
         <item quantity="one">У вас %d сообщение от мод-а!</item>
-        <item quantity="few">У вас %d сообщений от мод-а!</item>
+        <item quantity="few">У вас %d сообщения от мод-а!</item>
         <item quantity="many">У вас %d сообщений от мод-а!</item>
         <item quantity="other">У вас %d сообщений от мод-а!</item>
     </plurals>
+
     <!-- Miscellaneous/generic things that don't have a category or strings that are used for multiple categories -->
     <string name="misc_err">Ошибка</string>
     <string name="misc_none">Ничего</string>
@@ -347,32 +425,49 @@
     <string name="misc_setting_up">Настраиваю некоторые вещи&#8230;</string>
     <string name="misc_setting_up_message">Пожалуйста, не закрывайте окно. Это не займет много времени!</string>
     <string name="misc_more_info">Дополнительная информация</string>
-    <string name="misc_rate_title">Нравится Slide?</string>
-    <string name="misc_rate_msg">Оцените его!</string>
     <string name="misc_captcha_incorrect">Captcha введена неправильно, попробуйте еще раз</string>
+
     <!-- Goto User -->
     <string name="user_enter">Введите имя пользователя</string>
     <string name="user_btn_goto">Перейти к пользователю</string>
     <string name="user_btn_gotomultis">Перейти к мультиреддитам пользователя</string>
+
+    <!-- Saved users list -->
+    <string name="users_empty">Нет сохранённых пользователей</string>
+    <string name="users_btn_add">Добавить пользователя</string>
+    <string name="users_btn_remove">Удалить пользователя</string>
+    <string name="users_added">%s добавлен в пользователи</string>
+    <string name="users_removed">%s удалён из пользователей</string>
+    <string name="users_already_added">%s уже есть в пользователях</string>
+    <string name="users_copied">%s скопировано</string>
+    <string name="users_checking">Проверка имени пользователя</string>
+    <string name="users_invalid_title">Не удалось добавить пользователя</string>
+    <string name="users_invalid">%s не является пользователем Reddit</string>
+    <string name="users_check_failed">Не удалось проверить, существует ли %s. Проверьте подключение и повторите попытку.</string>
+    <string name="users_friend_added">%s добавлен в друзья</string>
+    <string name="users_friend_removed">%s удалён из друзей</string>
+    <string name="users_friend_failed">Не удалось обновить статус дружбы для %s</string>
+    <string name="btn_fab_add_user">Добавить пользователя</string>
+
     <!-- Buttons -->
     <string name="btn_add">Добавить</string>
     <string name="btn_cancel">Отменить</string>
     <string name="btn_close">Закрыть</string>
+    <string name="btn_toggle">Переключить</string>
     <string name="btn_open">Открыть</string>
     <string name="btn_discard">Отклонить</string>
     <string name="btn_done">Готово</string>
     <string name="btn_go_back">Назад</string>
-    <string name="btn_no_thanks">Нет, спасибо</string>
     <string name="btn_no">Нет</string>
     <string name="btn_ok">Хорошо</string>
     <string name="btn_remove">Удалить</string>
     <string name="btn_reply">Oтветить</string>
     <string name="btn_reset">Сброс</string>
+    <string name="btn_retry">Повторить</string>
     <string name="btn_save">Сохранить</string>
     <string name="btn_submit">Опубликовать</string>
     <string name="btn_undo">Отменить</string>
     <string name="btn_yes">Да</string>
-    <string name="btn_yes_exclaim">Да!</string>
     <string name="btn_refresh">обновить</string>
     <string name="btn_cache">Загрузить комментарии</string>
     <string name="btn_delete">Удалить</string>
@@ -384,7 +479,7 @@
     <string name="btn_set">УСТАНОВИТЬ</string>
     <string name="btn_create">Создать</string>
     <string name="btn_new">Новый</string>
-    <string name="btn_upload">Загрузить</string>
+
     <!-- Buttons Content labels for TalkBack accessibility-->
     <string name="btn_edit">Изменить</string>
     <string name="btn_hide">Скрыть</string>
@@ -403,11 +498,13 @@
     <string name="btn_fab_post">Создать новую запись</string>
     <string name="btn_fab_hide">Скрыть просмотренные записи</string>
     <string name="btn_fab_search">Поиск записей</string>
+
     <!-- Buttons Content labels for TalkBack accessibility active states-->
     <string name="btn_upvoted">Поддержал</string>
     <string name="btn_downvoted">Опустил</string>
     <string name="btn_unsave">Не сохранено</string>
     <string name="btn_collapse">Свернуть</string>
+
     <!-- Backup -->
     <string name="backup_success">Резервирование успешно!</string>
     <string name="backup_restoring">Восстановление настроек</string>
@@ -421,13 +518,48 @@
     <string name="backup_btn_restore_file">Восстановить из файла</string>
     <string name="backup_confirm">Вы уверены, что хотите сделать резервирование? Прошлая резервная копия будет перезаписана</string>
     <string name="backup_restore_confirm">Вы уверены, что хотите сделать восстановление? Ваши текущие настройки будут перезаписаны</string>
+    <string name="backup_failed_msg">Не удалось создать резервную копию. Повторите попытку позже.</string>
+    <string name="backup_restore_failed_msg">Не удалось восстановить. Убедитесь, что существует действительная резервная копия, и повторите попытку.</string>
+    <string name="backup_local_title">Локальная резервная копия</string>
+    <string name="backup_drive_title">Резервная копия на Google Диске</string>
+    <string name="backup_button">Создать резервную копию</string>
+    <string name="restore_button">Восстановить из резервной копии</string>
+    <string name="backup_question">Создать резервную копию?</string>
+    <string name="backup_complete">Резервирование завершено!</string>
+    <string name="err_not_valid_backup">Неверный файл резервной копии</string>
+    <string name="err_not_valid_backup_msg">Этот файл не похож на файл резервной копии Slide</string>
+    <string name="backup_password_title">Задайте пароль резервной копии</string>
+    <string name="backup_password_message">Резервная копия содержит учётные данные вашей учётной записи Reddit, поэтому она шифруется. Выберите пароль длиной от %1$d до %2$d символов. Он понадобится для восстановления, и восстановить его невозможно.</string>
+    <string name="backup_password_hint">Пароль</string>
+    <string name="restore_password_title">Введите пароль резервной копии</string>
+    <string name="restore_password_message">Введите пароль, которым была зашифрована эта резервная копия.</string>
+    <string name="restore_password_wrong">Неверный пароль. Повторите попытку.</string>
+    <string name="drive_authorization_failed">Не удалось авторизоваться в Google Диске</string>
+    <string name="drive_authorization_failed_msg">Slide не смог получить доступ к своей личной папке на Google Диске. Повторите попытку.</string>
+    <string name="drive_authorization_denied">Требуется доступ к Google Диску</string>
+    <string name="drive_authorization_denied_msg">Slide нужен доступ к своей личной папке на Google Диске, чтобы создать резервную копию настроек или восстановить их.</string>
+
     <!-- Vote -->
     <string name="vote_err">Ошибка при голосовании!</string>
     <string name="vote_err_login">Вы должны войти, чтобы голосовать!</string>
     <string name="vote_removed">Голос удален</string>
+
+    <!-- Subscribing -->
+    <string name="subscribe_err_login">Чтобы подписаться, нужно войти в аккаунт!</string>
+
     <!-- Moderation tools -->
     <string name="mod_mail">Почта от мод-ов</string>
     <string name="mod_mail_unread">Непрочитанная почта от мод-ов</string>
+    <string name="modmail_internal_note">(внутренняя заметка)</string>
+    <string name="modmail_scope_missing">Модпочте требуется повторная авторизация. Войдите снова (Настройки &#8594; аккаунт), чтобы включить её.</string>
+    <string name="modmail_reply_sent">Ответ отправлен!</string>
+    <string name="modmail_reply_failed">Не удалось отправить! Ответ сохранён как черновик.</string>
+    <plurals name="modmail_message_count">
+        <item quantity="one">%d сообщение</item>
+        <item quantity="few">%d сообщения</item>
+        <item quantity="many">%d сообщений</item>
+        <item quantity="other">%d сообщений</item>
+    </plurals>
     <string name="mod_modqueue">Ожидание модераторства</string>
     <string name="mod_unmoderated">Немодерируемые</string>
     <string name="mod_reports">Отчеты</string>
@@ -474,24 +606,31 @@
     <string name="mod_sticky">Закрепить</string>
     <string name="mod_unsticky">Открепить</string>
     <string name="reauth_complete">Повторная аутентификация завершена!</string>
+    <string name="reauth_in_progress">Повторная авторизация…</string>
+    <string name="reauth_failed">Не удалось выполнить повторную авторизацию</string>
+
     <plurals name="mod_btn_reports">
         <item quantity="one">Просмотреть %d жалобу</item>
-        <item quantity="few">Просмотреть %d жалоб</item>
+        <item quantity="few">Просмотреть %d жалобы</item>
         <item quantity="many">Просмотреть %d жалоб</item>
         <item quantity="other">Просмотреть %d жалоб</item>
     </plurals>
+
     <!-- If he did -->
     <string name="really_pin_submission_message">Публикация прикреплена</string>
     <string name="really_unpin_submission_message">Публикация откреплена</string>
+
     <!-- Subreddit Wiki -->
     <string name="wiki_err">Wiki не найдена</string>
     <string name="wiki_err_msg">У этого сабреддита нет wiki!</string>
+
     <!-- Subreddits -->
     <string name="subreddit_subscribers_string">%1$s подписчиков</string>
     <string name="subreddit_active_users_string_new">%1$s сейчас здесь</string>
     <string name="subreddit_err_msg">Сабреддит %1$s не может быть найден. Может, название написано неверно?</string>
     <string name="subreddit_err_msg_new">Сабреддит %1$s не найден. Возможно вы ошиблись в написании, или же у вас нет доступа к этому сабреддиту.</string>
     <string name="subreddit_err">Сабреддит не найден</string>
+
     <!-- Search -->
     <string name="search_comments_hint">Искать комментарий</string>
     <string name="search_goto">Перейти к</string>
@@ -504,6 +643,7 @@
     <string name="search_new">Новое</string>
     <string name="search_comments">Коментарии</string>
     <string name="no_posts_found">Не найдено постов</string>
+
     <!-- Settings -->
     <string name="settings_reddit_prefs">Параметры Reddit</string>
     <string name="settings_accent_title">Цвет элементов</string>
@@ -511,6 +651,7 @@
     <string name="settings_layout_default">Разметка записи</string>
     <string name="settings_link_album">Вид внутреннего альбома</string>
     <string name="settings_link_peek">Взглянуть на содержимое (экспериментально)</string>
+    <string name="settings_link_peek_description">Отключает долгое нажатие на изображении предпросмотра</string>
     <string name="settings_link_gif">Встроенный просмотр GIF</string>
     <string name="settings_link_hqgif">Высокое качество видео Gfycat</string>
     <string name="settings_link_handling">Обработка ссылок</string>
@@ -530,14 +671,14 @@
     <string name="share_image">Поделиться изображением</string>
     <string name="settings_libs">Библиотеки с открытым исходным кодом</string>
     <string name="settings_about_libs">О библиотеках</string>
+    <string name="settings_privacy">Политика конфиденциальности</string>
     <string name="settings_bugs">Сообщить о багах</string>
     <string name="settings_changelog">Посмотреть список изменений</string>
-    <string name="settings_google">Подключение к Google</string>
-    <string name="settings_google_msg">Slide соединяется с Google. Попробуйте снова через несколько секунд!</string>
-    <string name="settings_fabclear_msg">Нажатие кнопки Очистить уберет записи из вида, но не удалит навсегда.. \nДолгое нажатие удалит навсегда!</string>
+    <string name="settings_fabclear_msg">Нажатие кнопки очистки уберёт публикации из текущего вида, но не скроет их навсегда.\nДолгое нажатие кнопки скроет публикации навсегда!</string>
     <string name="settings_fabclear">Очистка FAB</string>
     <string name="settings_notifdisabled">Уведомления отключены</string>
     <string name="settings_colored_navigation_bar">Цветная панель навигации</string>
+    <string name="settings_always_black_statusbar">Чёрная строка состояния (панель уведомлений)</string>
     <string name="settings_colored_icon">Цветной значок приложения (экспериментально)</string>
     <string name="settings_colored_icon_desc">Для изменения может потребоваться перезапуск смартфона. Также удалится значок с домашнего экрана.</string>
     <string name="settings_filter_domain">Фильтры доменов</string>
@@ -554,8 +695,14 @@
     <string name="settings_set_storage_location">Изображения будут сохранены в %s</string>
     <string name="settings_general_immersive_mode">Иммерсивный полноэкранный режим</string>
     <string name="settings_general_immersive_mode_desc">Скрыть панели статуса и навигации (экспериментально)</string>
+    <string name="settings_general_old_swipe_mode">Старый режим свайпа</string>
+    <string name="settings_general_old_swipe_mode_desc">Старый стиль свайпа Slide. Предназначен для навигации тремя кнопками и жестов Samsung.</string>
+    <string name="settings_general_hibernate">Продолжить с того места, где я остановился</string>
+    <string name="settings_general_hibernate_desc">Открывает тот же экран в том же месте и показывает уже загруженное вместо обновления. При включении в дополнительное меню добавляется флажок, который включает и выключает продолжение без возврата сюда.</string>
+
     <string name="settings_general_title_drawer_items">Элементы Меню</string>
     <string name="settings_general_subtitle_drawer_items">Выберите элементы меню для отображения</string>
+
     <!-- Settings titles displayed in settings activity-->
     <string name="settings_title_backup">Резервирование &amp; восстановление</string>
     <string name="settings_title_default_theme">Основная тема</string>
@@ -565,7 +712,14 @@
     <string name="settings_title_pro">Перейти на Pro</string>
     <string name="settings_title_sub_theme">Темы сабреддитов</string>
     <string name="settings_title_sort">Сортировка по умолчанию</string>
+    <string name="settings_title_sort_frontpage">Сортировка главной страницы</string>
     <string name="settings_title_about">О приложении</string>
+    <string name="settings_title_debug">Отладка</string>
+    <string name="settings_section_debug_reauth">Повторная авторизация</string>
+    <string name="settings_debug_break_reauth">Сломать повторную авторизацию</string>
+    <string name="settings_debug_break_reauth_desc">Останавливает повторную авторизацию, чтобы можно было протестировать соответствующее уведомление. Обратимо: выключите этот параметр, затем запустите повторную авторизацию.</string>
+    <string name="settings_debug_trigger_reauth">Запустить повторную авторизацию</string>
+    <string name="settings_debug_trigger_reauth_desc">Запустить повторную авторизацию сейчас. Используйте это для восстановления после выключения переключателя.</string>
     <string name="settings_title_multi_column">Многостолбцовый режим</string>
     <string name="settings_title_fab">Плавающая кнопка действий</string>
     <string name="settings_title_comments">Коментарии</string>
@@ -573,6 +727,7 @@
     <string name="settings_title_font">Шрифт</string>
     <string name="settings_section_general">Общие</string>
     <string name="settings_section_appearance">Вид</string>
+    <string name="settings_section_hibernation">Спящий режим</string>
     <string name="settings_section_other">Другое</string>
     <string name="settings_section_browser">Браузер</string>
     <string name="settings_section_internal_viewers">Встроенные просмотрщики</string>
@@ -590,12 +745,16 @@
     <string name="settings_data_enable">Включить настройки экономии трафика</string>
     <string name="settings_data_video_quality">Предпочитайте низкокачественные видео, когда сохранение данных включено</string>
     <string name="settings_comments_collapse_deleted">Свернуть удаленные комментарии по умолчанию</string>
+    <string name="settings_comments_collapse_sticky">Всегда полностью сворачивать закреплённый комментарий</string>
+    <string name="settings_comments_collapse_blocked_users">Сворачивать комментарии заблокированных пользователей</string>
+    <string name="settings_comments_collapse_blocked_users_description">Также включает «Полностью сворачивать комментарии»</string>
     <string name="settings_backup_occurs">Резервирование произойдёт в %1$s</string>
     <string name="settings_backup_none">Не выбраны сабреддиты для резервирования</string>
     <string name="settings_backup_will_backup">\u0020создаст резервную копию</string>
     <string name="settings_backup_submission_only">только публикации</string>
     <string name="settings_backup_comments">\u0020(комментарии)</string>
     <string name="settings_filter_profile">Фильтры пользователей</string>
+    <string name="settings_subreddit_content_filters_till_restart">Фильтры содержимого сабреддита до перезапуска</string>
     <string name="settings_subredditspecific_selftext">Всегда показывать предпросмотр текстовых записей в этом сабреддите</string>
     <string name="settings_font_system">Система</string>
     <string name="settings_manage_subscriptions">Управление подписками</string>
@@ -615,6 +774,7 @@
     <string name="settings_links_force_external">Принудительно использовать внешний браузер</string>
     <string name="settings_layout_show_domain">Показывать домен в строке информации</string>
     <string name="settings_layout_show_content_type">Показывать тип контента в строке информации</string>
+    <string name="settings_layout_thumbnail_flags">Показывать цветные метки в углах миниатюр</string>
     <string name="settings_layout_show_votes_comments">Показывать голоса/комментарии в строке информации</string>
     <string name="settings_general_comment_last_visit">Показывать кол-во новых комментариев с последнего посещения</string>
     <string name="settings_fab_create">Показать FAB \"Создать коммент\"</string>
@@ -622,41 +782,49 @@
     <string name="settings_reddit_description">Эти настройки влияют на данные, возвращаемые Reddit API в Slide.\n\nДля отображения превью во всех сабреддитах, включите \'Игнорировать настройки мультимедиа сабреддита\'\n\nДля отображения NSFW контента, отключите \'Скрыть NSFW фото\' и включите \'Я старше 18\'</string>
     <string name="settings_reddit_media_pref">Игнорировать настройки мультимедиа сабреддита</string>
     <string name="settings_description_view_type">Типы просмотра влияют как на главный вид, так и на одиночные сабреддиты.\n\nПанель комментариев: комментарии свайпятся от ближайших в постах и состояние страницы комментария сохраняется после свайпа (так что вы не потеряете свое место)\n\nНет вкладок сабреддитов: отключает свайп между сабреддитами\n\nвкладки сабреддита: слайд между сабреддитами</string>
+    <string name="settings_short_description_view_type">Типы отображения влияют и на главный экран, и на экраны отдельных сабреддитов</string>
     <string name="settings_comment_hide_selftext_image">Скрывать изображение в текстовых записях</string>
     <string name="settings_filter_flair">Фильтры флейров</string>
     <string name="settings_view_type">Режим просмотра</string>
     <string name="settings_data">Экономия трафика</string>
+    <string name="settings_card_show_selftext">Показывать текст поста</string>
+    <string name="settings_card_selftext_paragraph">Показывать первый абзац</string>
+    <string name="settings_card_selftext_ellipsize">Сокращать до первых 128 символов</string>
     <string name="settings_handling_external_desc">Домены, указанные внизу, будут всегда открываться во внешнем браузере</string>
     <string name="settings_handling_enterdomain">Введите домен или часть домена</string>
     <string name="settings_section_content">Содержимое</string>
     <string name="settings_backup_view">Просмотр резервной копии</string>
     <string name="settings_backup_err_no_explorer">Файловый менеджер не найден, файл расположен в %1$s</string>
     <string name="settings_about_version_copied_toast">Номер версии скопирован в буфер обмена</string>
-    <string name="settings_support_slide">Поддержите Slide for Reddit, перейдя на Pro версию!</string>
     <string name="settings_theme_night_start_at">Включать в\u0020</string>
     <string name="settings_theme_night_end_at">Выключать в\u0020</string>
     <string name="settings_general_inbox_snd">Звук и вибрация</string>
     <string name="settings_enable_notifs">Включить уведомления о сообщениях</string>
+
     <!-- Quick setting toggles in the drawer -->
     <string name="toggle_night_mode">Ночной режим</string>
     <string name="toggle_immersive_mode">Иммерсивный режим</string>
     <string name="toggle_nsfw">Показать NSFW контент</string>
     <string name="toggle_right_thumbnails">Миниатюры по правому краю</string>
     <string name="toggle_reader_mode">Использовать режим чтения</string>
+
     <!-- View types -->
     <string name="view_type_tabs">Вкладки с сабреддитами</string>
     <string name="view_type_none">Без вкладок с сабреддитами</string>
     <string name="view_type_comments">Панель с комментариями</string>
+
     <!--Search methods -->
     <string name="subreddit_search_method_title">Метод поиска по сабреддитам</string>
     <string name="subreddit_search_method_drawer">Строка поиска в меню</string>
     <string name="subreddit_search_method_toolbar">Длительное нажатие на заголовок панели инструментов</string>
     <string name="subreddit_search_method_both">Заголовок бокового меню и панели инструментов</string>
+
     <!-- Back button behavior -->
     <string name="back_button_behavior_title">Поведение кнопки \"назад\"</string>
     <string name="back_button_behavior_default">Закрыть приложение</string>
     <string name="back_button_behavior_confirm_exit">Окно подтверждения выхода</string>
     <string name="back_button_behavior_drawer">Открыть боковое меню</string>
+
     <!-- Subscription managing -->
     <string name="reorder_add_domain">Добавить домен</string>
     <string name="reorder_add_subreddit">Добавить сабреддит</string>
@@ -692,11 +860,33 @@
     <string name="reorder_sync_complete">Синхронизация завершена</string>
     <string name="reorder_loading_title">Загружаем ваши сабреддиты</string>
     <string name="reorder_url_err">Неверный URL</string>
-    <!-- Save categories -->
+
+    <!-- Saved tags -->
+    <string name="tag_set_name_hint">Название метки</string>
+    <string name="tag_tag_action">ПОМЕТИТЬ</string>
+    <string name="profile_tag_select">Метки</string>
+    <string name="profile_saved_tags">Сохранённые метки</string>
+    <string name="tag_builtin_all">Все</string>
+    <string name="tag_builtin_posts">Посты</string>
+    <string name="tag_builtin_comments">Комментарии</string>
+    <string name="tag_types_header">Типы</string>
+    <string name="tag_post_types_header">Типы постов</string>
+    <string name="tag_custom_header">Свои метки</string>
+    <string name="tag_new">Новая метка</string>
+    <string name="tag_manage">Управление метками</string>
+    <string name="tag_add">Добавить метку</string>
+    <string name="tag_none_yet">Меток пока нет</string>
+    <string name="tag_rename">Переименовать</string>
+    <string name="tag_delete_confirm">Действительно удалить \"%1$s\"? Элементы с этой меткой удалены не будут.</string>
+    <string name="tag_name_used_title">Имя уже используется</string>
+    <string name="tag_name_used">Метка с таким именем уже существует, выберите уникальное имя.</string>
+    <string name="tag_name_reserved">Это имя зарезервировано, выберите другое.</string>
+
     <!-- Setting subheaders -->
     <string name="sorting">Сортировка</string>
     <string name="display">Показать</string>
     <string name="images">Изображения</string>
+    <string name="storage">Хранилище</string>
     <string name="app_theme">Тема приложения</string>
     <string name="tinting">Тонирование</string>
     <string name="post_info">Разместить информацию</string>
@@ -706,6 +896,7 @@
     <string name="nsfw">NSFW-контент</string>
     <string name="view_reddit_settings">Открыть настройки Reddit в браузере</string>
     <string name="font_styles">Стили шрифтов</string>
+
     <!-- Titles displayed in action bar / head / recents overview-->
     <string name="title_subreddit_settings">Темы и макеты сабреддиттов</string>
     <string name="title_edit_theme">Редактировать тему</string>
@@ -715,9 +906,11 @@
     <string name="title_share">Поделиться через</string>
     <string name="title_login">Войдите в Reddit</string>
     <string name="title_multireddits">Мультиреддиты</string>
+    <string name="title_users">Пользователи</string>
     <string name="title_inbox">Входящие</string>
     <string name="title_theme_settings">Тема</string>
     <string name="title_create_multi">Создать мультиреддит</string>
+
     <!-- Offline mode -->
     <string name="offline_msg">Проверьте подключение к сети и обновите сабреддит</string>
     <string name="offline_last_update">Последнее обновление %1$s</string>
@@ -726,14 +919,17 @@
     <string name="offline_enter_online">Войти в режим онлайн</string>
     <string name="offline_caching_title">Кэшируем %1$s</string>
     <string name="offline_caching_complete">Кэширование завершено</string>
+
     <!-- Website -->
     <string name="website_external">Открыть во внешнем браузере</string>
+
     <plurals name="reorder_subs_added">
         <item quantity="one">Добавлен %d сабреддит</item>
         <item quantity="few">Добавлены %d сабреддита</item>
-        <item quantity="many">Добавлены %d сабреддитов</item>
-        <item quantity="other">Добавлены %d сабреддитов</item>
+        <item quantity="many">Добавлено %d сабреддитов</item>
+        <item quantity="other">Добавлено %d сабреддита</item>
     </plurals>
+
     <!-- Time -->
     <string name="time_just_now">Только что</string>
     <plurals name="time_years">
@@ -746,7 +942,7 @@
         <item quantity="one">%d месяц</item>
         <item quantity="few">%d месяца</item>
         <item quantity="many">%d месяцев</item>
-        <item quantity="other">%d месяц</item>
+        <item quantity="other">%d месяца</item>
     </plurals>
     <plurals name="time_days">
         <item quantity="one">%d день</item>
@@ -768,15 +964,17 @@
     </plurals>
     <plurals name="time_seconds">
         <item quantity="one">%d секунду</item>
-        <item quantity="few">%d секунд</item>
+        <item quantity="few">%d секунды</item>
         <item quantity="many">%d секунд</item>
         <item quantity="other">%d секунд</item>
     </plurals>
+
     <!-- Time: shorthand durations for example 1 hour → 1h -->
     <string name="time_years_short">%dг</string>
     <string name="time_days_short">%dд</string>
     <string name="time_hours_short">%dч</string>
     <string name="time_minutes_short">%dм</string>
+
     <!-- Strings present during the login process -->
     <string name="login_subscribe_rslideforreddit">Подписаться на /r/slidereddit?</string>
     <string name="login_subscribe_rslideforreddit_desc">Хотели бы вы подписаться на /r/slidereddit для получения последних новостей и сообщения об ошибках?</string>
@@ -785,11 +983,13 @@
     <string name="login_authenticating">Slide выполняет вход</string>
     <string name="login_starting">Настраиваем!</string>
     <string name="login_starting_desc">Это займёт всего секунду&#8230;</string>
+
     <!-- Over 18 prompt when visiting a NSFW subreddit -->
     <string name="over18_title">/r/%1$s содержание для взрослых</string>
     <string name="over18_desc">Вам больше восемнадцати и вы желаете видеть контент для взрослых?</string>
     <string name="over18_desc_loggedout">Авторизируйтесь, чтобы отключить это предупреждение навсегда</string>
     <string name="over18_desc_loggedin">Вы можете отключить это навсегда в Настройки → Предпочтения Reddit → Показывать NSFW-контент</string>
+
     <!-- Subreddit color synchronization - https://reddit.com/comments/41054l -->
     <string name="color_sync_complete">Синхронизация завершена</string>
     <plurals name="color_sync_colored">
@@ -798,11 +998,13 @@
         <item quantity="many">%d сабреддитов были раскрашены</item>
         <item quantity="other">%d сабреддитов были раскрашены</item>
     </plurals>
+
     <!-- Discover section: find -->
     <string name="discover_title">Исследовать</string>
     <string name="discover_search">Поиск по выражению или теме</string>
     <string name="discover_popular">Популярное</string>
     <string name="discover_trending">Набирающее популярность</string>
+
     <!-- Subreddit post notifications -->
     <string name="sub_post_notifs_title">Получать уведомления о новых записях в \n/r/%1$s?</string>
     <string name="sub_post_notifs_title_settings">Уведомлять о новых записях?</string>
@@ -814,19 +1016,24 @@
     <string name="sub_post_notifs_notification_title">Новая запись в /r/%1$s</string>
     <string name="sub_post_notifs_notification_btn">Прекратить отслеживание /r/%1$s</string>
     <string name="title_sub_post_notifs">Уведомления о записях в сабреддитах</string>
+
     <!-- Internal browser -->
     <string name="internal_browser_extracting_error">Извините, не удалось извлечь статью</string>
     <string name="internal_browser_storecookies">Хранить куки вебсайтов</string>
     <string name="internal_browser_readermode">Режим Чтения</string>
+
     <!-- Live thread -->
     <string name="livethread_loading_title">Загрузка прямого эфира&#8230;</string>
     <string name="livethread_not_found">Прямой эфир не найден</string>
     <string name="livethread_recents_title">Прямой эфир: %1$s</string>
+
     <!-- Used when viewing media -->
     <string name="mediaview_notif_title">Загрузка изображения&#8230;</string>
+    <string name="mediaview_notif_video">Скачивание видео…</string>
     <string name="mediaview_notif_text">Идет загрузка</string>
     <string name="mediaview_save">Сохранить %1$s</string>
     <string name="mediaview_saving">Сохраняем %1$s</string>
+
     <!-- Drafts -->
     <string name="choose_draft">Выбрать черновик</string>
     <string name="dialog_no_drafts">Пока нет черновиков</string>
@@ -834,6 +1041,7 @@
     <string name="msg_save_draft">Сообщение сохранено в черновиках</string>
     <string name="manage_drafts">Управление черновиками</string>
     <string name="really_delete_drafts">Действительно удалить эти черновики?</string>
+
     <!-- Strings for widgets -->
     <string name="widget_theme_dark">ТЁМНАЯ</string>
     <string name="widget_theme_light">СВЕТЛАЯ</string>
@@ -848,6 +1056,7 @@
     <string name="widget_loading">Загрузка&#8230;</string>
     <string name="widget_creation_title">Новый виджет</string>
     <string name="shortcut_creation_title">Новый ярлык</string>
+
     <!-- Strings for alert dialogs -->
     <string name="force_change_subscription">Не удалось изменить подписку</string>
     <string name="force_change_subscription_desc">Хотите изменить его локально?</string>
@@ -860,6 +1069,7 @@
     <string name="mode_desktop_compact">Компактный рабочий стол</string>
     <string name="show_content_type_text_beside_links">Отображать тип контента рядом со ссылками</string>
     <string name="comment_shadowbox">Галерея комментариев</string>
+
     <!-- Sidebar strings (multis, flairs) -->
     <string name="sidebar_select_flair">Выберите флейр</string>
     <string name="sidebar_select_flair_text">Введите текст флейра</string>
@@ -875,6 +1085,7 @@
         <item quantity="many">"Выбраны %d"</item>
         <item quantity="other">"Выбраны %d"</item>
     </plurals>
+
     <!--Filtering dialog -->
     <string name="filter_title">Что вы хотите фильтровать?</string>
     <string name="filter_posts_sub">Записи из /r/%1$s</string>
@@ -883,6 +1094,7 @@
     <string name="filter_open_externally">Открывать URL %s внешними приложениями</string>
     <string name="filter_posts_flair">Флейр \"%1$s\" от %2$s</string>
     <string name="filter_btn">Фильтровать</string>
+
     <!-- Caching -->
     <string name="cache_no_comments_found">Не найдено ни одного комментария</string>
     <string name="cache_no_comments_found_snackbar">Не найдено ни одного кэшированного комментария</string>
@@ -893,9 +1105,11 @@
     <string name="cache_wifi_only">Кэшировать только по WiFi</string>
     <string name="comments_depth">Глубина кэшируемых комментариев</string>
     <string name="comments_count">Количество кэшируемых комментариев</string>
+
     <!-- Saving location setting -->
     <string name="set_save_location">Выберите место для сохранения изображений</string>
     <string name="set_save_location_msg">Место для сохранения изображений не было выбрано. Хотите сделать это сейчас?</string>
+
     <!-- Report flow -->
     <string name="btn_report">Отчет</string>
     <string name="report_post">Пожаловаться на запись</string>
@@ -907,6 +1121,7 @@
     <string name="report_other">Другое</string>
     <string name="input_reason_for_report">Причина жалобы</string>
     <string name="msg_report_sent">Отчет отправлен</string>
+
     <!-- Unsorted ¯\\_(ツ)_/¯ -->
     <string name="comment_load_more_number_unknown">Загрузить больше комментариев</string>
     <string name="card_right_thumb">Отображать миниатюру справа</string>
@@ -928,18 +1143,29 @@
     <string name="mode_no_thumbnails">Нет эскиза</string>
     <string name="mode_big_thumbnails">Широкие миниатюры</string>
     <string name="mode_cropped">Обрезанное большое изображение</string>
+    <string name="mode_letterbox">Большое изображение с полями</string>
     <string name="mode_bigpic">Большое изображение</string>
     <string name="press_actionbar">Нажать на стрелку для показа панели действий</string>
+    <string name="show_top_right">Показывать вверху справа</string>
+    <string name="show_bottom_right">Показывать внизу справа</string>
+    <string name="small_tag_disabled">Отключено</string>
     <string name="tap_actionbar">Долгое нажатие для показа панели действий</string>
     <string name="always_actionbar">Всегда показывать панель действий</string>
     <string name="sub_content_filter">Фильтр содержимого сабреддитов</string>
     <string name="submission_share_reddit_url">Поделиться комментариями</string>
     <string name="filter_content">Фильтровать следующее содержимое</string>
-    <string name="content_to_hide">Прятать следующее содержимое в %1$s</string>
+    <string name="content_to_show">Содержимое, показываемое на %1$s</string>
     <string name="save_for_offline_viewing">Сохранить публикации для автономного просмотра</string>
     <string name="btn_collapse_children_all">Свернуть дочерние комментарии</string>
     <string name="btn_open_content">Открыть содержимое</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Введите текст фильтра (сабреддит:флейр), нажмите \'Enter\' чтобы добавить</string>
+    <plurals name="filter_count">
+        <item quantity="one">%1$d фильтр (макс. показано %2$d)</item>
+        <item quantity="few">%1$d фильтра (макс. показано %2$d)</item>
+        <item quantity="many">%1$d фильтров (макс. показано %2$d)</item>
+        <item quantity="other">%1$d фильтров (макс. показано %2$d)</item>
+    </plurals>
+    <string name="filter_limit_reached">Показаны первые %1$d из %2$d. Уточните результаты поиском.</string>
     <string name="datasave_always">Мобильное подключение и Wi-Fi</string>
     <string name="datasave_mobile">Мобильное подключение</string>
     <string name="never">Никогда</string>
@@ -948,6 +1174,9 @@
     <string name="card_background_tint">Фон карточки</string>
     <string name="subreddit_name_tint">Название Subreddit</string>
     <string name="login_failed_err_decline">Убедитесь, что вы не выбрали \'Отклонить\' на прошлом экране и попробуйте еще раз через минуту</string>
+    <string name="login_unsupported_redirect_uri">Заданный URI перенаправления (%1$s) не может быть принят браузером, поэтому вход не может быть завершён. Используйте вход через WebView внутри приложения или задайте поддерживаемый URI перенаправления в настройках.</string>
+    <string name="login_unsupported_redirect_uri_title">Не удалось войти</string>
+    <string name="login_failed_oauth_error_page">Не удалось войти — Reddit вернул ошибку вместо завершения входа. Проверьте идентификатор клиента и URI перенаправления в настройках.</string>
     <string name="tutorial_swipe_navigation">Навигация смахиваниями</string>
     <string name="tutorial_swipe_description">Смахните с левого края, чтобы выйти.\n\nЭто работает с изображениями, GIF, альбомами, настройками и многим другим!</string>
     <string name="handling_browser">Веб-браузер</string>
@@ -958,6 +1187,7 @@
     <string name="content_deleted">[deleted]</string>
     <string name="thread_continue">Раскрыть эту ветку</string>
     <string name="type_selftext">Текстовые записи</string>
+    <string name="type_selftexts">Текстовые посты</string>
     <string name="submission_unhide">Показать запись</string>
     <string name="submission_info_unhidden">Публикация вновь отображается</string>
     <string name="msg_sent_success">Сообщение отправлено</string>
@@ -970,6 +1200,7 @@
     <string name="open_externally">Открыть в другом приложении</string>
     <string name="vertical_album_view">Вертикальный альбомный вид</string>
     <string name="download_album">Скачать альбом</string>
+    <string name="download_gallery">Скачать галерею</string>
     <string name="compose_message">Написать сообщение</string>
     <string name="mark_all_as_read">Отметить все как прочитанное</string>
     <string name="clear_subreddit_history">Очистить историю сабреддитов</string>
@@ -989,7 +1220,6 @@
     <string name="btn_offline">Войти в автономный режим</string>
     <string name="discard_comment_title">Удалить комментарий?</string>
     <string name="comment_discard_msg">Вы действительно хотите удалить свой комментарий?</string>
-    <string name="backup_complete">Резервирование завершено!</string>
     <string name="backup_saved_downloads">Резервная копия сохранена в загрузках</string>
     <string name="really_remove_subreddit_title">Действительно удалить этот сабреддит?</string>
     <string name="choose_sync_time">Выберите время синхронизации</string>
@@ -1008,14 +1238,16 @@
     <string name="rate_slide">Оцените Slide</string>
     <string name="edit_query">Редактировать запрос</string>
     <string name="share_slide">Поделитесь Slide</string>
-    <string name="create_folder">Создать папку</string>
-    <string name="folder_name">Название папки</string>
+    <string name="open_clipboard_reddit_link">Открыть ссылку Reddit из буфера обмена</string>
+    <string name="clipboard_no_reddit_link">В буфере обмена нет ссылки Reddit</string>
     <string name="open_links_externally">Всегда открывать этот сайт во внешнем браузере</string>
     <string name="hide_read_posts">Скрыть прочтенные записи</string>
     <string name="gallery_mode">Режим галереи</string>
+    <string name="settings_gallery_grid">Показывать посты-галереи сеткой</string>
+    <string name="gallery_grid_image">Изображение галереи %1$d из %2$d</string>
+    <string name="gallery_grid_overflow">+%1$d</string>
     <string name="friends_sort_error">/r/friends не сортируется</string>
     <string name="shadowbox_comments_nolinks">В комментариях не найдено ссылок</string>
-    <string name="pro_previews">Предпросмотр (%d)</string>
     <string name="draw_undo">Отменить</string>
     <string name="empty_preview_text">Здесь ничего нет ¯\\_(ツ)_/¯</string>
     <string name="theme_red_shift">Red shift</string>
@@ -1028,6 +1260,7 @@
     <string name="enlarge_links">Увеличить ссылки</string>
     <string name="enlarge_links_warning">На ссылки будет проще нажимать, но некоторые линии могут стать больше других</string>
     <string name="type_tumblr">Tumblr</string>
+    <string name="type_tumblrs">Tumblr</string>
     <string name="type_nsfw_tumblr">NSFW Tumblr</string>
     <string name="submission_info_contest">Эта ветка находится в режиме соревнования. Вы не можете изменить сортировку.</string>
     <string name="sub_post_notifs_msg">Slide будет проверять наличие новых записей при проверке сообщений (должны быть включены уведомления о сообщениях)</string>
@@ -1040,6 +1273,8 @@
     <string name="theme_pixel">Pixel</string>
     <string name="save_images_to_subreddit_specific_subfolders">Сохранять изображения в папки, соответствующие сабреддиту</string>
     <string name="description_save_subfolders">Работает при просмотре публикаций и комментариев</string>
+    <string name="save_media_to_type_specific_subfolders">Сохранять медиа в подпапки по типу</string>
+    <string name="description_save_type_subfolders">Изображения попадают в \"images\", видео и GIF — в \"videos\"</string>
     <string name="show_image_download_button">Ярлык загрузки</string>
     <string name="description_image_download_button">Показать кнопку загрузки в средстве просмотра изображений</string>
     <string name="content_settings">Настройки содержимого</string>
@@ -1048,6 +1283,8 @@
     <string name="setting_notification_piggybacking_desc">Проверять почту только когда официальное приложение Reddit получает push-уведомление</string>
     <string name="install_notif_piggyback">Установите оффициальное приложение Reddit, чтобы получать уведомления</string>
     <string name="success_block_user">Пользователь успешно заблокирован</string>
+    <string name="err_unblock_user">Ошибка при разблокировке пользователя</string>
+    <string name="success_unblock_user">Пользователь успешно разблокирован</string>
     <string name="settings_highlight_time_desc">Необходимо включить \'Показывать кол-во новых комментариев с последнего посещения\' в Настройки &gt; Разметка Записи</string>
     <string name="settings_colored_time">Цветные временные отметки для новых комментариев</string>
     <string name="theme_deep">Deep</string>
@@ -1068,8 +1305,135 @@
     <string name="back_button_behavior_goto_first">Перейти к первому сабреддиту</string>
     <string name="settings_hide_post_awards">Скрыть награды</string>
     <string name="settings_hide_comment_awards">Скрыть награды</string>
+    <string name="settings_title_markdown">Markdown</string>
+    <string name="settings_markdown_new_reddit">Markdown в стиле нового Reddit</string>
+    <string name="settings_markdown_new_reddit_desc">Отображать блоки кода и форматирование как в новом Reddit (если выключено, используется отрисовщик старого Reddit)</string>
+    <string name="comment_render_other">Показать другую отрисовку</string>
+    <string name="recover_post">Восстановить пост</string>
+    <string name="recover_loading">Получение оригинала из архива…</string>
+    <string name="recover_post_failed">Не удалось восстановить этот пост</string>
+    <string name="recover_comment">Восстановить комментарий</string>
+    <string name="recover_comment_failed">Не удалось восстановить этот комментарий</string>
+    <string name="markdown_preview_new_reddit">Отрисовка нового Reddit</string>
+    <string name="markdown_preview_old_reddit">Отрисовка старого Reddit</string>
     <string name="high_colorspace_images">Высокоцветные изображения</string>
     <string name="description_high_colorspace">Загружать полноцветное пространство на изображениях, что может привести к большему использованию памяти</string>
+    <string name="wide_color_gamut">Широкий цветовой охват</string>
+    <string name="description_wide_color_gamut">Отображать просмотрщики медиа с широким цветовым охватом. На некоторых OLED-экранах цвета могут выглядеть блёклыми</string>
+    <string name="comment_emote_animation">Анимация эмодзи в комментариях</string>
+    <string name="description_comment_emote_animation">Определяет, анимируются ли в комментариях эмодзи не из Giphy</string>
+    <string name="comment_image_size">Размер изображений в комментариях</string>
+    <string name="description_comment_image_size">Насколько крупно показываются встроенные изображения в комментариях</string>
+    <string name="comment_image_size_small">Маленький</string>
+    <string name="comment_image_size_medium">Средний</string>
+    <string name="comment_image_size_large">Большой</string>
+    <string name="no_preview_image_longclick">Без долгого нажатия на изображениях предпросмотра любого типа содержимого</string>
+    <string name="description_no_preview_image_longclick">Определяет, работает ли долгое нажатие на изображениях предпросмотра любого типа содержимого. Отключает функцию быстрого просмотра.</string>
     <string name="editor_btn_select_flair">Выберите флейр</string>
     <string name="submit_selected_flair">Выбранный флейр: %s</string>
+    <string name="mediaview_downloading">Скачивание изображения&#8230;</string>
+    <string name="err_save_image">Ошибка при сохранении изображения</string>
+    <string name="error_directory_not_selected">Папка не выбрана. Повторите попытку.</string>
+
+    <!-- Backup Operations -->
+
+    <!-- Additional Backup Operations -->
+    <string name="select_backup_file">Выберите файл резервной копии</string>
+
+    <string name="read_later">Прочитать позже</string>
+    <string name="mark_as_read">Отметить как прочитанное</string>
+
+    <string name="reddit_client_id">Идентификатор клиента Reddit</string>
+    <string name="click_custom_client_id">Нажмите, чтобы задать свой идентификатор клиента</string>
+    <string name="client_id_scan_qr">Сканировать QR-код</string>
+    <string name="client_id_scan_prompt">Отсканируйте QR-код с вашим идентификатором клиента Reddit</string>
+    <string name="camera_permission_denied">Для сканирования QR-кодов требуется разрешение на доступ к камере</string>
+    <string name="client_id_invalid_length">Неверный идентификатор клиента: должен состоять ровно из 22 символов</string>
+
+    <!-- Notification permission strings -->
+    <string name="notifications_permission_title">Включить уведомления</string>
+    <string name="notifications_permission_message">Slide нужно разрешение на уведомления, чтобы сообщать вам о новых сообщениях, постах и других обновлениях с Reddit. Настройки уведомлений можно изменить позже.</string>
+    <string name="notification_listener_permission_title">Включить доступ к уведомлениям</string>
+    <string name="notification_listener_permission_message">Slide нужен доступ к уведомлениям, чтобы перехватывать уведомления Reddit и обеспечивать более удобную работу. Включите доступ к уведомлениям для Slide на следующем экране.</string>
+
+
+    <string name="reddit_redirect_uri_override">Переопределение URI перенаправления Reddit</string>
+    <string name="click_custom_redirect_uri">Нажмите, чтобы задать свой URI перенаправления</string>
+    <string name="settings_reddit_redirect_uri_invalid">Неверный URI перенаправления: должен быть вида схема://хост</string>
+    <string name="reddit_user_agent_override">Переопределение user agent Reddit</string>
+    <string name="click_custom_user_agent">Нажмите, чтобы задать свой user agent</string>
+    <string name="settings_enable_overrides">Включить переопределения</string>
+    <string name="settings_enable_overrides_desc">Использовать свой идентификатор клиента, URI перенаправления и user agent вместо значений приложения по умолчанию. Оставьте выключенным, если не уверены, что это нужно.</string>
+
+    <string name="settings_section_sound">Звук</string>
+    <string name="settings_unmute_default">По умолчанию включать звук видео</string>
+
+    <string name="settings_subreddit_filter_prefix_matching">Включить сопоставление по префиксу в фильтрах сабреддитов</string>
+    <string name="settings_subreddit_filter_prefix_matching_description">Префикс — это полное имя сабреддита длиной не менее шести символов. Примеры: сабреддит social заблокирует socialanxiety. Сабреддит pokemongo заблокирует pokemongoraids.</string>
+
+    <string name="settings_filter_old_posts">Фильтровать посты старше</string>
+    <plurals name="settings_filter_old_posts_days">
+        <item quantity="one">%1$d день</item>
+        <item quantity="few">%1$d дня</item>
+        <item quantity="many">%1$d дней</item>
+        <item quantity="other">%1$d дней</item>
+    </plurals>
+    <string name="settings_filter_old_posts_description">Не применяется при просмотре отдельного сабреддита, а также при сортировке по Top или Controversial</string>
+
+    <!-- Pause on audio focus ducking setting -->
+    <string name="settings_pause_on_duck_title">Ставить видео на паузу вместо приглушения</string>
+    <string name="settings_pause_on_duck_desc">Ставит видео на паузу, когда другие приложения воспроизводят звук. Приглушение — это снижение громкости вместо постановки видео на паузу.</string>
+
+    <!-- Add this string resource for the play button content description -->
+    <string name="btn_play">Воспроизвести</string>
+
+    <string name="multireddit_name_title">Название мультиреддита</string>
+    <string name="multireddit_name_hint">Название мультиреддита</string>
+    <string name="multireddit_err_empty_name">Название мультиреддита не может быть пустым</string>
+    <string name="multireddit_err_no_valid_subs">Не выбрано ни одного подходящего сабреддита. Выберите хотя бы один.</string>
+    <string name="multireddit_progress_title">Создание мультиреддита</string>
+    <string name="multireddit_progress_message">Подождите, пока мы создаём ваш мультиреддит...</string>
+    <string name="multireddit_created_success">Мультиреддит успешно создан</string>
+    <string name="multireddit_created_error">Не удалось создать мультиреддит. Повторите попытку.</string>
+    <string name="multireddit_json_error">При подготовке данных мультиреддита произошла ошибка</string>
+
+    <string name="settings_dialog_colored_border">Добавить цветную рамку вокруг диалоговых окон</string>
+    <string name="settings_dialog_colored_border_desc">Показывает тонкую цветную рамку вокруг некоторых диалоговых окон.</string>
+
+    <string name="misc_err_sync_failed">Не удалось синхронизировать сабреддиты. Нет подписок?</string>
+
+    <string name="mod_btn_distinguish">Выделить</string>
+    <string name="mod_btn_undistinguish">Снять выделение</string>
+
+    <string name="nsfw_status_removed">Метка NSFW снята</string>
+    <string name="nsfw_status_set">Метка NSFW установлена</string>
+
+    <string name="spoiler_status_removed">Метка спойлера снята</string>
+    <string name="spoiler_status_set">Метка спойлера установлена</string>
+
+    <string name="submission_distinguished">Пост выделен</string>
+    <string name="submission_distinguished_removed">Выделение поста снято</string>
+
+    <string name="settings_general_hide_subreddit_tabs">Скрыть вкладки сабреддитов, на которые вы подписаны</string>
+    <string name="settings_general_hide_subreddit_tabs_desc">Скрывает сабреддиты, на которые вы подписаны, как вкладки, но оставляет кнопки навигации</string>
+
+    <!-- Video playback speed control -->
+    <string name="video_speed">Скорость</string>
+    <string name="video_speed_0_25x">0.25x</string>
+    <string name="video_speed_0_5x">0.5x</string>
+    <string name="video_speed_0_75x">0.75x</string>
+    <string name="video_speed_1x">Обычная</string>
+    <string name="video_speed_1_25x">1.25x</string>
+    <string name="video_speed_1_5x">1.5x</string>
+    <string name="video_speed_2x">2x</string>
+    <string name="video_speed_control_content_desc">Управление скоростью воспроизведения</string>
+    <string name="image_unavailable">Изображение недоступно</string>
+    <string name="image_rotate_content_desc">Повернуть изображение на 90 градусов по часовой стрелке</string>
+    <string name="image_rotate_left_content_desc">Повернуть изображение на 90 градусов против часовой стрелки</string>
+
+    <!-- Folder chooser dialog (formerly provided by afollestad material-dialogs commons) -->
+    <string name="md_error_label">Ошибка</string>
+    <string name="md_storage_perm_error">Для этой функции требуется разрешение на доступ к хранилищу, которое не было предоставлено.</string>
+    <string name="md_choose_label">ВЫБРАТЬ</string>
+    <string name="new_folder">Новая папка</string>
 </resources>

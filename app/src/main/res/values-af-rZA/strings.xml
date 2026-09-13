@@ -1,123 +1,1403 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Generic text used anywhere -->
+    <string name="general_confirm">Bevestig</string>
     <string name="general_confirm_exit">Bevestig terminasie</string>
     <string name="general_confirm_exit_msg">Bevestig weereens terminasie</string>
     <string name="general_enable_shadowbox">Skaduwee raam wyse</string>
+    <string name="general_open_settings">Sybalk</string>
+    <string name="general_sub_sync">Sinkroniseer tans intekeninge</string>
+
     <!-- Used when viewing a thread -->
+    <string name="submission_info_unsaved">Plasing nie meer gestoor nie</string>
+    <string name="submission_info_saved">Plasing gestoor</string>
+    <string name="submission_info_archived">Hierdie is \'n geargiveerde plasing. Jy sal nie kan stem of kommentaar lewer nie.</string>
     <string name="submission_post_saved">Artikel gespaar</string>
+    <string name="submission_info_hidden">Plasing vir altyd versteek</string>
     <string name="submission_stickied">Vasgepen</string>
+    <string name="submission_link_copy">Kopieer URL</string>
+    <string name="submission_link_share">Deel URL</string>
+    <string name="submission_share_title">Watter skakel wil jy deel?</string>
+    <string name="submission_share_reddit">Reddit-URL</string>
+    <string name="submission_share_content">Inhoud-URL</string>
     <string name="submission_hide">Verberg artikel</string>
     <string name="submission_report">Rapporteer artikel</string>
+    <string name="submission_gild">Open in blaaier</string>
     <string name="submission_save">Spaar artikel</string>
+    <string name="submission_save_image">Stoor prent</string>
+    <string name="submission_save_video">Stoor video</string>
+    <string name="submission_load_full">Laai volledige draad</string>
+    <string name="submission_np_link">Hierdie is \'n geen-deelname-skakel. Moenie stem of kommentaar lewer nie.</string>
     <string name="submission_not_found">Oeps, onderwerp nie gevind nie!</string>
     <string name="submission_not_found_msg">Jammer, kon nie onderwerp vind nie</string>
+    <string name="submission_copy_text">Kopieer teks</string>
+    <string name="submission_comment_saved">Kommentaar gestoor</string>
+    <string name="submission_comment_unsaved">Kommentaar nie meer gestoor nie</string>
+    <string name="submission_share_permalink">Deel skakel</string>
+    <string name="submission_comment_copied">Kommentaarteks gekopieer</string>
+    <string name="submission_text_copied">Plasingteks gekopieer</string>
+    <string name="submission_nocontent">Plasing het geen inhoud nie</string>
+    <string name="submission_link_copied">Skakel gekopieer</string>
+    <string name="translate_with_google">Vertaal</string>
+    <string name="translate_no_app">Geen toepassing beskikbaar om te vertaal nie</string>
+    <string name="read_aloud">Lees hardop</string>
+    <string name="read_aloud_unavailable">Teks-na-spraak nie beskikbaar nie</string>
+    <string name="submission_removed">Plasing verwyder</string>
+
+    <plurals name="new_messages">
+        <item quantity="one">%d nuwe boodskap</item>
+        <item quantity="other">%d nuwe boodskappe</item>
+    </plurals>
+    <plurals name="points">
+        <item quantity="one">pt</item>
+        <item quantity="other">pte</item>
+    </plurals>
+    <plurals name="comments">
+        <item quantity="one">komm.</item>
+        <item quantity="other">komm.</item>
+    </plurals>
+
     <!-- Theme settings -->
     <string name="theme_light">Lig</string>
     <string name="theme_dark">Donker</string>
     <string name="theme_black">AMOLED swart</string>
     <string name="theme_dark_blue">Donker blou</string>
+    <string name="night_mode">Nagmodus</string>
+    <string name="disabled">Gedeaktiveer</string>
+    <string name="manual">Handmatig</string>
+    <string name="automatic">Outomaties</string>
     <string name="theme_default_color">Primêre kleur</string>
     <string name="theme_subreddit_color">Verander kleur</string>
     <string name="theme_accent_color">Aksent kleur</string>
     <string name="theme_base">Basis tema</string>
     <string name="theme_card">Kaart</string>
+    <string name="theme_sepia">Sepia</string>
+    <string name="theme_amoled_contrast">AMOLED met kontras</string>
+    <string name="theme_night">Nagtema</string>
+
     <!-- Font settings -->
+    <string name="font_size_comment">Kommentaar-lettergrootte</string>
+    <string name="font_size_post">Plasing-lettergrootte</string>
+    <string name="font_size_huge">Enorm</string>
     <string name="font_size_larger">Groter</string>
     <string name="font_size_large">Groot</string>
     <string name="font_size_medium">Medium</string>
     <string name="font_size_small">Klein</string>
     <string name="font_size_smaller">Kleiner</string>
     <string name="font_size_tiny">Piepklein</string>
+
     <!-- For editing the submission card layout -->
+    <string name="card_hide_post_button">"Versteek plasing"-knoppie in aksiebalk</string>
+    <string name="card_tint_outside">Kleur slegs buite die subreddit</string>
+    <string name="card_save_button">"Stoor plasing"-knoppie in aksiebalk</string>
+
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Multi-kolom</string>
+    <string name="multi_column_portrait_count">Kolomme in portret</string>
+    <string name="multi_column_landscape_count">Kolomme in landskap</string>
+    <string name="single_column_multi_window">Enkelkolom in multivenster-modus</string>
+
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Jy</string>
     <string name="drawer_support">Gaan Pro</string>
     <string name="drawer_goto_profile">Gaan na profiel</string>
     <string name="drawer_add_account">Voeg rekening by</string>
     <string name="drawer_hello">Hallo,</string>
+    <string name="drawer_search">Gaan na subreddit</string>
+    <!-- Subreddit name when submitting/crossposting: a single subreddit only (no multireddit, no dot). -->
+    <!-- Message recipient: a username or an /r/ or /u/ path. -->
+    <!-- Settings search field. The trailing space is intentional, so the value is quoted to preserve it. -->
+    <string name="drawer_moderation">Moderasie</string>
     <string name="drawer_offline">Slide in aflyn mode</string>
+    <string name="drawer_offline_retry">Probeer om aanlynmodus te betree</string>
+    <string name="drawer_guest_mode">Blaai as gas</string>
+
     <!-- Sidebar items (That's the one on the right) -->
+    <string name="sidebar_wiki">Subreddit-wiki</string>
+    <string name="sidebar_mods">Subreddit-moderators</string>
+
     <!-- User profile -->
+    <string name="profile_karma_total">Totale karma</string>
+    <string name="profile_karma_link">Plasingkarma</string>
+    <string name="profile_karma_comment">Kommentaarkarma</string>
     <string name="profile_message">Privaat boodskap</string>
+    <string name="profile_saved">Gestoor</string>
+    <string name="local_saved">Plaaslik gestoor</string>
+    <string name="profile_read_later">Lees later</string>
     <string name="profile_upvoted">Opgestem</string>
     <string name="profile_err_title">Gebruiker nie gevind nie</string>
+    <string name="profile_err_msg">Reddit-gebruiker kon nie gehaal word nie</string>
     <string name="profile_overview">Oorsig</string>
     <string name="profile_comments">Kommentaar</string>
+    <string name="profile_submitted">Geplaas</string>
+    <string name="profile_gilded">Verguld</string>
     <string name="profile_downvoted">Afgestem</string>
     <string name="profile_hidden">Versteek</string>
     <string name="profile_friend">Vriend</string>
     <string name="profile_add_friend">Voeg vriend by</string>
     <string name="profile_remove_friend">Verwyder Vriend</string>
+    <string name="profile_follow_user">Volg</string>
+    <string name="profile_unfollow_user">Ontvolg</string>
+    <string name="profile_add_user">Voeg gebruiker by</string>
+    <string name="profile_remove_user">Verwyder gebruiker</string>
+    <string name="profile_remove_account">Wil jy regtig hierdie rekening verwyder?</string>
+    <string name="profile_remove">Skrap rekening</string>
     <string name="profile_history">Geskiedenis</string>
+    <string name="profile_share">%s se profiel</string>
+    <string name="profile_age">Redditor vir %s</string>
+    <string name="profile_tag">Etiket</string>
+    <string name="profile_tag_set">Stel etiket vir %s</string>
+    <string name="profile_tag_user">Merk gebruiker</string>
+    <string name="profile_tag_user_existing">Gebruiker gemerk as ‘%s’</string>
+    <string name="profile_btn_tag">Stel etiket</string>
+    <string name="profile_btn_untag">Verwyder etiket</string>
+    <string name="profile_info">Profielinligting</string>
+    <string name="profile_options">Gebruikeropsies</string>
+    <string name="profile_block_user">Blokkeer gebruiker</string>
+    <string name="profile_block_user_description">Blokkeer die gebruiker se boodskappe, plasings en profiel</string>
+    <string name="profile_unblock_user">Ontblokkeer gebruiker</string>
+    <string name="profile_unblock_user_description">Ontsluit die gebruiker se boodskappe, plasings en profiel</string>
+    <string name="profile_search">Soek</string>
+    <string name="profile_search_title">Soek in %1$s</string>
+    <string name="profile_search_hint">Soek titels en teks…</string>
+    <string name="profile_search_no_results">Geen resultate gevind nie</string>
+    <string name="profile_search_clear">Vee soektog uit</string>
+    <string name="profile_search_cleared">Soektog uitgevee</string>
+    <string name="profile_search_loading">Soek tans…</string>
+    <string name="profile_search_progress">%1$d resultate · %2$d deursoek</string>
+    <string name="profile_search_bypass_cache">Omseil kas</string>
+
     <!-- Comment text options -->
+    <string name="comment_gild">Beloon kommentaar</string>
+    <string name="comment_share">Deel kommentaar</string>
+    <string name="comment_delete">Skrap kommentaar</string>
+    <string name="comment_delete_msg">Wil jy regtig hierdie kommentaar skrap? Dit kan nie ongedaan gemaak word nie</string>
+    <string name="comment_delete_err">Ag nee, iets het verkeerd geloop</string>
+    <string name="comment_delete_err_msg">Wil jy weer probeer?</string>
+    <string name="comment_deleted">[geskrap]</string>
+    <string name="comment_unsave">Ontstoor</string>
+    <string name="comment_loading_more">Laai tans meer kommentaar…</string>
+    <string name="comment_permalink">Laai kommentaarskakel</string>
+    <string name="comment_parent">Wys ouerkommentaar</string>
+    <string name="comment_video_play">Speel video</string>
+
     <!-- Welcome view (first time setup) -->
+    <string name="welcome_start">Kom ons begin</string>
+    <string name="welcome_personalize">Personaliseer</string>
+
     <!-- Sorting options -->
+    <string name="sorting_choose">Kies \'n sorteertipe</string>
+    <string name="sorting_time_choose">Kies \'n tydraamwerk</string>
+    <string name="sorting_change_sorting">Sorteermodus</string>
     <string name="sorting_best">Beste</string>
+    <string name="sorting_top">Top</string>
     <string name="sorting_hot">Warm</string>
+    <string name="sorting_ama">V&amp;A (AMA)</string>
     <string name="sorting_new">Nuwe</string>
     <string name="sorting_old">Oud</string>
     <string name="sorting_controversial">Kontroversieel</string>
     <string name="sorting_rising">Reisend</string>
+    <string name="sorting_hour">uur</string>
+    <string name="sorting_day">24 uur</string>
+    <string name="sorting_week">week</string>
+    <string name="sorting_month">maand</string>
+    <string name="sorting_year">jaar</string>
+    <string name="sorting_all">alle tyd</string>
+    <string name="sorting_defaultfor">Verstek vir /r/%1$s</string>
+
     <!-- Editor (save/submit a post) actions -->
+    <string name="editor_url">URL</string>
     <string name="editor_text">Teks</string>
+    <string name="editor_title_link">Voeg skakel in</string>
+    <string name="editor_action_link">VOEG IN</string>
     <string name="editor_title">Titel</string>
     <string name="editor_err_msg">Probeer weer in \'n paar sekondes.</string>
+    <string name="editor_uploading_image">Laai tans prent op na Imgur</string>
+    <string name="editor_upload_image_title">Laai prent op</string>
+    <string name="editor_upload_reddit">Reddit (inlynprent)</string>
+    <string name="editor_upload_imgur">Imgur (skakel)</string>
+    <string name="editor_uploading_reddit">Laai tans prent op na Reddit</string>
+    <string name="editor_reddit_upload_success">Prent opgelaai</string>
+    <string name="editor_reddit_upload_failed">Prentoplaai het misluk</string>
+    <string name="submit_image_host_imgur">Imgur</string>
+    <string name="submit_image_host_reddit">Reddit</string>
+    <string name="submit_change_img">Verander prent</string>
+    <string name="submit_select_gallery">Voeg prente by</string>
+    <string name="submit_gallery_caption_hint">Onderskrif (opsioneel)</string>
+    <string name="submit_gallery_count">%1$d gekies</string>
+    <string name="submit_uploading_gallery">Laai tans prent %1$d van %2$d op</string>
     <string name="editor_select_img">Kies prent</string>
+    <string name="editor_hint_optional_body">Teks (opsioneel)</string>
+    <string name="editor_submit">Plaas \'n bydrae</string>
+    <string name="editor_hint_subreddit">Subreddit</string>
+    <string name="editor_finding_title">Soek tans die titel</string>
+    <string name="submit_findingflairs">Soek tans flairs</string>
+    <string name="submit_flairchoices">/r/%s-flairs</string>
+
+    <string name="edit_selftext">Redigeer selfteks</string>
+    <string name="delete_submission">Skrap plasing</string>
+    <string name="set_submission_flair">Stel plasingflair</string>
+
     <!-- Editor buttons -->
+    <string name="editor_save_draft">Stoor konsep</string>
+    <string name="editor_chose_draft">Kies konsep</string>
+    <string name="editor_insert_image">Voeg prent in</string>
+    <string name="editor_draw">Voeg prent in en teken daarop</string>
+    <string name="editor_link">Voeg skakel in</string>
+    <string name="editor_bold">Vetdruk</string>
+    <string name="editor_italics">Skuinsdruk</string>
+    <string name="editor_quote">Aanhaling</string>
+    <string name="editor_author">Noem outeur</string>
+    <string name="editor_list">Kolpuntlys</string>
+    <string name="editor_num_list">Genommerde lys</string>
+    <string name="editor_size">Groot lettertipe</string>
+    <string name="editor_strike">Deurhaal</string>
+    <string name="editor_spoiler">Verklapper</string>
+
     <!-- General information / information without a category -->
     <string name="info_photo_saved">Prent gebêre</string>
+    <string name="gif_saved">GIF gestoor</string>
+
     <!-- General errors / errors without a category -->
+    <string name="err_title">Ag nee, iets het verkeerd geloop!</string>
+    <string name="err_invalid_url">Ongeldige URL</string>
+    <string name="err_loading_content">Fout met die laai van inhoud</string>
+    <string name="err_general">Ag nee, \'n fout het voorgekom</string>
+    <string name="err_no_connection">Reddit kon nie bereik word nie. Wil jy weer probeer?</string>
+    <string name="err_no_connection_toast">Reddit kon nie bereik word nie. Probeer binnekort weer</string>
+    <string name="err_retry_later">Probeer oor \'n minuut weer!</string>
+    <string name="err_authentication">Verifikasie het misluk</string>
+    <string name="err_submit_restricted">Hierdie subreddit is beperk</string>
+    <string name="err_submit_restricted_text">Jy mag nie hier plaas nie. Kies asseblief \'n ander subreddit</string>
+    <string name="err_crosspost_disallowed_text">/r/%s laat nie kruisplasings toe nie. Kies asseblief \'n ander subreddit.</string>
+    <string name="err_crosspost_not_subscribed">Jy moet op /r/%s inteken voordat jy kruisplaas.</string>
+    <string name="err_crosspost_sub_not_found">/r/%s bestaan nie.</string>
+    <string name="crosspost_flair_required_short">\'n Flair is nodig — kies asseblief een voordat jy plaas.</string>
+    <string name="error_video_not_found">Video nie gevind nie</string>
+    <string name="error_video_message">\'n Fout het voorgekom tydens die laai van hierdie video</string>
+    <string name="error_album_not_found">Album nie gevind nie</string>
+    <string name="error_album_not_found_text">Wil jy die skakel in die blaaier open?</string>
+    <string name="err_comment_post_nosave_message">\nProbeer asseblief oor \'n minuut weer</string>
+    <string name="err_could_not_find_content_msg">Reddit kon nie die versoekte inhoud vind nie</string>
+    <string name="err_refused_request_msg">Reddit het \'n versoek geweier. Wil jy probeer om weer aan Reddit te koppel?</string>
+    <string name="err_color_sync_login">Meld asseblief aan om Kleursinkronisasie te gebruik</string>
+    <string name="err_something_wrong">Ag nee, iets het verkeerd geloop</string>
+    <string name="err_couldnt_save_choose_new">Slide kon nie na die gekose gids stoor nie. Wil jy \'n nuwe stoorplek kies?</string>
+    <string name="err_share_image">Fout met die deel van die prent</string>
+    <string name="err_file_not_found">Lêer nie gevind nie</string>
+    <string name="err_file_not_found_msg">Die gekose lêer kon nie gevind word nie. Maak asseblief seker dit bestaan en dat Slide toestemming het om daardie lêer/gids te gebruik</string>
+    <string name="err_comment_post">Ag nee, die plasing van hierdie kommentaar het misluk!</string>
+    <string name="err_comment_post_reason">Rede: %1$s</string>
+    <string name="err_comment_post_message">\n\nJou boodskap is as \'n konsep gestoor. Probeer asseblief later weer.</string>
+    <string name="err_connection_failed_msg">Die verbinding met Reddit het misluk. Gaan asseblief jou internetverbinding na en probeer weer, of gaan oor na vanlynmodus.</string>
+    <string name="err_block_user">Fout met die blokkeer van die gebruiker. Het jy hierdie gebruiker onlangs ontblokkeer?</string>
+
     <!-- Gif -->
+    <string name="gif_err_title">GIF nie gevind nie</string>
+    <string name="gif_err_msg">\'n Fout het voorgekom tydens die laai van hierdie GIF. Open die GIF asseblief weer en probeer opnuut.</string>
+    <string name="gif_load_failed">Kon nie GIF laai nie</string>
+    <string name="gif_download_failed">Kon nie GIF aflaai nie</string>
+
     <!-- Multireddits -->
+    <string name="multireddit_err_title">Nog geen multireddits nie!</string>
+    <string name="multireddit_err_msg">Wil jy \'n nuwe multireddit skep?</string>
+    <string name="public_multireddit_err_title">Geen multireddits nie!</string>
+    <string name="public_multireddit_err_msg">Hierdie gebruiker het geen openbare multireddits nie.</string>
+    <string name="multireddit_title_empty">Titel kan nie leeg wees nie</string>
+    <string name="multireddit_title_empty_msg">Voer asseblief \'n titel vir jou multireddit in</string>
+    <string name="multireddit_no_subs">Geen subreddits is bygevoeg nie</string>
+    <string name="multireddit_save_err">Die titel van hierdie multireddit bestaan reeds of daar is nie plek vir meer subreddits hier nie</string>
+    <string name="multireddit_no_subs_msg">Voeg asseblief \'n paar subreddits by deur op die +-knoppie te klik!</string>
+    <string name="multireddit_selector">Kies subreddits om by te voeg</string>
+    <string name="multireddit_create_hint">Multireddit-naam</string>
+    <string name="multireddit_invalid_name">Ongeldige multireddit-naam</string>
+    <string name="multireddit_invalid_name_msg">Multireddit-name mag slegs letters, syfers en onderstrepe bevat</string>
+    <string name="multi_add_to">Voeg /r/%s by</string>
+    <string name="multi_subreddit_added">Subreddit by /m/%1$s gevoeg</string>
+    <string name="multi_error">\'n Fout het voorgekom, probeer asseblief later weer</string>
+    <string name="btn_import_multi">Voer multireddit in</string>
+    <string name="multi_submit_which_sub">Na watter sub wil jy plaas?</string>
+    <string name="multi_saved_successfully">Suksesvol gestoor</string>
+    <string name="delete_multireddit_title">Wil jy regtig /m/%1$s skrap?</string>
+    <string name="multi_save_option">Wil jy hierdie multireddit stoor?</string>
+
     <!-- Content types -->
+    <string name="type_nsfw_img">NSFW-prent</string>
+    <string name="type_nsfw_gif">NSFW-GIF</string>
+    <string name="type_reddit">Reddit-skakel</string>
+    <string name="type_link">Skakel</string>
+    <string name="type_nsfw_link">NSFW-skakel</string>
+    <string name="type_gif">GIF</string>
+    <string name="type_title_only">Titelplasing</string>
+    <string name="type_album">Album</string>
+    <string name="type_xkcd">XKCD</string>
+    <string name="type_nsfw_album">NSFW-album</string>
+    <string name="type_nsfw_gallery">NSFW-galery</string>
+    <string name="type_nsfw_albums">NSFW-albums</string>
+    <string name="type_nsfw_galleries">NSFW-galerye</string>
+    <string name="type_nsfw_gifs">NSFW-GIF\'s</string>
+    <string name="type_nsfw_images">NSFW-prente</string>
+    <string name="type_nsfw_links">NSFW-skakels</string>
+    <string name="type_nsfw_selftexts">NSFW-selftekste</string>
+    <string name="type_nsfw_tumblrs">NSFW-Tumblrs</string>
+    <string name="type_nsfw_videos">NSFW-video\'s</string>
+    <string name="type_gallery">Galery</string>
+    <string name="type_galleries">Galerye</string>
+    <string name="type_img">Prent</string>
+    <string name="type_videos">Video\'s</string>
+    <string name="type_nsfw_video">NSFW-video</string>
+    <string name="type_imgur">Imgur-inhoud</string>
+    <string name="type_nsfw_imgur">NSFW-Imgur-inhoud</string>
+    <string name="type_nsfw_xkcd">NSFW-XKCD</string>
+    <string name="type_nsfw_deviantart">NSFW-DeviantArt</string>
+    <string name="type_nsfw_title_only">NSFW-titelplasing</string>
+    <string name="type_nsfw_reddit">NSFW-Reddit-skakel</string>
+    <string name="type_nsfw_selftext">NSFW-selfteks</string>
+    <string name="type_spoiler">Verklapper</string>
+    <string name="type_nsfw_spoiler">NSFW-verklapper</string>
+    <string name="type_nsfw_streamable">NSFW-Streamable</string>
+    <string name="type_external">Ekstern</string>
+
     <!-- Content types plural (Content filters) -->
+    <string name="type_gifs">GIF\'s</string>
+    <string name="type_albums">Albums</string>
+    <string name="type_links">Skakels</string>
+
     <!-- Inbox/mail -->
+    <string name="mail_tab_inbox">Inkassie</string>
+    <string name="mail_tab_unread">Ongelees</string>
+    <string name="mail_tab_messages">Boodskappe</string>
+    <string name="mail_tab_sent">Gestuur</string>
+    <string name="mail_tab_mentions">Vermeldings</string>
+    <string name="mail_author_wrote">%1$s het geskryf…</string>
+    <string name="mail_hint_recipient">Ontvanger</string>
+    <string name="mail_hint_subject">Onderwerp</string>
+    <string name="mail_hint_body">Teks</string>
+    <string name="mail_send_to">Stuur \'n boodskap aan %1$s</string>
+    <string name="mail_send">Stuur \'n boodskap</string>
+    <string name="mail_notification_msg_from">Nuwe boodskap van %1$s</string>
+    <string name="mail_notification_msg_via">Nuwe boodskap via /r/%1$s</string>
+    <string name="mod_mail_notification_msg">Nuwe modmail van %1$s</string>
+    <string name="mail_reply_to">Antwoord %1$s</string>
+    <string name="mail_notification_author">%1$s van %2$s</string>
+    <string name="mail_notification_subreddit">%1$s via /r/%2$s</string>
+    <string name="mail_theirs">Bekyk hul boodskap</string>
+    <string name="mail_re">re: %1$s</string>
+    <string name="mail_mark_read">Merk as gelees</string>
+    <string name="mail_view_full_thread">Bekyk volledige draad</string>
+    <string name="mail_message_copied">Boodskap gekopieer</string>
+    <plurals name="mail_notification_title">
+        <item quantity="one">Jy het %d nuwe boodskap!</item>
+        <item quantity="other">Jy het %d nuwe boodskappe!</item>
+    </plurals>
+    <plurals name="mod_mail_notification_title">
+        <item quantity="one">Jy het %d nuwe modpos!</item>
+        <item quantity="other">Jy het %d nuwe modpos!</item>
+    </plurals>
+
     <!-- Miscellaneous/generic things that don't have a category or strings that are used for multiple categories -->
+    <string name="misc_err">Fout</string>
+    <string name="misc_none">Geen</string>
+    <string name="misc_retry">Wil jy weer probeer?</string>
+    <string name="misc_retry_draft">Wil jy weer probeer? \n\'n Konsep van jou plasing is gestoor</string>
+    <string name="misc_score_hidden">telling versteek</string>
+    <string name="misc_subscribed">Ingeteken</string>
+    <string name="misc_continue">Gaan voort</string>
+    <string name="misc_unsubscribed">Uitgeteken</string>
+    <string name="misc_no_more_posts">Geen verdere plasings nie!</string>
+    <string name="misc_please_wait">Wag asseblief…</string>
+    <string name="misc_img_share">Deel prent met</string>
     <string name="misc_copy_text">Kopie teks</string>
+    <string name="misc_maybe_later">Miskien later</string>
+    <string name="misc_try_again">Probeer weer</string>
+    <string name="misc_please_try_again">Probeer asseblief weer</string>
+    <string name="misc_please_try_again_soon">Probeer asseblief binnekort weer</string>
+    <string name="misc_setting_up">Stel \'n paar dinge op…</string>
+    <string name="misc_setting_up_message">Moenie hierdie skerm verlaat nie. Dit behoort nie lank te neem nie!</string>
+    <string name="misc_more_info">Meer inligting</string>
+    <string name="misc_captcha_incorrect">Captcha verkeerd, probeer asseblief weer</string>
+
     <!-- Goto User -->
+    <string name="user_enter">Voer gebruikersnaam in</string>
+    <string name="user_btn_goto">Gaan na gebruiker</string>
+    <string name="user_btn_gotomultis">Gaan na die gebruiker se multis</string>
+
+    <!-- Saved users list -->
+    <string name="users_empty">Geen gestoorde gebruikers nie</string>
+    <string name="users_btn_add">Voeg gebruiker by</string>
+    <string name="users_btn_remove">Verwyder gebruiker</string>
+    <string name="users_added">%s by Gebruikers gevoeg</string>
+    <string name="users_removed">%s uit Gebruikers verwyder</string>
+    <string name="users_already_added">%s is reeds in Gebruikers</string>
+    <string name="users_copied">%s gekopieer</string>
+    <string name="users_checking">Kontroleer tans gebruikersnaam</string>
+    <string name="users_invalid_title">Kan nie gebruiker byvoeg nie</string>
+    <string name="users_invalid">%s is nie \'n Reddit-gebruiker nie</string>
+    <string name="users_check_failed">Kon nie bepaal of %s bestaan nie. Gaan asseblief jou verbinding na en probeer weer.</string>
+    <string name="users_friend_added">%s as vriend bygevoeg</string>
+    <string name="users_friend_removed">%s as vriend verwyder</string>
+    <string name="users_friend_failed">Kon nie die vriendstatus vir %s bywerk nie</string>
+    <string name="btn_fab_add_user">Voeg \'n gebruiker by</string>
+
     <!-- Buttons -->
+    <string name="btn_add">Voeg by</string>
+    <string name="btn_cancel">Kanselleer</string>
+    <string name="btn_close">Maak toe</string>
+    <string name="btn_toggle">Wissel</string>
+    <string name="btn_open">Open</string>
+    <string name="btn_discard">Verwerp</string>
+    <string name="btn_done">Klaar</string>
+    <string name="btn_go_back">Gaan terug</string>
+    <string name="btn_no">Nee</string>
+    <string name="btn_ok">OK</string>
+    <string name="btn_remove">Verwyder</string>
+    <string name="btn_reply">Antwoord</string>
+    <string name="btn_reset">Stel terug</string>
+    <string name="btn_retry">Probeer weer</string>
+    <string name="btn_save">Stoor</string>
+    <string name="btn_submit">Dien in</string>
+    <string name="btn_undo">Ontdoen</string>
+    <string name="btn_yes">Ja</string>
+    <string name="btn_refresh">Verfris</string>
+    <string name="btn_cache">Kas kommentaar</string>
+    <string name="btn_delete">Skrap</string>
+    <string name="btn_time">Tydperk</string>
+    <string name="btn_message">Boodskap</string>
+    <string name="btn_select">Kies</string>
+    <string name="btn_view">BEKYK</string>
+    <string name="btn_changelog">Veranderingslog</string>
+    <string name="btn_set">STEL</string>
+    <string name="btn_create">Skep</string>
+    <string name="btn_new">Nuut</string>
+
     <!-- Buttons Content labels for TalkBack accessibility-->
+    <string name="btn_edit">Redigeer</string>
+    <string name="btn_hide">Versteek</string>
+    <string name="btn_mod">Modereer</string>
+    <string name="btn_upvote">Stem op</string>
+    <string name="btn_downvote">Stem af</string>
+    <string name="btn_menu">Kieslys</string>
+    <string name="img_score">Telling</string>
+    <string name="img_comments">Kommentaar</string>
+    <string name="btn_expand">Vou uit</string>
+    <string name="btn_nav_up">Navigeer op</string>
+    <string name="btn_nav_mode">Stel navigasiemodus</string>
+    <string name="btn_nav_collapse_expand">Vou in/uit</string>
+    <string name="btn_nav_down">Navigeer af</string>
+    <string name="btn_fab_reply">Antwoord</string>
+    <string name="btn_fab_post">Skep nuwe plasing</string>
+    <string name="btn_fab_hide">Versteek bekykte plasings</string>
+    <string name="btn_fab_search">Soek plasings</string>
+
     <!-- Buttons Content labels for TalkBack accessibility active states-->
+    <string name="btn_upvoted">Opgestem</string>
+    <string name="btn_downvoted">Afgestem</string>
+    <string name="btn_unsave">Ontstoor</string>
+    <string name="btn_collapse">Vou in</string>
+
     <!-- Backup -->
+    <string name="backup_success">Rugsteun suksesvol!</string>
+    <string name="backup_restoring">Herstel tans jou instellings</string>
+    <string name="backup_backing_up">Rugsteun tans jou instellings</string>
+    <string name="backup_restore_settings">Herstel van instellings suksesvol!</string>
+    <string name="backup_restarting">Die toepassing sal nou herbegin</string>
+    <string name="backup_info">Slide rugsteun al jou data na \'n private Google Drive-vouer. Jy kan hierdie data oor toestelle sinkroniseer (of na dieselfde toestel), en jou data gaan nooit deur \'n derdeparty-diens of -bediener nie. Rugsteunlêers word geënkripteer met \'n wagwoord van jou keuse.</string>
+    <string name="backup_btn">Rugsteun</string>
+    <string name="backup_btn_restore">Herstel</string>
+    <string name="backup_btn_file">Rugsteun na zip</string>
+    <string name="backup_btn_restore_file">Herstel uit lêer of zip</string>
+    <string name="backup_confirm">Is jy seker jy wil rugsteun? Jou vorige rugsteun sal oorskryf word</string>
+    <string name="backup_restore_confirm">Is jy seker jy wil herstel? Jou huidige instellings sal oorskryf word</string>
+    <string name="backup_failed_msg">Rugsteun het misluk. Probeer asseblief later weer.</string>
+    <string name="backup_restore_failed_msg">Herstel het misluk. Maak asseblief seker \'n geldige rugsteun bestaan en probeer weer.</string>
+    <string name="backup_local_title">Plaaslike rugsteun</string>
+    <string name="backup_drive_title">Google Drive-rugsteun</string>
+    <string name="backup_button">Skep rugsteun</string>
+    <string name="restore_button">Herstel rugsteun</string>
+    <string name="backup_question">Rugsteun?</string>
+    <string name="backup_complete">Rugsteun voltooi!</string>
+    <string name="err_not_valid_backup">Nie \'n geldige Slide-rugsteunlêer nie</string>
+    <string name="err_not_valid_backup_msg">Die gekose lêer is nie \'n geldige Slide-rugsteunlêer nie</string>
+    <string name="backup_password_title">Stel \'n rugsteunwagwoord</string>
+    <string name="backup_password_message">Jou rugsteun bevat jou Reddit-rekeningbesonderhede, daarom word dit geënkripteer. Kies \'n wagwoord van %1$d tot %2$d karakters. Jy sal dit nodig hê om te herstel, en dit kan nie herwin word nie.</string>
+    <string name="backup_password_hint">Wagwoord</string>
+    <string name="restore_password_title">Voer rugsteunwagwoord in</string>
+    <string name="restore_password_message">Voer die wagwoord in wat gebruik is om hierdie rugsteun te enkripteer.</string>
+    <string name="restore_password_wrong">Verkeerde wagwoord. Probeer asseblief weer.</string>
+    <string name="drive_authorization_failed">Google Drive-magtiging het misluk</string>
+    <string name="drive_authorization_failed_msg">Slide kon nie toegang tot sy private Google Drive-vouer kry nie. Probeer asseblief weer.</string>
+    <string name="drive_authorization_denied">Google Drive-toegang benodig</string>
+    <string name="drive_authorization_denied_msg">Slide benodig toegang tot sy private Google Drive-vouer om jou instellings te rugsteun of te herstel.</string>
+
     <!-- Vote -->
+    <string name="vote_err">Fout met die uitbring van die stem!</string>
+    <string name="vote_err_login">Jy moet aangemeld wees om te stem!</string>
+    <string name="vote_removed">Stem verwyder</string>
+
+    <!-- Subscribing -->
+    <string name="subscribe_err_login">Jy moet aangemeld wees om in te teken!</string>
+
     <!-- Moderation tools -->
+    <string name="mod_mail">Modpos</string>
+    <string name="mod_mail_unread">Modpos ongelees</string>
+    <string name="modmail_internal_note">(interne nota)</string>
+    <string name="modmail_scope_missing">Modpos benodig herverifikasie. Meld weer aan (Instellings &#8594; rekening) om dit te aktiveer.</string>
+    <string name="modmail_reply_sent">Antwoord gestuur!</string>
+    <string name="modmail_reply_failed">Stuur het misluk! Antwoord as konsep gestoor.</string>
+    <plurals name="modmail_message_count">
+        <item quantity="one">%d boodskap</item>
+        <item quantity="other">%d boodskappe</item>
+    </plurals>
+    <string name="mod_modqueue">Modwaglys</string>
+    <string name="mod_unmoderated">Ongemodereer</string>
+    <string name="mod_reports">Aanmeldings</string>
+    <string name="mod_approved">Plasing goedgekeur</string>
+    <string name="mod_flair_hint">Flairteks</string>
+    <string name="mod_no_reports">Geen aanmeldings nie</string>
+    <string name="mod_btn_approve">Keur goed</string>
+    <string name="mod_btn_submission_flair">Stel flair</string>
+    <string name="mod_btn_submission_flair_text">Stel flairteks</string>
+    <string name="mod_btn_mark_nsfw">Merk as NSFW</string>
+    <string name="mod_btn_unmark_nsfw">Ontmerk NSFW</string>
+    <string name="mod_btn_mark_spoiler">Merk as verklapper</string>
+    <string name="mod_btn_unmark_spoiler">Ontmerk as verklapper</string>
+    <string name="mod_btn_lock_thread">Sluit draad</string>
+    <string name="mod_btn_unlock_thread">Ontsluit draad</string>
+    <string name="mod_btn_lock_comment">Sluit kommentaar</string>
+    <string name="mod_btn_unlock_comment">Ontsluit kommentaar</string>
+    <string name="mod_locked">Gesluit</string>
+    <string name="mod_unlocked">Ontsluit</string>
+    <string name="mod_btn_pin">Speld vas</string>
+    <string name="mod_btn_unpin">Speld los</string>
+    <string name="mod_btn_remove">Verwyder</string>
+    <string name="mod_btn_remove_reason">Verwyder met rede</string>
+    <string name="mod_btn_spam">Merk as gemorspos</string>
+    <string name="mod_btn_author">Outeurprofiel</string>
+    <string name="mod_btn_ban">Verban</string>
+    <string name="mod_ban_user">Verban gebruiker</string>
+    <string name="mod_ban_reauth">Om gebruikers te verban, moet Slide jou weer verifieer</string>
+    <string name="mod_ban_reauth_question">Wil jy nou weer by Slide aanmeld?</string>
+    <string name="mod_ban_success">Gebruiker verban!</string>
+    <string name="mod_ban_fail">Fout met die verbanning van die gebruiker</string>
+    <string name="mod_ban_reason">Verbanningsrede</string>
+    <string name="mod_ban_note_mod">Moderatornota (opsioneel)</string>
+    <string name="mod_ban_note_user">Gebruikersboodskap (opsioneel)</string>
+    <string name="mod_ban_time">Verbanningstyd - laat leeg vir permanent</string>
+    <string name="mod_ban_title">Verban /u/%1$s</string>
+    <string name="mod_remove_template">Verwyder weens\u0020</string>
+    <string name="mod_remove_hint">Verwyderingsrede</string>
+    <string name="mod_remove_title">Wat is die rede vir die verwydering van hierdie plasing?</string>
+    <string name="mod_remove_insert_draft">Voeg konsep in</string>
+    <string name="mod_flair_none_found">Geen flair vir hierdie subreddit gevind nie</string>
+    <string name="mod_distinguish">Onderskei</string>
+    <string name="mod_undistinguish">Ontonderskei</string>
+    <string name="mod_sticky">Vasgespeld</string>
+    <string name="mod_unsticky">Ontspeld</string>
+    <string name="reauth_complete">Herverifikasie voltooi!</string>
+    <string name="reauth_in_progress">Herverifieer tans…</string>
+    <string name="reauth_failed">Kon nie herverifieer nie</string>
+
+    <plurals name="mod_btn_reports">
+        <item quantity="one">Bekyk %d aanmelding</item>
+        <item quantity="other">Bekyk %d aanmeldings</item>
+    </plurals>
+
     <!-- If he did -->
+    <string name="really_pin_submission_message">Plasing vasgespeld</string>
+    <string name="really_unpin_submission_message">Plasing losgespeld</string>
+
     <!-- Subreddit Wiki -->
+    <string name="wiki_err">Geen wiki gevind nie</string>
+    <string name="wiki_err_msg">Hierdie subreddit het nie \'n wiki nie!</string>
+
     <!-- Subreddits -->
+    <string name="subreddit_subscribers_string">%1$s intekenaars</string>
+    <string name="subreddit_active_users_string_new">%1$s nou hier</string>
+    <string name="subreddit_err_msg">Die subreddit %1$s kon nie gevind word nie. Dalk is dit verkeerd gespel?</string>
+    <string name="subreddit_err_msg_new">Die subreddit %1$s kon nie gevind word nie. Dalk is dit verkeerd gespel, of jy het nie toegang tot hierdie subreddit nie.</string>
+    <string name="subreddit_err">Subreddit nie gevind nie</string>
+
     <!-- Search -->
+    <string name="search_comments_hint">Soek kommentaar</string>
+    <string name="search_goto">Gaan na</string>
+    <string name="search_title">Soek</string>
+    <string name="search_msg">Waarna soek jy?</string>
+    <string name="search_all">Soek alles</string>
+    <string name="search_subreddit">Soek %1$s</string>
+    <string name="search_relevance">Relevansie</string>
+    <string name="search_top">Top</string>
+    <string name="search_new">Nuut</string>
+    <string name="search_comments">Kommentaar</string>
+    <string name="no_posts_found">Geen plasings gevind nie</string>
+
     <!-- Settings -->
+    <string name="settings_reddit_prefs">Reddit-voorkeure</string>
+    <string name="settings_accent_title">Redigeer aksentkleur</string>
+    <string name="settings_delete_sub_settings">Wil jy regtig die instellings vir %1$s skrap?</string>
+    <string name="settings_layout_default">Plasinguitleg</string>
+    <string name="settings_link_album">Interne albumaansig</string>
+    <string name="settings_link_peek">Loer na inhoud</string>
+    <string name="settings_link_peek_description">Deaktiveer lang kliks op die voorskouprent</string>
+    <string name="settings_link_gif">Interne GIF-aansig</string>
+    <string name="settings_link_hqgif">Hoëkwaliteit-Gfycat-video\'s</string>
+    <string name="settings_link_handling">Skakelhantering</string>
+    <string name="settings_link_image">Interne prentaansig</string>
+    <string name="settings_mail_check">Kyk vir nuwe boodskappe</string>
+    <string name="settings_mail_info">Hoe hoër die frekwensie, hoe meer batterykrag kan Slide in die agtergrond gebruik!</string>
+    <string name="settings_main_color_title">Redigeer primêre kleur</string>
+    <string name="settings_notification">Kyk elke %1$s vir nuwe boodskappe</string>
+    <string name="settings_notification_newline">Kyk vir nuwe boodskappe elke\n%1$s</string>
+    <string name="settings_notification_short">Kyk elke %1$s</string>
+    <string name="settings_disable_nsfw_photo">Versteek alle NSFW-foto\'s</string>
+    <string name="settings_store_history">Stoor geskiedenis</string>
+    <string name="settings_store_nsfw_history">Stoor NSFW-geskiedenis</string>
+    <string name="settings_commentnav">Navigeer tussen ouerkommentaar</string>
+    <string name="share_link">Deel skakel</string>
+    <string name="posts_hidden_forever">Plasings vir altyd versteek</string>
+    <string name="share_image">Deel prent</string>
+    <string name="settings_libs">Oopbronbiblioteke</string>
+    <string name="settings_about_libs">Oor biblioteke</string>
+    <string name="settings_privacy">Privaatheidsbeleid</string>
+    <string name="settings_bugs">Rapporteer foute</string>
+    <string name="settings_changelog">Bekyk veranderingslog</string>
+    <string name="settings_fabclear_msg">Deur die skoonmaakknoppie te tik, word die plasings uit die huidige aansig verwyder, maar dit versteek nie die plasings vir altyd nie. \nDeur die knoppie lank te druk, word die plasings vir altyd versteek!</string>
+    <string name="settings_fabclear">FAB-skoonmaakaksies</string>
+    <string name="settings_notifdisabled">Kennisgewings gedeaktiveer</string>
+    <string name="settings_colored_navigation_bar">Gekleurde navigasiebalk</string>
+    <string name="settings_always_black_statusbar">Swart statusbalk (kennisgewingbalk)</string>
+    <string name="settings_colored_icon">Kleur toepassingsikoon (eksperimenteel)</string>
+    <string name="settings_colored_icon_desc">Mag \'n foonherbegin vereis om te werk. Dit sal ook die ikoon van jou tuisskerm verwyder.</string>
+    <string name="settings_filter_domain">Domeinfilters</string>
+    <string name="settings_filter_selfttext">Selfteksfilters</string>
+    <string name="settings_filter_title">Titelfilters</string>
+    <string name="settings_prefs_reddit">Bekyk alle reddit.com-voorkeure</string>
+    <string name="settings_font_post">Plasingtitel-lettertipe</string>
+    <string name="settings_font_comment">Kommentaar-lettertipe</string>
+    <string name="settings_comment_crop">Sny hoofprent in kommentaaraansig</string>
+    <string name="settings_general_scroll_read">Merk plasings as gesien wanneer daar verby gerol word</string>
+    <string name="settings_link_chrome">Custom Tabs</string>
+    <string name="settings_storage_location">Kies bergingsplek</string>
+    <string name="settings_storage_location_unset">Nog nie gestel nie</string>
+    <string name="settings_set_storage_location">Lêers sal na %s gestoor word</string>
+    <string name="settings_general_immersive_mode">Meesleurende volskermmodus</string>
+    <string name="settings_general_immersive_mode_desc">Versteek die status- en navigasiebalke (eksperimenteel)</string>
+    <string name="settings_general_old_swipe_mode">Ou veegmodus</string>
+    <string name="settings_general_old_swipe_mode_desc">Ou Slide-veegstyl. Bedoel vir 3-knoppie-navigasiemodus en Samsung-gebare.</string>
+    <string name="settings_general_hibernate">Gaan voort waar ek opgehou het</string>
+    <string name="settings_general_hibernate_desc">Heropen op dieselfde skerm, op dieselfde plek, en wys wat reeds gelaai is in plaas daarvan om te verfris. Deur dit te aktiveer word \'n merkblokkie by die oorloopkieslys gevoeg wat hervatting aan- en afskakel sonder om hierheen terug te keer.</string>
+
+    <string name="settings_general_title_drawer_items">Laai-items</string>
+    <string name="settings_general_subtitle_drawer_items">Kies watter laai-items vertoon moet word</string>
+
     <!-- Settings titles displayed in settings activity-->
+    <string name="settings_title_backup">Rugsteun &amp; herstel</string>
+    <string name="settings_title_default_theme">Hooftema</string>
+    <string name="settings_title_general">Algemeen</string>
+    <string name="settings_title_history">Geskiedenis</string>
+    <string name="settings_title_notifications">Kennisgewings</string>
+    <string name="settings_title_pro">Gaan Pro</string>
+    <string name="settings_title_sub_theme">Subreddit-temas</string>
+    <string name="settings_title_sort">Verstek sortering</string>
+    <string name="settings_title_sort_frontpage">Voorbladsortering</string>
+    <string name="settings_title_about">Oor</string>
+    <string name="settings_title_debug">Ontfouting</string>
+    <string name="settings_section_debug_reauth">Herverifikasie</string>
+    <string name="settings_debug_break_reauth">Breek herverifikasie</string>
+    <string name="settings_debug_break_reauth_desc">Laat herverifikasie vashaak sodat die herverifikasie-snackbar getoets kan word. Herstelbaar: skakel dit af en veroorsaak dan \'n herverifikasie.</string>
+    <string name="settings_debug_trigger_reauth">Veroorsaak herverifikasie</string>
+    <string name="settings_debug_trigger_reauth_desc">Begin nou \'n herverifikasie. Gebruik dit om te herstel nadat die wisselaar afgeskakel is.</string>
+    <string name="settings_title_multi_column">Multikolom</string>
+    <string name="settings_title_fab">Swewende aksieknoppie</string>
+    <string name="settings_title_comments">Kommentaar</string>
+    <string name="settings_title_filter">Filters</string>
+    <string name="settings_title_font">Lettertipe</string>
+    <string name="settings_section_general">Algemeen</string>
+    <string name="settings_section_appearance">Voorkoms</string>
+    <string name="settings_section_hibernation">Hibernasie</string>
+    <string name="settings_section_other">Ander</string>
+    <string name="settings_section_browser">Blaaier</string>
+    <string name="settings_section_internal_viewers">Interne aansigte</string>
+    <string name="settings_section_custom_domains">Pasgemaakte domeine</string>
+    <string name="settings_section_save_history">Stoor geskiedenis</string>
+    <string name="settings_section_clear_history">Vee geskiedenis uit</string>
+    <string name="settings_section_data_saving_mode">Databesparingsmodus</string>
+    <string name="settings_section_data_saving_quality">Databesparingskwaliteit</string>
+    <string name="settings_comment_color">Kleurvolle kommentaardiepte-aanwysers</string>
+    <string name="settings_volume_nav_comments">Navigeer kommentaar met volumeknoppies</string>
+    <string name="settings_commentnav_description">Aktiveer \'n onderste balk met navigasiepyle</string>
+    <string name="settings_comment_collapse">Vou kommentaar volledig in</string>
+    <string name="settings_comment_collapse_description">Deaktiveer ook kommentaaranimasies</string>
+    <string name="settings_comment_collapse_default">Vou kinderkommentaar by verstek in</string>
+    <string name="settings_data_enable">Aktiveer databesparingsinstellings</string>
+    <string name="settings_data_video_quality">Verkies laekwaliteit-video\'s wanneer databesparing geaktiveer is</string>
+    <string name="settings_comments_collapse_deleted">Vou geskrapte kommentaar by verstek in</string>
+    <string name="settings_comments_collapse_sticky">Vou die vasgespelde kommentaar altyd volledig in</string>
+    <string name="settings_comments_collapse_blocked_users">Vou kommentaar van geblokkeerde gebruikers in</string>
+    <string name="settings_comments_collapse_blocked_users_description">Aktiveer ook Vou kommentaar volledig in</string>
+    <string name="settings_backup_occurs">Rugsteun sal om %1$s plaasvind</string>
+    <string name="settings_backup_none">Geen subreddits sal gerugsteun word nie</string>
+    <string name="settings_backup_will_backup">\u0020sal gerugsteun word</string>
+    <string name="settings_backup_submission_only">slegs plasing</string>
+    <string name="settings_backup_comments">\u0020(kommentaar)</string>
+    <string name="settings_filter_profile">Profielfilters</string>
+    <string name="settings_subreddit_content_filters_till_restart">Subreddit-inhoudfilters tot herbegin</string>
+    <string name="settings_subredditspecific_selftext">Wys altyd selfteksvoorskoue in hierdie subreddit</string>
+    <string name="settings_font_system">Stelsel</string>
+    <string name="settings_manage_subscriptions">Bestuur jou intekeninge</string>
+    <string name="settings_comments_swap_long">Ruil lang druk- en tikaksies om</string>
+    <string name="settings_redditprefs_over18">Ek is ouer as 18 en wil NSFW-inhoud sien</string>
+    <string name="settings_layout_view">Aansigmodus</string>
+    <string name="settings_subredditspecific_bigpic">Wys altyd groot prente in hierdie subreddit</string>
+    <string name="settings_layout_picture_mode">Prentmodus</string>
+    <string name="settings_general_expanded_toolbar">Uitgebreide nutsbalkkieslys</string>
+    <string name="settings_general_expanded_toolbar_desc">Wys meer opsies op die subreddit-nutsbalk</string>
+    <string name="settings_always_show_floating_action_button">Wys altyd die swewende aksieknoppie</string>
+    <string name="settings_always_show_floating_action_button_desc">Versteek nooit die swewende aksieknoppie tydens rol nie</string>
+    <string name="settings_theme_tinting">Plasingkleurmodus</string>
+    <string name="settings_layout_actionbar_mode">Aksiebalkmodus</string>
+    <string name="settings_theme_tint_outside_desc">Kleur die agtergrond slegs in multireddits, die voorblad en alles</string>
+    <string name="settings_layout_small_content_tag">Kleiner inhoudetiket</string>
+    <string name="settings_links_force_external">Dwing eksterne blaaier af</string>
+    <string name="settings_layout_show_domain">Wys domein in inligtingslyn</string>
+    <string name="settings_layout_show_content_type">Wys inhoudtipe in inligtingslyn</string>
+    <string name="settings_layout_thumbnail_flags">Wys gekleurde hoekvlaggies op duimnaels</string>
+    <string name="settings_layout_show_votes_comments">Wys stemme/kommentaar in inligtingslyn</string>
+    <string name="settings_general_comment_last_visit">Wys kommentaartelling sedert laaste besoek</string>
+    <string name="settings_fab_create">Wys \"skep kommentaar\"-FAB</string>
+    <string name="settings_right_handed_comment_menu">Regshandige kommentaar-antwoordkieslys</string>
+    <string name="settings_reddit_description">Hierdie instellings verander wat die Reddit-API aan Slide teruggee.\n\nOm duimnaels in alle subreddits te sien, aktiveer \'Ignoreer subreddit-mediavoorkeure\'\n\nOm alle NSFW-inhoud te sien, skakel \'Versteek NSFW-foto\'s\' af en skakel \'Ek is ouer as 18\' aan</string>
+    <string name="settings_reddit_media_pref">Ignoreer subreddit-mediavoorkeure</string>
+    <string name="settings_description_view_type">Aansigtipes beïnvloed beide die hoofaansig en enkel-subreddit-aansigte.\n\nKommentaarpaneel: kommentaar gly langs plasings uit en die kommentaarbladsy se toestand word ná terugveeg gestoor (sodat jy nie jou plek verloor nie)\n\nGeen subreddit-oortjies: deaktiveer veeg tussen subreddits\n\nSubreddit-oortjies: gly tussen jou subreddits</string>
+    <string name="settings_short_description_view_type">Aansigtipes beïnvloed beide die hoofaansig en enkel-subreddit-aansigte</string>
+    <string name="settings_comment_hide_selftext_image">Versteek hoofprent op selfteksplasings</string>
+    <string name="settings_filter_flair">Flairfilters</string>
+    <string name="settings_view_type">Aansigtipe</string>
+    <string name="settings_data">Databesparing</string>
+    <string name="settings_card_show_selftext">Wys selfteks</string>
+    <string name="settings_card_selftext_paragraph">Wys eerste paragraaf</string>
+    <string name="settings_card_selftext_ellipsize">Kort af tot die eerste 128 karakters</string>
+    <string name="settings_handling_external_desc">Domeine wat hieronder ingevoer word, sal altyd ekstern oopmaak</string>
+    <string name="settings_handling_enterdomain">Voer \'n domein of deel van \'n domein in</string>
+    <string name="settings_section_content">Inhoud</string>
+    <string name="settings_backup_view">Bekyk rugsteun</string>
+    <string name="settings_backup_err_no_explorer">Geen lêerblaaier gevind nie; die lêer is by %1$s</string>
+    <string name="settings_about_version_copied_toast">Weergawenommer na knipbord gekopieer</string>
+    <string name="settings_theme_night_start_at">Begin om\u0020</string>
+    <string name="settings_theme_night_end_at">Eindig om\u0020</string>
+    <string name="settings_general_inbox_snd">Klank en vibrasie</string>
+    <string name="settings_enable_notifs">Aktiveer inkassie-kennisgewings</string>
+
     <!-- Quick setting toggles in the drawer -->
+    <string name="toggle_night_mode">Nagmodus</string>
+    <string name="toggle_immersive_mode">Meesleurende modus</string>
+    <string name="toggle_nsfw">Wys NSFW-inhoud</string>
+    <string name="toggle_right_thumbnails">Regsbelynde duimnaels</string>
+    <string name="toggle_reader_mode">Gebruik leesmodus</string>
+
     <!-- View types -->
+    <string name="view_type_tabs">Subreddit-oortjies</string>
+    <string name="view_type_none">Geen subreddit-oortjies</string>
+    <string name="view_type_comments">Kommentaarpaneel</string>
+
     <!--Search methods -->
+    <string name="subreddit_search_method_title">Subreddit-soekmetode</string>
+    <string name="subreddit_search_method_drawer">Soekbalk in die laai</string>
+    <string name="subreddit_search_method_toolbar">Lang druk op die nutsbalktitel</string>
+    <string name="subreddit_search_method_both">Beide die laai en die nutsbalktitel</string>
+
     <!-- Back button behavior -->
+    <string name="back_button_behavior_title">Terugknoppie-gedrag</string>
+    <string name="back_button_behavior_default">Sluit toepassing</string>
+    <string name="back_button_behavior_confirm_exit">Bevestig-uitgang-dialoog</string>
+    <string name="back_button_behavior_drawer">Open laai</string>
+
     <!-- Subscription managing -->
-    <!-- Save categories -->
+    <string name="reorder_add_domain">Voeg \'n domein by</string>
+    <string name="reorder_add_subreddit">Voeg \'n subreddit by</string>
+    <string name="reorder_fab_collection">Multireddit</string>
+    <string name="reorder_fab_domain">Domein</string>
+    <string name="reorder_fab_subreddit">Subreddit</string>
+    <string name="reorder_add_subscribe">Voeg by &amp; teken in</string>
+    <string name="reorder_remove_unsubscribe">Verwyder &amp; teken uit</string>
+    <string name="reorder_move">Skuif na bo</string>
+    <string name="reorder_domain_placeholder">\u0020(slegs die domeinnaam)</string>
+    <string name="reorder_not_found_err">Subreddit nie gevind nie; hier is \'n paar voorstelle</string>
+    <string name="reorder_subscribed_toast">Op /r/%1$s ingeteken</string>
+    <string name="reorder_unsubscribed_toast">Van /r/%1$s uitgeteken</string>
+    <string name="sorting_faq"><b>Hoe verfris ek subreddits?</b>\nOm subreddits te verfris, klik op die verfris-ikoon in die nutsbalk!\n\n<b>Ek het van sommige subreddits uitgeteken, maar hulle is steeds in die lys!</b>\nSlide sal uitgetekende subs vanaf die blaaier in informele intekeninge omskep. Om hulle te verwyder, druk lank op die subreddit(s) en klik verwyder!\n\n<b>Hoe gebruik ek versamelings?</b>\nOm \'n versameling te skep, klik op die +-FAB en kies \'Skep \'n versameling\'. Dit laat jou toe om veelvuldige subs as een subreddit op die hoofskerm te hê!</string>
+    <string name="alphabetize_subreddits">Alfabetiseer subreddits</string>
+    <string name="sync_subscriptions">Sinkroniseer intekeninge</string>
+    <string name="cannot_be_undone">Dit kan nie ongedaan gemaak word nie.</string>
+    <string name="deleting">Skrap tans…</string>
+    <string name="create_or_import_multi">Wil jy \'n nuwe multireddit skep of \'n multireddit invoer?</string>
+    <string name="sub_added">Subreddit bygevoeg!</string>
+    <string name="reorder_subs_FAQ">Vrae oor die herrangskikking van subreddits</string>
+    <string name="subscribe_to">Teken in op /r/%1$s</string>
+    <string name="unsubscribe_from">Teken uit van /r/%1$s</string>
+    <string name="btn_add_to_sublist">VOEG BY SUB-LYS</string>
+    <string name="btn_remove_from_sublist">VERWYDER UIT SUB-LYS</string>
+    <string name="just_unsub">TEKEN NET UIT</string>
+    <string name="subscribe_caps">TEKEN IN</string>
+    <string name="unsubscribe_caps">TEKEN UIT</string>
+    <string name="reorder_subreddits_title">Kies \'n subreddit om by te voeg</string>
+    <string name="reorder_add_or_search_subreddit">Voeg \'n subreddit by of soek een</string>
+    <string name="reorder_subreddit_name">Subreddit-naam</string>
+    <string name="reorder_remove_title">Verwyder hierdie subreddit?</string>
+    <string name="reorder_sync_complete">Sinkronisasie voltooi</string>
+    <string name="reorder_loading_title">Laai tans jou subreddits</string>
+    <string name="reorder_url_err">URL ongeldig</string>
+
+    <!-- Saved tags -->
+    <string name="tag_set_name_hint">Etiketnaam</string>
+    <string name="tag_tag_action">MERK</string>
+    <string name="profile_tag_select">Etikette</string>
+    <string name="profile_saved_tags">Gestoorde etikette</string>
+    <string name="tag_builtin_all">Alles</string>
+    <string name="tag_builtin_posts">Plasings</string>
+    <string name="tag_builtin_comments">Kommentaar</string>
+    <string name="tag_types_header">Tipes</string>
+    <string name="tag_post_types_header">Plasingtipes</string>
+    <string name="tag_custom_header">Pasgemaakte etikette</string>
+    <string name="tag_new">Nuwe etiket</string>
+    <string name="tag_manage">Bestuur etikette</string>
+    <string name="tag_add">Voeg etiket by</string>
+    <string name="tag_none_yet">Nog geen etikette nie</string>
+    <string name="tag_rename">Hernoem</string>
+    <string name="tag_delete_confirm">Is jy seker jy wil \"%1$s\" skrap? Items met hierdie etiket sal nie geskrap word nie.</string>
+    <string name="tag_name_used_title">Naam reeds gebruik</string>
+    <string name="tag_name_used">\'n Etiket met daardie naam bestaan reeds; kies asseblief \'n unieke naam.</string>
+    <string name="tag_name_reserved">Daardie naam is gereserveer; kies asseblief \'n ander een.</string>
+
     <!-- Setting subheaders -->
+    <string name="sorting">Sorterings</string>
+    <string name="display">Vertoon</string>
+    <string name="images">Prente</string>
+    <string name="storage">Berging</string>
+    <string name="app_theme">Toepassingstema</string>
+    <string name="tinting">Kleurskakering</string>
+    <string name="post_info">Plasinginligting</string>
+    <string name="post_buttons">Plasingknoppies</string>
+    <string name="navigation">Navigasie</string>
+    <string name="collapse_comments">Invou-aksies</string>
+    <string name="nsfw">NSFW-inhoud</string>
+    <string name="view_reddit_settings">Open Reddit-instellings in die blaaier</string>
+    <string name="font_styles">Lettertipestyle</string>
+
     <!-- Titles displayed in action bar / head / recents overview-->
-    <!-- Text in Donation-Activity -->
+    <string name="title_subreddit_settings">Subreddit-temas &amp; -uitlegte</string>
+    <string name="title_edit_theme">Redigeer tema</string>
+    <string name="title_submit_post">Dien plasing in</string>
+    <string name="title_crosspost">Kruisplasing</string>
+    <string name="title_settings">Instellings</string>
+    <string name="title_share">Deel met</string>
+    <string name="title_login">Meld by Reddit aan</string>
+    <string name="title_multireddits">Multireddits</string>
+    <string name="title_users">Gebruikers</string>
+    <string name="title_inbox">Inkassie</string>
+    <string name="title_theme_settings">Tema</string>
+    <string name="title_create_multi">Skep \'n multireddit</string>
+
     <!-- Offline mode -->
+    <string name="offline_msg">Gaan asseblief aanlyn en verfris die subreddit om dit te doen</string>
+    <string name="offline_last_update">Laas bygewerk %1$s</string>
+    <string name="offline_comments_not_loaded">Gaan asseblief weer aanlyn en kies ‘Kas kommentaar’ uit die 3-kolletjie-kieslys om kommentaar vanlyn te bekyk</string>
+    <string name="offline_no_content_found">Geen vanlyninhoud gevind nie</string>
+    <string name="offline_enter_online">Gaan na aanlynmodus</string>
+    <string name="offline_caching_title">Kas tans %1$s</string>
+    <string name="offline_caching_complete">Kassering voltooi</string>
+
     <!-- Website -->
+    <string name="website_external">Open in eksterne blaaier</string>
+
+    <plurals name="reorder_subs_added">
+        <item quantity="one">%d subreddit bygevoeg</item>
+        <item quantity="other">%d subreddits bygevoeg</item>
+    </plurals>
+
     <!-- Time -->
+    <string name="time_just_now">Nou net</string>
+    <plurals name="time_years">
+        <item quantity="one">%d jaar</item>
+        <item quantity="other">%d jaar</item>
+    </plurals>
+    <plurals name="time_months">
+        <item quantity="one">%d maand</item>
+        <item quantity="other">%d maande</item>
+    </plurals>
+    <plurals name="time_days">
+        <item quantity="one">%d dag</item>
+        <item quantity="other">%d dae</item>
+    </plurals>
+    <plurals name="time_hours">
+        <item quantity="one">%d uur</item>
+        <item quantity="other">%d uur</item>
+    </plurals>
+    <plurals name="time_minutes">
+        <item quantity="one">%d minuut</item>
+        <item quantity="other">%d minute</item>
+    </plurals>
+    <plurals name="time_seconds">
+        <item quantity="one">%d sekonde</item>
+        <item quantity="other">%d sekondes</item>
+    </plurals>
+
     <!-- Time: shorthand durations for example 1 hour → 1h -->
+    <string name="time_years_short">%dj</string>
+    <string name="time_days_short">%dd</string>
+    <string name="time_hours_short">%du</string>
+    <string name="time_minutes_short">%dm</string>
+
     <!-- Strings present during the login process -->
+    <string name="login_subscribe_rslideforreddit">Teken in op /r/slidereddit?</string>
+    <string name="login_subscribe_rslideforreddit_desc">Wil jy op /r/slidereddit inteken vir die jongste nuus en om probleme te rapporteer?</string>
+    <string name="login_sync_colors">Sinkroniseer kleure nou?</string>
+    <string name="login_sync_colors_desc">Wil jy jou subreddit-kleure nou sinkroniseer? Dit kan later gedoen word by Instellings → Subreddit-temas</string>
+    <string name="login_authenticating">Slide verifieer tans</string>
+    <string name="login_starting">Stel dinge op!</string>
+    <string name="login_starting_desc">Dit behoort net \'n oomblik te neem…</string>
+
     <!-- Over 18 prompt when visiting a NSFW subreddit -->
-    <!-- Subreddit color synchronization - https://redd.it/41054l -->
+    <string name="over18_title">/r/%1$s bevat volwasse inhoud</string>
+    <string name="over18_desc">Is jy ouer as agtien en bereid om volwasse inhoud te sien?</string>
+    <string name="over18_desc_loggedout">Meld aan om hierdie waarskuwing permanent te deaktiveer</string>
+    <string name="over18_desc_loggedin">Jy kan dit permanent deaktiveer by Instellings → Reddit-voorkeure → Wys NSFW-inhoud</string>
+
+    <!-- Subreddit color synchronization - https://reddit.com/comments/41054l -->
+    <string name="color_sync_complete">Sinkronisasie voltooi</string>
+    <plurals name="color_sync_colored">
+        <item quantity="one">%d subreddit is gekleur</item>
+        <item quantity="other">%d subreddits is gekleur</item>
+    </plurals>
+
     <!-- Discover section: find -->
+    <string name="discover_title">Ontdek</string>
+    <string name="discover_search">Soekterm of onderwerp</string>
+    <string name="discover_popular">Gewild</string>
+    <string name="discover_trending">Neigend</string>
+
     <!-- Subreddit post notifications -->
+    <string name="sub_post_notifs_title">Word in kennis gestel van nuwe plasings in\n/r/%1$s?</string>
+    <string name="sub_post_notifs_title_settings">Word in kennis gestel van nuwe plasings?</string>
+    <string name="sub_post_notify">Stel in kennis</string>
+    <string name="sub_post_notifs_threshold">Tellingdrempel</string>
+    <string name="sub_post_notifs_err">Jy kan slegs kennisgewings by enkele subreddits voeg</string>
+    <string name="sub_post_notifs_settings_none">Geen subreddits om oor in kennis te stel nie</string>
+    <string name="sub_post_notifs_settings_search">Soek subnaam</string>
+    <string name="sub_post_notifs_notification_title">Nuwe plasing in /r/%1$s</string>
+    <string name="sub_post_notifs_notification_btn">Hou op om /r/%1$s te volg</string>
+    <string name="title_sub_post_notifs">Subreddit-plasingkennisgewings</string>
+
     <!-- Internal browser -->
+    <string name="internal_browser_extracting_error">Jammer, die artikel kon nie onttrek word nie</string>
+    <string name="internal_browser_storecookies">Stoor webwerfkoekies</string>
+    <string name="internal_browser_readermode">Leesmodus</string>
+
     <!-- Live thread -->
+    <string name="livethread_loading_title">Laai tans lewendige draad…</string>
+    <string name="livethread_not_found">Lewendige draad nie gevind nie</string>
+    <string name="livethread_recents_title">Lewendige draad: %1$s</string>
+
     <!-- Used when viewing media -->
+    <string name="mediaview_notif_title">Laai tans prent af…</string>
+    <string name="mediaview_notif_video">Laai tans video af…</string>
+    <string name="mediaview_notif_text">Aflaai aan die gang</string>
+    <string name="mediaview_save">Stoor %1$s</string>
+    <string name="mediaview_saving">Stoor tans %1$s</string>
+
     <!-- Drafts -->
+    <string name="choose_draft">Kies \'n konsep</string>
+    <string name="dialog_no_drafts">Nog geen konsepte nie</string>
+    <string name="dialog_no_drafts_msg">Jy kan \'n konsep byvoeg deur op die \'stoor\'-ikoon in die redigeerbalk te klik!</string>
+    <string name="msg_save_draft">Boodskap as konsep gestoor</string>
+    <string name="manage_drafts">Bestuur konsepte</string>
+    <string name="really_delete_drafts">Regtig hierdie konsepte skrap?</string>
+
     <!-- Strings for widgets -->
+    <string name="widget_theme_dark">DONKER</string>
+    <string name="widget_theme_light">LIG</string>
+    <string name="widget_theme_clear">DEURSIGTIG</string>
+    <string name="widget_posttype_title">Plasingtipe</string>
+    <string name="widget_posttype_list">LYS</string>
+    <string name="widget_posttype_bigpic">GROOT PRENT</string>
+    <string name="widget_posttype_compact">KOMPAK</string>
+    <string name="widget_subname_hint">Subreddit-naam</string>
+    <string name="widget_visuals">Voorkoms</string>
+    <string name="widget_content">Inhoud</string>
+    <string name="widget_loading">Laai tans…</string>
+    <string name="widget_creation_title">Nuwe legstuk</string>
+    <string name="shortcut_creation_title">Nuwe kortpad</string>
+
     <!-- Strings for alert dialogs -->
+    <string name="force_change_subscription">Kon nie die intekening verander nie</string>
+    <string name="force_change_subscription_desc">Wil jy dit steeds plaaslik verander?</string>
+    <string name="never_load_images">Moenie enige prente laai nie</string>
+    <string name="load_low_quality">Laai laekwaliteit-prente (maks. 320x320)</string>
+    <string name="load_medium_quality">Laai mediumkwaliteit-prente (maks. 640x640)</string>
+    <string name="load_high_quality">Laai hoëkwaliteit-prente (maks. 1080x1080)</string>
+    <string name="choose_color_title">Kies \'n kleur</string>
+    <string name="enter_text_to_filter_click_enter_to_add">Voer teks in om te soek; druk enter om \'n filter by te voeg</string>
+    <string name="mode_desktop_compact">Rekenaar kompak</string>
+    <string name="show_content_type_text_beside_links">Wys inhoudtipeteks langs skakels</string>
+    <string name="comment_shadowbox">Kommentaar-shadowbox</string>
+
     <!-- Sidebar strings (multis, flairs) -->
+    <string name="sidebar_select_flair">Kies flair</string>
+    <string name="sidebar_select_flair_text">Stel flairteks</string>
+    <string name="sidebar_findingmods">Soek tans moderators</string>
+    <string name="snackbar_flair_success">Flair suksesvol gestel</string>
+    <string name="snackbar_flair_error">Fout met die stel van die flair; probeer binnekort weer</string>
+    <string name="sidebar_submods">/r/%s-mods</string>
+    <string name="sidebar_flair">Flair: %1$s</string>
+    <string name="sidebar_notfound">Geen sybalk gevind nie</string>
+    <plurals name="reorder_selected">
+        <item quantity="one">"%d gekies"</item>
+        <item quantity="other">"%d gekies"</item>
+    </plurals>
+
     <!--Filtering dialog -->
+    <string name="filter_title">Wat wil jy filter?</string>
+    <string name="filter_posts_sub">Plasings van /r/%1$s</string>
+    <string name="filter_posts_user">Plasings deur /u/%1$s</string>
+    <string name="filter_posts_urls">Plasings wat na %1$s skakel</string>
+    <string name="filter_open_externally">Open %s-URL\'s ekstern</string>
+    <string name="filter_posts_flair">Flair \"%1$s\" van %2$s</string>
+    <string name="filter_btn">Filter</string>
+
     <!-- Caching -->
+    <string name="cache_no_comments_found">Geen kommentaar gevind nie</string>
+    <string name="cache_no_comments_found_snackbar">Geen gekasde kommentaar gevind nie</string>
+    <string name="cache_no_comments_found_message">Hierdie plasing het geen gekasde kommentaar nie. Om kommentaar in die toekoms te kas, klik op die 3-kolletjie-kieslys op die hoofskerm en klik \'Kas kommentaar\', of stel Outokas op in die Vanlyninhoud-oortjie in die navigasielaai</string>
+    <string name="autocache_subreddits">Outokas-subreddits</string>
+    <string name="autocache_time">Outokas-tyd</string>
+    <string name="cache_subreddits_now">Kas subreddits nou</string>
+    <string name="cache_wifi_only">Kas slegs op Wi-Fi</string>
+    <string name="comments_depth">Diepte van kommentaar om te kas</string>
+    <string name="comments_count">Aantal kommentaar om te kas</string>
+
     <!-- Saving location setting -->
+    <string name="set_save_location">Stel mediastoorplek</string>
+    <string name="set_save_location_msg">Slide se mediastoorplek is nog nie gestel nie.</string>
+
     <!-- Report flow -->
+    <string name="btn_report">Rapporteer</string>
+    <string name="report_post">Rapporteer plasing</string>
+    <string name="report_comment">Rapporteer kommentaar</string>
+    <string name="report_loading">Laai tans redes…</string>
+    <string name="report_sub_rules">/r/%s-reëls</string>
+    <string name="report_site_rules">Reddit-reëls</string>
+    <string name="report_another_reason">\'n Ander rede</string>
+    <string name="report_other">Ander</string>
+    <string name="input_reason_for_report">Rede vir rapportering</string>
+    <string name="msg_report_sent">Aanmelding gestuur</string>
+
     <!-- Unsorted ¯\\_(ツ)_/¯ -->
+    <string name="comment_load_more_number_unknown">Laai meer kommentaar</string>
+    <string name="card_right_thumb">Regsbelynde duimnael</string>
+    <string name="setting_filter_subreddits">Subreddit-filters</string>
+    <string name="subreddit_theme">Subreddit-tema</string>
+    <string name="dialog_choose_subreddits_to_edit">Kies subreddits om te redigeer</string>
+    <string name="dialog_color_sync_title">Kleursinkronisasie</string>
+    <string name="dialog_color_sync_message">Dit sal probeer om die subreddit se ‘sleutelkleur’ te haal wat deur die moderators gestel is. Dit sal nie reeds gekleurde subreddits oorskryf nie.</string>
+    <string name="fab_hide">Versteek bekykte plasings</string>
+    <string name="fab_create">Skep nuwe plasing</string>
+    <string name="fab_disabled">Gedeaktiveer</string>
+    <string name="fab_search">Soek plasings</string>
+    <string name="handling_internal_browser">Interne blaaier</string>
+    <string name="handling_external_browser">Eksterne blaaier</string>
+    <string name="mode_list">Lys</string>
+    <string name="mode_centered">Kaart met gesentreerde prent</string>
+    <string name="mode_card">Kaart</string>
+    <string name="mode_thumbnail">Duimnael</string>
+    <string name="mode_no_thumbnails">Geen duimnael</string>
+    <string name="mode_big_thumbnails">Wye duimnaels</string>
+    <string name="mode_cropped">Gesnyde groot prent</string>
+    <string name="mode_letterbox">Groot prent met swart rande</string>
+    <string name="mode_bigpic">Groot prent</string>
+    <string name="press_actionbar">Druk die pyl om die aksiebalk te wys</string>
+    <string name="show_top_right">Wys regs bo</string>
+    <string name="show_bottom_right">Wys regs onder</string>
+    <string name="small_tag_disabled">Gedeaktiveer</string>
+    <string name="tap_actionbar">Lang druk vir die aksiebalk</string>
+    <string name="always_actionbar">Wys altyd die aksiebalk</string>
+    <string name="sub_content_filter">Subreddit-inhoudfilter</string>
+    <string name="submission_share_reddit_url">Deel kommentaar</string>
+    <string name="filter_content">Filter hierdie inhoud</string>
+    <string name="content_to_show">Inhoud om op %1$s te wys</string>
+    <string name="save_for_offline_viewing">Stoor plasings vir vanlynbekyking</string>
+    <string name="btn_collapse_children_all">Vou kinderkommentaar in</string>
+    <string name="btn_open_content">Open inhoud</string>
+    <string name="enter_text_to_filter_click_enter_to_add_flair">Voer teks in om te filter (subreddit:flair_teks); druk enter om by te voeg</string>
+    <plurals name="filter_count">
+        <item quantity="one">%1$d filter (%2$d maks. gewys)</item>
+        <item quantity="other">%1$d filters (%2$d maks. gewys)</item>
+    </plurals>
+    <string name="filter_limit_reached">Wys die eerste %1$d van %2$d. Soek om die resultate te verfyn.</string>
+    <string name="datasave_always">Mobiele data en Wi-Fi</string>
+    <string name="datasave_mobile">Mobiele data</string>
+    <string name="never">Nooit</string>
+    <string name="multi_column_force_full">Dwing volledige kommentaaraansig af</string>
+    <string name="submission_info_locked">Hierdie is \'n geslote plasing. Jy sal nie kan kommentaar lewer nie.</string>
+    <string name="card_background_tint">Kaartagtergrond</string>
+    <string name="subreddit_name_tint">Subreddit-naam</string>
+    <string name="login_failed_err_decline">Maak seker jy het nie ‘Weier’ op die vorige skerm gekies nie, en probeer oor \'n minuut weer</string>
+    <string name="login_unsupported_redirect_uri">Die gekonfigureerde Herleidings-URI (%1$s) kan nie deur \'n blaaier ontvang word nie, dus kan aanmelding nie voltooi nie. Gebruik eerder die WebView-aanmeldmetode binne die toepassing, of stel \'n ondersteunde Herleidings-URI in Instellings.</string>
+    <string name="login_unsupported_redirect_uri_title">Aanmelding het misluk</string>
+    <string name="login_failed_oauth_error_page">Aanmelding het misluk — Reddit het \'n fout teruggegee in plaas daarvan om aanmelding te voltooi. Gaan jou kliënt-ID en herleidings-URI in Instellings na.</string>
+    <string name="tutorial_swipe_navigation">Veegnavigasie</string>
+    <string name="tutorial_swipe_description">Veeg vanaf die linkerrand om af te sluit.\n\nDit geld vir prente, GIF\'s, albums, instellings en meer!</string>
+    <string name="handling_browser">Webblaaier</string>
+    <string name="submit_replies_to_inbox">Stuur antwoorde na die inkassie</string>
+    <string name="btn_open_comments">Open kommentaar</string>
+    <string name="btn_preview">Voorskou</string>
+    <string name="default_comment_sort">Verstek kommentaarsortering</string>
+    <string name="content_deleted">[geskrap]</string>
+    <string name="thread_continue">Gaan voort met hierdie draad</string>
+    <string name="type_selftext">Selfteks</string>
+    <string name="type_selftexts">Selftekste</string>
+    <string name="submission_unhide">Ontversteek plasing</string>
+    <string name="submission_info_unhidden">Plasing ontversteek</string>
+    <string name="msg_sent_success">Boodskap gestuur</string>
+    <string name="msg_sent_failure">Boodskap kon nie gestuur word nie</string>
+    <string name="msg_send_user_dne">Daardie gebruiker bestaan nie</string>
+    <string name="editor_actions_quote_comment">Kies teks om aan te haal</string>
+    <string name="guest">Gas</string>
+    <string name="album_slide_view">Glyende albumaansig</string>
+    <string name="album_grid">Albumrooster</string>
+    <string name="open_externally">Open ekstern</string>
+    <string name="vertical_album_view">Vertikale albumaansig</string>
+    <string name="download_album">Laai album af</string>
+    <string name="download_gallery">Laai galery af</string>
+    <string name="compose_message">Stel boodskap op</string>
+    <string name="mark_all_as_read">Merk alles as gelees</string>
+    <string name="clear_subreddit_history">Vee subreddit-geskiedenis uit</string>
+    <string name="clear_submission_history">Vee plasinggeskiedenis uit</string>
+    <string name="alert_history_cleared">Geskiedenis uitgevee!</string>
+    <string name="manage_offline_content">Bestuur vanlyninhoud</string>
+    <string name="go_offline">Gaan vanlyn</string>
+    <string name="sidebar_edit_flair">Redigeer jou flair</string>
+    <string name="go_online_view_content">Gaan asseblief aanlyn om hierdie inhoud te bekyk</string>
+    <string name="help">Hulp</string>
+    <string name="upvote_percentage">Wys opstempersentasie</string>
+    <string name="view_subreddits">Bekyk subreddits</string>
+    <string name="clear_saved_subreddits">Vee alle gestoorde subreddits uit</string>
+    <string name="download_the_slide_video_player_plugin">Laai die Slide Video Player-inprop af</string>
+    <string name="btn_suggest_title">Stel titel voor</string>
+    <string name="navigate_comments_since">Kommentaar nuwer as…</string>
+    <string name="btn_offline">Gaan na vanlynmodus</string>
+    <string name="discard_comment_title">Verwerp kommentaar?</string>
+    <string name="comment_discard_msg">Wil jy regtig jou kommentaar verwerp?</string>
+    <string name="backup_saved_downloads">Rugsteun na aflaaie gestoor</string>
+    <string name="really_remove_subreddit_title">Regtig hierdie subreddit verwyder?</string>
+    <string name="choose_sync_time">Kies \'n sinkronisasietyd</string>
+    <string name="account_suspended">Hierdie rekening is opgeskort</string>
+    <string name="clear_all_sub_themes">Vee alle subreddit-temas uit?</string>
+    <string name="clear_all_sub_themes_msg">Jy kan hierdie aksie nie ongedaan maak nie</string>
+    <string name="title_not_found">Titel nie gevind nie</string>
+    <string name="really_delete_submission">Regtig hierdie plasing skrap? Jy kan dit nie ongedaan maak nie</string>
+    <string name="comment_unstickied">Kommentaar losgespeld</string>
+    <string name="comment_stickied">Kommentaar vasgespeld</string>
+    <string name="comment_undistinguished">Kommentaar ontonderskei</string>
+    <string name="comment_distinguished">Kommentaar onderskei</string>
+    <string name="comment_removed">Kommentaar verwyder</string>
+    <string name="set_nav_mode">Stel navigasiemodus</string>
+    <string name="auto_hide_the_comment_nav_bar">Versteek die kommentaar-navigasiebalk outomaties</string>
+    <string name="rate_slide">Beoordeel Slide</string>
+    <string name="edit_query">Redigeer navraag</string>
+    <string name="share_slide">Deel Slide</string>
+    <string name="open_clipboard_reddit_link">Open die Reddit-skakel in die knipbord</string>
+    <string name="clipboard_no_reddit_link">Geen Reddit-skakel in die knipbord nie</string>
+    <string name="open_links_externally">Open hierdie gasheer altyd ekstern</string>
+    <string name="hide_read_posts">Versteek gelese plasings</string>
+    <string name="gallery_mode">Galerymodus</string>
+    <string name="settings_gallery_grid">Wys galeryplasings as \'n rooster</string>
+    <string name="gallery_grid_image">Galeryprent %1$d van %2$d</string>
+    <string name="gallery_grid_overflow">+%1$d</string>
+    <string name="friends_sort_error">/r/friends kan nie gesorteer word nie</string>
+    <string name="shadowbox_comments_nolinks">Geen skakels in die kommentaar gevind nie</string>
+    <string name="draw_undo">Ontdoen</string>
+    <string name="empty_preview_text">Niks om hier te sien nie ¯\\_(ツ)_/¯</string>
+    <string name="theme_red_shift">Rooiskuif</string>
+    <string name="view_sub_sidebar">Bekyk sub-sybalk</string>
+    <string name="mod_log">Modlog</string>
+    <string name="navigation_bar_vote_gestures">Stemgebare op die navigasiebalk</string>
+    <string name="nav_gestures_description">Stem op en af deur oor die kommentaar-navigasiepyle te veeg</string>
+    <string name="subreddit_sidebar_progress">Haal tans sybalk…</string>
+    <string name="manage_your_subreddits">Bestuur jou subreddits</string>
+    <string name="enlarge_links">Vergroot skakels</string>
+    <string name="enlarge_links_warning">Mag veroorsaak dat sommige lyne groter as ander is, maar maak skakels makliker om te raak</string>
+    <string name="type_tumblr">Tumblr</string>
+    <string name="type_tumblrs">Tumblrs</string>
+    <string name="type_nsfw_tumblr">NSFW-Tumblr</string>
+    <string name="submission_info_contest">Hierdie draad is in kompetisiemodus. Jy kan nie die sortering verander nie.</string>
+    <string name="sub_post_notifs_msg">Slide sal vir nuwe plasings kyk wanneer dit vir pos kyk (poskennisgewings moet geaktiveer wees)</string>
+    <string name="mod_ban_reason_required">\'n Rede is verpligtend</string>
+    <string name="settings_abbreviate_post_scores">Verkort plasingtellings (bv. 24,0k)</string>
+    <string name="settings_wide_depth_indicators">Wye kommentaardiepte-aanwysers</string>
+    <string name="settings_link_reader_mode_title">Gebruik leesmodus</string>
+    <string name="settings_link_reader_mode_description">Open alle skakels in leesmodus. Die blaaiertipe sal gebruik word wanneer daar vanuit leesmodus geopen word.</string>
+    <string name="settings_link_reader_night">Koppel leesmodus en nagmodus</string>
+    <string name="theme_pixel">Pixel</string>
+    <string name="save_images_to_subreddit_specific_subfolders">Stoor prente in subreddit-spesifieke subvouers</string>
+    <string name="description_save_subfolders">Werk in plasing- en kommentaaraansigte</string>
+    <string name="save_media_to_type_specific_subfolders">Stoor media in tipe-spesifieke subvouers</string>
+    <string name="description_save_type_subfolders">Prente gaan na \"images\", video\'s en GIF\'s na \"videos\"</string>
+    <string name="show_image_download_button">Aflaaikortpad</string>
+    <string name="description_image_download_button">Wys die aflaaiknoppie in die prentaansig</string>
+    <string name="content_settings">Inhoudinstellings</string>
+    <string name="setting_titleTop">Wys titel bo die inligtingslyn</string>
+    <string name="setting_notification_piggybacking">Kennisgewing-saamry</string>
+    <string name="setting_notification_piggybacking_desc">Kyk slegs vir pos wanneer die amptelike Reddit-toepassing \'n stootkennisgewing kry</string>
+    <string name="install_notif_piggyback">Installeer die amptelike Reddit-toepassing om Kennisgewing-saamry te aktiveer</string>
+    <string name="success_block_user">Gebruiker suksesvol geblokkeer</string>
+    <string name="err_unblock_user">Fout met die ontblokkeer van die gebruiker</string>
+    <string name="success_unblock_user">Gebruiker suksesvol ontblokkeer</string>
+    <string name="settings_highlight_time_desc">Vereis dat \'Wys kommentaartelling sedert laaste besoek\' geaktiveer is in Instellings &gt; Plasinguitleg</string>
+    <string name="settings_colored_time">Gekleurde tydborrel vir nuwe kommentaar</string>
+    <string name="theme_deep">Diep</string>
+    <string name="type_vreddit">Reddit-video</string>
+    <string name="authors_above">Outeurs bo</string>
+    <string name="btn_crosspost">Kruisplaas</string>
+    <string name="btn_reset_color">STEL KLEUR TERUG</string>
+    <string name="settings_shortlink_description">Skakels sal as \'https://reddit.com/comments/\' gedeel word</string>
+    <string name="settings_shortlink">Deel Reddit-kortskakel waar moontlik</string>
+    <string name="disable_replies_comment">Deaktiveer kommentaar-inkassie-antwoorde</string>
+    <string name="replies_disabled_comment">Kommentaarantwoorde gedeaktiveer</string>
+    <string name="replies_enabled_comment">Kommentaarantwoorde geaktiveer</string>
+    <string name="replies_switch_accounts">Skakel na \'n ander rekening</string>
+    <string name="search_settings">Soek instellings</string>
+    <string name="show_collapse_expand_nav_bar">Wys die invou/uitvou-knoppie in die kommentaar-navigasiebalk</string>
+    <string name="page_not_found">Bladsy nie gevind nie</string>
+    <string name="page_does_not_exist">Die bladsy wat jy versoek het, bestaan nie</string>
+    <string name="back_button_behavior_goto_first">Gaan na die eerste subreddit</string>
+    <string name="settings_hide_post_awards">Versteek toekennings</string>
+    <string name="settings_hide_comment_awards">Versteek toekennings</string>
+    <string name="settings_title_markdown">Markdown</string>
+    <string name="settings_markdown_new_reddit">Nuwe Reddit-styl-markdown</string>
+    <string name="settings_markdown_new_reddit_desc">Stel kodeblokke en formatering soos nuwe Reddit voor (af gebruik ou Reddit se weergeër)</string>
+    <string name="comment_render_other">Wys ander weergawe</string>
+    <string name="recover_post">Herstel plasing</string>
+    <string name="recover_loading">Haal tans die oorspronklike uit die argief…</string>
+    <string name="recover_post_failed">Kon nie hierdie plasing herstel nie</string>
+    <string name="recover_comment">Herstel kommentaar</string>
+    <string name="recover_comment_failed">Kon nie hierdie kommentaar herstel nie</string>
+    <string name="markdown_preview_new_reddit">Nuwe Reddit-weergawe</string>
+    <string name="markdown_preview_old_reddit">Ou Reddit-weergawe</string>
+    <string name="high_colorspace_images">Hoëkleurruimte-prente</string>
+    <string name="description_high_colorspace">Laai die volledige kleurruimte op prente, wat moontlik tot hoër geheuegebruik lei</string>
+    <string name="wide_color_gamut">Wye kleurgamma</string>
+    <string name="description_wide_color_gamut">Vertoon die media-aansigte in \'n wye kleurgamma. Mag kleure op sommige OLED-skerms verbleik</string>
+    <string name="comment_emote_animation">Kommentaar-emote-animasie</string>
+    <string name="description_comment_emote_animation">Bepaal of nie-Giphy-emotes in kommentaar geanimeer word of nie</string>
+    <string name="comment_image_size">Kommentaarprentgrootte</string>
+    <string name="description_comment_image_size">Hoe groot inlynprente in kommentaar vertoon word</string>
+    <string name="comment_image_size_small">Klein</string>
+    <string name="comment_image_size_medium">Medium</string>
+    <string name="comment_image_size_large">Groot</string>
+    <string name="no_preview_image_longclick">Geen lang kliks op voorskouprente van enige inhoudtipe nie</string>
+    <string name="description_no_preview_image_longclick">Bepaal of lang kliks op voorskouprente van enige inhoudtipe werk. Dit deaktiveer die loer-na-inhoud-funksie.</string>
+    <string name="editor_btn_select_flair">Kies flair</string>
+    <string name="submit_selected_flair">Gekose flair: %s</string>
+    <string name="mediaview_downloading">Laai tans prent af&#8230;</string>
+    <string name="err_save_image">Fout met die stoor van die prent</string>
+    <string name="error_directory_not_selected">Geen gids gekies nie. Probeer asseblief weer.</string>
+
+    <!-- Backup Operations -->
+
+    <!-- Additional Backup Operations -->
+    <string name="select_backup_file">Kies rugsteunlêer</string>
+
+    <string name="read_later">Lees later</string>
+    <string name="mark_as_read">Merk as gelees</string>
+
+    <string name="reddit_client_id">Reddit-kliënt-ID</string>
+    <string name="click_custom_client_id">Klik om \'n pasgemaakte kliënt-ID te stel</string>
+    <string name="client_id_scan_qr">Skandeer QR-kode</string>
+    <string name="client_id_scan_prompt">Skandeer \'n QR-kode wat jou Reddit-kliënt-ID bevat</string>
+    <string name="camera_permission_denied">Kameratoestemming word vereis om QR-kodes te skandeer</string>
+    <string name="client_id_invalid_length">Ongeldige kliënt-ID: moet presies 22 karakters wees</string>
+
+    <!-- Notification permission strings -->
+    <string name="notifications_permission_title">Aktiveer kennisgewings</string>
+    <string name="notifications_permission_message">Slide benodig kennisgewingtoestemming om jou van nuwe boodskappe, plasings en ander opdaterings vanaf Reddit in kennis te stel. Jy kan kennisgewinginstellings later bestuur.</string>
+    <string name="notification_listener_permission_title">Aktiveer kennisgewingtoegang</string>
+    <string name="notification_listener_permission_message">Slide benodig kennisgewingtoegang om Reddit-kennisgewings te onderskep en \'n beter kennisgewingervaring te bied. Aktiveer asseblief kennisgewingtoegang vir Slide op die volgende skerm.</string>
+
+
+    <string name="reddit_redirect_uri_override">Reddit-herleidings-URI-oorheersing</string>
+    <string name="click_custom_redirect_uri">Klik om \'n pasgemaakte herleidings-URI te stel</string>
+    <string name="settings_reddit_redirect_uri_invalid">Ongeldige herleidings-URI: moet in die vorm skema://gasheernaam wees</string>
+    <string name="reddit_user_agent_override">Reddit-gebruikeragent-oorheersing</string>
+    <string name="click_custom_user_agent">Klik om \'n pasgemaakte gebruikeragent te stel</string>
+    <string name="settings_enable_overrides">Aktiveer oorheersings</string>
+    <string name="settings_enable_overrides_desc">Gebruik jou pasgemaakte kliënt-ID, herleidings-URI en gebruikeragent in plaas van die toepassing se verstekwaardes. Laat dit af tensy jy weet jy het dit nodig.</string>
+
+    <string name="settings_section_sound">Klank</string>
+    <string name="settings_unmute_default">Ontdemp video\'s by verstek</string>
+
+    <string name="settings_subreddit_filter_prefix_matching">Aktiveer voorvoegselpassing vir subreddit-filters</string>
+    <string name="settings_subreddit_filter_prefix_matching_description">Die voorvoegsel is die hele subreddit-naam, en minstens ses karakters. Voorbeelde: Die subreddit social sal socialanxiety blokkeer. Die subreddit pokemongo sal pokemongoraids blokkeer.</string>
+
+    <string name="settings_filter_old_posts">Filter plasings ouer as</string>
+    <plurals name="settings_filter_old_posts_days">
+        <item quantity="one">%1$d dag</item>
+        <item quantity="other">%1$d dae</item>
+    </plurals>
+    <string name="settings_filter_old_posts_description">Word nie toegepas wanneer \'n individuele subreddit bekyk word nie, of wanneer volgens Top of Omstrede gesorteer word nie</string>
+
+    <!-- Pause on audio focus ducking setting -->
+    <string name="settings_pause_on_duck_title">Laat video wag in plaas daarvan om te demp</string>
+    <string name="settings_pause_on_duck_desc">Laat video\'s wag wanneer ander toepassings klank speel. Demping is wanneer die klankvolume verlaag word in plaas daarvan dat die video wag.</string>
+
+    <!-- Add this string resource for the play button content description -->
+    <string name="btn_play">Speel</string>
+
+    <string name="multireddit_name_title">Naam vir multireddit</string>
+    <string name="multireddit_name_hint">Multireddit-naam</string>
+    <string name="multireddit_err_empty_name">Multireddit-naam kan nie leeg wees nie</string>
+    <string name="multireddit_err_no_valid_subs">Geen geldige subreddits gekies nie. Kies asseblief minstens een subreddit.</string>
+    <string name="multireddit_progress_title">Skep tans multireddit</string>
+    <string name="multireddit_progress_message">Wag asseblief terwyl ons jou multireddit skep...</string>
+    <string name="multireddit_created_success">Multireddit suksesvol geskep</string>
+    <string name="multireddit_created_error">Kon nie die multireddit skep nie. Probeer asseblief weer.</string>
+    <string name="multireddit_json_error">\'n Fout het voorgekom tydens die voorbereiding van jou multireddit-data</string>
+
+    <string name="settings_dialog_colored_border">Plaas \'n gekleurde rand om dialoogkassies</string>
+    <string name="settings_dialog_colored_border_desc">Vertoon \'n dun gekleurde rand om sommige dialoogkassies.</string>
+
+    <string name="misc_err_sync_failed">Kon nie subreddits sinkroniseer nie. Geen ingetekende subreddits?</string>
+
+    <string name="mod_btn_distinguish">Onderskei</string>
+    <string name="mod_btn_undistinguish">Ontonderskei</string>
+
+    <string name="nsfw_status_removed">NSFW-status verwyder</string>
+    <string name="nsfw_status_set">NSFW-status gestel</string>
+
+    <string name="spoiler_status_removed">Verklapperstatus verwyder</string>
+    <string name="spoiler_status_set">Verklapperstatus gestel</string>
+
+    <string name="submission_distinguished">Plasing onderskei</string>
+    <string name="submission_distinguished_removed">Plasing se onderskeiding verwyder</string>
+
+    <string name="settings_general_hide_subreddit_tabs">Versteek ingetekende subreddit-oortjies</string>
+    <string name="settings_general_hide_subreddit_tabs_desc">Versteek ingetekende subreddits as oortjies, maar behou die navigasieknoppies</string>
+
+    <!-- Video playback speed control -->
+    <string name="video_speed">Spoed</string>
+    <string name="video_speed_0_25x">0.25x</string>
+    <string name="video_speed_0_5x">0.5x</string>
+    <string name="video_speed_0_75x">0.75x</string>
+    <string name="video_speed_1x">Normaal</string>
+    <string name="video_speed_1_25x">1.25x</string>
+    <string name="video_speed_1_5x">1.5x</string>
+    <string name="video_speed_2x">2x</string>
+    <string name="video_speed_control_content_desc">Terugspeelspoedbeheer</string>
+    <string name="image_unavailable">Prent nie beskikbaar nie</string>
+    <string name="image_rotate_content_desc">Draai prent 90 grade kloksgewys</string>
+    <string name="image_rotate_left_content_desc">Draai prent 90 grade antikloksgewys</string>
+
+    <!-- Folder chooser dialog (formerly provided by afollestad material-dialogs commons) -->
+    <string name="md_error_label">Fout</string>
+    <string name="md_storage_perm_error">Hierdie funksionaliteit vereis die bergingstoestemming, wat nie toegestaan is nie.</string>
+    <string name="md_choose_label">KIES</string>
+    <string name="new_folder">Nuwe vouer</string>
 </resources>

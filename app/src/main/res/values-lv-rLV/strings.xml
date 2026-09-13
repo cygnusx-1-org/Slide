@@ -1,126 +1,1421 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Generic text used anywhere -->
+    <string name="general_confirm">Apstiprināt</string>
+    <string name="general_confirm_exit">Apstiprināt iziešanu</string>
     <string name="general_confirm_exit_msg">Vai jūs tiešām vēlaties pamest Slide?</string>
+    <string name="general_enable_shadowbox">Shadowbox režīms</string>
+    <string name="general_open_settings">Sānjosla</string>
+    <string name="general_sub_sync">Sinhronizē abonementus</string>
+
     <!-- Used when viewing a thread -->
+    <string name="submission_info_unsaved">Ziņa noņemta no saglabātajām</string>
+    <string name="submission_info_saved">Ziņa saglabāta</string>
+    <string name="submission_info_archived">Šī ir arhivēta ziņa. Jūs nevarēsiet balsot vai komentēt.</string>
+    <string name="submission_post_saved">Ziņa saglabāta</string>
+    <string name="submission_info_hidden">Ziņa paslēpta uz visiem laikiem</string>
+    <string name="submission_stickied">Piesprausta</string>
+    <string name="submission_link_copy">Kopēt URL</string>
+    <string name="submission_link_share">Kopīgot URL</string>
+    <string name="submission_share_title">Kuru saiti vēlaties kopīgot?</string>
+    <string name="submission_share_reddit">Reddit URL</string>
+    <string name="submission_share_content">Satura URL</string>
+    <string name="submission_hide">Paslēpt ziņu</string>
+    <string name="submission_report">Ziņot par ziņu</string>
+    <string name="submission_gild">Atvērt pārlūkā</string>
+    <string name="submission_save">Saglabāt ziņu</string>
+    <string name="submission_save_image">Saglabāt attēlu</string>
+    <string name="submission_save_video">Saglabāt video</string>
+    <string name="submission_load_full">Ielādēt visu pavedienu</string>
+    <string name="submission_np_link">Šī ir nelīdzdalības saite. Lūdzu, nebalsojiet un nekomentējiet.</string>
+    <string name="submission_not_found">Ak vai, ziņa nav atrasta!</string>
+    <string name="submission_not_found_msg">Atvainojiet, šo ziņu neizdevās atrast</string>
+    <string name="submission_copy_text">Kopēt tekstu</string>
+    <string name="submission_comment_saved">Komentārs saglabāts</string>
+    <string name="submission_comment_unsaved">Komentārs noņemts no saglabātajiem</string>
+    <string name="submission_share_permalink">Kopīgot saiti</string>
+    <string name="submission_comment_copied">Komentāra teksts nokopēts</string>
+    <string name="submission_text_copied">Ziņas teksts nokopēts</string>
+    <string name="submission_nocontent">Ziņai nav satura</string>
+    <string name="submission_link_copied">Saite nokopēta</string>
+    <string name="translate_with_google">Tulkot</string>
+    <string name="translate_no_app">Nav pieejama neviena lietotne tulkošanai</string>
+    <string name="read_aloud">Nolasīt skaļi</string>
+    <string name="read_aloud_unavailable">Teksta pārveide runā nav pieejama</string>
+    <string name="submission_removed">Ziņa noņemta</string>
+
+    <plurals name="new_messages">
+        <item quantity="zero">%d jaunu ziņojumu</item>
+        <item quantity="one">%d jauns ziņojums</item>
+        <item quantity="other">%d jauni ziņojumi</item>
+    </plurals>
+    <plurals name="points">
+        <item quantity="zero">p</item>
+        <item quantity="one">p</item>
+        <item quantity="other">p</item>
+    </plurals>
+    <plurals name="comments">
+        <item quantity="zero">kom.</item>
+        <item quantity="one">kom.</item>
+        <item quantity="other">kom.</item>
+    </plurals>
+
     <!-- Theme settings -->
+    <string name="theme_light">Gaišs</string>
+    <string name="theme_dark">Tumšs</string>
     <string name="theme_black">AMOLED melns</string>
+    <string name="theme_dark_blue">Tumši zils</string>
+    <string name="night_mode">Nakts režīms</string>
+    <string name="disabled">Atspējots</string>
+    <string name="manual">Manuāli</string>
+    <string name="automatic">Automātiski</string>
+    <string name="theme_default_color">Galvenā krāsa</string>
+    <string name="theme_subreddit_color">Mainīt krāsu</string>
+    <string name="theme_accent_color">Akcenta krāsa</string>
     <string name="theme_base">Pamata motīvs</string>
+    <string name="theme_card">Kartīte</string>
+    <string name="theme_sepia">Sēpija</string>
+    <string name="theme_amoled_contrast">AMOLED ar kontrastu</string>
+    <string name="theme_night">Nakts motīvs</string>
+
     <!-- Font settings -->
+    <string name="font_size_comment">Komentāru fonta izmērs</string>
+    <string name="font_size_post">Ziņu fonta izmērs</string>
+    <string name="font_size_huge">Milzīgs</string>
+    <string name="font_size_larger">Lielāks</string>
+    <string name="font_size_large">Liels</string>
+    <string name="font_size_medium">Vidējs</string>
+    <string name="font_size_small">Mazs</string>
+    <string name="font_size_smaller">Mazāks</string>
+    <string name="font_size_tiny">Sīks</string>
+
     <!-- For editing the submission card layout -->
+    <string name="card_hide_post_button">Poga "Paslēpt ziņu" darbību joslā</string>
+    <string name="card_tint_outside">Krāsot tikai ārpus subreddit</string>
+    <string name="card_save_button">Poga "Saglabāt ziņu" darbību joslā</string>
+
     <!-- Settings for Multi-column view -->
+    <string name="multi_column_title">Vairākas kolonnas</string>
+    <string name="multi_column_portrait_count">Kolonnas portreta režīmā</string>
+    <string name="multi_column_landscape_count">Kolonnas ainavas režīmā</string>
+    <string name="single_column_multi_window">Viena kolonna vairāku logu režīmā</string>
+
     <!-- Drawer items (That's the one on the left) -->
+    <string name="drawer_profile">Jūs</string>
+    <string name="drawer_support">Iegūt Pro</string>
+    <string name="drawer_goto_profile">Doties uz profilu</string>
+    <string name="drawer_add_account">Pievienot kontu</string>
     <string name="drawer_hello">Sveicināts,</string>
+    <string name="drawer_search">Doties uz subreddit</string>
+    <!-- Subreddit name when submitting/crossposting: a single subreddit only (no multireddit, no dot). -->
+    <!-- Message recipient: a username or an /r/ or /u/ path. -->
+    <!-- Settings search field. The trailing space is intentional, so the value is quoted to preserve it. -->
+    <string name="drawer_moderation">Moderēšana</string>
+    <string name="drawer_offline">Slide darbojas bezsaistes režīmā</string>
+    <string name="drawer_offline_retry">Mēģināt pāriet tiešsaistes režīmā</string>
+    <string name="drawer_guest_mode">Pārlūkot kā viesim</string>
+
     <!-- Sidebar items (That's the one on the right) -->
+    <string name="sidebar_wiki">Subreddit viki</string>
+    <string name="sidebar_mods">Subreddit moderatori</string>
+
     <!-- User profile -->
+    <string name="profile_karma_total">Kopējā karma</string>
+    <string name="profile_karma_link">Ziņu karma</string>
     <string name="profile_karma_comment">komentāru karma</string>
     <string name="profile_message">Privāts ziņojums</string>
+    <string name="profile_saved">Saglabātie</string>
+    <string name="local_saved">Saglabāti lokāli</string>
+    <string name="profile_read_later">Lasīt vēlāk</string>
+    <string name="profile_upvoted">Atbalstītie</string>
     <string name="profile_err_title">Lietotājs netika atrasts</string>
+    <string name="profile_err_msg">Neizdevās iegūt Reddit lietotāju</string>
     <string name="profile_overview">pārskats</string>
     <string name="profile_comments">komentāri</string>
+    <string name="profile_submitted">Ziņas</string>
+    <string name="profile_gilded">Apbalvotie</string>
+    <string name="profile_downvoted">Noraidītie</string>
+    <string name="profile_hidden">Paslēptie</string>
+    <string name="profile_friend">Draugs</string>
+    <string name="profile_add_friend">Pievienot draugu</string>
+    <string name="profile_remove_friend">Noņemt draugu</string>
+    <string name="profile_follow_user">Sekot</string>
+    <string name="profile_unfollow_user">Pārtraukt sekošanu</string>
+    <string name="profile_add_user">Pievienot lietotāju</string>
+    <string name="profile_remove_user">Noņemt lietotāju</string>
+    <string name="profile_remove_account">Vai tiešām vēlaties noņemt šo kontu?</string>
+    <string name="profile_remove">Dzēst kontu</string>
+    <string name="profile_history">Vēsture</string>
+    <string name="profile_share">%s profils</string>
+    <string name="profile_age">Redditor jau %s</string>
+    <string name="profile_tag">Birka</string>
+    <string name="profile_tag_set">Iestatīt birku lietotājam %s</string>
+    <string name="profile_tag_user">Marķēt lietotāju</string>
+    <string name="profile_tag_user_existing">Lietotājs marķēts kā ‘%s’</string>
+    <string name="profile_btn_tag">Iestatīt birku</string>
+    <string name="profile_btn_untag">Noņemt birku</string>
+    <string name="profile_info">Profila informācija</string>
+    <string name="profile_options">Lietotāja opcijas</string>
+    <string name="profile_block_user">Bloķēt lietotāju</string>
+    <string name="profile_block_user_description">Bloķē lietotāja ziņojumus, ziņas un profilu</string>
+    <string name="profile_unblock_user">Atbloķēt lietotāju</string>
+    <string name="profile_unblock_user_description">Atbloķē lietotāja ziņojumus, ziņas un profilu</string>
+    <string name="profile_search">Meklēt</string>
+    <string name="profile_search_title">Meklēt vietnē %1$s</string>
+    <string name="profile_search_hint">Meklēt virsrakstos un tekstā…</string>
+    <string name="profile_search_no_results">Rezultāti nav atrasti</string>
+    <string name="profile_search_clear">Notīrīt meklēšanu</string>
+    <string name="profile_search_cleared">Meklēšana notīrīta</string>
+    <string name="profile_search_loading">Meklē…</string>
+    <string name="profile_search_progress">%1$d rezultāti · pārmeklēti %2$d</string>
+    <string name="profile_search_bypass_cache">Apiet kešatmiņu</string>
+
     <!-- Comment text options -->
+    <string name="comment_gild">Apbalvot komentāru</string>
+    <string name="comment_share">Kopīgot komentāru</string>
     <string name="comment_delete">Dzēst komentāru</string>
     <string name="comment_delete_msg">Vai jūs tiešām vēlaties dzēst šo komentāru? Šo darbību nav iespējams atsaukt.</string>
     <string name="comment_delete_err">Ak vai, kaut kas nogājis greizi.</string>
     <string name="comment_delete_err_msg">Vai jūs vēlaties mēģināt vēlreiz?</string>
+    <string name="comment_deleted">[dzēsts]</string>
+    <string name="comment_unsave">Noņemt no saglabātajiem</string>
+    <string name="comment_loading_more">Ielādē vairāk komentāru…</string>
+    <string name="comment_permalink">Ielādēt komentāra pastāvīgo saiti</string>
+    <string name="comment_parent">Rādīt vecāka komentāru</string>
+    <string name="comment_video_play">Atskaņot video</string>
+
     <!-- Welcome view (first time setup) -->
+    <string name="welcome_start">Sākt</string>
+    <string name="welcome_personalize">Personalizēt</string>
+
     <!-- Sorting options -->
+    <string name="sorting_choose">Izvēlieties kārtošanas veidu</string>
+    <string name="sorting_time_choose">Izvēlieties laika posmu</string>
+    <string name="sorting_change_sorting">Kārtošanas režīms</string>
+    <string name="sorting_best">Labākie</string>
+    <string name="sorting_top">Populārākie</string>
+    <string name="sorting_hot">Aktuālie</string>
+    <string name="sorting_ama">J&amp;A (AMA)</string>
+    <string name="sorting_new">Jaunākie</string>
+    <string name="sorting_old">Vecākie</string>
+    <string name="sorting_controversial">Pretrunīgie</string>
+    <string name="sorting_rising">Augošie</string>
+    <string name="sorting_hour">stunda</string>
+    <string name="sorting_day">24 stundas</string>
+    <string name="sorting_week">nedēļa</string>
+    <string name="sorting_month">mēnesis</string>
+    <string name="sorting_year">gads</string>
+    <string name="sorting_all">visu laiku</string>
+    <string name="sorting_defaultfor">Noklusējums subreddit /r/%1$s</string>
+
     <!-- Editor (save/submit a post) actions -->
     <string name="editor_url">URL</string>
     <string name="editor_text">Teksts</string>
     <string name="editor_title_link">Ievietot saiti</string>
     <string name="editor_action_link">IEVIETOT</string>
     <string name="editor_title">Virsraksts</string>
+    <string name="editor_err_msg">Lūdzu, mēģiniet vēlreiz pēc dažām sekundēm</string>
+    <string name="editor_uploading_image">Augšupielādē attēlu uz Imgur</string>
+    <string name="editor_upload_image_title">Augšupielādēt attēlu</string>
+    <string name="editor_upload_reddit">Reddit (iegults attēls)</string>
+    <string name="editor_upload_imgur">Imgur (saite)</string>
+    <string name="editor_uploading_reddit">Augšupielādē attēlu uz Reddit</string>
+    <string name="editor_reddit_upload_success">Attēls augšupielādēts</string>
+    <string name="editor_reddit_upload_failed">Attēla augšupielāde neizdevās</string>
+    <string name="submit_image_host_imgur">Imgur</string>
+    <string name="submit_image_host_reddit">Reddit</string>
+    <string name="submit_change_img">Mainīt attēlu</string>
+    <string name="submit_select_gallery">Pievienot attēlus</string>
+    <string name="submit_gallery_caption_hint">Paraksts (neobligāts)</string>
+    <string name="submit_gallery_count">Atlasīti: %1$d</string>
+    <string name="submit_uploading_gallery">Augšupielādē attēlu %1$d no %2$d</string>
     <string name="editor_select_img">Izvēlaties attēlu</string>
+    <string name="editor_hint_optional_body">Teksts (neobligāts)</string>
+    <string name="editor_submit">Publicēt ziņu</string>
+    <string name="editor_hint_subreddit">Subreddit</string>
+    <string name="editor_finding_title">Meklē virsrakstu</string>
+    <string name="submit_findingflairs">Meklē flair</string>
+    <string name="submit_flairchoices">/r/%s flair</string>
+
+    <string name="edit_selftext">Rediģēt ziņas tekstu</string>
+    <string name="delete_submission">Dzēst ziņu</string>
+    <string name="set_submission_flair">Iestatīt ziņas flair</string>
+
     <!-- Editor buttons -->
+    <string name="editor_save_draft">Saglabāt melnrakstu</string>
+    <string name="editor_chose_draft">Izvēlēties melnrakstu</string>
+    <string name="editor_insert_image">Ievietot attēlu</string>
+    <string name="editor_draw">Ievietot attēlu un zīmēt uz tā</string>
+    <string name="editor_link">Ievietot saiti</string>
+    <string name="editor_bold">Treknraksts</string>
+    <string name="editor_italics">Slīpraksts</string>
+    <string name="editor_quote">Citāts</string>
+    <string name="editor_author">Pieminēt autoru</string>
+    <string name="editor_list">Aizzīmju saraksts</string>
+    <string name="editor_num_list">Numurēts saraksts</string>
+    <string name="editor_size">Liels fonts</string>
+    <string name="editor_strike">Pārsvītrojums</string>
+    <string name="editor_spoiler">Spoileris</string>
+
     <!-- General information / information without a category -->
+    <string name="info_photo_saved">Fotoattēls saglabāts</string>
+    <string name="gif_saved">GIF saglabāts</string>
+
     <!-- General errors / errors without a category -->
+    <string name="err_title">Ak vai, kaut kas nogāja greizi!</string>
+    <string name="err_invalid_url">Nederīgs URL</string>
+    <string name="err_loading_content">Kļūda, ielādējot saturu</string>
+    <string name="err_general">Ak vai, radās kļūda</string>
+    <string name="err_no_connection">Neizdevās sazināties ar Reddit. Vai vēlaties mēģināt vēlreiz?</string>
+    <string name="err_no_connection_toast">Neizdevās sazināties ar Reddit. Mēģiniet vēlreiz drīzumā</string>
     <string name="err_retry_later">Pēc minūtes mēģini vēlreiz!</string>
+    <string name="err_authentication">Autentifikācija neizdevās</string>
+    <string name="err_submit_restricted">Šis subreddit ir ierobežots</string>
+    <string name="err_submit_restricted_text">Jums nav atļauts šeit publicēt. Lūdzu, izvēlieties citu subreddit</string>
+    <string name="err_crosspost_disallowed_text">/r/%s neatļauj krustpublicēšanu. Lūdzu, izvēlieties citu subreddit.</string>
+    <string name="err_crosspost_not_subscribed">Pirms krustpublicēšanas jums jāabonē /r/%s.</string>
+    <string name="err_crosspost_sub_not_found">/r/%s neeksistē.</string>
+    <string name="crosspost_flair_required_short">Nepieciešams flair — lūdzu, izvēlieties to pirms publicēšanas.</string>
+    <string name="error_video_not_found">Video nav atrasts</string>
+    <string name="error_video_message">Ielādējot šo video, radās kļūda</string>
+    <string name="error_album_not_found">Albums nav atrasts</string>
+    <string name="error_album_not_found_text">Vai vēlaties atvērt saiti pārlūkā?</string>
+    <string name="err_comment_post_nosave_message">\nLūdzu, mēģiniet vēlreiz pēc minūtes</string>
+    <string name="err_could_not_find_content_msg">Reddit neatrada pieprasīto saturu</string>
+    <string name="err_refused_request_msg">Reddit noraidīja pieprasījumu. Vai vēlaties mēģināt atkārtoti savienoties ar Reddit?</string>
+    <string name="err_color_sync_login">Lūdzu, pierakstieties, lai izmantotu krāsu sinhronizāciju</string>
+    <string name="err_something_wrong">Ak vai, kaut kas nogāja greizi</string>
+    <string name="err_couldnt_save_choose_new">Slide nevarēja saglabāt izvēlētajā mapē. Vai vēlaties izvēlēties jaunu saglabāšanas vietu?</string>
+    <string name="err_share_image">Kļūda, kopīgojot attēlu</string>
+    <string name="err_file_not_found">Fails nav atrasts</string>
+    <string name="err_file_not_found_msg">Izvēlēto failu neizdevās atrast. Lūdzu, pārliecinieties, ka tas eksistē un Slide ir piekļuves atļaujas šim failam/mapei</string>
+    <string name="err_comment_post">Ak vai, šī komentāra publicēšana neizdevās!</string>
+    <string name="err_comment_post_reason">Iemesls: %1$s</string>
+    <string name="err_comment_post_message">\n\nJūsu ziņojums tika saglabāts kā melnraksts. Lūdzu, mēģiniet vēlāk.</string>
+    <string name="err_connection_failed_msg">Savienojums ar Reddit neizdevās. Lūdzu, pārbaudiet interneta savienojumu un mēģiniet vēlreiz vai pārejiet bezsaistes režīmā.</string>
+    <string name="err_block_user">Kļūda, bloķējot lietotāju. Vai nesen atbloķējāt šo lietotāju?</string>
+
     <!-- Gif -->
     <string name="gif_err_title">GIF netika atrasts</string>
+    <string name="gif_err_msg">Ielādējot šo GIF, radās kļūda. Lūdzu, atveriet GIF vēlreiz un mēģiniet no jauna.</string>
+    <string name="gif_load_failed">Neizdevās ielādēt GIF</string>
+    <string name="gif_download_failed">Neizdevās lejupielādēt GIF</string>
+
     <!-- Multireddits -->
     <string name="multireddit_err_title">Multiredditi (vēl) nav pieejami!</string>
+    <string name="multireddit_err_msg">Vai vēlaties izveidot jaunu multireddit?</string>
+    <string name="public_multireddit_err_title">Nav neviena multireddit!</string>
+    <string name="public_multireddit_err_msg">Šim lietotājam nav publisku multireddit.</string>
     <string name="multireddit_title_empty">Virsraksts nevar būt tukšs</string>
+    <string name="multireddit_title_empty_msg">Lūdzu, ievadiet sava multireddit virsrakstu</string>
+    <string name="multireddit_no_subs">Nav pievienots neviens subreddit</string>
+    <string name="multireddit_save_err">Šāds multireddit virsraksts jau pastāv vai arī šeit vairs nav vietas subreddit</string>
+    <string name="multireddit_no_subs_msg">Lūdzu, pievienojiet dažus subreddit, nospiežot + pogu!</string>
     <string name="multireddit_selector">Izvēlaties subredditu ko vēlaties pievienot</string>
+    <string name="multireddit_create_hint">Multireddit nosaukums</string>
+    <string name="multireddit_invalid_name">Nederīgs multireddit nosaukums</string>
+    <string name="multireddit_invalid_name_msg">Multireddit nosaukumos drīkst būt tikai burti, cipari un pasvītrojumi</string>
+    <string name="multi_add_to">Pievienot /r/%s pie</string>
+    <string name="multi_subreddit_added">Subreddit pievienots /m/%1$s</string>
+    <string name="multi_error">Radās kļūda, lūdzu, mēģiniet vēlāk</string>
+    <string name="btn_import_multi">Importēt multireddit</string>
+    <string name="multi_submit_which_sub">Kurā sub vēlaties publicēt?</string>
+    <string name="multi_saved_successfully">Veiksmīgi saglabāts</string>
+    <string name="delete_multireddit_title">Vai tiešām vēlaties dzēst /m/%1$s?</string>
+    <string name="multi_save_option">Vai vēlaties saglabāt šo multireddit?</string>
+
     <!-- Content types -->
+    <string name="type_nsfw_img">NSFW attēls</string>
+    <string name="type_nsfw_gif">NSFW GIF</string>
+    <string name="type_reddit">Reddit saite</string>
+    <string name="type_link">Saite</string>
+    <string name="type_nsfw_link">NSFW saite</string>
+    <string name="type_gif">GIF</string>
+    <string name="type_title_only">Ziņa tikai ar virsrakstu</string>
+    <string name="type_album">Albums</string>
+    <string name="type_xkcd">XKCD</string>
+    <string name="type_nsfw_album">NSFW albums</string>
+    <string name="type_nsfw_gallery">NSFW galerija</string>
+    <string name="type_nsfw_albums">NSFW albumi</string>
+    <string name="type_nsfw_galleries">NSFW galerijas</string>
+    <string name="type_nsfw_gifs">NSFW GIF</string>
+    <string name="type_nsfw_images">NSFW attēli</string>
+    <string name="type_nsfw_links">NSFW saites</string>
+    <string name="type_nsfw_selftexts">NSFW teksta ziņas</string>
+    <string name="type_nsfw_tumblrs">NSFW Tumblr ziņas</string>
+    <string name="type_nsfw_videos">NSFW video</string>
+    <string name="type_gallery">Galerija</string>
+    <string name="type_galleries">Galerijas</string>
+    <string name="type_img">Attēls</string>
+    <string name="type_videos">Video</string>
+    <string name="type_nsfw_video">NSFW video</string>
+    <string name="type_imgur">Imgur saturs</string>
+    <string name="type_nsfw_imgur">NSFW Imgur saturs</string>
+    <string name="type_nsfw_xkcd">NSFW XKCD</string>
+    <string name="type_nsfw_deviantart">NSFW DeviantArt</string>
+    <string name="type_nsfw_title_only">NSFW ziņa tikai ar virsrakstu</string>
+    <string name="type_nsfw_reddit">NSFW Reddit saite</string>
+    <string name="type_nsfw_selftext">NSFW teksta ziņa</string>
+    <string name="type_spoiler">Spoileris</string>
+    <string name="type_nsfw_spoiler">NSFW spoileris</string>
+    <string name="type_nsfw_streamable">NSFW Streamable</string>
+    <string name="type_external">Ārējs</string>
+
     <!-- Content types plural (Content filters) -->
+    <string name="type_gifs">GIF</string>
+    <string name="type_albums">Albumi</string>
+    <string name="type_links">Saites</string>
+
     <!-- Inbox/mail -->
+    <string name="mail_tab_inbox">Iesūtne</string>
+    <string name="mail_tab_unread">Nelasītie</string>
+    <string name="mail_tab_messages">Ziņojumi</string>
+    <string name="mail_tab_sent">Nosūtītie</string>
+    <string name="mail_tab_mentions">Pieminējumi</string>
+    <string name="mail_author_wrote">%1$s rakstīja…</string>
+    <string name="mail_hint_recipient">Saņēmējs</string>
     <string name="mail_hint_subject">Tēma</string>
     <string name="mail_hint_body">Galvenā sadaļa</string>
+    <string name="mail_send_to">Nosūtīt ziņojumu lietotājam %1$s</string>
+    <string name="mail_send">Nosūtīt ziņojumu</string>
+    <string name="mail_notification_msg_from">Jauns ziņojums no %1$s</string>
+    <string name="mail_notification_msg_via">Jauns ziņojums caur /r/%1$s</string>
+    <string name="mod_mail_notification_msg">Jauns modmail no %1$s</string>
+    <string name="mail_reply_to">Atbildēt lietotājam %1$s</string>
+    <string name="mail_notification_author">%1$s no %2$s</string>
+    <string name="mail_notification_subreddit">%1$s caur /r/%2$s</string>
+    <string name="mail_theirs">Skatīt viņu ziņojumu</string>
+    <string name="mail_re">atb.: %1$s</string>
+    <string name="mail_mark_read">Atzīmēt kā izlasītu</string>
+    <string name="mail_view_full_thread">Skatīt visu pavedienu</string>
+    <string name="mail_message_copied">Ziņojums nokopēts</string>
+    <plurals name="mail_notification_title">
+        <item quantity="zero">Jums ir %d jaunu ziņojumu!</item>
+        <item quantity="one">Jums ir %d jauns ziņojums!</item>
+        <item quantity="other">Jums ir %d jauni ziņojumi!</item>
+    </plurals>
+    <plurals name="mod_mail_notification_title">
+        <item quantity="zero">Jums ir %d jaunu modmail!</item>
+        <item quantity="one">Jums ir %d jauns modmail!</item>
+        <item quantity="other">Jums ir %d jauni modmail!</item>
+    </plurals>
+
     <!-- Miscellaneous/generic things that don't have a category or strings that are used for multiple categories -->
+    <string name="misc_err">Kļūda</string>
+    <string name="misc_none">Nav</string>
+    <string name="misc_retry">Vai vēlaties mēģināt vēlreiz?</string>
+    <string name="misc_retry_draft">Vai vēlaties mēģināt vēlreiz? \nJūsu ziņas melnraksts ir saglabāts</string>
+    <string name="misc_score_hidden">vērtējums paslēpts</string>
+    <string name="misc_subscribed">Abonēts</string>
+    <string name="misc_continue">Turpināt</string>
+    <string name="misc_unsubscribed">Abonements atcelts</string>
+    <string name="misc_no_more_posts">Vairāk ziņu nav!</string>
+    <string name="misc_please_wait">Lūdzu, uzgaidiet…</string>
+    <string name="misc_img_share">Kopīgot attēlu ar</string>
+    <string name="misc_copy_text">Kopēt tekstu</string>
+    <string name="misc_maybe_later">Varbūt vēlāk</string>
+    <string name="misc_try_again">Mēģināt vēlreiz</string>
+    <string name="misc_please_try_again">Lūdzu, mēģiniet vēlreiz</string>
+    <string name="misc_please_try_again_soon">Lūdzu, mēģiniet vēlreiz drīzumā</string>
+    <string name="misc_setting_up">Sagatavo dažas lietas…</string>
+    <string name="misc_setting_up_message">Lūdzu, neatstājiet šo ekrānu. Tas neaizņems ilgu laiku!</string>
+    <string name="misc_more_info">Vairāk informācijas</string>
+    <string name="misc_captcha_incorrect">Nepareizs captcha, lūdzu, mēģiniet vēlreiz</string>
+
     <!-- Goto User -->
+    <string name="user_enter">Ievadiet lietotājvārdu</string>
     <string name="user_btn_goto">Doties uz lietotāja profilu</string>
+    <string name="user_btn_gotomultis">Doties uz lietotāja multi</string>
+
+    <!-- Saved users list -->
+    <string name="users_empty">Nav saglabātu lietotāju</string>
+    <string name="users_btn_add">Pievienot lietotāju</string>
+    <string name="users_btn_remove">Noņemt lietotāju</string>
+    <string name="users_added">%s pievienots lietotājiem</string>
+    <string name="users_removed">%s noņemts no lietotājiem</string>
+    <string name="users_already_added">%s jau ir lietotāju sarakstā</string>
+    <string name="users_copied">%s nokopēts</string>
+    <string name="users_checking">Pārbauda lietotājvārdu</string>
+    <string name="users_invalid_title">Nevar pievienot lietotāju</string>
+    <string name="users_invalid">%s nav Reddit lietotājs</string>
+    <string name="users_check_failed">Neizdevās pārbaudīt, vai %s eksistē. Lūdzu, pārbaudiet savienojumu un mēģiniet vēlreiz.</string>
+    <string name="users_friend_added">%s pievienots draugiem</string>
+    <string name="users_friend_removed">%s noņemts no draugiem</string>
+    <string name="users_friend_failed">Neizdevās atjaunināt draudzības statusu lietotājam %s</string>
+    <string name="btn_fab_add_user">Pievienot lietotāju</string>
+
     <!-- Buttons -->
     <string name="btn_add">Pievienot</string>
     <string name="btn_cancel">Atcelt</string>
+    <string name="btn_close">Aizvērt</string>
+    <string name="btn_toggle">Pārslēgt</string>
+    <string name="btn_open">Atvērt</string>
+    <string name="btn_discard">Atmest</string>
+    <string name="btn_done">Gatavs</string>
+    <string name="btn_go_back">Atpakaļ</string>
     <string name="btn_no">Nē</string>
     <string name="btn_ok">OK</string>
     <string name="btn_remove">Noņemt</string>
     <string name="btn_reply">Atbildēt</string>
     <string name="btn_reset">Atiestatīt</string>
+    <string name="btn_retry">Mēģināt vēlreiz</string>
     <string name="btn_save">Saglabāt</string>
     <string name="btn_submit">Publicēt</string>
     <string name="btn_undo">Atsaukt</string>
+    <string name="btn_yes">Jā</string>
+    <string name="btn_refresh">Atsvaidzināt</string>
+    <string name="btn_cache">Saglabāt komentārus kešatmiņā</string>
+    <string name="btn_delete">Dzēst</string>
+    <string name="btn_time">Laika posms</string>
+    <string name="btn_message">Ziņojums</string>
+    <string name="btn_select">Atlasīt</string>
+    <string name="btn_view">SKATĪT</string>
+    <string name="btn_changelog">Izmaiņu žurnāls</string>
+    <string name="btn_set">IESTATĪT</string>
+    <string name="btn_create">Izveidot</string>
+    <string name="btn_new">Jauns</string>
+
     <!-- Buttons Content labels for TalkBack accessibility-->
+    <string name="btn_edit">Rediģēt</string>
+    <string name="btn_hide">Paslēpt</string>
+    <string name="btn_mod">Moderēt</string>
+    <string name="btn_upvote">Balsot par</string>
+    <string name="btn_downvote">Balsot pret</string>
+    <string name="btn_menu">Izvēlne</string>
+    <string name="img_score">Vērtējums</string>
+    <string name="img_comments">Komentāri</string>
+    <string name="btn_expand">Izvērst</string>
+    <string name="btn_nav_up">Pārvietoties uz augšu</string>
+    <string name="btn_nav_mode">Iestatīt navigācijas režīmu</string>
+    <string name="btn_nav_collapse_expand">Sakļaut/izvērst</string>
+    <string name="btn_nav_down">Pārvietoties uz leju</string>
+    <string name="btn_fab_reply">Atbildēt</string>
+    <string name="btn_fab_post">Izveidot jaunu ziņu</string>
+    <string name="btn_fab_hide">Paslēpt apskatītās ziņas</string>
+    <string name="btn_fab_search">Meklēt ziņas</string>
+
     <!-- Buttons Content labels for TalkBack accessibility active states-->
+    <string name="btn_upvoted">Nobalsots par</string>
+    <string name="btn_downvoted">Nobalsots pret</string>
+    <string name="btn_unsave">Noņemt no saglabātajiem</string>
+    <string name="btn_collapse">Sakļaut</string>
+
     <!-- Backup -->
+    <string name="backup_success">Dublēšana izdevās!</string>
+    <string name="backup_restoring">Atjauno jūsu iestatījumus</string>
+    <string name="backup_backing_up">Dublē jūsu iestatījumus</string>
+    <string name="backup_restore_settings">Iestatījumu atjaunošana izdevās!</string>
+    <string name="backup_restarting">Lietotne tagad tiks restartēta</string>
+    <string name="backup_info">Slide dublē visus jūsu datus privātā Google Drive mapē. Jūs varat sinhronizēt šos datus starp ierīcēm (vai uz to pašu ierīci), un jūsu dati nekad neiziet cauri trešās puses pakalpojumam vai serverim. Dublējumi tiek šifrēti ar jūsu izvēlētu paroli.</string>
+    <string name="backup_btn">Dublēt</string>
+    <string name="backup_btn_restore">Atjaunot</string>
+    <string name="backup_btn_file">Dublēt zip failā</string>
+    <string name="backup_btn_restore_file">Atjaunot no faila vai zip</string>
+    <string name="backup_confirm">Vai tiešām vēlaties dublēt? Iepriekšējais dublējums tiks pārrakstīts</string>
+    <string name="backup_restore_confirm">Vai tiešām vēlaties atjaunot? Jūsu pašreizējie iestatījumi tiks pārrakstīti</string>
+    <string name="backup_failed_msg">Dublēšana neizdevās. Lūdzu, mēģiniet vēlāk.</string>
+    <string name="backup_restore_failed_msg">Atjaunošana neizdevās. Lūdzu, pārliecinieties, ka pastāv derīgs dublējums, un mēģiniet vēlreiz.</string>
+    <string name="backup_local_title">Lokāls dublējums</string>
+    <string name="backup_drive_title">Google Drive dublējums</string>
+    <string name="backup_button">Izveidot dublējumu</string>
+    <string name="restore_button">Atjaunot dublējumu</string>
+    <string name="backup_question">Vai dublēt?</string>
+    <string name="backup_complete">Dublēšana pabeigta!</string>
+    <string name="err_not_valid_backup">Nav derīgs Slide dublējuma fails</string>
+    <string name="err_not_valid_backup_msg">Izvēlētais fails nav derīgs Slide dublējuma fails</string>
+    <string name="backup_password_title">Iestatiet dublējuma paroli</string>
+    <string name="backup_password_message">Jūsu dublējums satur Reddit konta akreditācijas datus, tāpēc tas tiek šifrēts. Izvēlieties paroli no %1$d līdz %2$d rakstzīmēm. Tā būs nepieciešama atjaunošanai, un to nevar atgūt.</string>
+    <string name="backup_password_hint">Parole</string>
+    <string name="restore_password_title">Ievadiet dublējuma paroli</string>
+    <string name="restore_password_message">Ievadiet paroli, ar kuru šis dublējums tika šifrēts.</string>
+    <string name="restore_password_wrong">Nepareiza parole. Lūdzu, mēģiniet vēlreiz.</string>
+    <string name="drive_authorization_failed">Google Drive autorizācija neizdevās</string>
+    <string name="drive_authorization_failed_msg">Slide neizdevās piekļūt savai privātajai Google Drive mapei. Lūdzu, mēģiniet vēlreiz.</string>
+    <string name="drive_authorization_denied">Nepieciešama piekļuve Google Drive</string>
+    <string name="drive_authorization_denied_msg">Slide ir nepieciešama piekļuve savai privātajai Google Drive mapei, lai dublētu vai atjaunotu jūsu iestatījumus.</string>
+
     <!-- Vote -->
+    <string name="vote_err">Kļūda, balsojot!</string>
+    <string name="vote_err_login">Lai balsotu, jums jābūt pierakstītam!</string>
+    <string name="vote_removed">Balss noņemta</string>
+
+    <!-- Subscribing -->
+    <string name="subscribe_err_login">Lai abonētu, jums jābūt pierakstītam!</string>
+
     <!-- Moderation tools -->
+    <string name="mod_mail">Modmail</string>
+    <string name="mod_mail_unread">Nelasīts modmail</string>
+    <string name="modmail_internal_note">(iekšēja piezīme)</string>
+    <string name="modmail_scope_missing">Modmail nepieciešama atkārtota autentifikācija. Pierakstieties vēlreiz (Iestatījumi &#8594; konts), lai to iespējotu.</string>
+    <string name="modmail_reply_sent">Atbilde nosūtīta!</string>
+    <string name="modmail_reply_failed">Nosūtīšana neizdevās! Atbilde saglabāta kā melnraksts.</string>
+    <plurals name="modmail_message_count">
+        <item quantity="zero">%d ziņojumu</item>
+        <item quantity="one">%d ziņojums</item>
+        <item quantity="other">%d ziņojumi</item>
+    </plurals>
+    <string name="mod_modqueue">Moderēšanas rinda</string>
+    <string name="mod_unmoderated">Nemoderēts</string>
+    <string name="mod_reports">Ziņojumi</string>
+    <string name="mod_approved">Ziņa apstiprināta</string>
+    <string name="mod_flair_hint">Flair teksts</string>
+    <string name="mod_no_reports">Nav ziņojumu</string>
+    <string name="mod_btn_approve">Apstiprināt</string>
+    <string name="mod_btn_submission_flair">Iestatīt flair</string>
+    <string name="mod_btn_submission_flair_text">Iestatīt flair tekstu</string>
+    <string name="mod_btn_mark_nsfw">Atzīmēt kā NSFW</string>
+    <string name="mod_btn_unmark_nsfw">Noņemt NSFW atzīmi</string>
+    <string name="mod_btn_mark_spoiler">Atzīmēt kā spoileri</string>
+    <string name="mod_btn_unmark_spoiler">Noņemt spoilera atzīmi</string>
+    <string name="mod_btn_lock_thread">Slēgt pavedienu</string>
+    <string name="mod_btn_unlock_thread">Atslēgt pavedienu</string>
+    <string name="mod_btn_lock_comment">Slēgt komentāru</string>
+    <string name="mod_btn_unlock_comment">Atslēgt komentāru</string>
+    <string name="mod_locked">Slēgts</string>
+    <string name="mod_unlocked">Atslēgts</string>
+    <string name="mod_btn_pin">Piespraust</string>
+    <string name="mod_btn_unpin">Atspraust</string>
+    <string name="mod_btn_remove">Noņemt</string>
+    <string name="mod_btn_remove_reason">Noņemt ar iemeslu</string>
+    <string name="mod_btn_spam">Atzīmēt kā mēstuli</string>
+    <string name="mod_btn_author">Autora profils</string>
+    <string name="mod_btn_ban">Liegt piekļuvi</string>
+    <string name="mod_ban_user">Liegt lietotājam piekļuvi</string>
+    <string name="mod_ban_reauth">Lai liegtu lietotājiem piekļuvi, Slide jums jāautentificē atkārtoti</string>
+    <string name="mod_ban_reauth_question">Vai vēlaties tagad atkārtoti pierakstīties Slide?</string>
+    <string name="mod_ban_success">Lietotājam liegta piekļuve!</string>
+    <string name="mod_ban_fail">Kļūda, liedzot lietotājam piekļuvi</string>
+    <string name="mod_ban_reason">Piekļuves lieguma iemesls</string>
+    <string name="mod_ban_note_mod">Moderatora piezīme (neobligāta)</string>
+    <string name="mod_ban_note_user">Ziņojums lietotājam (neobligāts)</string>
+    <string name="mod_ban_time">Lieguma ilgums - atstājiet tukšu pastāvīgam</string>
+    <string name="mod_ban_title">Liegt piekļuvi /u/%1$s</string>
+    <string name="mod_remove_template">Noņemts dēļ\u0020</string>
+    <string name="mod_remove_hint">Noņemšanas iemesls</string>
+    <string name="mod_remove_title">Kāds ir šīs ziņas noņemšanas iemesls?</string>
+    <string name="mod_remove_insert_draft">Ievietot melnrakstu</string>
+    <string name="mod_flair_none_found">Šim subreddit nav atrasts neviens flair</string>
+    <string name="mod_distinguish">Izcelt</string>
+    <string name="mod_undistinguish">Noņemt izcēlumu</string>
+    <string name="mod_sticky">Piespraust</string>
+    <string name="mod_unsticky">Atspraust</string>
+    <string name="reauth_complete">Atkārtotā autentifikācija pabeigta!</string>
+    <string name="reauth_in_progress">Atkārtoti autentificē…</string>
+    <string name="reauth_failed">Neizdevās atkārtoti autentificēties</string>
+
+    <plurals name="mod_btn_reports">
+        <item quantity="zero">Skatīt %d ziņojumu</item>
+        <item quantity="one">Skatīt %d ziņojumu</item>
+        <item quantity="other">Skatīt %d ziņojumus</item>
+    </plurals>
+
     <!-- If he did -->
+    <string name="really_pin_submission_message">Ziņa piesprausta</string>
+    <string name="really_unpin_submission_message">Ziņa atsprausta</string>
+
     <!-- Subreddit Wiki -->
+    <string name="wiki_err">Viki nav atrasts</string>
+    <string name="wiki_err_msg">Šim subreddit nav viki!</string>
+
     <!-- Subreddits -->
+    <string name="subreddit_subscribers_string">%1$s abonentu</string>
+    <string name="subreddit_active_users_string_new">%1$s šobrīd šeit</string>
+    <string name="subreddit_err_msg">Subreddit %1$s neizdevās atrast. Varbūt tas ir uzrakstīts nepareizi?</string>
+    <string name="subreddit_err_msg_new">Subreddit %1$s neizdevās atrast. Varbūt tas ir uzrakstīts nepareizi vai arī jums nav piekļuves šim subreddit.</string>
     <string name="subreddit_err">Subreddits netika atrasts</string>
+
     <!-- Search -->
+    <string name="search_comments_hint">Meklēt komentāros</string>
     <string name="search_goto">Doties uz</string>
     <string name="search_title">Meklēt</string>
     <string name="search_msg">Ko jūs vēlaties meklēt?</string>
     <string name="search_all">Meklēt visos</string>
     <string name="search_subreddit">Meklēt %1$s</string>
+    <string name="search_relevance">Atbilstība</string>
+    <string name="search_top">Populārākie</string>
+    <string name="search_new">Jaunākie</string>
+    <string name="search_comments">Komentāri</string>
+    <string name="no_posts_found">Ziņas nav atrastas</string>
+
     <!-- Settings -->
+    <string name="settings_reddit_prefs">Reddit preferences</string>
     <string name="settings_accent_title">Uzstādīt akcentu krāsu</string>
+    <string name="settings_delete_sub_settings">Vai tiešām vēlaties dzēst %1$s iestatījumus?</string>
+    <string name="settings_layout_default">Ziņas izkārtojums</string>
     <string name="settings_link_album">Iebūvētais albumu skatītājs</string>
+    <string name="settings_link_peek">Ieskatīties saturā</string>
+    <string name="settings_link_peek_description">Atspējo ilgo nospiešanu uz priekšskatījuma attēla</string>
     <string name="settings_link_gif">Iebūvētais GIF skatītājs</string>
+    <string name="settings_link_hqgif">Augstas kvalitātes Gfycat video</string>
+    <string name="settings_link_handling">Saišu apstrāde</string>
     <string name="settings_link_image">Iebūvētais attēlu skatītājs</string>
+    <string name="settings_mail_check">Pārbaudīt jaunus ziņojumus</string>
+    <string name="settings_mail_info">Jo lielāks biežums, jo vairāk akumulatora Slide var patērēt fonā!</string>
+    <string name="settings_main_color_title">Rediģēt galveno krāsu</string>
+    <string name="settings_notification">Pārbaudīt jaunus ziņojumus ik pēc %1$s</string>
+    <string name="settings_notification_newline">Pārbaudīt jaunus ziņojumus ik pēc\n%1$s</string>
+    <string name="settings_notification_short">Pārbaudīt ik pēc %1$s</string>
+    <string name="settings_disable_nsfw_photo">Paslēpt visus NSFW attēlus</string>
+    <string name="settings_store_history">Saglabāt vēsturi</string>
+    <string name="settings_store_nsfw_history">Saglabāt NSFW vēsturi</string>
+    <string name="settings_commentnav">Pārvietoties starp vecāku komentāriem</string>
+    <string name="share_link">Kopīgot saiti</string>
+    <string name="posts_hidden_forever">Ziņas paslēptas uz visiem laikiem</string>
+    <string name="share_image">Kopīgot attēlu</string>
     <string name="settings_libs">Atvērtā pirmkoda koda bibliotēkas</string>
-    <string name="settings_google">Slide veido savienojumu ar Google</string>
+    <string name="settings_about_libs">Par bibliotēkām</string>
+    <string name="settings_privacy">Privātuma politika</string>
+    <string name="settings_bugs">Ziņot par kļūdām</string>
+    <string name="settings_changelog">Skatīt izmaiņu žurnālu</string>
+    <string name="settings_fabclear_msg">Pieskaroties notīrīšanas pogai, ziņas tiks noņemtas no pašreizējā skata, bet netiks paslēptas uz visiem laikiem. \nIlgi nospiežot pogu, ziņas tiks paslēptas uz visiem laikiem!</string>
+    <string name="settings_fabclear">Peldošās pogas notīrīšanas darbības</string>
+    <string name="settings_notifdisabled">Paziņojumi atspējoti</string>
+    <string name="settings_colored_navigation_bar">Krāsaina navigācijas josla</string>
+    <string name="settings_always_black_statusbar">Melna statusa josla (paziņojumu josla)</string>
+    <string name="settings_colored_icon">Krāsaina lietotnes ikona (eksperimentāli)</string>
+    <string name="settings_colored_icon_desc">Var būt nepieciešama tālruņa restartēšana. Tas arī noņems ikonu no jūsu sākuma ekrāna.</string>
+    <string name="settings_filter_domain">Domēnu filtri</string>
+    <string name="settings_filter_selfttext">Ziņas teksta filtri</string>
+    <string name="settings_filter_title">Virsrakstu filtri</string>
+    <string name="settings_prefs_reddit">Skatīt visas reddit.com preferences</string>
+    <string name="settings_font_post">Ziņas virsraksta fonts</string>
+    <string name="settings_font_comment">Komentāru fonts</string>
+    <string name="settings_comment_crop">Apgriezt galveno attēlu komentāru skatā</string>
+    <string name="settings_general_scroll_read">Atzīmēt ziņas kā redzētas, ritinot tām garām</string>
+    <string name="settings_link_chrome">Pielāgotās cilnes</string>
+    <string name="settings_storage_location">Izvēlēties krātuves atrašanās vietu</string>
+    <string name="settings_storage_location_unset">Vēl nav iestatīts</string>
+    <string name="settings_set_storage_location">Faili tiks saglabāti mapē %s</string>
+    <string name="settings_general_immersive_mode">Ieskaujošs pilnekrāna režīms</string>
+    <string name="settings_general_immersive_mode_desc">Paslēpt statusa un navigācijas joslas (eksperimentāli)</string>
+    <string name="settings_general_old_swipe_mode">Vecais vilkšanas režīms</string>
+    <string name="settings_general_old_swipe_mode_desc">Slide vecais vilkšanas stils. Paredzēts 3 pogu navigācijas režīmam un Samsung žestiem.</string>
+    <string name="settings_general_hibernate">Turpināt no vietas, kur beidzu</string>
+    <string name="settings_general_hibernate_desc">Atver to pašu ekrānu tajā pašā vietā un rāda jau ielādēto, nevis atsvaidzina. Iespējojot šo, papildu izvēlnei tiek pievienota izvēles rūtiņa, kas ieslēdz un izslēdz turpināšanu, neatgriežoties šeit.</string>
+
+    <string name="settings_general_title_drawer_items">Atvilktnes vienumi</string>
+    <string name="settings_general_subtitle_drawer_items">Izvēlieties, kurus atvilktnes vienumus rādīt</string>
+
     <!-- Settings titles displayed in settings activity-->
+    <string name="settings_title_backup">Dublēšana &amp; atjaunošana</string>
+    <string name="settings_title_default_theme">Galvenais motīvs</string>
+    <string name="settings_title_general">Vispārīgi</string>
+    <string name="settings_title_history">Vēsture</string>
+    <string name="settings_title_notifications">Paziņojumi</string>
     <string name="settings_title_pro">Pirkt Pro versiju</string>
+    <string name="settings_title_sub_theme">Subreddit motīvi</string>
+    <string name="settings_title_sort">Noklusējuma kārtošana</string>
+    <string name="settings_title_sort_frontpage">Sākumlapas kārtošana</string>
     <string name="settings_title_about">Par aplikāciju</string>
+    <string name="settings_title_debug">Atkļūdošana</string>
+    <string name="settings_section_debug_reauth">Atkārtota autentifikācija</string>
+    <string name="settings_debug_break_reauth">Sabojāt atkārtoto autentifikāciju</string>
+    <string name="settings_debug_break_reauth_desc">Aptur atkārtoto autentifikāciju, lai varētu pārbaudīt attiecīgo paziņojumu. Atgriezeniski: izslēdziet šo un pēc tam palaidiet atkārtotu autentifikāciju.</string>
+    <string name="settings_debug_trigger_reauth">Palaist atkārtotu autentifikāciju</string>
+    <string name="settings_debug_trigger_reauth_desc">Sāciet atkārtotu autentifikāciju tagad. Izmantojiet to, lai atjaunotos pēc slēdža izslēgšanas.</string>
+    <string name="settings_title_multi_column">Vairākas kolonnas</string>
+    <string name="settings_title_fab">Peldošā darbības poga</string>
+    <string name="settings_title_comments">Komentāri</string>
+    <string name="settings_title_filter">Filtri</string>
+    <string name="settings_title_font">Fonts</string>
+    <string name="settings_section_general">Vispārīgi</string>
+    <string name="settings_section_appearance">Izskats</string>
+    <string name="settings_section_hibernation">Hibernācija</string>
+    <string name="settings_section_other">Citi</string>
+    <string name="settings_section_browser">Pārlūks</string>
+    <string name="settings_section_internal_viewers">Iekšējie skatītāji</string>
+    <string name="settings_section_custom_domains">Pielāgoti domēni</string>
+    <string name="settings_section_save_history">Vēstures saglabāšana</string>
+    <string name="settings_section_clear_history">Vēstures notīrīšana</string>
+    <string name="settings_section_data_saving_mode">Datu taupīšanas režīms</string>
+    <string name="settings_section_data_saving_quality">Kvalitāte datu taupīšanas režīmā</string>
+    <string name="settings_comment_color">Krāsaini komentāru dziļuma indikatori</string>
+    <string name="settings_volume_nav_comments">Pārvietoties komentāros ar skaļuma pogām</string>
+    <string name="settings_commentnav_description">Iespējo apakšējo joslu ar navigācijas bultiņām</string>
+    <string name="settings_comment_collapse">Pilnībā sakļaut komentārus</string>
+    <string name="settings_comment_collapse_description">Atspējo arī komentāru animācijas</string>
+    <string name="settings_comment_collapse_default">Pēc noklusējuma sakļaut apakškomentārus</string>
+    <string name="settings_data_enable">Iespējot datu taupīšanas iestatījumus</string>
+    <string name="settings_data_video_quality">Dot priekšroku zemas kvalitātes video, kad ieslēgta datu taupīšana</string>
+    <string name="settings_comments_collapse_deleted">Pēc noklusējuma sakļaut dzēstos komentārus</string>
+    <string name="settings_comments_collapse_sticky">Vienmēr pilnībā sakļaut piesprausto komentāru</string>
+    <string name="settings_comments_collapse_blocked_users">Sakļaut bloķēto lietotāju komentārus</string>
+    <string name="settings_comments_collapse_blocked_users_description">Iespējo arī Pilnībā sakļaut komentārus</string>
+    <string name="settings_backup_occurs">Dublēšana notiks plkst. %1$s</string>
+    <string name="settings_backup_none">Neviens subreddit netiks dublēts</string>
+    <string name="settings_backup_will_backup">\u0020tiks dublēts</string>
+    <string name="settings_backup_submission_only">tikai ziņa</string>
+    <string name="settings_backup_comments">\u0020(komentāri)</string>
+    <string name="settings_filter_profile">Profila filtri</string>
+    <string name="settings_subreddit_content_filters_till_restart">Subreddit satura filtri līdz restartēšanai</string>
+    <string name="settings_subredditspecific_selftext">Šajā subreddit vienmēr rādīt teksta priekšskatījumu</string>
+    <string name="settings_font_system">Sistēmas</string>
+    <string name="settings_manage_subscriptions">Pārvaldīt savus abonementus</string>
+    <string name="settings_comments_swap_long">Samainīt ilgās nospiešanas un pieskāriena darbības</string>
+    <string name="settings_redditprefs_over18">Esmu vecāks par 18 gadiem un vēlos redzēt NSFW saturu</string>
+    <string name="settings_layout_view">Skata režīms</string>
+    <string name="settings_subredditspecific_bigpic">Šajā subreddit vienmēr rādīt lielus attēlus</string>
+    <string name="settings_layout_picture_mode">Attēlu režīms</string>
+    <string name="settings_general_expanded_toolbar">Paplašināta rīkjoslas izvēlne</string>
+    <string name="settings_general_expanded_toolbar_desc">Rādīt vairāk opciju subreddit rīkjoslā</string>
+    <string name="settings_always_show_floating_action_button">Vienmēr rādīt peldošo darbības pogu</string>
+    <string name="settings_always_show_floating_action_button_desc">Nekad neslēpt peldošo darbības pogu ritinot</string>
+    <string name="settings_theme_tinting">Ziņu krāsošanas režīms</string>
+    <string name="settings_layout_actionbar_mode">Darbību joslas režīms</string>
+    <string name="settings_theme_tint_outside_desc">Krāsot fonu tikai multireddit, sākumlapā un visos</string>
+    <string name="settings_layout_small_content_tag">Mazāka satura birka</string>
+    <string name="settings_links_force_external">Piespiest ārējo pārlūku</string>
+    <string name="settings_layout_show_domain">Rādīt domēnu informācijas rindā</string>
+    <string name="settings_layout_show_content_type">Rādīt satura veidu informācijas rindā</string>
+    <string name="settings_layout_thumbnail_flags">Rādīt krāsainas stūra atzīmes sīktēlos</string>
+    <string name="settings_layout_show_votes_comments">Rādīt balsis/komentārus informācijas rindā</string>
+    <string name="settings_general_comment_last_visit">Rādīt komentāru skaitu kopš pēdējās apmeklēšanas</string>
+    <string name="settings_fab_create">Rādīt peldošo pogu \"izveidot komentāru\"</string>
+    <string name="settings_right_handed_comment_menu">Labročiem paredzēta komentāru atbildes izvēlne</string>
+    <string name="settings_reddit_description">Šie iestatījumi maina to, ko Reddit API atgriež Slide.\n\nLai redzētu sīktēlus visos subreddit, iespējojiet \'Ignorēt subreddit multivides preferences\'\n\nLai redzētu visu NSFW saturu, izslēdziet \'Paslēpt NSFW attēlus\' un ieslēdziet \'Esmu vecāks par 18\'</string>
+    <string name="settings_reddit_media_pref">Ignorēt subreddit multivides preferences</string>
+    <string name="settings_description_view_type">Skata veidi ietekmē gan galveno skatu, gan atsevišķu subreddit skatus.\n\nKomentāru panelis: komentāri izslīd blakus ziņām, un komentāru lapas stāvoklis tiek saglabāts pēc atgriešanās ar vilkšanu (lai jūs nezaudētu savu vietu)\n\nBez subreddit cilnēm: atspējo vilkšanu starp subreddit\n\nSubreddit cilnes: velciet starp saviem subreddit</string>
+    <string name="settings_short_description_view_type">Skata veidi ietekmē gan galveno skatu, gan atsevišķu subreddit skatus</string>
+    <string name="settings_comment_hide_selftext_image">Paslēpt galveno attēlu teksta ziņās</string>
+    <string name="settings_filter_flair">Flair filtri</string>
+    <string name="settings_view_type">Skata veids</string>
+    <string name="settings_data">Datu taupīšana</string>
+    <string name="settings_card_show_selftext">Rādīt ziņas tekstu</string>
+    <string name="settings_card_selftext_paragraph">Rādīt pirmo rindkopu</string>
+    <string name="settings_card_selftext_ellipsize">Saīsināt līdz pirmajām 128 rakstzīmēm</string>
+    <string name="settings_handling_external_desc">Zemāk ievadītie domēni vienmēr tiks atvērti ārēji</string>
+    <string name="settings_handling_enterdomain">Ievadiet domēnu vai tā daļu</string>
+    <string name="settings_section_content">Saturs</string>
+    <string name="settings_backup_view">Skatīt dublējumu</string>
+    <string name="settings_backup_err_no_explorer">Failu pārlūks nav atrasts, fails atrodas %1$s</string>
+    <string name="settings_about_version_copied_toast">Versijas numurs nokopēts starpliktuvē</string>
+    <string name="settings_theme_night_start_at">Sākas plkst.\u0020</string>
+    <string name="settings_theme_night_end_at">Beidzas plkst.\u0020</string>
+    <string name="settings_general_inbox_snd">Skaņa un vibrācija</string>
+    <string name="settings_enable_notifs">Iespējot iesūtnes paziņojumus</string>
+
     <!-- Quick setting toggles in the drawer -->
+    <string name="toggle_night_mode">Nakts režīms</string>
+    <string name="toggle_immersive_mode">Ieskaujošais režīms</string>
+    <string name="toggle_nsfw">Rādīt NSFW saturu</string>
+    <string name="toggle_right_thumbnails">Pa labi līdzināti sīktēli</string>
+    <string name="toggle_reader_mode">Izmantot lasīšanas režīmu</string>
+
     <!-- View types -->
+    <string name="view_type_tabs">Subreddit cilnes</string>
+    <string name="view_type_none">Bez subreddit cilnēm</string>
+    <string name="view_type_comments">Komentāru panelis</string>
+
     <!--Search methods -->
+    <string name="subreddit_search_method_title">Subreddit meklēšanas metode</string>
+    <string name="subreddit_search_method_drawer">Meklēšanas josla atvilktnē</string>
+    <string name="subreddit_search_method_toolbar">Ilgi nospiest rīkjoslas virsrakstu</string>
+    <string name="subreddit_search_method_both">Gan atvilktne, gan rīkjoslas virsraksts</string>
+
     <!-- Back button behavior -->
+    <string name="back_button_behavior_title">Atpakaļpogas darbība</string>
+    <string name="back_button_behavior_default">Aizvērt lietotni</string>
+    <string name="back_button_behavior_confirm_exit">Iziešanas apstiprinājuma dialogs</string>
+    <string name="back_button_behavior_drawer">Atvērt atvilktni</string>
+
     <!-- Subscription managing -->
-    <!-- Save categories -->
+    <string name="reorder_add_domain">Pievienot domēnu</string>
+    <string name="reorder_add_subreddit">Pievienot subreddit</string>
+    <string name="reorder_fab_collection">Multireddit</string>
+    <string name="reorder_fab_domain">Domēns</string>
+    <string name="reorder_fab_subreddit">Subreddit</string>
+    <string name="reorder_add_subscribe">Pievienot &amp; abonēt</string>
+    <string name="reorder_remove_unsubscribe">Noņemt &amp; atteikties</string>
+    <string name="reorder_move">Pārvietot uz augšu</string>
+    <string name="reorder_domain_placeholder">\u0020(tikai domēna nosaukums)</string>
+    <string name="reorder_not_found_err">Subreddit nav atrasts, šeit ir daži ieteikumi</string>
+    <string name="reorder_subscribed_toast">Abonēts /r/%1$s</string>
+    <string name="reorder_unsubscribed_toast">Atteikts no /r/%1$s</string>
+    <string name="sorting_faq"><b>Kā atsvaidzināt subreddit?</b>\nLai atsvaidzinātu subreddit, noklikšķiniet uz atsvaidzināšanas ikonas rīkjoslā!\n\n<b>Es atteicos no dažiem subreddit, bet tie joprojām ir sarakstā!</b>\nSlide pārvērš pārlūkā atteiktos subreddit par neformāliem abonementiem. Lai tos noņemtu, ilgi nospiediet uz subreddit un noklikšķiniet uz noņemt!\n\n<b>Kā lietot kolekcijas?</b>\nLai izveidotu kolekciju, noklikšķiniet uz + peldošās pogas un izvēlieties \'Izveidot kolekciju\'. Tas ļauj vairākiem sub darboties kā vienam subreddit galvenajā ekrānā!</string>
+    <string name="alphabetize_subreddits">Sakārtot subreddit alfabētiski</string>
+    <string name="sync_subscriptions">Sinhronizēt abonementus</string>
+    <string name="cannot_be_undone">To nevar atsaukt.</string>
+    <string name="deleting">Dzēš…</string>
+    <string name="create_or_import_multi">Vai vēlaties izveidot jaunu multireddit vai importēt esošu?</string>
+    <string name="sub_added">Subreddit pievienots!</string>
+    <string name="reorder_subs_FAQ">BUJ par subreddit pārkārtošanu</string>
+    <string name="subscribe_to">Abonēt /r/%1$s</string>
+    <string name="unsubscribe_from">Atteikties no /r/%1$s</string>
+    <string name="btn_add_to_sublist">PIEVIENOT SUB SARAKSTAM</string>
+    <string name="btn_remove_from_sublist">NOŅEMT NO SUB SARAKSTA</string>
+    <string name="just_unsub">TIKAI ATTEIKTIES</string>
+    <string name="subscribe_caps">ABONĒT</string>
+    <string name="unsubscribe_caps">ATTEIKTIES</string>
+    <string name="reorder_subreddits_title">Izvēlieties pievienojamo subreddit</string>
+    <string name="reorder_add_or_search_subreddit">Pievienojiet vai meklējiet subreddit</string>
+    <string name="reorder_subreddit_name">Subreddit nosaukums</string>
+    <string name="reorder_remove_title">Vai noņemt šo subreddit?</string>
+    <string name="reorder_sync_complete">Sinhronizācija pabeigta</string>
+    <string name="reorder_loading_title">Ielādē jūsu subreddit</string>
+    <string name="reorder_url_err">Nederīgs URL</string>
+
+    <!-- Saved tags -->
+    <string name="tag_set_name_hint">Birkas nosaukums</string>
+    <string name="tag_tag_action">MARĶĒT</string>
+    <string name="profile_tag_select">Birkas</string>
+    <string name="profile_saved_tags">Saglabātās birkas</string>
+    <string name="tag_builtin_all">Visi</string>
+    <string name="tag_builtin_posts">Ziņas</string>
+    <string name="tag_builtin_comments">Komentāri</string>
+    <string name="tag_types_header">Veidi</string>
+    <string name="tag_post_types_header">Ziņu veidi</string>
+    <string name="tag_custom_header">Pielāgotas birkas</string>
+    <string name="tag_new">Jauna birka</string>
+    <string name="tag_manage">Pārvaldīt birkas</string>
+    <string name="tag_add">Pievienot birku</string>
+    <string name="tag_none_yet">Vēl nav birku</string>
+    <string name="tag_rename">Pārdēvēt</string>
+    <string name="tag_delete_confirm">Vai tiešām vēlaties dzēst \"%1$s\"? Vienumi ar šo birku netiks dzēsti.</string>
+    <string name="tag_name_used_title">Nosaukums jau tiek lietots</string>
+    <string name="tag_name_used">Birka ar šādu nosaukumu jau pastāv, lūdzu, izvēlieties unikālu nosaukumu.</string>
+    <string name="tag_name_reserved">Šis nosaukums ir rezervēts, lūdzu, izvēlieties citu.</string>
+
     <!-- Setting subheaders -->
+    <string name="sorting">Kārtošana</string>
+    <string name="display">Attēlošana</string>
+    <string name="images">Attēli</string>
+    <string name="storage">Krātuve</string>
+    <string name="app_theme">Lietotnes motīvs</string>
+    <string name="tinting">Krāsošana</string>
+    <string name="post_info">Ziņas informācija</string>
+    <string name="post_buttons">Ziņas pogas</string>
+    <string name="navigation">Navigācija</string>
+    <string name="collapse_comments">Sakļaušanas darbības</string>
+    <string name="nsfw">NSFW saturs</string>
+    <string name="view_reddit_settings">Atvērt Reddit iestatījumus pārlūkā</string>
+    <string name="font_styles">Fontu stili</string>
+
     <!-- Titles displayed in action bar / head / recents overview-->
+    <string name="title_subreddit_settings">Subreddit motīvi &amp; izkārtojumi</string>
     <string name="title_edit_theme">Rediģēt motīvu</string>
+    <string name="title_submit_post">Publicēt ziņu</string>
+    <string name="title_crosspost">Krustpublicēšana</string>
     <string name="title_settings">Iestatījumi</string>
+    <string name="title_share">Kopīgot, izmantojot</string>
     <string name="title_login">Ielogoties Reddit</string>
     <string name="title_multireddits">Multiredditi</string>
+    <string name="title_users">Lietotāji</string>
     <string name="title_inbox">Iesūtne</string>
     <string name="title_theme_settings">Motīvs</string>
-    <!-- Text in Donation-Activity -->
+    <string name="title_create_multi">Izveidot multireddit</string>
+
     <!-- Offline mode -->
+    <string name="offline_msg">Lūdzu, pārejiet tiešsaistē un atsvaidziniet subreddit, lai to izdarītu</string>
+    <string name="offline_last_update">Pēdējoreiz atjaunināts %1$s</string>
+    <string name="offline_comments_not_loaded">Lūdzu, atgriezieties tiešsaistē un izvēlieties ‘Saglabāt komentārus kešatmiņā’ no trīs punktu izvēlnes, lai skatītu komentārus bezsaistē</string>
+    <string name="offline_no_content_found">Bezsaistes saturs nav atrasts</string>
+    <string name="offline_enter_online">Pāriet tiešsaistes režīmā</string>
+    <string name="offline_caching_title">Saglabā kešatmiņā %1$s</string>
+    <string name="offline_caching_complete">Saglabāšana kešatmiņā pabeigta</string>
+
     <!-- Website -->
+    <string name="website_external">Atvērt ārējā pārlūkā</string>
+
+    <plurals name="reorder_subs_added">
+        <item quantity="zero">Pievienoti %d subreddit</item>
+        <item quantity="one">Pievienots %d subreddit</item>
+        <item quantity="other">Pievienoti %d subreddit</item>
+    </plurals>
+
     <!-- Time -->
+    <string name="time_just_now">Tikko</string>
+    <plurals name="time_years">
+        <item quantity="zero">%d gadu</item>
+        <item quantity="one">%d gads</item>
+        <item quantity="other">%d gadi</item>
+    </plurals>
+    <plurals name="time_months">
+        <item quantity="zero">%d mēnešu</item>
+        <item quantity="one">%d mēnesis</item>
+        <item quantity="other">%d mēneši</item>
+    </plurals>
+    <plurals name="time_days">
+        <item quantity="zero">%d dienu</item>
+        <item quantity="one">%d diena</item>
+        <item quantity="other">%d dienas</item>
+    </plurals>
+    <plurals name="time_hours">
+        <item quantity="zero">%d stundu</item>
+        <item quantity="one">%d stunda</item>
+        <item quantity="other">%d stundas</item>
+    </plurals>
+    <plurals name="time_minutes">
+        <item quantity="zero">%d minūšu</item>
+        <item quantity="one">%d minūte</item>
+        <item quantity="other">%d minūtes</item>
+    </plurals>
+    <plurals name="time_seconds">
+        <item quantity="zero">%d sekunžu</item>
+        <item quantity="one">%d sekunde</item>
+        <item quantity="other">%d sekundes</item>
+    </plurals>
+
     <!-- Time: shorthand durations for example 1 hour → 1h -->
+    <string name="time_years_short">%dg</string>
+    <string name="time_days_short">%dd</string>
+    <string name="time_hours_short">%dst</string>
+    <string name="time_minutes_short">%dmin</string>
+
     <!-- Strings present during the login process -->
+    <string name="login_subscribe_rslideforreddit">Abonēt /r/slidereddit?</string>
+    <string name="login_subscribe_rslideforreddit_desc">Vai vēlaties abonēt /r/slidereddit, lai uzzinātu jaunākās ziņas un ziņotu par problēmām?</string>
+    <string name="login_sync_colors">Sinhronizēt krāsas tagad?</string>
+    <string name="login_sync_colors_desc">Vai vēlaties tagad sinhronizēt savu subreddit krāsas? To var izdarīt vēlāk sadaļā Iestatījumi → Subreddit motīvi</string>
+    <string name="login_authenticating">Slide autentificējas</string>
+    <string name="login_starting">Sagatavo visu!</string>
+    <string name="login_starting_desc">Tas aizņems tikai mirkli…</string>
+
     <!-- Over 18 prompt when visiting a NSFW subreddit -->
-    <!-- Subreddit color synchronization - https://redd.it/41054l -->
+    <string name="over18_title">/r/%1$s satur pieaugušajiem paredzētu saturu</string>
+    <string name="over18_desc">Vai esat vecāks par astoņpadsmit gadiem un vēlaties redzēt pieaugušajiem paredzētu saturu?</string>
+    <string name="over18_desc_loggedout">Pierakstieties, lai neatgriezeniski atspējotu šo brīdinājumu</string>
+    <string name="over18_desc_loggedin">To var neatgriezeniski atspējot sadaļā Iestatījumi → Reddit preferences → Rādīt NSFW saturu</string>
+
+    <!-- Subreddit color synchronization - https://reddit.com/comments/41054l -->
+    <string name="color_sync_complete">Sinhronizācija pabeigta</string>
+    <plurals name="color_sync_colored">
+        <item quantity="zero">Iekrāsoti %d subreddit</item>
+        <item quantity="one">Iekrāsots %d subreddit</item>
+        <item quantity="other">Iekrāsoti %d subreddit</item>
+    </plurals>
+
     <!-- Discover section: find -->
+    <string name="discover_title">Atklāt</string>
+    <string name="discover_search">Meklēšanas vārds vai temats</string>
+    <string name="discover_popular">Populāri</string>
+    <string name="discover_trending">Aktuāli</string>
+
     <!-- Subreddit post notifications -->
+    <string name="sub_post_notifs_title">Vai saņemt paziņojumus par jaunām ziņām subreddit\n/r/%1$s?</string>
+    <string name="sub_post_notifs_title_settings">Vai saņemt paziņojumus par jaunām ziņām?</string>
+    <string name="sub_post_notify">Paziņot</string>
+    <string name="sub_post_notifs_threshold">Vērtējuma slieksnis</string>
+    <string name="sub_post_notifs_err">Paziņojumus var pievienot tikai atsevišķiem subreddit</string>
+    <string name="sub_post_notifs_settings_none">Nav subreddit, par kuriem paziņot</string>
+    <string name="sub_post_notifs_settings_search">Meklēt sub nosaukumu</string>
+    <string name="sub_post_notifs_notification_title">Jauna ziņa subreddit /r/%1$s</string>
+    <string name="sub_post_notifs_notification_btn">Pārtraukt sekot /r/%1$s</string>
+    <string name="title_sub_post_notifs">Subreddit ziņu paziņojumi</string>
+
     <!-- Internal browser -->
+    <string name="internal_browser_extracting_error">Atvainojiet, rakstu neizdevās izgūt</string>
+    <string name="internal_browser_storecookies">Saglabāt vietņu sīkfailus</string>
+    <string name="internal_browser_readermode">Lasīšanas režīms</string>
+
     <!-- Live thread -->
+    <string name="livethread_loading_title">Ielādē tiešraides pavedienu…</string>
+    <string name="livethread_not_found">Tiešraides pavediens nav atrasts</string>
+    <string name="livethread_recents_title">Tiešraides pavediens: %1$s</string>
+
     <!-- Used when viewing media -->
+    <string name="mediaview_notif_title">Lejupielādē attēlu…</string>
+    <string name="mediaview_notif_video">Lejupielādē video…</string>
+    <string name="mediaview_notif_text">Notiek lejupielāde</string>
+    <string name="mediaview_save">Saglabāt %1$s</string>
+    <string name="mediaview_saving">Saglabā %1$s</string>
+
     <!-- Drafts -->
+    <string name="choose_draft">Izvēlieties melnrakstu</string>
+    <string name="dialog_no_drafts">Vēl nav melnrakstu</string>
+    <string name="dialog_no_drafts_msg">Melnrakstu var pievienot, noklikšķinot uz ikonas \'saglabāt\' redaktora joslā!</string>
+    <string name="msg_save_draft">Ziņojums saglabāts kā melnraksts</string>
+    <string name="manage_drafts">Pārvaldīt melnrakstus</string>
+    <string name="really_delete_drafts">Vai tiešām dzēst šos melnrakstus?</string>
+
     <!-- Strings for widgets -->
+    <string name="widget_theme_dark">TUMŠS</string>
+    <string name="widget_theme_light">GAIŠS</string>
+    <string name="widget_theme_clear">CAURSPĪDĪGS</string>
+    <string name="widget_posttype_title">Ziņas veids</string>
+    <string name="widget_posttype_list">SARAKSTS</string>
+    <string name="widget_posttype_bigpic">LIELS ATTĒLS</string>
+    <string name="widget_posttype_compact">KOMPAKTS</string>
+    <string name="widget_subname_hint">Subreddit nosaukums</string>
+    <string name="widget_visuals">Izskats</string>
+    <string name="widget_content">Saturs</string>
+    <string name="widget_loading">Ielādē…</string>
+    <string name="widget_creation_title">Jauns logrīks</string>
+    <string name="shortcut_creation_title">Jauna saīsne</string>
+
     <!-- Strings for alert dialogs -->
+    <string name="force_change_subscription">Neizdevās mainīt abonementu</string>
+    <string name="force_change_subscription_desc">Vai tomēr vēlaties to mainīt lokāli?</string>
+    <string name="never_load_images">Neielādēt nevienu attēlu</string>
+    <string name="load_low_quality">Ielādēt zemas kvalitātes attēlus (maks. 320x320)</string>
+    <string name="load_medium_quality">Ielādēt vidējas kvalitātes attēlus (maks. 640x640)</string>
+    <string name="load_high_quality">Ielādēt augstas kvalitātes attēlus (maks. 1080x1080)</string>
+    <string name="choose_color_title">Izvēlieties krāsu</string>
+    <string name="enter_text_to_filter_click_enter_to_add">Ievadiet tekstu meklēšanai, nospiediet Enter, lai pievienotu filtru</string>
+    <string name="mode_desktop_compact">Darbvirsmas kompaktais</string>
+    <string name="show_content_type_text_beside_links">Rādīt satura veida tekstu blakus saitēm</string>
+    <string name="comment_shadowbox">Komentāru Shadowbox</string>
+
     <!-- Sidebar strings (multis, flairs) -->
+    <string name="sidebar_select_flair">Izvēlēties flair</string>
+    <string name="sidebar_select_flair_text">Iestatīt flair tekstu</string>
+    <string name="sidebar_findingmods">Meklē moderatorus</string>
+    <string name="snackbar_flair_success">Flair veiksmīgi iestatīts</string>
+    <string name="snackbar_flair_error">Kļūda, iestatot flair, mēģiniet vēlreiz drīzumā</string>
+    <string name="sidebar_submods">/r/%s moderatori</string>
+    <string name="sidebar_flair">Flair: %1$s</string>
+    <string name="sidebar_notfound">Sānjosla nav atrasta</string>
+    <plurals name="reorder_selected">
+        <item quantity="zero">"Atlasīti %d"</item>
+        <item quantity="one">"Atlasīts %d"</item>
+        <item quantity="other">"Atlasīti %d"</item>
+    </plurals>
+
     <!--Filtering dialog -->
+    <string name="filter_title">Ko vēlaties filtrēt?</string>
+    <string name="filter_posts_sub">Ziņas no /r/%1$s</string>
+    <string name="filter_posts_user">/u/%1$s ziņas</string>
+    <string name="filter_posts_urls">Ziņas, kas saista uz %1$s</string>
+    <string name="filter_open_externally">Atvērt %s saites ārēji</string>
+    <string name="filter_posts_flair">Flair \"%1$s\" no %2$s</string>
+    <string name="filter_btn">Filtrēt</string>
+
     <!-- Caching -->
+    <string name="cache_no_comments_found">Komentāri nav atrasti</string>
+    <string name="cache_no_comments_found_snackbar">Kešatmiņā saglabāti komentāri nav atrasti</string>
+    <string name="cache_no_comments_found_message">Šai ziņai nav kešatmiņā saglabātu komentāru. Lai turpmāk saglabātu komentārus kešatmiņā, noklikšķiniet uz trīs punktu izvēlnes galvenajā ekrānā un izvēlieties \'Saglabāt komentārus kešatmiņā\', vai iestatiet automātisko saglabāšanu cilnē Bezsaistes saturs navigācijas atvilktnē</string>
+    <string name="autocache_subreddits">Automātiskās saglabāšanas subreddit</string>
+    <string name="autocache_time">Automātiskās saglabāšanas laiks</string>
+    <string name="cache_subreddits_now">Saglabāt subreddit kešatmiņā tagad</string>
+    <string name="cache_wifi_only">Saglabāt kešatmiņā tikai Wi-Fi tīklā</string>
+    <string name="comments_depth">Kešatmiņā saglabājamo komentāru dziļums</string>
+    <string name="comments_count">Kešatmiņā saglabājamo komentāru skaits</string>
+
     <!-- Saving location setting -->
+    <string name="set_save_location">Iestatīt multivides saglabāšanas vietu</string>
+    <string name="set_save_location_msg">Slide multivides saglabāšanas vieta nav iestatīta.</string>
+
     <!-- Report flow -->
     <string name="btn_report">Ziņo</string>
+    <string name="report_post">Ziņot par ziņu</string>
+    <string name="report_comment">Ziņot par komentāru</string>
+    <string name="report_loading">Ielādē iemeslus…</string>
+    <string name="report_sub_rules">/r/%s noteikumi</string>
+    <string name="report_site_rules">Reddit noteikumi</string>
+    <string name="report_another_reason">Cits iemesls</string>
+    <string name="report_other">Cits</string>
+    <string name="input_reason_for_report">Ziņošanas iemesls</string>
+    <string name="msg_report_sent">Ziņojums nosūtīts</string>
+
     <!-- Unsorted ¯\\_(ツ)_/¯ -->
+    <string name="comment_load_more_number_unknown">Ielādēt vairāk komentāru</string>
+    <string name="card_right_thumb">Pa labi līdzināts sīktēls</string>
+    <string name="setting_filter_subreddits">Subreddit filtri</string>
+    <string name="subreddit_theme">Subreddit motīvs</string>
+    <string name="dialog_choose_subreddits_to_edit">Izvēlieties rediģējamos subreddit</string>
+    <string name="dialog_color_sync_title">Krāsu sinhronizācija</string>
+    <string name="dialog_color_sync_message">Tas mēģinās iegūt subreddit ‘galveno krāsu’, ko iestatījuši moderatori. Tas nepārrakstīs jau iekrāsotos subreddit.</string>
+    <string name="fab_hide">Paslēpt apskatītās ziņas</string>
+    <string name="fab_create">Izveidot jaunu ziņu</string>
+    <string name="fab_disabled">Atspējots</string>
+    <string name="fab_search">Meklēt ziņas</string>
+    <string name="handling_internal_browser">Iekšējais pārlūks</string>
+    <string name="handling_external_browser">Ārējais pārlūks</string>
+    <string name="mode_list">Saraksts</string>
+    <string name="mode_centered">Kartīte ar centrētu attēlu</string>
+    <string name="mode_card">Kartīte</string>
+    <string name="mode_thumbnail">Sīktēls</string>
+    <string name="mode_no_thumbnails">Bez sīktēla</string>
+    <string name="mode_big_thumbnails">Plati sīktēli</string>
+    <string name="mode_cropped">Apgriezts liels attēls</string>
+    <string name="mode_letterbox">Liels attēls ar malām</string>
+    <string name="mode_bigpic">Liels attēls</string>
+    <string name="press_actionbar">Nospiediet bultiņu, lai parādītu darbību joslu</string>
+    <string name="show_top_right">Rādīt augšējā labajā stūrī</string>
+    <string name="show_bottom_right">Rādīt apakšējā labajā stūrī</string>
+    <string name="small_tag_disabled">Atspējots</string>
+    <string name="tap_actionbar">Ilgi nospiest darbību joslai</string>
+    <string name="always_actionbar">Vienmēr rādīt darbību joslu</string>
+    <string name="sub_content_filter">Subreddit satura filtrs</string>
+    <string name="submission_share_reddit_url">Kopīgot komentārus</string>
+    <string name="filter_content">Filtrēt šo saturu</string>
+    <string name="content_to_show">Saturs, ko rādīt vietnē %1$s</string>
+    <string name="save_for_offline_viewing">Saglabāt ziņas skatīšanai bezsaistē</string>
+    <string name="btn_collapse_children_all">Sakļaut apakškomentārus</string>
+    <string name="btn_open_content">Atvērt saturu</string>
+    <string name="enter_text_to_filter_click_enter_to_add_flair">Ievadiet filtrējamo tekstu (subreddit:flair_text), nospiediet Enter, lai pievienotu</string>
+    <plurals name="filter_count">
+        <item quantity="zero">%1$d filtru (maks. %2$d rādīti)</item>
+        <item quantity="one">%1$d filtrs (maks. %2$d rādīti)</item>
+        <item quantity="other">%1$d filtri (maks. %2$d rādīti)</item>
+    </plurals>
+    <string name="filter_limit_reached">Tiek rādīti pirmie %1$d no %2$d. Meklējiet, lai sašaurinātu rezultātus.</string>
+    <string name="datasave_always">Mobilie dati un Wi-Fi</string>
+    <string name="datasave_mobile">Mobilie dati</string>
+    <string name="never">Nekad</string>
+    <string name="multi_column_force_full">Piespiest pilnu komentāru skatu</string>
+    <string name="submission_info_locked">Šī ir slēgta ziņa. Jūs nevarēsiet komentēt.</string>
+    <string name="card_background_tint">Kartītes fons</string>
+    <string name="subreddit_name_tint">Subreddit nosaukums</string>
+    <string name="login_failed_err_decline">Pārliecinieties, ka iepriekšējā ekrānā neizvēlējāties ‘Noraidīt’, un mēģiniet vēlreiz pēc minūtes</string>
+    <string name="login_unsupported_redirect_uri">Konfigurēto novirzīšanas URI (%1$s) pārlūks nevar saņemt, tāpēc pierakstīšanos nevar pabeigt. Tā vietā izmantojiet pierakstīšanos ar WebView lietotnē vai iestatiet atbalstītu novirzīšanas URI iestatījumos.</string>
+    <string name="login_unsupported_redirect_uri_title">Pierakstīšanās neizdevās</string>
+    <string name="login_failed_oauth_error_page">Pierakstīšanās neizdevās — Reddit atgrieza kļūdu, nevis pabeidza pierakstīšanos. Pārbaudiet savu klienta ID un novirzīšanas URI iestatījumos.</string>
+    <string name="tutorial_swipe_navigation">Navigācija ar vilkšanu</string>
+    <string name="tutorial_swipe_description">Velciet no kreisās malas, lai izietu.\n\nTas attiecas uz attēliem, GIF, albumiem, iestatījumiem un citu!</string>
+    <string name="handling_browser">Tīmekļa pārlūks</string>
+    <string name="submit_replies_to_inbox">Sūtīt atbildes uz iesūtni</string>
+    <string name="btn_open_comments">Atvērt komentārus</string>
+    <string name="btn_preview">Priekšskatījums</string>
+    <string name="default_comment_sort">Noklusējuma komentāru kārtošana</string>
+    <string name="content_deleted">[dzēsts]</string>
+    <string name="thread_continue">Turpināt šo pavedienu</string>
+    <string name="type_selftext">Teksta ziņa</string>
+    <string name="type_selftexts">Teksta ziņas</string>
+    <string name="submission_unhide">Atkal rādīt ziņu</string>
+    <string name="submission_info_unhidden">Ziņa atkal redzama</string>
+    <string name="msg_sent_success">Ziņojums nosūtīts</string>
+    <string name="msg_sent_failure">Ziņojumu neizdevās nosūtīt</string>
+    <string name="msg_send_user_dne">Šāds lietotājs neeksistē</string>
+    <string name="editor_actions_quote_comment">Atlasiet citējamo tekstu</string>
+    <string name="guest">Viesis</string>
+    <string name="album_slide_view">Slīdošs albuma skats</string>
+    <string name="album_grid">Albuma režģis</string>
+    <string name="open_externally">Atvērt ārēji</string>
+    <string name="vertical_album_view">Vertikāls albuma skats</string>
+    <string name="download_album">Lejupielādēt albumu</string>
+    <string name="download_gallery">Lejupielādēt galeriju</string>
+    <string name="compose_message">Rakstīt ziņojumu</string>
+    <string name="mark_all_as_read">Atzīmēt visus kā izlasītus</string>
+    <string name="clear_subreddit_history">Notīrīt subreddit vēsturi</string>
+    <string name="clear_submission_history">Notīrīt ziņu vēsturi</string>
+    <string name="alert_history_cleared">Vēsture notīrīta!</string>
+    <string name="manage_offline_content">Pārvaldīt bezsaistes saturu</string>
+    <string name="go_offline">Pāriet bezsaistē</string>
+    <string name="sidebar_edit_flair">Rediģēt savu flair</string>
+    <string name="go_online_view_content">Lūdzu, pārejiet tiešsaistē, lai skatītu šo saturu</string>
+    <string name="help">Palīdzība</string>
+    <string name="upvote_percentage">Rādīt atbalsta procentu</string>
+    <string name="view_subreddits">Skatīt subreddit</string>
+    <string name="clear_saved_subreddits">Notīrīt visus saglabātos subreddit</string>
+    <string name="download_the_slide_video_player_plugin">Lejupielādēt Slide Video Player spraudni</string>
+    <string name="btn_suggest_title">Ieteikt virsrakstu</string>
+    <string name="navigate_comments_since">Komentāri, kas jaunāki par…</string>
+    <string name="btn_offline">Pāriet bezsaistes režīmā</string>
+    <string name="discard_comment_title">Vai atmest komentāru?</string>
+    <string name="comment_discard_msg">Vai tiešām vēlaties atmest savu komentāru?</string>
+    <string name="backup_saved_downloads">Dublējums saglabāts lejupielādēs</string>
+    <string name="really_remove_subreddit_title">Vai tiešām noņemt šo subreddit?</string>
+    <string name="choose_sync_time">Izvēlieties sinhronizācijas laiku</string>
+    <string name="account_suspended">Šis konts ir apturēts</string>
+    <string name="clear_all_sub_themes">Vai notīrīt visus subreddit motīvus?</string>
+    <string name="clear_all_sub_themes_msg">Šo darbību nevar atsaukt</string>
+    <string name="title_not_found">Virsraksts nav atrasts</string>
+    <string name="really_delete_submission">Vai tiešām dzēst šo ziņu? To nevar atsaukt</string>
+    <string name="comment_unstickied">Komentārs atsprausts</string>
+    <string name="comment_stickied">Komentārs piesprausts</string>
+    <string name="comment_undistinguished">Komentāra izcēlums noņemts</string>
+    <string name="comment_distinguished">Komentārs izcelts</string>
+    <string name="comment_removed">Komentārs noņemts</string>
+    <string name="set_nav_mode">Iestatīt navigācijas režīmu</string>
+    <string name="auto_hide_the_comment_nav_bar">Automātiski slēpt komentāru navigācijas joslu</string>
+    <string name="rate_slide">Novērtēt Slide</string>
+    <string name="edit_query">Rediģēt vaicājumu</string>
+    <string name="share_slide">Kopīgot Slide</string>
+    <string name="open_clipboard_reddit_link">Atvērt Reddit saiti no starpliktuves</string>
+    <string name="clipboard_no_reddit_link">Starpliktuvē nav Reddit saites</string>
+    <string name="open_links_externally">Vienmēr atvērt šo resursdatoru ārēji</string>
+    <string name="hide_read_posts">Paslēpt izlasītās ziņas</string>
+    <string name="gallery_mode">Galerijas režīms</string>
+    <string name="settings_gallery_grid">Rādīt galerijas ziņas kā režģi</string>
+    <string name="gallery_grid_image">Galerijas attēls %1$d no %2$d</string>
+    <string name="gallery_grid_overflow">+%1$d</string>
+    <string name="friends_sort_error">/r/friends nevar kārtot</string>
+    <string name="shadowbox_comments_nolinks">Komentāros nav atrasta neviena saite</string>
+    <string name="draw_undo">Atsaukt</string>
+    <string name="empty_preview_text">Šeit nav ko redzēt ¯\\_(ツ)_/¯</string>
+    <string name="theme_red_shift">Sarkanā nobīde</string>
+    <string name="view_sub_sidebar">Skatīt sub sānjoslu</string>
+    <string name="mod_log">Moderēšanas žurnāls</string>
+    <string name="navigation_bar_vote_gestures">Balsošanas žesti navigācijas joslā</string>
+    <string name="nav_gestures_description">Balsojiet par un pret, velkot pa komentāru navigācijas bultiņām</string>
+    <string name="subreddit_sidebar_progress">Iegūst sānjoslu…</string>
+    <string name="manage_your_subreddits">Pārvaldīt savus subreddit</string>
+    <string name="enlarge_links">Palielināt saites</string>
+    <string name="enlarge_links_warning">Var padarīt dažas rindas lielākas par citām, bet saitēm ir vieglāk pieskarties</string>
+    <string name="type_tumblr">Tumblr</string>
+    <string name="type_tumblrs">Tumblr ziņas</string>
+    <string name="type_nsfw_tumblr">NSFW Tumblr</string>
+    <string name="submission_info_contest">Šis pavediens ir konkursa režīmā. Jūs nevarat mainīt kārtošanu.</string>
+    <string name="sub_post_notifs_msg">Slide pārbaudīs jaunas ziņas, kad tas pārbaudīs pastu (pasta paziņojumiem jābūt iespējotiem)</string>
+    <string name="mod_ban_reason_required">Iemesls ir obligāts</string>
+    <string name="settings_abbreviate_post_scores">Saīsināt ziņu vērtējumus (piem., 24.0k)</string>
+    <string name="settings_wide_depth_indicators">Plati komentāru dziļuma indikatori</string>
+    <string name="settings_link_reader_mode_title">Izmantot lasīšanas režīmu</string>
+    <string name="settings_link_reader_mode_description">Atvērt visas saites lasīšanas režīmā. Atverot no lasīšanas režīma, tiks izmantots izvēlētais pārlūka veids.</string>
+    <string name="settings_link_reader_night">Saistīt lasīšanas režīmu ar nakts režīmu</string>
+    <string name="theme_pixel">Pixel</string>
+    <string name="save_images_to_subreddit_specific_subfolders">Saglabāt attēlus apakšmapēs pēc subreddit</string>
+    <string name="description_save_subfolders">Darbojas ziņu un komentāru skatos</string>
+    <string name="save_media_to_type_specific_subfolders">Saglabāt multividi apakšmapēs pēc veida</string>
+    <string name="description_save_type_subfolders">Attēli nonāk mapē \"images\", video un GIF mapē \"videos\"</string>
+    <string name="show_image_download_button">Lejupielādes saīsne</string>
+    <string name="description_image_download_button">Rādīt lejupielādes pogu attēlu skatītājā</string>
+    <string name="content_settings">Satura iestatījumi</string>
+    <string name="setting_titleTop">Rādīt virsrakstu virs informācijas rindas</string>
+    <string name="setting_notification_piggybacking">Reddit paziņojumu izmantošana</string>
+    <string name="setting_notification_piggybacking_desc">Pārbaudīt pastu tikai tad, kad oficiālā Reddit lietotne saņem push paziņojumu</string>
+    <string name="install_notif_piggyback">Instalējiet oficiālo Reddit lietotni, lai iespējotu paziņojumu izmantošanu</string>
+    <string name="success_block_user">Lietotājs veiksmīgi bloķēts</string>
+    <string name="err_unblock_user">Kļūda, atbloķējot lietotāju</string>
+    <string name="success_unblock_user">Lietotājs veiksmīgi atbloķēts</string>
+    <string name="settings_highlight_time_desc">Nepieciešams, lai iestatījumos &gt; Ziņas izkārtojums būtu iespējota opcija \'Rādīt komentāru skaitu kopš pēdējās apmeklēšanas\'</string>
+    <string name="settings_colored_time">Krāsains laika burbulis jauniem komentāriem</string>
+    <string name="theme_deep">Dziļš</string>
+    <string name="type_vreddit">Reddit video</string>
+    <string name="authors_above">Autori augšpusē</string>
+    <string name="btn_crosspost">Krustpublicēt</string>
+    <string name="btn_reset_color">ATIESTATĪT KRĀSU</string>
+    <string name="settings_shortlink_description">Saites tiks kopīgotas formātā \'https://reddit.com/comments/\'</string>
+    <string name="settings_shortlink">Kopīgot Reddit īsās saites, kur iespējams</string>
+    <string name="disable_replies_comment">Atspējot komentāra atbildes iesūtnē</string>
+    <string name="replies_disabled_comment">Komentāru atbildes atspējotas</string>
+    <string name="replies_enabled_comment">Komentāru atbildes iespējotas</string>
+    <string name="replies_switch_accounts">Pārslēgties uz citu kontu</string>
+    <string name="search_settings">Meklēt iestatījumos</string>
+    <string name="show_collapse_expand_nav_bar">Rādīt sakļaušanas/izvēršanas pogu komentāru navigācijas joslā</string>
+    <string name="page_not_found">Lapa nav atrasta</string>
+    <string name="page_does_not_exist">Pieprasītā lapa neeksistē</string>
+    <string name="back_button_behavior_goto_first">Doties uz pirmo subreddit</string>
+    <string name="settings_hide_post_awards">Paslēpt apbalvojumus</string>
+    <string name="settings_hide_comment_awards">Paslēpt apbalvojumus</string>
+    <string name="settings_title_markdown">Markdown</string>
+    <string name="settings_markdown_new_reddit">Jaunā Reddit stila Markdown</string>
+    <string name="settings_markdown_new_reddit_desc">Attēlo koda blokus un formatējumu kā jaunajā Reddit (izslēgts izmanto vecā Reddit attēlotāju)</string>
+    <string name="comment_render_other">Rādīt citu attēlojumu</string>
+    <string name="recover_post">Atgūt ziņu</string>
+    <string name="recover_loading">Iegūst oriģinālu no arhīva…</string>
+    <string name="recover_post_failed">Šo ziņu neizdevās atgūt</string>
+    <string name="recover_comment">Atgūt komentāru</string>
+    <string name="recover_comment_failed">Šo komentāru neizdevās atgūt</string>
+    <string name="markdown_preview_new_reddit">Jaunā Reddit attēlojums</string>
+    <string name="markdown_preview_old_reddit">Vecā Reddit attēlojums</string>
+    <string name="high_colorspace_images">Attēli ar plašu krāsu telpu</string>
+    <string name="description_high_colorspace">Ielādē attēlus pilnā krāsu telpā, kas var palielināt atmiņas patēriņu</string>
+    <string name="wide_color_gamut">Plaša krāsu gamma</string>
+    <string name="description_wide_color_gamut">Attēlo multivides skatītājus plašā krāsu gammā. Dažos OLED ekrānos krāsas var izbalēt</string>
+    <string name="comment_emote_animation">Komentāru emociju animācija</string>
+    <string name="description_comment_emote_animation">Nosaka, vai komentāros tiek animētas emocijas, kas nav no Giphy</string>
+    <string name="comment_image_size">Attēlu izmērs komentāros</string>
+    <string name="description_comment_image_size">Cik lieli komentāros tiek rādīti iegultie attēli</string>
+    <string name="comment_image_size_small">Mazs</string>
+    <string name="comment_image_size_medium">Vidējs</string>
+    <string name="comment_image_size_large">Liels</string>
+    <string name="no_preview_image_longclick">Nekādas ilgās nospiešanas uz jebkura satura veida priekšskatījuma attēliem</string>
+    <string name="description_no_preview_image_longclick">Nosaka, vai ilgā nospiešana darbojas uz jebkura satura veida priekšskatījuma attēliem. Tas atspējo satura ieskates funkciju.</string>
+    <string name="editor_btn_select_flair">Izvēlēties flair</string>
+    <string name="submit_selected_flair">Izvēlētais flair: %s</string>
+    <string name="mediaview_downloading">Lejupielādē attēlu&#8230;</string>
+    <string name="err_save_image">Kļūda, saglabājot attēlu</string>
+    <string name="error_directory_not_selected">Nav izvēlēta neviena mape. Lūdzu, mēģiniet vēlreiz.</string>
+
+    <!-- Backup Operations -->
+
+    <!-- Additional Backup Operations -->
+    <string name="select_backup_file">Izvēlieties dublējuma failu</string>
+
+    <string name="read_later">Lasīt vēlāk</string>
+    <string name="mark_as_read">Atzīmēt kā izlasītu</string>
+
+    <string name="reddit_client_id">Reddit klienta ID</string>
+    <string name="click_custom_client_id">Pieskarieties, lai iestatītu pielāgotu klienta ID</string>
+    <string name="client_id_scan_qr">Skenēt QR kodu</string>
+    <string name="client_id_scan_prompt">Noskenējiet QR kodu, kas satur jūsu Reddit klienta ID</string>
+    <string name="camera_permission_denied">QR kodu skenēšanai nepieciešama kameras atļauja</string>
+    <string name="client_id_invalid_length">Nederīgs klienta ID: tam jābūt tieši 22 rakstzīmes garam</string>
+
+    <!-- Notification permission strings -->
+    <string name="notifications_permission_title">Iespējot paziņojumus</string>
+    <string name="notifications_permission_message">Slide nepieciešama paziņojumu atļauja, lai informētu jūs par jauniem ziņojumiem, ziņām un citiem Reddit jaunumiem. Paziņojumu iestatījumus varēsiet pārvaldīt vēlāk.</string>
+    <string name="notification_listener_permission_title">Iespējot piekļuvi paziņojumiem</string>
+    <string name="notification_listener_permission_message">Slide nepieciešama piekļuve paziņojumiem, lai pārtvertu Reddit paziņojumus un nodrošinātu labāku pieredzi. Lūdzu, iespējojiet Slide piekļuvi paziņojumiem nākamajā ekrānā.</string>
+
+
+    <string name="reddit_redirect_uri_override">Reddit novirzīšanas URI aizstāšana</string>
+    <string name="click_custom_redirect_uri">Pieskarieties, lai iestatītu pielāgotu novirzīšanas URI</string>
+    <string name="settings_reddit_redirect_uri_invalid">Nederīgs novirzīšanas URI: tam jābūt formā shēma://resursdators</string>
+    <string name="reddit_user_agent_override">Reddit user agent aizstāšana</string>
+    <string name="click_custom_user_agent">Pieskarieties, lai iestatītu pielāgotu user agent</string>
+    <string name="settings_enable_overrides">Iespējot aizstāšanas</string>
+    <string name="settings_enable_overrides_desc">Izmantojiet savu klienta ID, novirzīšanas URI un user agent lietotnes noklusējuma vērtību vietā. Atstājiet izslēgtu, ja vien nezināt, ka tas ir nepieciešams.</string>
+
+    <string name="settings_section_sound">Skaņa</string>
+    <string name="settings_unmute_default">Pēc noklusējuma ieslēgt video skaņu</string>
+
+    <string name="settings_subreddit_filter_prefix_matching">Iespējot prefiksa atbilstību subreddit filtros</string>
+    <string name="settings_subreddit_filter_prefix_matching_description">Prefikss ir pilns subreddit nosaukums un vismaz sešas rakstzīmes. Piemēri: subreddit social bloķēs socialanxiety. Subreddit pokemongo bloķēs pokemongoraids.</string>
+
+    <string name="settings_filter_old_posts">Filtrēt ziņas, kas vecākas par</string>
+    <plurals name="settings_filter_old_posts_days">
+        <item quantity="zero">%1$d dienu</item>
+        <item quantity="one">%1$d diena</item>
+        <item quantity="other">%1$d dienas</item>
+    </plurals>
+    <string name="settings_filter_old_posts_description">Netiek piemērots, skatot atsevišķu subreddit vai kārtojot pēc Top vai Controversial</string>
+
+    <!-- Pause on audio focus ducking setting -->
+    <string name="settings_pause_on_duck_title">Apturēt video, nevis samazināt skaļumu</string>
+    <string name="settings_pause_on_duck_desc">Aptur video, kad citas lietotnes atskaņo skaņu. Skaļuma samazināšana nozīmē skaļuma pazemināšanu, nevis video apturēšanu.</string>
+
+    <!-- Add this string resource for the play button content description -->
+    <string name="btn_play">Atskaņot</string>
+
+    <string name="multireddit_name_title">Multireddit nosaukums</string>
+    <string name="multireddit_name_hint">Multireddit nosaukums</string>
+    <string name="multireddit_err_empty_name">Multireddit nosaukums nevar būt tukšs</string>
+    <string name="multireddit_err_no_valid_subs">Nav izvēlēts neviens derīgs subreddit. Lūdzu, izvēlieties vismaz vienu.</string>
+    <string name="multireddit_progress_title">Izveido multireddit</string>
+    <string name="multireddit_progress_message">Lūdzu, uzgaidiet, kamēr izveidojam jūsu multireddit...</string>
+    <string name="multireddit_created_success">Multireddit veiksmīgi izveidots</string>
+    <string name="multireddit_created_error">Neizdevās izveidot multireddit. Lūdzu, mēģiniet vēlreiz.</string>
+    <string name="multireddit_json_error">Sagatavojot jūsu multireddit datus, radās kļūda</string>
+
+    <string name="settings_dialog_colored_border">Pievienot krāsainu apmali ap dialoglodziņiem</string>
+    <string name="settings_dialog_colored_border_desc">Rāda plānu krāsainu apmali ap dažiem dialoglodziņiem.</string>
+
+    <string name="misc_err_sync_failed">Neizdevās sinhronizēt subreddit. Nav abonētu subreddit?</string>
+
+    <string name="mod_btn_distinguish">Izcelt</string>
+    <string name="mod_btn_undistinguish">Noņemt izcēlumu</string>
+
+    <string name="nsfw_status_removed">NSFW atzīme noņemta</string>
+    <string name="nsfw_status_set">NSFW atzīme iestatīta</string>
+
+    <string name="spoiler_status_removed">Spoilera atzīme noņemta</string>
+    <string name="spoiler_status_set">Spoilera atzīme iestatīta</string>
+
+    <string name="submission_distinguished">Ziņa izcelta</string>
+    <string name="submission_distinguished_removed">Ziņas izcēlums noņemts</string>
+
+    <string name="settings_general_hide_subreddit_tabs">Paslēpt abonēto subreddit cilnes</string>
+    <string name="settings_general_hide_subreddit_tabs_desc">Paslēpj abonētos subreddit kā cilnes, bet saglabā navigācijas pogas</string>
+
+    <!-- Video playback speed control -->
+    <string name="video_speed">Ātrums</string>
+    <string name="video_speed_0_25x">0.25x</string>
+    <string name="video_speed_0_5x">0.5x</string>
+    <string name="video_speed_0_75x">0.75x</string>
+    <string name="video_speed_1x">Parasts</string>
+    <string name="video_speed_1_25x">1.25x</string>
+    <string name="video_speed_1_5x">1.5x</string>
+    <string name="video_speed_2x">2x</string>
+    <string name="video_speed_control_content_desc">Atskaņošanas ātruma vadība</string>
+    <string name="image_unavailable">Attēls nav pieejams</string>
+    <string name="image_rotate_content_desc">Pagriezt attēlu par 90 grādiem pulksteņrādītāja virzienā</string>
+    <string name="image_rotate_left_content_desc">Pagriezt attēlu par 90 grādiem pretēji pulksteņrādītāja virzienam</string>
+
+    <!-- Folder chooser dialog (formerly provided by afollestad material-dialogs commons) -->
+    <string name="md_error_label">Kļūda</string>
+    <string name="md_storage_perm_error">Šai funkcijai nepieciešama krātuves atļauja, kas nav piešķirta.</string>
+    <string name="md_choose_label">IZVĒLĒTIES</string>
+    <string name="new_folder">Jauna mape</string>
 </resources>

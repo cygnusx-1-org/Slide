@@ -1,87 +1,1403 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Generic text used anywhere -->
+    <string name="general_confirm">Konfirmo</string>
     <string name="general_confirm_exit">Konfirmo Daljen</string>
     <string name="general_confirm_exit_msg">Deshironi te dilni nga aplikacioni?</string>
     <string name="general_enable_shadowbox">Forma Shadowbox</string>
     <string name="general_open_settings">Sidebar</string>
+    <string name="general_sub_sync">Po sinkronizohen abonimet</string>
+
     <!-- Used when viewing a thread -->
+    <string name="submission_info_unsaved">Postimi u hoq nga të ruajturat</string>
+    <string name="submission_info_saved">Postimi u ruajt</string>
+    <string name="submission_info_archived">Ky është një postim i arkivuar. Nuk do të mund të votoni ose të komentoni.</string>
     <string name="submission_post_saved">Postimi u ruajt</string>
     <string name="submission_info_hidden">Postimi u fsheh perhere</string>
     <string name="submission_stickied">Pinned</string>
     <string name="submission_link_copy">Kopjo URL</string>
     <string name="submission_link_share">Shperndaje</string>
+    <string name="submission_share_title">Cilën lidhje doni të ndani?</string>
     <string name="submission_share_reddit">Reddit URL</string>
     <string name="submission_share_content">URL e permbajtjes</string>
     <string name="submission_hide">Fsheh postimin</string>
     <string name="submission_report">Raporto postimin</string>
     <string name="submission_gild">Hape ne browser</string>
     <string name="submission_save">Ruaje postimin</string>
+    <string name="submission_save_image">Ruaj imazhin</string>
+    <string name="submission_save_video">Ruaj videon</string>
     <string name="submission_load_full">Hap postimin e plote</string>
-    <string name="submission_tap_gif">Shtyp per te hapur GIF</string>
+    <string name="submission_np_link">Kjo është një lidhje pa pjesëmarrje. Ju lutemi mos votoni dhe mos komentoni.</string>
     <string name="submission_not_found">Uh oh, postimi nuk u gjet!</string>
+    <string name="submission_not_found_msg">Na vjen keq, ky postim nuk u gjet</string>
+    <string name="submission_copy_text">Kopjo tekstin</string>
+    <string name="submission_comment_saved">Komenti u ruajt</string>
+    <string name="submission_comment_unsaved">Komenti u hoq nga të ruajturat</string>
+    <string name="submission_share_permalink">Ndaj lidhjen</string>
+    <string name="submission_comment_copied">Teksti i komentit u kopjua</string>
+    <string name="submission_text_copied">Teksti i postimit u kopjua</string>
+    <string name="submission_nocontent">Postimi nuk ka përmbajtje</string>
+    <string name="submission_link_copied">Lidhja u kopjua</string>
+    <string name="translate_with_google">Përkthe</string>
+    <string name="translate_no_app">Nuk ka asnjë aplikacion të disponueshëm për përkthim</string>
+    <string name="read_aloud">Lexo me zë</string>
+    <string name="read_aloud_unavailable">Kthimi i tekstit në të folur nuk është i disponueshëm</string>
+    <string name="submission_removed">Postimi u hoq</string>
+
+    <plurals name="new_messages">
+        <item quantity="one">%d mesazh i ri</item>
+        <item quantity="other">%d mesazhe të reja</item>
+    </plurals>
+    <plurals name="points">
+        <item quantity="one">pikë</item>
+        <item quantity="other">pikë</item>
+    </plurals>
+    <plurals name="comments">
+        <item quantity="one">kom.</item>
+        <item quantity="other">kom.</item>
+    </plurals>
+
     <!-- Theme settings -->
+    <string name="theme_light">E çelët</string>
+    <string name="theme_dark">E errët</string>
+    <string name="theme_black">AMOLED e zezë</string>
+    <string name="theme_dark_blue">Blu e errët</string>
+    <string name="night_mode">Modaliteti i natës</string>
+    <string name="disabled">I çaktivizuar</string>
+    <string name="manual">Manual</string>
+    <string name="automatic">Automatik</string>
+    <string name="theme_default_color">Ngjyra kryesore</string>
+    <string name="theme_subreddit_color">Ndrysho ngjyrën</string>
+    <string name="theme_accent_color">Ngjyra e theksimit</string>
+    <string name="theme_base">Tema bazë</string>
+    <string name="theme_card">Kartë</string>
+    <string name="theme_sepia">Sepia</string>
+    <string name="theme_amoled_contrast">AMOLED me kontrast</string>
+    <string name="theme_night">Temë nate</string>
+
     <!-- Font settings -->
+    <string name="font_size_comment">Madhësia e shkronjave të komenteve</string>
+    <string name="font_size_post">Madhësia e shkronjave të postimeve</string>
+    <string name="font_size_huge">Shumë e madhe</string>
+    <string name="font_size_larger">Më e madhe</string>
+    <string name="font_size_large">E madhe</string>
+    <string name="font_size_medium">Mesatare</string>
+    <string name="font_size_small">E vogël</string>
+    <string name="font_size_smaller">Më e vogël</string>
+    <string name="font_size_tiny">Shumë e vogël</string>
+
     <!-- For editing the submission card layout -->
+    <string name="card_hide_post_button">Butoni "Fshih postimin" në shiritin e veprimeve</string>
+    <string name="card_tint_outside">Ngjyros vetëm jashtë subreddit-it</string>
+    <string name="card_save_button">Butoni "Ruaj postimin" në shiritin e veprimeve</string>
+
     <!-- Settings for Multi-column view -->
+    <string name="multi_column_title">Shumë kolona</string>
+    <string name="multi_column_portrait_count">Kolona në pamjen vertikale</string>
+    <string name="multi_column_landscape_count">Kolona në pamjen horizontale</string>
+    <string name="single_column_multi_window">Një kolonë në modalitetin me shumë dritare</string>
+
     <!-- Drawer items (That's the one on the left) -->
+    <string name="drawer_profile">Ju</string>
+    <string name="drawer_support">Merrni Pro</string>
+    <string name="drawer_goto_profile">Shko te profili</string>
+    <string name="drawer_add_account">Shto një llogari</string>
+    <string name="drawer_hello">Përshëndetje,</string>
+    <string name="drawer_search">Shko te subreddit-i</string>
+    <!-- Subreddit name when submitting/crossposting: a single subreddit only (no multireddit, no dot). -->
+    <!-- Message recipient: a username or an /r/ or /u/ path. -->
+    <!-- Settings search field. The trailing space is intentional, so the value is quoted to preserve it. -->
+    <string name="drawer_moderation">Moderimi</string>
+    <string name="drawer_offline">Slide është në modalitetin jashtë linje</string>
+    <string name="drawer_offline_retry">Provo të kalosh në modalitetin në linjë</string>
+    <string name="drawer_guest_mode">Shfleto si vizitor</string>
+
     <!-- Sidebar items (That's the one on the right) -->
+    <string name="sidebar_wiki">Wiki i subreddit-it</string>
+    <string name="sidebar_mods">Moderatorët e subreddit-it</string>
+
     <!-- User profile -->
+    <string name="profile_karma_total">Karma totale</string>
+    <string name="profile_karma_link">Karma e postimeve</string>
+    <string name="profile_karma_comment">Karma e komenteve</string>
+    <string name="profile_message">Mesazh privat</string>
+    <string name="profile_saved">Të ruajtura</string>
+    <string name="local_saved">Të ruajtura lokalisht</string>
+    <string name="profile_read_later">Lexo më vonë</string>
+    <string name="profile_upvoted">Të votuara pro</string>
+    <string name="profile_err_title">Përdoruesi nuk u gjet</string>
+    <string name="profile_err_msg">Përdoruesi i Reddit nuk mund të merrej</string>
+    <string name="profile_overview">Përmbledhje</string>
+    <string name="profile_comments">Komente</string>
+    <string name="profile_submitted">Postime</string>
+    <string name="profile_gilded">Të shpërblyera</string>
+    <string name="profile_downvoted">Të votuara kundër</string>
+    <string name="profile_hidden">Të fshehura</string>
+    <string name="profile_friend">Mik</string>
+    <string name="profile_add_friend">Shto mik</string>
+    <string name="profile_remove_friend">Hiq mikun</string>
+    <string name="profile_follow_user">Ndiq</string>
+    <string name="profile_unfollow_user">Hiq ndjekjen</string>
+    <string name="profile_add_user">Shto përdorues</string>
+    <string name="profile_remove_user">Hiq përdoruesin</string>
+    <string name="profile_remove_account">A doni vërtet ta hiqni këtë llogari?</string>
+    <string name="profile_remove">Fshi llogarinë</string>
+    <string name="profile_history">Historiku</string>
+    <string name="profile_share">Profili i %s</string>
+    <string name="profile_age">Redditor prej %s</string>
+    <string name="profile_tag">Etiketë</string>
+    <string name="profile_tag_set">Vendos etiketë për %s</string>
+    <string name="profile_tag_user">Etiketo përdoruesin</string>
+    <string name="profile_tag_user_existing">Përdoruesi u etiketua si ‘%s’</string>
+    <string name="profile_btn_tag">Vendos etiketën</string>
+    <string name="profile_btn_untag">Hiq etiketën</string>
+    <string name="profile_info">Informacioni i profilit</string>
+    <string name="profile_options">Opsionet e përdoruesit</string>
+    <string name="profile_block_user">Blloko përdoruesin</string>
+    <string name="profile_block_user_description">Bllokon mesazhet, postimet dhe profilin e përdoruesit</string>
+    <string name="profile_unblock_user">Zhblloko përdoruesin</string>
+    <string name="profile_unblock_user_description">Zhbllokon mesazhet, postimet dhe profilin e përdoruesit</string>
+    <string name="profile_search">Kërko</string>
+    <string name="profile_search_title">Kërko në %1$s</string>
+    <string name="profile_search_hint">Kërko në tituj dhe tekst…</string>
+    <string name="profile_search_no_results">Nuk u gjet asnjë rezultat</string>
+    <string name="profile_search_clear">Pastro kërkimin</string>
+    <string name="profile_search_cleared">Kërkimi u pastrua</string>
+    <string name="profile_search_loading">Po kërkohet…</string>
+    <string name="profile_search_progress">%1$d rezultate · %2$d të kërkuara</string>
+    <string name="profile_search_bypass_cache">Anashkalo cache-in</string>
+
     <!-- Comment text options -->
+    <string name="comment_gild">Shpërble komentin</string>
+    <string name="comment_share">Ndaj komentin</string>
+    <string name="comment_delete">Fshi komentin</string>
+    <string name="comment_delete_msg">A doni vërtet ta fshini këtë koment? Kjo nuk mund të zhbëhet</string>
+    <string name="comment_delete_err">Oh jo, diçka shkoi keq</string>
+    <string name="comment_delete_err_msg">Doni të provoni përsëri?</string>
+    <string name="comment_deleted">[i fshirë]</string>
+    <string name="comment_unsave">Hiq nga të ruajturat</string>
+    <string name="comment_loading_more">Po ngarkohen më shumë komente…</string>
+    <string name="comment_permalink">Ngarko lidhjen e përhershme të komentit</string>
+    <string name="comment_parent">Shfaq komentin prind</string>
+    <string name="comment_video_play">Luaj videon</string>
+
     <!-- Welcome view (first time setup) -->
+    <string name="welcome_start">Fillo</string>
+    <string name="welcome_personalize">Personalizo</string>
+
     <!-- Sorting options -->
+    <string name="sorting_choose">Zgjidhni një lloj renditjeje</string>
+    <string name="sorting_time_choose">Zgjidhni një interval kohor</string>
+    <string name="sorting_change_sorting">Modaliteti i renditjes</string>
+    <string name="sorting_best">Më të mirat</string>
+    <string name="sorting_top">Kryesore</string>
+    <string name="sorting_hot">Të nxehta</string>
+    <string name="sorting_ama">P&amp;P (AMA)</string>
+    <string name="sorting_new">Të reja</string>
+    <string name="sorting_old">Të vjetra</string>
+    <string name="sorting_controversial">Të diskutueshme</string>
+    <string name="sorting_rising">Në rritje</string>
+    <string name="sorting_hour">orë</string>
+    <string name="sorting_day">24 orë</string>
+    <string name="sorting_week">javë</string>
+    <string name="sorting_month">muaj</string>
+    <string name="sorting_year">vit</string>
+    <string name="sorting_all">gjithë kohën</string>
+    <string name="sorting_defaultfor">I parazgjedhur për /r/%1$s</string>
+
     <!-- Editor (save/submit a post) actions -->
+    <string name="editor_url">URL</string>
+    <string name="editor_text">Tekst</string>
+    <string name="editor_title_link">Fut lidhje</string>
+    <string name="editor_action_link">FUT</string>
+    <string name="editor_title">Titull</string>
+    <string name="editor_err_msg">Ju lutemi provoni përsëri pas disa sekondash</string>
+    <string name="editor_uploading_image">Po ngarkohet imazhi në Imgur</string>
+    <string name="editor_upload_image_title">Ngarko imazh</string>
+    <string name="editor_upload_reddit">Reddit (imazh i integruar)</string>
+    <string name="editor_upload_imgur">Imgur (lidhje)</string>
+    <string name="editor_uploading_reddit">Po ngarkohet imazhi në Reddit</string>
+    <string name="editor_reddit_upload_success">Imazhi u ngarkua</string>
+    <string name="editor_reddit_upload_failed">Ngarkimi i imazhit dështoi</string>
+    <string name="submit_image_host_imgur">Imgur</string>
+    <string name="submit_image_host_reddit">Reddit</string>
+    <string name="submit_change_img">Ndrysho imazhin</string>
+    <string name="submit_select_gallery">Shto imazhe</string>
+    <string name="submit_gallery_caption_hint">Përshkrim (opsional)</string>
+    <string name="submit_gallery_count">%1$d të zgjedhura</string>
+    <string name="submit_uploading_gallery">Po ngarkohet imazhi %1$d nga %2$d</string>
+    <string name="editor_select_img">Zgjidh imazhin</string>
+    <string name="editor_hint_optional_body">Tekst (opsional)</string>
+    <string name="editor_submit">Bëj një postim</string>
+    <string name="editor_hint_subreddit">Subreddit</string>
+    <string name="editor_finding_title">Po kërkohet titulli</string>
+    <string name="submit_findingflairs">Po kërkohen flair-et</string>
+    <string name="submit_flairchoices">Flair-et e /r/%s</string>
+
+    <string name="edit_selftext">Redakto tekstin e postimit</string>
+    <string name="delete_submission">Fshi postimin</string>
+    <string name="set_submission_flair">Vendos flair-in e postimit</string>
+
     <!-- Editor buttons -->
+    <string name="editor_save_draft">Ruaj skicën</string>
+    <string name="editor_chose_draft">Zgjidh skicën</string>
+    <string name="editor_insert_image">Fut imazh</string>
+    <string name="editor_draw">Fut imazh dhe vizato mbi të</string>
+    <string name="editor_link">Fut lidhje</string>
+    <string name="editor_bold">I trashë</string>
+    <string name="editor_italics">I pjerrët</string>
+    <string name="editor_quote">Citim</string>
+    <string name="editor_author">Përmend autorin</string>
+    <string name="editor_list">Listë me pika</string>
+    <string name="editor_num_list">Listë e numëruar</string>
+    <string name="editor_size">Shkronja të mëdha</string>
+    <string name="editor_strike">I kryqëzuar</string>
+    <string name="editor_spoiler">Spoiler</string>
+
     <!-- General information / information without a category -->
+    <string name="info_photo_saved">Fotoja u ruajt</string>
+    <string name="gif_saved">GIF-i u ruajt</string>
+
     <!-- General errors / errors without a category -->
+    <string name="err_title">Oh jo, diçka shkoi keq!</string>
+    <string name="err_invalid_url">URL e pavlefshme</string>
+    <string name="err_loading_content">Gabim gjatë ngarkimit të përmbajtjes</string>
+    <string name="err_general">Oh jo, ndodhi një gabim</string>
+    <string name="err_no_connection">Reddit nuk u arrit. Doni të provoni përsëri?</string>
+    <string name="err_no_connection_toast">Reddit nuk u arrit. Provoni përsëri së shpejti</string>
+    <string name="err_retry_later">Provoni përsëri pas një minute!</string>
+    <string name="err_authentication">Vërtetimi dështoi</string>
+    <string name="err_submit_restricted">Ky subreddit është i kufizuar</string>
+    <string name="err_submit_restricted_text">Nuk ju lejohet të postoni këtu. Ju lutemi zgjidhni një subreddit tjetër</string>
+    <string name="err_crosspost_disallowed_text">/r/%s nuk lejon postime të kryqëzuara. Ju lutemi zgjidhni një subreddit tjetër.</string>
+    <string name="err_crosspost_not_subscribed">Duhet të abonoheni në /r/%s përpara se të bëni një postim të kryqëzuar.</string>
+    <string name="err_crosspost_sub_not_found">/r/%s nuk ekziston.</string>
+    <string name="crosspost_flair_required_short">Kërkohet një flair — ju lutemi zgjidhni një përpara postimit.</string>
+    <string name="error_video_not_found">Videoja nuk u gjet</string>
+    <string name="error_video_message">Ndodhi një gabim gjatë ngarkimit të kësaj videoje</string>
+    <string name="error_album_not_found">Albumi nuk u gjet</string>
+    <string name="error_album_not_found_text">Doni ta hapni lidhjen në shfletues?</string>
+    <string name="err_comment_post_nosave_message">\nJu lutemi provoni përsëri pas një minute</string>
+    <string name="err_could_not_find_content_msg">Reddit nuk e gjeti përmbajtjen e kërkuar</string>
+    <string name="err_refused_request_msg">Reddit refuzoi një kërkesë. Doni të provoni të rilidheni me Reddit?</string>
+    <string name="err_color_sync_login">Ju lutemi hyni për të përdorur sinkronizimin e ngjyrave</string>
+    <string name="err_something_wrong">Oh jo, diçka shkoi keq</string>
+    <string name="err_couldnt_save_choose_new">Slide nuk arriti të ruajë në dosjen e zgjedhur. Doni të zgjidhni një vendndodhje të re ruajtjeje?</string>
+    <string name="err_share_image">Gabim gjatë ndarjes së imazhit</string>
+    <string name="err_file_not_found">Skedari nuk u gjet</string>
+    <string name="err_file_not_found_msg">Skedari i zgjedhur nuk u gjet. Ju lutemi sigurohuni që ekziston dhe që Slide ka leje për të hyrë në atë skedar/dosje</string>
+    <string name="err_comment_post">Oh jo, postimi i këtij komenti dështoi!</string>
+    <string name="err_comment_post_reason">Arsyeja: %1$s</string>
+    <string name="err_comment_post_message">\n\nMesazhi juaj u ruajt si skicë. Ju lutemi provoni më vonë.</string>
+    <string name="err_connection_failed_msg">Lidhja me Reddit dështoi. Ju lutemi kontrolloni lidhjen tuaj me internetin dhe provoni përsëri, ose kaloni në modalitetin jashtë linje.</string>
+    <string name="err_block_user">Gabim gjatë bllokimit të përdoruesit. A e keni zhbllokuar së fundmi këtë përdorues?</string>
+
     <!-- Gif -->
+    <string name="gif_err_title">GIF-i nuk u gjet</string>
+    <string name="gif_err_msg">Ndodhi një gabim gjatë ngarkimit të këtij GIF-i. Ju lutemi rihapeni GIF-in dhe provoni sërish.</string>
+    <string name="gif_load_failed">Ngarkimi i GIF-it dështoi</string>
+    <string name="gif_download_failed">Shkarkimi i GIF-it dështoi</string>
+
     <!-- Multireddits -->
+    <string name="multireddit_err_title">Nuk ka multireddit (ende)!</string>
+    <string name="multireddit_err_msg">Doni të krijoni një multireddit të ri?</string>
+    <string name="public_multireddit_err_title">Nuk ka multireddit!</string>
+    <string name="public_multireddit_err_msg">Ky përdorues nuk ka multireddit publike.</string>
+    <string name="multireddit_title_empty">Titulli nuk mund të jetë bosh</string>
+    <string name="multireddit_title_empty_msg">Ju lutemi shkruani një titull për multireddit-in tuaj</string>
+    <string name="multireddit_no_subs">Nuk është shtuar asnjë subreddit</string>
+    <string name="multireddit_save_err">Titulli i këtij multireddit-i ekziston tashmë ose nuk ka më vend për subreddit-e këtu</string>
+    <string name="multireddit_no_subs_msg">Ju lutemi shtoni disa subreddit duke klikuar butonin +!</string>
+    <string name="multireddit_selector">Zgjidhni subreddit-et për të shtuar</string>
+    <string name="multireddit_create_hint">Emri i multireddit-it</string>
+    <string name="multireddit_invalid_name">Emër i pavlefshëm multireddit-i</string>
+    <string name="multireddit_invalid_name_msg">Emrat e multireddit-eve mund të përmbajnë vetëm shkronja, numra dhe nënvija</string>
+    <string name="multi_add_to">Shto /r/%s te</string>
+    <string name="multi_subreddit_added">Subreddit-i u shtua te /m/%1$s</string>
+    <string name="multi_error">Ndodhi një gabim, ju lutemi provoni më vonë</string>
+    <string name="btn_import_multi">Importo multireddit</string>
+    <string name="multi_submit_which_sub">Në cilin sub doni të postoni?</string>
+    <string name="multi_saved_successfully">U ruajt me sukses</string>
+    <string name="delete_multireddit_title">A doni vërtet të fshini /m/%1$s?</string>
+    <string name="multi_save_option">Doni ta ruani këtë multireddit?</string>
+
     <!-- Content types -->
+    <string name="type_nsfw_img">Imazh NSFW</string>
+    <string name="type_nsfw_gif">GIF NSFW</string>
+    <string name="type_reddit">Lidhje Reddit</string>
+    <string name="type_link">Lidhje</string>
+    <string name="type_nsfw_link">Lidhje NSFW</string>
+    <string name="type_gif">GIF</string>
+    <string name="type_title_only">Postim vetëm me titull</string>
+    <string name="type_album">Album</string>
+    <string name="type_xkcd">XKCD</string>
+    <string name="type_nsfw_album">Album NSFW</string>
+    <string name="type_nsfw_gallery">Galeri NSFW</string>
+    <string name="type_nsfw_albums">Albume NSFW</string>
+    <string name="type_nsfw_galleries">Galeri NSFW</string>
+    <string name="type_nsfw_gifs">GIF NSFW</string>
+    <string name="type_nsfw_images">Imazhe NSFW</string>
+    <string name="type_nsfw_links">Lidhje NSFW</string>
+    <string name="type_nsfw_selftexts">Postime me tekst NSFW</string>
+    <string name="type_nsfw_tumblrs">Postime Tumblr NSFW</string>
+    <string name="type_nsfw_videos">Video NSFW</string>
+    <string name="type_gallery">Galeri</string>
+    <string name="type_galleries">Galeri</string>
+    <string name="type_img">Imazh</string>
+    <string name="type_videos">Video</string>
+    <string name="type_nsfw_video">Video NSFW</string>
+    <string name="type_imgur">Përmbajtje Imgur</string>
+    <string name="type_nsfw_imgur">Përmbajtje Imgur NSFW</string>
+    <string name="type_nsfw_xkcd">XKCD NSFW</string>
+    <string name="type_nsfw_deviantart">DeviantArt NSFW</string>
+    <string name="type_nsfw_title_only">Postim NSFW vetëm me titull</string>
+    <string name="type_nsfw_reddit">Lidhje Reddit NSFW</string>
+    <string name="type_nsfw_selftext">Postim me tekst NSFW</string>
+    <string name="type_spoiler">Spoiler</string>
+    <string name="type_nsfw_spoiler">Spoiler NSFW</string>
+    <string name="type_nsfw_streamable">Streamable NSFW</string>
+    <string name="type_external">I jashtëm</string>
+
     <!-- Content types plural (Content filters) -->
+    <string name="type_gifs">GIF</string>
+    <string name="type_albums">Albume</string>
+    <string name="type_links">Lidhje</string>
+
     <!-- Inbox/mail -->
+    <string name="mail_tab_inbox">Të marra</string>
+    <string name="mail_tab_unread">Të palexuara</string>
+    <string name="mail_tab_messages">Mesazhe</string>
+    <string name="mail_tab_sent">Të dërguara</string>
+    <string name="mail_tab_mentions">Përmendje</string>
+    <string name="mail_author_wrote">%1$s shkroi…</string>
+    <string name="mail_hint_recipient">Marrësi</string>
+    <string name="mail_hint_subject">Subjekti</string>
+    <string name="mail_hint_body">Tekst</string>
+    <string name="mail_send_to">Dërgo një mesazh te %1$s</string>
+    <string name="mail_send">Dërgo një mesazh</string>
+    <string name="mail_notification_msg_from">Mesazh i ri nga %1$s</string>
+    <string name="mail_notification_msg_via">Mesazh i ri përmes /r/%1$s</string>
+    <string name="mod_mail_notification_msg">Modmail i ri nga %1$s</string>
+    <string name="mail_reply_to">Përgjigju %1$s</string>
+    <string name="mail_notification_author">%1$s nga %2$s</string>
+    <string name="mail_notification_subreddit">%1$s përmes /r/%2$s</string>
+    <string name="mail_theirs">Shiko mesazhin e tyre</string>
+    <string name="mail_re">përgj.: %1$s</string>
+    <string name="mail_mark_read">Shëno si të lexuar</string>
+    <string name="mail_view_full_thread">Shiko të gjithë temën</string>
+    <string name="mail_message_copied">Mesazhi u kopjua</string>
+    <plurals name="mail_notification_title">
+        <item quantity="one">Keni %d mesazh të ri!</item>
+        <item quantity="other">Keni %d mesazhe të reja!</item>
+    </plurals>
+    <plurals name="mod_mail_notification_title">
+        <item quantity="one">Keni %d modmail të ri!</item>
+        <item quantity="other">Keni %d modmail të reja!</item>
+    </plurals>
+
     <!-- Miscellaneous/generic things that don't have a category or strings that are used for multiple categories -->
+    <string name="misc_err">Gabim</string>
+    <string name="misc_none">Asnjë</string>
+    <string name="misc_retry">Doni të provoni përsëri?</string>
+    <string name="misc_retry_draft">Doni të provoni përsëri? \nNjë skicë e postimit tuaj u ruajt</string>
+    <string name="misc_score_hidden">pikët janë të fshehura</string>
+    <string name="misc_subscribed">I abonuar</string>
+    <string name="misc_continue">Vazhdo</string>
+    <string name="misc_unsubscribed">Abonimi u anulua</string>
+    <string name="misc_no_more_posts">Nuk ka më postime!</string>
+    <string name="misc_please_wait">Ju lutemi prisni…</string>
+    <string name="misc_img_share">Ndaje imazhin me</string>
     <string name="misc_copy_text">Kopjo tekstin</string>
+    <string name="misc_maybe_later">Ndoshta më vonë</string>
+    <string name="misc_try_again">Provo përsëri</string>
+    <string name="misc_please_try_again">Ju lutemi provoni përsëri</string>
+    <string name="misc_please_try_again_soon">Ju lutemi provoni përsëri së shpejti</string>
+    <string name="misc_setting_up">Po rregullohen disa gjëra…</string>
+    <string name="misc_setting_up_message">Ju lutemi mos e braktisni këtë ekran. Nuk do të zgjasë shumë!</string>
+    <string name="misc_more_info">Më shumë informacion</string>
+    <string name="misc_captcha_incorrect">Captcha e pasaktë, ju lutemi provoni përsëri</string>
+
     <!-- Goto User -->
+    <string name="user_enter">Shkruani emrin e përdoruesit</string>
+    <string name="user_btn_goto">Shko te përdoruesi</string>
+    <string name="user_btn_gotomultis">Shko te multi-të e përdoruesit</string>
+
+    <!-- Saved users list -->
+    <string name="users_empty">Nuk ka përdorues të ruajtur</string>
+    <string name="users_btn_add">Shto përdorues</string>
+    <string name="users_btn_remove">Hiq përdoruesin</string>
+    <string name="users_added">%s u shtua te Përdoruesit</string>
+    <string name="users_removed">%s u hoq nga Përdoruesit</string>
+    <string name="users_already_added">%s është tashmë te Përdoruesit</string>
+    <string name="users_copied">%s u kopjua</string>
+    <string name="users_checking">Po kontrollohet emri i përdoruesit</string>
+    <string name="users_invalid_title">Përdoruesi nuk mund të shtohet</string>
+    <string name="users_invalid">%s nuk është përdorues i Reddit</string>
+    <string name="users_check_failed">Nuk u arrit të kontrollohej nëse %s ekziston. Ju lutemi kontrolloni lidhjen dhe provoni përsëri.</string>
+    <string name="users_friend_added">%s u shtua si mik</string>
+    <string name="users_friend_removed">%s u hoq nga miqtë</string>
+    <string name="users_friend_failed">Statusi i miqësisë për %s nuk mund të përditësohej</string>
+    <string name="btn_fab_add_user">Shto një përdorues</string>
+
     <!-- Buttons -->
+    <string name="btn_add">Shto</string>
+    <string name="btn_cancel">Anulo</string>
+    <string name="btn_close">Mbyll</string>
+    <string name="btn_toggle">Ndërro</string>
+    <string name="btn_open">Hap</string>
+    <string name="btn_discard">Hidh poshtë</string>
+    <string name="btn_done">U krye</string>
+    <string name="btn_go_back">Kthehu</string>
+    <string name="btn_no">Jo</string>
+    <string name="btn_ok">OK</string>
+    <string name="btn_remove">Hiq</string>
+    <string name="btn_reply">Përgjigju</string>
+    <string name="btn_reset">Rivendos</string>
+    <string name="btn_retry">Provo përsëri</string>
+    <string name="btn_save">Ruaj</string>
+    <string name="btn_submit">Dërgo</string>
+    <string name="btn_undo">Zhbëj</string>
+    <string name="btn_yes">Po</string>
+    <string name="btn_refresh">Rifresko</string>
+    <string name="btn_cache">Ruaj komentet në cache</string>
+    <string name="btn_delete">Fshi</string>
+    <string name="btn_time">Periudha kohore</string>
+    <string name="btn_message">Mesazh</string>
+    <string name="btn_select">Zgjidh</string>
+    <string name="btn_view">SHIKO</string>
+    <string name="btn_changelog">Regjistri i ndryshimeve</string>
+    <string name="btn_set">VENDOS</string>
+    <string name="btn_create">Krijo</string>
+    <string name="btn_new">I ri</string>
+
     <!-- Buttons Content labels for TalkBack accessibility-->
+    <string name="btn_edit">Redakto</string>
+    <string name="btn_hide">Fshih</string>
+    <string name="btn_mod">Modero</string>
+    <string name="btn_upvote">Voto pro</string>
+    <string name="btn_downvote">Voto kundër</string>
+    <string name="btn_menu">Menyja</string>
+    <string name="img_score">Pikët</string>
+    <string name="img_comments">Komentet</string>
+    <string name="btn_expand">Zgjero</string>
+    <string name="btn_nav_up">Lëviz lart</string>
+    <string name="btn_nav_mode">Vendos modalitetin e lundrimit</string>
+    <string name="btn_nav_collapse_expand">Palos/zgjero</string>
+    <string name="btn_nav_down">Lëviz poshtë</string>
+    <string name="btn_fab_reply">Përgjigju</string>
+    <string name="btn_fab_post">Krijo një postim të ri</string>
+    <string name="btn_fab_hide">Fshih postimet e para</string>
+    <string name="btn_fab_search">Kërko postime</string>
+
     <!-- Buttons Content labels for TalkBack accessibility active states-->
+    <string name="btn_upvoted">Votuar pro</string>
+    <string name="btn_downvoted">Votuar kundër</string>
+    <string name="btn_unsave">Hiq nga të ruajturat</string>
+    <string name="btn_collapse">Palos</string>
+
     <!-- Backup -->
+    <string name="backup_success">Rezervimi u krye me sukses!</string>
+    <string name="backup_restoring">Po rikthehen cilësimet tuaja</string>
+    <string name="backup_backing_up">Po rezervohen cilësimet tuaja</string>
+    <string name="backup_restore_settings">Rikthimi i cilësimeve u krye me sukses!</string>
+    <string name="backup_restarting">Aplikacioni do të riniset tani</string>
+    <string name="backup_info">Slide i rezervon të gjitha të dhënat tuaja në një dosje private në Google Drive. Këto të dhëna mund t\'i sinkronizoni mes pajisjeve (ose në të njëjtën pajisje), dhe ato nuk kalojnë kurrë përmes një shërbimi apo serveri të palës së tretë. Rezervimet enkriptohen me një fjalëkalim që zgjidhni ju.</string>
+    <string name="backup_btn">Rezervo</string>
+    <string name="backup_btn_restore">Rikthe</string>
+    <string name="backup_btn_file">Rezervo në zip</string>
+    <string name="backup_btn_restore_file">Rikthe nga skedari ose zip</string>
+    <string name="backup_confirm">Jeni i sigurt se doni të rezervoni? Rezervimi juaj i mëparshëm do të mbishkruhet</string>
+    <string name="backup_restore_confirm">Jeni i sigurt se doni të riktheni? Cilësimet tuaja aktuale do të mbishkruhen</string>
+    <string name="backup_failed_msg">Rezervimi dështoi. Ju lutemi provoni më vonë.</string>
+    <string name="backup_restore_failed_msg">Rikthimi dështoi. Ju lutemi sigurohuni që ekziston një rezervim i vlefshëm dhe provoni përsëri.</string>
+    <string name="backup_local_title">Rezervim lokal</string>
+    <string name="backup_drive_title">Rezervim në Google Drive</string>
+    <string name="backup_button">Krijo rezervim</string>
+    <string name="restore_button">Rikthe rezervimin</string>
+    <string name="backup_question">Të rezervohet?</string>
+    <string name="backup_complete">Rezervimi përfundoi!</string>
+    <string name="err_not_valid_backup">Nuk është skedar i vlefshëm rezervimi i Slide</string>
+    <string name="err_not_valid_backup_msg">Skedari i zgjedhur nuk është skedar i vlefshëm rezervimi i Slide</string>
+    <string name="backup_password_title">Vendosni një fjalëkalim rezervimi</string>
+    <string name="backup_password_message">Rezervimi juaj përmban kredencialet e llogarisë suaj Reddit, prandaj enkriptohet. Zgjidhni një fjalëkalim me %1$d deri %2$d karaktere. Do t\'ju duhet për rikthimin dhe nuk mund të rikuperohet.</string>
+    <string name="backup_password_hint">Fjalëkalimi</string>
+    <string name="restore_password_title">Shkruani fjalëkalimin e rezervimit</string>
+    <string name="restore_password_message">Shkruani fjalëkalimin që u përdor për enkriptimin e këtij rezervimi.</string>
+    <string name="restore_password_wrong">Fjalëkalim i pasaktë. Ju lutemi provoni përsëri.</string>
+    <string name="drive_authorization_failed">Autorizimi i Google Drive dështoi</string>
+    <string name="drive_authorization_failed_msg">Slide nuk arriti të hyjë në dosjen e vet private në Google Drive. Ju lutemi provoni përsëri.</string>
+    <string name="drive_authorization_denied">Nevojitet qasje në Google Drive</string>
+    <string name="drive_authorization_denied_msg">Slide ka nevojë për qasje në dosjen e vet private në Google Drive për të rezervuar ose rikthyer cilësimet tuaja.</string>
+
     <!-- Vote -->
+    <string name="vote_err">Gabim gjatë votimit!</string>
+    <string name="vote_err_login">Duhet të keni hyrë për të votuar!</string>
+    <string name="vote_removed">Vota u hoq</string>
+
+    <!-- Subscribing -->
+    <string name="subscribe_err_login">Duhet të keni hyrë për t\'u abonuar!</string>
+
     <!-- Moderation tools -->
+    <string name="mod_mail">Modmail</string>
+    <string name="mod_mail_unread">Modmail i palexuar</string>
+    <string name="modmail_internal_note">(shënim i brendshëm)</string>
+    <string name="modmail_scope_missing">Modmail kërkon rivërtetim. Hyni përsëri (Cilësimet &#8594; llogaria) për ta aktivizuar.</string>
+    <string name="modmail_reply_sent">Përgjigjja u dërgua!</string>
+    <string name="modmail_reply_failed">Dërgimi dështoi! Përgjigjja u ruajt si skicë.</string>
+    <plurals name="modmail_message_count">
+        <item quantity="one">%d mesazh</item>
+        <item quantity="other">%d mesazhe</item>
+    </plurals>
+    <string name="mod_modqueue">Radha e moderimit</string>
+    <string name="mod_unmoderated">Të pamoderuara</string>
+    <string name="mod_reports">Raportime</string>
+    <string name="mod_approved">Postimi u miratua</string>
+    <string name="mod_flair_hint">Teksti i flair-it</string>
+    <string name="mod_no_reports">Nuk ka raportime</string>
+    <string name="mod_btn_approve">Mirato</string>
+    <string name="mod_btn_submission_flair">Vendos flair</string>
+    <string name="mod_btn_submission_flair_text">Vendos tekstin e flair-it</string>
+    <string name="mod_btn_mark_nsfw">Shëno si NSFW</string>
+    <string name="mod_btn_unmark_nsfw">Hiq shënimin NSFW</string>
+    <string name="mod_btn_mark_spoiler">Shëno si spoiler</string>
+    <string name="mod_btn_unmark_spoiler">Hiq shënimin e spoiler-it</string>
+    <string name="mod_btn_lock_thread">Kyç temën</string>
+    <string name="mod_btn_unlock_thread">Shkyç temën</string>
+    <string name="mod_btn_lock_comment">Kyç komentin</string>
+    <string name="mod_btn_unlock_comment">Shkyç komentin</string>
+    <string name="mod_locked">I kyçur</string>
+    <string name="mod_unlocked">I shkyçur</string>
+    <string name="mod_btn_pin">Fikso</string>
+    <string name="mod_btn_unpin">Hiq fiksimin</string>
+    <string name="mod_btn_remove">Hiq</string>
+    <string name="mod_btn_remove_reason">Hiq me arsye</string>
+    <string name="mod_btn_spam">Shëno si mesazh i padëshiruar</string>
+    <string name="mod_btn_author">Profili i autorit</string>
+    <string name="mod_btn_ban">Dëbo</string>
+    <string name="mod_ban_user">Dëbo përdoruesin</string>
+    <string name="mod_ban_reauth">Për të dëbuar përdorues, Slide duhet t\'ju rivërtetojë</string>
+    <string name="mod_ban_reauth_question">Doni të hyni përsëri në Slide tani?</string>
+    <string name="mod_ban_success">Përdoruesi u dëbua!</string>
+    <string name="mod_ban_fail">Gabim gjatë dëbimit të përdoruesit</string>
+    <string name="mod_ban_reason">Arsyeja e dëbimit</string>
+    <string name="mod_ban_note_mod">Shënim i moderatorit (opsional)</string>
+    <string name="mod_ban_note_user">Mesazh për përdoruesin (opsional)</string>
+    <string name="mod_ban_time">Kohëzgjatja e dëbimit - lëreni bosh për të përhershëm</string>
+    <string name="mod_ban_title">Dëbo /u/%1$s</string>
+    <string name="mod_remove_template">U hoq për shkak të\u0020</string>
+    <string name="mod_remove_hint">Arsyeja e heqjes</string>
+    <string name="mod_remove_title">Cila është arsyeja e heqjes së këtij postimi?</string>
+    <string name="mod_remove_insert_draft">Fut skicën</string>
+    <string name="mod_flair_none_found">Nuk u gjet asnjë flair për këtë subreddit</string>
+    <string name="mod_distinguish">Dallo</string>
+    <string name="mod_undistinguish">Hiq dallimin</string>
+    <string name="mod_sticky">Fikso</string>
+    <string name="mod_unsticky">Hiq fiksimin</string>
+    <string name="reauth_complete">Rivërtetimi përfundoi!</string>
+    <string name="reauth_in_progress">Po rivërtetohet…</string>
+    <string name="reauth_failed">Rivërtetimi dështoi</string>
+
+    <plurals name="mod_btn_reports">
+        <item quantity="one">Shiko %d raportim</item>
+        <item quantity="other">Shiko %d raportime</item>
+    </plurals>
+
     <!-- If he did -->
+    <string name="really_pin_submission_message">Postimi u fiksua</string>
+    <string name="really_unpin_submission_message">Fiksimi i postimit u hoq</string>
+
     <!-- Subreddit Wiki -->
+    <string name="wiki_err">Nuk u gjet asnjë wiki</string>
+    <string name="wiki_err_msg">Ky subreddit nuk ka wiki!</string>
+
     <!-- Subreddits -->
+    <string name="subreddit_subscribers_string">%1$s abonentë</string>
+    <string name="subreddit_active_users_string_new">%1$s këtu tani</string>
+    <string name="subreddit_err_msg">Subreddit-i %1$s nuk u gjet. Ndoshta është shkruar gabim?</string>
+    <string name="subreddit_err_msg_new">Subreddit-i %1$s nuk u gjet. Ndoshta është shkruar gabim, ose nuk keni qasje në këtë subreddit.</string>
+    <string name="subreddit_err">Subreddit-i nuk u gjet</string>
+
     <!-- Search -->
+    <string name="search_comments_hint">Kërko në komente</string>
+    <string name="search_goto">Shko te</string>
+    <string name="search_title">Kërko</string>
+    <string name="search_msg">Çfarë po kërkoni?</string>
+    <string name="search_all">Kërko kudo</string>
+    <string name="search_subreddit">Kërko në %1$s</string>
+    <string name="search_relevance">Përkatësia</string>
+    <string name="search_top">Kryesore</string>
+    <string name="search_new">Të reja</string>
+    <string name="search_comments">Komente</string>
+    <string name="no_posts_found">Nuk u gjet asnjë postim</string>
+
     <!-- Settings -->
+    <string name="settings_reddit_prefs">Preferencat e Reddit</string>
+    <string name="settings_accent_title">Redakto ngjyrën e theksimit</string>
+    <string name="settings_delete_sub_settings">A doni vërtet të fshini cilësimet për %1$s?</string>
+    <string name="settings_layout_default">Paraqitja e postimeve</string>
+    <string name="settings_link_album">Pamja e brendshme e albumeve</string>
+    <string name="settings_link_peek">Shiko shpejt përmbajtjen</string>
+    <string name="settings_link_peek_description">Çaktivizon shtypjen e gjatë mbi imazhin e pamjes paraprake</string>
+    <string name="settings_link_gif">Pamja e brendshme e GIF-eve</string>
+    <string name="settings_link_hqgif">Video Gfycat me cilësi të lartë</string>
+    <string name="settings_link_handling">Trajtimi i lidhjeve</string>
+    <string name="settings_link_image">Pamja e brendshme e imazheve</string>
+    <string name="settings_mail_check">Kontrollo për mesazhe të reja</string>
+    <string name="settings_mail_info">Sa më e lartë frekuenca, aq më shumë bateri mund të shpenzojë Slide në sfond!</string>
+    <string name="settings_main_color_title">Redakto ngjyrën kryesore</string>
+    <string name="settings_notification">Kontrollo për mesazhe të reja çdo %1$s</string>
+    <string name="settings_notification_newline">Kontrollo për mesazhe të reja çdo\n%1$s</string>
+    <string name="settings_notification_short">Kontrollo çdo %1$s</string>
+    <string name="settings_disable_nsfw_photo">Fshih të gjitha fotot NSFW</string>
+    <string name="settings_store_history">Ruaj historikun</string>
+    <string name="settings_store_nsfw_history">Ruaj historikun NSFW</string>
+    <string name="settings_commentnav">Lëviz mes komenteve prind</string>
+    <string name="share_link">Ndaj lidhjen</string>
+    <string name="posts_hidden_forever">Postime të fshehura përgjithmonë</string>
+    <string name="share_image">Ndaj imazhin</string>
+    <string name="settings_libs">Bibliotekat me burim të hapur</string>
+    <string name="settings_about_libs">Rreth bibliotekave</string>
+    <string name="settings_privacy">Politika e privatësisë</string>
+    <string name="settings_bugs">Raporto defekte</string>
+    <string name="settings_changelog">Shiko regjistrin e ndryshimeve</string>
+    <string name="settings_fabclear_msg">Prekja e butonit të pastrimit do të heqë postimet nga pamja aktuale, por nuk do t\'i fshehë ato përgjithmonë. \nShtypja e gjatë e butonit do t\'i fshehë postimet përgjithmonë!</string>
+    <string name="settings_fabclear">Veprimet e pastrimit të butonit pluskues</string>
+    <string name="settings_notifdisabled">Njoftimet janë të çaktivizuara</string>
+    <string name="settings_colored_navigation_bar">Shirit lundrimi me ngjyrë</string>
+    <string name="settings_always_black_statusbar">Shirit statusi i zi (shiriti i njoftimeve)</string>
+    <string name="settings_colored_icon">Ngjyros ikonën e aplikacionit (eksperimentale)</string>
+    <string name="settings_colored_icon_desc">Mund të kërkojë rinisjen e telefonit. Kjo gjithashtu do të heqë ikonën nga ekrani kryesor.</string>
+    <string name="settings_filter_domain">Filtrat e domeneve</string>
+    <string name="settings_filter_selfttext">Filtrat e tekstit të postimit</string>
+    <string name="settings_filter_title">Filtrat e titujve</string>
+    <string name="settings_prefs_reddit">Shiko të gjitha preferencat e reddit.com</string>
+    <string name="settings_font_post">Shkronjat e titullit të postimit</string>
+    <string name="settings_font_comment">Shkronjat e komenteve</string>
+    <string name="settings_comment_crop">Prit imazhin kryesor në pamjen e komenteve</string>
+    <string name="settings_general_scroll_read">Shëno postimet si të para kur rrëshqiten</string>
+    <string name="settings_link_chrome">Skeda të personalizuara</string>
+    <string name="settings_storage_location">Zgjidh vendndodhjen e ruajtjes</string>
+    <string name="settings_storage_location_unset">Ende e pavendosur</string>
+    <string name="settings_set_storage_location">Skedarët do të ruhen te %s</string>
+    <string name="settings_general_immersive_mode">Modalitet i plotë zhytës</string>
+    <string name="settings_general_immersive_mode_desc">Fshih shiritat e statusit dhe të lundrimit (eksperimentale)</string>
+    <string name="settings_general_old_swipe_mode">Modaliteti i vjetër i rrëshqitjes</string>
+    <string name="settings_general_old_swipe_mode_desc">Stili i vjetër i rrëshqitjes i Slide. I destinuar për lundrimin me 3 butona dhe gjestet e Samsung.</string>
+    <string name="settings_general_hibernate">Vazhdo aty ku e lashë</string>
+    <string name="settings_general_hibernate_desc">Rihap të njëjtin ekran, në të njëjtin vend, duke shfaqur atë që ishte ngarkuar tashmë në vend që të rifreskojë. Aktivizimi shton një kuti zgjedhjeje në menynë shtesë që aktivizon dhe çaktivizon vazhdimin pa u kthyer këtu.</string>
+
+    <string name="settings_general_title_drawer_items">Artikujt e sirtarit</string>
+    <string name="settings_general_subtitle_drawer_items">Zgjidhni cilët artikuj të sirtarit të shfaqen</string>
+
     <!-- Settings titles displayed in settings activity-->
+    <string name="settings_title_backup">Rezervim &amp; rikthim</string>
+    <string name="settings_title_default_theme">Tema kryesore</string>
+    <string name="settings_title_general">Të përgjithshme</string>
+    <string name="settings_title_history">Historiku</string>
+    <string name="settings_title_notifications">Njoftimet</string>
+    <string name="settings_title_pro">Merrni Pro</string>
+    <string name="settings_title_sub_theme">Temat e subreddit-eve</string>
+    <string name="settings_title_sort">Renditja e parazgjedhur</string>
+    <string name="settings_title_sort_frontpage">Renditja e faqes kryesore</string>
+    <string name="settings_title_about">Rreth</string>
+    <string name="settings_title_debug">Korrigjimi</string>
+    <string name="settings_section_debug_reauth">Rivërtetimi</string>
+    <string name="settings_debug_break_reauth">Prish rivërtetimin</string>
+    <string name="settings_debug_break_reauth_desc">Ndalon rivërtetimin që të mund të testohet njoftimi përkatës. E kthyeshme: çaktivizojeni këtë dhe pastaj nisni një rivërtetim.</string>
+    <string name="settings_debug_trigger_reauth">Nis rivërtetimin</string>
+    <string name="settings_debug_trigger_reauth_desc">Nisni një rivërtetim tani. Përdoreni këtë për t\'u rimëkëmbur pasi të keni çaktivizuar çelësin.</string>
+    <string name="settings_title_multi_column">Shumë kolona</string>
+    <string name="settings_title_fab">Butoni pluskues i veprimeve</string>
+    <string name="settings_title_comments">Komentet</string>
+    <string name="settings_title_filter">Filtrat</string>
+    <string name="settings_title_font">Shkronjat</string>
+    <string name="settings_section_general">Të përgjithshme</string>
+    <string name="settings_section_appearance">Pamja</string>
+    <string name="settings_section_hibernation">Hibernimi</string>
+    <string name="settings_section_other">Të tjera</string>
+    <string name="settings_section_browser">Shfletuesi</string>
+    <string name="settings_section_internal_viewers">Shikuesit e brendshëm</string>
+    <string name="settings_section_custom_domains">Domene të personalizuara</string>
+    <string name="settings_section_save_history">Ruajtja e historikut</string>
+    <string name="settings_section_clear_history">Pastrimi i historikut</string>
+    <string name="settings_section_data_saving_mode">Modaliteti i kursimit të të dhënave</string>
+    <string name="settings_section_data_saving_quality">Cilësia në kursimin e të dhënave</string>
+    <string name="settings_comment_color">Tregues me ngjyra të thellësisë së komenteve</string>
+    <string name="settings_volume_nav_comments">Lëviz mes komenteve me butonat e volumit</string>
+    <string name="settings_commentnav_description">Aktivizon një shirit të poshtëm me shigjeta lundrimi</string>
+    <string name="settings_comment_collapse">Palos plotësisht komentet</string>
+    <string name="settings_comment_collapse_description">Gjithashtu çaktivizon animacionet e komenteve</string>
+    <string name="settings_comment_collapse_default">Palos komentet fëmijë si parazgjedhje</string>
+    <string name="settings_data_enable">Aktivizo cilësimet e kursimit të të dhënave</string>
+    <string name="settings_data_video_quality">Preferoni video me cilësi të ulët kur kursimi i të dhënave është aktiv</string>
+    <string name="settings_comments_collapse_deleted">Palos komentet e fshira si parazgjedhje</string>
+    <string name="settings_comments_collapse_sticky">Palos gjithmonë plotësisht komentin e fiksuar</string>
+    <string name="settings_comments_collapse_blocked_users">Palos komentet e përdoruesve të bllokuar</string>
+    <string name="settings_comments_collapse_blocked_users_description">Aktivizon gjithashtu Palos plotësisht komentet</string>
+    <string name="settings_backup_occurs">Rezervimi do të kryhet në %1$s</string>
+    <string name="settings_backup_none">Asnjë subreddit nuk do të rezervohet</string>
+    <string name="settings_backup_will_backup">\u0020do të rezervohet</string>
+    <string name="settings_backup_submission_only">vetëm postimi</string>
+    <string name="settings_backup_comments">\u0020(komentet)</string>
+    <string name="settings_filter_profile">Filtrat e profilit</string>
+    <string name="settings_subreddit_content_filters_till_restart">Filtrat e përmbajtjes së subreddit-it deri në rinisje</string>
+    <string name="settings_subredditspecific_selftext">Shfaq gjithmonë pamjet paraprake të tekstit në këtë subreddit</string>
+    <string name="settings_font_system">Sistemi</string>
+    <string name="settings_manage_subscriptions">Menaxho abonimet e tua</string>
+    <string name="settings_comments_swap_long">Ndërro veprimet e shtypjes së gjatë dhe të prekjes</string>
+    <string name="settings_redditprefs_over18">Jam mbi 18 vjeç dhe dua të shoh përmbajtje NSFW</string>
+    <string name="settings_layout_view">Modaliteti i pamjes</string>
+    <string name="settings_subredditspecific_bigpic">Shfaq gjithmonë imazhe të mëdha në këtë subreddit</string>
+    <string name="settings_layout_picture_mode">Modaliteti i imazheve</string>
+    <string name="settings_general_expanded_toolbar">Meny e zgjeruar e shiritit të veglave</string>
+    <string name="settings_general_expanded_toolbar_desc">Shfaq më shumë opsione në shiritin e veglave të subreddit-it</string>
+    <string name="settings_always_show_floating_action_button">Shfaq gjithmonë butonin pluskues të veprimeve</string>
+    <string name="settings_always_show_floating_action_button_desc">Mos e fshih kurrë butonin pluskues të veprimeve gjatë rrëshqitjes</string>
+    <string name="settings_theme_tinting">Modaliteti i ngjyrosjes së postimeve</string>
+    <string name="settings_layout_actionbar_mode">Modaliteti i shiritit të veprimeve</string>
+    <string name="settings_theme_tint_outside_desc">Ngjyros sfondin vetëm në multireddit, faqen kryesore dhe të gjitha</string>
+    <string name="settings_layout_small_content_tag">Etiketë përmbajtjeje më e vogël</string>
+    <string name="settings_links_force_external">Detyro shfletuesin e jashtëm</string>
+    <string name="settings_layout_show_domain">Shfaq domenin në rreshtin e informacionit</string>
+    <string name="settings_layout_show_content_type">Shfaq llojin e përmbajtjes në rreshtin e informacionit</string>
+    <string name="settings_layout_thumbnail_flags">Shfaq shenja me ngjyra në cepat e miniaturave</string>
+    <string name="settings_layout_show_votes_comments">Shfaq votat/komentet në rreshtin e informacionit</string>
+    <string name="settings_general_comment_last_visit">Shfaq numrin e komenteve që nga vizita e fundit</string>
+    <string name="settings_fab_create">Shfaq butonin pluskues \"krijo koment\"</string>
+    <string name="settings_right_handed_comment_menu">Meny përgjigjeje komentesh për djathtakët</string>
+    <string name="settings_reddit_description">Këto cilësime ndryshojnë atë që API-ja e Reddit i kthen Slide-it.\n\nPër të parë miniaturat në të gjitha subreddit-et, aktivizoni \'Shpërfill preferencat e mediave të subreddit-it\'\n\nPër të parë të gjithë përmbajtjen NSFW, çaktivizoni \'Fshih fotot NSFW\' dhe aktivizoni \'Jam mbi 18 vjeç\'</string>
+    <string name="settings_reddit_media_pref">Shpërfill preferencat e mediave të subreddit-it</string>
+    <string name="settings_description_view_type">Llojet e pamjes ndikojnë si te pamja kryesore ashtu edhe te pamjet e subreddit-eve individuale.\n\nPaneli i komenteve: komentet rrëshqasin nga ana e postimeve dhe gjendja e faqes së komenteve ruhet pas kthimit me rrëshqitje (që të mos e humbni vendin tuaj)\n\nPa skeda subreddit-esh: çaktivizon rrëshqitjen mes subreddit-eve\n\nSkeda subreddit-esh: rrëshqitni mes subreddit-eve tuaja</string>
+    <string name="settings_short_description_view_type">Llojet e pamjes ndikojnë si te pamja kryesore ashtu edhe te pamjet e subreddit-eve individuale</string>
+    <string name="settings_comment_hide_selftext_image">Fshih imazhin kryesor te postimet me tekst</string>
+    <string name="settings_filter_flair">Filtrat e flair-eve</string>
+    <string name="settings_view_type">Lloji i pamjes</string>
+    <string name="settings_data">Kursimi i të dhënave</string>
+    <string name="settings_card_show_selftext">Shfaq tekstin e postimit</string>
+    <string name="settings_card_selftext_paragraph">Shfaq paragrafin e parë</string>
+    <string name="settings_card_selftext_ellipsize">Shkurto te 128 karakteret e para</string>
+    <string name="settings_handling_external_desc">Domenet e shkruara më poshtë do të hapen gjithmonë nga jashtë</string>
+    <string name="settings_handling_enterdomain">Shkruani një domen ose një pjesë të tij</string>
+    <string name="settings_section_content">Përmbajtja</string>
+    <string name="settings_backup_view">Shiko rezervimin</string>
+    <string name="settings_backup_err_no_explorer">Nuk u gjet asnjë shfletues skedarësh, skedari ndodhet te %1$s</string>
+    <string name="settings_about_version_copied_toast">Numri i versionit u kopjua në kujtesën e fragmenteve</string>
+    <string name="settings_theme_night_start_at">Fillon në\u0020</string>
+    <string name="settings_theme_night_end_at">Përfundon në\u0020</string>
+    <string name="settings_general_inbox_snd">Tingull dhe dridhje</string>
+    <string name="settings_enable_notifs">Aktivizo njoftimet e kutisë hyrëse</string>
+
     <!-- Quick setting toggles in the drawer -->
+    <string name="toggle_night_mode">Modaliteti i natës</string>
+    <string name="toggle_immersive_mode">Modaliteti zhytës</string>
+    <string name="toggle_nsfw">Shfaq përmbajtje NSFW</string>
+    <string name="toggle_right_thumbnails">Miniatura të rreshtuara djathtas</string>
+    <string name="toggle_reader_mode">Përdor modalitetin e leximit</string>
+
     <!-- View types -->
+    <string name="view_type_tabs">Skeda subreddit-esh</string>
+    <string name="view_type_none">Pa skeda subreddit-esh</string>
+    <string name="view_type_comments">Paneli i komenteve</string>
+
     <!--Search methods -->
+    <string name="subreddit_search_method_title">Metoda e kërkimit të subreddit-eve</string>
+    <string name="subreddit_search_method_drawer">Shirit kërkimi në sirtar</string>
+    <string name="subreddit_search_method_toolbar">Shtypje e gjatë mbi titullin e shiritit të veglave</string>
+    <string name="subreddit_search_method_both">Si sirtari ashtu edhe titulli i shiritit të veglave</string>
+
     <!-- Back button behavior -->
+    <string name="back_button_behavior_title">Sjellja e butonit të kthimit</string>
+    <string name="back_button_behavior_default">Mbyll aplikacionin</string>
+    <string name="back_button_behavior_confirm_exit">Dritare konfirmimi për daljen</string>
+    <string name="back_button_behavior_drawer">Hap sirtarin</string>
+
     <!-- Subscription managing -->
-    <!-- Save categories -->
+    <string name="reorder_add_domain">Shto një domen</string>
+    <string name="reorder_add_subreddit">Shto një subreddit</string>
+    <string name="reorder_fab_collection">Multireddit</string>
+    <string name="reorder_fab_domain">Domen</string>
+    <string name="reorder_fab_subreddit">Subreddit</string>
+    <string name="reorder_add_subscribe">Shto &amp; abonohu</string>
+    <string name="reorder_remove_unsubscribe">Hiq &amp; çabonohu</string>
+    <string name="reorder_move">Zhvendos në krye</string>
+    <string name="reorder_domain_placeholder">\u0020(vetëm emri i domenit)</string>
+    <string name="reorder_not_found_err">Subreddit-i nuk u gjet, ja disa sugjerime</string>
+    <string name="reorder_subscribed_toast">U abonuat te /r/%1$s</string>
+    <string name="reorder_unsubscribed_toast">U çabonuat nga /r/%1$s</string>
+    <string name="sorting_faq"><b>Si t\'i rifreskoj subreddit-et?</b>\nPër të rifreskuar subreddit-et, klikoni ikonën e rifreskimit në shiritin e veglave!\n\n<b>U çabonova nga disa subreddit-e por ato janë ende në listë!</b>\nSlide i kthen subreddit-et nga të cilat jeni çabonuar në shfletues në abonime informale. Për t\'i hequr, shtypni gjatë mbi subreddit-in dhe klikoni hiq!\n\n<b>Si t\'i përdor koleksionet?</b>\nPër të krijuar një koleksion, klikoni butonin pluskues + dhe zgjidhni \'Krijo një koleksion\'. Kjo lejon që disa sub të veprojnë si një subreddit i vetëm në ekranin kryesor!</string>
+    <string name="alphabetize_subreddits">Rendit subreddit-et alfabetikisht</string>
+    <string name="sync_subscriptions">Sinkronizo abonimet</string>
+    <string name="cannot_be_undone">Kjo nuk mund të zhbëhet.</string>
+    <string name="deleting">Po fshihet…</string>
+    <string name="create_or_import_multi">Doni të krijoni një multireddit të ri apo të importoni një?</string>
+    <string name="sub_added">Subreddit-i u shtua!</string>
+    <string name="reorder_subs_FAQ">Pyetje të shpeshta për rirenditjen e subreddit-eve</string>
+    <string name="subscribe_to">Abonohu te /r/%1$s</string>
+    <string name="unsubscribe_from">Çabonohu nga /r/%1$s</string>
+    <string name="btn_add_to_sublist">SHTO NË LISTËN E SUB-EVE</string>
+    <string name="btn_remove_from_sublist">HIQ NGA LISTA E SUB-EVE</string>
+    <string name="just_unsub">VETËM ÇABONOHU</string>
+    <string name="subscribe_caps">ABONOHU</string>
+    <string name="unsubscribe_caps">ÇABONOHU</string>
+    <string name="reorder_subreddits_title">Zgjidhni një subreddit për ta shtuar</string>
+    <string name="reorder_add_or_search_subreddit">Shtoni ose kërkoni një subreddit</string>
+    <string name="reorder_subreddit_name">Emri i subreddit-it</string>
+    <string name="reorder_remove_title">Ta heqim këtë subreddit?</string>
+    <string name="reorder_sync_complete">Sinkronizimi përfundoi</string>
+    <string name="reorder_loading_title">Po ngarkohen subreddit-et tuaja</string>
+    <string name="reorder_url_err">URL e pavlefshme</string>
+
+    <!-- Saved tags -->
+    <string name="tag_set_name_hint">Emri i etiketës</string>
+    <string name="tag_tag_action">ETIKETO</string>
+    <string name="profile_tag_select">Etiketat</string>
+    <string name="profile_saved_tags">Etiketat e ruajtura</string>
+    <string name="tag_builtin_all">Të gjitha</string>
+    <string name="tag_builtin_posts">Postime</string>
+    <string name="tag_builtin_comments">Komente</string>
+    <string name="tag_types_header">Llojet</string>
+    <string name="tag_post_types_header">Llojet e postimeve</string>
+    <string name="tag_custom_header">Etiketa të personalizuara</string>
+    <string name="tag_new">Etiketë e re</string>
+    <string name="tag_manage">Menaxho etiketat</string>
+    <string name="tag_add">Shto etiketë</string>
+    <string name="tag_none_yet">Ende nuk ka etiketa</string>
+    <string name="tag_rename">Riemërto</string>
+    <string name="tag_delete_confirm">Jeni i sigurt se doni të fshini \"%1$s\"? Artikujt me këtë etiketë nuk do të fshihen.</string>
+    <string name="tag_name_used_title">Emri është përdorur tashmë</string>
+    <string name="tag_name_used">Ekziston tashmë një etiketë me atë emër, ju lutemi zgjidhni një emër unik.</string>
+    <string name="tag_name_reserved">Ai emër është i rezervuar, ju lutemi zgjidhni një tjetër.</string>
+
     <!-- Setting subheaders -->
+    <string name="sorting">Renditjet</string>
+    <string name="display">Shfaqja</string>
+    <string name="images">Imazhe</string>
+    <string name="storage">Ruajtja</string>
+    <string name="app_theme">Tema e aplikacionit</string>
+    <string name="tinting">Ngjyrosja</string>
+    <string name="post_info">Informacioni i postimit</string>
+    <string name="post_buttons">Butonat e postimit</string>
+    <string name="navigation">Lundrimi</string>
+    <string name="collapse_comments">Veprimet e palosjes</string>
+    <string name="nsfw">Përmbajtje NSFW</string>
+    <string name="view_reddit_settings">Hap cilësimet e Reddit në shfletues</string>
+    <string name="font_styles">Stilet e shkronjave</string>
+
     <!-- Titles displayed in action bar / head / recents overview-->
-    <!-- Text in Donation-Activity -->
+    <string name="title_subreddit_settings">Temat &amp; paraqitjet e subreddit-eve</string>
+    <string name="title_edit_theme">Redakto temën</string>
+    <string name="title_submit_post">Bëj postimin</string>
+    <string name="title_crosspost">Postim i kryqëzuar</string>
+    <string name="title_settings">Cilësimet</string>
+    <string name="title_share">Ndaje me</string>
+    <string name="title_login">Hyni në Reddit</string>
+    <string name="title_multireddits">Multireddit</string>
+    <string name="title_users">Përdoruesit</string>
+    <string name="title_inbox">Kutia hyrëse</string>
+    <string name="title_theme_settings">Tema</string>
+    <string name="title_create_multi">Krijo një multireddit</string>
+
     <!-- Offline mode -->
+    <string name="offline_msg">Ju lutemi lidhuni në internet dhe rifreskoni subreddit-in për ta bërë këtë</string>
+    <string name="offline_last_update">Përditësuar për herë të fundit %1$s</string>
+    <string name="offline_comments_not_loaded">Ju lutemi kthehuni në linjë dhe zgjidhni ‘Ruaj komentet në cache’ nga menyja me tre pika për t\'i parë komentet jashtë linje</string>
+    <string name="offline_no_content_found">Nuk u gjet përmbajtje jashtë linje</string>
+    <string name="offline_enter_online">Kalo në modalitetin në linjë</string>
+    <string name="offline_caching_title">Po ruhet në cache %1$s</string>
+    <string name="offline_caching_complete">Ruajtja në cache përfundoi</string>
+
     <!-- Website -->
+    <string name="website_external">Hap në shfletues të jashtëm</string>
+
+    <plurals name="reorder_subs_added">
+        <item quantity="one">U shtua %d subreddit</item>
+        <item quantity="other">U shtuan %d subreddit-e</item>
+    </plurals>
+
     <!-- Time -->
+    <string name="time_just_now">Tani</string>
+    <plurals name="time_years">
+        <item quantity="one">%d vit</item>
+        <item quantity="other">%d vjet</item>
+    </plurals>
+    <plurals name="time_months">
+        <item quantity="one">%d muaj</item>
+        <item quantity="other">%d muaj</item>
+    </plurals>
+    <plurals name="time_days">
+        <item quantity="one">%d ditë</item>
+        <item quantity="other">%d ditë</item>
+    </plurals>
+    <plurals name="time_hours">
+        <item quantity="one">%d orë</item>
+        <item quantity="other">%d orë</item>
+    </plurals>
+    <plurals name="time_minutes">
+        <item quantity="one">%d minutë</item>
+        <item quantity="other">%d minuta</item>
+    </plurals>
+    <plurals name="time_seconds">
+        <item quantity="one">%d sekondë</item>
+        <item quantity="other">%d sekonda</item>
+    </plurals>
+
     <!-- Time: shorthand durations for example 1 hour → 1h -->
+    <string name="time_years_short">%dv</string>
+    <string name="time_days_short">%dd</string>
+    <string name="time_hours_short">%do</string>
+    <string name="time_minutes_short">%dm</string>
+
     <!-- Strings present during the login process -->
+    <string name="login_subscribe_rslideforreddit">Të abonohem te /r/slidereddit?</string>
+    <string name="login_subscribe_rslideforreddit_desc">Doni të abonoheni te /r/slidereddit për lajmet më të fundit dhe për të raportuar probleme?</string>
+    <string name="login_sync_colors">Të sinkronizohen ngjyrat tani?</string>
+    <string name="login_sync_colors_desc">Doni t\'i sinkronizoni tani ngjyrat e subreddit-eve tuaja? Kjo mund të bëhet më vonë te Cilësimet → Temat e subreddit-eve</string>
+    <string name="login_authenticating">Slide po vërtetohet</string>
+    <string name="login_starting">Po rregullohet gjithçka!</string>
+    <string name="login_starting_desc">Duhet të zgjasë vetëm një sekondë…</string>
+
     <!-- Over 18 prompt when visiting a NSFW subreddit -->
-    <!-- Subreddit color synchronization - https://redd.it/41054l -->
+    <string name="over18_title">/r/%1$s përmban përmbajtje për të rritur</string>
+    <string name="over18_desc">A jeni mbi tetëmbëdhjetë vjeç dhe doni të shihni përmbajtje për të rritur?</string>
+    <string name="over18_desc_loggedout">Hyni për ta çaktivizuar përgjithmonë këtë paralajmërim</string>
+    <string name="over18_desc_loggedin">Mund ta çaktivizoni përgjithmonë te Cilësimet → Preferencat e Reddit → Shfaq përmbajtje NSFW</string>
+
+    <!-- Subreddit color synchronization - https://reddit.com/comments/41054l -->
+    <string name="color_sync_complete">Sinkronizimi përfundoi</string>
+    <plurals name="color_sync_colored">
+        <item quantity="one">U ngjyros %d subreddit</item>
+        <item quantity="other">U ngjyrosën %d subreddit-e</item>
+    </plurals>
+
     <!-- Discover section: find -->
+    <string name="discover_title">Zbulo</string>
+    <string name="discover_search">Term kërkimi ose temë</string>
+    <string name="discover_popular">Popullore</string>
+    <string name="discover_trending">Në trend</string>
+
     <!-- Subreddit post notifications -->
+    <string name="sub_post_notifs_title">Të njoftoheni për postime të reja te\n/r/%1$s?</string>
+    <string name="sub_post_notifs_title_settings">Të njoftoheni për postime të reja?</string>
+    <string name="sub_post_notify">Njofto</string>
+    <string name="sub_post_notifs_threshold">Pragu i pikëve</string>
+    <string name="sub_post_notifs_err">Njoftimet mund t\'i shtoni vetëm te subreddit-e individuale</string>
+    <string name="sub_post_notifs_settings_none">Nuk ka subreddit-e për njoftim</string>
+    <string name="sub_post_notifs_settings_search">Kërko emrin e sub-it</string>
+    <string name="sub_post_notifs_notification_title">Postim i ri te /r/%1$s</string>
+    <string name="sub_post_notifs_notification_btn">Ndalo ndjekjen e /r/%1$s</string>
+    <string name="title_sub_post_notifs">Njoftimet për postimet e subreddit-eve</string>
+
     <!-- Internal browser -->
+    <string name="internal_browser_extracting_error">Na vjen keq, artikulli nuk mund të nxirrej</string>
+    <string name="internal_browser_storecookies">Ruaj cookie-t e faqeve</string>
+    <string name="internal_browser_readermode">Modaliteti i leximit</string>
+
     <!-- Live thread -->
+    <string name="livethread_loading_title">Po ngarkohet tema e drejtpërdrejtë…</string>
+    <string name="livethread_not_found">Tema e drejtpërdrejtë nuk u gjet</string>
+    <string name="livethread_recents_title">Temë e drejtpërdrejtë: %1$s</string>
+
     <!-- Used when viewing media -->
+    <string name="mediaview_notif_title">Po shkarkohet imazhi…</string>
+    <string name="mediaview_notif_video">Po shkarkohet videoja…</string>
+    <string name="mediaview_notif_text">Shkarkimi në vazhdim</string>
+    <string name="mediaview_save">Ruaj %1$s</string>
+    <string name="mediaview_saving">Po ruhet %1$s</string>
+
     <!-- Drafts -->
+    <string name="choose_draft">Zgjidhni një skicë</string>
+    <string name="dialog_no_drafts">Ende nuk ka skica</string>
+    <string name="dialog_no_drafts_msg">Mund të shtoni një skicë duke klikuar ikonën \'ruaj\' në shiritin e redaktorit!</string>
+    <string name="msg_save_draft">Mesazhi u ruajt si skicë</string>
+    <string name="manage_drafts">Menaxho skicat</string>
+    <string name="really_delete_drafts">Vërtet t\'i fshini këto skica?</string>
+
     <!-- Strings for widgets -->
+    <string name="widget_theme_dark">E ERRËT</string>
+    <string name="widget_theme_light">E ÇELËT</string>
+    <string name="widget_theme_clear">TRANSPARENTE</string>
+    <string name="widget_posttype_title">Lloji i postimit</string>
+    <string name="widget_posttype_list">LISTË</string>
+    <string name="widget_posttype_bigpic">IMAZH I MADH</string>
+    <string name="widget_posttype_compact">KOMPAKT</string>
+    <string name="widget_subname_hint">Emri i subreddit-it</string>
+    <string name="widget_visuals">Pamja</string>
+    <string name="widget_content">Përmbajtja</string>
+    <string name="widget_loading">Po ngarkohet…</string>
+    <string name="widget_creation_title">Miniaplikacion i ri</string>
+    <string name="shortcut_creation_title">Shkurtore e re</string>
+
     <!-- Strings for alert dialogs -->
+    <string name="force_change_subscription">Abonimi nuk mund të ndryshohej</string>
+    <string name="force_change_subscription_desc">Doni ta ndryshoni gjithsesi lokalisht?</string>
+    <string name="never_load_images">Mos ngarko asnjë imazh</string>
+    <string name="load_low_quality">Ngarko imazhe me cilësi të ulët (maks. 320x320)</string>
+    <string name="load_medium_quality">Ngarko imazhe me cilësi mesatare (maks. 640x640)</string>
+    <string name="load_high_quality">Ngarko imazhe me cilësi të lartë (maks. 1080x1080)</string>
+    <string name="choose_color_title">Zgjidhni një ngjyrë</string>
+    <string name="enter_text_to_filter_click_enter_to_add">Shkruani tekst për të kërkuar, shtypni enter për të shtuar një filtër</string>
+    <string name="mode_desktop_compact">Kompakt si në desktop</string>
+    <string name="show_content_type_text_beside_links">Shfaq tekstin e llojit të përmbajtjes pranë lidhjeve</string>
+    <string name="comment_shadowbox">Shadowbox i komenteve</string>
+
     <!-- Sidebar strings (multis, flairs) -->
+    <string name="sidebar_select_flair">Zgjidh flair</string>
+    <string name="sidebar_select_flair_text">Vendos tekstin e flair-it</string>
+    <string name="sidebar_findingmods">Po kërkohen moderatorët</string>
+    <string name="snackbar_flair_success">Flair-i u vendos me sukses</string>
+    <string name="snackbar_flair_error">Gabim gjatë vendosjes së flair-it, provoni përsëri së shpejti</string>
+    <string name="sidebar_submods">Moderatorët e /r/%s</string>
+    <string name="sidebar_flair">Flair: %1$s</string>
+    <string name="sidebar_notfound">Nuk u gjet asnjë shirit anësor</string>
+    <plurals name="reorder_selected">
+        <item quantity="one">"%d i zgjedhur"</item>
+        <item quantity="other">"%d të zgjedhur"</item>
+    </plurals>
+
     <!--Filtering dialog -->
+    <string name="filter_title">Çfarë doni të filtroni?</string>
+    <string name="filter_posts_sub">Postime nga /r/%1$s</string>
+    <string name="filter_posts_user">Postime nga /u/%1$s</string>
+    <string name="filter_posts_urls">Postime që lidhen me %1$s</string>
+    <string name="filter_open_externally">Hap lidhjet %s nga jashtë</string>
+    <string name="filter_posts_flair">Flair \"%1$s\" nga %2$s</string>
+    <string name="filter_btn">Filtro</string>
+
     <!-- Caching -->
+    <string name="cache_no_comments_found">Nuk u gjet asnjë koment</string>
+    <string name="cache_no_comments_found_snackbar">Nuk u gjet asnjë koment i ruajtur në cache</string>
+    <string name="cache_no_comments_found_message">Ky postim nuk ka komente të ruajtura në cache. Për të ruajtur komentet në të ardhmen, klikoni menynë me tre pika në ekranin kryesor dhe zgjidhni \'Ruaj komentet në cache\', ose konfiguroni ruajtjen automatike te skeda Përmbajtja jashtë linje në sirtarin e lundrimit</string>
+    <string name="autocache_subreddits">Subreddit-et për ruajtje automatike</string>
+    <string name="autocache_time">Koha e ruajtjes automatike</string>
+    <string name="cache_subreddits_now">Ruaj subreddit-et në cache tani</string>
+    <string name="cache_wifi_only">Ruaj në cache vetëm me Wi-Fi</string>
+    <string name="comments_depth">Thellësia e komenteve për t\'u ruajtur</string>
+    <string name="comments_count">Numri i komenteve për t\'u ruajtur</string>
+
     <!-- Saving location setting -->
+    <string name="set_save_location">Vendos vendndodhjen e ruajtjes së mediave</string>
+    <string name="set_save_location_msg">Vendndodhja e ruajtjes së mediave të Slide nuk është vendosur.</string>
+
     <!-- Report flow -->
+    <string name="btn_report">Raporto</string>
+    <string name="report_post">Raporto postimin</string>
+    <string name="report_comment">Raporto komentin</string>
+    <string name="report_loading">Po ngarkohen arsyet…</string>
+    <string name="report_sub_rules">Rregullat e /r/%s</string>
+    <string name="report_site_rules">Rregullat e Reddit</string>
+    <string name="report_another_reason">Arsye tjetër</string>
+    <string name="report_other">Tjetër</string>
+    <string name="input_reason_for_report">Arsyeja e raportimit</string>
+    <string name="msg_report_sent">Raportimi u dërgua</string>
+
     <!-- Unsorted ¯\\_(ツ)_/¯ -->
+    <string name="comment_load_more_number_unknown">Ngarko më shumë komente</string>
+    <string name="card_right_thumb">Miniaturë e rreshtuar djathtas</string>
+    <string name="setting_filter_subreddits">Filtrat e subreddit-eve</string>
+    <string name="subreddit_theme">Tema e subreddit-it</string>
+    <string name="dialog_choose_subreddits_to_edit">Zgjidhni subreddit-et për t\'i redaktuar</string>
+    <string name="dialog_color_sync_title">Sinkronizimi i ngjyrave</string>
+    <string name="dialog_color_sync_message">Kjo do të përpiqet të marrë ‘ngjyrën kryesore’ të subreddit-it të vendosur nga moderatorët. Nuk do të mbishkruajë subreddit-et që kanë tashmë ngjyrë.</string>
+    <string name="fab_hide">Fshih postimet e para</string>
+    <string name="fab_create">Krijo një postim të ri</string>
+    <string name="fab_disabled">I çaktivizuar</string>
+    <string name="fab_search">Kërko postime</string>
+    <string name="handling_internal_browser">Shfletuesi i brendshëm</string>
+    <string name="handling_external_browser">Shfletuesi i jashtëm</string>
+    <string name="mode_list">Listë</string>
+    <string name="mode_centered">Kartë me imazh në qendër</string>
+    <string name="mode_card">Kartë</string>
+    <string name="mode_thumbnail">Miniaturë</string>
+    <string name="mode_no_thumbnails">Pa miniaturë</string>
+    <string name="mode_big_thumbnails">Miniatura të gjera</string>
+    <string name="mode_cropped">Imazh i madh i prerë</string>
+    <string name="mode_letterbox">Imazh i madh me shirita</string>
+    <string name="mode_bigpic">Imazh i madh</string>
+    <string name="press_actionbar">Shtypni shigjetën për të shfaqur shiritin e veprimeve</string>
+    <string name="show_top_right">Shfaq lart djathtas</string>
+    <string name="show_bottom_right">Shfaq poshtë djathtas</string>
+    <string name="small_tag_disabled">I çaktivizuar</string>
+    <string name="tap_actionbar">Shtypje e gjatë për shiritin e veprimeve</string>
+    <string name="always_actionbar">Shfaq gjithmonë shiritin e veprimeve</string>
+    <string name="sub_content_filter">Filtri i përmbajtjes së subreddit-it</string>
+    <string name="submission_share_reddit_url">Ndaj komentet</string>
+    <string name="filter_content">Filtro këtë përmbajtje</string>
+    <string name="content_to_show">Përmbajtja për t\'u shfaqur te %1$s</string>
+    <string name="save_for_offline_viewing">Ruaj postimet për shikim jashtë linje</string>
+    <string name="btn_collapse_children_all">Palos komentet fëmijë</string>
+    <string name="btn_open_content">Hap përmbajtjen</string>
+    <string name="enter_text_to_filter_click_enter_to_add_flair">Shkruani tekstin për të filtruar (subreddit:flair_text), shtypni enter për ta shtuar</string>
+    <plurals name="filter_count">
+        <item quantity="one">%1$d filtër (maks. %2$d të shfaqur)</item>
+        <item quantity="other">%1$d filtra (maks. %2$d të shfaqur)</item>
+    </plurals>
+    <string name="filter_limit_reached">Po shfaqen %1$d të parat nga %2$d. Kërkoni për t\'i ngushtuar rezultatet.</string>
+    <string name="datasave_always">Të dhënat celulare dhe Wi-Fi</string>
+    <string name="datasave_mobile">Të dhënat celulare</string>
+    <string name="never">Kurrë</string>
+    <string name="multi_column_force_full">Detyro pamjen e plotë të komenteve</string>
+    <string name="submission_info_locked">Ky është një postim i kyçur. Nuk do të mund të komentoni.</string>
+    <string name="card_background_tint">Sfondi i kartës</string>
+    <string name="subreddit_name_tint">Emri i subreddit-it</string>
+    <string name="login_failed_err_decline">Sigurohuni që nuk keni zgjedhur ‘Refuzo’ në ekranin e mëparshëm, dhe provoni përsëri pas një minute</string>
+    <string name="login_unsupported_redirect_uri">URI-ja e ridrejtimit e konfiguruar (%1$s) nuk mund të pranohet nga një shfletues, prandaj hyrja nuk mund të përfundojë. Përdorni metodën e hyrjes me WebView brenda aplikacionit, ose vendosni një URI ridrejtimi të mbështetur te Cilësimet.</string>
+    <string name="login_unsupported_redirect_uri_title">Hyrja dështoi</string>
+    <string name="login_failed_oauth_error_page">Hyrja dështoi — Reddit ktheu një gabim në vend që ta përfundonte hyrjen. Kontrolloni ID-në e klientit dhe URI-në e ridrejtimit te Cilësimet.</string>
+    <string name="tutorial_swipe_navigation">Lundrim me rrëshqitje</string>
+    <string name="tutorial_swipe_description">Rrëshqitni nga skaji i majtë për të dalë.\n\nKjo vlen për imazhet, GIF-et, albumet, cilësimet dhe më shumë!</string>
+    <string name="handling_browser">Shfletues uebi</string>
+    <string name="submit_replies_to_inbox">Dërgo përgjigjet te kutia hyrëse</string>
+    <string name="btn_open_comments">Hap komentet</string>
+    <string name="btn_preview">Parapamje</string>
+    <string name="default_comment_sort">Renditja e parazgjedhur e komenteve</string>
+    <string name="content_deleted">[i fshirë]</string>
+    <string name="thread_continue">Vazhdo këtë temë</string>
+    <string name="type_selftext">Postim me tekst</string>
+    <string name="type_selftexts">Postime me tekst</string>
+    <string name="submission_unhide">Shfaq sërish postimin</string>
+    <string name="submission_info_unhidden">Postimi u shfaq sërish</string>
+    <string name="msg_sent_success">Mesazhi u dërgua</string>
+    <string name="msg_sent_failure">Mesazhi nuk u dërgua</string>
+    <string name="msg_send_user_dne">Ai përdorues nuk ekziston</string>
+    <string name="editor_actions_quote_comment">Zgjidhni tekstin për ta cituar</string>
+    <string name="guest">Vizitor</string>
+    <string name="album_slide_view">Pamje albumi me rrëshqitje</string>
+    <string name="album_grid">Rrjetë albumi</string>
+    <string name="open_externally">Hap nga jashtë</string>
+    <string name="vertical_album_view">Pamje vertikale e albumit</string>
+    <string name="download_album">Shkarko albumin</string>
+    <string name="download_gallery">Shkarko galerinë</string>
+    <string name="compose_message">Shkruaj mesazh</string>
+    <string name="mark_all_as_read">Shëno të gjitha si të lexuara</string>
+    <string name="clear_subreddit_history">Pastro historikun e subreddit-eve</string>
+    <string name="clear_submission_history">Pastro historikun e postimeve</string>
+    <string name="alert_history_cleared">Historiku u pastrua!</string>
+    <string name="manage_offline_content">Menaxho përmbajtjen jashtë linje</string>
+    <string name="go_offline">Kalo jashtë linje</string>
+    <string name="sidebar_edit_flair">Redakto flair-in tënd</string>
+    <string name="go_online_view_content">Ju lutemi lidhuni në internet për ta parë këtë përmbajtje</string>
+    <string name="help">Ndihmë</string>
+    <string name="upvote_percentage">Shfaq përqindjen e votave pro</string>
+    <string name="view_subreddits">Shiko subreddit-et</string>
+    <string name="clear_saved_subreddits">Pastro të gjitha subreddit-et e ruajtura</string>
+    <string name="download_the_slide_video_player_plugin">Shkarko shtojcën Slide Video Player</string>
+    <string name="btn_suggest_title">Sugjero titull</string>
+    <string name="navigate_comments_since">Komente më të reja se…</string>
+    <string name="btn_offline">Kalo në modalitetin jashtë linje</string>
+    <string name="discard_comment_title">Ta hidhni poshtë komentin?</string>
+    <string name="comment_discard_msg">A doni vërtet ta hidhni poshtë komentin tuaj?</string>
+    <string name="backup_saved_downloads">Rezervimi u ruajt te shkarkimet</string>
+    <string name="really_remove_subreddit_title">Vërtet ta hiqni këtë subreddit?</string>
+    <string name="choose_sync_time">Zgjidhni një kohë sinkronizimi</string>
+    <string name="account_suspended">Kjo llogari është pezulluar</string>
+    <string name="clear_all_sub_themes">T\'i pastroni të gjitha temat e subreddit-eve?</string>
+    <string name="clear_all_sub_themes_msg">Nuk mund ta zhbëni këtë veprim</string>
+    <string name="title_not_found">Titulli nuk u gjet</string>
+    <string name="really_delete_submission">Vërtet ta fshini këtë postim? Nuk mund ta zhbëni</string>
+    <string name="comment_unstickied">Fiksimi i komentit u hoq</string>
+    <string name="comment_stickied">Komenti u fiksua</string>
+    <string name="comment_undistinguished">Dallimi i komentit u hoq</string>
+    <string name="comment_distinguished">Komenti u dallua</string>
+    <string name="comment_removed">Komenti u hoq</string>
+    <string name="set_nav_mode">Vendos modalitetin e lundrimit</string>
+    <string name="auto_hide_the_comment_nav_bar">Fshih automatikisht shiritin e lundrimit të komenteve</string>
+    <string name="rate_slide">Vlerëso Slide</string>
+    <string name="edit_query">Redakto kërkesën</string>
+    <string name="share_slide">Ndaj Slide</string>
+    <string name="open_clipboard_reddit_link">Hap lidhjen e Reddit nga kujtesa e fragmenteve</string>
+    <string name="clipboard_no_reddit_link">Nuk ka lidhje Reddit në kujtesën e fragmenteve</string>
+    <string name="open_links_externally">Hap gjithmonë këtë host nga jashtë</string>
+    <string name="hide_read_posts">Fshih postimet e lexuara</string>
+    <string name="gallery_mode">Modaliteti i galerisë</string>
+    <string name="settings_gallery_grid">Shfaq postimet e galerisë si rrjetë</string>
+    <string name="gallery_grid_image">Imazhi %1$d nga %2$d i galerisë</string>
+    <string name="gallery_grid_overflow">+%1$d</string>
+    <string name="friends_sort_error">/r/friends nuk mund të renditet</string>
+    <string name="shadowbox_comments_nolinks">Nuk u gjet asnjë lidhje në komente</string>
+    <string name="draw_undo">Zhbëj</string>
+    <string name="empty_preview_text">Asgjë për të parë këtu ¯\\_(ツ)_/¯</string>
+    <string name="theme_red_shift">Zhvendosje drejt së kuqes</string>
+    <string name="view_sub_sidebar">Shiko shiritin anësor të sub-it</string>
+    <string name="mod_log">Regjistri i moderimit</string>
+    <string name="navigation_bar_vote_gestures">Gjeste votimi në shiritin e lundrimit</string>
+    <string name="nav_gestures_description">Votoni pro dhe kundër duke rrëshqitur mbi shigjetat e lundrimit të komenteve</string>
+    <string name="subreddit_sidebar_progress">Po merret shiriti anësor…</string>
+    <string name="manage_your_subreddits">Menaxho subreddit-et e tua</string>
+    <string name="enlarge_links">Zmadho lidhjet</string>
+    <string name="enlarge_links_warning">Mund të bëjë disa rreshta më të mëdhenj se të tjerët, por i bën lidhjet më të lehta për t\'u prekur</string>
+    <string name="type_tumblr">Tumblr</string>
+    <string name="type_tumblrs">Postime Tumblr</string>
+    <string name="type_nsfw_tumblr">Tumblr NSFW</string>
+    <string name="submission_info_contest">Kjo temë është në modalitet konkursi. Nuk mund ta ndryshoni renditjen.</string>
+    <string name="sub_post_notifs_msg">Slide do të kontrollojë për postime të reja kur kontrollon postën (njoftimet e postës duhet të jenë aktive)</string>
+    <string name="mod_ban_reason_required">Arsyeja është e detyrueshme</string>
+    <string name="settings_abbreviate_post_scores">Shkurto pikët e postimeve (p.sh. 24.0k)</string>
+    <string name="settings_wide_depth_indicators">Tregues të gjerë të thellësisë së komenteve</string>
+    <string name="settings_link_reader_mode_title">Përdor modalitetin e leximit</string>
+    <string name="settings_link_reader_mode_description">Hap të gjitha lidhjet në modalitetin e leximit. Lloji i shfletuesit do të përdoret kur hapet nga modaliteti i leximit.</string>
+    <string name="settings_link_reader_night">Lidh modalitetin e leximit me modalitetin e natës</string>
+    <string name="theme_pixel">Pixel</string>
+    <string name="save_images_to_subreddit_specific_subfolders">Ruaj imazhet në nëndosje sipas subreddit-it</string>
+    <string name="description_save_subfolders">Funksionon në pamjet e postimeve dhe komenteve</string>
+    <string name="save_media_to_type_specific_subfolders">Ruaj mediat në nëndosje sipas llojit</string>
+    <string name="description_save_type_subfolders">Imazhet shkojnë te \"images\", videot dhe GIF-et te \"videos\"</string>
+    <string name="show_image_download_button">Shkurtore shkarkimi</string>
+    <string name="description_image_download_button">Shfaq butonin e shkarkimit te shikuesi i imazheve</string>
+    <string name="content_settings">Cilësimet e përmbajtjes</string>
+    <string name="setting_titleTop">Shfaq titullin mbi rreshtin e informacionit</string>
+    <string name="setting_notification_piggybacking">Shfrytëzimi i njoftimeve të Reddit</string>
+    <string name="setting_notification_piggybacking_desc">Kontrollo postën vetëm kur aplikacioni zyrtar i Reddit merr një njoftim push</string>
+    <string name="install_notif_piggyback">Instaloni aplikacionin zyrtar të Reddit për të aktivizuar shfrytëzimin e njoftimeve</string>
+    <string name="success_block_user">Përdoruesi u bllokua me sukses</string>
+    <string name="err_unblock_user">Gabim gjatë zhbllokimit të përdoruesit</string>
+    <string name="success_unblock_user">Përdoruesi u zhbllokua me sukses</string>
+    <string name="settings_highlight_time_desc">Kërkon që \'Shfaq numrin e komenteve që nga vizita e fundit\' të jetë aktive te Cilësimet &gt; Paraqitja e postimeve</string>
+    <string name="settings_colored_time">Flluskë kohe me ngjyrë për komentet e reja</string>
+    <string name="theme_deep">I thellë</string>
+    <string name="type_vreddit">Video Reddit</string>
+    <string name="authors_above">Autorët sipër</string>
+    <string name="btn_crosspost">Postim i kryqëzuar</string>
+    <string name="btn_reset_color">RIVENDOS NGJYRËN</string>
+    <string name="settings_shortlink_description">Lidhjet do të ndahen si \'https://reddit.com/comments/\'</string>
+    <string name="settings_shortlink">Ndaj lidhjen e shkurtër të Reddit ku është e mundur</string>
+    <string name="disable_replies_comment">Çaktivizo përgjigjet e komentit në kutinë hyrëse</string>
+    <string name="replies_disabled_comment">Përgjigjet e komenteve u çaktivizuan</string>
+    <string name="replies_enabled_comment">Përgjigjet e komenteve u aktivizuan</string>
+    <string name="replies_switch_accounts">Kalo në një llogari tjetër</string>
+    <string name="search_settings">Kërko te cilësimet</string>
+    <string name="show_collapse_expand_nav_bar">Shfaq butonin palos/zgjero në shiritin e lundrimit të komenteve</string>
+    <string name="page_not_found">Faqja nuk u gjet</string>
+    <string name="page_does_not_exist">Faqja që kërkuat nuk ekziston</string>
+    <string name="back_button_behavior_goto_first">Shko te subreddit-i i parë</string>
+    <string name="settings_hide_post_awards">Fshih çmimet</string>
+    <string name="settings_hide_comment_awards">Fshih çmimet</string>
+    <string name="settings_title_markdown">Markdown</string>
+    <string name="settings_markdown_new_reddit">Markdown në stilin e Reddit-it të ri</string>
+    <string name="settings_markdown_new_reddit_desc">Paraqit blloqet e kodit dhe formatimin si Reddit-i i ri (i çaktivizuar përdor paraqitjen e Reddit-it të vjetër)</string>
+    <string name="comment_render_other">Shfaq paraqitjen tjetër</string>
+    <string name="recover_post">Rikupero postimin</string>
+    <string name="recover_loading">Po merret origjinali nga arkivi…</string>
+    <string name="recover_post_failed">Ky postim nuk mund të rikuperohej</string>
+    <string name="recover_comment">Rikupero komentin</string>
+    <string name="recover_comment_failed">Ky koment nuk mund të rikuperohej</string>
+    <string name="markdown_preview_new_reddit">Paraqitja e Reddit-it të ri</string>
+    <string name="markdown_preview_old_reddit">Paraqitja e Reddit-it të vjetër</string>
+    <string name="high_colorspace_images">Imazhe me hapësirë të gjerë ngjyrash</string>
+    <string name="description_high_colorspace">Ngarkon imazhet me hapësirën e plotë të ngjyrave, çka mund të rrisë përdorimin e memories</string>
+    <string name="wide_color_gamut">Gamë e gjerë ngjyrash</string>
+    <string name="description_wide_color_gamut">Paraqit shikuesit e mediave me gamë të gjerë ngjyrash. Mund t\'i zbehë ngjyrat në disa ekrane OLED</string>
+    <string name="comment_emote_animation">Animacioni i emote-ve në komente</string>
+    <string name="description_comment_emote_animation">Përcakton nëse emote-t që nuk janë nga Giphy animohen në komente</string>
+    <string name="comment_image_size">Madhësia e imazheve në komente</string>
+    <string name="description_comment_image_size">Sa të mëdha shfaqen imazhet e integruara në komente</string>
+    <string name="comment_image_size_small">I vogël</string>
+    <string name="comment_image_size_medium">Mesatar</string>
+    <string name="comment_image_size_large">I madh</string>
+    <string name="no_preview_image_longclick">Pa shtypje të gjatë mbi imazhet e pamjes paraprake të çdo lloji përmbajtjeje</string>
+    <string name="description_no_preview_image_longclick">Përcakton nëse shtypja e gjatë funksionon mbi imazhet e pamjes paraprake të çdo lloji përmbajtjeje. Çaktivizon veçorinë e shikimit të shpejtë të përmbajtjes.</string>
+    <string name="editor_btn_select_flair">Zgjidh flair</string>
+    <string name="submit_selected_flair">Flair i zgjedhur: %s</string>
+    <string name="mediaview_downloading">Po shkarkohet imazhi&#8230;</string>
+    <string name="err_save_image">Gabim gjatë ruajtjes së imazhit</string>
+    <string name="error_directory_not_selected">Nuk u zgjodh asnjë dosje. Ju lutemi provoni përsëri.</string>
+
+    <!-- Backup Operations -->
+
+    <!-- Additional Backup Operations -->
+    <string name="select_backup_file">Zgjidhni skedarin e rezervimit</string>
+
+    <string name="read_later">Lexo më vonë</string>
+    <string name="mark_as_read">Shëno si të lexuar</string>
+
+    <string name="reddit_client_id">ID-ja e klientit Reddit</string>
+    <string name="click_custom_client_id">Prekni për të vendosur një ID klienti të personalizuar</string>
+    <string name="client_id_scan_qr">Skano kodin QR</string>
+    <string name="client_id_scan_prompt">Skanoni një kod QR që përmban ID-në tuaj të klientit Reddit</string>
+    <string name="camera_permission_denied">Për të skanuar kode QR kërkohet leja e kamerës</string>
+    <string name="client_id_invalid_length">ID klienti e pavlefshme: duhet të jetë saktësisht 22 karaktere</string>
+
+    <!-- Notification permission strings -->
+    <string name="notifications_permission_title">Aktivizo njoftimet</string>
+    <string name="notifications_permission_message">Slide ka nevojë për lejen e njoftimeve që t\'ju njoftojë për mesazhe të reja, postime dhe përditësime të tjera nga Reddit. Cilësimet e njoftimeve mund t\'i menaxhoni më vonë.</string>
+    <string name="notification_listener_permission_title">Aktivizo qasjen te njoftimet</string>
+    <string name="notification_listener_permission_message">Slide ka nevojë për qasje te njoftimet për të kapur njoftimet e Reddit dhe për të ofruar një përvojë më të mirë. Ju lutemi aktivizoni qasjen te njoftimet për Slide në ekranin vijues.</string>
+
+
+    <string name="reddit_redirect_uri_override">Mbivendosja e URI-së së ridrejtimit të Reddit</string>
+    <string name="click_custom_redirect_uri">Prekni për të vendosur një URI ridrejtimi të personalizuar</string>
+    <string name="settings_reddit_redirect_uri_invalid">URI ridrejtimi e pavlefshme: duhet të jetë në formën skemë://host</string>
+    <string name="reddit_user_agent_override">Mbivendosja e user agent-it të Reddit</string>
+    <string name="click_custom_user_agent">Prekni për të vendosur një user agent të personalizuar</string>
+    <string name="settings_enable_overrides">Aktivizo mbivendosjet</string>
+    <string name="settings_enable_overrides_desc">Përdorni ID-në tuaj të klientit, URI-në e ridrejtimit dhe user agent-in e personalizuar në vend të vlerave të parazgjedhura të aplikacionit. Lëreni të çaktivizuar nëse nuk e dini se ju duhet.</string>
+
+    <string name="settings_section_sound">Tingulli</string>
+    <string name="settings_unmute_default">Hiq heshtjen e videove si parazgjedhje</string>
+
+    <string name="settings_subreddit_filter_prefix_matching">Aktivizo përputhjen me prefiks te filtrat e subreddit-eve</string>
+    <string name="settings_subreddit_filter_prefix_matching_description">Prefiksi është emri i plotë i subreddit-it dhe të paktën gjashtë karaktere. Shembuj: subreddit-i social do të bllokojë socialanxiety. Subreddit-i pokemongo do të bllokojë pokemongoraids.</string>
+
+    <string name="settings_filter_old_posts">Filtro postimet më të vjetra se</string>
+    <plurals name="settings_filter_old_posts_days">
+        <item quantity="one">%1$d ditë</item>
+        <item quantity="other">%1$d ditë</item>
+    </plurals>
+    <string name="settings_filter_old_posts_description">Nuk zbatohet kur shikoni një subreddit të vetëm, ose kur renditni sipas Top ose Controversial</string>
+
+    <!-- Pause on audio focus ducking setting -->
+    <string name="settings_pause_on_duck_title">Ndalo videon në vend që të ulet volumi</string>
+    <string name="settings_pause_on_duck_desc">Ndalon videot kur aplikacione të tjera luajnë audio. Ulja e volumit do të thotë që volumi zbritet në vend që videoja të ndalet.</string>
+
+    <!-- Add this string resource for the play button content description -->
+    <string name="btn_play">Luaj</string>
+
+    <string name="multireddit_name_title">Emri i multireddit-it</string>
+    <string name="multireddit_name_hint">Emri i multireddit-it</string>
+    <string name="multireddit_err_empty_name">Emri i multireddit-it nuk mund të jetë bosh</string>
+    <string name="multireddit_err_no_valid_subs">Nuk u zgjodh asnjë subreddit i vlefshëm. Ju lutemi zgjidhni të paktën një.</string>
+    <string name="multireddit_progress_title">Po krijohet multireddit-i</string>
+    <string name="multireddit_progress_message">Ju lutemi prisni ndërsa krijojmë multireddit-in tuaj...</string>
+    <string name="multireddit_created_success">Multireddit-i u krijua me sukses</string>
+    <string name="multireddit_created_error">Multireddit-i nuk mund të krijohej. Ju lutemi provoni përsëri.</string>
+    <string name="multireddit_json_error">Ndodhi një gabim gjatë përgatitjes së të dhënave të multireddit-it tuaj</string>
+
+    <string name="settings_dialog_colored_border">Vendos një kornizë me ngjyrë rreth dritareve të dialogut</string>
+    <string name="settings_dialog_colored_border_desc">Shfaq një kornizë të hollë me ngjyrë rreth disa dritareve të dialogut.</string>
+
+    <string name="misc_err_sync_failed">Subreddit-et nuk u sinkronizuan. Nuk ka subreddit-e të abonuara?</string>
+
+    <string name="mod_btn_distinguish">Dallo</string>
+    <string name="mod_btn_undistinguish">Hiq dallimin</string>
+
+    <string name="nsfw_status_removed">Statusi NSFW u hoq</string>
+    <string name="nsfw_status_set">Statusi NSFW u vendos</string>
+
+    <string name="spoiler_status_removed">Statusi i spoiler-it u hoq</string>
+    <string name="spoiler_status_set">Statusi i spoiler-it u vendos</string>
+
+    <string name="submission_distinguished">Postimi u dallua</string>
+    <string name="submission_distinguished_removed">Dallimi i postimit u hoq</string>
+
+    <string name="settings_general_hide_subreddit_tabs">Fshih skedat e subreddit-eve të abonuara</string>
+    <string name="settings_general_hide_subreddit_tabs_desc">Fsheh subreddit-et e abonuara si skeda, por i ruan butonat e lundrimit</string>
+
+    <!-- Video playback speed control -->
+    <string name="video_speed">Shpejtësia</string>
+    <string name="video_speed_0_25x">0.25x</string>
+    <string name="video_speed_0_5x">0.5x</string>
+    <string name="video_speed_0_75x">0.75x</string>
+    <string name="video_speed_1x">Normale</string>
+    <string name="video_speed_1_25x">1.25x</string>
+    <string name="video_speed_1_5x">1.5x</string>
+    <string name="video_speed_2x">2x</string>
+    <string name="video_speed_control_content_desc">Kontrolli i shpejtësisë së luajtjes</string>
+    <string name="image_unavailable">Imazhi nuk është i disponueshëm</string>
+    <string name="image_rotate_content_desc">Rrotullo imazhin 90 gradë në drejtim orar</string>
+    <string name="image_rotate_left_content_desc">Rrotullo imazhin 90 gradë në drejtim antiorar</string>
+
+    <!-- Folder chooser dialog (formerly provided by afollestad material-dialogs commons) -->
+    <string name="md_error_label">Gabim</string>
+    <string name="md_storage_perm_error">Ky funksion kërkon lejen e ruajtjes, e cila nuk është dhënë.</string>
+    <string name="md_choose_label">ZGJIDH</string>
+    <string name="new_folder">Dosje e re</string>
 </resources>

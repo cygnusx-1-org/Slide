@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Generic text used anywhere -->
+    <string name="general_confirm">Xác nhận</string>
     <string name="general_confirm_exit">Xác nhận thoát</string>
     <string name="general_confirm_exit_msg">Bạn có thực sự muốn thoát khỏi Slide?</string>
     <string name="general_enable_shadowbox">Kích hoạt chế độ Shadowbox</string>
-    <string name="pro_upgrade_msg">Nâng cấp lên Slide for Reddit Pro để trải nghiệm nhiều tính năng mới bao gồm: \n\n- Chặn quảng cáo và Chế Đồ Đọc trong trang Web\n- Cắt và vẽ lên ảnh trước khi tải lên\n- Chế độ theo dõi theo cột cho Tablet\n- Tự động chuyển chế độ ban đêm\n- Chế độ theo dõi theo Shadowbox và thư viện ảnh\n- Chế độ theo dõi bình luận theo Shadowbox\n- Sao lưu và phục hồi vào Google Drive và vào file\n- Ủng hộ phần mềm mở và không quảng cáo!\n\nBạn có muốn ủng hộ Silde for Reddit không?</string>
     <string name="general_open_settings">Thanh tiện ích</string>
     <string name="general_sub_sync">Đồng bộ các mục theo dõi</string>
+
     <!-- Used when viewing a thread -->
     <string name="submission_info_unsaved">Đã bỏ lưu bài đăng</string>
     <string name="submission_info_saved">Đã lưu bài đăng</string>
@@ -24,9 +25,9 @@
     <string name="submission_gild">Mở trong trình duyệt</string>
     <string name="submission_save">Lưu chủ đề</string>
     <string name="submission_save_image">Lưu ảnh</string>
+    <string name="submission_save_video">Lưu video</string>
     <string name="submission_load_full">Tải toàn bộ chủ đề</string>
     <string name="submission_np_link">Liên kết này không có sự tham gia. Đừng bình chọn hoặc bình luận</string>
-    <string name="submission_tap_gif">Ấn để tải GIF</string>
     <string name="submission_not_found">Ồ, chủ đề không tồn tài!</string>
     <string name="submission_not_found_msg">Xin lỗi, không tìm thấy chủ đề này</string>
     <string name="submission_copy_text">Sao chép văn bản</string>
@@ -37,7 +38,12 @@
     <string name="submission_text_copied">Đã sao chép bài viết</string>
     <string name="submission_nocontent">Bài đăng không có nội dung</string>
     <string name="submission_link_copied">Đã sao chép địa chỉ</string>
+    <string name="translate_with_google">Dịch</string>
+    <string name="translate_no_app">Không có ứng dụng nào để dịch</string>
+    <string name="read_aloud">Đọc to</string>
+    <string name="read_aloud_unavailable">Không có chức năng chuyển văn bản thành giọng nói</string>
     <string name="submission_removed">Đã xóa bài đăng</string>
+
     <plurals name="new_messages">
         <item quantity="other">%d tin nhắn mới</item>
     </plurals>
@@ -47,20 +53,90 @@
     <plurals name="comments">
         <item quantity="other">bl</item>
     </plurals>
+
     <!-- Theme settings -->
     <string name="theme_light">Sáng</string>
     <string name="theme_dark">Tối</string>
     <string name="theme_black">AMOLED đen</string>
+    <string name="theme_dark_blue">Xanh đậm</string>
+    <string name="night_mode">Chế độ ban đêm</string>
+    <string name="disabled">Đã tắt</string>
+    <string name="manual">Thủ công</string>
+    <string name="automatic">Tự động</string>
+    <string name="theme_default_color">Màu chính</string>
+    <string name="theme_subreddit_color">Đổi màu</string>
+    <string name="theme_accent_color">Màu nhấn</string>
+    <string name="theme_base">Giao diện cơ bản</string>
+    <string name="theme_card">Thẻ</string>
+    <string name="theme_sepia">Sepia</string>
+    <string name="theme_amoled_contrast">AMOLED có tương phản</string>
+    <string name="theme_night">Giao diện ban đêm</string>
+
     <!-- Font settings -->
+    <string name="font_size_comment">Cỡ chữ bình luận</string>
+    <string name="font_size_post">Cỡ chữ bài đăng</string>
+    <string name="font_size_huge">Rất lớn</string>
+    <string name="font_size_larger">Lớn hơn</string>
+    <string name="font_size_large">Lớn</string>
+    <string name="font_size_medium">Vừa</string>
+    <string name="font_size_small">Nhỏ</string>
+    <string name="font_size_smaller">Nhỏ hơn</string>
+    <string name="font_size_tiny">Rất nhỏ</string>
+
     <!-- For editing the submission card layout -->
+    <string name="card_hide_post_button">Nút "Ẩn bài đăng" trên thanh tác vụ</string>
+    <string name="card_tint_outside">Chỉ tô màu bên ngoài subreddit</string>
+    <string name="card_save_button">Nút "Lưu bài đăng" trên thanh tác vụ</string>
+
     <!-- Settings for Multi-column view -->
+    <string name="multi_column_title">Nhiều cột</string>
+    <string name="multi_column_portrait_count">Số cột ở chế độ dọc</string>
+    <string name="multi_column_landscape_count">Số cột ở chế độ ngang</string>
+    <string name="single_column_multi_window">Một cột ở chế độ nhiều cửa sổ</string>
+
     <!-- Drawer items (That's the one on the left) -->
+    <string name="drawer_profile">Bạn</string>
+    <string name="drawer_support">Nâng cấp Pro</string>
+    <string name="drawer_goto_profile">Đi tới hồ sơ</string>
+    <string name="drawer_add_account">Thêm tài khoản</string>
+    <string name="drawer_hello">Xin chào,</string>
+    <string name="drawer_search">Đi tới subreddit</string>
+    <!-- Subreddit name when submitting/crossposting: a single subreddit only (no multireddit, no dot). -->
+    <!-- Message recipient: a username or an /r/ or /u/ path. -->
+    <!-- Settings search field. The trailing space is intentional, so the value is quoted to preserve it. -->
+    <string name="drawer_moderation">Kiểm duyệt</string>
+    <string name="drawer_offline">Slide đang ở chế độ ngoại tuyến</string>
+    <string name="drawer_offline_retry">Thử chuyển sang chế độ trực tuyến</string>
+    <string name="drawer_guest_mode">Duyệt với tư cách khách</string>
+
     <!-- Sidebar items (That's the one on the right) -->
+    <string name="sidebar_wiki">Wiki của subreddit</string>
+    <string name="sidebar_mods">Người kiểm duyệt subreddit</string>
+
     <!-- User profile -->
+    <string name="profile_karma_total">Tổng karma</string>
+    <string name="profile_karma_link">Karma bài đăng</string>
+    <string name="profile_karma_comment">Karma bình luận</string>
+    <string name="profile_message">Tin nhắn riêng</string>
+    <string name="profile_saved">Đã lưu</string>
+    <string name="local_saved">Đã lưu cục bộ</string>
+    <string name="profile_read_later">Đọc sau</string>
+    <string name="profile_upvoted">Đã bình chọn tăng</string>
+    <string name="profile_err_title">Không tìm thấy người dùng</string>
     <string name="profile_err_msg">Không thể nhận người dùng</string>
+    <string name="profile_overview">Tổng quan</string>
     <string name="profile_comments">Bình luận</string>
+    <string name="profile_submitted">Bài đăng</string>
+    <string name="profile_gilded">Được tặng thưởng</string>
+    <string name="profile_downvoted">Đã bình chọn giảm</string>
+    <string name="profile_hidden">Đã ẩn</string>
+    <string name="profile_friend">Bạn bè</string>
     <string name="profile_add_friend">Thêm bạn</string>
     <string name="profile_remove_friend">Xóa bạn</string>
+    <string name="profile_follow_user">Theo dõi</string>
+    <string name="profile_unfollow_user">Bỏ theo dõi</string>
+    <string name="profile_add_user">Thêm người dùng</string>
+    <string name="profile_remove_user">Xóa người dùng</string>
     <string name="profile_remove_account">Bạn thực sự muốn xóa tài khoản này?</string>
     <string name="profile_remove">Xóa tài khoản</string>
     <string name="profile_history">Lịch sử</string>
@@ -73,7 +149,23 @@
     <string name="profile_btn_tag">Chọn nhãn</string>
     <string name="profile_btn_untag">Xóa nhãn</string>
     <string name="profile_info">Thông tin hồ sơ</string>
+    <string name="profile_options">Tùy chọn người dùng</string>
+    <string name="profile_block_user">Chặn người dùng</string>
+    <string name="profile_block_user_description">Chặn tin nhắn, bài đăng và hồ sơ của người dùng</string>
+    <string name="profile_unblock_user">Bỏ chặn người dùng</string>
+    <string name="profile_unblock_user_description">Bỏ chặn tin nhắn, bài đăng và hồ sơ của người dùng</string>
+    <string name="profile_search">Tìm kiếm</string>
+    <string name="profile_search_title">Tìm trong %1$s</string>
+    <string name="profile_search_hint">Tìm trong tiêu đề và nội dung…</string>
+    <string name="profile_search_no_results">Không tìm thấy kết quả nào</string>
+    <string name="profile_search_clear">Xóa tìm kiếm</string>
+    <string name="profile_search_cleared">Đã xóa tìm kiếm</string>
+    <string name="profile_search_loading">Đang tìm kiếm…</string>
+    <string name="profile_search_progress">%1$d kết quả · đã tìm %2$d</string>
+    <string name="profile_search_bypass_cache">Bỏ qua bộ nhớ đệm</string>
+
     <!-- Comment text options -->
+    <string name="comment_gild">Tặng thưởng bình luận</string>
     <string name="comment_share">Chia sẻ bình luận</string>
     <string name="comment_delete">Xóa bình luận</string>
     <string name="comment_delete_msg">Bạn thật sự muốn xóa bình luận này? Việc này không thể hủy bỏ được</string>
@@ -81,69 +173,1213 @@
     <string name="comment_delete_err_msg">Bạn có muốn thử lại không?</string>
     <string name="comment_deleted">[đã xóa]</string>
     <string name="comment_unsave">Bỏ lưu</string>
-    <string name="comment_load_more_string_new">Tải %1$s thêm</string>
     <string name="comment_loading_more">Tải thêm bình luận&#8230;</string>
+    <string name="comment_permalink">Tải liên kết cố định của bình luận</string>
+    <string name="comment_parent">Hiện bình luận gốc</string>
+    <string name="comment_video_play">Phát video</string>
+
     <!-- Welcome view (first time setup) -->
+    <string name="welcome_start">Bắt đầu</string>
+    <string name="welcome_personalize">Cá nhân hóa</string>
+
     <!-- Sorting options -->
     <string name="sorting_choose">Chọn kiểu sắp xếp</string>
+    <string name="sorting_time_choose">Chọn khoảng thời gian</string>
+    <string name="sorting_change_sorting">Chế độ sắp xếp</string>
     <string name="sorting_best">Hay nhất</string>
     <string name="sorting_top">Dẫn đầu </string>
+    <string name="sorting_hot">Nổi bật</string>
+    <string name="sorting_ama">Hỏi &amp; Đáp (AMA)</string>
+    <string name="sorting_new">Mới</string>
+    <string name="sorting_old">Cũ</string>
+    <string name="sorting_controversial">Gây tranh cãi</string>
+    <string name="sorting_rising">Đang lên</string>
+    <string name="sorting_hour">giờ</string>
+    <string name="sorting_day">24 giờ</string>
+    <string name="sorting_week">tuần</string>
+    <string name="sorting_month">tháng</string>
+    <string name="sorting_year">năm</string>
+    <string name="sorting_all">mọi lúc</string>
+    <string name="sorting_defaultfor">Mặc định cho /r/%1$s</string>
+
     <!-- Editor (save/submit a post) actions -->
+    <string name="editor_url">URL</string>
+    <string name="editor_text">Văn bản</string>
+    <string name="editor_title_link">Chèn liên kết</string>
+    <string name="editor_action_link">CHÈN</string>
+    <string name="editor_title">Tiêu đề</string>
+    <string name="editor_err_msg">Vui lòng thử lại sau vài giây</string>
+    <string name="editor_uploading_image">Đang tải ảnh lên Imgur</string>
+    <string name="editor_upload_image_title">Tải ảnh lên</string>
+    <string name="editor_upload_reddit">Reddit (ảnh nhúng)</string>
+    <string name="editor_upload_imgur">Imgur (liên kết)</string>
+    <string name="editor_uploading_reddit">Đang tải ảnh lên Reddit</string>
+    <string name="editor_reddit_upload_success">Đã tải ảnh lên</string>
+    <string name="editor_reddit_upload_failed">Tải ảnh lên thất bại</string>
+    <string name="submit_image_host_imgur">Imgur</string>
+    <string name="submit_image_host_reddit">Reddit</string>
+    <string name="submit_change_img">Đổi ảnh</string>
+    <string name="submit_select_gallery">Thêm ảnh</string>
+    <string name="submit_gallery_caption_hint">Chú thích (tùy chọn)</string>
+    <string name="submit_gallery_count">Đã chọn %1$d</string>
+    <string name="submit_uploading_gallery">Đang tải ảnh %1$d trên %2$d</string>
+    <string name="editor_select_img">Chọn ảnh</string>
+    <string name="editor_hint_optional_body">Văn bản (tùy chọn)</string>
+    <string name="editor_submit">Đăng bài</string>
+    <string name="editor_hint_subreddit">Subreddit</string>
+    <string name="editor_finding_title">Đang tìm tiêu đề</string>
+    <string name="submit_findingflairs">Đang tìm flair</string>
+    <string name="submit_flairchoices">Flair của /r/%s</string>
+
+    <string name="edit_selftext">Sửa nội dung bài đăng</string>
+    <string name="delete_submission">Xóa bài đăng</string>
+    <string name="set_submission_flair">Đặt flair cho bài đăng</string>
+
     <!-- Editor buttons -->
+    <string name="editor_save_draft">Lưu bản nháp</string>
+    <string name="editor_chose_draft">Chọn bản nháp</string>
+    <string name="editor_insert_image">Chèn ảnh</string>
     <string name="editor_draw">Chèn và vẽ ảnh</string>
+    <string name="editor_link">Chèn liên kết</string>
+    <string name="editor_bold">In đậm</string>
+    <string name="editor_italics">In nghiêng</string>
+    <string name="editor_quote">Trích dẫn</string>
+    <string name="editor_author">Nhắc đến tác giả</string>
+    <string name="editor_list">Danh sách dấu đầu dòng</string>
+    <string name="editor_num_list">Danh sách đánh số</string>
+    <string name="editor_size">Cỡ chữ lớn</string>
+    <string name="editor_strike">Gạch ngang</string>
+    <string name="editor_spoiler">Spoiler</string>
+
     <!-- General information / information without a category -->
+    <string name="info_photo_saved">Đã lưu ảnh</string>
+    <string name="gif_saved">Đã lưu GIF</string>
+
     <!-- General errors / errors without a category -->
+    <string name="err_title">Rất tiếc, đã xảy ra lỗi!</string>
+    <string name="err_invalid_url">URL không hợp lệ</string>
+    <string name="err_loading_content">Lỗi khi tải nội dung</string>
+    <string name="err_general">Rất tiếc, đã xảy ra lỗi</string>
+    <string name="err_no_connection">Không thể kết nối tới Reddit. Bạn có muốn thử lại không?</string>
+    <string name="err_no_connection_toast">Không thể kết nối tới Reddit. Hãy thử lại sau</string>
+    <string name="err_retry_later">Hãy thử lại sau một phút!</string>
+    <string name="err_authentication">Xác thực thất bại</string>
+    <string name="err_submit_restricted">Subreddit này bị hạn chế</string>
+    <string name="err_submit_restricted_text">Bạn không được phép đăng bài ở đây. Vui lòng chọn subreddit khác</string>
+    <string name="err_crosspost_disallowed_text">/r/%s không cho phép đăng chéo. Vui lòng chọn subreddit khác.</string>
+    <string name="err_crosspost_not_subscribed">Bạn phải đăng ký /r/%s trước khi đăng chéo.</string>
+    <string name="err_crosspost_sub_not_found">/r/%s không tồn tại.</string>
+    <string name="crosspost_flair_required_short">Cần có flair — vui lòng chọn một flair trước khi đăng.</string>
+    <string name="error_video_not_found">Không tìm thấy video</string>
+    <string name="error_video_message">Đã xảy ra lỗi khi tải video này</string>
+    <string name="error_album_not_found">Không tìm thấy album</string>
+    <string name="error_album_not_found_text">Bạn có muốn mở liên kết trong trình duyệt không?</string>
+    <string name="err_comment_post_nosave_message">\nVui lòng thử lại sau một phút</string>
+    <string name="err_could_not_find_content_msg">Reddit không tìm thấy nội dung được yêu cầu</string>
+    <string name="err_refused_request_msg">Reddit đã từ chối một yêu cầu. Bạn có muốn thử kết nối lại với Reddit không?</string>
+    <string name="err_color_sync_login">Vui lòng đăng nhập để dùng Đồng bộ màu</string>
+    <string name="err_something_wrong">Rất tiếc, đã xảy ra lỗi</string>
+    <string name="err_couldnt_save_choose_new">Slide không thể lưu vào thư mục đã chọn. Bạn có muốn chọn vị trí lưu mới không?</string>
+    <string name="err_share_image">Lỗi khi chia sẻ ảnh</string>
+    <string name="err_file_not_found">Không tìm thấy tệp</string>
+    <string name="err_file_not_found_msg">Không tìm thấy tệp đã chọn. Hãy đảm bảo tệp tồn tại và Slide có quyền truy cập tệp/thư mục đó</string>
+    <string name="err_comment_post">Rất tiếc, đăng bình luận này thất bại!</string>
+    <string name="err_comment_post_reason">Lý do: %1$s</string>
+    <string name="err_comment_post_message">\n\nTin nhắn của bạn đã được lưu thành bản nháp. Vui lòng thử lại sau.</string>
+    <string name="err_connection_failed_msg">Kết nối tới Reddit thất bại. Vui lòng kiểm tra kết nối internet và thử lại, hoặc chuyển sang chế độ ngoại tuyến.</string>
+    <string name="err_block_user">Lỗi khi chặn người dùng. Gần đây bạn có bỏ chặn người dùng này không?</string>
+
     <!-- Gif -->
+    <string name="gif_err_title">Không tìm thấy GIF</string>
+    <string name="gif_err_msg">Đã xảy ra lỗi khi tải GIF này. Vui lòng mở lại GIF và thử lại.</string>
+    <string name="gif_load_failed">Tải GIF thất bại</string>
+    <string name="gif_download_failed">Tải xuống GIF thất bại</string>
+
     <!-- Multireddits -->
+    <string name="multireddit_err_title">Chưa có multireddit nào!</string>
+    <string name="multireddit_err_msg">Bạn có muốn tạo một multireddit mới không?</string>
+    <string name="public_multireddit_err_title">Không có multireddit nào!</string>
+    <string name="public_multireddit_err_msg">Người dùng này không có multireddit công khai nào.</string>
+    <string name="multireddit_title_empty">Tiêu đề không được để trống</string>
+    <string name="multireddit_title_empty_msg">Vui lòng nhập tiêu đề cho multireddit của bạn</string>
+    <string name="multireddit_no_subs">Chưa thêm subreddit nào</string>
+    <string name="multireddit_save_err">Tiêu đề multireddit này đã tồn tại hoặc không còn chỗ cho thêm subreddit</string>
+    <string name="multireddit_no_subs_msg">Hãy thêm một số subreddit bằng cách nhấn nút +!</string>
+    <string name="multireddit_selector">Chọn subreddit để thêm</string>
+    <string name="multireddit_create_hint">Tên multireddit</string>
+    <string name="multireddit_invalid_name">Tên multireddit không hợp lệ</string>
+    <string name="multireddit_invalid_name_msg">Tên multireddit chỉ được chứa chữ cái, chữ số và dấu gạch dưới</string>
+    <string name="multi_add_to">Thêm /r/%s vào</string>
+    <string name="multi_subreddit_added">Đã thêm subreddit vào /m/%1$s</string>
+    <string name="multi_error">Đã xảy ra lỗi, vui lòng thử lại sau</string>
+    <string name="btn_import_multi">Nhập multireddit</string>
+    <string name="multi_submit_which_sub">Bạn muốn đăng vào sub nào?</string>
+    <string name="multi_saved_successfully">Đã lưu thành công</string>
+    <string name="delete_multireddit_title">Bạn có thực sự muốn xóa /m/%1$s không?</string>
+    <string name="multi_save_option">Bạn có muốn lưu multireddit này không?</string>
+
     <!-- Content types -->
+    <string name="type_nsfw_img">Ảnh NSFW</string>
+    <string name="type_nsfw_gif">GIF NSFW</string>
+    <string name="type_reddit">Liên kết Reddit</string>
+    <string name="type_link">Liên kết</string>
+    <string name="type_nsfw_link">Liên kết NSFW</string>
+    <string name="type_gif">GIF</string>
+    <string name="type_title_only">Bài chỉ có tiêu đề</string>
+    <string name="type_album">Album</string>
+    <string name="type_xkcd">XKCD</string>
+    <string name="type_nsfw_album">Album NSFW</string>
+    <string name="type_nsfw_gallery">Thư viện NSFW</string>
+    <string name="type_nsfw_albums">Album NSFW</string>
+    <string name="type_nsfw_galleries">Thư viện NSFW</string>
+    <string name="type_nsfw_gifs">GIF NSFW</string>
+    <string name="type_nsfw_images">Ảnh NSFW</string>
+    <string name="type_nsfw_links">Liên kết NSFW</string>
+    <string name="type_nsfw_selftexts">Bài văn bản NSFW</string>
+    <string name="type_nsfw_tumblrs">Bài Tumblr NSFW</string>
+    <string name="type_nsfw_videos">Video NSFW</string>
+    <string name="type_gallery">Thư viện</string>
+    <string name="type_galleries">Thư viện</string>
+    <string name="type_img">Ảnh</string>
+    <string name="type_videos">Video</string>
+    <string name="type_nsfw_video">Video NSFW</string>
+    <string name="type_imgur">Nội dung Imgur</string>
+    <string name="type_nsfw_imgur">Nội dung Imgur NSFW</string>
+    <string name="type_nsfw_xkcd">XKCD NSFW</string>
+    <string name="type_nsfw_deviantart">DeviantArt NSFW</string>
+    <string name="type_nsfw_title_only">Bài NSFW chỉ có tiêu đề</string>
+    <string name="type_nsfw_reddit">Liên kết Reddit NSFW</string>
+    <string name="type_nsfw_selftext">Bài văn bản NSFW</string>
+    <string name="type_spoiler">Spoiler</string>
+    <string name="type_nsfw_spoiler">Spoiler NSFW</string>
+    <string name="type_nsfw_streamable">Streamable NSFW</string>
+    <string name="type_external">Bên ngoài</string>
+
     <!-- Content types plural (Content filters) -->
+    <string name="type_gifs">GIF</string>
+    <string name="type_albums">Album</string>
+    <string name="type_links">Liên kết</string>
+
     <!-- Inbox/mail -->
+    <string name="mail_tab_inbox">Hộp thư đến</string>
+    <string name="mail_tab_unread">Chưa đọc</string>
+    <string name="mail_tab_messages">Tin nhắn</string>
+    <string name="mail_tab_sent">Đã gửi</string>
+    <string name="mail_tab_mentions">Nhắc đến</string>
+    <string name="mail_author_wrote">%1$s đã viết…</string>
+    <string name="mail_hint_recipient">Người nhận</string>
+    <string name="mail_hint_subject">Chủ đề</string>
+    <string name="mail_hint_body">Văn bản</string>
+    <string name="mail_send_to">Gửi tin nhắn tới %1$s</string>
+    <string name="mail_send">Gửi tin nhắn</string>
+    <string name="mail_notification_msg_from">Tin nhắn mới từ %1$s</string>
+    <string name="mail_notification_msg_via">Tin nhắn mới qua /r/%1$s</string>
+    <string name="mod_mail_notification_msg">Modmail mới từ %1$s</string>
+    <string name="mail_reply_to">Trả lời %1$s</string>
+    <string name="mail_notification_author">%1$s từ %2$s</string>
+    <string name="mail_notification_subreddit">%1$s qua /r/%2$s</string>
+    <string name="mail_theirs">Xem tin nhắn của họ</string>
+    <string name="mail_re">trả lời: %1$s</string>
+    <string name="mail_mark_read">Đánh dấu đã đọc</string>
+    <string name="mail_view_full_thread">Xem toàn bộ chủ đề</string>
+    <string name="mail_message_copied">Đã sao chép tin nhắn</string>
+    <plurals name="mail_notification_title">
+        <item quantity="other">Bạn có %d tin nhắn mới!</item>
+    </plurals>
+    <plurals name="mod_mail_notification_title">
+        <item quantity="other">Bạn có %d modmail mới!</item>
+    </plurals>
+
     <!-- Miscellaneous/generic things that don't have a category or strings that are used for multiple categories -->
+    <string name="misc_err">Lỗi</string>
+    <string name="misc_none">Không có</string>
+    <string name="misc_retry">Bạn có muốn thử lại không?</string>
+    <string name="misc_retry_draft">Bạn có muốn thử lại không? \nBản nháp bài đăng của bạn đã được lưu</string>
+    <string name="misc_score_hidden">điểm bị ẩn</string>
+    <string name="misc_subscribed">Đã đăng ký</string>
+    <string name="misc_continue">Tiếp tục</string>
+    <string name="misc_unsubscribed">Đã hủy đăng ký</string>
+    <string name="misc_no_more_posts">Không còn bài đăng nào!</string>
+    <string name="misc_please_wait">Vui lòng đợi…</string>
+    <string name="misc_img_share">Chia sẻ ảnh với</string>
+    <string name="misc_copy_text">Sao chép văn bản</string>
+    <string name="misc_maybe_later">Có thể để sau</string>
+    <string name="misc_try_again">Thử lại</string>
+    <string name="misc_please_try_again">Vui lòng thử lại</string>
+    <string name="misc_please_try_again_soon">Vui lòng thử lại sau</string>
+    <string name="misc_setting_up">Đang thiết lập vài thứ…</string>
+    <string name="misc_setting_up_message">Vui lòng đừng rời khỏi màn hình này. Sẽ không mất nhiều thời gian đâu!</string>
+    <string name="misc_more_info">Thêm thông tin</string>
+    <string name="misc_captcha_incorrect">Captcha không đúng, vui lòng thử lại</string>
+
     <!-- Goto User -->
+    <string name="user_enter">Nhập tên người dùng</string>
+    <string name="user_btn_goto">Đi tới người dùng</string>
+    <string name="user_btn_gotomultis">Đi tới multi của người dùng</string>
+
+    <!-- Saved users list -->
+    <string name="users_empty">Không có người dùng đã lưu</string>
+    <string name="users_btn_add">Thêm người dùng</string>
+    <string name="users_btn_remove">Xóa người dùng</string>
+    <string name="users_added">Đã thêm %s vào Người dùng</string>
+    <string name="users_removed">Đã xóa %s khỏi Người dùng</string>
+    <string name="users_already_added">%s đã có trong Người dùng</string>
+    <string name="users_copied">Đã sao chép %s</string>
+    <string name="users_checking">Đang kiểm tra tên người dùng</string>
+    <string name="users_invalid_title">Không thể thêm người dùng</string>
+    <string name="users_invalid">%s không phải là người dùng Reddit</string>
+    <string name="users_check_failed">Không thể kiểm tra xem %s có tồn tại không. Vui lòng kiểm tra kết nối và thử lại.</string>
+    <string name="users_friend_added">Đã thêm %s làm bạn</string>
+    <string name="users_friend_removed">Đã xóa %s khỏi danh sách bạn</string>
+    <string name="users_friend_failed">Không thể cập nhật trạng thái bạn bè cho %s</string>
+    <string name="btn_fab_add_user">Thêm người dùng</string>
+
     <!-- Buttons -->
+    <string name="btn_add">Thêm</string>
+    <string name="btn_cancel">Hủy</string>
+    <string name="btn_close">Đóng</string>
+    <string name="btn_toggle">Bật/tắt</string>
+    <string name="btn_open">Mở</string>
+    <string name="btn_discard">Bỏ</string>
+    <string name="btn_done">Xong</string>
+    <string name="btn_go_back">Quay lại</string>
+    <string name="btn_no">Không</string>
+    <string name="btn_ok">OK</string>
+    <string name="btn_remove">Xóa</string>
+    <string name="btn_reply">Trả lời</string>
+    <string name="btn_reset">Đặt lại</string>
+    <string name="btn_retry">Thử lại</string>
+    <string name="btn_save">Lưu</string>
+    <string name="btn_submit">Gửi</string>
+    <string name="btn_undo">Hoàn tác</string>
+    <string name="btn_yes">Có</string>
+    <string name="btn_refresh">Làm mới</string>
+    <string name="btn_cache">Lưu đệm bình luận</string>
+    <string name="btn_delete">Xóa</string>
+    <string name="btn_time">Khoảng thời gian</string>
+    <string name="btn_message">Tin nhắn</string>
+    <string name="btn_select">Chọn</string>
+    <string name="btn_view">XEM</string>
+    <string name="btn_changelog">Nhật ký thay đổi</string>
+    <string name="btn_set">ĐẶT</string>
+    <string name="btn_create">Tạo</string>
+    <string name="btn_new">Mới</string>
+
     <!-- Buttons Content labels for TalkBack accessibility-->
+    <string name="btn_edit">Sửa</string>
+    <string name="btn_hide">Ẩn</string>
+    <string name="btn_mod">Kiểm duyệt</string>
+    <string name="btn_upvote">Bình chọn tăng</string>
+    <string name="btn_downvote">Bình chọn giảm</string>
+    <string name="btn_menu">Menu</string>
+    <string name="img_score">Điểm</string>
+    <string name="img_comments">Bình luận</string>
+    <string name="btn_expand">Mở rộng</string>
+    <string name="btn_nav_up">Điều hướng lên</string>
+    <string name="btn_nav_mode">Đặt chế độ điều hướng</string>
+    <string name="btn_nav_collapse_expand">Thu gọn/mở rộng</string>
+    <string name="btn_nav_down">Điều hướng xuống</string>
+    <string name="btn_fab_reply">Trả lời</string>
+    <string name="btn_fab_post">Tạo bài đăng mới</string>
+    <string name="btn_fab_hide">Ẩn các bài đã xem</string>
+    <string name="btn_fab_search">Tìm bài đăng</string>
+
     <!-- Buttons Content labels for TalkBack accessibility active states-->
+    <string name="btn_upvoted">Đã bình chọn tăng</string>
+    <string name="btn_downvoted">Đã bình chọn giảm</string>
+    <string name="btn_unsave">Bỏ lưu</string>
+    <string name="btn_collapse">Thu gọn</string>
+
     <!-- Backup -->
+    <string name="backup_success">Sao lưu thành công!</string>
+    <string name="backup_restoring">Đang khôi phục cài đặt của bạn</string>
+    <string name="backup_backing_up">Đang sao lưu cài đặt của bạn</string>
+    <string name="backup_restore_settings">Khôi phục cài đặt thành công!</string>
+    <string name="backup_restarting">Ứng dụng sẽ khởi động lại ngay bây giờ</string>
+    <string name="backup_info">Slide sao lưu toàn bộ dữ liệu của bạn vào một thư mục riêng tư trên Google Drive. Bạn có thể đồng bộ dữ liệu này giữa các thiết bị (hoặc về cùng một thiết bị), và dữ liệu của bạn không bao giờ đi qua dịch vụ hay máy chủ của bên thứ ba. Bản sao lưu được mã hóa bằng mật khẩu do bạn chọn.</string>
+    <string name="backup_btn">Sao lưu</string>
+    <string name="backup_btn_restore">Khôi phục</string>
+    <string name="backup_btn_file">Sao lưu ra tệp zip</string>
+    <string name="backup_btn_restore_file">Khôi phục từ tệp hoặc zip</string>
+    <string name="backup_confirm">Bạn có chắc muốn sao lưu không? Bản sao lưu trước sẽ bị ghi đè</string>
+    <string name="backup_restore_confirm">Bạn có chắc muốn khôi phục không? Cài đặt hiện tại của bạn sẽ bị ghi đè</string>
+    <string name="backup_failed_msg">Sao lưu thất bại. Vui lòng thử lại sau.</string>
+    <string name="backup_restore_failed_msg">Khôi phục thất bại. Hãy đảm bảo có một bản sao lưu hợp lệ rồi thử lại.</string>
+    <string name="backup_local_title">Sao lưu cục bộ</string>
+    <string name="backup_drive_title">Sao lưu trên Google Drive</string>
+    <string name="backup_button">Tạo bản sao lưu</string>
+    <string name="restore_button">Khôi phục bản sao lưu</string>
+    <string name="backup_question">Sao lưu?</string>
+    <string name="backup_complete">Đã hoàn tất sao lưu!</string>
+    <string name="err_not_valid_backup">Không phải tệp sao lưu Slide hợp lệ</string>
+    <string name="err_not_valid_backup_msg">Tệp đã chọn không phải là tệp sao lưu Slide hợp lệ</string>
+    <string name="backup_password_title">Đặt mật khẩu sao lưu</string>
+    <string name="backup_password_message">Bản sao lưu chứa thông tin đăng nhập tài khoản Reddit của bạn nên được mã hóa. Hãy chọn mật khẩu từ %1$d đến %2$d ký tự. Bạn sẽ cần nó để khôi phục và không thể lấy lại được.</string>
+    <string name="backup_password_hint">Mật khẩu</string>
+    <string name="restore_password_title">Nhập mật khẩu sao lưu</string>
+    <string name="restore_password_message">Nhập mật khẩu đã dùng để mã hóa bản sao lưu này.</string>
+    <string name="restore_password_wrong">Mật khẩu không đúng. Vui lòng thử lại.</string>
+    <string name="drive_authorization_failed">Ủy quyền Google Drive thất bại</string>
+    <string name="drive_authorization_failed_msg">Slide không thể truy cập thư mục riêng tư của mình trên Google Drive. Vui lòng thử lại.</string>
+    <string name="drive_authorization_denied">Cần quyền truy cập Google Drive</string>
+    <string name="drive_authorization_denied_msg">Slide cần quyền truy cập thư mục riêng tư của mình trên Google Drive để sao lưu hoặc khôi phục cài đặt của bạn.</string>
+
     <!-- Vote -->
     <string name="vote_err">Lỗi khi bình chọn</string>
+    <string name="vote_err_login">Bạn phải đăng nhập để bình chọn!</string>
     <string name="vote_removed">Bình chọn đã bị loại bỏ</string>
+
+    <!-- Subscribing -->
+    <string name="subscribe_err_login">Bạn phải đăng nhập để đăng ký!</string>
+
     <!-- Moderation tools -->
     <string name="mod_mail">Mail của quản trị viên</string>
     <string name="mod_mail_unread">Mail của quản trị viên chưa đọc</string>
+    <string name="modmail_internal_note">(ghi chú nội bộ)</string>
+    <string name="modmail_scope_missing">Modmail cần xác thực lại. Hãy đăng nhập lại (Cài đặt &#8594; tài khoản) để bật tính năng này.</string>
+    <string name="modmail_reply_sent">Đã gửi trả lời!</string>
+    <string name="modmail_reply_failed">Gửi thất bại! Trả lời đã được lưu thành bản nháp.</string>
+    <plurals name="modmail_message_count">
+        <item quantity="other">%d tin nhắn</item>
+    </plurals>
+    <string name="mod_modqueue">Hàng đợi kiểm duyệt</string>
+    <string name="mod_unmoderated">Chưa kiểm duyệt</string>
+    <string name="mod_reports">Báo cáo</string>
+    <string name="mod_approved">Đã phê duyệt bài đăng</string>
+    <string name="mod_flair_hint">Nội dung flair</string>
+    <string name="mod_no_reports">Không có báo cáo</string>
+    <string name="mod_btn_approve">Phê duyệt</string>
+    <string name="mod_btn_submission_flair">Đặt flair</string>
+    <string name="mod_btn_submission_flair_text">Đặt nội dung flair</string>
+    <string name="mod_btn_mark_nsfw">Đánh dấu NSFW</string>
+    <string name="mod_btn_unmark_nsfw">Bỏ đánh dấu NSFW</string>
+    <string name="mod_btn_mark_spoiler">Đánh dấu là spoiler</string>
+    <string name="mod_btn_unmark_spoiler">Bỏ đánh dấu spoiler</string>
+    <string name="mod_btn_lock_thread">Khóa chủ đề</string>
+    <string name="mod_btn_unlock_thread">Mở khóa chủ đề</string>
+    <string name="mod_btn_lock_comment">Khóa bình luận</string>
+    <string name="mod_btn_unlock_comment">Mở khóa bình luận</string>
+    <string name="mod_locked">Đã khóa</string>
+    <string name="mod_unlocked">Đã mở khóa</string>
+    <string name="mod_btn_pin">Ghim</string>
+    <string name="mod_btn_unpin">Bỏ ghim</string>
+    <string name="mod_btn_remove">Gỡ</string>
+    <string name="mod_btn_remove_reason">Gỡ kèm lý do</string>
+    <string name="mod_btn_spam">Đánh dấu là spam</string>
+    <string name="mod_btn_author">Hồ sơ tác giả</string>
+    <string name="mod_btn_ban">Cấm</string>
+    <string name="mod_ban_user">Cấm người dùng</string>
+    <string name="mod_ban_reauth">Để cấm người dùng, Slide phải xác thực lại bạn</string>
+    <string name="mod_ban_reauth_question">Bạn có muốn đăng nhập lại vào Slide ngay bây giờ không?</string>
+    <string name="mod_ban_success">Đã cấm người dùng!</string>
+    <string name="mod_ban_fail">Lỗi khi cấm người dùng</string>
+    <string name="mod_ban_reason">Lý do cấm</string>
+    <string name="mod_ban_note_mod">Ghi chú của người kiểm duyệt (tùy chọn)</string>
+    <string name="mod_ban_note_user">Tin nhắn gửi người dùng (tùy chọn)</string>
+    <string name="mod_ban_time">Thời hạn cấm - để trống nếu cấm vĩnh viễn</string>
+    <string name="mod_ban_title">Cấm /u/%1$s</string>
+    <string name="mod_remove_template">Đã gỡ vì\u0020</string>
+    <string name="mod_remove_hint">Lý do gỡ</string>
+    <string name="mod_remove_title">Lý do gỡ bài đăng này là gì?</string>
+    <string name="mod_remove_insert_draft">Chèn bản nháp</string>
+    <string name="mod_flair_none_found">Không tìm thấy flair nào cho subreddit này</string>
+    <string name="mod_distinguish">Làm nổi bật</string>
+    <string name="mod_undistinguish">Bỏ làm nổi bật</string>
+    <string name="mod_sticky">Ghim</string>
+    <string name="mod_unsticky">Bỏ ghim</string>
+    <string name="reauth_complete">Đã hoàn tất xác thực lại!</string>
+    <string name="reauth_in_progress">Đang xác thực lại…</string>
+    <string name="reauth_failed">Không thể xác thực lại</string>
+
+    <plurals name="mod_btn_reports">
+        <item quantity="other">Xem %d báo cáo</item>
+    </plurals>
+
     <!-- If he did -->
+    <string name="really_pin_submission_message">Đã ghim bài đăng</string>
+    <string name="really_unpin_submission_message">Đã bỏ ghim bài đăng</string>
+
     <!-- Subreddit Wiki -->
+    <string name="wiki_err">Không tìm thấy wiki</string>
+    <string name="wiki_err_msg">Subreddit này không có wiki!</string>
+
     <!-- Subreddits -->
+    <string name="subreddit_subscribers_string">%1$s người đăng ký</string>
+    <string name="subreddit_active_users_string_new">%1$s đang ở đây</string>
+    <string name="subreddit_err_msg">Không tìm thấy subreddit %1$s. Có thể tên bị viết sai?</string>
+    <string name="subreddit_err_msg_new">Không tìm thấy subreddit %1$s. Có thể tên bị viết sai, hoặc bạn không có quyền truy cập subreddit này.</string>
+    <string name="subreddit_err">Không tìm thấy subreddit</string>
+
     <!-- Search -->
+    <string name="search_comments_hint">Tìm trong bình luận</string>
+    <string name="search_goto">Đi tới</string>
+    <string name="search_title">Tìm kiếm</string>
+    <string name="search_msg">Bạn đang tìm gì?</string>
+    <string name="search_all">Tìm tất cả</string>
+    <string name="search_subreddit">Tìm trong %1$s</string>
+    <string name="search_relevance">Liên quan</string>
+    <string name="search_top">Hàng đầu</string>
+    <string name="search_new">Mới</string>
+    <string name="search_comments">Bình luận</string>
+    <string name="no_posts_found">Không tìm thấy bài đăng nào</string>
+
     <!-- Settings -->
+    <string name="settings_reddit_prefs">Tùy chọn Reddit</string>
+    <string name="settings_accent_title">Sửa màu nhấn</string>
+    <string name="settings_delete_sub_settings">Bạn có thực sự muốn xóa cài đặt cho %1$s không?</string>
+    <string name="settings_layout_default">Bố cục bài đăng</string>
+    <string name="settings_link_album">Trình xem album nội bộ</string>
+    <string name="settings_link_peek">Xem nhanh nội dung</string>
+    <string name="settings_link_peek_description">Tắt nhấn giữ trên ảnh xem trước</string>
+    <string name="settings_link_gif">Trình xem GIF nội bộ</string>
+    <string name="settings_link_hqgif">Video Gfycat chất lượng cao</string>
+    <string name="settings_link_handling">Xử lý liên kết</string>
+    <string name="settings_link_image">Trình xem ảnh nội bộ</string>
+    <string name="settings_mail_check">Kiểm tra tin nhắn mới</string>
+    <string name="settings_mail_info">Tần suất càng cao thì Slide càng có thể tiêu tốn nhiều pin khi chạy nền!</string>
+    <string name="settings_main_color_title">Sửa màu chính</string>
+    <string name="settings_notification">Kiểm tra tin nhắn mới mỗi %1$s</string>
+    <string name="settings_notification_newline">Kiểm tra tin nhắn mới mỗi\n%1$s</string>
+    <string name="settings_notification_short">Kiểm tra mỗi %1$s</string>
+    <string name="settings_disable_nsfw_photo">Ẩn tất cả ảnh NSFW</string>
+    <string name="settings_store_history">Lưu lịch sử</string>
+    <string name="settings_store_nsfw_history">Lưu lịch sử NSFW</string>
+    <string name="settings_commentnav">Điều hướng giữa các bình luận gốc</string>
+    <string name="share_link">Chia sẻ liên kết</string>
+    <string name="posts_hidden_forever">Bài đăng đã ẩn vĩnh viễn</string>
+    <string name="share_image">Chia sẻ ảnh</string>
+    <string name="settings_libs">Thư viện mã nguồn mở</string>
+    <string name="settings_about_libs">Giới thiệu thư viện</string>
+    <string name="settings_privacy">Chính sách quyền riêng tư</string>
+    <string name="settings_bugs">Báo lỗi</string>
+    <string name="settings_changelog">Xem nhật ký thay đổi</string>
+    <string name="settings_fabclear_msg">Chạm nút xóa sẽ gỡ các bài đăng khỏi chế độ xem hiện tại, nhưng không ẩn chúng vĩnh viễn. \nNhấn giữ nút sẽ ẩn các bài đăng vĩnh viễn!</string>
+    <string name="settings_fabclear">Hành động xóa của nút nổi</string>
+    <string name="settings_notifdisabled">Đã tắt thông báo</string>
+    <string name="settings_colored_navigation_bar">Thanh điều hướng có màu</string>
+    <string name="settings_always_black_statusbar">Thanh trạng thái đen (thanh thông báo)</string>
+    <string name="settings_colored_icon">Tô màu biểu tượng ứng dụng (thử nghiệm)</string>
+    <string name="settings_colored_icon_desc">Có thể cần khởi động lại điện thoại. Thao tác này cũng sẽ gỡ biểu tượng khỏi màn hình chính.</string>
+    <string name="settings_filter_domain">Bộ lọc tên miền</string>
+    <string name="settings_filter_selfttext">Bộ lọc nội dung bài đăng</string>
+    <string name="settings_filter_title">Bộ lọc tiêu đề</string>
+    <string name="settings_prefs_reddit">Xem tất cả tùy chọn reddit.com</string>
+    <string name="settings_font_post">Phông chữ tiêu đề bài đăng</string>
+    <string name="settings_font_comment">Phông chữ bình luận</string>
+    <string name="settings_comment_crop">Cắt ảnh chính trong chế độ xem bình luận</string>
+    <string name="settings_general_scroll_read">Đánh dấu bài đăng là đã xem khi cuộn qua</string>
+    <string name="settings_link_chrome">Custom Tabs</string>
+    <string name="settings_storage_location">Chọn vị trí lưu trữ</string>
+    <string name="settings_storage_location_unset">Chưa đặt</string>
+    <string name="settings_set_storage_location">Tệp sẽ được lưu vào %s</string>
+    <string name="settings_general_immersive_mode">Chế độ toàn màn hình đắm chìm</string>
+    <string name="settings_general_immersive_mode_desc">Ẩn thanh trạng thái và thanh điều hướng (thử nghiệm)</string>
+    <string name="settings_general_old_swipe_mode">Chế độ vuốt cũ</string>
+    <string name="settings_general_old_swipe_mode_desc">Kiểu vuốt cũ của Slide. Dành cho chế độ điều hướng 3 nút và cử chỉ Samsung.</string>
+    <string name="settings_general_hibernate">Tiếp tục từ nơi tôi đã dừng</string>
+    <string name="settings_general_hibernate_desc">Mở lại cùng màn hình, ở cùng vị trí, hiển thị nội dung đã tải thay vì làm mới. Bật tùy chọn này sẽ thêm một ô đánh dấu vào menu mở rộng để bật/tắt việc tiếp tục mà không cần quay lại đây.</string>
+
+    <string name="settings_general_title_drawer_items">Mục trong ngăn kéo</string>
+    <string name="settings_general_subtitle_drawer_items">Chọn những mục nào sẽ hiển thị trong ngăn kéo</string>
+
     <!-- Settings titles displayed in settings activity-->
+    <string name="settings_title_backup">Sao lưu &amp; khôi phục</string>
+    <string name="settings_title_default_theme">Giao diện chính</string>
+    <string name="settings_title_general">Chung</string>
+    <string name="settings_title_history">Lịch sử</string>
+    <string name="settings_title_notifications">Thông báo</string>
+    <string name="settings_title_pro">Nâng cấp Pro</string>
+    <string name="settings_title_sub_theme">Giao diện subreddit</string>
+    <string name="settings_title_sort">Sắp xếp mặc định</string>
+    <string name="settings_title_sort_frontpage">Sắp xếp trang chủ</string>
+    <string name="settings_title_about">Giới thiệu</string>
+    <string name="settings_title_debug">Gỡ lỗi</string>
+    <string name="settings_section_debug_reauth">Xác thực lại</string>
+    <string name="settings_debug_break_reauth">Làm hỏng xác thực lại</string>
+    <string name="settings_debug_break_reauth_desc">Dừng quá trình xác thực lại để có thể kiểm thử thông báo tương ứng. Có thể khôi phục: tắt tùy chọn này rồi kích hoạt một lần xác thực lại.</string>
+    <string name="settings_debug_trigger_reauth">Kích hoạt xác thực lại</string>
+    <string name="settings_debug_trigger_reauth_desc">Bắt đầu xác thực lại ngay bây giờ. Dùng tùy chọn này để khôi phục sau khi tắt công tắc.</string>
+    <string name="settings_title_multi_column">Nhiều cột</string>
+    <string name="settings_title_fab">Nút hành động nổi</string>
+    <string name="settings_title_comments">Bình luận</string>
+    <string name="settings_title_filter">Bộ lọc</string>
+    <string name="settings_title_font">Phông chữ</string>
+    <string name="settings_section_general">Chung</string>
+    <string name="settings_section_appearance">Giao diện</string>
+    <string name="settings_section_hibernation">Ngủ đông</string>
+    <string name="settings_section_other">Khác</string>
+    <string name="settings_section_browser">Trình duyệt</string>
+    <string name="settings_section_internal_viewers">Trình xem nội bộ</string>
+    <string name="settings_section_custom_domains">Tên miền tùy chỉnh</string>
+    <string name="settings_section_save_history">Lưu lịch sử</string>
+    <string name="settings_section_clear_history">Xóa lịch sử</string>
+    <string name="settings_section_data_saving_mode">Chế độ tiết kiệm dữ liệu</string>
+    <string name="settings_section_data_saving_quality">Chất lượng khi tiết kiệm dữ liệu</string>
+    <string name="settings_comment_color">Chỉ báo độ sâu bình luận nhiều màu</string>
+    <string name="settings_volume_nav_comments">Điều hướng bình luận bằng nút âm lượng</string>
+    <string name="settings_commentnav_description">Bật thanh dưới có mũi tên điều hướng</string>
+    <string name="settings_comment_collapse">Thu gọn hoàn toàn bình luận</string>
+    <string name="settings_comment_collapse_description">Đồng thời tắt hiệu ứng động của bình luận</string>
+    <string name="settings_comment_collapse_default">Mặc định thu gọn bình luận con</string>
+    <string name="settings_data_enable">Bật cài đặt tiết kiệm dữ liệu</string>
+    <string name="settings_data_video_quality">Ưu tiên video chất lượng thấp khi bật tiết kiệm dữ liệu</string>
+    <string name="settings_comments_collapse_deleted">Mặc định thu gọn bình luận đã xóa</string>
+    <string name="settings_comments_collapse_sticky">Luôn thu gọn hoàn toàn bình luận được ghim</string>
+    <string name="settings_comments_collapse_blocked_users">Thu gọn bình luận của người dùng bị chặn</string>
+    <string name="settings_comments_collapse_blocked_users_description">Đồng thời bật Thu gọn hoàn toàn bình luận</string>
+    <string name="settings_backup_occurs">Bản sao lưu sẽ được tạo lúc %1$s</string>
+    <string name="settings_backup_none">Sẽ không sao lưu subreddit nào</string>
+    <string name="settings_backup_will_backup">\u0020sẽ được sao lưu</string>
+    <string name="settings_backup_submission_only">chỉ bài đăng</string>
+    <string name="settings_backup_comments">\u0020(bình luận)</string>
+    <string name="settings_filter_profile">Bộ lọc hồ sơ</string>
+    <string name="settings_subreddit_content_filters_till_restart">Bộ lọc nội dung subreddit cho đến khi khởi động lại</string>
+    <string name="settings_subredditspecific_selftext">Luôn hiện bản xem trước nội dung trong subreddit này</string>
+    <string name="settings_font_system">Hệ thống</string>
+    <string name="settings_manage_subscriptions">Quản lý đăng ký của bạn</string>
+    <string name="settings_comments_swap_long">Hoán đổi hành động nhấn giữ và chạm</string>
+    <string name="settings_redditprefs_over18">Tôi trên 18 tuổi và muốn xem nội dung NSFW</string>
+    <string name="settings_layout_view">Chế độ xem</string>
+    <string name="settings_subredditspecific_bigpic">Luôn hiện ảnh lớn trong subreddit này</string>
+    <string name="settings_layout_picture_mode">Chế độ ảnh</string>
+    <string name="settings_general_expanded_toolbar">Menu thanh công cụ mở rộng</string>
+    <string name="settings_general_expanded_toolbar_desc">Hiện thêm tùy chọn trên thanh công cụ của subreddit</string>
+    <string name="settings_always_show_floating_action_button">Luôn hiện nút hành động nổi</string>
+    <string name="settings_always_show_floating_action_button_desc">Không bao giờ ẩn nút hành động nổi khi cuộn</string>
+    <string name="settings_theme_tinting">Chế độ tô màu bài đăng</string>
+    <string name="settings_layout_actionbar_mode">Chế độ thanh tác vụ</string>
+    <string name="settings_theme_tint_outside_desc">Chỉ tô màu nền trong multireddit, trang chủ và tất cả</string>
+    <string name="settings_layout_small_content_tag">Nhãn nội dung nhỏ hơn</string>
+    <string name="settings_links_force_external">Buộc dùng trình duyệt ngoài</string>
+    <string name="settings_layout_show_domain">Hiện tên miền trên dòng thông tin</string>
+    <string name="settings_layout_show_content_type">Hiện loại nội dung trên dòng thông tin</string>
+    <string name="settings_layout_thumbnail_flags">Hiện dấu màu ở góc ảnh thu nhỏ</string>
+    <string name="settings_layout_show_votes_comments">Hiện số bình chọn/bình luận trên dòng thông tin</string>
+    <string name="settings_general_comment_last_visit">Hiện số bình luận kể từ lần truy cập trước</string>
+    <string name="settings_fab_create">Hiện nút nổi \"tạo bình luận\"</string>
+    <string name="settings_right_handed_comment_menu">Menu trả lời bình luận cho người thuận tay phải</string>
+    <string name="settings_reddit_description">Những cài đặt này thay đổi dữ liệu mà API của Reddit trả về cho Slide.\n\nĐể thấy ảnh thu nhỏ trong mọi subreddit, hãy bật \'Bỏ qua tùy chọn phương tiện của subreddit\'\n\nĐể thấy toàn bộ nội dung NSFW, hãy tắt \'Ẩn ảnh NSFW\' và bật \'Tôi trên 18 tuổi\'</string>
+    <string name="settings_reddit_media_pref">Bỏ qua tùy chọn phương tiện của subreddit</string>
+    <string name="settings_description_view_type">Các kiểu xem ảnh hưởng đến cả màn hình chính lẫn màn hình từng subreddit.\n\nKhung bình luận: bình luận trượt ra bên cạnh bài đăng và trạng thái trang bình luận được giữ lại sau khi vuốt ngược (để bạn không mất vị trí đang đọc)\n\nKhông có tab subreddit: tắt việc vuốt giữa các subreddit\n\nTab subreddit: vuốt giữa các subreddit của bạn</string>
+    <string name="settings_short_description_view_type">Các kiểu xem ảnh hưởng đến cả màn hình chính lẫn màn hình từng subreddit</string>
+    <string name="settings_comment_hide_selftext_image">Ẩn ảnh chính ở các bài đăng văn bản</string>
+    <string name="settings_filter_flair">Bộ lọc flair</string>
+    <string name="settings_view_type">Kiểu xem</string>
+    <string name="settings_data">Tiết kiệm dữ liệu</string>
+    <string name="settings_card_show_selftext">Hiện nội dung bài đăng</string>
+    <string name="settings_card_selftext_paragraph">Hiện đoạn đầu tiên</string>
+    <string name="settings_card_selftext_ellipsize">Rút gọn còn 128 ký tự đầu</string>
+    <string name="settings_handling_external_desc">Các tên miền nhập bên dưới sẽ luôn mở bằng ứng dụng ngoài</string>
+    <string name="settings_handling_enterdomain">Nhập một tên miền hoặc một phần tên miền</string>
+    <string name="settings_section_content">Nội dung</string>
+    <string name="settings_backup_view">Xem bản sao lưu</string>
+    <string name="settings_backup_err_no_explorer">Không tìm thấy trình quản lý tệp, tệp nằm tại %1$s</string>
+    <string name="settings_about_version_copied_toast">Đã sao chép số phiên bản vào bộ nhớ tạm</string>
+    <string name="settings_theme_night_start_at">Bắt đầu lúc\u0020</string>
+    <string name="settings_theme_night_end_at">Kết thúc lúc\u0020</string>
+    <string name="settings_general_inbox_snd">Âm thanh và rung</string>
+    <string name="settings_enable_notifs">Bật thông báo hộp thư đến</string>
+
     <!-- Quick setting toggles in the drawer -->
+    <string name="toggle_night_mode">Chế độ ban đêm</string>
+    <string name="toggle_immersive_mode">Chế độ đắm chìm</string>
+    <string name="toggle_nsfw">Hiện nội dung NSFW</string>
+    <string name="toggle_right_thumbnails">Ảnh thu nhỏ căn phải</string>
+    <string name="toggle_reader_mode">Dùng chế độ đọc</string>
+
     <!-- View types -->
+    <string name="view_type_tabs">Tab subreddit</string>
+    <string name="view_type_none">Không có tab subreddit</string>
+    <string name="view_type_comments">Khung bình luận</string>
+
     <!--Search methods -->
+    <string name="subreddit_search_method_title">Cách tìm subreddit</string>
+    <string name="subreddit_search_method_drawer">Thanh tìm kiếm trong ngăn kéo</string>
+    <string name="subreddit_search_method_toolbar">Nhấn giữ tiêu đề thanh công cụ</string>
+    <string name="subreddit_search_method_both">Cả ngăn kéo lẫn tiêu đề thanh công cụ</string>
+
     <!-- Back button behavior -->
+    <string name="back_button_behavior_title">Hành vi nút quay lại</string>
+    <string name="back_button_behavior_default">Đóng ứng dụng</string>
+    <string name="back_button_behavior_confirm_exit">Hộp thoại xác nhận thoát</string>
+    <string name="back_button_behavior_drawer">Mở ngăn kéo</string>
+
     <!-- Subscription managing -->
-    <!-- Save categories -->
+    <string name="reorder_add_domain">Thêm một tên miền</string>
+    <string name="reorder_add_subreddit">Thêm một subreddit</string>
+    <string name="reorder_fab_collection">Multireddit</string>
+    <string name="reorder_fab_domain">Tên miền</string>
+    <string name="reorder_fab_subreddit">Subreddit</string>
+    <string name="reorder_add_subscribe">Thêm &amp; đăng ký</string>
+    <string name="reorder_remove_unsubscribe">Xóa &amp; hủy đăng ký</string>
+    <string name="reorder_move">Chuyển lên đầu</string>
+    <string name="reorder_domain_placeholder">\u0020(chỉ tên miền)</string>
+    <string name="reorder_not_found_err">Không tìm thấy subreddit, đây là một số gợi ý</string>
+    <string name="reorder_subscribed_toast">Đã đăng ký /r/%1$s</string>
+    <string name="reorder_unsubscribed_toast">Đã hủy đăng ký /r/%1$s</string>
+    <string name="sorting_faq"><b>Làm sao để làm mới subreddit?</b>\nĐể làm mới subreddit, hãy nhấn biểu tượng làm mới trên thanh công cụ!\n\n<b>Tôi đã hủy đăng ký một số subreddit nhưng chúng vẫn còn trong danh sách!</b>\nSlide sẽ chuyển các subreddit bạn đã hủy đăng ký từ trình duyệt thành đăng ký không chính thức. Để xóa chúng, hãy nhấn giữ subreddit và chọn xóa!\n\n<b>Làm sao để dùng bộ sưu tập?</b>\nĐể tạo bộ sưu tập, hãy nhấn nút nổi + và chọn \'Tạo bộ sưu tập\'. Nhờ đó nhiều sub có thể hoạt động như một subreddit duy nhất trên màn hình chính!</string>
+    <string name="alphabetize_subreddits">Sắp xếp subreddit theo bảng chữ cái</string>
+    <string name="sync_subscriptions">Đồng bộ đăng ký</string>
+    <string name="cannot_be_undone">Thao tác này không thể hoàn tác.</string>
+    <string name="deleting">Đang xóa…</string>
+    <string name="create_or_import_multi">Bạn muốn tạo multireddit mới hay nhập một multireddit?</string>
+    <string name="sub_added">Đã thêm subreddit!</string>
+    <string name="reorder_subs_FAQ">Câu hỏi thường gặp về sắp xếp subreddit</string>
+    <string name="subscribe_to">Đăng ký /r/%1$s</string>
+    <string name="unsubscribe_from">Hủy đăng ký /r/%1$s</string>
+    <string name="btn_add_to_sublist">THÊM VÀO DANH SÁCH SUB</string>
+    <string name="btn_remove_from_sublist">XÓA KHỎI DANH SÁCH SUB</string>
+    <string name="just_unsub">CHỈ HỦY ĐĂNG KÝ</string>
+    <string name="subscribe_caps">ĐĂNG KÝ</string>
+    <string name="unsubscribe_caps">HỦY ĐĂNG KÝ</string>
+    <string name="reorder_subreddits_title">Chọn subreddit để thêm</string>
+    <string name="reorder_add_or_search_subreddit">Thêm hoặc tìm một subreddit</string>
+    <string name="reorder_subreddit_name">Tên subreddit</string>
+    <string name="reorder_remove_title">Xóa subreddit này?</string>
+    <string name="reorder_sync_complete">Đã đồng bộ xong</string>
+    <string name="reorder_loading_title">Đang tải các subreddit của bạn</string>
+    <string name="reorder_url_err">URL không hợp lệ</string>
+
+    <!-- Saved tags -->
+    <string name="tag_set_name_hint">Tên nhãn</string>
+    <string name="tag_tag_action">GẮN NHÃN</string>
+    <string name="profile_tag_select">Nhãn</string>
+    <string name="profile_saved_tags">Nhãn đã lưu</string>
+    <string name="tag_builtin_all">Tất cả</string>
+    <string name="tag_builtin_posts">Bài đăng</string>
+    <string name="tag_builtin_comments">Bình luận</string>
+    <string name="tag_types_header">Loại</string>
+    <string name="tag_post_types_header">Loại bài đăng</string>
+    <string name="tag_custom_header">Nhãn tùy chỉnh</string>
+    <string name="tag_new">Nhãn mới</string>
+    <string name="tag_manage">Quản lý nhãn</string>
+    <string name="tag_add">Thêm nhãn</string>
+    <string name="tag_none_yet">Chưa có nhãn nào</string>
+    <string name="tag_rename">Đổi tên</string>
+    <string name="tag_delete_confirm">Bạn có chắc muốn xóa \"%1$s\" không? Các mục có nhãn này sẽ không bị xóa.</string>
+    <string name="tag_name_used_title">Tên đã được dùng</string>
+    <string name="tag_name_used">Đã có nhãn mang tên đó, vui lòng chọn một tên khác.</string>
+    <string name="tag_name_reserved">Tên đó đã được dành riêng, vui lòng chọn tên khác.</string>
+
     <!-- Setting subheaders -->
+    <string name="sorting">Kiểu sắp xếp</string>
+    <string name="display">Hiển thị</string>
+    <string name="images">Ảnh</string>
+    <string name="storage">Bộ nhớ</string>
+    <string name="app_theme">Giao diện ứng dụng</string>
+    <string name="tinting">Tô màu</string>
+    <string name="post_info">Thông tin bài đăng</string>
+    <string name="post_buttons">Nút bài đăng</string>
+    <string name="navigation">Điều hướng</string>
+    <string name="collapse_comments">Hành động thu gọn</string>
+    <string name="nsfw">Nội dung NSFW</string>
+    <string name="view_reddit_settings">Mở cài đặt Reddit trong trình duyệt</string>
+    <string name="font_styles">Kiểu phông chữ</string>
+
     <!-- Titles displayed in action bar / head / recents overview-->
-    <!-- Text in Donation-Activity -->
+    <string name="title_subreddit_settings">Giao diện &amp; bố cục subreddit</string>
+    <string name="title_edit_theme">Sửa giao diện</string>
+    <string name="title_submit_post">Đăng bài</string>
+    <string name="title_crosspost">Đăng chéo</string>
+    <string name="title_settings">Cài đặt</string>
+    <string name="title_share">Chia sẻ bằng</string>
+    <string name="title_login">Đăng nhập Reddit</string>
+    <string name="title_multireddits">Multireddit</string>
+    <string name="title_users">Người dùng</string>
+    <string name="title_inbox">Hộp thư đến</string>
+    <string name="title_theme_settings">Giao diện</string>
+    <string name="title_create_multi">Tạo multireddit</string>
+
     <!-- Offline mode -->
+    <string name="offline_msg">Vui lòng kết nối mạng và làm mới subreddit để thực hiện việc đó</string>
+    <string name="offline_last_update">Cập nhật lần cuối %1$s</string>
+    <string name="offline_comments_not_loaded">Vui lòng kết nối mạng trở lại và chọn ‘Lưu đệm bình luận’ từ menu ba chấm để xem bình luận khi ngoại tuyến</string>
+    <string name="offline_no_content_found">Không tìm thấy nội dung ngoại tuyến</string>
+    <string name="offline_enter_online">Chuyển sang chế độ trực tuyến</string>
+    <string name="offline_caching_title">Đang lưu đệm %1$s</string>
+    <string name="offline_caching_complete">Đã lưu đệm xong</string>
+
     <!-- Website -->
+    <string name="website_external">Mở trong trình duyệt ngoài</string>
+
+    <plurals name="reorder_subs_added">
+        <item quantity="other">Đã thêm %d subreddit</item>
+    </plurals>
+
     <!-- Time -->
+    <string name="time_just_now">Vừa xong</string>
+    <plurals name="time_years">
+        <item quantity="other">%d năm</item>
+    </plurals>
+    <plurals name="time_months">
+        <item quantity="other">%d tháng</item>
+    </plurals>
+    <plurals name="time_days">
+        <item quantity="other">%d ngày</item>
+    </plurals>
+    <plurals name="time_hours">
+        <item quantity="other">%d giờ</item>
+    </plurals>
+    <plurals name="time_minutes">
+        <item quantity="other">%d phút</item>
+    </plurals>
+    <plurals name="time_seconds">
+        <item quantity="other">%d giây</item>
+    </plurals>
+
     <!-- Time: shorthand durations for example 1 hour → 1h -->
+    <string name="time_years_short">%dn</string>
+    <string name="time_days_short">%dng</string>
+    <string name="time_hours_short">%dg</string>
+    <string name="time_minutes_short">%dp</string>
+
     <!-- Strings present during the login process -->
+    <string name="login_subscribe_rslideforreddit">Đăng ký /r/slidereddit?</string>
+    <string name="login_subscribe_rslideforreddit_desc">Bạn có muốn đăng ký /r/slidereddit để nhận tin mới nhất và báo cáo sự cố không?</string>
+    <string name="login_sync_colors">Đồng bộ màu ngay bây giờ?</string>
+    <string name="login_sync_colors_desc">Bạn có muốn đồng bộ màu subreddit ngay bây giờ không? Việc này có thể làm sau trong Cài đặt → Giao diện subreddit</string>
+    <string name="login_authenticating">Slide đang xác thực</string>
+    <string name="login_starting">Đang thiết lập!</string>
+    <string name="login_starting_desc">Chỉ mất một giây thôi…</string>
+
     <!-- Over 18 prompt when visiting a NSFW subreddit -->
-    <!-- Subreddit color synchronization - https://redd.it/41054l -->
+    <string name="over18_title">/r/%1$s chứa nội dung người lớn</string>
+    <string name="over18_desc">Bạn đã trên mười tám tuổi và muốn xem nội dung người lớn chứ?</string>
+    <string name="over18_desc_loggedout">Đăng nhập để tắt vĩnh viễn cảnh báo này</string>
+    <string name="over18_desc_loggedin">Bạn có thể tắt vĩnh viễn trong Cài đặt → Tùy chọn Reddit → Hiện nội dung NSFW</string>
+
+    <!-- Subreddit color synchronization - https://reddit.com/comments/41054l -->
+    <string name="color_sync_complete">Đã đồng bộ xong</string>
+    <plurals name="color_sync_colored">
+        <item quantity="other">Đã tô màu %d subreddit</item>
+    </plurals>
+
     <!-- Discover section: find -->
+    <string name="discover_title">Khám phá</string>
+    <string name="discover_search">Từ khóa hoặc chủ đề</string>
+    <string name="discover_popular">Phổ biến</string>
+    <string name="discover_trending">Xu hướng</string>
+
     <!-- Subreddit post notifications -->
+    <string name="sub_post_notifs_title">Nhận thông báo về bài đăng mới trong\n/r/%1$s?</string>
+    <string name="sub_post_notifs_title_settings">Nhận thông báo về bài đăng mới?</string>
+    <string name="sub_post_notify">Thông báo</string>
+    <string name="sub_post_notifs_threshold">Ngưỡng điểm</string>
+    <string name="sub_post_notifs_err">Bạn chỉ có thể thêm thông báo cho từng subreddit riêng lẻ</string>
+    <string name="sub_post_notifs_settings_none">Không có subreddit nào để thông báo</string>
+    <string name="sub_post_notifs_settings_search">Tìm tên sub</string>
+    <string name="sub_post_notifs_notification_title">Bài đăng mới trong /r/%1$s</string>
+    <string name="sub_post_notifs_notification_btn">Ngừng theo dõi /r/%1$s</string>
+    <string name="title_sub_post_notifs">Thông báo bài đăng subreddit</string>
+
     <!-- Internal browser -->
+    <string name="internal_browser_extracting_error">Xin lỗi, không thể trích xuất bài viết</string>
+    <string name="internal_browser_storecookies">Lưu cookie của trang web</string>
+    <string name="internal_browser_readermode">Chế độ đọc</string>
+
     <!-- Live thread -->
+    <string name="livethread_loading_title">Đang tải chủ đề trực tiếp…</string>
+    <string name="livethread_not_found">Không tìm thấy chủ đề trực tiếp</string>
+    <string name="livethread_recents_title">Chủ đề trực tiếp: %1$s</string>
+
     <!-- Used when viewing media -->
+    <string name="mediaview_notif_title">Đang tải ảnh xuống…</string>
+    <string name="mediaview_notif_video">Đang tải video xuống…</string>
+    <string name="mediaview_notif_text">Đang tải xuống</string>
+    <string name="mediaview_save">Lưu %1$s</string>
+    <string name="mediaview_saving">Đang lưu %1$s</string>
+
     <!-- Drafts -->
+    <string name="choose_draft">Chọn một bản nháp</string>
+    <string name="dialog_no_drafts">Chưa có bản nháp nào</string>
+    <string name="dialog_no_drafts_msg">Bạn có thể thêm bản nháp bằng cách nhấn biểu tượng \'lưu\' trên thanh soạn thảo!</string>
+    <string name="msg_save_draft">Đã lưu tin nhắn thành bản nháp</string>
+    <string name="manage_drafts">Quản lý bản nháp</string>
+    <string name="really_delete_drafts">Thực sự xóa các bản nháp này?</string>
+
     <!-- Strings for widgets -->
+    <string name="widget_theme_dark">TỐI</string>
+    <string name="widget_theme_light">SÁNG</string>
+    <string name="widget_theme_clear">TRONG SUỐT</string>
+    <string name="widget_posttype_title">Loại bài đăng</string>
+    <string name="widget_posttype_list">DANH SÁCH</string>
+    <string name="widget_posttype_bigpic">ẢNH LỚN</string>
+    <string name="widget_posttype_compact">GỌN</string>
+    <string name="widget_subname_hint">Tên subreddit</string>
+    <string name="widget_visuals">Hình thức</string>
+    <string name="widget_content">Nội dung</string>
+    <string name="widget_loading">Đang tải…</string>
+    <string name="widget_creation_title">Tiện ích mới</string>
+    <string name="shortcut_creation_title">Lối tắt mới</string>
+
     <!-- Strings for alert dialogs -->
+    <string name="force_change_subscription">Không thể thay đổi đăng ký</string>
+    <string name="force_change_subscription_desc">Bạn vẫn muốn thay đổi cục bộ chứ?</string>
+    <string name="never_load_images">Không tải bất kỳ ảnh nào</string>
+    <string name="load_low_quality">Tải ảnh chất lượng thấp (tối đa 320x320)</string>
+    <string name="load_medium_quality">Tải ảnh chất lượng trung bình (tối đa 640x640)</string>
+    <string name="load_high_quality">Tải ảnh chất lượng cao (tối đa 1080x1080)</string>
+    <string name="choose_color_title">Chọn một màu</string>
+    <string name="enter_text_to_filter_click_enter_to_add">Nhập văn bản để tìm, nhấn enter để thêm bộ lọc</string>
+    <string name="mode_desktop_compact">Máy tính gọn</string>
+    <string name="show_content_type_text_beside_links">Hiện chữ loại nội dung bên cạnh liên kết</string>
+    <string name="comment_shadowbox">Shadowbox bình luận</string>
+
     <!-- Sidebar strings (multis, flairs) -->
+    <string name="sidebar_select_flair">Chọn flair</string>
+    <string name="sidebar_select_flair_text">Đặt nội dung flair</string>
+    <string name="sidebar_findingmods">Đang tìm người kiểm duyệt</string>
+    <string name="snackbar_flair_success">Đã đặt flair thành công</string>
+    <string name="snackbar_flair_error">Lỗi khi đặt flair, hãy thử lại sau</string>
+    <string name="sidebar_submods">Người kiểm duyệt /r/%s</string>
+    <string name="sidebar_flair">Flair: %1$s</string>
+    <string name="sidebar_notfound">Không tìm thấy thanh bên</string>
+    <plurals name="reorder_selected">
+        <item quantity="other">"Đã chọn %d"</item>
+    </plurals>
+
     <!--Filtering dialog -->
+    <string name="filter_title">Bạn muốn lọc gì?</string>
+    <string name="filter_posts_sub">Bài đăng từ /r/%1$s</string>
+    <string name="filter_posts_user">Bài đăng của /u/%1$s</string>
+    <string name="filter_posts_urls">Bài đăng liên kết tới %1$s</string>
+    <string name="filter_open_externally">Mở liên kết %s bằng ứng dụng ngoài</string>
+    <string name="filter_posts_flair">Flair \"%1$s\" từ %2$s</string>
+    <string name="filter_btn">Lọc</string>
+
     <!-- Caching -->
+    <string name="cache_no_comments_found">Không tìm thấy bình luận nào</string>
+    <string name="cache_no_comments_found_snackbar">Không tìm thấy bình luận đã lưu đệm</string>
+    <string name="cache_no_comments_found_message">Bài đăng này không có bình luận nào được lưu đệm. Để lưu đệm bình luận trong tương lai, hãy nhấn menu ba chấm trên màn hình chính và chọn \'Lưu đệm bình luận\', hoặc thiết lập Tự động lưu đệm trong tab Nội dung ngoại tuyến ở ngăn điều hướng</string>
+    <string name="autocache_subreddits">Subreddit tự động lưu đệm</string>
+    <string name="autocache_time">Thời điểm tự động lưu đệm</string>
+    <string name="cache_subreddits_now">Lưu đệm subreddit ngay</string>
+    <string name="cache_wifi_only">Chỉ lưu đệm qua Wi-Fi</string>
+    <string name="comments_depth">Độ sâu bình luận cần lưu đệm</string>
+    <string name="comments_count">Số bình luận cần lưu đệm</string>
+
     <!-- Saving location setting -->
+    <string name="set_save_location">Đặt vị trí lưu phương tiện</string>
+    <string name="set_save_location_msg">Chưa đặt vị trí lưu phương tiện của Slide.</string>
+
     <!-- Report flow -->
+    <string name="btn_report">Báo cáo</string>
+    <string name="report_post">Báo cáo bài đăng</string>
+    <string name="report_comment">Báo cáo bình luận</string>
+    <string name="report_loading">Đang tải danh sách lý do…</string>
+    <string name="report_sub_rules">Quy tắc của /r/%s</string>
+    <string name="report_site_rules">Quy tắc của Reddit</string>
+    <string name="report_another_reason">Lý do khác</string>
+    <string name="report_other">Khác</string>
+    <string name="input_reason_for_report">Lý do báo cáo</string>
+    <string name="msg_report_sent">Đã gửi báo cáo</string>
+
     <!-- Unsorted ¯\\_(ツ)_/¯ -->
+    <string name="comment_load_more_number_unknown">Tải thêm bình luận</string>
+    <string name="card_right_thumb">Ảnh thu nhỏ căn phải</string>
+    <string name="setting_filter_subreddits">Bộ lọc subreddit</string>
+    <string name="subreddit_theme">Giao diện subreddit</string>
+    <string name="dialog_choose_subreddits_to_edit">Chọn subreddit để chỉnh sửa</string>
+    <string name="dialog_color_sync_title">Đồng bộ màu</string>
+    <string name="dialog_color_sync_message">Thao tác này sẽ thử lấy ‘màu chủ đạo’ của subreddit do người kiểm duyệt đặt. Nó sẽ không ghi đè các subreddit đã được tô màu.</string>
+    <string name="fab_hide">Ẩn các bài đã xem</string>
+    <string name="fab_create">Tạo bài đăng mới</string>
+    <string name="fab_disabled">Đã tắt</string>
+    <string name="fab_search">Tìm bài đăng</string>
+    <string name="handling_internal_browser">Trình duyệt nội bộ</string>
+    <string name="handling_external_browser">Trình duyệt ngoài</string>
+    <string name="mode_list">Danh sách</string>
+    <string name="mode_centered">Thẻ với ảnh căn giữa</string>
+    <string name="mode_card">Thẻ</string>
+    <string name="mode_thumbnail">Ảnh thu nhỏ</string>
+    <string name="mode_no_thumbnails">Không có ảnh thu nhỏ</string>
+    <string name="mode_big_thumbnails">Ảnh thu nhỏ rộng</string>
+    <string name="mode_cropped">Ảnh lớn đã cắt</string>
+    <string name="mode_letterbox">Ảnh lớn có viền đen</string>
+    <string name="mode_bigpic">Ảnh lớn</string>
+    <string name="press_actionbar">Nhấn mũi tên để hiện thanh tác vụ</string>
+    <string name="show_top_right">Hiện ở góc trên bên phải</string>
+    <string name="show_bottom_right">Hiện ở góc dưới bên phải</string>
+    <string name="small_tag_disabled">Đã tắt</string>
+    <string name="tap_actionbar">Nhấn giữ để hiện thanh tác vụ</string>
+    <string name="always_actionbar">Luôn hiện thanh tác vụ</string>
+    <string name="sub_content_filter">Bộ lọc nội dung subreddit</string>
+    <string name="submission_share_reddit_url">Chia sẻ bình luận</string>
+    <string name="filter_content">Lọc nội dung này</string>
+    <string name="content_to_show">Nội dung cần hiện trên %1$s</string>
+    <string name="save_for_offline_viewing">Lưu bài đăng để xem ngoại tuyến</string>
+    <string name="btn_collapse_children_all">Thu gọn bình luận con</string>
+    <string name="btn_open_content">Mở nội dung</string>
+    <string name="enter_text_to_filter_click_enter_to_add_flair">Nhập văn bản cần lọc (subreddit:flair_text), nhấn enter để thêm</string>
+    <plurals name="filter_count">
+        <item quantity="other">%1$d bộ lọc (hiện tối đa %2$d)</item>
+    </plurals>
+    <string name="filter_limit_reached">Đang hiển thị %1$d trong số %2$d đầu tiên. Hãy tìm kiếm để thu hẹp kết quả.</string>
+    <string name="datasave_always">Dữ liệu di động và Wi-Fi</string>
+    <string name="datasave_mobile">Dữ liệu di động</string>
+    <string name="never">Không bao giờ</string>
+    <string name="multi_column_force_full">Buộc hiển thị bình luận đầy đủ</string>
+    <string name="submission_info_locked">Đây là bài đăng đã bị khóa. Bạn không thể bình luận.</string>
+    <string name="card_background_tint">Nền thẻ</string>
+    <string name="subreddit_name_tint">Tên subreddit</string>
+    <string name="login_failed_err_decline">Hãy chắc chắn bạn không chọn ‘Từ chối’ ở màn hình trước, rồi thử lại sau một phút</string>
+    <string name="login_unsupported_redirect_uri">URI chuyển hướng đã cấu hình (%1$s) không thể được trình duyệt tiếp nhận, nên không thể hoàn tất đăng nhập. Hãy dùng cách đăng nhập bằng WebView trong ứng dụng, hoặc đặt một URI chuyển hướng được hỗ trợ trong Cài đặt.</string>
+    <string name="login_unsupported_redirect_uri_title">Đăng nhập thất bại</string>
+    <string name="login_failed_oauth_error_page">Đăng nhập thất bại — Reddit trả về lỗi thay vì hoàn tất đăng nhập. Hãy kiểm tra ID ứng dụng khách và URI chuyển hướng trong Cài đặt.</string>
+    <string name="tutorial_swipe_navigation">Điều hướng bằng vuốt</string>
+    <string name="tutorial_swipe_description">Vuốt từ cạnh trái để thoát.\n\nĐiều này áp dụng cho ảnh, GIF, album, cài đặt và nhiều thứ khác!</string>
+    <string name="handling_browser">Trình duyệt web</string>
+    <string name="submit_replies_to_inbox">Gửi phản hồi tới hộp thư đến</string>
+    <string name="btn_open_comments">Mở bình luận</string>
+    <string name="btn_preview">Xem trước</string>
+    <string name="default_comment_sort">Sắp xếp bình luận mặc định</string>
+    <string name="content_deleted">[đã xóa]</string>
+    <string name="thread_continue">Tiếp tục chủ đề này</string>
+    <string name="type_selftext">Bài văn bản</string>
+    <string name="type_selftexts">Bài văn bản</string>
+    <string name="submission_unhide">Bỏ ẩn bài đăng</string>
+    <string name="submission_info_unhidden">Đã bỏ ẩn bài đăng</string>
+    <string name="msg_sent_success">Đã gửi tin nhắn</string>
+    <string name="msg_sent_failure">Gửi tin nhắn thất bại</string>
+    <string name="msg_send_user_dne">Người dùng đó không tồn tại</string>
+    <string name="editor_actions_quote_comment">Chọn văn bản để trích dẫn</string>
+    <string name="guest">Khách</string>
+    <string name="album_slide_view">Chế độ xem album trượt</string>
+    <string name="album_grid">Lưới album</string>
+    <string name="open_externally">Mở bằng ứng dụng ngoài</string>
+    <string name="vertical_album_view">Chế độ xem album dọc</string>
+    <string name="download_album">Tải album xuống</string>
+    <string name="download_gallery">Tải thư viện xuống</string>
+    <string name="compose_message">Soạn tin nhắn</string>
+    <string name="mark_all_as_read">Đánh dấu tất cả là đã đọc</string>
+    <string name="clear_subreddit_history">Xóa lịch sử subreddit</string>
+    <string name="clear_submission_history">Xóa lịch sử bài đăng</string>
+    <string name="alert_history_cleared">Đã xóa lịch sử!</string>
+    <string name="manage_offline_content">Quản lý nội dung ngoại tuyến</string>
+    <string name="go_offline">Chuyển sang ngoại tuyến</string>
+    <string name="sidebar_edit_flair">Sửa flair của bạn</string>
+    <string name="go_online_view_content">Vui lòng kết nối mạng để xem nội dung này</string>
+    <string name="help">Trợ giúp</string>
+    <string name="upvote_percentage">Hiện tỷ lệ bình chọn tăng</string>
+    <string name="view_subreddits">Xem subreddit</string>
+    <string name="clear_saved_subreddits">Xóa tất cả subreddit đã lưu</string>
+    <string name="download_the_slide_video_player_plugin">Tải tiện ích Slide Video Player</string>
+    <string name="btn_suggest_title">Gợi ý tiêu đề</string>
+    <string name="navigate_comments_since">Bình luận mới hơn…</string>
+    <string name="btn_offline">Chuyển sang chế độ ngoại tuyến</string>
+    <string name="discard_comment_title">Bỏ bình luận?</string>
+    <string name="comment_discard_msg">Bạn có thực sự muốn bỏ bình luận của mình không?</string>
+    <string name="backup_saved_downloads">Đã lưu bản sao lưu vào thư mục tải xuống</string>
+    <string name="really_remove_subreddit_title">Thực sự xóa subreddit này?</string>
+    <string name="choose_sync_time">Chọn thời điểm đồng bộ</string>
+    <string name="account_suspended">Tài khoản này đã bị đình chỉ</string>
+    <string name="clear_all_sub_themes">Xóa tất cả giao diện subreddit?</string>
+    <string name="clear_all_sub_themes_msg">Bạn không thể hoàn tác hành động này</string>
+    <string name="title_not_found">Không tìm thấy tiêu đề</string>
+    <string name="really_delete_submission">Thực sự xóa bài đăng này? Bạn không thể hoàn tác</string>
+    <string name="comment_unstickied">Đã bỏ ghim bình luận</string>
+    <string name="comment_stickied">Đã ghim bình luận</string>
+    <string name="comment_undistinguished">Đã bỏ làm nổi bật bình luận</string>
+    <string name="comment_distinguished">Đã làm nổi bật bình luận</string>
+    <string name="comment_removed">Đã gỡ bình luận</string>
+    <string name="set_nav_mode">Đặt chế độ điều hướng</string>
+    <string name="auto_hide_the_comment_nav_bar">Tự động ẩn thanh điều hướng bình luận</string>
+    <string name="rate_slide">Đánh giá Slide</string>
+    <string name="edit_query">Sửa truy vấn</string>
+    <string name="share_slide">Chia sẻ Slide</string>
+    <string name="open_clipboard_reddit_link">Mở liên kết Reddit trong bộ nhớ tạm</string>
+    <string name="clipboard_no_reddit_link">Không có liên kết Reddit trong bộ nhớ tạm</string>
+    <string name="open_links_externally">Luôn mở máy chủ này bằng ứng dụng ngoài</string>
+    <string name="hide_read_posts">Ẩn bài đăng đã đọc</string>
+    <string name="gallery_mode">Chế độ thư viện</string>
+    <string name="settings_gallery_grid">Hiện bài đăng thư viện dạng lưới</string>
+    <string name="gallery_grid_image">Ảnh thư viện %1$d trên %2$d</string>
+    <string name="gallery_grid_overflow">+%1$d</string>
+    <string name="friends_sort_error">Không thể sắp xếp /r/friends</string>
+    <string name="shadowbox_comments_nolinks">Không tìm thấy liên kết nào trong bình luận</string>
+    <string name="draw_undo">Hoàn tác</string>
+    <string name="empty_preview_text">Không có gì ở đây ¯\\_(ツ)_/¯</string>
+    <string name="theme_red_shift">Dịch chuyển đỏ</string>
+    <string name="view_sub_sidebar">Xem thanh bên của sub</string>
+    <string name="mod_log">Nhật ký kiểm duyệt</string>
+    <string name="navigation_bar_vote_gestures">Cử chỉ bình chọn trên thanh điều hướng</string>
+    <string name="nav_gestures_description">Bình chọn tăng và giảm bằng cách vuốt trên các mũi tên điều hướng bình luận</string>
+    <string name="subreddit_sidebar_progress">Đang lấy thanh bên…</string>
+    <string name="manage_your_subreddits">Quản lý subreddit của bạn</string>
+    <string name="enlarge_links">Phóng to liên kết</string>
+    <string name="enlarge_links_warning">Có thể khiến một số dòng lớn hơn các dòng khác, nhưng giúp chạm vào liên kết dễ hơn</string>
+    <string name="type_tumblr">Tumblr</string>
+    <string name="type_tumblrs">Bài Tumblr</string>
+    <string name="type_nsfw_tumblr">Tumblr NSFW</string>
+    <string name="submission_info_contest">Chủ đề này đang ở chế độ thi. Bạn không thể thay đổi cách sắp xếp.</string>
+    <string name="sub_post_notifs_msg">Slide sẽ kiểm tra bài đăng mới khi kiểm tra thư (phải bật thông báo thư)</string>
+    <string name="mod_ban_reason_required">Bắt buộc phải có lý do</string>
+    <string name="settings_abbreviate_post_scores">Rút gọn điểm bài đăng (vd. 24.0k)</string>
+    <string name="settings_wide_depth_indicators">Chỉ báo độ sâu bình luận rộng</string>
+    <string name="settings_link_reader_mode_title">Dùng chế độ đọc</string>
+    <string name="settings_link_reader_mode_description">Mở mọi liên kết ở chế độ đọc. Loại trình duyệt sẽ được dùng khi mở từ chế độ đọc.</string>
+    <string name="settings_link_reader_night">Liên kết chế độ đọc với chế độ ban đêm</string>
+    <string name="theme_pixel">Pixel</string>
+    <string name="save_images_to_subreddit_specific_subfolders">Lưu ảnh vào thư mục con theo từng subreddit</string>
+    <string name="description_save_subfolders">Hoạt động trong chế độ xem bài đăng và bình luận</string>
+    <string name="save_media_to_type_specific_subfolders">Lưu phương tiện vào thư mục con theo loại</string>
+    <string name="description_save_type_subfolders">Ảnh vào \"images\", video và GIF vào \"videos\"</string>
+    <string name="show_image_download_button">Lối tắt tải xuống</string>
+    <string name="description_image_download_button">Hiện nút tải xuống trong trình xem ảnh</string>
+    <string name="content_settings">Cài đặt nội dung</string>
+    <string name="setting_titleTop">Hiện tiêu đề phía trên dòng thông tin</string>
+    <string name="setting_notification_piggybacking">Tận dụng thông báo Reddit</string>
+    <string name="setting_notification_piggybacking_desc">Chỉ kiểm tra thư khi ứng dụng Reddit chính thức nhận được thông báo đẩy</string>
+    <string name="install_notif_piggyback">Cài ứng dụng Reddit chính thức để bật tính năng tận dụng thông báo</string>
+    <string name="success_block_user">Đã chặn người dùng thành công</string>
+    <string name="err_unblock_user">Lỗi khi bỏ chặn người dùng</string>
+    <string name="success_unblock_user">Đã bỏ chặn người dùng thành công</string>
+    <string name="settings_highlight_time_desc">Yêu cầu bật \'Hiện số bình luận kể từ lần truy cập trước\' trong Cài đặt &gt; Bố cục bài đăng</string>
+    <string name="settings_colored_time">Bong bóng thời gian có màu cho bình luận mới</string>
+    <string name="theme_deep">Sâu</string>
+    <string name="type_vreddit">Video Reddit</string>
+    <string name="authors_above">Tác giả ở phía trên</string>
+    <string name="btn_crosspost">Đăng chéo</string>
+    <string name="btn_reset_color">ĐẶT LẠI MÀU</string>
+    <string name="settings_shortlink_description">Liên kết sẽ được chia sẻ dưới dạng \'https://reddit.com/comments/\'</string>
+    <string name="settings_shortlink">Chia sẻ liên kết rút gọn của Reddit khi có thể</string>
+    <string name="disable_replies_comment">Tắt phản hồi bình luận trong hộp thư đến</string>
+    <string name="replies_disabled_comment">Đã tắt phản hồi bình luận</string>
+    <string name="replies_enabled_comment">Đã bật phản hồi bình luận</string>
+    <string name="replies_switch_accounts">Chuyển sang tài khoản khác</string>
+    <string name="search_settings">Tìm trong cài đặt</string>
+    <string name="show_collapse_expand_nav_bar">Hiện nút thu gọn/mở rộng trên thanh điều hướng bình luận</string>
+    <string name="page_not_found">Không tìm thấy trang</string>
+    <string name="page_does_not_exist">Trang bạn yêu cầu không tồn tại</string>
+    <string name="back_button_behavior_goto_first">Đi tới subreddit đầu tiên</string>
+    <string name="settings_hide_post_awards">Ẩn phần thưởng</string>
+    <string name="settings_hide_comment_awards">Ẩn phần thưởng</string>
+    <string name="settings_title_markdown">Markdown</string>
+    <string name="settings_markdown_new_reddit">Markdown kiểu Reddit mới</string>
+    <string name="settings_markdown_new_reddit_desc">Hiển thị khối mã và định dạng như Reddit mới (khi tắt sẽ dùng cách hiển thị của Reddit cũ)</string>
+    <string name="comment_render_other">Hiện cách hiển thị khác</string>
+    <string name="recover_post">Khôi phục bài đăng</string>
+    <string name="recover_loading">Đang lấy bản gốc từ kho lưu trữ…</string>
+    <string name="recover_post_failed">Không thể khôi phục bài đăng này</string>
+    <string name="recover_comment">Khôi phục bình luận</string>
+    <string name="recover_comment_failed">Không thể khôi phục bình luận này</string>
+    <string name="markdown_preview_new_reddit">Hiển thị kiểu Reddit mới</string>
+    <string name="markdown_preview_old_reddit">Hiển thị kiểu Reddit cũ</string>
+    <string name="high_colorspace_images">Ảnh không gian màu rộng</string>
+    <string name="description_high_colorspace">Tải ảnh với không gian màu đầy đủ, có thể làm tăng mức sử dụng bộ nhớ</string>
+    <string name="wide_color_gamut">Gam màu rộng</string>
+    <string name="description_wide_color_gamut">Hiển thị trình xem phương tiện với gam màu rộng. Có thể làm màu bị nhạt trên một số màn hình OLED</string>
+    <string name="comment_emote_animation">Hiệu ứng động của emote trong bình luận</string>
+    <string name="description_comment_emote_animation">Quyết định emote không thuộc Giphy trong bình luận có chuyển động hay không</string>
+    <string name="comment_image_size">Kích thước ảnh trong bình luận</string>
+    <string name="description_comment_image_size">Ảnh nhúng trong bình luận được hiển thị lớn cỡ nào</string>
+    <string name="comment_image_size_small">Nhỏ</string>
+    <string name="comment_image_size_medium">Vừa</string>
+    <string name="comment_image_size_large">Lớn</string>
+    <string name="no_preview_image_longclick">Không nhấn giữ trên ảnh xem trước của bất kỳ loại nội dung nào</string>
+    <string name="description_no_preview_image_longclick">Quyết định việc nhấn giữ có hoạt động trên ảnh xem trước của mọi loại nội dung hay không. Tính năng này sẽ tắt chức năng xem nhanh nội dung.</string>
+    <string name="editor_btn_select_flair">Chọn flair</string>
+    <string name="submit_selected_flair">Flair đã chọn: %s</string>
+    <string name="mediaview_downloading">Đang tải ảnh xuống&#8230;</string>
+    <string name="err_save_image">Lỗi khi lưu ảnh</string>
+    <string name="error_directory_not_selected">Chưa chọn thư mục. Vui lòng thử lại.</string>
+
+    <!-- Backup Operations -->
+
+    <!-- Additional Backup Operations -->
+    <string name="select_backup_file">Chọn tệp sao lưu</string>
+
+    <string name="read_later">Đọc sau</string>
+    <string name="mark_as_read">Đánh dấu là đã đọc</string>
+
+    <string name="reddit_client_id">ID ứng dụng khách Reddit</string>
+    <string name="click_custom_client_id">Chạm để đặt ID ứng dụng khách tùy chỉnh</string>
+    <string name="client_id_scan_qr">Quét mã QR</string>
+    <string name="client_id_scan_prompt">Quét mã QR chứa ID ứng dụng khách Reddit của bạn</string>
+    <string name="camera_permission_denied">Cần quyền truy cập camera để quét mã QR</string>
+    <string name="client_id_invalid_length">ID ứng dụng khách không hợp lệ: phải đúng 22 ký tự</string>
+
+    <!-- Notification permission strings -->
+    <string name="notifications_permission_title">Bật thông báo</string>
+    <string name="notifications_permission_message">Slide cần quyền thông báo để báo cho bạn về tin nhắn mới, bài đăng và các cập nhật khác từ Reddit. Bạn có thể quản lý cài đặt thông báo sau.</string>
+    <string name="notification_listener_permission_title">Bật quyền truy cập thông báo</string>
+    <string name="notification_listener_permission_message">Slide cần quyền truy cập thông báo để chặn thông báo của Reddit và mang lại trải nghiệm tốt hơn. Vui lòng bật quyền truy cập thông báo cho Slide ở màn hình tiếp theo.</string>
+
+
+    <string name="reddit_redirect_uri_override">Ghi đè URI chuyển hướng Reddit</string>
+    <string name="click_custom_redirect_uri">Chạm để đặt URI chuyển hướng tùy chỉnh</string>
+    <string name="settings_reddit_redirect_uri_invalid">URI chuyển hướng không hợp lệ: phải theo dạng scheme://hostname</string>
+    <string name="reddit_user_agent_override">Ghi đè user agent Reddit</string>
+    <string name="click_custom_user_agent">Chạm để đặt user agent tùy chỉnh</string>
+    <string name="settings_enable_overrides">Bật các ghi đè</string>
+    <string name="settings_enable_overrides_desc">Dùng ID ứng dụng khách, URI chuyển hướng và user agent tùy chỉnh của bạn thay cho giá trị mặc định của ứng dụng. Hãy để tắt trừ khi bạn biết mình cần.</string>
+
+    <string name="settings_section_sound">Âm thanh</string>
+    <string name="settings_unmute_default">Mặc định bật tiếng video</string>
+
+    <string name="settings_subreddit_filter_prefix_matching">Bật khớp tiền tố cho bộ lọc subreddit</string>
+    <string name="settings_subreddit_filter_prefix_matching_description">Tiền tố là toàn bộ tên subreddit, tối thiểu sáu ký tự. Ví dụ: subreddit social sẽ chặn socialanxiety. Subreddit pokemongo sẽ chặn pokemongoraids.</string>
+
+    <string name="settings_filter_old_posts">Lọc bài đăng cũ hơn</string>
+    <plurals name="settings_filter_old_posts_days">
+        <item quantity="other">%1$d ngày</item>
+    </plurals>
+    <string name="settings_filter_old_posts_description">Không áp dụng khi xem một subreddit riêng lẻ, hoặc khi sắp xếp theo Top hay Controversial</string>
+
+    <!-- Pause on audio focus ducking setting -->
+    <string name="settings_pause_on_duck_title">Tạm dừng video thay vì giảm âm lượng</string>
+    <string name="settings_pause_on_duck_desc">Tạm dừng video khi ứng dụng khác phát âm thanh. Giảm âm lượng nghĩa là hạ mức âm lượng thay vì tạm dừng video.</string>
+
+    <!-- Add this string resource for the play button content description -->
+    <string name="btn_play">Phát</string>
+
+    <string name="multireddit_name_title">Tên multireddit</string>
+    <string name="multireddit_name_hint">Tên multireddit</string>
+    <string name="multireddit_err_empty_name">Tên multireddit không được để trống</string>
+    <string name="multireddit_err_no_valid_subs">Chưa chọn subreddit hợp lệ nào. Vui lòng chọn ít nhất một subreddit.</string>
+    <string name="multireddit_progress_title">Đang tạo multireddit</string>
+    <string name="multireddit_progress_message">Vui lòng đợi trong khi chúng tôi tạo multireddit của bạn...</string>
+    <string name="multireddit_created_success">Đã tạo multireddit thành công</string>
+    <string name="multireddit_created_error">Không thể tạo multireddit. Vui lòng thử lại.</string>
+    <string name="multireddit_json_error">Đã xảy ra lỗi khi chuẩn bị dữ liệu multireddit của bạn</string>
+
+    <string name="settings_dialog_colored_border">Thêm viền màu quanh hộp thoại</string>
+    <string name="settings_dialog_colored_border_desc">Hiển thị một viền màu mỏng quanh một số hộp thoại.</string>
+
+    <string name="misc_err_sync_failed">Không thể đồng bộ subreddit. Chưa đăng ký subreddit nào?</string>
+
+    <string name="mod_btn_distinguish">Làm nổi bật</string>
+    <string name="mod_btn_undistinguish">Bỏ làm nổi bật</string>
+
+    <string name="nsfw_status_removed">Đã gỡ trạng thái NSFW</string>
+    <string name="nsfw_status_set">Đã đặt trạng thái NSFW</string>
+
+    <string name="spoiler_status_removed">Đã gỡ trạng thái spoiler</string>
+    <string name="spoiler_status_set">Đã đặt trạng thái spoiler</string>
+
+    <string name="submission_distinguished">Đã làm nổi bật bài đăng</string>
+    <string name="submission_distinguished_removed">Đã gỡ làm nổi bật bài đăng</string>
+
+    <string name="settings_general_hide_subreddit_tabs">Ẩn tab của các subreddit đã đăng ký</string>
+    <string name="settings_general_hide_subreddit_tabs_desc">Ẩn các subreddit đã đăng ký dưới dạng tab, nhưng vẫn giữ các nút điều hướng</string>
+
+    <!-- Video playback speed control -->
+    <string name="video_speed">Tốc độ</string>
+    <string name="video_speed_0_25x">0.25x</string>
+    <string name="video_speed_0_5x">0.5x</string>
+    <string name="video_speed_0_75x">0.75x</string>
+    <string name="video_speed_1x">Bình thường</string>
+    <string name="video_speed_1_25x">1.25x</string>
+    <string name="video_speed_1_5x">1.5x</string>
+    <string name="video_speed_2x">2x</string>
+    <string name="video_speed_control_content_desc">Điều khiển tốc độ phát</string>
+    <string name="image_unavailable">Ảnh không khả dụng</string>
+    <string name="image_rotate_content_desc">Xoay ảnh 90 độ theo chiều kim đồng hồ</string>
+    <string name="image_rotate_left_content_desc">Xoay ảnh 90 độ ngược chiều kim đồng hồ</string>
+
+    <!-- Folder chooser dialog (formerly provided by afollestad material-dialogs commons) -->
+    <string name="md_error_label">Lỗi</string>
+    <string name="md_storage_perm_error">Chức năng này cần quyền truy cập bộ nhớ, nhưng quyền chưa được cấp.</string>
+    <string name="md_choose_label">CHỌN</string>
+    <string name="new_folder">Thư mục mới</string>
 </resources>

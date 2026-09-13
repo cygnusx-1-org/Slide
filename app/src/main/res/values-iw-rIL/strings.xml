@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Generic text used anywhere -->
+    <string name="general_confirm">אישור</string>
     <string name="general_confirm_exit">אשר יציאה</string>
     <string name="general_confirm_exit_msg">אתה באמת רוצה לצאת מ-Slide?</string>
     <string name="general_enable_shadowbox">הפעל מצב Shadowbox</string>
-    <string name="pro_upgrade_msg">שדרוג לSlide for Reddit Pro כדי ליהנות מכמה יכולות מצוינות: \n\n - חוסם פרסומות ומצב קריאה במציג דפי אינטרנט \nחיתוך, ציור על התמונות להעלאה\n-התאמה אישית של עמודות טאבלט \nמצב לילה אוטומטי\nהצגת תוכן במצב גלריה\nגיבוי ושחזור מאחסון גוגל וקבצים\nתמיכה בתוכנת קוד פתוח ללא פרסומות!\nהאם תרצו לתמוך בSlide for Reddit?</string>
     <string name="general_open_settings">פתח הגדרות Subreddit</string>
     <string name="general_sub_sync">מסנכרן רישומים</string>
+
     <!-- Used when viewing a thread -->
     <string name="submission_info_unsaved">הפוסט לא נשמר</string>
     <string name="submission_info_saved">הפוסט נשמר</string>
@@ -24,46 +25,172 @@
     <string name="submission_gild">פתח בדפדפן</string>
     <string name="submission_save">שמור פוסט</string>
     <string name="submission_save_image">שמור תמונה</string>
+    <string name="submission_save_video">שמירת הסרטון</string>
     <string name="submission_load_full">טען שרשור מלא</string>
     <string name="submission_np_link">זהו קישור אי השתתפות. נא לא להצביע או להגיב.</string>
-    <string name="submission_tap_gif">לחץ כדי לטעון את הGIF</string>
     <string name="submission_not_found">פרסום לא נמצא!</string>
     <string name="submission_not_found_msg">מצטערים, פרסום זה לא נמצא</string>
     <string name="submission_copy_text">העתקת טקסט</string>
     <string name="submission_comment_saved">תגובה נשמרה</string>
+    <string name="submission_comment_unsaved">התגובה הוסרה מהשמורות</string>
+    <string name="submission_share_permalink">שיתוף קישור</string>
+    <string name="submission_comment_copied">טקסט התגובה הועתק</string>
+    <string name="submission_text_copied">טקסט הפוסט הועתק</string>
+    <string name="submission_nocontent">לפוסט אין תוכן</string>
+    <string name="submission_link_copied">הקישור הועתק</string>
+    <string name="translate_with_google">תרגום</string>
+    <string name="translate_no_app">אין אפליקציה זמינה לתרגום</string>
+    <string name="read_aloud">הקראה</string>
+    <string name="read_aloud_unavailable">הקראת טקסט אינה זמינה</string>
+    <string name="submission_removed">הפוסט הוסר</string>
+
+    <plurals name="new_messages">
+        <item quantity="one">הודעה חדשה אחת</item>
+        <item quantity="two">שתי הודעות חדשות</item>
+        <item quantity="other">%d הודעות חדשות</item>
+    </plurals>
+    <plurals name="points">
+        <item quantity="one">נק׳</item>
+        <item quantity="two">נק׳</item>
+        <item quantity="other">נק׳</item>
+    </plurals>
+    <plurals name="comments">
+        <item quantity="one">תג׳</item>
+        <item quantity="two">תג׳</item>
+        <item quantity="other">תג׳</item>
+    </plurals>
+
     <!-- Theme settings -->
     <string name="theme_light">בהיר</string>
     <string name="theme_dark">כהה</string>
     <string name="theme_black">שחור AMOLED</string>
+    <string name="theme_dark_blue">כחול כהה</string>
+    <string name="night_mode">מצב לילה</string>
+    <string name="disabled">מושבת</string>
+    <string name="manual">ידני</string>
+    <string name="automatic">אוטומטי</string>
+    <string name="theme_default_color">צבע ראשי</string>
     <string name="theme_subreddit_color">שנה צבע</string>
     <string name="theme_accent_color">צבע הדגשה</string>
     <string name="theme_base">ערכת נושא בסיסית</string>
     <string name="theme_card">קלף</string>
+    <string name="theme_sepia">ספיה</string>
+    <string name="theme_amoled_contrast">AMOLED עם ניגודיות</string>
+    <string name="theme_night">ערכת לילה</string>
+
     <!-- Font settings -->
+    <string name="font_size_comment">גודל גופן התגובות</string>
+    <string name="font_size_post">גודל גופן הפוסטים</string>
+    <string name="font_size_huge">ענק</string>
+    <string name="font_size_larger">גדול יותר</string>
+    <string name="font_size_large">גדול</string>
+    <string name="font_size_medium">בינוני</string>
+    <string name="font_size_small">קטן</string>
+    <string name="font_size_smaller">קטן יותר</string>
+    <string name="font_size_tiny">זעיר</string>
+
     <!-- For editing the submission card layout -->
+    <string name="card_hide_post_button">כפתור "הסתרת הפוסט" בסרגל הפעולות</string>
+    <string name="card_tint_outside">צביעה רק מחוץ לסאברדיט</string>
+    <string name="card_save_button">כפתור "שמירת הפוסט" בסרגל הפעולות</string>
+
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">הגדרות עמודות מרובות</string>
+    <string name="multi_column_portrait_count">עמודות בתצוגה לאורך</string>
+    <string name="multi_column_landscape_count">עמודות בתצוגה לרוחב</string>
+    <string name="single_column_multi_window">עמודה אחת במצב ריבוי חלונות</string>
+
     <!-- Drawer items (That's the one on the left) -->
+    <string name="drawer_profile">אתם</string>
+    <string name="drawer_support">שדרוג ל‑Pro</string>
     <string name="drawer_goto_profile">צפה בפרופיל</string>
     <string name="drawer_add_account">הוסף משתמש</string>
     <string name="drawer_hello">היי</string>
     <string name="drawer_search">חיפוש subreddit</string>
+    <!-- Subreddit name when submitting/crossposting: a single subreddit only (no multireddit, no dot). -->
+    <!-- Message recipient: a username or an /r/ or /u/ path. -->
+    <!-- Settings search field. The trailing space is intentional, so the value is quoted to preserve it. -->
     <string name="drawer_moderation">ניהול</string>
+    <string name="drawer_offline">Slide נמצא במצב לא מקוון</string>
+    <string name="drawer_offline_retry">ניסיון מעבר למצב מקוון</string>
+    <string name="drawer_guest_mode">גלישה כאורח</string>
+
     <!-- Sidebar items (That's the one on the right) -->
+    <string name="sidebar_wiki">ויקי של הסאברדיט</string>
+    <string name="sidebar_mods">מנהלי הסאברדיט</string>
+
     <!-- User profile -->
+    <string name="profile_karma_total">סך הקארמה</string>
+    <string name="profile_karma_link">קארמת פוסטים</string>
     <string name="profile_karma_comment">קארמת תגובות</string>
     <string name="profile_message">הודעה פרטית</string>
+    <string name="profile_saved">שמורים</string>
+    <string name="local_saved">שמורים מקומית</string>
+    <string name="profile_read_later">לקריאה מאוחר יותר</string>
+    <string name="profile_upvoted">הצבעות בעד</string>
     <string name="profile_err_title">משתמש לא נמצא</string>
     <string name="profile_err_msg">לא ניתן היה למצוא את המשתמש.</string>
     <string name="profile_overview">סקירה</string>
     <string name="profile_comments">תגובות</string>
     <string name="profile_submitted">פרסומים</string>
     <string name="profile_gilded">מוזהב</string>
+    <string name="profile_downvoted">הצבעות נגד</string>
+    <string name="profile_hidden">מוסתרים</string>
+    <string name="profile_friend">חבר</string>
+    <string name="profile_add_friend">הוספת חבר</string>
+    <string name="profile_remove_friend">הסרת חבר</string>
+    <string name="profile_follow_user">מעקב</string>
+    <string name="profile_unfollow_user">הפסקת מעקב</string>
+    <string name="profile_add_user">הוספת משתמש</string>
+    <string name="profile_remove_user">הסרת משתמש</string>
+    <string name="profile_remove_account">האם באמת ברצונך להסיר את החשבון הזה?</string>
+    <string name="profile_remove">מחיקת חשבון</string>
+    <string name="profile_history">היסטוריה</string>
+    <string name="profile_share">הפרופיל של %s</string>
+    <string name="profile_age">Redditor כבר %s</string>
+    <string name="profile_tag">תווית</string>
+    <string name="profile_tag_set">הגדרת תווית עבור %s</string>
+    <string name="profile_tag_user">תיוג משתמש</string>
+    <string name="profile_tag_user_existing">המשתמש תויג כ‑‘%s’</string>
+    <string name="profile_btn_tag">הגדרת תווית</string>
+    <string name="profile_btn_untag">הסרת תווית</string>
+    <string name="profile_info">פרטי הפרופיל</string>
+    <string name="profile_options">אפשרויות משתמש</string>
+    <string name="profile_block_user">חסימת המשתמש</string>
+    <string name="profile_block_user_description">חוסם את ההודעות, הפוסטים והפרופיל של המשתמש</string>
+    <string name="profile_unblock_user">ביטול חסימת המשתמש</string>
+    <string name="profile_unblock_user_description">מבטל את החסימה של ההודעות, הפוסטים והפרופיל של המשתמש</string>
+    <string name="profile_search">חיפוש</string>
+    <string name="profile_search_title">חיפוש ב‑%1$s</string>
+    <string name="profile_search_hint">חיפוש בכותרות ובטקסט…</string>
+    <string name="profile_search_no_results">לא נמצאו תוצאות</string>
+    <string name="profile_search_clear">ניקוי החיפוש</string>
+    <string name="profile_search_cleared">החיפוש נוקה</string>
+    <string name="profile_search_loading">מחפש…</string>
+    <string name="profile_search_progress">%1$d תוצאות · %2$d נסרקו</string>
+    <string name="profile_search_bypass_cache">עקיפת המטמון</string>
+
     <!-- Comment text options -->
+    <string name="comment_gild">הענקת פרס לתגובה</string>
     <string name="comment_share">שתף/י תגובה</string>
+    <string name="comment_delete">מחיקת התגובה</string>
+    <string name="comment_delete_msg">האם באמת ברצונך למחוק את התגובה הזו? לא ניתן לבטל פעולה זו</string>
+    <string name="comment_delete_err">אופס, משהו השתבש</string>
+    <string name="comment_delete_err_msg">האם תרצו לנסות שוב?</string>
+    <string name="comment_deleted">[נמחק]</string>
+    <string name="comment_unsave">ביטול השמירה</string>
+    <string name="comment_loading_more">טוען תגובות נוספות…</string>
+    <string name="comment_permalink">טעינת הקישור הקבוע של התגובה</string>
+    <string name="comment_parent">הצגת תגובת האב</string>
+    <string name="comment_video_play">הפעלת הסרטון</string>
+
     <!-- Welcome view (first time setup) -->
+    <string name="welcome_start">בואו נתחיל</string>
+    <string name="welcome_personalize">התאמה אישית</string>
+
     <!-- Sorting options -->
     <string name="sorting_choose">בחר/י בסוג המיון</string>
+    <string name="sorting_time_choose">בחרו טווח זמן</string>
     <string name="sorting_change_sorting">בחר/י בסוג מיון הפוסטים</string>
     <string name="sorting_best">הטובים ביותר</string>
     <string name="sorting_top">המצליחים ביותר</string>
@@ -71,6 +198,16 @@
     <string name="sorting_ama">שאלות ותשובות (AMA)</string>
     <string name="sorting_new">חדש</string>
     <string name="sorting_old">ישן</string>
+    <string name="sorting_controversial">שנויים במחלוקת</string>
+    <string name="sorting_rising">בעלייה</string>
+    <string name="sorting_hour">שעה</string>
+    <string name="sorting_day">24 שעות</string>
+    <string name="sorting_week">שבוע</string>
+    <string name="sorting_month">חודש</string>
+    <string name="sorting_year">שנה</string>
+    <string name="sorting_all">כל הזמנים</string>
+    <string name="sorting_defaultfor">ברירת מחדל עבור /r/%1$s</string>
+
     <!-- Editor (save/submit a post) actions -->
     <string name="editor_url">לינק</string>
     <string name="editor_text">טקסט</string>
@@ -79,63 +216,1206 @@
     <string name="editor_title">נושא</string>
     <string name="editor_err_msg">אנא נסא שוב בעוד כמה שניות.</string>
     <string name="editor_uploading_image">מעלה תמונה ל imgur</string>
+    <string name="editor_upload_image_title">העלאת תמונה</string>
+    <string name="editor_upload_reddit">Reddit (תמונה מוטמעת)</string>
+    <string name="editor_upload_imgur">Imgur (קישור)</string>
+    <string name="editor_uploading_reddit">מעלה תמונה ל‑Reddit</string>
+    <string name="editor_reddit_upload_success">התמונה הועלתה</string>
+    <string name="editor_reddit_upload_failed">העלאת התמונה נכשלה</string>
+    <string name="submit_image_host_imgur">Imgur</string>
+    <string name="submit_image_host_reddit">Reddit</string>
+    <string name="submit_change_img">החלפת התמונה</string>
+    <string name="submit_select_gallery">הוספת תמונות</string>
+    <string name="submit_gallery_caption_hint">כיתוב (אופציונלי)</string>
+    <string name="submit_gallery_count">%1$d נבחרו</string>
+    <string name="submit_uploading_gallery">מעלה תמונה %1$d מתוך %2$d</string>
     <string name="editor_select_img">בחירת תמונה</string>
     <string name="editor_hint_optional_body">גוף פרסום (לא חובה)</string>
     <string name="editor_submit">הוסף פרסום</string>
+    <string name="editor_hint_subreddit">סאברדיט</string>
+    <string name="editor_finding_title">מחפש את הכותרת</string>
+    <string name="submit_findingflairs">מחפש תגיות</string>
+    <string name="submit_flairchoices">תגיות של /r/%s</string>
+
+    <string name="edit_selftext">עריכת טקסט הפוסט</string>
+    <string name="delete_submission">מחיקת הפוסט</string>
+    <string name="set_submission_flair">הגדרת תגית לפוסט</string>
+
     <!-- Editor buttons -->
+    <string name="editor_save_draft">שמירת טיוטה</string>
+    <string name="editor_chose_draft">בחירת טיוטה</string>
+    <string name="editor_insert_image">הוספת תמונה</string>
+    <string name="editor_draw">הוספת תמונה וציור עליה</string>
+    <string name="editor_link">הוספת קישור</string>
+    <string name="editor_bold">מודגש</string>
+    <string name="editor_italics">נטוי</string>
+    <string name="editor_quote">ציטוט</string>
+    <string name="editor_author">אזכור המחבר</string>
+    <string name="editor_list">רשימת תבליטים</string>
+    <string name="editor_num_list">רשימה ממוספרת</string>
+    <string name="editor_size">גופן גדול</string>
+    <string name="editor_strike">קו חוצה</string>
+    <string name="editor_spoiler">ספוילר</string>
+
     <!-- General information / information without a category -->
     <string name="info_photo_saved">תמונה נשמרה</string>
+    <string name="gif_saved">ה‑GIF נשמר</string>
+
     <!-- General errors / errors without a category -->
+    <string name="err_title">אופס, משהו השתבש!</string>
     <string name="err_invalid_url">לינק לא תקין</string>
+    <string name="err_loading_content">שגיאה בטעינת התוכן</string>
     <string name="err_general">אירעה שגיאה</string>
+    <string name="err_no_connection">לא ניתן היה להתחבר ל‑Reddit. האם תרצו לנסות שוב?</string>
+    <string name="err_no_connection_toast">לא ניתן היה להתחבר ל‑Reddit. נסו שוב בקרוב</string>
+    <string name="err_retry_later">נסו שוב בעוד דקה!</string>
+    <string name="err_authentication">האימות נכשל</string>
+    <string name="err_submit_restricted">הסאברדיט הזה מוגבל</string>
+    <string name="err_submit_restricted_text">אינכם רשאים לפרסם כאן. בחרו סאברדיט אחר</string>
+    <string name="err_crosspost_disallowed_text">‏/r/%s אינו מאפשר פרסום צולב. בחרו סאברדיט אחר.</string>
+    <string name="err_crosspost_not_subscribed">עליכם להירשם ל‑/r/%s לפני פרסום צולב.</string>
+    <string name="err_crosspost_sub_not_found">‏/r/%s אינו קיים.</string>
+    <string name="crosspost_flair_required_short">נדרשת תגית — בחרו אחת לפני הפרסום.</string>
+    <string name="error_video_not_found">הסרטון לא נמצא</string>
+    <string name="error_video_message">אירעה שגיאה בעת טעינת הסרטון הזה</string>
+    <string name="error_album_not_found">האלבום לא נמצא</string>
+    <string name="error_album_not_found_text">האם תרצו לפתוח את הקישור בדפדפן?</string>
+    <string name="err_comment_post_nosave_message">\nנסו שוב בעוד דקה</string>
+    <string name="err_could_not_find_content_msg">‏Reddit לא מצא את התוכן המבוקש</string>
+    <string name="err_refused_request_msg">‏Reddit דחה בקשה. האם תרצו לנסות להתחבר שוב ל‑Reddit?</string>
+    <string name="err_color_sync_login">התחברו כדי להשתמש בסנכרון הצבעים</string>
+    <string name="err_something_wrong">אופס, משהו השתבש</string>
+    <string name="err_couldnt_save_choose_new">‏Slide לא הצליח לשמור לתיקייה שנבחרה. האם תרצו לבחור מיקום שמירה חדש?</string>
+    <string name="err_share_image">שגיאה בשיתוף התמונה</string>
+    <string name="err_file_not_found">הקובץ לא נמצא</string>
+    <string name="err_file_not_found_msg">הקובץ שנבחר לא נמצא. ודאו שהוא קיים ושל‑Slide יש הרשאה לגשת לקובץ/לתיקייה</string>
+    <string name="err_comment_post">אופס, פרסום התגובה נכשל!</string>
+    <string name="err_comment_post_reason">סיבה: %1$s</string>
+    <string name="err_comment_post_message">\n\nההודעה שלכם נשמרה כטיוטה. נסו שוב מאוחר יותר.</string>
+    <string name="err_connection_failed_msg">החיבור ל‑Reddit נכשל. בדקו את חיבור האינטרנט ונסו שוב, או עברו למצב לא מקוון.</string>
+    <string name="err_block_user">שגיאה בחסימת המשתמש. האם ביטלתם לאחרונה את חסימתו?</string>
+
     <!-- Gif -->
+    <string name="gif_err_title">ה‑GIF לא נמצא</string>
+    <string name="gif_err_msg">אירעה שגיאה בעת טעינת ה‑GIF הזה. פתחו אותו שוב ונסו מחדש.</string>
+    <string name="gif_load_failed">טעינת ה‑GIF נכשלה</string>
+    <string name="gif_download_failed">הורדת ה‑GIF נכשלה</string>
+
     <!-- Multireddits -->
+    <string name="multireddit_err_title">אין מולטירדיטים (עדיין)!</string>
+    <string name="multireddit_err_msg">האם תרצו ליצור מולטירדיט חדש?</string>
+    <string name="public_multireddit_err_title">אין מולטירדיטים!</string>
+    <string name="public_multireddit_err_msg">למשתמש הזה אין מולטירדיטים ציבוריים.</string>
+    <string name="multireddit_title_empty">הכותרת אינה יכולה להיות ריקה</string>
+    <string name="multireddit_title_empty_msg">הזינו כותרת למולטירדיט שלכם</string>
+    <string name="multireddit_no_subs">לא נוספו סאברדיטים</string>
+    <string name="multireddit_save_err">כותרת המולטירדיט הזה כבר קיימת, או שאין כאן מקום לעוד סאברדיטים</string>
+    <string name="multireddit_no_subs_msg">הוסיפו כמה סאברדיטים בלחיצה על כפתור ה‑+!</string>
+    <string name="multireddit_selector">בחרו סאברדיטים להוספה</string>
+    <string name="multireddit_create_hint">שם המולטירדיט</string>
+    <string name="multireddit_invalid_name">שם מולטירדיט לא חוקי</string>
+    <string name="multireddit_invalid_name_msg">שמות מולטירדיט יכולים להכיל רק אותיות, ספרות וקווים תחתונים</string>
+    <string name="multi_add_to">הוספת /r/%s אל</string>
+    <string name="multi_subreddit_added">הסאברדיט נוסף ל‑/m/%1$s</string>
+    <string name="multi_error">אירעה שגיאה, נסו שוב מאוחר יותר</string>
+    <string name="btn_import_multi">ייבוא מולטירדיט</string>
+    <string name="multi_submit_which_sub">לאיזה סאב תרצו לפרסם?</string>
+    <string name="multi_saved_successfully">נשמר בהצלחה</string>
+    <string name="delete_multireddit_title">האם באמת ברצונך למחוק את /m/%1$s?</string>
+    <string name="multi_save_option">האם תרצו לשמור את המולטירדיט הזה?</string>
+
     <!-- Content types -->
+    <string name="type_nsfw_img">תמונת NSFW</string>
+    <string name="type_nsfw_gif">‏GIF‏ NSFW</string>
+    <string name="type_reddit">קישור Reddit</string>
+    <string name="type_link">קישור</string>
+    <string name="type_nsfw_link">קישור NSFW</string>
+    <string name="type_gif">GIF</string>
+    <string name="type_title_only">פוסט כותרת בלבד</string>
+    <string name="type_album">אלבום</string>
+    <string name="type_xkcd">XKCD</string>
+    <string name="type_nsfw_album">אלבום NSFW</string>
+    <string name="type_nsfw_gallery">גלריית NSFW</string>
+    <string name="type_nsfw_albums">אלבומי NSFW</string>
+    <string name="type_nsfw_galleries">גלריות NSFW</string>
+    <string name="type_nsfw_gifs">קובצי GIF‏ NSFW</string>
+    <string name="type_nsfw_images">תמונות NSFW</string>
+    <string name="type_nsfw_links">קישורי NSFW</string>
+    <string name="type_nsfw_selftexts">פוסטי טקסט NSFW</string>
+    <string name="type_nsfw_tumblrs">פוסטי Tumblr‏ NSFW</string>
+    <string name="type_nsfw_videos">סרטוני NSFW</string>
+    <string name="type_gallery">גלריה</string>
+    <string name="type_galleries">גלריות</string>
+    <string name="type_img">תמונה</string>
+    <string name="type_videos">סרטונים</string>
+    <string name="type_nsfw_video">סרטון NSFW</string>
+    <string name="type_imgur">תוכן Imgur</string>
+    <string name="type_nsfw_imgur">תוכן Imgur‏ NSFW</string>
+    <string name="type_nsfw_xkcd">‏XKCD‏ NSFW</string>
+    <string name="type_nsfw_deviantart">‏DeviantArt‏ NSFW</string>
+    <string name="type_nsfw_title_only">פוסט כותרת בלבד NSFW</string>
+    <string name="type_nsfw_reddit">קישור Reddit‏ NSFW</string>
+    <string name="type_nsfw_selftext">פוסט טקסט NSFW</string>
+    <string name="type_spoiler">ספוילר</string>
+    <string name="type_nsfw_spoiler">ספוילר NSFW</string>
+    <string name="type_nsfw_streamable">‏Streamable‏ NSFW</string>
+    <string name="type_external">חיצוני</string>
+
     <!-- Content types plural (Content filters) -->
+    <string name="type_gifs">קובצי GIF</string>
+    <string name="type_albums">אלבומים</string>
+    <string name="type_links">קישורים</string>
+
     <!-- Inbox/mail -->
+    <string name="mail_tab_inbox">דואר נכנס</string>
+    <string name="mail_tab_unread">לא נקראו</string>
+    <string name="mail_tab_messages">הודעות</string>
+    <string name="mail_tab_sent">נשלחו</string>
+    <string name="mail_tab_mentions">אזכורים</string>
+    <string name="mail_author_wrote">%1$s כתב…</string>
+    <string name="mail_hint_recipient">נמען</string>
+    <string name="mail_hint_subject">נושא</string>
+    <string name="mail_hint_body">טקסט</string>
+    <string name="mail_send_to">שליחת הודעה אל %1$s</string>
+    <string name="mail_send">שליחת הודעה</string>
+    <string name="mail_notification_msg_from">הודעה חדשה מ‑%1$s</string>
+    <string name="mail_notification_msg_via">הודעה חדשה דרך /r/%1$s</string>
+    <string name="mod_mail_notification_msg">דואר ניהול חדש מ‑%1$s</string>
+    <string name="mail_reply_to">תגובה אל %1$s</string>
+    <string name="mail_notification_author">%1$s מתוך %2$s</string>
+    <string name="mail_notification_subreddit">%1$s דרך /r/%2$s</string>
+    <string name="mail_theirs">הצגת ההודעה שלהם</string>
+    <string name="mail_re">בנוגע ל‑: %1$s</string>
+    <string name="mail_mark_read">סימון כנקרא</string>
+    <string name="mail_view_full_thread">הצגת השרשור המלא</string>
+    <string name="mail_message_copied">ההודעה הועתקה</string>
+    <plurals name="mail_notification_title">
+        <item quantity="one">יש לכם הודעה חדשה אחת!</item>
+        <item quantity="two">יש לכם שתי הודעות חדשות!</item>
+        <item quantity="other">יש לכם %d הודעות חדשות!</item>
+    </plurals>
+    <plurals name="mod_mail_notification_title">
+        <item quantity="one">יש לכם הודעת ניהול חדשה אחת!</item>
+        <item quantity="two">יש לכם שתי הודעות ניהול חדשות!</item>
+        <item quantity="other">יש לכם %d הודעות ניהול חדשות!</item>
+    </plurals>
+
     <!-- Miscellaneous/generic things that don't have a category or strings that are used for multiple categories -->
+    <string name="misc_err">שגיאה</string>
+    <string name="misc_none">ללא</string>
+    <string name="misc_retry">האם תרצו לנסות שוב?</string>
+    <string name="misc_retry_draft">האם תרצו לנסות שוב? \nטיוטה של הפוסט שלכם נשמרה</string>
+    <string name="misc_score_hidden">הניקוד מוסתר</string>
+    <string name="misc_subscribed">נרשמתם</string>
+    <string name="misc_continue">המשך</string>
+    <string name="misc_unsubscribed">ההרשמה בוטלה</string>
+    <string name="misc_no_more_posts">אין עוד פוסטים!</string>
+    <string name="misc_please_wait">נא להמתין…</string>
+    <string name="misc_img_share">שיתוף התמונה עם</string>
+    <string name="misc_copy_text">העתקת טקסט</string>
+    <string name="misc_maybe_later">אולי מאוחר יותר</string>
+    <string name="misc_try_again">נסו שוב</string>
+    <string name="misc_please_try_again">נסו שוב</string>
+    <string name="misc_please_try_again_soon">נסו שוב בקרוב</string>
+    <string name="misc_setting_up">מגדיר כמה דברים…</string>
+    <string name="misc_setting_up_message">נא לא לעזוב את המסך הזה. זה לא ייקח הרבה זמן!</string>
+    <string name="misc_more_info">מידע נוסף</string>
+    <string name="misc_captcha_incorrect">הקפצ\'ה שגויה, נסו שוב</string>
+
     <!-- Goto User -->
+    <string name="user_enter">הזינו שם משתמש</string>
+    <string name="user_btn_goto">מעבר למשתמש</string>
+    <string name="user_btn_gotomultis">מעבר למולטי של המשתמש</string>
+
+    <!-- Saved users list -->
+    <string name="users_empty">אין משתמשים שמורים</string>
+    <string name="users_btn_add">הוספת משתמש</string>
+    <string name="users_btn_remove">הסרת משתמש</string>
+    <string name="users_added">%s נוסף למשתמשים</string>
+    <string name="users_removed">%s הוסר מהמשתמשים</string>
+    <string name="users_already_added">%s כבר נמצא במשתמשים</string>
+    <string name="users_copied">%s הועתק</string>
+    <string name="users_checking">בודק את שם המשתמש</string>
+    <string name="users_invalid_title">לא ניתן להוסיף את המשתמש</string>
+    <string name="users_invalid">%s אינו משתמש Reddit</string>
+    <string name="users_check_failed">לא ניתן היה לבדוק אם %s קיים. בדקו את החיבור ונסו שוב.</string>
+    <string name="users_friend_added">%s נוסף כחבר</string>
+    <string name="users_friend_removed">%s הוסר מהחברים</string>
+    <string name="users_friend_failed">לא ניתן היה לעדכן את מצב החברות עבור %s</string>
+    <string name="btn_fab_add_user">הוספת משתמש</string>
+
     <!-- Buttons -->
+    <string name="btn_add">הוספה</string>
+    <string name="btn_cancel">ביטול</string>
+    <string name="btn_close">סגירה</string>
+    <string name="btn_toggle">החלפה</string>
+    <string name="btn_open">פתיחה</string>
+    <string name="btn_discard">ביטול</string>
+    <string name="btn_done">סיום</string>
+    <string name="btn_go_back">חזרה</string>
+    <string name="btn_no">לא</string>
+    <string name="btn_ok">אישור</string>
+    <string name="btn_remove">הסרה</string>
+    <string name="btn_reply">תגובה</string>
+    <string name="btn_reset">איפוס</string>
+    <string name="btn_retry">ניסיון חוזר</string>
+    <string name="btn_save">שמירה</string>
+    <string name="btn_submit">שליחה</string>
+    <string name="btn_undo">ביטול פעולה</string>
+    <string name="btn_yes">כן</string>
+    <string name="btn_refresh">רענון</string>
+    <string name="btn_cache">שמירת תגובות במטמון</string>
+    <string name="btn_delete">מחיקה</string>
+    <string name="btn_time">טווח זמן</string>
+    <string name="btn_message">הודעה</string>
+    <string name="btn_select">בחירה</string>
+    <string name="btn_view">הצגה</string>
+    <string name="btn_changelog">יומן שינויים</string>
+    <string name="btn_set">הגדרה</string>
+    <string name="btn_create">יצירה</string>
+    <string name="btn_new">חדש</string>
+
     <!-- Buttons Content labels for TalkBack accessibility-->
+    <string name="btn_edit">עריכה</string>
+    <string name="btn_hide">הסתרה</string>
+    <string name="btn_mod">ניהול</string>
+    <string name="btn_upvote">הצבעה בעד</string>
+    <string name="btn_downvote">הצבעה נגד</string>
+    <string name="btn_menu">תפריט</string>
+    <string name="img_score">ניקוד</string>
+    <string name="img_comments">תגובות</string>
+    <string name="btn_expand">הרחבה</string>
+    <string name="btn_nav_up">ניווט למעלה</string>
+    <string name="btn_nav_mode">הגדרת מצב ניווט</string>
+    <string name="btn_nav_collapse_expand">כיווץ/הרחבה</string>
+    <string name="btn_nav_down">ניווט למטה</string>
+    <string name="btn_fab_reply">תגובה</string>
+    <string name="btn_fab_post">יצירת פוסט חדש</string>
+    <string name="btn_fab_hide">הסתרת פוסטים שנצפו</string>
+    <string name="btn_fab_search">חיפוש פוסטים</string>
+
     <!-- Buttons Content labels for TalkBack accessibility active states-->
+    <string name="btn_upvoted">הוצבע בעד</string>
+    <string name="btn_downvoted">הוצבע נגד</string>
+    <string name="btn_unsave">ביטול השמירה</string>
+    <string name="btn_collapse">כיווץ</string>
+
     <!-- Backup -->
+    <string name="backup_success">הגיבוי הצליח!</string>
+    <string name="backup_restoring">משחזר את ההגדרות שלכם</string>
+    <string name="backup_backing_up">מגבה את ההגדרות שלכם</string>
+    <string name="backup_restore_settings">שחזור ההגדרות הצליח!</string>
+    <string name="backup_restarting">האפליקציה תופעל מחדש כעת</string>
+    <string name="backup_info">‏Slide מגבה את כל הנתונים שלכם לתיקייה פרטית ב‑Google Drive. תוכלו לסנכרן את הנתונים בין מכשירים (או לאותו מכשיר), והנתונים שלכם לעולם אינם עוברים דרך שירות או שרת של צד שלישי. הגיבויים מוצפנים בסיסמה שאתם בוחרים.</string>
+    <string name="backup_btn">גיבוי</string>
+    <string name="backup_btn_restore">שחזור</string>
+    <string name="backup_btn_file">גיבוי לקובץ zip</string>
+    <string name="backup_btn_restore_file">שחזור מקובץ או מ‑zip</string>
+    <string name="backup_confirm">האם אתם בטוחים שברצונכם לגבות? הגיבוי הקודם יוחלף</string>
+    <string name="backup_restore_confirm">האם אתם בטוחים שברצונכם לשחזר? ההגדרות הנוכחיות שלכם יוחלפו</string>
+    <string name="backup_failed_msg">הגיבוי נכשל. נסו שוב מאוחר יותר.</string>
+    <string name="backup_restore_failed_msg">השחזור נכשל. ודאו שקיים גיבוי תקין ונסו שוב.</string>
+    <string name="backup_local_title">גיבוי מקומי</string>
+    <string name="backup_drive_title">גיבוי ל‑Google Drive</string>
+    <string name="backup_button">יצירת גיבוי</string>
+    <string name="restore_button">שחזור מגיבוי</string>
+    <string name="backup_question">לגבות?</string>
+    <string name="backup_complete">הגיבוי הושלם!</string>
+    <string name="err_not_valid_backup">אינו קובץ גיבוי תקין של Slide</string>
+    <string name="err_not_valid_backup_msg">הקובץ שנבחר אינו קובץ גיבוי תקין של Slide</string>
+    <string name="backup_password_title">הגדירו סיסמת גיבוי</string>
+    <string name="backup_password_message">הגיבוי שלכם מכיל את פרטי ההתחברות לחשבון Reddit שלכם, ולכן הוא מוצפן. בחרו סיסמה באורך %1$d עד %2$d תווים. תזדקקו לה לשחזור, ולא ניתן לשחזר אותה.</string>
+    <string name="backup_password_hint">סיסמה</string>
+    <string name="restore_password_title">הזינו את סיסמת הגיבוי</string>
+    <string name="restore_password_message">הזינו את הסיסמה ששימשה להצפנת הגיבוי הזה.</string>
+    <string name="restore_password_wrong">סיסמה שגויה. נסו שוב.</string>
+    <string name="drive_authorization_failed">ההרשאה ל‑Google Drive נכשלה</string>
+    <string name="drive_authorization_failed_msg">‏Slide לא הצליח לגשת לתיקייה הפרטית שלו ב‑Google Drive. נסו שוב.</string>
+    <string name="drive_authorization_denied">נדרשת גישה ל‑Google Drive</string>
+    <string name="drive_authorization_denied_msg">‏Slide זקוק לגישה לתיקייה הפרטית שלו ב‑Google Drive כדי לגבות או לשחזר את ההגדרות שלכם.</string>
+
     <!-- Vote -->
+    <string name="vote_err">שגיאה בהצבעה!</string>
+    <string name="vote_err_login">עליכם להתחבר כדי להצביע!</string>
+    <string name="vote_removed">ההצבעה הוסרה</string>
+
+    <!-- Subscribing -->
+    <string name="subscribe_err_login">עליכם להתחבר כדי להירשם!</string>
+
     <!-- Moderation tools -->
+    <string name="mod_mail">דואר ניהול</string>
+    <string name="mod_mail_unread">דואר ניהול שלא נקרא</string>
+    <string name="modmail_internal_note">(הערה פנימית)</string>
+    <string name="modmail_scope_missing">דואר הניהול דורש אימות מחדש. התחברו שוב (הגדרות &#8594; חשבון) כדי להפעיל אותו.</string>
+    <string name="modmail_reply_sent">התגובה נשלחה!</string>
+    <string name="modmail_reply_failed">השליחה נכשלה! התגובה נשמרה כטיוטה.</string>
+    <plurals name="modmail_message_count">
+        <item quantity="one">הודעה אחת</item>
+        <item quantity="two">שתי הודעות</item>
+        <item quantity="other">%d הודעות</item>
+    </plurals>
+    <string name="mod_modqueue">תור הניהול</string>
+    <string name="mod_unmoderated">לא נבדקו</string>
+    <string name="mod_reports">דיווחים</string>
+    <string name="mod_approved">הפוסט אושר</string>
+    <string name="mod_flair_hint">טקסט התגית</string>
+    <string name="mod_no_reports">אין דיווחים</string>
+    <string name="mod_btn_approve">אישור</string>
+    <string name="mod_btn_submission_flair">הגדרת תגית</string>
+    <string name="mod_btn_submission_flair_text">הגדרת טקסט התגית</string>
+    <string name="mod_btn_mark_nsfw">סימון כ‑NSFW</string>
+    <string name="mod_btn_unmark_nsfw">הסרת סימון NSFW</string>
+    <string name="mod_btn_mark_spoiler">סימון כספוילר</string>
+    <string name="mod_btn_unmark_spoiler">הסרת סימון ספוילר</string>
+    <string name="mod_btn_lock_thread">נעילת השרשור</string>
+    <string name="mod_btn_unlock_thread">ביטול נעילת השרשור</string>
+    <string name="mod_btn_lock_comment">נעילת התגובה</string>
+    <string name="mod_btn_unlock_comment">ביטול נעילת התגובה</string>
+    <string name="mod_locked">נעול</string>
+    <string name="mod_unlocked">לא נעול</string>
+    <string name="mod_btn_pin">הצמדה</string>
+    <string name="mod_btn_unpin">ביטול הצמדה</string>
+    <string name="mod_btn_remove">הסרה</string>
+    <string name="mod_btn_remove_reason">הסרה עם סיבה</string>
+    <string name="mod_btn_spam">סימון כספאם</string>
+    <string name="mod_btn_author">פרופיל המחבר</string>
+    <string name="mod_btn_ban">חסימה</string>
+    <string name="mod_ban_user">חסימת משתמש</string>
+    <string name="mod_ban_reauth">כדי לחסום משתמשים, Slide חייב לאמת אתכם מחדש</string>
+    <string name="mod_ban_reauth_question">האם תרצו להתחבר שוב ל‑Slide כעת?</string>
+    <string name="mod_ban_success">המשתמש נחסם!</string>
+    <string name="mod_ban_fail">שגיאה בחסימת המשתמש</string>
+    <string name="mod_ban_reason">סיבת החסימה</string>
+    <string name="mod_ban_note_mod">הערת מנהל (אופציונלי)</string>
+    <string name="mod_ban_note_user">הודעה למשתמש (אופציונלי)</string>
+    <string name="mod_ban_time">משך החסימה - השאירו ריק לחסימה לצמיתות</string>
+    <string name="mod_ban_title">חסימת /u/%1$s</string>
+    <string name="mod_remove_template">הוסר בשל\u0020</string>
+    <string name="mod_remove_hint">סיבת ההסרה</string>
+    <string name="mod_remove_title">מהי הסיבה להסרת הפוסט הזה?</string>
+    <string name="mod_remove_insert_draft">הוספת טיוטה</string>
+    <string name="mod_flair_none_found">לא נמצאו תגיות לסאברדיט הזה</string>
+    <string name="mod_distinguish">הבלטה</string>
+    <string name="mod_undistinguish">ביטול ההבלטה</string>
+    <string name="mod_sticky">הצמדה</string>
+    <string name="mod_unsticky">ביטול הצמדה</string>
+    <string name="reauth_complete">האימות מחדש הושלם!</string>
+    <string name="reauth_in_progress">מאמת מחדש…</string>
+    <string name="reauth_failed">לא ניתן היה לאמת מחדש</string>
+
+    <plurals name="mod_btn_reports">
+        <item quantity="one">הצגת דיווח אחד</item>
+        <item quantity="two">הצגת שני דיווחים</item>
+        <item quantity="other">הצגת %d דיווחים</item>
+    </plurals>
+
     <!-- If he did -->
+    <string name="really_pin_submission_message">הפוסט הוצמד</string>
+    <string name="really_unpin_submission_message">הצמדת הפוסט בוטלה</string>
+
     <!-- Subreddit Wiki -->
+    <string name="wiki_err">לא נמצא ויקי</string>
+    <string name="wiki_err_msg">לסאברדיט הזה אין ויקי!</string>
+
     <!-- Subreddits -->
+    <string name="subreddit_subscribers_string">%1$s נרשמים</string>
+    <string name="subreddit_active_users_string_new">%1$s כאן עכשיו</string>
+    <string name="subreddit_err_msg">הסאברדיט %1$s לא נמצא. אולי הוא נכתב בשגיאה?</string>
+    <string name="subreddit_err_msg_new">הסאברדיט %1$s לא נמצא. אולי הוא נכתב בשגיאה, או שאין לכם גישה אליו.</string>
+    <string name="subreddit_err">הסאברדיט לא נמצא</string>
+
     <!-- Search -->
+    <string name="search_comments_hint">חיפוש בתגובות</string>
+    <string name="search_goto">מעבר אל</string>
+    <string name="search_title">חיפוש</string>
+    <string name="search_msg">מה אתם מחפשים?</string>
+    <string name="search_all">חיפוש בהכל</string>
+    <string name="search_subreddit">חיפוש ב‑%1$s</string>
+    <string name="search_relevance">רלוונטיות</string>
+    <string name="search_top">מובילים</string>
+    <string name="search_new">חדשים</string>
+    <string name="search_comments">תגובות</string>
+    <string name="no_posts_found">לא נמצאו פוסטים</string>
+
     <!-- Settings -->
+    <string name="settings_reddit_prefs">העדפות Reddit</string>
+    <string name="settings_accent_title">עריכת צבע ההדגשה</string>
+    <string name="settings_delete_sub_settings">האם באמת ברצונך למחוק את ההגדרות עבור %1$s?</string>
+    <string name="settings_layout_default">פריסת הפוסטים</string>
+    <string name="settings_link_album">תצוגת אלבום פנימית</string>
+    <string name="settings_link_peek">הצצה לתוכן</string>
+    <string name="settings_link_peek_description">משבית לחיצה ארוכה על תמונת התצוגה המקדימה</string>
+    <string name="settings_link_gif">תצוגת GIF פנימית</string>
+    <string name="settings_link_hqgif">סרטוני Gfycat באיכות גבוהה</string>
+    <string name="settings_link_handling">טיפול בקישורים</string>
+    <string name="settings_link_image">תצוגת תמונות פנימית</string>
+    <string name="settings_mail_check">בדיקת הודעות חדשות</string>
+    <string name="settings_mail_info">ככל שהתדירות גבוהה יותר, כך Slide עשוי לצרוך יותר סוללה ברקע!</string>
+    <string name="settings_main_color_title">עריכת הצבע הראשי</string>
+    <string name="settings_notification">בדיקת הודעות חדשות כל %1$s</string>
+    <string name="settings_notification_newline">בדיקת הודעות חדשות כל\n%1$s</string>
+    <string name="settings_notification_short">בדיקה כל %1$s</string>
+    <string name="settings_disable_nsfw_photo">הסתרת כל תמונות ה‑NSFW</string>
+    <string name="settings_store_history">שמירת היסטוריה</string>
+    <string name="settings_store_nsfw_history">שמירת היסטוריית NSFW</string>
+    <string name="settings_commentnav">ניווט בין תגובות אב</string>
+    <string name="share_link">שיתוף קישור</string>
+    <string name="posts_hidden_forever">פוסטים שהוסתרו לצמיתות</string>
+    <string name="share_image">שיתוף תמונה</string>
+    <string name="settings_libs">ספריות קוד פתוח</string>
+    <string name="settings_about_libs">אודות הספריות</string>
+    <string name="settings_privacy">מדיניות הפרטיות</string>
+    <string name="settings_bugs">דיווח על באגים</string>
+    <string name="settings_changelog">הצגת יומן השינויים</string>
+    <string name="settings_fabclear_msg">הקשה על כפתור הניקוי תסיר את הפוסטים מהתצוגה הנוכחית, אך לא תסתיר אותם לצמיתות. \nלחיצה ארוכה על הכפתור תסתיר את הפוסטים לצמיתות!</string>
+    <string name="settings_fabclear">פעולות הניקוי של הכפתור הצף</string>
+    <string name="settings_notifdisabled">ההתראות מושבתות</string>
+    <string name="settings_colored_navigation_bar">סרגל ניווט צבעוני</string>
+    <string name="settings_always_black_statusbar">סרגל מצב שחור (סרגל ההתראות)</string>
+    <string name="settings_colored_icon">צביעת סמל האפליקציה (ניסיוני)</string>
+    <string name="settings_colored_icon_desc">ייתכן שיידרש אתחול של הטלפון. פעולה זו גם תסיר את הסמל ממסך הבית.</string>
+    <string name="settings_filter_domain">מסנני דומיינים</string>
+    <string name="settings_filter_selfttext">מסנני טקסט הפוסט</string>
+    <string name="settings_filter_title">מסנני כותרות</string>
+    <string name="settings_prefs_reddit">הצגת כל העדפות reddit.com</string>
+    <string name="settings_font_post">גופן כותרת הפוסט</string>
+    <string name="settings_font_comment">גופן התגובות</string>
+    <string name="settings_comment_crop">חיתוך התמונה הראשית בתצוגת התגובות</string>
+    <string name="settings_general_scroll_read">סימון פוסטים כנצפו בעת גלילה מעליהם</string>
+    <string name="settings_link_chrome">לשוניות מותאמות</string>
+    <string name="settings_storage_location">בחירת מיקום אחסון</string>
+    <string name="settings_storage_location_unset">טרם הוגדר</string>
+    <string name="settings_set_storage_location">הקבצים יישמרו אל %s</string>
+    <string name="settings_general_immersive_mode">מצב מסך מלא סוחף</string>
+    <string name="settings_general_immersive_mode_desc">הסתרת סרגלי המצב והניווט (ניסיוני)</string>
+    <string name="settings_general_old_swipe_mode">מצב החלקה ישן</string>
+    <string name="settings_general_old_swipe_mode_desc">סגנון ההחלקה הישן של Slide. מיועד לניווט בשלושה כפתורים ולמחוות Samsung.</string>
+    <string name="settings_general_hibernate">להמשיך מהמקום שבו הפסקתי</string>
+    <string name="settings_general_hibernate_desc">פותח מחדש את אותו מסך, באותו מקום, ומציג את מה שכבר נטען במקום לרענן. הפעלה מוסיפה תיבת סימון לתפריט הנוסף המפעילה ומכבה את ההמשך בלי לחזור לכאן.</string>
+
+    <string name="settings_general_title_drawer_items">פריטי המגירה</string>
+    <string name="settings_general_subtitle_drawer_items">בחרו אילו פריטי מגירה יוצגו</string>
+
     <!-- Settings titles displayed in settings activity-->
+    <string name="settings_title_backup">גיבוי &amp; שחזור</string>
+    <string name="settings_title_default_theme">ערכת הנושא הראשית</string>
+    <string name="settings_title_general">כללי</string>
+    <string name="settings_title_history">היסטוריה</string>
+    <string name="settings_title_notifications">התראות</string>
+    <string name="settings_title_pro">שדרוג ל‑Pro</string>
+    <string name="settings_title_sub_theme">ערכות נושא לסאברדיטים</string>
+    <string name="settings_title_sort">מיון ברירת מחדל</string>
+    <string name="settings_title_sort_frontpage">מיון עמוד הבית</string>
+    <string name="settings_title_about">אודות</string>
+    <string name="settings_title_debug">ניפוי שגיאות</string>
+    <string name="settings_section_debug_reauth">אימות מחדש</string>
+    <string name="settings_debug_break_reauth">שבירת האימות מחדש</string>
+    <string name="settings_debug_break_reauth_desc">עוצר את האימות מחדש כדי שניתן יהיה לבדוק את ההודעה הנלווית. הפיך: כבו אפשרות זו ואז הפעילו אימות מחדש.</string>
+    <string name="settings_debug_trigger_reauth">הפעלת אימות מחדש</string>
+    <string name="settings_debug_trigger_reauth_desc">התחילו אימות מחדש עכשיו. השתמשו בזה כדי להתאושש אחרי כיבוי המתג.</string>
+    <string name="settings_title_multi_column">ריבוי עמודות</string>
+    <string name="settings_title_fab">כפתור פעולה צף</string>
+    <string name="settings_title_comments">תגובות</string>
+    <string name="settings_title_filter">מסננים</string>
+    <string name="settings_title_font">גופן</string>
+    <string name="settings_section_general">כללי</string>
+    <string name="settings_section_appearance">מראה</string>
+    <string name="settings_section_hibernation">מצב שינה</string>
+    <string name="settings_section_other">אחר</string>
+    <string name="settings_section_browser">דפדפן</string>
+    <string name="settings_section_internal_viewers">מציגים פנימיים</string>
+    <string name="settings_section_custom_domains">דומיינים מותאמים</string>
+    <string name="settings_section_save_history">שמירת היסטוריה</string>
+    <string name="settings_section_clear_history">ניקוי היסטוריה</string>
+    <string name="settings_section_data_saving_mode">מצב חיסכון בנתונים</string>
+    <string name="settings_section_data_saving_quality">איכות בחיסכון בנתונים</string>
+    <string name="settings_comment_color">מחווני עומק תגובות צבעוניים</string>
+    <string name="settings_volume_nav_comments">ניווט בתגובות באמצעות כפתורי עוצמת הקול</string>
+    <string name="settings_commentnav_description">מפעיל סרגל תחתון עם חצי ניווט</string>
+    <string name="settings_comment_collapse">כיווץ מלא של תגובות</string>
+    <string name="settings_comment_collapse_description">משבית גם את אנימציות התגובות</string>
+    <string name="settings_comment_collapse_default">כיווץ תגובות משנה כברירת מחדל</string>
+    <string name="settings_data_enable">הפעלת הגדרות החיסכון בנתונים</string>
+    <string name="settings_data_video_quality">העדפת סרטונים באיכות נמוכה כשהחיסכון בנתונים פעיל</string>
+    <string name="settings_comments_collapse_deleted">כיווץ תגובות שנמחקו כברירת מחדל</string>
+    <string name="settings_comments_collapse_sticky">תמיד לכווץ לגמרי את התגובה המוצמדת</string>
+    <string name="settings_comments_collapse_blocked_users">כיווץ תגובות של משתמשים חסומים</string>
+    <string name="settings_comments_collapse_blocked_users_description">מפעיל גם את כיווץ מלא של תגובות</string>
+    <string name="settings_backup_occurs">הגיבוי יתבצע בשעה %1$s</string>
+    <string name="settings_backup_none">לא יגובה אף סאברדיט</string>
+    <string name="settings_backup_will_backup">\u0020יגובה</string>
+    <string name="settings_backup_submission_only">פוסט בלבד</string>
+    <string name="settings_backup_comments">\u0020(תגובות)</string>
+    <string name="settings_filter_profile">מסנני פרופיל</string>
+    <string name="settings_subreddit_content_filters_till_restart">מסנני תוכן של הסאברדיט עד להפעלה מחדש</string>
+    <string name="settings_subredditspecific_selftext">תמיד להציג תצוגה מקדימה של טקסט בסאברדיט הזה</string>
+    <string name="settings_font_system">מערכת</string>
+    <string name="settings_manage_subscriptions">ניהול המנויים שלכם</string>
+    <string name="settings_comments_swap_long">החלפת פעולות הלחיצה הארוכה וההקשה</string>
+    <string name="settings_redditprefs_over18">אני מעל גיל 18 ורוצה לראות תוכן NSFW</string>
+    <string name="settings_layout_view">מצב תצוגה</string>
+    <string name="settings_subredditspecific_bigpic">תמיד להציג תמונות גדולות בסאברדיט הזה</string>
+    <string name="settings_layout_picture_mode">מצב תמונות</string>
+    <string name="settings_general_expanded_toolbar">תפריט סרגל כלים מורחב</string>
+    <string name="settings_general_expanded_toolbar_desc">הצגת אפשרויות נוספות בסרגל הכלים של הסאברדיט</string>
+    <string name="settings_always_show_floating_action_button">תמיד להציג את כפתור הפעולה הצף</string>
+    <string name="settings_always_show_floating_action_button_desc">לעולם לא להסתיר את כפתור הפעולה הצף בעת גלילה</string>
+    <string name="settings_theme_tinting">מצב צביעת הפוסטים</string>
+    <string name="settings_layout_actionbar_mode">מצב סרגל הפעולות</string>
+    <string name="settings_theme_tint_outside_desc">צביעת הרקע רק במולטירדיטים, בעמוד הבית ובהכל</string>
+    <string name="settings_layout_small_content_tag">תווית תוכן קטנה יותר</string>
+    <string name="settings_links_force_external">אילוץ דפדפן חיצוני</string>
+    <string name="settings_layout_show_domain">הצגת הדומיין בשורת המידע</string>
+    <string name="settings_layout_show_content_type">הצגת סוג התוכן בשורת המידע</string>
+    <string name="settings_layout_thumbnail_flags">הצגת סימונים צבעוניים בפינות התמונות הממוזערות</string>
+    <string name="settings_layout_show_votes_comments">הצגת הצבעות/תגובות בשורת המידע</string>
+    <string name="settings_general_comment_last_visit">הצגת מספר התגובות מאז הביקור האחרון</string>
+    <string name="settings_fab_create">הצגת כפתור צף \"יצירת תגובה\"</string>
+    <string name="settings_right_handed_comment_menu">תפריט תגובה לימניים</string>
+    <string name="settings_reddit_description">ההגדרות האלה משנות את מה שה‑API של Reddit מחזיר ל‑Slide.\n\nכדי לראות תמונות ממוזערות בכל הסאברדיטים, הפעילו את \'התעלמות מהעדפות המדיה של הסאברדיט\'\n\nכדי לראות את כל תוכן ה‑NSFW, כבו את \'הסתרת תמונות NSFW\' והפעילו את \'אני מעל גיל 18\'</string>
+    <string name="settings_reddit_media_pref">התעלמות מהעדפות המדיה של הסאברדיט</string>
+    <string name="settings_description_view_type">סוגי התצוגה משפיעים גם על התצוגה הראשית וגם על תצוגות של סאברדיט בודד.\n\nחלונית תגובות: התגובות נפתחות לצד הפוסטים ומצב דף התגובות נשמר לאחר החלקה חזרה (כדי שלא תאבדו את המקום שלכם)\n\nללא לשוניות סאברדיט: משבית החלקה בין סאברדיטים\n\nלשוניות סאברדיט: החליקו בין הסאברדיטים שלכם</string>
+    <string name="settings_short_description_view_type">סוגי התצוגה משפיעים גם על התצוגה הראשית וגם על תצוגות של סאברדיט בודד</string>
+    <string name="settings_comment_hide_selftext_image">הסתרת התמונה הראשית בפוסטי טקסט</string>
+    <string name="settings_filter_flair">מסנני תגיות</string>
+    <string name="settings_view_type">סוג תצוגה</string>
+    <string name="settings_data">חיסכון בנתונים</string>
+    <string name="settings_card_show_selftext">הצגת טקסט הפוסט</string>
+    <string name="settings_card_selftext_paragraph">הצגת הפסקה הראשונה</string>
+    <string name="settings_card_selftext_ellipsize">קיצור ל‑128 התווים הראשונים</string>
+    <string name="settings_handling_external_desc">דומיינים שיוזנו למטה ייפתחו תמיד באופן חיצוני</string>
+    <string name="settings_handling_enterdomain">הזינו דומיין או חלק מדומיין</string>
+    <string name="settings_section_content">תוכן</string>
+    <string name="settings_backup_view">הצגת הגיבוי</string>
+    <string name="settings_backup_err_no_explorer">לא נמצא מנהל קבצים, הקובץ נמצא ב‑%1$s</string>
+    <string name="settings_about_version_copied_toast">מספר הגרסה הועתק ללוח</string>
+    <string name="settings_theme_night_start_at">מתחיל בשעה\u0020</string>
+    <string name="settings_theme_night_end_at">מסתיים בשעה\u0020</string>
+    <string name="settings_general_inbox_snd">צליל ורטט</string>
+    <string name="settings_enable_notifs">הפעלת התראות לדואר הנכנס</string>
+
     <!-- Quick setting toggles in the drawer -->
+    <string name="toggle_night_mode">מצב לילה</string>
+    <string name="toggle_immersive_mode">מצב סוחף</string>
+    <string name="toggle_nsfw">הצגת תוכן NSFW</string>
+    <string name="toggle_right_thumbnails">תמונות ממוזערות מיושרות לימין</string>
+    <string name="toggle_reader_mode">שימוש במצב קריאה</string>
+
     <!-- View types -->
+    <string name="view_type_tabs">לשוניות סאברדיט</string>
+    <string name="view_type_none">ללא לשוניות סאברדיט</string>
+    <string name="view_type_comments">חלונית תגובות</string>
+
     <!--Search methods -->
+    <string name="subreddit_search_method_title">שיטת חיפוש הסאברדיטים</string>
+    <string name="subreddit_search_method_drawer">סרגל חיפוש במגירה</string>
+    <string name="subreddit_search_method_toolbar">לחיצה ארוכה על כותרת סרגל הכלים</string>
+    <string name="subreddit_search_method_both">גם המגירה וגם כותרת סרגל הכלים</string>
+
     <!-- Back button behavior -->
+    <string name="back_button_behavior_title">התנהגות כפתור החזרה</string>
+    <string name="back_button_behavior_default">סגירת האפליקציה</string>
+    <string name="back_button_behavior_confirm_exit">חלון אישור יציאה</string>
+    <string name="back_button_behavior_drawer">פתיחת המגירה</string>
+
     <!-- Subscription managing -->
-    <!-- Save categories -->
+    <string name="reorder_add_domain">הוספת דומיין</string>
+    <string name="reorder_add_subreddit">הוספת סאברדיט</string>
+    <string name="reorder_fab_collection">מולטירדיט</string>
+    <string name="reorder_fab_domain">דומיין</string>
+    <string name="reorder_fab_subreddit">סאברדיט</string>
+    <string name="reorder_add_subscribe">הוספה &amp; הרשמה</string>
+    <string name="reorder_remove_unsubscribe">הסרה &amp; ביטול הרשמה</string>
+    <string name="reorder_move">העברה לראש</string>
+    <string name="reorder_domain_placeholder">\u0020(שם הדומיין בלבד)</string>
+    <string name="reorder_not_found_err">הסאברדיט לא נמצא, הנה כמה הצעות</string>
+    <string name="reorder_subscribed_toast">נרשמתם ל‑/r/%1$s</string>
+    <string name="reorder_unsubscribed_toast">ההרשמה ל‑/r/%1$s בוטלה</string>
+    <string name="sorting_faq"><b>איך מרעננים סאברדיטים?</b>\nכדי לרענן סאברדיטים, לחצו על סמל הרענון בסרגל הכלים!\n\n<b>ביטלתי הרשמה לכמה סאברדיטים אבל הם עדיין ברשימה!</b>\n‏Slide ממיר סאברדיטים שביטלתם בדפדפן למנויים לא רשמיים. כדי להסיר אותם, לחצו לחיצה ארוכה על הסאברדיט ובחרו הסרה!\n\n<b>איך משתמשים באוספים?</b>\nכדי ליצור אוסף, לחצו על כפתור ה‑+ הצף ובחרו \'יצירת אוסף\'. כך כמה סאבים יכולים לפעול כסאברדיט אחד במסך הראשי!</string>
+    <string name="alphabetize_subreddits">סידור הסאברדיטים לפי א״ב</string>
+    <string name="sync_subscriptions">סנכרון המנויים</string>
+    <string name="cannot_be_undone">לא ניתן לבטל פעולה זו.</string>
+    <string name="deleting">מוחק…</string>
+    <string name="create_or_import_multi">האם תרצו ליצור מולטירדיט חדש או לייבא מולטירדיט?</string>
+    <string name="sub_added">הסאברדיט נוסף!</string>
+    <string name="reorder_subs_FAQ">שאלות נפוצות על סידור מחדש של סאברדיטים</string>
+    <string name="subscribe_to">הרשמה ל‑/r/%1$s</string>
+    <string name="unsubscribe_from">ביטול הרשמה ל‑/r/%1$s</string>
+    <string name="btn_add_to_sublist">הוספה לרשימת הסאבים</string>
+    <string name="btn_remove_from_sublist">הסרה מרשימת הסאבים</string>
+    <string name="just_unsub">רק לבטל הרשמה</string>
+    <string name="subscribe_caps">הרשמה</string>
+    <string name="unsubscribe_caps">ביטול הרשמה</string>
+    <string name="reorder_subreddits_title">בחרו סאברדיט להוספה</string>
+    <string name="reorder_add_or_search_subreddit">הוסיפו או חפשו סאברדיט</string>
+    <string name="reorder_subreddit_name">שם הסאברדיט</string>
+    <string name="reorder_remove_title">להסיר את הסאברדיט הזה?</string>
+    <string name="reorder_sync_complete">הסנכרון הושלם</string>
+    <string name="reorder_loading_title">טוען את הסאברדיטים שלכם</string>
+    <string name="reorder_url_err">כתובת URL לא חוקית</string>
+
+    <!-- Saved tags -->
+    <string name="tag_set_name_hint">שם התווית</string>
+    <string name="tag_tag_action">תיוג</string>
+    <string name="profile_tag_select">תוויות</string>
+    <string name="profile_saved_tags">תוויות שמורות</string>
+    <string name="tag_builtin_all">הכל</string>
+    <string name="tag_builtin_posts">פוסטים</string>
+    <string name="tag_builtin_comments">תגובות</string>
+    <string name="tag_types_header">סוגים</string>
+    <string name="tag_post_types_header">סוגי פוסטים</string>
+    <string name="tag_custom_header">תוויות מותאמות</string>
+    <string name="tag_new">תווית חדשה</string>
+    <string name="tag_manage">ניהול התוויות</string>
+    <string name="tag_add">הוספת תווית</string>
+    <string name="tag_none_yet">אין עדיין תוויות</string>
+    <string name="tag_rename">שינוי שם</string>
+    <string name="tag_delete_confirm">האם אתם בטוחים שברצונכם למחוק את \"%1$s\"? פריטים עם התווית הזו לא יימחקו.</string>
+    <string name="tag_name_used_title">השם כבר בשימוש</string>
+    <string name="tag_name_used">כבר קיימת תווית בשם הזה, בחרו שם ייחודי.</string>
+    <string name="tag_name_reserved">השם הזה שמור, בחרו שם אחר.</string>
+
     <!-- Setting subheaders -->
+    <string name="sorting">מיונים</string>
+    <string name="display">תצוגה</string>
+    <string name="images">תמונות</string>
+    <string name="storage">אחסון</string>
+    <string name="app_theme">ערכת הנושא של האפליקציה</string>
+    <string name="tinting">צביעה</string>
+    <string name="post_info">פרטי הפוסט</string>
+    <string name="post_buttons">כפתורי הפוסט</string>
+    <string name="navigation">ניווט</string>
+    <string name="collapse_comments">פעולות כיווץ</string>
+    <string name="nsfw">תוכן NSFW</string>
+    <string name="view_reddit_settings">פתיחת הגדרות Reddit בדפדפן</string>
+    <string name="font_styles">סגנונות גופן</string>
+
     <!-- Titles displayed in action bar / head / recents overview-->
-    <!-- Text in Donation-Activity -->
+    <string name="title_subreddit_settings">ערכות נושא &amp; פריסות לסאברדיטים</string>
+    <string name="title_edit_theme">עריכת ערכת הנושא</string>
+    <string name="title_submit_post">פרסום פוסט</string>
+    <string name="title_crosspost">פרסום צולב</string>
+    <string name="title_settings">הגדרות</string>
+    <string name="title_share">שיתוף באמצעות</string>
+    <string name="title_login">התחברות ל‑Reddit</string>
+    <string name="title_multireddits">מולטירדיטים</string>
+    <string name="title_users">משתמשים</string>
+    <string name="title_inbox">דואר נכנס</string>
+    <string name="title_theme_settings">ערכת נושא</string>
+    <string name="title_create_multi">יצירת מולטירדיט</string>
+
     <!-- Offline mode -->
+    <string name="offline_msg">התחברו לרשת ורעננו את הסאברדיט כדי לעשות זאת</string>
+    <string name="offline_last_update">עודכן לאחרונה %1$s</string>
+    <string name="offline_comments_not_loaded">חזרו למצב מקוון ובחרו ‘שמירת תגובות במטמון’ מתפריט שלוש הנקודות כדי לצפות בתגובות במצב לא מקוון</string>
+    <string name="offline_no_content_found">לא נמצא תוכן לא מקוון</string>
+    <string name="offline_enter_online">מעבר למצב מקוון</string>
+    <string name="offline_caching_title">שומר את %1$s במטמון</string>
+    <string name="offline_caching_complete">השמירה במטמון הושלמה</string>
+
     <!-- Website -->
+    <string name="website_external">פתיחה בדפדפן חיצוני</string>
+
+    <plurals name="reorder_subs_added">
+        <item quantity="one">נוסף סאברדיט אחד</item>
+        <item quantity="two">נוספו שני סאברדיטים</item>
+        <item quantity="other">נוספו %d סאברדיטים</item>
+    </plurals>
+
     <!-- Time -->
+    <string name="time_just_now">הרגע</string>
+    <plurals name="time_years">
+        <item quantity="one">שנה</item>
+        <item quantity="two">שנתיים</item>
+        <item quantity="other">%d שנים</item>
+    </plurals>
+    <plurals name="time_months">
+        <item quantity="one">חודש</item>
+        <item quantity="two">חודשיים</item>
+        <item quantity="other">%d חודשים</item>
+    </plurals>
+    <plurals name="time_days">
+        <item quantity="one">יום</item>
+        <item quantity="two">יומיים</item>
+        <item quantity="other">%d ימים</item>
+    </plurals>
+    <plurals name="time_hours">
+        <item quantity="one">שעה</item>
+        <item quantity="two">שעתיים</item>
+        <item quantity="other">%d שעות</item>
+    </plurals>
+    <plurals name="time_minutes">
+        <item quantity="one">דקה</item>
+        <item quantity="two">שתי דקות</item>
+        <item quantity="other">%d דקות</item>
+    </plurals>
+    <plurals name="time_seconds">
+        <item quantity="one">שנייה</item>
+        <item quantity="two">שתי שניות</item>
+        <item quantity="other">%d שניות</item>
+    </plurals>
+
     <!-- Time: shorthand durations for example 1 hour → 1h -->
+    <string name="time_years_short">%dש</string>
+    <string name="time_days_short">%dי</string>
+    <string name="time_hours_short">%dש׳</string>
+    <string name="time_minutes_short">%dד</string>
+
     <!-- Strings present during the login process -->
+    <string name="login_subscribe_rslideforreddit">להירשם ל‑/r/slidereddit?</string>
+    <string name="login_subscribe_rslideforreddit_desc">האם תרצו להירשם ל‑/r/slidereddit לקבלת חדשות ולדיווח על בעיות?</string>
+    <string name="login_sync_colors">לסנכרן צבעים עכשיו?</string>
+    <string name="login_sync_colors_desc">האם תרצו לסנכרן עכשיו את צבעי הסאברדיטים שלכם? ניתן לעשות זאת מאוחר יותר בהגדרות → ערכות נושא לסאברדיטים</string>
+    <string name="login_authenticating">‏Slide מבצע אימות</string>
+    <string name="login_starting">מכין הכל!</string>
+    <string name="login_starting_desc">זה ייקח רק רגע…</string>
+
     <!-- Over 18 prompt when visiting a NSFW subreddit -->
-    <!-- Subreddit color synchronization - https://redd.it/41054l -->
+    <string name="over18_title">‏/r/%1$s מכיל תוכן למבוגרים</string>
+    <string name="over18_desc">האם אתם מעל גיל שמונה עשרה ומעוניינים לראות תוכן למבוגרים?</string>
+    <string name="over18_desc_loggedout">התחברו כדי לכבות את האזהרה הזו לצמיתות</string>
+    <string name="over18_desc_loggedin">ניתן לכבות זאת לצמיתות בהגדרות → העדפות Reddit → הצגת תוכן NSFW</string>
+
+    <!-- Subreddit color synchronization - https://reddit.com/comments/41054l -->
+    <string name="color_sync_complete">הסנכרון הושלם</string>
+    <plurals name="color_sync_colored">
+        <item quantity="one">נצבע סאברדיט אחד</item>
+        <item quantity="two">נצבעו שני סאברדיטים</item>
+        <item quantity="other">נצבעו %d סאברדיטים</item>
+    </plurals>
+
     <!-- Discover section: find -->
+    <string name="discover_title">גילוי</string>
+    <string name="discover_search">מונח חיפוש או נושא</string>
+    <string name="discover_popular">פופולרי</string>
+    <string name="discover_trending">מובילים</string>
+
     <!-- Subreddit post notifications -->
+    <string name="sub_post_notifs_title">לקבל התראות על פוסטים חדשים ב‑\n/r/%1$s?</string>
+    <string name="sub_post_notifs_title_settings">לקבל התראות על פוסטים חדשים?</string>
+    <string name="sub_post_notify">התראה</string>
+    <string name="sub_post_notifs_threshold">סף ניקוד</string>
+    <string name="sub_post_notifs_err">ניתן להוסיף התראות לסאברדיטים בודדים בלבד</string>
+    <string name="sub_post_notifs_settings_none">אין סאברדיטים להתראה</string>
+    <string name="sub_post_notifs_settings_search">חיפוש שם סאב</string>
+    <string name="sub_post_notifs_notification_title">פוסט חדש ב‑/r/%1$s</string>
+    <string name="sub_post_notifs_notification_btn">הפסקת מעקב אחרי /r/%1$s</string>
+    <string name="title_sub_post_notifs">התראות על פוסטים בסאברדיט</string>
+
     <!-- Internal browser -->
+    <string name="internal_browser_extracting_error">מצטערים, לא ניתן היה לחלץ את הכתבה</string>
+    <string name="internal_browser_storecookies">שמירת קובצי Cookie של אתרים</string>
+    <string name="internal_browser_readermode">מצב קריאה</string>
+
     <!-- Live thread -->
+    <string name="livethread_loading_title">טוען שרשור חי…</string>
+    <string name="livethread_not_found">השרשור החי לא נמצא</string>
+    <string name="livethread_recents_title">שרשור חי: %1$s</string>
+
     <!-- Used when viewing media -->
+    <string name="mediaview_notif_title">מוריד תמונה…</string>
+    <string name="mediaview_notif_video">מוריד סרטון…</string>
+    <string name="mediaview_notif_text">ההורדה מתבצעת</string>
+    <string name="mediaview_save">שמירת %1$s</string>
+    <string name="mediaview_saving">שומר את %1$s</string>
+
     <!-- Drafts -->
+    <string name="choose_draft">בחרו טיוטה</string>
+    <string name="dialog_no_drafts">אין עדיין טיוטות</string>
+    <string name="dialog_no_drafts_msg">ניתן להוסיף טיוטה בלחיצה על סמל ה\'שמירה\' בסרגל העריכה!</string>
+    <string name="msg_save_draft">ההודעה נשמרה כטיוטה</string>
+    <string name="manage_drafts">ניהול הטיוטות</string>
+    <string name="really_delete_drafts">באמת למחוק את הטיוטות האלה?</string>
+
     <!-- Strings for widgets -->
+    <string name="widget_theme_dark">כהה</string>
+    <string name="widget_theme_light">בהיר</string>
+    <string name="widget_theme_clear">שקוף</string>
+    <string name="widget_posttype_title">סוג הפוסט</string>
+    <string name="widget_posttype_list">רשימה</string>
+    <string name="widget_posttype_bigpic">תמונה גדולה</string>
+    <string name="widget_posttype_compact">קומפקטי</string>
+    <string name="widget_subname_hint">שם הסאברדיט</string>
+    <string name="widget_visuals">מראה</string>
+    <string name="widget_content">תוכן</string>
+    <string name="widget_loading">טוען…</string>
+    <string name="widget_creation_title">ווידג\'ט חדש</string>
+    <string name="shortcut_creation_title">קיצור דרך חדש</string>
+
     <!-- Strings for alert dialogs -->
+    <string name="force_change_subscription">לא ניתן היה לשנות את המנוי</string>
+    <string name="force_change_subscription_desc">האם עדיין תרצו לשנות אותו מקומית?</string>
+    <string name="never_load_images">לא לטעון תמונות כלל</string>
+    <string name="load_low_quality">טעינת תמונות באיכות נמוכה (עד 320x320)</string>
+    <string name="load_medium_quality">טעינת תמונות באיכות בינונית (עד 640x640)</string>
+    <string name="load_high_quality">טעינת תמונות באיכות גבוהה (עד 1080x1080)</string>
+    <string name="choose_color_title">בחרו צבע</string>
+    <string name="enter_text_to_filter_click_enter_to_add">הזינו טקסט לחיפוש, הקישו Enter כדי להוסיף מסנן</string>
+    <string name="mode_desktop_compact">שולחן עבודה קומפקטי</string>
+    <string name="show_content_type_text_beside_links">הצגת טקסט סוג התוכן לצד הקישורים</string>
+    <string name="comment_shadowbox">‏Shadowbox לתגובות</string>
+
     <!-- Sidebar strings (multis, flairs) -->
+    <string name="sidebar_select_flair">בחירת תגית</string>
+    <string name="sidebar_select_flair_text">הגדרת טקסט התגית</string>
+    <string name="sidebar_findingmods">מחפש מנהלים</string>
+    <string name="snackbar_flair_success">התגית הוגדרה בהצלחה</string>
+    <string name="snackbar_flair_error">שגיאה בהגדרת התגית, נסו שוב בקרוב</string>
+    <string name="sidebar_submods">מנהלי /r/%s</string>
+    <string name="sidebar_flair">תגית: %1$s</string>
+    <string name="sidebar_notfound">לא נמצא סרגל צד</string>
+    <plurals name="reorder_selected">
+        <item quantity="one">"נבחר אחד"</item>
+        <item quantity="two">"נבחרו שניים"</item>
+        <item quantity="other">"נבחרו %d"</item>
+    </plurals>
+
     <!--Filtering dialog -->
+    <string name="filter_title">מה תרצו לסנן?</string>
+    <string name="filter_posts_sub">פוסטים מ‑/r/%1$s</string>
+    <string name="filter_posts_user">פוסטים של /u/%1$s</string>
+    <string name="filter_posts_urls">פוסטים המקשרים אל %1$s</string>
+    <string name="filter_open_externally">פתיחת קישורי %s באופן חיצוני</string>
+    <string name="filter_posts_flair">תגית \"%1$s\" מ‑%2$s</string>
+    <string name="filter_btn">סינון</string>
+
     <!-- Caching -->
+    <string name="cache_no_comments_found">לא נמצאו תגובות</string>
+    <string name="cache_no_comments_found_snackbar">לא נמצאו תגובות שמורות במטמון</string>
+    <string name="cache_no_comments_found_message">לפוסט הזה אין תגובות שמורות במטמון. כדי לשמור תגובות במטמון בעתיד, לחצו על תפריט שלוש הנקודות במסך הראשי ובחרו \'שמירת תגובות במטמון\', או הגדירו שמירה אוטומטית בלשונית התוכן הלא מקוון במגירת הניווט</string>
+    <string name="autocache_subreddits">סאברדיטים לשמירה אוטומטית</string>
+    <string name="autocache_time">שעת השמירה האוטומטית</string>
+    <string name="cache_subreddits_now">שמירת סאברדיטים במטמון עכשיו</string>
+    <string name="cache_wifi_only">שמירה במטמון רק ב‑Wi‑Fi</string>
+    <string name="comments_depth">עומק התגובות לשמירה במטמון</string>
+    <string name="comments_count">מספר התגובות לשמירה במטמון</string>
+
     <!-- Saving location setting -->
+    <string name="set_save_location">הגדרת מיקום שמירת המדיה</string>
+    <string name="set_save_location_msg">מיקום שמירת המדיה של Slide לא הוגדר.</string>
+
     <!-- Report flow -->
     <string name="btn_report">דיווח</string>
+    <string name="report_post">דיווח על הפוסט</string>
+    <string name="report_comment">דיווח על התגובה</string>
+    <string name="report_loading">טוען סיבות…</string>
+    <string name="report_sub_rules">כללי /r/%s</string>
+    <string name="report_site_rules">כללי Reddit</string>
+    <string name="report_another_reason">סיבה אחרת</string>
+    <string name="report_other">אחר</string>
+    <string name="input_reason_for_report">סיבת הדיווח</string>
+    <string name="msg_report_sent">הדיווח נשלח</string>
+
     <!-- Unsorted ¯\\_(ツ)_/¯ -->
+    <string name="comment_load_more_number_unknown">טעינת תגובות נוספות</string>
+    <string name="card_right_thumb">תמונה ממוזערת מיושרת לימין</string>
+    <string name="setting_filter_subreddits">מסנני סאברדיטים</string>
+    <string name="subreddit_theme">ערכת נושא לסאברדיט</string>
+    <string name="dialog_choose_subreddits_to_edit">בחרו סאברדיטים לעריכה</string>
+    <string name="dialog_color_sync_title">סנכרון צבעים</string>
+    <string name="dialog_color_sync_message">פעולה זו תנסה לאחזר את ‘צבע המפתח’ של הסאברדיט שהוגדר על ידי המנהלים. היא לא תדרוס סאברדיטים שכבר נצבעו.</string>
+    <string name="fab_hide">הסתרת פוסטים שנצפו</string>
+    <string name="fab_create">יצירת פוסט חדש</string>
+    <string name="fab_disabled">מושבת</string>
+    <string name="fab_search">חיפוש פוסטים</string>
+    <string name="handling_internal_browser">דפדפן פנימי</string>
+    <string name="handling_external_browser">דפדפן חיצוני</string>
+    <string name="mode_list">רשימה</string>
+    <string name="mode_centered">כרטיס עם תמונה במרכז</string>
+    <string name="mode_card">כרטיס</string>
+    <string name="mode_thumbnail">תמונה ממוזערת</string>
+    <string name="mode_no_thumbnails">ללא תמונה ממוזערת</string>
+    <string name="mode_big_thumbnails">תמונות ממוזערות רחבות</string>
+    <string name="mode_cropped">תמונה גדולה חתוכה</string>
+    <string name="mode_letterbox">תמונה גדולה עם פסים</string>
+    <string name="mode_bigpic">תמונה גדולה</string>
+    <string name="press_actionbar">לחצו על החץ כדי להציג את סרגל הפעולות</string>
+    <string name="show_top_right">הצגה בפינה הימנית העליונה</string>
+    <string name="show_bottom_right">הצגה בפינה הימנית התחתונה</string>
+    <string name="small_tag_disabled">מושבת</string>
+    <string name="tap_actionbar">לחיצה ארוכה לסרגל הפעולות</string>
+    <string name="always_actionbar">תמיד להציג את סרגל הפעולות</string>
+    <string name="sub_content_filter">מסנן תוכן הסאברדיט</string>
+    <string name="submission_share_reddit_url">שיתוף התגובות</string>
+    <string name="filter_content">סינון התוכן הזה</string>
+    <string name="content_to_show">תוכן להצגה ב‑%1$s</string>
+    <string name="save_for_offline_viewing">שמירת פוסטים לצפייה לא מקוונת</string>
+    <string name="btn_collapse_children_all">כיווץ תגובות המשנה</string>
+    <string name="btn_open_content">פתיחת התוכן</string>
+    <string name="enter_text_to_filter_click_enter_to_add_flair">הזינו טקסט לסינון (subreddit:flair_text), הקישו Enter כדי להוסיף</string>
+    <plurals name="filter_count">
+        <item quantity="one">מסנן אחד (%2$d מוצגים לכל היותר)</item>
+        <item quantity="two">שני מסננים (%2$d מוצגים לכל היותר)</item>
+        <item quantity="other">%1$d מסננים (%2$d מוצגים לכל היותר)</item>
+    </plurals>
+    <string name="filter_limit_reached">מוצגים %1$d הראשונים מתוך %2$d. חפשו כדי לצמצם את התוצאות.</string>
+    <string name="datasave_always">נתונים סלולריים ו‑Wi‑Fi</string>
+    <string name="datasave_mobile">נתונים סלולריים</string>
+    <string name="never">לעולם לא</string>
+    <string name="multi_column_force_full">אילוץ תצוגת תגובות מלאה</string>
+    <string name="submission_info_locked">זהו פוסט נעול. לא תוכלו להגיב.</string>
+    <string name="card_background_tint">רקע הכרטיס</string>
+    <string name="subreddit_name_tint">שם הסאברדיט</string>
+    <string name="login_failed_err_decline">ודאו שלא בחרתם ‘דחייה’ במסך הקודם, ונסו שוב בעוד דקה</string>
+    <string name="login_unsupported_redirect_uri">כתובת ההפניה שהוגדרה (%1$s) אינה יכולה להתקבל על ידי דפדפן, ולכן לא ניתן להשלים את ההתחברות. השתמשו בהתחברות דרך WebView בתוך האפליקציה, או הגדירו כתובת הפניה נתמכת בהגדרות.</string>
+    <string name="login_unsupported_redirect_uri_title">ההתחברות נכשלה</string>
+    <string name="login_failed_oauth_error_page">ההתחברות נכשלה — ‏Reddit החזיר שגיאה במקום להשלים את ההתחברות. בדקו את מזהה הלקוח וכתובת ההפניה בהגדרות.</string>
+    <string name="tutorial_swipe_navigation">ניווט בהחלקה</string>
+    <string name="tutorial_swipe_description">החליקו מהקצה השמאלי כדי לצאת.\n\nזה חל על תמונות, קובצי GIF, אלבומים, הגדרות ועוד!</string>
+    <string name="handling_browser">דפדפן אינטרנט</string>
+    <string name="submit_replies_to_inbox">שליחת תגובות לדואר הנכנס</string>
+    <string name="btn_open_comments">פתיחת התגובות</string>
+    <string name="btn_preview">תצוגה מקדימה</string>
+    <string name="default_comment_sort">מיון ברירת מחדל לתגובות</string>
+    <string name="content_deleted">[נמחק]</string>
+    <string name="thread_continue">המשך השרשור הזה</string>
+    <string name="type_selftext">פוסט טקסט</string>
+    <string name="type_selftexts">פוסטי טקסט</string>
+    <string name="submission_unhide">ביטול הסתרת הפוסט</string>
+    <string name="submission_info_unhidden">הסתרת הפוסט בוטלה</string>
+    <string name="msg_sent_success">ההודעה נשלחה</string>
+    <string name="msg_sent_failure">שליחת ההודעה נכשלה</string>
+    <string name="msg_send_user_dne">המשתמש הזה אינו קיים</string>
+    <string name="editor_actions_quote_comment">בחרו את הטקסט לציטוט</string>
+    <string name="guest">אורח</string>
+    <string name="album_slide_view">תצוגת אלבום מחליקה</string>
+    <string name="album_grid">רשת אלבום</string>
+    <string name="open_externally">פתיחה באופן חיצוני</string>
+    <string name="vertical_album_view">תצוגת אלבום אנכית</string>
+    <string name="download_album">הורדת האלבום</string>
+    <string name="download_gallery">הורדת הגלריה</string>
+    <string name="compose_message">כתיבת הודעה</string>
+    <string name="mark_all_as_read">סימון הכל כנקרא</string>
+    <string name="clear_subreddit_history">ניקוי היסטוריית הסאברדיטים</string>
+    <string name="clear_submission_history">ניקוי היסטוריית הפוסטים</string>
+    <string name="alert_history_cleared">ההיסטוריה נוקתה!</string>
+    <string name="manage_offline_content">ניהול תוכן לא מקוון</string>
+    <string name="go_offline">מעבר למצב לא מקוון</string>
+    <string name="sidebar_edit_flair">עריכת התגית שלכם</string>
+    <string name="go_online_view_content">התחברו לרשת כדי לצפות בתוכן הזה</string>
+    <string name="help">עזרה</string>
+    <string name="upvote_percentage">הצגת אחוז ההצבעות בעד</string>
+    <string name="view_subreddits">הצגת הסאברדיטים</string>
+    <string name="clear_saved_subreddits">ניקוי כל הסאברדיטים השמורים</string>
+    <string name="download_the_slide_video_player_plugin">הורדת התוסף Slide Video Player</string>
+    <string name="btn_suggest_title">הצעת כותרת</string>
+    <string name="navigate_comments_since">תגובות חדשות מ‑…</string>
+    <string name="btn_offline">מעבר למצב לא מקוון</string>
+    <string name="discard_comment_title">לבטל את התגובה?</string>
+    <string name="comment_discard_msg">האם באמת ברצונך לבטל את התגובה שלך?</string>
+    <string name="backup_saved_downloads">הגיבוי נשמר בהורדות</string>
+    <string name="really_remove_subreddit_title">באמת להסיר את הסאברדיט הזה?</string>
+    <string name="choose_sync_time">בחרו שעת סנכרון</string>
+    <string name="account_suspended">החשבון הזה מושעה</string>
+    <string name="clear_all_sub_themes">לנקות את כל ערכות הנושא של הסאברדיטים?</string>
+    <string name="clear_all_sub_themes_msg">לא ניתן לבטל את הפעולה הזו</string>
+    <string name="title_not_found">הכותרת לא נמצאה</string>
+    <string name="really_delete_submission">באמת למחוק את הפוסט הזה? לא ניתן לבטל זאת</string>
+    <string name="comment_unstickied">הצמדת התגובה בוטלה</string>
+    <string name="comment_stickied">התגובה הוצמדה</string>
+    <string name="comment_undistinguished">הבלטת התגובה בוטלה</string>
+    <string name="comment_distinguished">התגובה הובלטה</string>
+    <string name="comment_removed">התגובה הוסרה</string>
+    <string name="set_nav_mode">הגדרת מצב ניווט</string>
+    <string name="auto_hide_the_comment_nav_bar">הסתרה אוטומטית של סרגל ניווט התגובות</string>
+    <string name="rate_slide">דירוג Slide</string>
+    <string name="edit_query">עריכת השאילתה</string>
+    <string name="share_slide">שיתוף Slide</string>
+    <string name="open_clipboard_reddit_link">פתיחת קישור ה‑Reddit שבלוח</string>
+    <string name="clipboard_no_reddit_link">אין קישור Reddit בלוח</string>
+    <string name="open_links_externally">תמיד לפתוח את המארח הזה באופן חיצוני</string>
+    <string name="hide_read_posts">הסתרת פוסטים שנקראו</string>
+    <string name="gallery_mode">מצב גלריה</string>
+    <string name="settings_gallery_grid">הצגת פוסטי גלריה כרשת</string>
+    <string name="gallery_grid_image">תמונת גלריה %1$d מתוך %2$d</string>
+    <string name="gallery_grid_overflow">+%1$d</string>
+    <string name="friends_sort_error">לא ניתן למיין את /r/friends</string>
+    <string name="shadowbox_comments_nolinks">לא נמצאו קישורים בתגובות</string>
+    <string name="draw_undo">ביטול</string>
+    <string name="empty_preview_text">אין כאן כלום ¯\\_(ツ)_/¯</string>
+    <string name="theme_red_shift">הסטה לאדום</string>
+    <string name="view_sub_sidebar">הצגת סרגל הצד של הסאב</string>
+    <string name="mod_log">יומן הניהול</string>
+    <string name="navigation_bar_vote_gestures">מחוות הצבעה בסרגל הניווט</string>
+    <string name="nav_gestures_description">הצביעו בעד ונגד בהחלקה על חצי ניווט התגובות</string>
+    <string name="subreddit_sidebar_progress">מביא את סרגל הצד…</string>
+    <string name="manage_your_subreddits">ניהול הסאברדיטים שלכם</string>
+    <string name="enlarge_links">הגדלת הקישורים</string>
+    <string name="enlarge_links_warning">עלול לגרום לכך שחלק מהשורות יהיו גדולות מאחרות, אך מקל על הקשה על קישורים</string>
+    <string name="type_tumblr">Tumblr</string>
+    <string name="type_tumblrs">פוסטי Tumblr</string>
+    <string name="type_nsfw_tumblr">‏Tumblr‏ NSFW</string>
+    <string name="submission_info_contest">השרשור הזה נמצא במצב תחרות. לא ניתן לשנות את המיון.</string>
+    <string name="sub_post_notifs_msg">‏Slide יבדוק פוסטים חדשים כשהוא בודק דואר (יש להפעיל התראות דואר)</string>
+    <string name="mod_ban_reason_required">חובה לציין סיבה</string>
+    <string name="settings_abbreviate_post_scores">קיצור ניקוד הפוסטים (לדוגמה 24.0k)</string>
+    <string name="settings_wide_depth_indicators">מחווני עומק תגובות רחבים</string>
+    <string name="settings_link_reader_mode_title">שימוש במצב קריאה</string>
+    <string name="settings_link_reader_mode_description">פתיחת כל הקישורים במצב קריאה. סוג הדפדפן ישמש בעת פתיחה ממצב קריאה.</string>
+    <string name="settings_link_reader_night">קישור בין מצב קריאה למצב לילה</string>
+    <string name="theme_pixel">Pixel</string>
+    <string name="save_images_to_subreddit_specific_subfolders">שמירת תמונות בתיקיות משנה לפי סאברדיט</string>
+    <string name="description_save_subfolders">פועל בתצוגות הפוסטים והתגובות</string>
+    <string name="save_media_to_type_specific_subfolders">שמירת מדיה בתיקיות משנה לפי סוג</string>
+    <string name="description_save_type_subfolders">תמונות נשמרות ב‑\"images\", סרטונים וקובצי GIF ב‑\"videos\"</string>
+    <string name="show_image_download_button">קיצור דרך להורדה</string>
+    <string name="description_image_download_button">הצגת כפתור ההורדה במציג התמונות</string>
+    <string name="content_settings">הגדרות תוכן</string>
+    <string name="setting_titleTop">הצגת הכותרת מעל שורת המידע</string>
+    <string name="setting_notification_piggybacking">ניצול התראות Reddit</string>
+    <string name="setting_notification_piggybacking_desc">בדיקת דואר רק כשאפליקציית Reddit הרשמית מקבלת התראת דחיפה</string>
+    <string name="install_notif_piggyback">התקינו את אפליקציית Reddit הרשמית כדי להפעיל את ניצול ההתראות</string>
+    <string name="success_block_user">המשתמש נחסם בהצלחה</string>
+    <string name="err_unblock_user">שגיאה בביטול חסימת המשתמש</string>
+    <string name="success_unblock_user">חסימת המשתמש בוטלה בהצלחה</string>
+    <string name="settings_highlight_time_desc">דורש שהאפשרות \'הצגת מספר התגובות מאז הביקור האחרון\' תהיה פעילה בהגדרות &gt; פריסת הפוסטים</string>
+    <string name="settings_colored_time">בועת זמן צבעונית לתגובות חדשות</string>
+    <string name="theme_deep">עמוק</string>
+    <string name="type_vreddit">סרטון Reddit</string>
+    <string name="authors_above">המחברים למעלה</string>
+    <string name="btn_crosspost">פרסום צולב</string>
+    <string name="btn_reset_color">איפוס הצבע</string>
+    <string name="settings_shortlink_description">קישורים ישותפו בפורמט \'https://reddit.com/comments/\'</string>
+    <string name="settings_shortlink">שיתוף קישור Reddit מקוצר כשהדבר אפשרי</string>
+    <string name="disable_replies_comment">השבתת תגובות לדואר הנכנס עבור התגובה</string>
+    <string name="replies_disabled_comment">התגובות לתגובה הושבתו</string>
+    <string name="replies_enabled_comment">התגובות לתגובה הופעלו</string>
+    <string name="replies_switch_accounts">מעבר לחשבון אחר</string>
+    <string name="search_settings">חיפוש בהגדרות</string>
+    <string name="show_collapse_expand_nav_bar">הצגת כפתור כיווץ/הרחבה בסרגל ניווט התגובות</string>
+    <string name="page_not_found">הדף לא נמצא</string>
+    <string name="page_does_not_exist">הדף שביקשתם אינו קיים</string>
+    <string name="back_button_behavior_goto_first">מעבר לסאברדיט הראשון</string>
+    <string name="settings_hide_post_awards">הסתרת פרסים</string>
+    <string name="settings_hide_comment_awards">הסתרת פרסים</string>
+    <string name="settings_title_markdown">Markdown</string>
+    <string name="settings_markdown_new_reddit">‏Markdown בסגנון Reddit החדש</string>
+    <string name="settings_markdown_new_reddit_desc">מציג בלוקי קוד ועיצוב כמו Reddit החדש (כשמכובה נעשה שימוש במנוע של Reddit הישן)</string>
+    <string name="comment_render_other">הצגת התצוגה האחרת</string>
+    <string name="recover_post">שחזור הפוסט</string>
+    <string name="recover_loading">מביא את המקור מהארכיון…</string>
+    <string name="recover_post_failed">לא ניתן היה לשחזר את הפוסט הזה</string>
+    <string name="recover_comment">שחזור התגובה</string>
+    <string name="recover_comment_failed">לא ניתן היה לשחזר את התגובה הזו</string>
+    <string name="markdown_preview_new_reddit">תצוגת Reddit החדש</string>
+    <string name="markdown_preview_old_reddit">תצוגת Reddit הישן</string>
+    <string name="high_colorspace_images">תמונות במרחב צבעים רחב</string>
+    <string name="description_high_colorspace">טוען את מרחב הצבעים המלא של התמונות, מה שעלול להגדיל את צריכת הזיכרון</string>
+    <string name="wide_color_gamut">מנעד צבעים רחב</string>
+    <string name="description_wide_color_gamut">מציג את מציגי המדיה במנעד צבעים רחב. עלול להחוויר צבעים בחלק ממסכי OLED</string>
+    <string name="comment_emote_animation">הנפשת אימוג\'ים בתגובות</string>
+    <string name="description_comment_emote_animation">קובע אם אימוג\'ים שאינם מ‑Giphy מונפשים בתגובות</string>
+    <string name="comment_image_size">גודל התמונות בתגובות</string>
+    <string name="description_comment_image_size">באיזה גודל מוצגות תמונות מוטמעות בתגובות</string>
+    <string name="comment_image_size_small">קטן</string>
+    <string name="comment_image_size_medium">בינוני</string>
+    <string name="comment_image_size_large">גדול</string>
+    <string name="no_preview_image_longclick">ללא לחיצות ארוכות על תמונות תצוגה מקדימה מכל סוג תוכן</string>
+    <string name="description_no_preview_image_longclick">קובע אם לחיצות ארוכות פועלות על תמונות תצוגה מקדימה מכל סוג תוכן. משבית את תכונת ההצצה לתוכן.</string>
+    <string name="editor_btn_select_flair">בחירת תגית</string>
+    <string name="submit_selected_flair">התגית שנבחרה: %s</string>
+    <string name="mediaview_downloading">מוריד תמונה&#8230;</string>
+    <string name="err_save_image">שגיאה בשמירת התמונה</string>
+    <string name="error_directory_not_selected">לא נבחרה תיקייה. נסו שוב.</string>
+
+    <!-- Backup Operations -->
+
+    <!-- Additional Backup Operations -->
+    <string name="select_backup_file">בחרו קובץ גיבוי</string>
+
+    <string name="read_later">לקריאה מאוחר יותר</string>
+    <string name="mark_as_read">סימון כנקרא</string>
+
+    <string name="reddit_client_id">מזהה הלקוח של Reddit</string>
+    <string name="click_custom_client_id">הקישו כדי להגדיר מזהה לקוח מותאם</string>
+    <string name="client_id_scan_qr">סריקת קוד QR</string>
+    <string name="client_id_scan_prompt">סרקו קוד QR המכיל את מזהה הלקוח שלכם ב‑Reddit</string>
+    <string name="camera_permission_denied">נדרשת הרשאת מצלמה כדי לסרוק קודי QR</string>
+    <string name="client_id_invalid_length">מזהה לקוח לא חוקי: חייב להיות באורך 22 תווים בדיוק</string>
+
+    <!-- Notification permission strings -->
+    <string name="notifications_permission_title">הפעלת התראות</string>
+    <string name="notifications_permission_message">‏Slide זקוק להרשאת התראות כדי ליידע אתכם על הודעות חדשות, פוסטים ועדכונים אחרים מ‑Reddit. תוכלו לנהל את הגדרות ההתראות מאוחר יותר.</string>
+    <string name="notification_listener_permission_title">הפעלת גישה להתראות</string>
+    <string name="notification_listener_permission_message">‏Slide זקוק לגישה להתראות כדי ליירט התראות של Reddit ולספק חוויה טובה יותר. הפעילו את הגישה להתראות עבור Slide במסך הבא.</string>
+
+
+    <string name="reddit_redirect_uri_override">דריסת כתובת ההפניה של Reddit</string>
+    <string name="click_custom_redirect_uri">הקישו כדי להגדיר כתובת הפניה מותאמת</string>
+    <string name="settings_reddit_redirect_uri_invalid">כתובת הפניה לא חוקית: חייבת להיות בצורה scheme://hostname</string>
+    <string name="reddit_user_agent_override">דריסת ה‑User Agent של Reddit</string>
+    <string name="click_custom_user_agent">הקישו כדי להגדיר User Agent מותאם</string>
+    <string name="settings_enable_overrides">הפעלת דריסות</string>
+    <string name="settings_enable_overrides_desc">השתמשו במזהה הלקוח, כתובת ההפניה וה‑User Agent המותאמים שלכם במקום בברירות המחדל של האפליקציה. השאירו כבוי אלא אם אתם יודעים שאתם זקוקים לכך.</string>
+
+    <string name="settings_section_sound">צליל</string>
+    <string name="settings_unmute_default">ביטול השתקת הסרטונים כברירת מחדל</string>
+
+    <string name="settings_subreddit_filter_prefix_matching">הפעלת התאמת קידומת במסנני הסאברדיטים</string>
+    <string name="settings_subreddit_filter_prefix_matching_description">הקידומת היא שם הסאברדיט המלא, ולפחות שישה תווים. דוגמאות: הסאברדיט social יחסום את socialanxiety. הסאברדיט pokemongo יחסום את pokemongoraids.</string>
+
+    <string name="settings_filter_old_posts">סינון פוסטים ישנים יותר מ‑</string>
+    <plurals name="settings_filter_old_posts_days">
+        <item quantity="one">יום אחד</item>
+        <item quantity="two">יומיים</item>
+        <item quantity="other">%1$d ימים</item>
+    </plurals>
+    <string name="settings_filter_old_posts_description">אינו חל בעת צפייה בסאברדיט בודד, או בעת מיון לפי Top או Controversial</string>
+
+    <!-- Pause on audio focus ducking setting -->
+    <string name="settings_pause_on_duck_title">השהיית הסרטון במקום הנמכת הקול</string>
+    <string name="settings_pause_on_duck_desc">משהה סרטונים כשאפליקציות אחרות מנגנות שמע. הנמכת קול פירושה הפחתת עוצמת הקול במקום השהיית הסרטון.</string>
+
+    <!-- Add this string resource for the play button content description -->
+    <string name="btn_play">הפעלה</string>
+
+    <string name="multireddit_name_title">שם המולטירדיט</string>
+    <string name="multireddit_name_hint">שם המולטירדיט</string>
+    <string name="multireddit_err_empty_name">שם המולטירדיט אינו יכול להיות ריק</string>
+    <string name="multireddit_err_no_valid_subs">לא נבחרו סאברדיטים תקינים. בחרו לפחות אחד.</string>
+    <string name="multireddit_progress_title">יוצר מולטירדיט</string>
+    <string name="multireddit_progress_message">המתינו בזמן שאנחנו יוצרים את המולטירדיט שלכם...</string>
+    <string name="multireddit_created_success">המולטירדיט נוצר בהצלחה</string>
+    <string name="multireddit_created_error">לא ניתן היה ליצור את המולטירדיט. נסו שוב.</string>
+    <string name="multireddit_json_error">אירעה שגיאה בעת הכנת נתוני המולטירדיט שלכם</string>
+
+    <string name="settings_dialog_colored_border">מסגרת צבעונית סביב תיבות הדו‑שיח</string>
+    <string name="settings_dialog_colored_border_desc">מציג מסגרת צבעונית דקה סביב חלק מתיבות הדו‑שיח.</string>
+
+    <string name="misc_err_sync_failed">לא ניתן היה לסנכרן את הסאברדיטים. אין מנויים?</string>
+
+    <string name="mod_btn_distinguish">הבלטה</string>
+    <string name="mod_btn_undistinguish">ביטול ההבלטה</string>
+
+    <string name="nsfw_status_removed">סימון ה‑NSFW הוסר</string>
+    <string name="nsfw_status_set">סימון ה‑NSFW הוגדר</string>
+
+    <string name="spoiler_status_removed">סימון הספוילר הוסר</string>
+    <string name="spoiler_status_set">סימון הספוילר הוגדר</string>
+
+    <string name="submission_distinguished">הפוסט הובלט</string>
+    <string name="submission_distinguished_removed">הבלטת הפוסט הוסרה</string>
+
+    <string name="settings_general_hide_subreddit_tabs">הסתרת לשוניות הסאברדיטים שנרשמתם אליהם</string>
+    <string name="settings_general_hide_subreddit_tabs_desc">מסתיר את הסאברדיטים שנרשמתם אליהם כלשוניות, אך משאיר את כפתורי הניווט</string>
+
+    <!-- Video playback speed control -->
+    <string name="video_speed">מהירות</string>
+    <string name="video_speed_0_25x">0.25x</string>
+    <string name="video_speed_0_5x">0.5x</string>
+    <string name="video_speed_0_75x">0.75x</string>
+    <string name="video_speed_1x">רגילה</string>
+    <string name="video_speed_1_25x">1.25x</string>
+    <string name="video_speed_1_5x">1.5x</string>
+    <string name="video_speed_2x">2x</string>
+    <string name="video_speed_control_content_desc">בקרת מהירות ההפעלה</string>
+    <string name="image_unavailable">התמונה אינה זמינה</string>
+    <string name="image_rotate_content_desc">סיבוב התמונה ב‑90 מעלות עם כיוון השעון</string>
+    <string name="image_rotate_left_content_desc">סיבוב התמונה ב‑90 מעלות נגד כיוון השעון</string>
+
+    <!-- Folder chooser dialog (formerly provided by afollestad material-dialogs commons) -->
+    <string name="md_error_label">שגיאה</string>
+    <string name="md_storage_perm_error">התכונה הזו דורשת הרשאת אחסון, שלא ניתנה.</string>
+    <string name="md_choose_label">בחירה</string>
+    <string name="new_folder">תיקייה חדשה</string>
 </resources>

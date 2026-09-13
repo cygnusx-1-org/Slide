@@ -5,9 +5,9 @@
     <string name="general_confirm_exit">تأكيد الخروج</string>
     <string name="general_confirm_exit_msg">هل تريد حقاً الخروج من سلايد؟</string>
     <string name="general_enable_shadowbox">نمط Shadowbox</string>
-    <string name="pro_upgrade_msg">يمكنك الترقية إلى Slide لـ Reddit Pro للاستمتاع ببعض الميزات الجديدة في تحقيق ذلك:\n\n- أداة حظر الإعلانات عرض القارئ في عرض موقع الويب \n- لاقتصاص والرسم على الصور لتحميل\n- وضع عمود لوحي قابل للتخصيص \n- الوضع الليلي التلقائي mode\n- Shadowbox and ومعارض المحتوى معرض \n- تعليق Shadowbox عرض\n- النسخ الاحتياطي والاستعادة إلى Google Drive والملف\n- دعم البرامج مفتوحة المصدر والبرامج الخالية من الإعلانات!\n\nهل ترغب في دعم Slide for Reddit؟?</string>
     <string name="general_open_settings">الشريط الجانبي</string>
     <string name="general_sub_sync">مزامنة الاشتراكات</string>
+
     <!-- Used when viewing a thread -->
     <string name="submission_info_unsaved">لم يتم حفظ البيانات</string>
     <string name="submission_info_saved">تم حفظ الادخال</string>
@@ -25,9 +25,9 @@
     <string name="submission_gild">فتح بالمتصفح</string>
     <string name="submission_save">حفظ المنشور</string>
     <string name="submission_save_image">احفظ الصورة</string>
+    <string name="submission_save_video">حفظ الفيديو</string>
     <string name="submission_load_full">فتح الموضوع بالكامل</string>
     <string name="submission_np_link">هذا هو رابط عدم المشاركة. يرجى عدم التصويت أو التعليق.</string>
-    <string name="submission_tap_gif">اضغط لتنزيل الـGIF</string>
     <string name="submission_not_found">أووه، لم يتم العثور على المنشور!</string>
     <string name="submission_not_found_msg">عذرًا، لا يمكن العثور على هذا المنشور</string>
     <string name="submission_copy_text">نسخ النص</string>
@@ -38,23 +38,37 @@
     <string name="submission_text_copied">تم نسخ الالنص الذاتي</string>
     <string name="submission_nocontent">تسليم ليس له محتوى</string>
     <string name="submission_link_copied">تم نسخ الرابط</string>
+    <string name="translate_with_google">ترجمة</string>
+    <string name="translate_no_app">لا يوجد تطبيق متاح للترجمة</string>
+    <string name="read_aloud">قراءة بصوت عالٍ</string>
+    <string name="read_aloud_unavailable">تحويل النص إلى كلام غير متاح</string>
     <string name="submission_removed">تسليم تمت إزالته</string>
+
+    <plurals name="new_messages">
+        <item quantity="zero">لا رسائل جديدة</item>
+        <item quantity="one">رسالة جديدة واحدة</item>
+        <item quantity="two">رسالتان جديدتان</item>
+        <item quantity="few">%d رسائل جديدة</item>
+        <item quantity="many">%d رسالة جديدة</item>
+        <item quantity="other">%d رسالة جديدة</item>
+    </plurals>
     <plurals name="points">
-        <item quantity="zero">0 نقاط</item>
-        <item quantity="one">1 نقاط</item>
-        <item quantity="two">2 نقاط</item>
-        <item quantity="few">قليل من النقاط</item>
-        <item quantity="many">كثير من النقاط</item>
-        <item quantity="other">نقاط اخرى</item>
+        <item quantity="zero">نقاط</item>
+        <item quantity="one">نقطة</item>
+        <item quantity="two">نقطتان</item>
+        <item quantity="few">نقاط</item>
+        <item quantity="many">نقطة</item>
+        <item quantity="other">نقطة</item>
     </plurals>
     <plurals name="comments">
-        <item quantity="zero">0 تعليقات</item>
-        <item quantity="one">1 تعليقات</item>
-        <item quantity="two">2 تعليقات</item>
-        <item quantity="few">قليل من التعليقات</item>
-        <item quantity="many">كثير من التعليقات</item>
-        <item quantity="other">تعليقات اخرى</item>
+        <item quantity="zero">تعليقات</item>
+        <item quantity="one">تعليق</item>
+        <item quantity="two">تعليقان</item>
+        <item quantity="few">تعليقات</item>
+        <item quantity="many">تعليق</item>
+        <item quantity="other">تعليق</item>
     </plurals>
+
     <!-- Theme settings -->
     <string name="theme_light">فاتح (ابيض)</string>
     <string name="theme_dark">غامق</string>
@@ -72,6 +86,7 @@
     <string name="theme_sepia">بني داكن</string>
     <string name="theme_amoled_contrast">AMOLED مع التباين</string>
     <string name="theme_night">موضوع الليلة</string>
+
     <!-- Font settings -->
     <string name="font_size_comment">حجم خط التعليق</string>
     <string name="font_size_post">حجم الخط المنشور</string>
@@ -82,13 +97,18 @@
     <string name="font_size_small">صغير</string>
     <string name="font_size_smaller">أصغر</string>
     <string name="font_size_tiny">صغير جدا</string>
+
     <!-- For editing the submission card layout -->
     <string name="card_hide_post_button">زر \"اخفاء البوست\" في شريط العمل</string>
     <string name="card_tint_outside">التظليل فقط خارج السب ريديت</string>
     <string name="card_save_button">زر حفظ البوست في شريط العمل</string>
+
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">متعدد الأعمدة</string>
+    <string name="multi_column_portrait_count">الأعمدة في الوضع الطولي</string>
+    <string name="multi_column_landscape_count">الأعمدة في الوضع العرضي</string>
     <string name="single_column_multi_window">عمود واحد في وضع متعدد النوافذ</string>
+
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">أنت</string>
     <string name="drawer_support">اشتر نسخة Pro</string>
@@ -96,18 +116,25 @@
     <string name="drawer_add_account">إضافة حساب</string>
     <string name="drawer_hello">مرحباً,</string>
     <string name="drawer_search">اذهب إلى سب ريديت</string>
+    <!-- Subreddit name when submitting/crossposting: a single subreddit only (no multireddit, no dot). -->
+    <!-- Message recipient: a username or an /r/ or /u/ path. -->
+    <!-- Settings search field. The trailing space is intentional, so the value is quoted to preserve it. -->
     <string name="drawer_moderation">الإشراف</string>
     <string name="drawer_offline">Slide غير متصل</string>
     <string name="drawer_offline_retry">حاول لدخول وضع على الإنترنت</string>
     <string name="drawer_guest_mode">تصفح كضيف</string>
+
     <!-- Sidebar items (That's the one on the right) -->
     <string name="sidebar_wiki">ويكي subreddit</string>
     <string name="sidebar_mods">المشرفون على Subreddit</string>
+
     <!-- User profile -->
+    <string name="profile_karma_total">إجمالي الكارما</string>
     <string name="profile_karma_link">Karma المنشور</string>
     <string name="profile_karma_comment">Karma التعلبق</string>
     <string name="profile_message">رسالة خاصة</string>
     <string name="profile_saved">تم الحفظ</string>
+    <string name="local_saved">المحفوظات المحلية</string>
     <string name="profile_read_later">اقرأ لاحقا</string>
     <string name="profile_upvoted">التصويت للأعلى</string>
     <string name="profile_err_title">لم يتم العثور على المستخدم</string>
@@ -121,6 +148,10 @@
     <string name="profile_friend">صديق</string>
     <string name="profile_add_friend">أضف كصديق</string>
     <string name="profile_remove_friend">حذف صديق</string>
+    <string name="profile_follow_user">متابعة</string>
+    <string name="profile_unfollow_user">إلغاء المتابعة</string>
+    <string name="profile_add_user">إضافة مستخدم</string>
+    <string name="profile_remove_user">إزالة المستخدم</string>
     <string name="profile_remove_account">هل ترغب حقًا في إزالة هذا الحساب؟</string>
     <string name="profile_remove">حذف الحساب</string>
     <string name="profile_history">السّجل</string>
@@ -133,22 +164,39 @@
     <string name="profile_btn_tag">ضع العلامة</string>
     <string name="profile_btn_untag">إزالة العلامة</string>
     <string name="profile_info">معلومات الملف الشخصي</string>
-    <string name="profile_block_user">مستخدم محضور</string>
+    <string name="profile_options">خيارات المستخدم</string>
+    <string name="profile_block_user">حظر المستخدم</string>
+    <string name="profile_block_user_description">يحظر رسائل المستخدم ومنشوراته وملفه الشخصي</string>
+    <string name="profile_unblock_user">إلغاء حظر المستخدم</string>
+    <string name="profile_unblock_user_description">يفتح رسائل المستخدم ومنشوراته وملفه الشخصي</string>
+    <string name="profile_search">بحث</string>
+    <string name="profile_search_title">البحث في %1$s</string>
+    <string name="profile_search_hint">ابحث في العناوين والنصوص…</string>
+    <string name="profile_search_no_results">لم يتم العثور على نتائج</string>
+    <string name="profile_search_clear">مسح البحث</string>
+    <string name="profile_search_cleared">تم مسح البحث</string>
+    <string name="profile_search_loading">جارٍ البحث…</string>
+    <string name="profile_search_progress">%1$d نتيجة · تم البحث في %2$d</string>
+    <string name="profile_search_bypass_cache">تجاوز ذاكرة التخزين المؤقت</string>
+
     <!-- Comment text options -->
+    <string name="comment_gild">مكافأة التعليق</string>
     <string name="comment_share">شارك التعليق</string>
     <string name="comment_delete">حذف التعليق</string>
     <string name="comment_delete_msg">هل تريد حذف هذا التعليق حقاً؟ وهذا لا يمكن التراجع عنه.</string>
     <string name="comment_delete_err">آه ، لقد حدث خطأ ما</string>
     <string name="comment_delete_err_msg">هل تود أن تجرب مجددا؟</string>
+    <string name="comment_deleted">[محذوف]</string>
     <string name="comment_unsave">لم يحفظ</string>
-    <string name="comment_load_more">حمِّل %1$d آخرين</string>
-    <string name="comment_load_more_string_new">حمِّل %1$s آخرين</string>
     <string name="comment_loading_more">يحمل تعليقات...</string>
     <string name="comment_permalink">حمِّل الرابط الثابت للتعليق</string>
     <string name="comment_parent">إعرض التعليق الأب</string>
+    <string name="comment_video_play">تشغيل الفيديو</string>
+
     <!-- Welcome view (first time setup) -->
     <string name="welcome_start">ابدأ الآن</string>
     <string name="welcome_personalize">خصص</string>
+
     <!-- Sorting options -->
     <string name="sorting_choose">اختر نوع الفرز</string>
     <string name="sorting_time_choose">اختر إطارا زمنيا</string>
@@ -159,6 +207,7 @@
     <string name="sorting_ama">س&amp;ج (أسألني أي شيء AMA)</string>
     <string name="sorting_new">جديد</string>
     <string name="sorting_old">قديم</string>
+    <string name="sorting_controversial">مثير للجدل</string>
     <string name="sorting_rising">صاعد</string>
     <string name="sorting_hour">ساعة</string>
     <string name="sorting_day">٢٤ ساعة</string>
@@ -166,6 +215,8 @@
     <string name="sorting_month">شهر</string>
     <string name="sorting_year">السنة</string>
     <string name="sorting_all">جميع الأوقات</string>
+    <string name="sorting_defaultfor">الافتراضي لـ /r/%1$s</string>
+
     <!-- Editor (save/submit a post) actions -->
     <string name="editor_url">الرابط</string>
     <string name="editor_text">النص</string>
@@ -174,16 +225,36 @@
     <string name="editor_title">عنوان</string>
     <string name="editor_err_msg">الرجاء المحاولة مرة أخرى في بضع ثوان.</string>
     <string name="editor_uploading_image">تحميل الصورة إلى Imgur</string>
-    <string name="editor_upload_image_question">تحميل الصورة إلى Imgur؟</string>
+    <string name="editor_upload_image_title">رفع صورة</string>
+    <string name="editor_upload_reddit">Reddit (صورة مضمّنة)</string>
+    <string name="editor_upload_imgur">Imgur (رابط)</string>
+    <string name="editor_uploading_reddit">جارٍ رفع الصورة إلى Reddit</string>
+    <string name="editor_reddit_upload_success">تم رفع الصورة</string>
+    <string name="editor_reddit_upload_failed">فشل رفع الصورة</string>
+    <string name="submit_image_host_imgur">Imgur</string>
+    <string name="submit_image_host_reddit">Reddit</string>
+    <string name="submit_change_img">تغيير الصورة</string>
+    <string name="submit_select_gallery">إضافة صور</string>
+    <string name="submit_gallery_caption_hint">تعليق توضيحي (اختياري)</string>
+    <string name="submit_gallery_count">تم تحديد %1$d</string>
+    <string name="submit_uploading_gallery">جارٍ رفع الصورة %1$d من %2$d</string>
     <string name="editor_select_img">قم بأختيار صورة</string>
     <string name="editor_hint_optional_body">الجسم (اختياري)</string>
     <string name="editor_submit">أرسِل المنشورة</string>
     <string name="editor_hint_subreddit">ريدّت فرعي</string>
+    <string name="editor_finding_title">جارٍ البحث عن العنوان</string>
+    <string name="submit_findingflairs">جارٍ البحث عن الوسوم</string>
+    <string name="submit_flairchoices">وسوم /r/%s</string>
+
     <string name="edit_selftext">حرر النص</string>
+    <string name="delete_submission">حذف المنشور</string>
+    <string name="set_submission_flair">تعيين وسم المنشور</string>
+
     <!-- Editor buttons -->
     <string name="editor_save_draft">أحفظ كمسودة</string>
     <string name="editor_chose_draft">اختر مسودة</string>
     <string name="editor_insert_image">إرفاق صورة</string>
+    <string name="editor_draw">إدراج صورة والرسم عليها</string>
     <string name="editor_link">إضافة رابط</string>
     <string name="editor_bold">عريض</string>
     <string name="editor_italics">مائل</string>
@@ -193,33 +264,52 @@
     <string name="editor_num_list">قائمة مرقّمة</string>
     <string name="editor_size">نص كبير</string>
     <string name="editor_strike">شطب</string>
+    <string name="editor_spoiler">حرق الأحداث</string>
+
     <!-- General information / information without a category -->
     <string name="info_photo_saved">حُفظت الصورة</string>
     <string name="gif_saved">حفظت ال GIF</string>
+
     <!-- General errors / errors without a category -->
     <string name="err_title">حدث خطأ!</string>
     <string name="err_invalid_url">الرابط غير صالح</string>
     <string name="err_loading_content">خطأ في تحميل المحتوى</string>
     <string name="err_general">حدث خطأ!</string>
     <string name="err_no_connection">تعذر الوصول إلى ريديت. هل ترغب في إعادة المحاولة؟</string>
+    <string name="err_no_connection_toast">تعذّر الوصول إلى Reddit. حاول مرة أخرى قريبًا</string>
     <string name="err_retry_later">إعادة المحاولة بعد دقيقة!</string>
-    <string name="err_permission">رُفض الإذن</string>
+    <string name="err_authentication">فشلت المصادقة</string>
+    <string name="err_submit_restricted">هذا السبريدت مقيّد</string>
+    <string name="err_submit_restricted_text">لا يُسمح لك بالنشر هنا. يرجى اختيار سبريدت آخر</string>
+    <string name="err_crosspost_disallowed_text">لا يسمح /r/%s بالنشر المتقاطع. يرجى اختيار سبريدت آخر.</string>
+    <string name="err_crosspost_not_subscribed">يجب أن تشترك في /r/%s قبل النشر المتقاطع.</string>
+    <string name="err_crosspost_sub_not_found">/r/%s غير موجود.</string>
+    <string name="crosspost_flair_required_short">الوسم مطلوب — يرجى اختيار وسم قبل النشر.</string>
     <string name="error_video_not_found">لم يتم العثور على الفيديو</string>
+    <string name="error_video_message">حدث خطأ أثناء تحميل هذا الفيديو</string>
+    <string name="error_album_not_found">لم يتم العثور على الألبوم</string>
+    <string name="error_album_not_found_text">هل ترغب في فتح الرابط في المتصفح؟</string>
+    <string name="err_comment_post_nosave_message">\nيرجى المحاولة مرة أخرى بعد دقيقة</string>
+    <string name="err_could_not_find_content_msg">تعذّر على Reddit العثور على المحتوى المطلوب</string>
+    <string name="err_refused_request_msg">رفض Reddit أحد الطلبات. هل ترغب في محاولة إعادة الاتصال بـ Reddit؟</string>
+    <string name="err_color_sync_login">يرجى تسجيل الدخول لاستخدام مزامنة الألوان</string>
     <string name="err_something_wrong">آه ، لقد حدث خطأ ما</string>
     <string name="err_couldnt_save_choose_new">لا يمكن حفظ لslide إلى الدليل المحدد. هل ترغب في اختيار موقع الحفظ جديدة؟</string>
     <string name="err_share_image">حدث خطأ أثناء مشاركة الصوره</string>
     <string name="err_file_not_found">لم يتم العثور على الملف</string>
-    <string name="err_not_valid_backup">ملف النسخ الاحتياطي لslide ليس صالحا</string>
-    <string name="err_not_valid_backup_msg">الملف المحدد ليس ملف نسخة احتياطية صالحة لslide</string>
     <string name="err_file_not_found_msg">تعذر العثور على الملف المحدد. الرجاء تأكد من وجوده وان slide لديه أذونات للوصول إلى هذا الملف/المجلد</string>
     <string name="err_comment_post">آه...، نشر هذا التعليق فشل!</string>
     <string name="err_comment_post_reason">السبب: %1$s</string>
     <string name="err_comment_post_message">تم حفظ الرسالة \n\nYour كمسودة. الرجاء المحاولة مرة أخرى لاحقاً.</string>
     <string name="err_connection_failed_msg">فشل الاتصال Reddit. الرجاء التحقق من اتصال الإنترنت الخاص بك وحاول مرة أخرى، أو الدخول في وضع دون اتصال.</string>
-    <string name="err_block_user">خطأ أثناء حظر المستخدم</string>
+    <string name="err_block_user">خطأ أثناء حظر المستخدم. هل ألغيت حظر هذا المستخدم مؤخرًا؟</string>
+
     <!-- Gif -->
     <string name="gif_err_title">لم يتم العثور على GIF</string>
     <string name="gif_err_msg">حدث خطأ عند تحميل ال GIF. الرجاء إعادة فتح GIF ثم أعد المحاولة.</string>
+    <string name="gif_load_failed">فشل تحميل صورة GIF</string>
+    <string name="gif_download_failed">فشل تنزيل صورة GIF</string>
+
     <!-- Multireddits -->
     <string name="multireddit_err_title">لا Multireddits (حتى الآن)!</string>
     <string name="multireddit_err_msg">هل ترغب في إنشاء Multireddit من جديد؟</string>
@@ -228,6 +318,7 @@
     <string name="multireddit_title_empty">العنوان لا يمكن أن يكون فارغاً</string>
     <string name="multireddit_title_empty_msg">الرجاء إدخال عنوان لMultireddit</string>
     <string name="multireddit_no_subs">لم تتم إضافة subreddits</string>
+    <string name="multireddit_save_err">عنوان هذا المالتي ريديت موجود بالفعل أو لا توجد مساحة لمزيد من السبريدتات هنا</string>
     <string name="multireddit_no_subs_msg">الرجاء إضافة بعض subreddits بالنقر علي زر +!</string>
     <string name="multireddit_selector">حدد subreddits لإضافة</string>
     <string name="multireddit_create_hint">اسم Multireddit</string>
@@ -239,7 +330,9 @@
     <string name="btn_import_multi">استيراد multireddit</string>
     <string name="multi_submit_which_sub">ما Sub التي ترغب في إرسالها إلى؟</string>
     <string name="multi_saved_successfully">تم الحفظ بنجاح</string>
-    <string name="delete_multireddit_title">هل أنت متأكد من رغبتك في حذف %s؟</string>
+    <string name="delete_multireddit_title">هل أنت متأكد من رغبتك في حذف %1$s؟</string>
+    <string name="multi_save_option">هل ترغب في حفظ هذا المالتي ريديت؟</string>
+
     <!-- Content types -->
     <string name="type_nsfw_img">صورة NSFW</string>
     <string name="type_nsfw_gif">GIF NSFW</string>
@@ -251,17 +344,37 @@
     <string name="type_album">ألبوم</string>
     <string name="type_xkcd">XKCD</string>
     <string name="type_nsfw_album">ألبوم غير صالح للعمل</string>
+    <string name="type_nsfw_gallery">معرض NSFW</string>
+    <string name="type_nsfw_albums">ألبومات NSFW</string>
+    <string name="type_nsfw_galleries">معارض NSFW</string>
+    <string name="type_nsfw_gifs">صور GIF بتصنيف NSFW</string>
+    <string name="type_nsfw_images">صور NSFW</string>
+    <string name="type_nsfw_links">روابط NSFW</string>
+    <string name="type_nsfw_selftexts">نصوص ذاتية NSFW</string>
+    <string name="type_nsfw_tumblrs">منشورات Tumblr بتصنيف NSFW</string>
+    <string name="type_nsfw_videos">مقاطع فيديو NSFW</string>
+    <string name="type_gallery">معرض</string>
+    <string name="type_galleries">معارض</string>
     <string name="type_img">صورة</string>
     <string name="type_videos">مقاطع فيديو</string>
     <string name="type_nsfw_video">فيديو غير صالح للعمل</string>
     <string name="type_imgur">محتوى Imgur</string>
     <string name="type_nsfw_imgur">محتوى Imgur غير صالح للعمل</string>
+    <string name="type_nsfw_xkcd">XKCD بتصنيف NSFW</string>
+    <string name="type_nsfw_deviantart">DeviantArt بتصنيف NSFW</string>
+    <string name="type_nsfw_title_only">منشور بعنوان فقط NSFW</string>
+    <string name="type_nsfw_reddit">رابط Reddit بتصنيف NSFW</string>
+    <string name="type_nsfw_selftext">نص ذاتي NSFW</string>
+    <string name="type_spoiler">حرق الأحداث</string>
+    <string name="type_nsfw_spoiler">حرق أحداث NSFW</string>
+    <string name="type_nsfw_streamable">Streamable بتصنيف NSFW</string>
     <string name="type_external">خارجي</string>
+
     <!-- Content types plural (Content filters) -->
     <string name="type_gifs">الصور المتحركة</string>
     <string name="type_albums">ألبومات</string>
-    <string name="type_nsfw_content">محتوى غير صالح للعمل</string>
     <string name="type_links">روابط</string>
+
     <!-- Inbox/mail -->
     <string name="mail_tab_inbox">صندوق الوارد</string>
     <string name="mail_tab_unread">لم يُقرأ بعد</string>
@@ -275,22 +388,83 @@
     <string name="mail_send_to">إرسال رسالة إلى %1$s</string>
     <string name="mail_send">أرسل رسالة</string>
     <string name="mail_notification_msg_from">رسالة جديدة من %1$s</string>
+    <string name="mail_notification_msg_via">رسالة جديدة عبر /r/%1$s</string>
+    <string name="mod_mail_notification_msg">بريد إشراف جديد من %1$s</string>
     <string name="mail_reply_to">الرد على %1$s</string>
     <string name="mail_notification_author">%1$s من %2$s</string>
+    <string name="mail_notification_subreddit">%1$s عبر /r/%2$s</string>
     <string name="mail_theirs">عرض الرسالة الخاصة بهم</string>
+    <string name="mail_re">رد: %1$s</string>
+    <string name="mail_mark_read">تعليم كمقروء</string>
+    <string name="mail_view_full_thread">عرض المحادثة كاملة</string>
+    <string name="mail_message_copied">تم نسخ الرسالة</string>
+    <plurals name="mail_notification_title">
+        <item quantity="zero">ليس لديك رسائل جديدة!</item>
+        <item quantity="one">لديك رسالة جديدة واحدة!</item>
+        <item quantity="two">لديك رسالتان جديدتان!</item>
+        <item quantity="few">لديك %d رسائل جديدة!</item>
+        <item quantity="many">لديك %d رسالة جديدة!</item>
+        <item quantity="other">لديك %d رسالة جديدة!</item>
+    </plurals>
+    <plurals name="mod_mail_notification_title">
+        <item quantity="zero">ليس لديك بريد إشراف جديد!</item>
+        <item quantity="one">لديك رسالة بريد إشراف جديدة!</item>
+        <item quantity="two">لديك رسالتا بريد إشراف جديدتان!</item>
+        <item quantity="few">لديك %d رسائل بريد إشراف جديدة!</item>
+        <item quantity="many">لديك %d رسالة بريد إشراف جديدة!</item>
+        <item quantity="other">لديك %d رسالة بريد إشراف جديدة!</item>
+    </plurals>
+
     <!-- Miscellaneous/generic things that don't have a category or strings that are used for multiple categories -->
     <string name="misc_err">خطأ</string>
     <string name="misc_none">لاشيء</string>
+    <string name="misc_retry">هل ترغب في المحاولة مرة أخرى؟</string>
+    <string name="misc_retry_draft">هل ترغب في المحاولة مرة أخرى؟ \nتم حفظ مسودة من منشورك</string>
     <string name="misc_score_hidden">النقاط مخفية</string>
+    <string name="misc_subscribed">تم الاشتراك</string>
     <string name="misc_continue">متابعة</string>
+    <string name="misc_unsubscribed">تم إلغاء الاشتراك</string>
+    <string name="misc_no_more_posts">لا مزيد من المنشورات!</string>
+    <string name="misc_please_wait">يرجى الانتظار…</string>
+    <string name="misc_img_share">مشاركة الصورة عبر</string>
     <string name="misc_copy_text">نسخ الكتابه</string>
+    <string name="misc_maybe_later">ربما لاحقًا</string>
+    <string name="misc_try_again">حاول مرة أخرى</string>
+    <string name="misc_please_try_again">يرجى المحاولة مرة أخرى</string>
+    <string name="misc_please_try_again_soon">يرجى المحاولة مرة أخرى قريبًا</string>
+    <string name="misc_setting_up">جارٍ إعداد بعض الأمور…</string>
+    <string name="misc_setting_up_message">يرجى عدم مغادرة هذه الشاشة. لن يستغرق الأمر وقتًا طويلًا!</string>
+    <string name="misc_more_info">مزيد من المعلومات</string>
+    <string name="misc_captcha_incorrect">رمز التحقق غير صحيح، يرجى المحاولة مرة أخرى</string>
+
     <!-- Goto User -->
     <string name="user_enter">أدخل اسم المستخدم</string>
     <string name="user_btn_goto">الانتقال إلى استخدام</string>
+    <string name="user_btn_gotomultis">الانتقال إلى مالتي ريديتات المستخدم</string>
+
+    <!-- Saved users list -->
+    <string name="users_empty">لا يوجد مستخدمون محفوظون</string>
+    <string name="users_btn_add">إضافة مستخدم</string>
+    <string name="users_btn_remove">إزالة المستخدم</string>
+    <string name="users_added">تمت إضافة %s إلى المستخدمين</string>
+    <string name="users_removed">تمت إزالة %s من المستخدمين</string>
+    <string name="users_already_added">%s موجود بالفعل في المستخدمين</string>
+    <string name="users_copied">تم نسخ %s</string>
+    <string name="users_checking">جارٍ التحقق من اسم المستخدم</string>
+    <string name="users_invalid_title">تعذّر إضافة المستخدم</string>
+    <string name="users_invalid">%s ليس مستخدمًا في Reddit</string>
+    <string name="users_check_failed">تعذّر التحقق من وجود %s. يرجى التحقق من اتصالك والمحاولة مرة أخرى.</string>
+    <string name="users_friend_added">تمت إضافة %s كصديق</string>
+    <string name="users_friend_removed">تمت إزالة %s من الأصدقاء</string>
+    <string name="users_friend_failed">تعذّر تحديث حالة الصداقة لـ %s</string>
+    <string name="btn_fab_add_user">إضافة مستخدم</string>
+
     <!-- Buttons -->
     <string name="btn_add">اضف</string>
     <string name="btn_cancel">الغاء</string>
     <string name="btn_close">أغلق</string>
+    <string name="btn_toggle">تبديل</string>
+    <string name="btn_open">فتح</string>
     <string name="btn_discard">حذف</string>
     <string name="btn_done">تمّ</string>
     <string name="btn_go_back">رجوع</string>
@@ -299,99 +473,1003 @@
     <string name="btn_remove">إزالة</string>
     <string name="btn_reply">رد </string>
     <string name="btn_reset">اعادة ضبط</string>
+    <string name="btn_retry">إعادة المحاولة</string>
     <string name="btn_save">حفظ</string>
     <string name="btn_submit">ارسال</string>
     <string name="btn_undo">ارجع</string>
     <string name="btn_yes">نعم</string>
     <string name="btn_refresh">تحديث</string>
+    <string name="btn_cache">تخزين التعليقات مؤقتًا</string>
+    <string name="btn_delete">حذف</string>
+    <string name="btn_time">الفترة الزمنية</string>
+    <string name="btn_message">رسالة</string>
+    <string name="btn_select">تحديد</string>
+    <string name="btn_view">عرض</string>
+    <string name="btn_changelog">سجل التغييرات</string>
+    <string name="btn_set">تعيين</string>
+    <string name="btn_create">إنشاء</string>
+    <string name="btn_new">جديد</string>
+
     <!-- Buttons Content labels for TalkBack accessibility-->
+    <string name="btn_edit">تحرير</string>
+    <string name="btn_hide">إخفاء</string>
+    <string name="btn_mod">إشراف</string>
+    <string name="btn_upvote">تصويت إيجابي</string>
+    <string name="btn_downvote">تصويت سلبي</string>
+    <string name="btn_menu">القائمة</string>
+    <string name="img_score">النتيجة</string>
+    <string name="img_comments">التعليقات</string>
+    <string name="btn_expand">توسيع</string>
+    <string name="btn_nav_up">التنقل لأعلى</string>
+    <string name="btn_nav_mode">تعيين وضع التنقل</string>
+    <string name="btn_nav_collapse_expand">طي/توسيع</string>
+    <string name="btn_nav_down">التنقل لأسفل</string>
+    <string name="btn_fab_reply">رد</string>
+    <string name="btn_fab_post">إنشاء منشور جديد</string>
+    <string name="btn_fab_hide">إخفاء المنشورات المعروضة</string>
+    <string name="btn_fab_search">البحث في المنشورات</string>
+
     <!-- Buttons Content labels for TalkBack accessibility active states-->
+    <string name="btn_upvoted">تم التصويت إيجابيًا</string>
+    <string name="btn_downvoted">تم التصويت سلبيًا</string>
+    <string name="btn_unsave">إلغاء الحفظ</string>
+    <string name="btn_collapse">طي</string>
+
     <!-- Backup -->
     <string name="backup_success">لقد نجحت عملية النسخ الإحتياطي!</string>
     <string name="backup_restoring">استعادة الإعدادات الخاصة بك</string>
     <string name="backup_backing_up">يتم نسخ النسخة الاحتياطي للإعدادات الخاصة بك</string>
+    <string name="backup_restore_settings">تمت استعادة الإعدادات بنجاح!</string>
     <string name="backup_restarting">سيتم الآن إعادة تشغيل البرنامج.</string>
+    <string name="backup_info">ينسخ Slide جميع بياناتك احتياطيًا إلى مجلد خاص في Google Drive. يمكنك مزامنة هذه البيانات عبر الأجهزة (أو إلى الجهاز نفسه)، ولا تمرّ بياناتك أبدًا عبر خدمة أو خادم تابع لجهة خارجية. يتم تشفير النسخ الاحتياطية بكلمة مرور تختارها.</string>
     <string name="backup_btn">نسخة احتياطية</string>
     <string name="backup_btn_restore">استعادة</string>
+    <string name="backup_btn_file">نسخ احتياطي إلى ملف مضغوط</string>
+    <string name="backup_btn_restore_file">استعادة من ملف أو ملف مضغوط</string>
+    <string name="backup_confirm">هل أنت متأكد من رغبتك في النسخ الاحتياطي؟ سيتم استبدال نسختك الاحتياطية السابقة</string>
+    <string name="backup_restore_confirm">هل أنت متأكد من رغبتك في الاستعادة؟ سيتم استبدال إعداداتك الحالية</string>
+    <string name="backup_failed_msg">فشل النسخ الاحتياطي. يرجى المحاولة لاحقًا.</string>
+    <string name="backup_restore_failed_msg">فشلت الاستعادة. يرجى التأكد من وجود نسخة احتياطية صالحة والمحاولة مرة أخرى.</string>
+    <string name="backup_local_title">نسخة احتياطية محلية</string>
+    <string name="backup_drive_title">نسخة احتياطية على Google Drive</string>
+    <string name="backup_button">إنشاء نسخة احتياطية</string>
+    <string name="restore_button">استعادة النسخة الاحتياطية</string>
+    <string name="backup_question">نسخ احتياطي؟</string>
+    <string name="backup_complete">اكتمل النسخ الاحتياطي!</string>
+    <string name="err_not_valid_backup">ملف النسخ الاحتياطي لslide ليس صالحا</string>
+    <string name="err_not_valid_backup_msg">الملف المحدد ليس ملف نسخة احتياطية صالحة لslide</string>
+    <string name="backup_password_title">تعيين كلمة مرور للنسخة الاحتياطية</string>
+    <string name="backup_password_message">تحتوي نسختك الاحتياطية على بيانات اعتماد حساب Reddit الخاص بك، لذا فهي مشفّرة. اختر كلمة مرور من %1$d إلى %2$d حرفًا. ستحتاج إليها للاستعادة، ولا يمكن استرجاعها.</string>
+    <string name="backup_password_hint">كلمة المرور</string>
+    <string name="restore_password_title">أدخل كلمة مرور النسخة الاحتياطية</string>
+    <string name="restore_password_message">أدخل كلمة المرور المستخدمة لتشفير هذه النسخة الاحتياطية.</string>
+    <string name="restore_password_wrong">كلمة المرور غير صحيحة. يرجى المحاولة مرة أخرى.</string>
+    <string name="drive_authorization_failed">فشل تفويض Google Drive</string>
+    <string name="drive_authorization_failed_msg">تعذّر على Slide الوصول إلى مجلده الخاص في Google Drive. يرجى المحاولة مرة أخرى.</string>
+    <string name="drive_authorization_denied">مطلوب الوصول إلى Google Drive</string>
+    <string name="drive_authorization_denied_msg">يحتاج Slide إلى الوصول إلى مجلده الخاص في Google Drive لنسخ إعداداتك احتياطيًا أو استعادتها.</string>
+
     <!-- Vote -->
+    <string name="vote_err">خطأ أثناء التصويت!</string>
     <string name="vote_err_login">يجب أن تكون مسجلاً للتصويت!</string>
+    <string name="vote_removed">تمت إزالة التصويت</string>
+
+    <!-- Subscribing -->
+    <string name="subscribe_err_login">يجب تسجيل الدخول للاشتراك!</string>
+
     <!-- Moderation tools -->
+    <string name="mod_mail">بريد الإشراف</string>
+    <string name="mod_mail_unread">بريد إشراف غير مقروء</string>
+    <string name="modmail_internal_note">(ملاحظة داخلية)</string>
+    <string name="modmail_scope_missing">يحتاج بريد الإشراف إلى إعادة مصادقة. أعد تسجيل الدخول (الإعدادات &#8594; الحساب) لتفعيله.</string>
+    <string name="modmail_reply_sent">تم إرسال الرد!</string>
+    <string name="modmail_reply_failed">فشل الإرسال! تم حفظ الرد كمسودة.</string>
+    <plurals name="modmail_message_count">
+        <item quantity="zero">لا رسائل</item>
+        <item quantity="one">رسالة واحدة</item>
+        <item quantity="two">رسالتان</item>
+        <item quantity="few">%d رسائل</item>
+        <item quantity="many">%d رسالة</item>
+        <item quantity="other">%d رسالة</item>
+    </plurals>
+    <string name="mod_modqueue">قائمة الإشراف</string>
+    <string name="mod_unmoderated">غير مُشرف عليه</string>
     <string name="mod_reports">ابلاغ</string>
+    <string name="mod_approved">تمت الموافقة على المنشور</string>
+    <string name="mod_flair_hint">نص الوسم</string>
     <string name="mod_no_reports">لا توجد تقارير</string>
+    <string name="mod_btn_approve">موافقة</string>
+    <string name="mod_btn_submission_flair">تعيين الوسم</string>
+    <string name="mod_btn_submission_flair_text">تعيين نص الوسم</string>
     <string name="mod_btn_mark_nsfw">علّم محتوى غير صالح للعمل</string>
     <string name="mod_btn_unmark_nsfw">ألغ تعليم محتوى غير صالح للعمل</string>
+    <string name="mod_btn_mark_spoiler">تعليم كحرق أحداث</string>
+    <string name="mod_btn_unmark_spoiler">إلغاء تعليم حرق الأحداث</string>
+    <string name="mod_btn_lock_thread">قفل المحادثة</string>
+    <string name="mod_btn_unlock_thread">فتح المحادثة</string>
+    <string name="mod_btn_lock_comment">قفل التعليق</string>
+    <string name="mod_btn_unlock_comment">فتح التعليق</string>
+    <string name="mod_locked">مقفل</string>
+    <string name="mod_unlocked">مفتوح</string>
+    <string name="mod_btn_pin">تثبيت</string>
+    <string name="mod_btn_unpin">إلغاء التثبيت</string>
+    <string name="mod_btn_remove">إزالة</string>
+    <string name="mod_btn_remove_reason">إزالة مع ذكر السبب</string>
+    <string name="mod_btn_spam">تعليم كرسالة مزعجة</string>
+    <string name="mod_btn_author">الملف الشخصي للكاتب</string>
+    <string name="mod_btn_ban">حظر</string>
+    <string name="mod_ban_user">حظر المستخدم</string>
+    <string name="mod_ban_reauth">لحظر المستخدمين، يجب على Slide إعادة مصادقتك</string>
+    <string name="mod_ban_reauth_question">هل ترغب في إعادة تسجيل الدخول إلى Slide الآن؟</string>
+    <string name="mod_ban_success">تم حظر المستخدم!</string>
+    <string name="mod_ban_fail">خطأ أثناء حظر المستخدم</string>
+    <string name="mod_ban_reason">سبب الحظر</string>
+    <string name="mod_ban_note_mod">ملاحظة المشرف (اختياري)</string>
+    <string name="mod_ban_note_user">رسالة المستخدم (اختياري)</string>
+    <string name="mod_ban_time">مدة الحظر - اتركها فارغة للحظر الدائم</string>
+    <string name="mod_ban_title">حظر /u/%1$s</string>
+    <string name="mod_remove_template">تمت الإزالة بسبب\u0020</string>
+    <string name="mod_remove_hint">سبب الإزالة</string>
+    <string name="mod_remove_title">ما سبب إزالة هذا المنشور؟</string>
+    <string name="mod_remove_insert_draft">إدراج مسودة</string>
+    <string name="mod_flair_none_found">لم يتم العثور على وسوم لهذا السبريدت</string>
+    <string name="mod_distinguish">تمييز</string>
+    <string name="mod_undistinguish">إلغاء التمييز</string>
+    <string name="mod_sticky">تثبيت</string>
+    <string name="mod_unsticky">إلغاء التثبيت</string>
+    <string name="reauth_complete">اكتملت إعادة المصادقة!</string>
+    <string name="reauth_in_progress">جارٍ إعادة المصادقة…</string>
+    <string name="reauth_failed">تعذّرت إعادة المصادقة</string>
+
+    <plurals name="mod_btn_reports">
+        <item quantity="zero">لا توجد بلاغات</item>
+        <item quantity="one">عرض بلاغ واحد</item>
+        <item quantity="two">عرض بلاغين</item>
+        <item quantity="few">عرض %d بلاغات</item>
+        <item quantity="many">عرض %d بلاغًا</item>
+        <item quantity="other">عرض %d بلاغ</item>
+    </plurals>
+
     <!-- If he did -->
+    <string name="really_pin_submission_message">تم تثبيت المنشور</string>
+    <string name="really_unpin_submission_message">تم إلغاء تثبيت المنشور</string>
+
     <!-- Subreddit Wiki -->
     <string name="wiki_err">لم يتم العصور على wiki</string>
+    <string name="wiki_err_msg">لا يحتوي هذا السبريدت على ويكي!</string>
+
     <!-- Subreddits -->
+    <string name="subreddit_subscribers_string">%1$s مشترك</string>
+    <string name="subreddit_active_users_string_new">%1$s متواجد الآن</string>
+    <string name="subreddit_err_msg">تعذّر العثور على السبريدت %1$s. ربما كُتب بشكل خاطئ؟</string>
+    <string name="subreddit_err_msg_new">تعذّر العثور على السبريدت %1$s. ربما كُتب بشكل خاطئ، أو ليس لديك صلاحية الوصول إلى هذا السبريدت.</string>
+    <string name="subreddit_err">لم يتم العثور على السبريدت</string>
+
     <!-- Search -->
+    <string name="search_comments_hint">البحث في التعليقات</string>
     <string name="search_goto">اذهب الى</string>
+    <string name="search_title">بحث</string>
+    <string name="search_msg">عمّ تبحث؟</string>
+    <string name="search_all">البحث في الكل</string>
+    <string name="search_subreddit">البحث في %1$s</string>
+    <string name="search_relevance">الصلة</string>
+    <string name="search_top">الأعلى</string>
+    <string name="search_new">الأحدث</string>
+    <string name="search_comments">التعليقات</string>
+    <string name="no_posts_found">لم يتم العثور على منشورات</string>
+
     <!-- Settings -->
+    <string name="settings_reddit_prefs">تفضيلات Reddit</string>
+    <string name="settings_accent_title">تحرير اللون المميز</string>
+    <string name="settings_delete_sub_settings">هل تريد حقًا حذف إعدادات %1$s؟</string>
     <string name="settings_layout_default">شكل الموضوع</string>
     <string name="settings_link_album">عرض الالبومات بالداخل</string>
+    <string name="settings_link_peek">معاينة سريعة للمحتوى</string>
+    <string name="settings_link_peek_description">يعطّل الضغط المطوّل على صورة المعاينة</string>
     <string name="settings_link_gif">عرض الـGIF بالداخل</string>
+    <string name="settings_link_hqgif">مقاطع Gfycat عالية الجودة</string>
     <string name="settings_link_handling">التعامل مع الرابط</string>
     <string name="settings_link_image">عرض الصور بالداخل</string>
     <string name="settings_mail_check">التحقق من وجود بريد جديد</string>
+    <string name="settings_mail_info">كلما زاد التكرار، زادت البطارية التي قد يستهلكها Slide في الخلفية!</string>
     <string name="settings_main_color_title">تحرير اللون الرئيسي</string>
+    <string name="settings_notification">التحقق من الرسائل الجديدة كل %1$s</string>
+    <string name="settings_notification_newline">التحقق من الرسائل الجديدة كل\n%1$s</string>
     <string name="settings_notification_short">تحقق كل %1$s</string>
+    <string name="settings_disable_nsfw_photo">إخفاء جميع صور NSFW</string>
+    <string name="settings_store_history">حفظ السجل</string>
+    <string name="settings_store_nsfw_history">حفظ سجل NSFW</string>
+    <string name="settings_commentnav">التنقل بين التعليقات الأصلية</string>
     <string name="share_link">مشاركة الرابط</string>
     <string name="posts_hidden_forever">إخفاء الموضوع للأبد</string>
     <string name="share_image">مشاركة الصوره</string>
     <string name="settings_libs">مكتبات مفتوحة المصدر</string>
+    <string name="settings_about_libs">حول المكتبات</string>
+    <string name="settings_privacy">سياسة الخصوصية</string>
     <string name="settings_bugs">أرسل تقريراً بالخطأ</string>
     <string name="settings_changelog">عرض سجل التغيير</string>
+    <string name="settings_fabclear_msg">سيؤدي النقر على زر المسح إلى إزالة المنشورات من العرض الحالي، لكنه لن يخفيها إلى الأبد. \nأما الضغط المطوّل على الزر فسيخفي المنشورات إلى الأبد!</string>
+    <string name="settings_fabclear">إجراءات مسح زر الإجراء العائم</string>
+    <string name="settings_notifdisabled">الإشعارات معطّلة</string>
     <string name="settings_colored_navigation_bar">شريط التنقل ملون</string>
+    <string name="settings_always_black_statusbar">شريط حالة أسود (شريط الإشعارات)</string>
+    <string name="settings_colored_icon">تلوين أيقونة التطبيق (تجريبي)</string>
+    <string name="settings_colored_icon_desc">قد يتطلب إعادة تشغيل الهاتف ليعمل. سيؤدي هذا أيضًا إلى إزالة الأيقونة من الشاشة الرئيسية.</string>
+    <string name="settings_filter_domain">مرشحات النطاقات</string>
+    <string name="settings_filter_selfttext">مرشحات النص الذاتي</string>
+    <string name="settings_filter_title">مرشحات العناوين</string>
+    <string name="settings_prefs_reddit">عرض جميع تفضيلات reddit.com</string>
+    <string name="settings_font_post">خط عنوان المنشور</string>
+    <string name="settings_font_comment">خط التعليق</string>
+    <string name="settings_comment_crop">اقتصاص الصورة الرئيسية في عرض التعليقات</string>
+    <string name="settings_general_scroll_read">تعليم المنشورات كمقروءة عند تمريرها</string>
+    <string name="settings_link_chrome">علامات التبويب المخصصة</string>
+    <string name="settings_storage_location">اختيار موقع التخزين</string>
+    <string name="settings_storage_location_unset">لم يُحدَّد بعد</string>
+    <string name="settings_set_storage_location">سيتم حفظ الملفات في %s</string>
+    <string name="settings_general_immersive_mode">وضع ملء الشاشة الغامر</string>
+    <string name="settings_general_immersive_mode_desc">إخفاء شريطي الحالة والتنقل (تجريبي)</string>
+    <string name="settings_general_old_swipe_mode">وضع التمرير القديم</string>
+    <string name="settings_general_old_swipe_mode_desc">نمط التمرير القديم في Slide. مخصص لوضع التنقل بثلاثة أزرار وإيماءات Samsung.</string>
+    <string name="settings_general_hibernate">استئناف من حيث توقفت</string>
+    <string name="settings_general_hibernate_desc">إعادة الفتح على الشاشة نفسها وفي الموضع نفسه، مع عرض ما تم تحميله مسبقًا بدلًا من التحديث. يؤدي تفعيل هذا إلى إضافة مربع اختيار في قائمة الخيارات الإضافية لتشغيل الاستئناف وإيقافه دون العودة إلى هنا.</string>
+
+    <string name="settings_general_title_drawer_items">عناصر القائمة الجانبية</string>
+    <string name="settings_general_subtitle_drawer_items">اختر عناصر القائمة الجانبية التي تريد عرضها</string>
+
     <!-- Settings titles displayed in settings activity-->
+    <string name="settings_title_backup">النسخ الاحتياطي &amp; الاستعادة</string>
+    <string name="settings_title_default_theme">السمة الرئيسية</string>
     <string name="settings_title_general">عامّ</string>
     <string name="settings_title_history">السّجل</string>
     <string name="settings_title_notifications">إعدادات التنبيهات</string>
+    <string name="settings_title_pro">الترقية إلى Pro</string>
+    <string name="settings_title_sub_theme">سمات السبريدت</string>
+    <string name="settings_title_sort">الترتيب الافتراضي</string>
+    <string name="settings_title_sort_frontpage">ترتيب الصفحة الرئيسية</string>
     <string name="settings_title_about">حول</string>
+    <string name="settings_title_debug">تصحيح الأخطاء</string>
+    <string name="settings_section_debug_reauth">إعادة المصادقة</string>
+    <string name="settings_debug_break_reauth">تعطيل إعادة المصادقة</string>
+    <string name="settings_debug_break_reauth_desc">إيقاف إعادة المصادقة مؤقتًا لاختبار شريط تنبيه إعادة المصادقة. قابل للاسترجاع: أوقف هذا الخيار ثم شغّل إعادة مصادقة.</string>
+    <string name="settings_debug_trigger_reauth">تشغيل إعادة المصادقة</string>
+    <string name="settings_debug_trigger_reauth_desc">ابدأ إعادة مصادقة الآن. استخدم هذا للتعافي بعد إيقاف المفتاح.</string>
+    <string name="settings_title_multi_column">أعمدة متعددة</string>
     <string name="settings_title_fab">زر العمل عائم</string>
+    <string name="settings_title_comments">التعليقات</string>
     <string name="settings_title_filter">فلترة</string>
     <string name="settings_title_font">الخط</string>
+    <string name="settings_section_general">عام</string>
     <string name="settings_section_appearance">المظهر</string>
+    <string name="settings_section_hibernation">الإسبات</string>
+    <string name="settings_section_other">أخرى</string>
+    <string name="settings_section_browser">المتصفح</string>
+    <string name="settings_section_internal_viewers">العارضات الداخلية</string>
+    <string name="settings_section_custom_domains">النطاقات المخصصة</string>
+    <string name="settings_section_save_history">حفظ السجل</string>
+    <string name="settings_section_clear_history">مسح السجل</string>
+    <string name="settings_section_data_saving_mode">وضع توفير البيانات</string>
+    <string name="settings_section_data_saving_quality">جودة توفير البيانات</string>
+    <string name="settings_comment_color">مؤشرات ملوّنة لعمق التعليقات</string>
+    <string name="settings_volume_nav_comments">التنقل بين التعليقات بأزرار مستوى الصوت</string>
+    <string name="settings_commentnav_description">يفعّل شريطًا سفليًا يحتوي على أسهم التنقل</string>
+    <string name="settings_comment_collapse">طي التعليقات بالكامل</string>
+    <string name="settings_comment_collapse_description">يعطّل أيضًا الرسوم المتحركة للتعليقات</string>
+    <string name="settings_comment_collapse_default">طي التعليقات الفرعية افتراضيًا</string>
+    <string name="settings_data_enable">تفعيل إعدادات توفير البيانات</string>
+    <string name="settings_data_video_quality">تفضيل مقاطع الفيديو منخفضة الجودة عند تفعيل توفير البيانات</string>
+    <string name="settings_comments_collapse_deleted">طي التعليقات المحذوفة افتراضيًا</string>
+    <string name="settings_comments_collapse_sticky">طي التعليق المثبّت بالكامل دائمًا</string>
+    <string name="settings_comments_collapse_blocked_users">طي تعليقات المستخدمين المحظورين</string>
+    <string name="settings_comments_collapse_blocked_users_description">يفعّل أيضًا طي التعليقات بالكامل</string>
+    <string name="settings_backup_occurs">سيتم النسخ الاحتياطي في %1$s</string>
+    <string name="settings_backup_none">لن يتم نسخ أي سبريدت احتياطيًا</string>
+    <string name="settings_backup_will_backup">\u0020سيتم نسخه احتياطيًا</string>
+    <string name="settings_backup_submission_only">المنشور فقط</string>
+    <string name="settings_backup_comments">\u0020(التعليقات)</string>
+    <string name="settings_filter_profile">مرشحات الملف الشخصي</string>
+    <string name="settings_subreddit_content_filters_till_restart">مرشحات محتوى السبريدت حتى إعادة التشغيل</string>
+    <string name="settings_subredditspecific_selftext">عرض معاينات النص الذاتي دائمًا في هذا السبريدت</string>
+    <string name="settings_font_system">النظام</string>
+    <string name="settings_manage_subscriptions">إدارة اشتراكاتك</string>
+    <string name="settings_comments_swap_long">تبديل إجراءات الضغط المطوّل والنقر</string>
+    <string name="settings_redditprefs_over18">عمري يتجاوز 18 عامًا وأريد رؤية محتوى NSFW</string>
+    <string name="settings_layout_view">وضع العرض</string>
+    <string name="settings_subredditspecific_bigpic">عرض الصور الكبيرة دائمًا في هذا السبريدت</string>
+    <string name="settings_layout_picture_mode">وضع الصور</string>
+    <string name="settings_general_expanded_toolbar">قائمة شريط أدوات موسّعة</string>
+    <string name="settings_general_expanded_toolbar_desc">عرض المزيد من الخيارات في شريط أدوات السبريدت</string>
+    <string name="settings_always_show_floating_action_button">إظهار زر الإجراء العائم دائمًا</string>
+    <string name="settings_always_show_floating_action_button_desc">عدم إخفاء زر الإجراء العائم أبدًا أثناء التمرير</string>
+    <string name="settings_theme_tinting">وضع تلوين المنشورات</string>
+    <string name="settings_layout_actionbar_mode">وضع شريط الإجراءات</string>
+    <string name="settings_theme_tint_outside_desc">تلوين الخلفية فقط في المالتي ريديت والصفحة الرئيسية والكل</string>
+    <string name="settings_layout_small_content_tag">وسم محتوى أصغر</string>
+    <string name="settings_links_force_external">فرض المتصفح الخارجي</string>
+    <string name="settings_layout_show_domain">عرض النطاق في سطر المعلومات</string>
+    <string name="settings_layout_show_content_type">عرض نوع المحتوى في سطر المعلومات</string>
+    <string name="settings_layout_thumbnail_flags">عرض أعلام ملوّنة في زوايا الصور المصغّرة</string>
+    <string name="settings_layout_show_votes_comments">عرض الأصوات/التعليقات في سطر المعلومات</string>
+    <string name="settings_general_comment_last_visit">عرض عدد التعليقات منذ آخر زيارة</string>
+    <string name="settings_fab_create">إظهار زر الإجراء العائم \"إنشاء تعليق\"</string>
+    <string name="settings_right_handed_comment_menu">قائمة الرد على التعليقات لليد اليمنى</string>
+    <string name="settings_reddit_description">تغيّر هذه الإعدادات ما تعيده واجهة Reddit البرمجية إلى Slide.\n\nلرؤية الصور المصغّرة في جميع السبريدتات، فعّل \'تجاهل تفضيلات الوسائط في السبريدت\'\n\nلرؤية جميع محتوى NSFW، أوقف \'إخفاء صور NSFW\' وفعّل \'عمري يتجاوز 18\'</string>
+    <string name="settings_reddit_media_pref">تجاهل تفضيلات الوسائط في السبريدت</string>
+    <string name="settings_description_view_type">تؤثر أنواع العرض على العرض الرئيسي وعروض السبريدت المفردة معًا.\n\nلوحة التعليقات: تنزلق التعليقات بجوار المنشورات ويتم حفظ حالة صفحة التعليقات بعد التمرير للخلف (حتى لا تفقد موضعك)\n\nبدون علامات تبويب للسبريدت: يعطّل التمرير بين السبريدتات\n\nعلامات تبويب السبريدت: تنقّل بين سبريدتاتك بالتمرير</string>
+    <string name="settings_short_description_view_type">تؤثر أنواع العرض على العرض الرئيسي وعروض السبريدت المفردة معًا</string>
+    <string name="settings_comment_hide_selftext_image">إخفاء الصورة الرئيسية في منشورات النص الذاتي</string>
+    <string name="settings_filter_flair">مرشحات الوسوم</string>
+    <string name="settings_view_type">نوع العرض</string>
+    <string name="settings_data">توفير البيانات</string>
+    <string name="settings_card_show_selftext">عرض النص الذاتي</string>
+    <string name="settings_card_selftext_paragraph">عرض الفقرة الأولى</string>
+    <string name="settings_card_selftext_ellipsize">الاختصار إلى أول 128 حرفًا</string>
+    <string name="settings_handling_external_desc">النطاقات المدخلة أدناه ستُفتح دائمًا خارجيًا</string>
+    <string name="settings_handling_enterdomain">أدخل نطاقًا أو جزءًا من نطاق</string>
+    <string name="settings_section_content">المحتوى</string>
+    <string name="settings_backup_view">عرض النسخة الاحتياطية</string>
+    <string name="settings_backup_err_no_explorer">لم يتم العثور على مستكشف ملفات، الملف موجود في %1$s</string>
+    <string name="settings_about_version_copied_toast">تم نسخ رقم الإصدار إلى الحافظة</string>
+    <string name="settings_theme_night_start_at">يبدأ في\u0020</string>
+    <string name="settings_theme_night_end_at">ينتهي في\u0020</string>
+    <string name="settings_general_inbox_snd">الصوت والاهتزاز</string>
+    <string name="settings_enable_notifs">تفعيل إشعارات صندوق الوارد</string>
+
     <!-- Quick setting toggles in the drawer -->
+    <string name="toggle_night_mode">الوضع الليلي</string>
+    <string name="toggle_immersive_mode">الوضع الغامر</string>
+    <string name="toggle_nsfw">عرض محتوى NSFW</string>
+    <string name="toggle_right_thumbnails">صور مصغّرة محاذاة لليمين</string>
+    <string name="toggle_reader_mode">استخدام وضع القراءة</string>
+
     <!-- View types -->
+    <string name="view_type_tabs">علامات تبويب السبريدت</string>
+    <string name="view_type_none">بدون علامات تبويب للسبريدت</string>
+    <string name="view_type_comments">لوحة التعليقات</string>
+
     <!--Search methods -->
+    <string name="subreddit_search_method_title">طريقة البحث عن السبريدت</string>
+    <string name="subreddit_search_method_drawer">شريط بحث في القائمة الجانبية</string>
+    <string name="subreddit_search_method_toolbar">ضغط مطوّل على عنوان شريط الأدوات</string>
+    <string name="subreddit_search_method_both">القائمة الجانبية وعنوان شريط الأدوات معًا</string>
+
     <!-- Back button behavior -->
+    <string name="back_button_behavior_title">سلوك زر الرجوع</string>
+    <string name="back_button_behavior_default">إغلاق التطبيق</string>
+    <string name="back_button_behavior_confirm_exit">مربع حوار تأكيد الخروج</string>
+    <string name="back_button_behavior_drawer">فتح القائمة الجانبية</string>
+
     <!-- Subscription managing -->
+    <string name="reorder_add_domain">إضافة نطاق</string>
+    <string name="reorder_add_subreddit">إضافة سبريدت</string>
+    <string name="reorder_fab_collection">مالتي ريديت</string>
+    <string name="reorder_fab_domain">نطاق</string>
+    <string name="reorder_fab_subreddit">سبريدت</string>
+    <string name="reorder_add_subscribe">إضافة &amp; اشتراك</string>
+    <string name="reorder_remove_unsubscribe">إزالة &amp; إلغاء اشتراك</string>
+    <string name="reorder_move">نقل إلى الأعلى</string>
+    <string name="reorder_domain_placeholder">\u0020(اسم النطاق فقط)</string>
+    <string name="reorder_not_found_err">لم يتم العثور على السبريدت، إليك بعض الاقتراحات</string>
+    <string name="reorder_subscribed_toast">تم الاشتراك في /r/%1$s</string>
+    <string name="reorder_unsubscribed_toast">تم إلغاء الاشتراك من /r/%1$s</string>
+    <string name="sorting_faq"><b>كيف أحدّث السبريدتات؟</b>\nلتحديث السبريدتات، انقر على أيقونة التحديث في شريط الأدوات!\n\n<b>ألغيت الاشتراك في بعض السبريدتات لكنها ما زالت في القائمة!</b>\nسيحوّل Slide السبريدتات التي ألغيت الاشتراك فيها من المتصفح إلى اشتراكات عارضة. لإزالتها، اضغط مطوّلًا على السبريدت (أو السبريدتات) وانقر على إزالة!\n\n<b>كيف أستخدم المجموعات؟</b>\nلإنشاء مجموعة، انقر على زر الإجراء العائم + واختر \'إنشاء مجموعة\'. يتيح لك ذلك أن تعمل عدة سبريدتات كسبريدت واحد في الشاشة الرئيسية!</string>
+    <string name="alphabetize_subreddits">ترتيب السبريدتات أبجديًا</string>
+    <string name="sync_subscriptions">مزامنة الاشتراكات</string>
+    <string name="cannot_be_undone">لا يمكن التراجع عن هذا.</string>
+    <string name="deleting">جارٍ الحذف…</string>
+    <string name="create_or_import_multi">هل ترغب في إنشاء مالتي ريديت جديد أم استيراد واحد؟</string>
+    <string name="sub_added">تمت إضافة السبريدت!</string>
+    <string name="reorder_subs_FAQ">الأسئلة الشائعة حول إعادة ترتيب السبريدتات</string>
+    <string name="subscribe_to">الاشتراك في /r/%1$s</string>
+    <string name="unsubscribe_from">إلغاء الاشتراك من /r/%1$s</string>
+    <string name="btn_add_to_sublist">إضافة إلى قائمة السبريدتات</string>
+    <string name="btn_remove_from_sublist">إزالة من قائمة السبريدتات</string>
+    <string name="just_unsub">إلغاء الاشتراك فقط</string>
+    <string name="subscribe_caps">اشتراك</string>
+    <string name="unsubscribe_caps">إلغاء الاشتراك</string>
+    <string name="reorder_subreddits_title">اختر سبريدت لإضافته</string>
+    <string name="reorder_add_or_search_subreddit">أضف سبريدت أو ابحث عنه</string>
     <string name="reorder_subreddit_name">اسم السوبريديت</string>
     <string name="reorder_remove_title">إزالة هذا سوبريديت؟</string>
-    <!-- Save categories -->
+    <string name="reorder_sync_complete">اكتملت المزامنة</string>
+    <string name="reorder_loading_title">جارٍ تحميل سبريدتاتك</string>
+    <string name="reorder_url_err">الرابط غير صالح</string>
+
+    <!-- Saved tags -->
+    <string name="tag_set_name_hint">اسم الوسم</string>
+    <string name="tag_tag_action">وسم</string>
+    <string name="profile_tag_select">الوسوم</string>
+    <string name="profile_saved_tags">الوسوم المحفوظة</string>
+    <string name="tag_builtin_all">الكل</string>
+    <string name="tag_builtin_posts">المنشورات</string>
+    <string name="tag_builtin_comments">التعليقات</string>
+    <string name="tag_types_header">الأنواع</string>
+    <string name="tag_post_types_header">أنواع المنشورات</string>
+    <string name="tag_custom_header">وسوم مخصصة</string>
+    <string name="tag_new">وسم جديد</string>
+    <string name="tag_manage">إدارة الوسوم</string>
+    <string name="tag_add">إضافة وسم</string>
+    <string name="tag_none_yet">لا توجد وسوم بعد</string>
+    <string name="tag_rename">إعادة تسمية</string>
+    <string name="tag_delete_confirm">هل أنت متأكد من رغبتك في حذف \"%1$s\"؟ لن يتم حذف العناصر التي تحمل هذا الوسم.</string>
+    <string name="tag_name_used_title">الاسم مستخدم بالفعل</string>
+    <string name="tag_name_used">يوجد وسم بهذا الاسم بالفعل، يرجى اختيار اسم فريد.</string>
+    <string name="tag_name_reserved">هذا الاسم محجوز، يرجى اختيار اسم آخر.</string>
+
     <!-- Setting subheaders -->
+    <string name="sorting">أنواع الترتيب</string>
+    <string name="display">العرض</string>
+    <string name="images">الصور</string>
+    <string name="storage">التخزين</string>
+    <string name="app_theme">سمة التطبيق</string>
+    <string name="tinting">التلوين</string>
+    <string name="post_info">معلومات المنشور</string>
+    <string name="post_buttons">أزرار المنشور</string>
+    <string name="navigation">التنقل</string>
+    <string name="collapse_comments">إجراءات الطي</string>
+    <string name="nsfw">محتوى NSFW</string>
+    <string name="view_reddit_settings">فتح إعدادات Reddit في المتصفح</string>
+    <string name="font_styles">أنماط الخطوط</string>
+
     <!-- Titles displayed in action bar / head / recents overview-->
+    <string name="title_subreddit_settings">سمات السبريدت &amp; تخطيطاته</string>
+    <string name="title_edit_theme">تحرير السمة</string>
     <string name="title_submit_post">إرسال المنشورة</string>
+    <string name="title_crosspost">نشر متقاطع</string>
     <string name="title_settings">إعدادات</string>
     <string name="title_share">مشاركة باستخدام</string>
     <string name="title_login">تسجيل الدخول إلى Reddit</string>
+    <string name="title_multireddits">المالتي ريديتات</string>
+    <string name="title_users">المستخدمون</string>
     <string name="title_inbox">صندوق الوارد</string>
     <string name="title_theme_settings">المظهر</string>
     <string name="title_create_multi">أنشاء multireddit</string>
+
     <!-- Offline mode -->
+    <string name="offline_msg">يرجى الاتصال بالإنترنت وتحديث السبريدت للقيام بذلك</string>
+    <string name="offline_last_update">آخر تحديث %1$s</string>
+    <string name="offline_comments_not_loaded">يرجى العودة إلى الاتصال بالإنترنت واختيار ‘تخزين التعليقات مؤقتًا’ من قائمة النقاط الثلاث لعرض التعليقات دون اتصال</string>
+    <string name="offline_no_content_found">لم يتم العثور على محتوى دون اتصال</string>
+    <string name="offline_enter_online">الدخول إلى وضع الاتصال</string>
+    <string name="offline_caching_title">جارٍ تخزين %1$s مؤقتًا</string>
+    <string name="offline_caching_complete">اكتمل التخزين المؤقت</string>
+
     <!-- Website -->
+    <string name="website_external">فتح في متصفح خارجي</string>
+
+    <plurals name="reorder_subs_added">
+        <item quantity="zero">لم تتم إضافة أي سبريدت</item>
+        <item quantity="one">تمت إضافة سبريدت واحد</item>
+        <item quantity="two">تمت إضافة سبريدتين</item>
+        <item quantity="few">تمت إضافة %d سبريدتات</item>
+        <item quantity="many">تمت إضافة %d سبريدتًا</item>
+        <item quantity="other">تمت إضافة %d سبريدت</item>
+    </plurals>
+
     <!-- Time -->
+    <string name="time_just_now">الآن</string>
+    <plurals name="time_years">
+        <item quantity="zero">%d سنة</item>
+        <item quantity="one">سنة واحدة</item>
+        <item quantity="two">سنتان</item>
+        <item quantity="few">%d سنوات</item>
+        <item quantity="many">%d سنة</item>
+        <item quantity="other">%d سنة</item>
+    </plurals>
+    <plurals name="time_months">
+        <item quantity="zero">%d شهر</item>
+        <item quantity="one">شهر واحد</item>
+        <item quantity="two">شهران</item>
+        <item quantity="few">%d أشهر</item>
+        <item quantity="many">%d شهرًا</item>
+        <item quantity="other">%d شهر</item>
+    </plurals>
+    <plurals name="time_days">
+        <item quantity="zero">%d يوم</item>
+        <item quantity="one">يوم واحد</item>
+        <item quantity="two">يومان</item>
+        <item quantity="few">%d أيام</item>
+        <item quantity="many">%d يومًا</item>
+        <item quantity="other">%d يوم</item>
+    </plurals>
+    <plurals name="time_hours">
+        <item quantity="zero">%d ساعة</item>
+        <item quantity="one">ساعة واحدة</item>
+        <item quantity="two">ساعتان</item>
+        <item quantity="few">%d ساعات</item>
+        <item quantity="many">%d ساعة</item>
+        <item quantity="other">%d ساعة</item>
+    </plurals>
+    <plurals name="time_minutes">
+        <item quantity="zero">%d دقيقة</item>
+        <item quantity="one">دقيقة واحدة</item>
+        <item quantity="two">دقيقتان</item>
+        <item quantity="few">%d دقائق</item>
+        <item quantity="many">%d دقيقة</item>
+        <item quantity="other">%d دقيقة</item>
+    </plurals>
+    <plurals name="time_seconds">
+        <item quantity="zero">%d ثانية</item>
+        <item quantity="one">ثانية واحدة</item>
+        <item quantity="two">ثانيتان</item>
+        <item quantity="few">%d ثوانٍ</item>
+        <item quantity="many">%d ثانية</item>
+        <item quantity="other">%d ثانية</item>
+    </plurals>
+
     <!-- Time: shorthand durations for example 1 hour → 1h -->
+    <string name="time_years_short">%dس</string>
+    <string name="time_days_short">%dي</string>
+    <string name="time_hours_short">%dسا</string>
+    <string name="time_minutes_short">%dد</string>
+
     <!-- Strings present during the login process -->
+    <string name="login_subscribe_rslideforreddit">الاشتراك في /r/slidereddit؟</string>
+    <string name="login_subscribe_rslideforreddit_desc">هل ترغب في الاشتراك في /r/slidereddit للحصول على آخر الأخبار والإبلاغ عن المشكلات؟</string>
+    <string name="login_sync_colors">مزامنة الألوان الآن؟</string>
+    <string name="login_sync_colors_desc">هل ترغب في مزامنة ألوان السبريدت الآن؟ يمكن القيام بذلك لاحقًا من الإعدادات → سمات السبريدت</string>
+    <string name="login_authenticating">جارٍ مصادقة Slide</string>
+    <string name="login_starting">جارٍ الإعداد!</string>
+    <string name="login_starting_desc">لن يستغرق هذا سوى لحظة…</string>
+
     <!-- Over 18 prompt when visiting a NSFW subreddit -->
-    <!-- Subreddit color synchronization - https://redd.it/41054l -->
+    <string name="over18_title">يحتوي /r/%1$s على محتوى للبالغين</string>
+    <string name="over18_desc">هل تجاوزت الثامنة عشرة وترغب في رؤية محتوى للبالغين؟</string>
+    <string name="over18_desc_loggedout">سجّل الدخول لتعطيل هذا التحذير نهائيًا</string>
+    <string name="over18_desc_loggedin">يمكنك تعطيل هذا نهائيًا من الإعدادات → تفضيلات Reddit → عرض محتوى NSFW</string>
+
+    <!-- Subreddit color synchronization - https://reddit.com/comments/41054l -->
     <string name="color_sync_complete">تم أكمال المزامنة</string>
+    <plurals name="color_sync_colored">
+        <item quantity="zero">لم يتم تلوين أي سبريدت</item>
+        <item quantity="one">تم تلوين سبريدت واحد</item>
+        <item quantity="two">تم تلوين سبريدتين</item>
+        <item quantity="few">تم تلوين %d سبريدتات</item>
+        <item quantity="many">تم تلوين %d سبريدتًا</item>
+        <item quantity="other">تم تلوين %d سبريدت</item>
+    </plurals>
+
     <!-- Discover section: find -->
+    <string name="discover_title">اكتشف</string>
+    <string name="discover_search">مصطلح بحث أو موضوع</string>
     <string name="discover_popular">الاكثر شعبية</string>
     <string name="discover_trending">رائج</string>
+
     <!-- Subreddit post notifications -->
+    <string name="sub_post_notifs_title">هل تريد تلقي إشعارات بالمنشورات الجديدة في\n/r/%1$s؟</string>
+    <string name="sub_post_notifs_title_settings">هل تريد تلقي إشعارات بالمنشورات الجديدة؟</string>
+    <string name="sub_post_notify">إشعار</string>
+    <string name="sub_post_notifs_threshold">حد النقاط</string>
+    <string name="sub_post_notifs_err">يمكنك إضافة إشعارات إلى السبريدتات المفردة فقط</string>
+    <string name="sub_post_notifs_settings_none">لا توجد سبريدتات للإشعار عنها</string>
+    <string name="sub_post_notifs_settings_search">ابحث عن اسم السبريدت</string>
+    <string name="sub_post_notifs_notification_title">منشور جديد في /r/%1$s</string>
+    <string name="sub_post_notifs_notification_btn">إيقاف متابعة /r/%1$s</string>
+    <string name="title_sub_post_notifs">إشعارات منشورات السبريدت</string>
+
     <!-- Internal browser -->
+    <string name="internal_browser_extracting_error">عذرًا، تعذّر استخراج المقال</string>
+    <string name="internal_browser_storecookies">تخزين ملفات تعريف الارتباط للمواقع</string>
+    <string name="internal_browser_readermode">وضع القراءة</string>
+
     <!-- Live thread -->
+    <string name="livethread_loading_title">جارٍ تحميل المحادثة المباشرة…</string>
+    <string name="livethread_not_found">لم يتم العثور على المحادثة المباشرة</string>
+    <string name="livethread_recents_title">محادثة مباشرة: %1$s</string>
+
     <!-- Used when viewing media -->
+    <string name="mediaview_notif_title">جارٍ تنزيل الصورة…</string>
+    <string name="mediaview_notif_video">جارٍ تنزيل الفيديو…</string>
+    <string name="mediaview_notif_text">التنزيل قيد التقدم</string>
+    <string name="mediaview_save">حفظ %1$s</string>
+    <string name="mediaview_saving">جارٍ حفظ %1$s</string>
+
     <!-- Drafts -->
+    <string name="choose_draft">اختر مسودة</string>
+    <string name="dialog_no_drafts">لا توجد مسودات بعد</string>
+    <string name="dialog_no_drafts_msg">يمكنك إضافة مسودة بالنقر على أيقونة \'حفظ\' في شريط المحرر!</string>
+    <string name="msg_save_draft">تم حفظ الرسالة كمسودة</string>
+    <string name="manage_drafts">إدارة المسودات</string>
+    <string name="really_delete_drafts">هل تريد حقًا حذف هذه المسودات؟</string>
+
     <!-- Strings for widgets -->
+    <string name="widget_theme_dark">داكن</string>
+    <string name="widget_theme_light">فاتح</string>
+    <string name="widget_theme_clear">شفاف</string>
+    <string name="widget_posttype_title">نوع المنشور</string>
+    <string name="widget_posttype_list">قائمة</string>
+    <string name="widget_posttype_bigpic">صورة كبيرة</string>
+    <string name="widget_posttype_compact">مضغوط</string>
+    <string name="widget_subname_hint">اسم السبريدت</string>
+    <string name="widget_visuals">المظهر</string>
+    <string name="widget_content">المحتوى</string>
+    <string name="widget_loading">جارٍ التحميل…</string>
+    <string name="widget_creation_title">أداة جديدة</string>
+    <string name="shortcut_creation_title">اختصار جديد</string>
+
     <!-- Strings for alert dialogs -->
+    <string name="force_change_subscription">تعذّر تغيير الاشتراك</string>
+    <string name="force_change_subscription_desc">هل ما زلت ترغب في تغييره محليًا؟</string>
+    <string name="never_load_images">عدم تحميل أي صور</string>
+    <string name="load_low_quality">تحميل صور منخفضة الجودة (بحد أقصى 320x320)</string>
+    <string name="load_medium_quality">تحميل صور متوسطة الجودة (بحد أقصى 640x640)</string>
+    <string name="load_high_quality">تحميل صور عالية الجودة (بحد أقصى 1080x1080)</string>
+    <string name="choose_color_title">اختر لونًا</string>
+    <string name="enter_text_to_filter_click_enter_to_add">أدخل نصًا للبحث، واضغط Enter لإضافة مرشح</string>
+    <string name="mode_desktop_compact">سطح المكتب المضغوط</string>
+    <string name="show_content_type_text_beside_links">عرض نص نوع المحتوى بجوار الروابط</string>
+    <string name="comment_shadowbox">صندوق التعليقات المتراكب</string>
+
     <!-- Sidebar strings (multis, flairs) -->
+    <string name="sidebar_select_flair">اختر وسمًا</string>
+    <string name="sidebar_select_flair_text">تعيين نص الوسم</string>
+    <string name="sidebar_findingmods">جارٍ البحث عن المشرفين</string>
+    <string name="snackbar_flair_success">تم تعيين الوسم بنجاح</string>
+    <string name="snackbar_flair_error">خطأ أثناء تعيين الوسم، حاول مرة أخرى قريبًا</string>
+    <string name="sidebar_submods">مشرفو /r/%s</string>
+    <string name="sidebar_flair">الوسم: %1$s</string>
+    <string name="sidebar_notfound">لم يتم العثور على شريط جانبي</string>
+    <plurals name="reorder_selected">
+        <item quantity="zero">"لم يتم التحديد"</item>
+        <item quantity="one">"تم تحديد واحد"</item>
+        <item quantity="two">"تم تحديد اثنين"</item>
+        <item quantity="few">"تم تحديد %d"</item>
+        <item quantity="many">"تم تحديد %d"</item>
+        <item quantity="other">"تم تحديد %d"</item>
+    </plurals>
+
     <!--Filtering dialog -->
+    <string name="filter_title">ما الذي ترغب في تصفيته؟</string>
+    <string name="filter_posts_sub">المنشورات من /r/%1$s</string>
+    <string name="filter_posts_user">منشورات /u/%1$s</string>
+    <string name="filter_posts_urls">المنشورات التي ترتبط بـ %1$s</string>
+    <string name="filter_open_externally">فتح روابط %s خارجيًا</string>
+    <string name="filter_posts_flair">الوسم \"%1$s\" من %2$s</string>
+    <string name="filter_btn">تصفية</string>
+
     <!-- Caching -->
+    <string name="cache_no_comments_found">لم يتم العثور على تعليقات</string>
+    <string name="cache_no_comments_found_snackbar">لم يتم العثور على تعليقات مخزّنة مؤقتًا</string>
+    <string name="cache_no_comments_found_message">لا يحتوي هذا المنشور على تعليقات مخزّنة مؤقتًا. لتخزين التعليقات مستقبلًا، انقر على قائمة النقاط الثلاث في الشاشة الرئيسية واختر \'تخزين التعليقات مؤقتًا\'، أو فعّل التخزين التلقائي في تبويب المحتوى دون اتصال في القائمة الجانبية</string>
+    <string name="autocache_subreddits">سبريدتات التخزين التلقائي</string>
+    <string name="autocache_time">وقت التخزين التلقائي</string>
+    <string name="cache_subreddits_now">تخزين السبريدتات مؤقتًا الآن</string>
+    <string name="cache_wifi_only">التخزين المؤقت عبر Wi-Fi فقط</string>
+    <string name="comments_depth">عمق التعليقات المراد تخزينها</string>
+    <string name="comments_count">عدد التعليقات المراد تخزينها</string>
+
     <!-- Saving location setting -->
+    <string name="set_save_location">تعيين موقع حفظ الوسائط</string>
+    <string name="set_save_location_msg">لم يتم تعيين موقع حفظ الوسائط في Slide.</string>
+
     <!-- Report flow -->
     <string name="btn_report">ابلاغ</string>
+    <string name="report_post">الإبلاغ عن المنشور</string>
+    <string name="report_comment">الإبلاغ عن التعليق</string>
+    <string name="report_loading">جارٍ تحميل الأسباب…</string>
+    <string name="report_sub_rules">قواعد /r/%s</string>
+    <string name="report_site_rules">قواعد Reddit</string>
+    <string name="report_another_reason">سبب آخر</string>
+    <string name="report_other">أخرى</string>
+    <string name="input_reason_for_report">سبب الإبلاغ</string>
+    <string name="msg_report_sent">تم إرسال البلاغ</string>
+
     <!-- Unsorted ¯\\_(ツ)_/¯ -->
     <string name="comment_load_more_number_unknown">إظهار المزيد من التعليقات</string>
+    <string name="card_right_thumb">صورة مصغّرة محاذاة لليمين</string>
+    <string name="setting_filter_subreddits">مرشحات السبريدت</string>
+    <string name="subreddit_theme">سمة السبريدت</string>
+    <string name="dialog_choose_subreddits_to_edit">اختر السبريدتات المراد تحريرها</string>
+    <string name="dialog_color_sync_title">مزامنة الألوان</string>
+    <string name="dialog_color_sync_message">سيحاول هذا جلب ‘اللون الأساسي’ للسبريدت الذي حدده المشرفون. لن يستبدل السبريدتات الملوّنة مسبقًا.</string>
+    <string name="fab_hide">إخفاء المنشورات المعروضة</string>
+    <string name="fab_create">إنشاء منشور جديد</string>
+    <string name="fab_disabled">معطّل</string>
+    <string name="fab_search">البحث في المنشورات</string>
+    <string name="handling_internal_browser">المتصفح الداخلي</string>
+    <string name="handling_external_browser">المتصفح الخارجي</string>
+    <string name="mode_list">قائمة</string>
+    <string name="mode_centered">بطاقة بصورة في المنتصف</string>
+    <string name="mode_card">بطاقة</string>
+    <string name="mode_thumbnail">صورة مصغّرة</string>
+    <string name="mode_no_thumbnails">بدون صورة مصغّرة</string>
+    <string name="mode_big_thumbnails">صور مصغّرة عريضة</string>
+    <string name="mode_cropped">صورة كبيرة مقتصّة</string>
+    <string name="mode_letterbox">صورة كبيرة بإطار</string>
+    <string name="mode_bigpic">صورة كبيرة</string>
+    <string name="press_actionbar">اضغط السهم لإظهار شريط الإجراءات</string>
+    <string name="show_top_right">إظهار في الأعلى يمينًا</string>
+    <string name="show_bottom_right">إظهار في الأسفل يمينًا</string>
+    <string name="small_tag_disabled">معطّل</string>
+    <string name="tap_actionbar">اضغط مطوّلًا لإظهار شريط الإجراءات</string>
+    <string name="always_actionbar">إظهار شريط الإجراءات دائمًا</string>
+    <string name="sub_content_filter">مرشح محتوى السبريدت</string>
+    <string name="submission_share_reddit_url">مشاركة التعليقات</string>
+    <string name="filter_content">تصفية هذا المحتوى</string>
+    <string name="content_to_show">المحتوى المراد إظهاره في %1$s</string>
+    <string name="save_for_offline_viewing">حفظ المنشورات للعرض دون اتصال</string>
+    <string name="btn_collapse_children_all">طي التعليقات الفرعية</string>
+    <string name="btn_open_content">فتح المحتوى</string>
+    <string name="enter_text_to_filter_click_enter_to_add_flair">أدخل نصًا للتصفية (subreddit:flair_text)، واضغط Enter للإضافة</string>
+    <plurals name="filter_count">
+        <item quantity="zero">%1$d مرشح (%2$d بحد أقصى للعرض)</item>
+        <item quantity="one">مرشح واحد (%2$d بحد أقصى للعرض)</item>
+        <item quantity="two">مرشحان (%2$d بحد أقصى للعرض)</item>
+        <item quantity="few">%1$d مرشحات (%2$d بحد أقصى للعرض)</item>
+        <item quantity="many">%1$d مرشحًا (%2$d بحد أقصى للعرض)</item>
+        <item quantity="other">%1$d مرشح (%2$d بحد أقصى للعرض)</item>
+    </plurals>
+    <string name="filter_limit_reached">عرض أول %1$d من %2$d. ابحث لتضييق النتائج.</string>
+    <string name="datasave_always">بيانات الجوال وWi-Fi</string>
+    <string name="datasave_mobile">بيانات الجوال</string>
+    <string name="never">أبدًا</string>
+    <string name="multi_column_force_full">فرض عرض التعليقات الكامل</string>
+    <string name="submission_info_locked">هذا منشور مقفل. لن تتمكن من التعليق.</string>
+    <string name="card_background_tint">خلفية البطاقة</string>
+    <string name="subreddit_name_tint">اسم السبريدت</string>
+    <string name="login_failed_err_decline">تأكد من أنك لم تختر ‘رفض’ في الشاشة السابقة، وحاول مرة أخرى بعد دقيقة</string>
+    <string name="login_unsupported_redirect_uri">لا يمكن للمتصفح استقبال عنوان إعادة التوجيه المُعدّ (%1$s)، لذا لا يمكن إكمال تسجيل الدخول. استخدم طريقة تسجيل الدخول عبر WebView داخل التطبيق بدلًا من ذلك، أو عيّن عنوان إعادة توجيه مدعومًا في الإعدادات.</string>
+    <string name="login_unsupported_redirect_uri_title">فشل تسجيل الدخول</string>
+    <string name="login_failed_oauth_error_page">فشل تسجيل الدخول — أعاد Reddit خطأً بدلًا من إكمال تسجيل الدخول. تحقق من معرّف العميل وعنوان إعادة التوجيه في الإعدادات.</string>
+    <string name="tutorial_swipe_navigation">التنقل بالتمرير</string>
+    <string name="tutorial_swipe_description">مرّر من الحافة اليسرى للخروج.\n\nينطبق هذا على الصور وصور GIF والألبومات والإعدادات والمزيد!</string>
+    <string name="handling_browser">متصفح الويب</string>
+    <string name="submit_replies_to_inbox">إرسال الردود إلى صندوق الوارد</string>
+    <string name="btn_open_comments">فتح التعليقات</string>
+    <string name="btn_preview">معاينة</string>
+    <string name="default_comment_sort">الترتيب الافتراضي للتعليقات</string>
+    <string name="content_deleted">[محذوف]</string>
+    <string name="thread_continue">متابعة هذه المحادثة</string>
+    <string name="type_selftext">نص ذاتي</string>
+    <string name="type_selftexts">نصوص ذاتية</string>
+    <string name="submission_unhide">إظهار المنشور</string>
+    <string name="submission_info_unhidden">تم إظهار المنشور</string>
+    <string name="msg_sent_success">تم إرسال الرسالة</string>
+    <string name="msg_sent_failure">فشل إرسال الرسالة</string>
+    <string name="msg_send_user_dne">هذا المستخدم غير موجود</string>
+    <string name="editor_actions_quote_comment">حدد النص المراد اقتباسه</string>
+    <string name="guest">ضيف</string>
+    <string name="album_slide_view">عرض الألبوم بالتمرير</string>
+    <string name="album_grid">شبكة الألبوم</string>
+    <string name="open_externally">فتح خارجيًا</string>
+    <string name="vertical_album_view">عرض الألبوم عموديًا</string>
+    <string name="download_album">تنزيل الألبوم</string>
+    <string name="download_gallery">تنزيل المعرض</string>
+    <string name="compose_message">كتابة رسالة</string>
+    <string name="mark_all_as_read">تعليم الكل كمقروء</string>
+    <string name="clear_subreddit_history">مسح سجل السبريدتات</string>
+    <string name="clear_submission_history">مسح سجل المنشورات</string>
+    <string name="alert_history_cleared">تم مسح السجل!</string>
+    <string name="manage_offline_content">إدارة المحتوى دون اتصال</string>
+    <string name="go_offline">الانتقال إلى وضع عدم الاتصال</string>
+    <string name="sidebar_edit_flair">تحرير وسمك</string>
+    <string name="go_online_view_content">يرجى الاتصال بالإنترنت لعرض هذا المحتوى</string>
+    <string name="help">مساعدة</string>
+    <string name="upvote_percentage">عرض نسبة التصويت الإيجابي</string>
+    <string name="view_subreddits">عرض السبريدتات</string>
+    <string name="clear_saved_subreddits">مسح جميع السبريدتات المحفوظة</string>
+    <string name="download_the_slide_video_player_plugin">تنزيل إضافة Slide Video Player</string>
+    <string name="btn_suggest_title">اقتراح عنوان</string>
+    <string name="navigate_comments_since">التعليقات الأحدث من…</string>
+    <string name="btn_offline">الدخول إلى وضع عدم الاتصال</string>
+    <string name="discard_comment_title">تجاهل التعليق؟</string>
+    <string name="comment_discard_msg">هل تريد حقًا تجاهل تعليقك؟</string>
+    <string name="backup_saved_downloads">تم حفظ النسخة الاحتياطية في مجلد التنزيلات</string>
+    <string name="really_remove_subreddit_title">هل تريد حقًا إزالة هذا السبريدت؟</string>
+    <string name="choose_sync_time">اختر وقت المزامنة</string>
+    <string name="account_suspended">هذا الحساب موقوف</string>
+    <string name="clear_all_sub_themes">مسح جميع سمات السبريدت؟</string>
+    <string name="clear_all_sub_themes_msg">لا يمكنك التراجع عن هذا الإجراء</string>
+    <string name="title_not_found">لم يتم العثور على العنوان</string>
+    <string name="really_delete_submission">هل تريد حقًا حذف هذا المنشور؟ لا يمكنك التراجع عن هذا</string>
+    <string name="comment_unstickied">تم إلغاء تثبيت التعليق</string>
+    <string name="comment_stickied">تم تثبيت التعليق</string>
+    <string name="comment_undistinguished">تم إلغاء تمييز التعليق</string>
+    <string name="comment_distinguished">تم تمييز التعليق</string>
+    <string name="comment_removed">تمت إزالة التعليق</string>
+    <string name="set_nav_mode">تعيين وضع التنقل</string>
+    <string name="auto_hide_the_comment_nav_bar">إخفاء شريط تنقل التعليقات تلقائيًا</string>
+    <string name="rate_slide">قيّم Slide</string>
+    <string name="edit_query">تحرير الاستعلام</string>
+    <string name="share_slide">مشاركة Slide</string>
+    <string name="open_clipboard_reddit_link">فتح رابط Reddit الموجود في الحافظة</string>
+    <string name="clipboard_no_reddit_link">لا يوجد رابط Reddit في الحافظة</string>
+    <string name="open_links_externally">فتح هذا المضيف خارجيًا دائمًا</string>
+    <string name="hide_read_posts">إخفاء المنشورات المقروءة</string>
+    <string name="gallery_mode">وضع المعرض</string>
+    <string name="settings_gallery_grid">عرض منشورات المعرض كشبكة</string>
+    <string name="gallery_grid_image">صورة المعرض %1$d من %2$d</string>
+    <string name="gallery_grid_overflow">+%1$d</string>
+    <string name="friends_sort_error">لا يمكن ترتيب /r/friends</string>
+    <string name="shadowbox_comments_nolinks">لم يتم العثور على روابط في التعليقات</string>
+    <string name="draw_undo">تراجع</string>
+    <string name="empty_preview_text">لا شيء لعرضه هنا ¯\\_(ツ)_/¯</string>
+    <string name="theme_red_shift">الانزياح الأحمر</string>
+    <string name="view_sub_sidebar">عرض الشريط الجانبي للسبريدت</string>
+    <string name="mod_log">سجل الإشراف</string>
+    <string name="navigation_bar_vote_gestures">إيماءات التصويت في شريط التنقل</string>
+    <string name="nav_gestures_description">صوّت إيجابيًا وسلبيًا بالتمرير على أسهم تنقل التعليقات</string>
+    <string name="subreddit_sidebar_progress">جارٍ جلب الشريط الجانبي…</string>
+    <string name="manage_your_subreddits">إدارة سبريدتاتك</string>
+    <string name="enlarge_links">تكبير الروابط</string>
+    <string name="enlarge_links_warning">قد يجعل بعض الأسطر أكبر من غيرها، لكنه يسهّل لمس الروابط</string>
+    <string name="type_tumblr">Tumblr</string>
+    <string name="type_tumblrs">منشورات Tumblr</string>
+    <string name="type_nsfw_tumblr">Tumblr بتصنيف NSFW</string>
+    <string name="submission_info_contest">هذه المحادثة في وضع المسابقة. لا يمكنك تغيير الترتيب.</string>
+    <string name="sub_post_notifs_msg">سيتحقق Slide من المنشورات الجديدة عند التحقق من البريد (يجب تفعيل إشعارات البريد)</string>
+    <string name="mod_ban_reason_required">السبب مطلوب</string>
+    <string name="settings_abbreviate_post_scores">اختصار نقاط المنشورات (مثال 24.0k)</string>
+    <string name="settings_wide_depth_indicators">مؤشرات عريضة لعمق التعليقات</string>
+    <string name="settings_link_reader_mode_title">استخدام وضع القراءة</string>
+    <string name="settings_link_reader_mode_description">فتح جميع الروابط في وضع القراءة. سيُستخدم نوع المتصفح عند الفتح من وضع القراءة.</string>
+    <string name="settings_link_reader_night">ربط وضع القراءة بالوضع الليلي</string>
+    <string name="theme_pixel">Pixel</string>
+    <string name="save_images_to_subreddit_specific_subfolders">حفظ الصور في مجلدات فرعية خاصة بكل سبريدت</string>
+    <string name="description_save_subfolders">يعمل في عرضي المنشورات والتعليقات</string>
+    <string name="save_media_to_type_specific_subfolders">حفظ الوسائط في مجلدات فرعية حسب النوع</string>
+    <string name="description_save_type_subfolders">تذهب الصور إلى \"images\"، ومقاطع الفيديو وصور GIF إلى \"videos\"</string>
+    <string name="show_image_download_button">اختصار التنزيل</string>
+    <string name="description_image_download_button">عرض زر التنزيل في عارض الصور</string>
+    <string name="content_settings">إعدادات المحتوى</string>
+    <string name="setting_titleTop">عرض العنوان فوق سطر المعلومات</string>
+    <string name="setting_notification_piggybacking">الاستفادة من إشعارات Reddit</string>
+    <string name="setting_notification_piggybacking_desc">التحقق من البريد فقط عندما يتلقى تطبيق Reddit الرسمي إشعارًا فوريًا</string>
+    <string name="install_notif_piggyback">ثبّت تطبيق Reddit الرسمي لتفعيل الاستفادة من الإشعارات</string>
+    <string name="success_block_user">تم حظر المستخدم بنجاح</string>
+    <string name="err_unblock_user">خطأ أثناء إلغاء حظر المستخدم</string>
+    <string name="success_unblock_user">تم إلغاء حظر المستخدم بنجاح</string>
+    <string name="settings_highlight_time_desc">يتطلب تفعيل \'عرض عدد التعليقات منذ آخر زيارة\' في الإعدادات &gt; تخطيط المنشور</string>
+    <string name="settings_colored_time">فقاعة وقت ملوّنة للتعليقات الجديدة</string>
+    <string name="theme_deep">عميق</string>
+    <string name="type_vreddit">فيديو Reddit</string>
+    <string name="authors_above">أسماء الكتّاب في الأعلى</string>
+    <string name="btn_crosspost">نشر متقاطع</string>
+    <string name="btn_reset_color">إعادة تعيين اللون</string>
+    <string name="settings_shortlink_description">ستتم مشاركة الروابط بصيغة \'https://reddit.com/comments/\'</string>
+    <string name="settings_shortlink">مشاركة رابط Reddit المختصر حيثما أمكن</string>
+    <string name="disable_replies_comment">تعطيل ردود التعليقات في صندوق الوارد</string>
+    <string name="replies_disabled_comment">تم تعطيل ردود التعليقات</string>
+    <string name="replies_enabled_comment">تم تفعيل ردود التعليقات</string>
+    <string name="replies_switch_accounts">التبديل إلى حساب آخر</string>
+    <string name="search_settings">البحث في الإعدادات</string>
+    <string name="show_collapse_expand_nav_bar">عرض زر الطي/التوسيع في شريط تنقل التعليقات</string>
+    <string name="page_not_found">لم يتم العثور على الصفحة</string>
+    <string name="page_does_not_exist">الصفحة التي طلبتها غير موجودة</string>
+    <string name="back_button_behavior_goto_first">الانتقال إلى أول سبريدت</string>
+    <string name="settings_hide_post_awards">إخفاء الجوائز</string>
+    <string name="settings_hide_comment_awards">إخفاء الجوائز</string>
+    <string name="settings_title_markdown">Markdown</string>
+    <string name="settings_markdown_new_reddit">تنسيق Markdown بنمط Reddit الجديد</string>
+    <string name="settings_markdown_new_reddit_desc">عرض كتل التعليمات البرمجية والتنسيق مثل Reddit الجديد (عند الإيقاف يُستخدم عارض Reddit القديم)</string>
+    <string name="comment_render_other">عرض التنسيق الآخر</string>
+    <string name="recover_post">استعادة المنشور</string>
+    <string name="recover_loading">جارٍ جلب النسخة الأصلية من الأرشيف…</string>
+    <string name="recover_post_failed">تعذّرت استعادة هذا المنشور</string>
+    <string name="recover_comment">استعادة التعليق</string>
+    <string name="recover_comment_failed">تعذّرت استعادة هذا التعليق</string>
+    <string name="markdown_preview_new_reddit">عرض Reddit الجديد</string>
+    <string name="markdown_preview_old_reddit">عرض Reddit القديم</string>
+    <string name="high_colorspace_images">صور بمساحة ألوان عالية</string>
+    <string name="description_high_colorspace">يحمّل مساحة الألوان الكاملة للصور، مما قد يؤدي إلى استهلاك أعلى للذاكرة</string>
+    <string name="wide_color_gamut">تدرج ألوان واسع</string>
+    <string name="description_wide_color_gamut">عرض عارضات الوسائط بتدرج ألوان واسع. قد يبهت الألوان على بعض شاشات OLED</string>
+    <string name="comment_emote_animation">تحريك رموز التعليقات</string>
+    <string name="description_comment_emote_animation">يحدد ما إذا كانت الرموز غير التابعة لـ Giphy في التعليقات متحركة أم لا</string>
+    <string name="comment_image_size">حجم صور التعليقات</string>
+    <string name="description_comment_image_size">حجم عرض الصور المضمّنة في التعليقات</string>
+    <string name="comment_image_size_small">صغير</string>
+    <string name="comment_image_size_medium">متوسط</string>
+    <string name="comment_image_size_large">كبير</string>
+    <string name="no_preview_image_longclick">تعطيل الضغط المطوّل على صور المعاينة لجميع أنواع المحتوى</string>
+    <string name="description_no_preview_image_longclick">يحدد ما إذا كان الضغط المطوّل يعمل على صور المعاينة لجميع أنواع المحتوى. يعطّل هذا ميزة المعاينة السريعة.</string>
+    <string name="editor_btn_select_flair">اختر وسمًا</string>
+    <string name="submit_selected_flair">الوسم المحدد: %s</string>
+    <string name="mediaview_downloading">جارٍ تنزيل الصورة&#8230;</string>
+    <string name="err_save_image">خطأ أثناء حفظ الصورة</string>
+    <string name="error_directory_not_selected">لم يتم اختيار مجلد. يرجى المحاولة مرة أخرى.</string>
+
+    <!-- Backup Operations -->
+
+    <!-- Additional Backup Operations -->
+    <string name="select_backup_file">اختر ملف النسخة الاحتياطية</string>
+
+    <string name="read_later">القراءة لاحقًا</string>
+    <string name="mark_as_read">تعليم كمقروء</string>
+
+    <string name="reddit_client_id">معرّف عميل Reddit</string>
+    <string name="click_custom_client_id">انقر لتعيين معرّف عميل مخصص</string>
+    <string name="client_id_scan_qr">مسح رمز QR</string>
+    <string name="client_id_scan_prompt">امسح رمز QR يحتوي على معرّف عميل Reddit الخاص بك</string>
+    <string name="camera_permission_denied">إذن الكاميرا مطلوب لمسح رموز QR</string>
+    <string name="client_id_invalid_length">معرّف عميل غير صالح: يجب أن يتكون من 22 حرفًا بالضبط</string>
+
+    <!-- Notification permission strings -->
+    <string name="notifications_permission_title">تفعيل الإشعارات</string>
+    <string name="notifications_permission_message">يحتاج Slide إلى إذن الإشعارات لإعلامك بالرسائل والمنشورات الجديدة والتحديثات الأخرى من Reddit. يمكنك إدارة إعدادات الإشعارات لاحقًا.</string>
+    <string name="notification_listener_permission_title">تفعيل الوصول إلى الإشعارات</string>
+    <string name="notification_listener_permission_message">يحتاج Slide إلى الوصول إلى الإشعارات لاعتراض إشعارات Reddit وتقديم تجربة إشعارات أفضل. يرجى تفعيل الوصول إلى الإشعارات لـ Slide في الشاشة التالية.</string>
+
+
+    <string name="reddit_redirect_uri_override">تجاوز عنوان إعادة توجيه Reddit</string>
+    <string name="click_custom_redirect_uri">انقر لتعيين عنوان إعادة توجيه مخصص</string>
+    <string name="settings_reddit_redirect_uri_invalid">عنوان إعادة توجيه غير صالح: يجب أن يكون بصيغة scheme://hostname</string>
+    <string name="reddit_user_agent_override">تجاوز وكيل مستخدم Reddit</string>
+    <string name="click_custom_user_agent">انقر لتعيين وكيل مستخدم مخصص</string>
+    <string name="settings_enable_overrides">تفعيل التجاوزات</string>
+    <string name="settings_enable_overrides_desc">استخدم معرّف العميل وعنوان إعادة التوجيه ووكيل المستخدم المخصصة بدلًا من الإعدادات الافتراضية للتطبيق. اتركه معطّلًا ما لم تكن بحاجة إليه.</string>
+
+    <string name="settings_section_sound">الصوت</string>
+    <string name="settings_unmute_default">إلغاء كتم صوت الفيديو افتراضيًا</string>
+
+    <string name="settings_subreddit_filter_prefix_matching">تفعيل مطابقة بادئة مرشح السبريدت</string>
+    <string name="settings_subreddit_filter_prefix_matching_description">البادئة هي اسم السبريدت كاملًا، وبحد أدنى ستة أحرف. أمثلة: السبريدت social سيحظر socialanxiety. والسبريدت pokemongo سيحظر pokemongoraids.</string>
+
+    <string name="settings_filter_old_posts">تصفية المنشورات الأقدم من</string>
+    <plurals name="settings_filter_old_posts_days">
+        <item quantity="zero">%1$d يوم</item>
+        <item quantity="one">يوم واحد</item>
+        <item quantity="two">يومان</item>
+        <item quantity="few">%1$d أيام</item>
+        <item quantity="many">%1$d يومًا</item>
+        <item quantity="other">%1$d يوم</item>
+    </plurals>
+    <string name="settings_filter_old_posts_description">لا يُطبّق عند عرض سبريدت مفرد، أو عند الترتيب حسب الأعلى أو المثير للجدل</string>
+
+    <!-- Pause on audio focus ducking setting -->
+    <string name="settings_pause_on_duck_title">إيقاف الفيديو مؤقتًا بدلًا من خفض الصوت</string>
+    <string name="settings_pause_on_duck_desc">أوقف مقاطع الفيديو مؤقتًا عندما تشغّل تطبيقات أخرى صوتًا. خفض الصوت هو تقليل مستوى الصوت بدلًا من إيقاف الفيديو مؤقتًا.</string>
+
+    <!-- Add this string resource for the play button content description -->
+    <string name="btn_play">تشغيل</string>
+
+    <string name="multireddit_name_title">اسم المالتي ريديت</string>
+    <string name="multireddit_name_hint">اسم المالتي ريديت</string>
+    <string name="multireddit_err_empty_name">لا يمكن أن يكون اسم المالتي ريديت فارغًا</string>
+    <string name="multireddit_err_no_valid_subs">لم يتم اختيار سبريدتات صالحة. يرجى اختيار سبريدت واحد على الأقل.</string>
+    <string name="multireddit_progress_title">جارٍ إنشاء المالتي ريديت</string>
+    <string name="multireddit_progress_message">يرجى الانتظار بينما ننشئ المالتي ريديت الخاص بك...</string>
+    <string name="multireddit_created_success">تم إنشاء المالتي ريديت بنجاح</string>
+    <string name="multireddit_created_error">فشل إنشاء المالتي ريديت. يرجى المحاولة مرة أخرى.</string>
+    <string name="multireddit_json_error">حدث خطأ أثناء تجهيز بيانات المالتي ريديت</string>
+
+    <string name="settings_dialog_colored_border">وضع إطار ملوّن حول مربعات الحوار</string>
+    <string name="settings_dialog_colored_border_desc">عرض إطار ملوّن رفيع حول بعض مربعات الحوار.</string>
+
+    <string name="misc_err_sync_failed">فشلت مزامنة السبريدتات. ألا توجد سبريدتات مشترك بها؟</string>
+
+    <string name="mod_btn_distinguish">تمييز</string>
+    <string name="mod_btn_undistinguish">إلغاء التمييز</string>
+
+    <string name="nsfw_status_removed">تمت إزالة تصنيف NSFW</string>
+    <string name="nsfw_status_set">تم تعيين تصنيف NSFW</string>
+
+    <string name="spoiler_status_removed">تمت إزالة تصنيف حرق الأحداث</string>
+    <string name="spoiler_status_set">تم تعيين تصنيف حرق الأحداث</string>
+
+    <string name="submission_distinguished">تم تمييز المنشور</string>
+    <string name="submission_distinguished_removed">تمت إزالة تمييز المنشور</string>
+
+    <string name="settings_general_hide_subreddit_tabs">إخفاء علامات تبويب السبريدتات المشترك بها</string>
+    <string name="settings_general_hide_subreddit_tabs_desc">إخفاء السبريدتات المشترك بها كعلامات تبويب، مع الإبقاء على أزرار التنقل</string>
+
+    <!-- Video playback speed control -->
+    <string name="video_speed">السرعة</string>
+    <string name="video_speed_0_25x">0.25x</string>
+    <string name="video_speed_0_5x">0.5x</string>
+    <string name="video_speed_0_75x">0.75x</string>
+    <string name="video_speed_1x">عادي</string>
+    <string name="video_speed_1_25x">1.25x</string>
+    <string name="video_speed_1_5x">1.5x</string>
+    <string name="video_speed_2x">2x</string>
+    <string name="video_speed_control_content_desc">التحكم في سرعة التشغيل</string>
+    <string name="image_unavailable">الصورة غير متاحة</string>
+    <string name="image_rotate_content_desc">تدوير الصورة 90 درجة باتجاه عقارب الساعة</string>
+    <string name="image_rotate_left_content_desc">تدوير الصورة 90 درجة عكس اتجاه عقارب الساعة</string>
+
+    <!-- Folder chooser dialog (formerly provided by afollestad material-dialogs commons) -->
+    <string name="md_error_label">خطأ</string>
+    <string name="md_storage_perm_error">تتطلب هذه الوظيفة إذن التخزين، وهو غير ممنوح.</string>
+    <string name="md_choose_label">اختيار</string>
+    <string name="new_folder">مجلد جديد</string>
 </resources>

@@ -5,9 +5,9 @@
     <string name="general_confirm_exit">本当に終了しますか?</string>
     <string name="general_confirm_exit_msg">Slide を終了してもよろしいですか?</string>
     <string name="general_enable_shadowbox">シャドー ボクシング モードを有効にする</string>
-    <string name="pro_upgrade_msg">Slide for Reddit Pro にアップグレードして次の素晴らしい新機能を楽しみましょう:\n\n- 広告ブロッカーと Web サイトビューのリーダーモード\n- アップロードする画像のトリミングと描画\n- カスタマイズ可能なタブレット カラムモード\n- 自動夜間モード\n- シャドーボックスとギャラリー コンテンツ ビュー\n- コメント シャドーボックス ビュー\n- Google ドライブおよびファイルへのバックアップと復元\n- オープンソースと広告のないソフトウェアのサポート!\n\nSlide for Reddit をサポートしていただけませんか?</string>
     <string name="general_open_settings">Subreddit 設定を開く</string>
     <string name="general_sub_sync">購読の同期中</string>
+
     <!-- Used when viewing a thread -->
     <string name="submission_info_unsaved">未保存のサブミッション</string>
     <string name="submission_info_saved">保存したサブミッション</string>
@@ -25,9 +25,9 @@
     <string name="submission_gild">ブラウザーで開く</string>
     <string name="submission_save">投稿を保存</string>
     <string name="submission_save_image">画像を保存</string>
+    <string name="submission_save_video">動画を保存</string>
     <string name="submission_load_full">完全なスレッドを読み込む</string>
     <string name="submission_np_link">これは参加リンクがありません。投票やコメントをしないでください。</string>
-    <string name="submission_tap_gif">タップすると GIF を読み込みます</string>
     <string name="submission_not_found">投稿が見つかりません!</string>
     <string name="submission_not_found_msg">申し訳ありませんが、この投稿は見つかりませんでした</string>
     <string name="submission_copy_text">テキストをコピー</string>
@@ -38,7 +38,12 @@
     <string name="submission_text_copied">Selftext をコピーしました</string>
     <string name="submission_nocontent">サブミッションにはコンテンツがありません</string>
     <string name="submission_link_copied">リンクをコピーしました</string>
+    <string name="translate_with_google">翻訳</string>
+    <string name="translate_no_app">翻訳に利用できるアプリがありません</string>
+    <string name="read_aloud">読み上げる</string>
+    <string name="read_aloud_unavailable">音声読み上げを利用できません</string>
     <string name="submission_removed">サブミッションを削除しました</string>
+
     <plurals name="new_messages">
         <item quantity="other">%d件の新規メッセージ</item>
     </plurals>
@@ -48,6 +53,7 @@
     <plurals name="comments">
         <item quantity="other">ｺﾒﾝﾄ</item>
     </plurals>
+
     <!-- Theme settings -->
     <string name="theme_light">明るめ</string>
     <string name="theme_dark">暗め</string>
@@ -65,6 +71,7 @@
     <string name="theme_sepia">セピア</string>
     <string name="theme_amoled_contrast">AMOLEDでコントラストを使用する</string>
     <string name="theme_night">夜間テーマ</string>
+
     <!-- Font settings -->
     <string name="font_size_comment">コメントのフォントサイズ</string>
     <string name="font_size_post">投稿のフォントサイズ</string>
@@ -75,13 +82,18 @@
     <string name="font_size_small">小さい</string>
     <string name="font_size_smaller">さらに小さい</string>
     <string name="font_size_tiny">極小</string>
+
     <!-- For editing the submission card layout -->
     <string name="card_hide_post_button">アクションバーの \"投稿を隠す\" ボタン</string>
     <string name="card_tint_outside">Subreddit 外の色のみ</string>
     <string name="card_save_button">アクションバー \'\'投稿を保存\'\' ボタン</string>
+
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">複数列</string>
+    <string name="multi_column_portrait_count">縦向きの列数</string>
+    <string name="multi_column_landscape_count">横向きの列数</string>
     <string name="single_column_multi_window">マルチウィンドウモードで一つの列</string>
+
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">あなた</string>
     <string name="drawer_support">Pro 版</string>
@@ -89,19 +101,25 @@
     <string name="drawer_add_account">アカウントを追加</string>
     <string name="drawer_hello">こんにちは，</string>
     <string name="drawer_search">Subreddit を検索</string>
+    <!-- Subreddit name when submitting/crossposting: a single subreddit only (no multireddit, no dot). -->
+    <!-- Message recipient: a username or an /r/ or /u/ path. -->
+    <!-- Settings search field. The trailing space is intentional, so the value is quoted to preserve it. -->
     <string name="drawer_moderation">モデレーション</string>
     <string name="drawer_offline">Slide はオフライン モードです</string>
     <string name="drawer_offline_retry">オンライン モードを試してください</string>
     <string name="drawer_guest_mode">ゲストとして参照</string>
+
     <!-- Sidebar items (That's the one on the right) -->
     <string name="sidebar_wiki">サブレディットのwiki</string>
     <string name="sidebar_mods">サブレディットのモデレーター</string>
+
     <!-- User profile -->
     <string name="profile_karma_total">カルマ合計</string>
     <string name="profile_karma_link">投稿のカルマ</string>
     <string name="profile_karma_comment">コメントカルマ</string>
     <string name="profile_message">プライベートメッセージ</string>
     <string name="profile_saved">保存しました</string>
+    <string name="local_saved">ローカル保存</string>
     <string name="profile_read_later">後で読む</string>
     <string name="profile_upvoted">ナイスしました</string>
     <string name="profile_err_title">ユーザーが見つかりませんでした。</string>
@@ -115,6 +133,10 @@
     <string name="profile_friend">友達</string>
     <string name="profile_add_friend">友達を追加</string>
     <string name="profile_remove_friend">友達を削除</string>
+    <string name="profile_follow_user">フォロー</string>
+    <string name="profile_unfollow_user">フォロー解除</string>
+    <string name="profile_add_user">ユーザーを追加</string>
+    <string name="profile_remove_user">ユーザーを削除</string>
     <string name="profile_remove_account">このアカウントを削除してもよろしいですか?</string>
     <string name="profile_remove">アカウントを削除</string>
     <string name="profile_history">履歴</string>
@@ -127,7 +149,21 @@
     <string name="profile_btn_tag">タグを付ける</string>
     <string name="profile_btn_untag">タグを外す</string>
     <string name="profile_info">プロフィール情報</string>
+    <string name="profile_options">ユーザーオプション</string>
     <string name="profile_block_user">ユーザーをブロック</string>
+    <string name="profile_block_user_description">このユーザーのメッセージ、投稿、プロフィールをブロックします</string>
+    <string name="profile_unblock_user">ユーザーのブロックを解除</string>
+    <string name="profile_unblock_user_description">このユーザーのメッセージ、投稿、プロフィールのブロックを解除します</string>
+    <string name="profile_search">検索</string>
+    <string name="profile_search_title">%1$s 内を検索</string>
+    <string name="profile_search_hint">タイトルと本文を検索…</string>
+    <string name="profile_search_no_results">結果が見つかりません</string>
+    <string name="profile_search_clear">検索をクリア</string>
+    <string name="profile_search_cleared">検索をクリアしました</string>
+    <string name="profile_search_loading">検索中…</string>
+    <string name="profile_search_progress">%1$d 件の結果 · %2$d 件を検索済み</string>
+    <string name="profile_search_bypass_cache">キャッシュを使わない</string>
+
     <!-- Comment text options -->
     <string name="comment_gild">受賞コメント</string>
     <string name="comment_share">コメントを共有</string>
@@ -137,14 +173,15 @@
     <string name="comment_delete_err_msg">もう一度試しますか?</string>
     <string name="comment_deleted">[削除済]</string>
     <string name="comment_unsave">未保存</string>
-    <string name="comment_load_more">さらに %1$d を読み込む</string>
-    <string name="comment_load_more_string_new">さらに %1$s 読み込む</string>
     <string name="comment_loading_more">追加のコメントを読み込んでいます&#8230;</string>
     <string name="comment_permalink">コメントの固定リンクを読み込む</string>
     <string name="comment_parent">親コメントを表示する</string>
+    <string name="comment_video_play">動画を再生</string>
+
     <!-- Welcome view (first time setup) -->
     <string name="welcome_start">始めましょう</string>
     <string name="welcome_personalize">パーソナライズ</string>
+
     <!-- Sorting options -->
     <string name="sorting_choose">並べ替えの種類を選択</string>
     <string name="sorting_time_choose">時間枠を選択</string>
@@ -164,6 +201,7 @@
     <string name="sorting_year">年</string>
     <string name="sorting_all">すべての期間</string>
     <string name="sorting_defaultfor">/r/%1$s のデフォルト</string>
+
     <!-- Editor (save/submit a post) actions -->
     <string name="editor_url">URL</string>
     <string name="editor_text">文字</string>
@@ -172,15 +210,31 @@
     <string name="editor_title">タイトル</string>
     <string name="editor_err_msg">数秒してからやり直してください。</string>
     <string name="editor_uploading_image">Imgur に画像をアップロード中</string>
-    <string name="editor_upload_image_question">Imgur に画像をアップロードしますか?</string>
+    <string name="editor_upload_image_title">画像をアップロード</string>
+    <string name="editor_upload_reddit">Reddit（インライン画像）</string>
+    <string name="editor_upload_imgur">Imgur（リンク）</string>
+    <string name="editor_uploading_reddit">画像を Reddit にアップロード中</string>
+    <string name="editor_reddit_upload_success">画像をアップロードしました</string>
+    <string name="editor_reddit_upload_failed">画像のアップロードに失敗しました</string>
+    <string name="submit_image_host_imgur">Imgur</string>
+    <string name="submit_image_host_reddit">Reddit</string>
+    <string name="submit_change_img">画像を変更</string>
+    <string name="submit_select_gallery">画像を追加</string>
+    <string name="submit_gallery_caption_hint">キャプション（任意）</string>
+    <string name="submit_gallery_count">%1$d 件選択中</string>
+    <string name="submit_uploading_gallery">画像をアップロード中 %1$d / %2$d</string>
     <string name="editor_select_img">画像選択</string>
     <string name="editor_hint_optional_body">本文 (省略可能)</string>
     <string name="editor_submit">投稿を送信</string>
     <string name="editor_hint_subreddit">Subreddit</string>
     <string name="editor_finding_title">タイトルの検索</string>
+    <string name="submit_findingflairs">フレアを取得中</string>
+    <string name="submit_flairchoices">/r/%s のフレア</string>
+
     <string name="edit_selftext">Selftext を編集</string>
     <string name="delete_submission">サブミッションを削除</string>
     <string name="set_submission_flair">サブミッションのフレアーを設定</string>
+
     <!-- Editor buttons -->
     <string name="editor_save_draft">下書きを保存</string>
     <string name="editor_chose_draft">下書きを選択</string>
@@ -196,21 +250,26 @@
     <string name="editor_size">大きなフォント</string>
     <string name="editor_strike">取り消し線</string>
     <string name="editor_spoiler">ネタバレ</string>
+
     <!-- General information / information without a category -->
     <string name="info_photo_saved">保存した写真</string>
     <string name="gif_saved">GIF を保存しました</string>
+
     <!-- General errors / errors without a category -->
     <string name="err_title">何か問題が発生しました!</string>
     <string name="err_invalid_url">URL が正しくありません</string>
     <string name="err_loading_content">コンテンツの読み込み時にエラー</string>
     <string name="err_general">エラーが発生しました</string>
     <string name="err_no_connection">Reddit に到達できませんでした。再試行しますか?</string>
+    <string name="err_no_connection_toast">Reddit に接続できませんでした。しばらくしてからもう一度お試しください</string>
     <string name="err_retry_later">1 分後にもう一度試してください!</string>
-    <string name="err_permission">アクセス許可が拒否されました</string>
-    <string name="err_permission_msg">Slide の外部ストレージへの書き込みアクセスが拒否されたようです。これにより、画像キャッシュ、投稿キャッシュ、画像の保存ができません。\nSlide の外部ストレージへのアクセスを許可してもよろしいですか?</string>
     <string name="err_authentication">認証に失敗しました</string>
     <string name="err_submit_restricted">この subreddit は制限されています</string>
     <string name="err_submit_restricted_text">ここに投稿することはできません。別の subreddit を選択してください</string>
+    <string name="err_crosspost_disallowed_text">/r/%s はクロスポストを許可していません。別のサブレディットを選んでください。</string>
+    <string name="err_crosspost_not_subscribed">クロスポストする前に /r/%s を購読する必要があります。</string>
+    <string name="err_crosspost_sub_not_found">/r/%s は存在しません。</string>
+    <string name="crosspost_flair_required_short">フレアが必要です — 投稿する前にフレアを選択してください。</string>
     <string name="error_video_not_found">ビデオが見つかりません</string>
     <string name="error_video_message">ビデオの読み込み中にエラーが発生しました</string>
     <string name="error_album_not_found">アルバムが見つかりません</string>
@@ -223,17 +282,19 @@
     <string name="err_couldnt_save_choose_new">Slide は、選択したディレクトリに保存できませんでした。新しい保存場所を選択しますか?</string>
     <string name="err_share_image">画像の共有時にエラーが発生しました</string>
     <string name="err_file_not_found">ファイルが見つかりません</string>
-    <string name="err_not_valid_backup">有効な Slide のバックアップファイルではありません</string>
-    <string name="err_not_valid_backup_msg">選択したファイルは、有効な Slide のバックアップ ファイルではありません</string>
     <string name="err_file_not_found_msg">選択したファイルが見つかりません。ファイルが存在すること、Slide がファイル/フォルダーへのアクセス権限を持っていることを確認してください。</string>
     <string name="err_comment_post">あーらら、このコメント投稿に失敗しました!</string>
     <string name="err_comment_post_reason">理由: %1$s</string>
     <string name="err_comment_post_message">\n\nあなたのコメントは下書きに保存されました。後でもう一度試してみてください。</string>
     <string name="err_connection_failed_msg">Reddit への接続に失敗しました。インターネット接続を確認してもう一度実行するか、オフライン モードにしてください。</string>
-    <string name="err_block_user">ユーザーのブロック時にエラーが発生しました</string>
+    <string name="err_block_user">ユーザーのブロック時にエラーが発生しました。このユーザーのブロックを最近解除しましたか？</string>
+
     <!-- Gif -->
     <string name="gif_err_title">GIF が見つかりません</string>
     <string name="gif_err_msg">この GIF の読み込み時にエラーが発生しました。GIF を再度開いてもう一度試してください。</string>
+    <string name="gif_load_failed">GIF を読み込めませんでした</string>
+    <string name="gif_download_failed">GIF をダウンロードできませんでした</string>
+
     <!-- Multireddits -->
     <string name="multireddit_err_title">Multireddits はいませ（まだ）！</string>
     <string name="multireddit_err_msg">新しい Multireddit を作成しますか?</string>
@@ -256,6 +317,7 @@
     <string name="multi_saved_successfully">正常に保存しました</string>
     <string name="delete_multireddit_title">削除してもよろしいですか /m/%1$s?</string>
     <string name="multi_save_option">この Multireddit を保存しますか?</string>
+
     <!-- Content types -->
     <string name="type_nsfw_img">NSFW 画像</string>
     <string name="type_nsfw_gif">NSFW GIF</string>
@@ -268,18 +330,36 @@
     <string name="type_xkcd">XKCD</string>
     <string name="type_nsfw_album">NSFWアルバム</string>
     <string name="type_nsfw_gallery">NSFW ギャラリー</string>
+    <string name="type_nsfw_albums">NSFW アルバム</string>
+    <string name="type_nsfw_galleries">NSFW ギャラリー</string>
+    <string name="type_nsfw_gifs">NSFW GIF</string>
+    <string name="type_nsfw_images">NSFW 画像</string>
+    <string name="type_nsfw_links">NSFW リンク</string>
+    <string name="type_nsfw_selftexts">NSFW テキスト投稿</string>
+    <string name="type_nsfw_tumblrs">NSFW Tumblr</string>
+    <string name="type_nsfw_videos">NSFW 動画</string>
     <string name="type_gallery">ギャラリー</string>
+    <string name="type_galleries">ギャラリー</string>
     <string name="type_img">画像</string>
     <string name="type_videos">動画</string>
     <string name="type_nsfw_video">NSFWビデオ</string>
     <string name="type_imgur">Imgur コンテンツ</string>
     <string name="type_nsfw_imgur">ImgurのNSFWコンテンツ</string>
+    <string name="type_nsfw_xkcd">NSFW XKCD</string>
+    <string name="type_nsfw_deviantart">NSFW DeviantArt</string>
+    <string name="type_nsfw_title_only">NSFW タイトルのみの投稿</string>
+    <string name="type_nsfw_reddit">NSFW Reddit リンク</string>
+    <string name="type_nsfw_selftext">NSFW テキスト投稿</string>
+    <string name="type_spoiler">ネタバレ</string>
+    <string name="type_nsfw_spoiler">NSFW ネタバレ</string>
+    <string name="type_nsfw_streamable">NSFW Streamable</string>
     <string name="type_external">外部</string>
+
     <!-- Content types plural (Content filters) -->
     <string name="type_gifs">GIF</string>
     <string name="type_albums">アルバム</string>
-    <string name="type_nsfw_content">NSFW コンテンツ</string>
     <string name="type_links">リンク</string>
+
     <!-- Inbox/mail -->
     <string name="mail_tab_inbox">受信トレイ</string>
     <string name="mail_tab_unread">未読</string>
@@ -301,15 +381,15 @@
     <string name="mail_theirs">彼らのメッセージを表示</string>
     <string name="mail_re">返信: %1$s</string>
     <string name="mail_mark_read">既読にする</string>
-    <string name="mail_mark_unread">既読を解除</string>
     <string name="mail_view_full_thread">スレッドを全て見る</string>
     <string name="mail_message_copied">メッセージがコピーされました</string>
     <plurals name="mail_notification_title">
-        <item quantity="other">%d の新しいメッセージがあります!</item>
+        <item quantity="other">%d 件の新しいメッセージがあります！</item>
     </plurals>
     <plurals name="mod_mail_notification_title">
         <item quantity="other">%d件のモデレーターからの新規メッセージがあります!</item>
     </plurals>
+
     <!-- Miscellaneous/generic things that don't have a category or strings that are used for multiple categories -->
     <string name="misc_err">エラー！</string>
     <string name="misc_none">なし</string>
@@ -330,32 +410,49 @@
     <string name="misc_setting_up">いくつか設定します&#8230;</string>
     <string name="misc_setting_up_message">この画面から離れないでください。時間はかからないはずです!</string>
     <string name="misc_more_info">詳細</string>
-    <string name="misc_rate_title">Slideが気に入りましたか?</string>
-    <string name="misc_rate_msg">評価してください!</string>
     <string name="misc_captcha_incorrect">キャプチャが間違っています。もう一度やり直してください</string>
+
     <!-- Goto User -->
     <string name="user_enter">ユーザー名を入力します。</string>
     <string name="user_btn_goto">ユーザーに移動します。</string>
     <string name="user_btn_gotomultis">ユーザーの Multis に移動</string>
+
+    <!-- Saved users list -->
+    <string name="users_empty">保存されたユーザーはありません</string>
+    <string name="users_btn_add">ユーザーを追加</string>
+    <string name="users_btn_remove">ユーザーを削除</string>
+    <string name="users_added">%s をユーザーに追加しました</string>
+    <string name="users_removed">%s をユーザーから削除しました</string>
+    <string name="users_already_added">%s はすでにユーザーに登録されています</string>
+    <string name="users_copied">%s をコピーしました</string>
+    <string name="users_checking">ユーザー名を確認中</string>
+    <string name="users_invalid_title">ユーザーを追加できません</string>
+    <string name="users_invalid">%s は Reddit ユーザーではありません</string>
+    <string name="users_check_failed">%s が存在するか確認できませんでした。接続を確認してもう一度お試しください。</string>
+    <string name="users_friend_added">%s をフレンドに追加しました</string>
+    <string name="users_friend_removed">%s をフレンドから削除しました</string>
+    <string name="users_friend_failed">%s のフレンド状態を更新できませんでした</string>
+    <string name="btn_fab_add_user">ユーザーを追加</string>
+
     <!-- Buttons -->
     <string name="btn_add">追加</string>
     <string name="btn_cancel">キャンセル</string>
     <string name="btn_close">閉じる</string>
+    <string name="btn_toggle">切り替え</string>
     <string name="btn_open">開く</string>
     <string name="btn_discard">破棄</string>
     <string name="btn_done">完了</string>
     <string name="btn_go_back">戻る</string>
-    <string name="btn_no_thanks">いいえ結構です</string>
     <string name="btn_no">いいえ</string>
     <string name="btn_ok">OK</string>
     <string name="btn_remove">削除</string>
     <string name="btn_reply">返信する</string>
     <string name="btn_reset">リセット</string>
+    <string name="btn_retry">再試行</string>
     <string name="btn_save">保存</string>
     <string name="btn_submit">送信</string>
     <string name="btn_undo">元に戻す</string>
     <string name="btn_yes">はい</string>
-    <string name="btn_yes_exclaim">はい!</string>
     <string name="btn_refresh">更新</string>
     <string name="btn_cache">コメントをキャッシュ</string>
     <string name="btn_delete">削除</string>
@@ -367,7 +464,7 @@
     <string name="btn_set">セット</string>
     <string name="btn_create">作成</string>
     <string name="btn_new">新規</string>
-    <string name="btn_upload">アップロード</string>
+
     <!-- Buttons Content labels for TalkBack accessibility-->
     <string name="btn_edit">編集</string>
     <string name="btn_hide">非表示</string>
@@ -386,11 +483,13 @@
     <string name="btn_fab_post">新しい投稿を作成</string>
     <string name="btn_fab_hide">閲覧済の投稿を非表示</string>
     <string name="btn_fab_search">投稿を検索</string>
+
     <!-- Buttons Content labels for TalkBack accessibility active states-->
     <string name="btn_upvoted">ナイスしました</string>
     <string name="btn_downvoted">イマイチしました</string>
     <string name="btn_unsave">未保存</string>
     <string name="btn_collapse">折りたたむ</string>
+
     <!-- Backup -->
     <string name="backup_success">正常にバックアップしました!</string>
     <string name="backup_restoring">設定を復元します</string>
@@ -404,13 +503,45 @@
     <string name="backup_btn_restore_file">ファイルから復元する</string>
     <string name="backup_confirm">バックアップしてもよろしいですか? 以前のバックアップが上書きされます</string>
     <string name="backup_restore_confirm">復元してもよろしいですか? 現在の設定が上書きされます</string>
+    <string name="backup_failed_msg">バックアップに失敗しました。しばらくしてからもう一度お試しください。</string>
+    <string name="backup_restore_failed_msg">復元に失敗しました。有効なバックアップがあることを確認してもう一度お試しください。</string>
+    <string name="backup_local_title">ローカルバックアップ</string>
+    <string name="backup_drive_title">Google ドライブのバックアップ</string>
+    <string name="backup_button">バックアップを作成</string>
+    <string name="restore_button">バックアップを復元</string>
+    <string name="backup_question">バックアップしますか？</string>
+    <string name="backup_complete">バックアップが完了しました!</string>
+    <string name="err_not_valid_backup">有効な Slide のバックアップファイルではありません</string>
+    <string name="err_not_valid_backup_msg">選択したファイルは、有効な Slide のバックアップ ファイルではありません</string>
+    <string name="backup_password_title">バックアップのパスワードを設定</string>
+    <string name="backup_password_message">バックアップには Reddit アカウントの認証情報が含まれるため暗号化されます。%1$d〜%2$d 文字のパスワードを選んでください。復元時に必要で、再発行はできません。</string>
+    <string name="backup_password_hint">パスワード</string>
+    <string name="restore_password_title">バックアップのパスワードを入力</string>
+    <string name="restore_password_message">このバックアップの暗号化に使用したパスワードを入力してください。</string>
+    <string name="restore_password_wrong">パスワードが違います。もう一度お試しください。</string>
+    <string name="drive_authorization_failed">Google ドライブの認証に失敗しました</string>
+    <string name="drive_authorization_failed_msg">Slide は専用の Google ドライブ フォルダにアクセスできませんでした。もう一度お試しください。</string>
+    <string name="drive_authorization_denied">Google ドライブへのアクセスが必要です</string>
+    <string name="drive_authorization_denied_msg">設定をバックアップまたは復元するには、Slide が専用の Google ドライブ フォルダにアクセスする必要があります。</string>
+
     <!-- Vote -->
     <string name="vote_err">投票時にエラー!</string>
     <string name="vote_err_login">投票するにはログインする必要があります!</string>
     <string name="vote_removed">投票を削除しました</string>
+
+    <!-- Subscribing -->
+    <string name="subscribe_err_login">購読するにはログインが必要です！</string>
+
     <!-- Moderation tools -->
     <string name="mod_mail">Mod メール</string>
     <string name="mod_mail_unread">モデレーターからのメッセージが未読です</string>
+    <string name="modmail_internal_note">（内部メモ）</string>
+    <string name="modmail_scope_missing">モッドメールには再認証が必要です。有効にするには再度ログインしてください（設定 &#8594; アカウント）。</string>
+    <string name="modmail_reply_sent">返信を送信しました！</string>
+    <string name="modmail_reply_failed">送信に失敗しました！返信は下書きとして保存されました。</string>
+    <plurals name="modmail_message_count">
+        <item quantity="other">%d 件のメッセージ</item>
+    </plurals>
     <string name="mod_modqueue">モデレーターキュー</string>
     <string name="mod_unmoderated">モデレーション解除</string>
     <string name="mod_reports">報告</string>
@@ -457,21 +588,28 @@
     <string name="mod_sticky">付箋を付ける</string>
     <string name="mod_unsticky">付箋を外す</string>
     <string name="reauth_complete">再認証が完了しました!</string>
+    <string name="reauth_in_progress">再認証中…</string>
+    <string name="reauth_failed">再認証できませんでした</string>
+
     <plurals name="mod_btn_reports">
         <item quantity="other">%d件の通報を見る</item>
     </plurals>
+
     <!-- If he did -->
     <string name="really_pin_submission_message">サブミッションをピン留めしました</string>
     <string name="really_unpin_submission_message">サブミッションのピン留めを解除しました</string>
+
     <!-- Subreddit Wiki -->
     <string name="wiki_err">Wiki が見つかりません</string>
     <string name="wiki_err_msg">この Subreddit は Wiki がありません!</string>
+
     <!-- Subreddits -->
     <string name="subreddit_subscribers_string">%1$s 購読者</string>
     <string name="subreddit_active_users_string_new">%1$s は今ここ</string>
     <string name="subreddit_err_msg">Subreddit %1$s が見つかりません。綴りが間違っていませんか?</string>
     <string name="subreddit_err_msg_new">Subreddit %1$s が見つかりませんでした。つづりが間違っているか、この Subreddit へのアクセス許可がありません。</string>
     <string name="subreddit_err">Subreddit が見つかりません</string>
+
     <!-- Search -->
     <string name="search_comments_hint">コメントを検索</string>
     <string name="search_goto">移動</string>
@@ -484,6 +622,7 @@
     <string name="search_new">新規</string>
     <string name="search_comments">コメント</string>
     <string name="no_posts_found">投稿が見つかりません</string>
+
     <!-- Settings -->
     <string name="settings_reddit_prefs">Reddit の設定</string>
     <string name="settings_accent_title">アクセント カラーを編集</string>
@@ -491,6 +630,7 @@
     <string name="settings_layout_default">投稿レイアウト</string>
     <string name="settings_link_album">内部のアルバム表示</string>
     <string name="settings_link_peek">コンテンツをのぞき見 (実験的)</string>
+    <string name="settings_link_peek_description">プレビュー画像の長押しを無効にします</string>
     <string name="settings_link_gif">内部 GIF 表示</string>
     <string name="settings_link_hqgif">高品質の Gfycat ビデオ</string>
     <string name="settings_link_handling">リンクの処理</string>
@@ -510,14 +650,14 @@
     <string name="share_image">画像を共有</string>
     <string name="settings_libs">オープンソース ライブラリ</string>
     <string name="settings_about_libs">ライブラリについて</string>
+    <string name="settings_privacy">プライバシーポリシー</string>
     <string name="settings_bugs">バグを報告</string>
     <string name="settings_changelog">更新履歴を表示</string>
-    <string name="settings_google">Google に接続中</string>
-    <string name="settings_google_msg">Slide は Google に接続しています。数秒後にもう一度お試しください!</string>
     <string name="settings_fabclear_msg">消去ボタンをタップすると現在の表示から投稿が削除されますが、永久に投稿を非表示にするわけではありません。\nボタンを長押すると、永久に投稿を非表示にします!</string>
     <string name="settings_fabclear">FAB 消去操作</string>
     <string name="settings_notifdisabled">通知を無効にしました。</string>
     <string name="settings_colored_navigation_bar">色のナビゲーション バー</string>
+    <string name="settings_always_black_statusbar">黒いステータスバー（通知バー）</string>
     <string name="settings_colored_icon">カラー アプリアイコン (実験的)</string>
     <string name="settings_colored_icon_desc">動作するために携帯電話の再起動が必要になります。またホーム画面からアイコンが削除されます。</string>
     <string name="settings_filter_domain">ドメイン フィルター</string>
@@ -534,8 +674,14 @@
     <string name="settings_set_storage_location">画像が %s に保存されるようになりました</string>
     <string name="settings_general_immersive_mode">イマーシブ全画面モード</string>
     <string name="settings_general_immersive_mode_desc">ステータスとナビゲーション バーを非表示にします (実験的)</string>
+    <string name="settings_general_old_swipe_mode">旧スワイプモード</string>
+    <string name="settings_general_old_swipe_mode_desc">Slide の旧スワイプ方式。3 ボタンナビゲーションと Samsung のジェスチャー向けです。</string>
+    <string name="settings_general_hibernate">前回の続きから再開する</string>
+    <string name="settings_general_hibernate_desc">同じ画面の同じ位置を開き直し、更新せずに読み込み済みの内容を表示します。有効にすると、ここに戻らずに再開のオン／オフを切り替えられるチェックボックスがオーバーフローメニューに追加されます。</string>
+
     <string name="settings_general_title_drawer_items">ドロワーアイテム</string>
     <string name="settings_general_subtitle_drawer_items">表示するドロワーアイテムを選択</string>
+
     <!-- Settings titles displayed in settings activity-->
     <string name="settings_title_backup">バックアップ &amp; 復元</string>
     <string name="settings_title_default_theme">メイン テーマ</string>
@@ -545,7 +691,14 @@
     <string name="settings_title_pro">Pro 版</string>
     <string name="settings_title_sub_theme">Subreddit テーマ</string>
     <string name="settings_title_sort">デフォルトの並べ替え</string>
+    <string name="settings_title_sort_frontpage">フロントページの並び順</string>
     <string name="settings_title_about">アプリついて</string>
+    <string name="settings_title_debug">デバッグ</string>
+    <string name="settings_section_debug_reauth">再認証</string>
+    <string name="settings_debug_break_reauth">再認証を停止させる</string>
+    <string name="settings_debug_break_reauth_desc">再認証を停止させ、再認証のスナックバーをテストできるようにします。元に戻せます: これをオフにしてから再認証を実行してください。</string>
+    <string name="settings_debug_trigger_reauth">再認証を実行</string>
+    <string name="settings_debug_trigger_reauth_desc">今すぐ再認証を開始します。スイッチをオフにした後の復帰に使用します。</string>
     <string name="settings_title_multi_column">複数列</string>
     <string name="settings_title_fab">フローティング アクションボタン</string>
     <string name="settings_title_comments">コメント</string>
@@ -553,6 +706,7 @@
     <string name="settings_title_font">フォント</string>
     <string name="settings_section_general">全般</string>
     <string name="settings_section_appearance">表示設定</string>
+    <string name="settings_section_hibernation">休止</string>
     <string name="settings_section_other">その他の設定</string>
     <string name="settings_section_browser">ブラウザー</string>
     <string name="settings_section_internal_viewers">内部ビューアー</string>
@@ -570,12 +724,16 @@
     <string name="settings_data_enable">データ節約設定を有効にする</string>
     <string name="settings_data_video_quality">データの節約が有効になっているときに低画質のビデオを優先</string>
     <string name="settings_comments_collapse_deleted">デフォルトで削除されたコメントを折りたたむ</string>
+    <string name="settings_comments_collapse_sticky">固定コメントを常に完全に折りたたむ</string>
+    <string name="settings_comments_collapse_blocked_users">ブロックしたユーザーのコメントを折りたたむ</string>
+    <string name="settings_comments_collapse_blocked_users_description">「コメントを完全に折りたたむ」も有効になります</string>
     <string name="settings_backup_occurs">バックアップを行います %1$s</string>
     <string name="settings_backup_none">Subreddit はバックアップされません</string>
     <string name="settings_backup_will_backup">\u0020をバックアップします</string>
     <string name="settings_backup_submission_only">サブミッションのみ</string>
     <string name="settings_backup_comments">\u0020(コメント)</string>
     <string name="settings_filter_profile">プロフィール フィルター</string>
+    <string name="settings_subreddit_content_filters_till_restart">再起動までのサブレディットコンテンツフィルター</string>
     <string name="settings_subredditspecific_selftext">このサブレディットでは自己テキスト投稿を常にプレビューする</string>
     <string name="settings_font_system">システム</string>
     <string name="settings_manage_subscriptions">購読の管理</string>
@@ -595,6 +753,7 @@
     <string name="settings_links_force_external">強制的に外部ブラウザー</string>
     <string name="settings_layout_show_domain">情報ラインにドメインを表示</string>
     <string name="settings_layout_show_content_type">情報ラインにコンテンツの種類を表示</string>
+    <string name="settings_layout_thumbnail_flags">サムネイルの角に色付きのフラグを表示</string>
     <string name="settings_layout_show_votes_comments">情報ラインに投票/コメントを表示</string>
     <string name="settings_general_comment_last_visit">前回訪問してからのコメント数を表示</string>
     <string name="settings_fab_create">\"コメントを作成\" FAB を表示</string>
@@ -602,41 +761,49 @@
     <string name="settings_reddit_description">これらの設定は Reddit API が Slide に返す内容を変更します。\n\nすべての Subreddit でサムネイルを表示するには、「Subreddit メディア設定を無視する」を有効にします\n\nすべての NSFW コンテンツを表示するには、「NSFW 写真を非表示」をオフにして、「私は 18 歳以上です」をオンにします</string>
     <string name="settings_reddit_media_pref">Subreddit メディア設定を無視する</string>
     <string name="settings_description_view_type">表示の種類はメイン画面と単一の Subreddit 画面に影響します。\n\nコメント ペイン: 投稿の横からコメントが引き出され、スワイプで戻った後にコメント ページの状態が保存されます (場所を忘れることはありません) \n\nSubreddit タブなし: Subreddit 間のスワイプを無効にします\n\nSubreddit タブ: Subreddits 間でスライドします</string>
+    <string name="settings_short_description_view_type">表示タイプはメイン画面と個別サブレディット画面の両方に適用されます</string>
     <string name="settings_comment_hide_selftext_image">自己テキスト投稿で、先頭の画像を非表示</string>
     <string name="settings_filter_flair">フレア フィルター</string>
     <string name="settings_view_type">表示の種類</string>
     <string name="settings_data">データの節約</string>
+    <string name="settings_card_show_selftext">本文を表示</string>
+    <string name="settings_card_selftext_paragraph">最初の段落を表示</string>
+    <string name="settings_card_selftext_ellipsize">先頭 128 文字に短縮</string>
     <string name="settings_handling_external_desc">下部に入力されたドメインは常に外部ブラウザ等で開かれます</string>
     <string name="settings_handling_enterdomain">ドメインもしくはその一部を入力</string>
     <string name="settings_section_content">コンテンツ</string>
     <string name="settings_backup_view">バックアップを表示</string>
     <string name="settings_backup_err_no_explorer">ファイルエクスプローラーが見つかりません。ファイルの場所は %1$s</string>
     <string name="settings_about_version_copied_toast">バージョン番号をクリップボードにコピーしました</string>
-    <string name="settings_support_slide">Pro 版に移行して Slide for Reddit をサポート!</string>
     <string name="settings_theme_night_start_at">開始時刻\u0020</string>
     <string name="settings_theme_night_end_at">終了時刻\u0020</string>
     <string name="settings_general_inbox_snd">サウンドとバイブレーション</string>
     <string name="settings_enable_notifs">受信通知を有効にする</string>
+
     <!-- Quick setting toggles in the drawer -->
     <string name="toggle_night_mode">夜間モード</string>
     <string name="toggle_immersive_mode">イマーシブモード</string>
     <string name="toggle_nsfw">NSFW コンテンツを表示する</string>
     <string name="toggle_right_thumbnails">サムネイルの右揃え</string>
     <string name="toggle_reader_mode">リーダーモードを使用する</string>
+
     <!-- View types -->
     <string name="view_type_tabs">Subreddit タブ</string>
     <string name="view_type_none">Subreddit タブなし</string>
     <string name="view_type_comments">コメント ウィンドウ</string>
+
     <!--Search methods -->
     <string name="subreddit_search_method_title">Subreddit 検索方法</string>
     <string name="subreddit_search_method_drawer">ドロワー内の検索バー</string>
     <string name="subreddit_search_method_toolbar">ツールバーのタイトルを長押し</string>
     <string name="subreddit_search_method_both">ドロワーとツールバーのタイトルの両方</string>
+
     <!-- Back button behavior -->
     <string name="back_button_behavior_title">戻るボタンの動作</string>
     <string name="back_button_behavior_default">アプリケーションを閉じる</string>
     <string name="back_button_behavior_confirm_exit">終了ダイアログを確認</string>
     <string name="back_button_behavior_drawer">ドロワーを開く</string>
+
     <!-- Subscription managing -->
     <string name="reorder_add_domain">ドメインを追加</string>
     <string name="reorder_add_subreddit">Subreddit を追加</string>
@@ -672,11 +839,33 @@
     <string name="reorder_sync_complete">同期が完了しました</string>
     <string name="reorder_loading_title">Subreddit を読み込み中</string>
     <string name="reorder_url_err">URL が正しくありません</string>
-    <!-- Save categories -->
+
+    <!-- Saved tags -->
+    <string name="tag_set_name_hint">タグ名</string>
+    <string name="tag_tag_action">タグ付け</string>
+    <string name="profile_tag_select">タグ</string>
+    <string name="profile_saved_tags">保存したタグ</string>
+    <string name="tag_builtin_all">すべて</string>
+    <string name="tag_builtin_posts">投稿</string>
+    <string name="tag_builtin_comments">コメント</string>
+    <string name="tag_types_header">種類</string>
+    <string name="tag_post_types_header">投稿の種類</string>
+    <string name="tag_custom_header">カスタムタグ</string>
+    <string name="tag_new">新しいタグ</string>
+    <string name="tag_manage">タグを管理</string>
+    <string name="tag_add">タグを追加</string>
+    <string name="tag_none_yet">タグはまだありません</string>
+    <string name="tag_rename">名前を変更</string>
+    <string name="tag_delete_confirm">\"%1$s\" を削除してもよろしいですか？このタグが付いた項目は削除されません。</string>
+    <string name="tag_name_used_title">名前が既に使用されています</string>
+    <string name="tag_name_used">その名前のタグは既に存在します。一意の名前を選んでください。</string>
+    <string name="tag_name_reserved">その名前は予約されています。別の名前を選んでください。</string>
+
     <!-- Setting subheaders -->
     <string name="sorting">ソート設定</string>
     <string name="display">画面表示</string>
     <string name="images">画像</string>
+    <string name="storage">ストレージ</string>
     <string name="app_theme">アプリテーマ</string>
     <string name="tinting">色合い</string>
     <string name="post_info">投稿情報</string>
@@ -686,6 +875,7 @@
     <string name="nsfw">NSFW コンテンツ</string>
     <string name="view_reddit_settings">Redditをブラウザ上で設定する</string>
     <string name="font_styles">フォント スタイル</string>
+
     <!-- Titles displayed in action bar / head / recents overview-->
     <string name="title_subreddit_settings">Subreddit テーマ &amp; レイアウト</string>
     <string name="title_edit_theme">テーマを編集</string>
@@ -695,9 +885,11 @@
     <string name="title_share">次で共有</string>
     <string name="title_login">Reddit にログイン</string>
     <string name="title_multireddits">Multireddits</string>
+    <string name="title_users">ユーザー</string>
     <string name="title_inbox">受信箱</string>
     <string name="title_theme_settings">テーマ</string>
     <string name="title_create_multi">Multireddit を作成</string>
+
     <!-- Offline mode -->
     <string name="offline_msg">それを行うには、オンラインにして subreddit を更新してください</string>
     <string name="offline_last_update">最終更新 %1$s</string>
@@ -706,11 +898,14 @@
     <string name="offline_enter_online">オンライン モードにする</string>
     <string name="offline_caching_title">キャッシュ中 %1$s</string>
     <string name="offline_caching_complete">キャッシュを完了しました</string>
+
     <!-- Website -->
     <string name="website_external">外部ブラウザーで開く</string>
+
     <plurals name="reorder_subs_added">
         <item quantity="other">%d個のサブレディットが追加されました</item>
     </plurals>
+
     <!-- Time -->
     <string name="time_just_now">たった今</string>
     <plurals name="time_years">
@@ -723,7 +918,7 @@
         <item quantity="other">%d日前</item>
     </plurals>
     <plurals name="time_hours">
-        <item quantity="other">%d 時</item>
+        <item quantity="other">%d 時間</item>
     </plurals>
     <plurals name="time_minutes">
         <item quantity="other">%d 分</item>
@@ -731,11 +926,13 @@
     <plurals name="time_seconds">
         <item quantity="other">%d秒前</item>
     </plurals>
+
     <!-- Time: shorthand durations for example 1 hour → 1h -->
     <string name="time_years_short">%d年</string>
     <string name="time_days_short">%d日</string>
     <string name="time_hours_short">%d時間</string>
     <string name="time_minutes_short">%d分</string>
+
     <!-- Strings present during the login process -->
     <string name="login_subscribe_rslideforreddit">/r/slideredditを購読しますか?</string>
     <string name="login_subscribe_rslideforreddit_desc">最新のお知らせや問題の報告の為に/r/slideredditを購読しますか?</string>
@@ -744,21 +941,25 @@
     <string name="login_authenticating">Slideは認証中です</string>
     <string name="login_starting">色々設定しましょう!</string>
     <string name="login_starting_desc">こんなのすぐに済むハズなんだけどなぁ...</string>
+
     <!-- Over 18 prompt when visiting a NSFW subreddit -->
     <string name="over18_title">/r/%1$sには成人向けコンテンツが含まれています</string>
     <string name="over18_desc">あなたは18歳以上で、成人向けコンテンツを閲覧しますか?</string>
     <string name="over18_desc_loggedout">この注意を永久に表示しない為にはログインして下さい</string>
     <string name="over18_desc_loggedin">この機能は 設定 → Reddit 設定 → NSFWコンテンツを表示する で無効化できます</string>
+
     <!-- Subreddit color synchronization - https://reddit.com/comments/41054l -->
     <string name="color_sync_complete">同期が完了しました</string>
     <plurals name="color_sync_colored">
         <item quantity="other">%d個のサブレディットに色が付けられました</item>
     </plurals>
+
     <!-- Discover section: find -->
     <string name="discover_title">発見</string>
     <string name="discover_search">ワードや話題の検索</string>
     <string name="discover_popular">人気</string>
     <string name="discover_trending">上昇中</string>
+
     <!-- Subreddit post notifications -->
     <string name="sub_post_notifs_title">次の新しい投稿を通知しますか\n/r/%1$s?</string>
     <string name="sub_post_notifs_title_settings">新しい投稿を通知しますか?</string>
@@ -770,19 +971,24 @@
     <string name="sub_post_notifs_notification_title">/r/%1$s に新しい投稿</string>
     <string name="sub_post_notifs_notification_btn">/r/%1$s の追跡を停止</string>
     <string name="title_sub_post_notifs">Subreddit 投稿の通知</string>
+
     <!-- Internal browser -->
     <string name="internal_browser_extracting_error">申し訳ありません。記事を抽出できませんでした</string>
     <string name="internal_browser_storecookies">Webサイトのクッキーを保存</string>
     <string name="internal_browser_readermode">リーダーモード</string>
+
     <!-- Live thread -->
     <string name="livethread_loading_title">ライブスレッドの読み込み中&#8230;</string>
     <string name="livethread_not_found">ライブスレッドが見つかりません</string>
     <string name="livethread_recents_title">ライブスレッド: %1$s</string>
+
     <!-- Used when viewing media -->
     <string name="mediaview_notif_title">画像をダウンロード中&#8230;</string>
+    <string name="mediaview_notif_video">動画をダウンロード中…</string>
     <string name="mediaview_notif_text">ダウンロードが進行中</string>
     <string name="mediaview_save">%1$s を保存</string>
     <string name="mediaview_saving">%1$s を保存中</string>
+
     <!-- Drafts -->
     <string name="choose_draft">下書きを選択する</string>
     <string name="dialog_no_drafts">下書きはありません</string>
@@ -790,6 +996,7 @@
     <string name="msg_save_draft">下書きとしてメッセージが保存されました</string>
     <string name="manage_drafts">下書きの管理</string>
     <string name="really_delete_drafts">この下書きを削除してもよろしいですか?</string>
+
     <!-- Strings for widgets -->
     <string name="widget_theme_dark">ダーク</string>
     <string name="widget_theme_light">ライト</string>
@@ -804,6 +1011,7 @@
     <string name="widget_loading">読み込み中&#8230;</string>
     <string name="widget_creation_title">新しいウィジェット</string>
     <string name="shortcut_creation_title">新しいショートカット</string>
+
     <!-- Strings for alert dialogs -->
     <string name="force_change_subscription">購読を変更できませんでした</string>
     <string name="force_change_subscription_desc">ローカルでそれを変更しますか?</string>
@@ -816,6 +1024,7 @@
     <string name="mode_desktop_compact">デスクトップ コンパクト</string>
     <string name="show_content_type_text_beside_links">リンクの横にコンテンツタイプのテキストを表示</string>
     <string name="comment_shadowbox">コメント シャドーボックス</string>
+
     <!-- Sidebar strings (multis, flairs) -->
     <string name="sidebar_select_flair">フレアを選択</string>
     <string name="sidebar_select_flair_text">フレアーテキストを設定</string>
@@ -828,6 +1037,7 @@
     <plurals name="reorder_selected">
         <item quantity="other">"%d 選択済"</item>
     </plurals>
+
     <!--Filtering dialog -->
     <string name="filter_title">何をフィルターしますか?</string>
     <string name="filter_posts_sub">/r/%1$s から投稿</string>
@@ -836,6 +1046,7 @@
     <string name="filter_open_externally">%s URL を外部で開く</string>
     <string name="filter_posts_flair">%2$s からのフレア \"%1$s\"</string>
     <string name="filter_btn">フィルター</string>
+
     <!-- Caching -->
     <string name="cache_no_comments_found">コメントが見つかりません</string>
     <string name="cache_no_comments_found_snackbar">キャッシュされたコメントは見つかりません</string>
@@ -846,9 +1057,11 @@
     <string name="cache_wifi_only">Wifi接続時のみキャッシュする</string>
     <string name="comments_depth">キャッシュするコメントの深さ</string>
     <string name="comments_count">キャッシュするコメントの数</string>
+
     <!-- Saving location setting -->
     <string name="set_save_location">画像の保存場所を設定</string>
     <string name="set_save_location_msg">Slide の画像保存場所が設定されていません。今すぐ設定しますか?</string>
+
     <!-- Report flow -->
     <string name="btn_report">報告する</string>
     <string name="report_post">投稿を報告</string>
@@ -860,6 +1073,7 @@
     <string name="report_other">その他</string>
     <string name="input_reason_for_report">報告する理由</string>
     <string name="msg_report_sent">報告を送信しました</string>
+
     <!-- Unsorted ¯\\_(ツ)_/¯ -->
     <string name="comment_load_more_number_unknown">残りのコメントを読み込む</string>
     <string name="card_right_thumb">サムネイルの右揃え</string>
@@ -881,18 +1095,26 @@
     <string name="mode_no_thumbnails">サムネイルなし</string>
     <string name="mode_big_thumbnails">ワイド サムネイル</string>
     <string name="mode_cropped">トリミングした大きな画像</string>
+    <string name="mode_letterbox">レターボックス表示の大きな画像</string>
     <string name="mode_bigpic">大型の画像</string>
     <string name="press_actionbar">矢印を押してアクションバーを表示します</string>
+    <string name="show_top_right">右上に表示</string>
+    <string name="show_bottom_right">右下に表示</string>
+    <string name="small_tag_disabled">無効</string>
     <string name="tap_actionbar">アクションバーの長押し</string>
     <string name="always_actionbar">常にアクションバーを表示</string>
     <string name="sub_content_filter">Subreddit コンテンツ フィルター</string>
     <string name="submission_share_reddit_url">コメントを共有</string>
     <string name="filter_content">このコンテンツをフィルタ リング</string>
-    <string name="content_to_hide">%1$sの投稿するコンテンツを隠す</string>
+    <string name="content_to_show">%1$s で表示するコンテンツ</string>
     <string name="save_for_offline_viewing">オフラインで表示するためにサブミッションを保存</string>
     <string name="btn_collapse_children_all">子コメントを畳む</string>
     <string name="btn_open_content">コンテンツを開く</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">フィルターするテキストを入力 (subreddit:flair_text)。Enter をクリックして追加します</string>
+    <plurals name="filter_count">
+        <item quantity="other">%1$d 件のフィルター（最大 %2$d 件表示）</item>
+    </plurals>
+    <string name="filter_limit_reached">%2$d 件中 %1$d 件を表示しています。検索して結果を絞り込んでください。</string>
     <string name="datasave_always">モバイル データ通信と Wi-Fi</string>
     <string name="datasave_mobile">モバイル データ通信</string>
     <string name="never">なし</string>
@@ -901,6 +1123,9 @@
     <string name="card_background_tint">カードの背景</string>
     <string name="subreddit_name_tint">Subreddit 名</string>
     <string name="login_failed_err_decline">前回の画面で「拒否」を選択していないことを確認して、しばらしてからもう一度試してください</string>
+    <string name="login_unsupported_redirect_uri">設定されたリダイレクト URI（%1$s）はブラウザーで受け取れないため、ログインを完了できません。代わりにアプリ内 WebView でのログインを使うか、設定でサポートされているリダイレクト URI を指定してください。</string>
+    <string name="login_unsupported_redirect_uri_title">ログインに失敗しました</string>
+    <string name="login_failed_oauth_error_page">ログインに失敗しました — Reddit はログインを完了せずエラーを返しました。設定でクライアント ID とリダイレクト URI を確認してください。</string>
     <string name="tutorial_swipe_navigation">スワイプ ナビゲーション</string>
     <string name="tutorial_swipe_description">左端からスワイプすると終了します。\n\nこれは、画像、gif、アルバム、設定などに適用されます!</string>
     <string name="handling_browser">Web ブラウザー</string>
@@ -911,6 +1136,7 @@
     <string name="content_deleted">[削除済]</string>
     <string name="thread_continue">このスレッドの続きを読む</string>
     <string name="type_selftext">自己投稿文</string>
+    <string name="type_selftexts">テキスト投稿</string>
     <string name="submission_unhide">投稿の非表示の取り消し</string>
     <string name="submission_info_unhidden">サブミの非表示が取り消されました</string>
     <string name="msg_sent_success">メッセージを送信しました</string>
@@ -923,6 +1149,7 @@
     <string name="open_externally">外部で開く</string>
     <string name="vertical_album_view">アルバムを垂直方向に表示、閲覧する</string>
     <string name="download_album">アルバムをダウンロード</string>
+    <string name="download_gallery">ギャラリーをダウンロード</string>
     <string name="compose_message">コメントを作成</string>
     <string name="mark_all_as_read">すべて既読にする</string>
     <string name="clear_subreddit_history">サブレディット履歴を消去</string>
@@ -942,7 +1169,6 @@
     <string name="btn_offline">オフライン モードにする</string>
     <string name="discard_comment_title">コメントを破棄しますか?</string>
     <string name="comment_discard_msg">このコメントを破棄してもよろしいですか?</string>
-    <string name="backup_complete">バックアップが完了しました!</string>
     <string name="backup_saved_downloads">バックアップを downloads に保存しました</string>
     <string name="really_remove_subreddit_title">この Subreddit を削除してもよろしいですか?</string>
     <string name="choose_sync_time">同期時刻を選択</string>
@@ -961,14 +1187,16 @@
     <string name="rate_slide">Slideを評価する</string>
     <string name="edit_query">クエリの編集</string>
     <string name="share_slide">Slideを共有</string>
-    <string name="create_folder">フォルダーを作成</string>
-    <string name="folder_name">フォルダー名</string>
+    <string name="open_clipboard_reddit_link">クリップボードの Reddit リンクを開く</string>
+    <string name="clipboard_no_reddit_link">クリップボードに Reddit リンクがありません</string>
     <string name="open_links_externally">常に外部からこのホストを開く</string>
     <string name="hide_read_posts">既読の投稿を非表示</string>
     <string name="gallery_mode">ギャラリーモード</string>
+    <string name="settings_gallery_grid">ギャラリー投稿をグリッドで表示</string>
+    <string name="gallery_grid_image">ギャラリー画像 %1$d / %2$d</string>
+    <string name="gallery_grid_overflow">+%1$d</string>
     <string name="friends_sort_error">/r/ 友達は並び替えできません</string>
     <string name="shadowbox_comments_nolinks">コメントにリンクは見つかりません</string>
-    <string name="pro_previews">プレビュー (%d)</string>
     <string name="draw_undo">元に戻す</string>
     <string name="empty_preview_text">ここに表示するものはありません ¯\\_(ツ)_/¯</string>
     <string name="theme_red_shift">レッドシフト</string>
@@ -981,6 +1209,7 @@
     <string name="enlarge_links">リンクを拡大</string>
     <string name="enlarge_links_warning">一部の行が他より大きくなりますが、リンクにタッチしやすくなります</string>
     <string name="type_tumblr">Tumblr</string>
+    <string name="type_tumblrs">Tumblr</string>
     <string name="type_nsfw_tumblr">NSFW Tumblr</string>
     <string name="submission_info_contest">このスレッドは、コンテスト モードです。並べ替えを変更できません</string>
     <string name="sub_post_notifs_msg">メールをチェックするとき、Slide が新しい投稿をチェックします (メール通知を有効にする必要があります)</string>
@@ -993,6 +1222,8 @@
     <string name="theme_pixel">ピクセル</string>
     <string name="save_images_to_subreddit_specific_subfolders">Subreddit 固有のサブフォルダーに画像を保存</string>
     <string name="description_save_subfolders">提出とコメント表示で動作します</string>
+    <string name="save_media_to_type_specific_subfolders">メディアを種類別のサブフォルダに保存</string>
+    <string name="description_save_type_subfolders">画像は \"images\"、動画と GIF は \"videos\" に保存されます</string>
     <string name="show_image_download_button">ショートカットをダウンロード</string>
     <string name="description_image_download_button">画像ビューアにダウンロードボタンを表示する</string>
     <string name="content_settings">コンテンツの設定</string>
@@ -1001,6 +1232,8 @@
     <string name="setting_notification_piggybacking_desc">Reddit の公式アプリがプッシュ通知を取得した場合のみメールを確認します</string>
     <string name="install_notif_piggyback">通知のピギーバックができるように公式の Reddit アプリをインストール</string>
     <string name="success_block_user">ユーザーを正常にブロックしました</string>
+    <string name="err_unblock_user">ユーザーのブロック解除中にエラーが発生しました</string>
+    <string name="success_unblock_user">ユーザーのブロックを解除しました</string>
     <string name="settings_highlight_time_desc">設定 &gt; 投稿レイアウトで \'前回訪問してからのコメント数を表示\' を有効にする必要があります</string>
     <string name="settings_colored_time">新しいコメントに色の付いたタイムバブル</string>
     <string name="theme_deep">ディープ</string>
@@ -1021,6 +1254,132 @@
     <string name="back_button_behavior_goto_first">最初の Subreddit に移動</string>
     <string name="settings_hide_post_awards">受賞を非表示</string>
     <string name="settings_hide_comment_awards">受賞を非表示</string>
+    <string name="settings_title_markdown">Markdown</string>
+    <string name="settings_markdown_new_reddit">新しい Reddit 形式の Markdown</string>
+    <string name="settings_markdown_new_reddit_desc">コードブロックと書式を新しい Reddit と同じように描画します（オフの場合は旧 Reddit のレンダラーを使用）</string>
+    <string name="comment_render_other">別の描画方法で表示</string>
+    <string name="recover_post">投稿を復元</string>
+    <string name="recover_loading">アーカイブから元の内容を取得中…</string>
+    <string name="recover_post_failed">この投稿を復元できませんでした</string>
+    <string name="recover_comment">コメントを復元</string>
+    <string name="recover_comment_failed">このコメントを復元できませんでした</string>
+    <string name="markdown_preview_new_reddit">新しい Reddit の描画</string>
+    <string name="markdown_preview_old_reddit">旧 Reddit の描画</string>
     <string name="high_colorspace_images">高色空間の画像</string>
     <string name="description_high_colorspace">画像のフルカラー空間を読み込み、メモリ使用量が増加する可能性があります</string>
+    <string name="wide_color_gamut">広色域</string>
+    <string name="description_wide_color_gamut">メディアビューアーを広色域で描画します。一部の OLED ディスプレイでは色があせて見えることがあります</string>
+    <string name="comment_emote_animation">コメントのエモートのアニメーション</string>
+    <string name="description_comment_emote_animation">コメント内の Giphy 以外のエモートをアニメーションさせるかどうかを切り替えます</string>
+    <string name="comment_image_size">コメント内の画像サイズ</string>
+    <string name="description_comment_image_size">コメント内のインライン画像を表示する大きさ</string>
+    <string name="comment_image_size_small">小</string>
+    <string name="comment_image_size_medium">中</string>
+    <string name="comment_image_size_large">大</string>
+    <string name="no_preview_image_longclick">どのコンテンツ種別でもプレビュー画像の長押しを無効にする</string>
+    <string name="description_no_preview_image_longclick">どのコンテンツ種別でもプレビュー画像の長押しが機能するかどうかを切り替えます。コンテンツのプレビュー機能が無効になります。</string>
+    <string name="editor_btn_select_flair">フレアを選択</string>
+    <string name="submit_selected_flair">選択したフレア: %s</string>
+    <string name="mediaview_downloading">画像をダウンロード中&#8230;</string>
+    <string name="err_save_image">画像の保存中にエラーが発生しました</string>
+    <string name="error_directory_not_selected">フォルダが選択されていません。もう一度お試しください。</string>
+
+    <!-- Backup Operations -->
+
+    <!-- Additional Backup Operations -->
+    <string name="select_backup_file">バックアップファイルを選択</string>
+
+    <string name="read_later">後で読む</string>
+    <string name="mark_as_read">既読にする</string>
+
+    <string name="reddit_client_id">Reddit クライアント ID</string>
+    <string name="click_custom_client_id">タップしてカスタムのクライアント ID を設定</string>
+    <string name="client_id_scan_qr">QR コードをスキャン</string>
+    <string name="client_id_scan_prompt">Reddit クライアント ID が含まれる QR コードをスキャンしてください</string>
+    <string name="camera_permission_denied">QR コードのスキャンにはカメラの権限が必要です</string>
+    <string name="client_id_invalid_length">クライアント ID が無効です: ちょうど 22 文字である必要があります</string>
+
+    <!-- Notification permission strings -->
+    <string name="notifications_permission_title">通知を有効にする</string>
+    <string name="notifications_permission_message">Slide が新しいメッセージ、投稿、その他 Reddit の更新をお知らせするには通知の権限が必要です。通知設定は後から変更できます。</string>
+    <string name="notification_listener_permission_title">通知へのアクセスを有効にする</string>
+    <string name="notification_listener_permission_message">Slide は Reddit の通知を受け取ってより良い通知体験を提供するために、通知へのアクセスが必要です。次の画面で Slide の通知アクセスを有効にしてください。</string>
+
+
+    <string name="reddit_redirect_uri_override">Reddit リダイレクト URI の上書き</string>
+    <string name="click_custom_redirect_uri">タップしてカスタムのリダイレクト URI を設定</string>
+    <string name="settings_reddit_redirect_uri_invalid">リダイレクト URI が無効です: scheme://hostname の形式である必要があります</string>
+    <string name="reddit_user_agent_override">Reddit ユーザーエージェントの上書き</string>
+    <string name="click_custom_user_agent">タップしてカスタムのユーザーエージェントを設定</string>
+    <string name="settings_enable_overrides">上書きを有効にする</string>
+    <string name="settings_enable_overrides_desc">アプリの既定値ではなく、独自のクライアント ID、リダイレクト URI、ユーザーエージェントを使用します。必要だとわかっている場合以外はオフのままにしてください。</string>
+
+    <string name="settings_section_sound">サウンド</string>
+    <string name="settings_unmute_default">既定で動画のミュートを解除する</string>
+
+    <string name="settings_subreddit_filter_prefix_matching">サブレディットフィルターの前方一致を有効にする</string>
+    <string name="settings_subreddit_filter_prefix_matching_description">前方一致にはサブレディット名全体、かつ 6 文字以上が必要です。例: サブレディット social は socialanxiety をブロックします。サブレディット pokemongo は pokemongoraids をブロックします。</string>
+
+    <string name="settings_filter_old_posts">これより古い投稿をフィルターする</string>
+    <plurals name="settings_filter_old_posts_days">
+        <item quantity="other">%1$d 日</item>
+    </plurals>
+    <string name="settings_filter_old_posts_description">個別のサブレディットを表示しているとき、または Top や Controversial で並べ替えているときは適用されません</string>
+
+    <!-- Pause on audio focus ducking setting -->
+    <string name="settings_pause_on_duck_title">音量を下げる代わりに動画を一時停止</string>
+    <string name="settings_pause_on_duck_desc">他のアプリが音声を再生しているときに動画を一時停止します。音量を下げるとは、動画を一時停止せずに音量だけを下げることです。</string>
+
+    <!-- Add this string resource for the play button content description -->
+    <string name="btn_play">再生</string>
+
+    <string name="multireddit_name_title">マルチレディットの名前</string>
+    <string name="multireddit_name_hint">マルチレディット名</string>
+    <string name="multireddit_err_empty_name">マルチレディット名を空にはできません</string>
+    <string name="multireddit_err_no_valid_subs">有効なサブレディットが選択されていません。少なくとも 1 つ選択してください。</string>
+    <string name="multireddit_progress_title">マルチレディットを作成中</string>
+    <string name="multireddit_progress_message">マルチレディットを作成しています。しばらくお待ちください...</string>
+    <string name="multireddit_created_success">マルチレディットを作成しました</string>
+    <string name="multireddit_created_error">マルチレディットを作成できませんでした。もう一度お試しください。</string>
+    <string name="multireddit_json_error">マルチレディットのデータ準備中にエラーが発生しました</string>
+
+    <string name="settings_dialog_colored_border">ダイアログの周囲に色付きの枠を表示</string>
+    <string name="settings_dialog_colored_border_desc">一部のダイアログの周囲に細い色付きの枠を表示します。</string>
+
+    <string name="misc_err_sync_failed">サブレディットを同期できませんでした。購読しているサブレディットがありませんか？</string>
+
+    <string name="mod_btn_distinguish">区別表示</string>
+    <string name="mod_btn_undistinguish">区別表示を解除</string>
+
+    <string name="nsfw_status_removed">NSFW 指定を解除しました</string>
+    <string name="nsfw_status_set">NSFW に指定しました</string>
+
+    <string name="spoiler_status_removed">ネタバレ指定を解除しました</string>
+    <string name="spoiler_status_set">ネタバレに指定しました</string>
+
+    <string name="submission_distinguished">投稿を区別表示しました</string>
+    <string name="submission_distinguished_removed">投稿の区別表示を解除しました</string>
+
+    <string name="settings_general_hide_subreddit_tabs">購読中サブレディットのタブを隠す</string>
+    <string name="settings_general_hide_subreddit_tabs_desc">購読中のサブレディットをタブとして隠しますが、ナビゲーションボタンは残します</string>
+
+    <!-- Video playback speed control -->
+    <string name="video_speed">速度</string>
+    <string name="video_speed_0_25x">0.25x</string>
+    <string name="video_speed_0_5x">0.5x</string>
+    <string name="video_speed_0_75x">0.75x</string>
+    <string name="video_speed_1x">標準</string>
+    <string name="video_speed_1_25x">1.25x</string>
+    <string name="video_speed_1_5x">1.5x</string>
+    <string name="video_speed_2x">2x</string>
+    <string name="video_speed_control_content_desc">再生速度の調整</string>
+    <string name="image_unavailable">画像を利用できません</string>
+    <string name="image_rotate_content_desc">画像を時計回りに 90 度回転</string>
+    <string name="image_rotate_left_content_desc">画像を反時計回りに 90 度回転</string>
+
+    <!-- Folder chooser dialog (formerly provided by afollestad material-dialogs commons) -->
+    <string name="md_error_label">エラー</string>
+    <string name="md_storage_perm_error">この機能にはストレージの権限が必要ですが、許可されていません。</string>
+    <string name="md_choose_label">選択</string>
+    <string name="new_folder">新しいフォルダ</string>
 </resources>

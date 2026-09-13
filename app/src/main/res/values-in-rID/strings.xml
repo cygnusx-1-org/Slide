@@ -5,9 +5,9 @@
     <string name="general_confirm_exit">Konfirmasi keluar</string>
     <string name="general_confirm_exit_msg">Apakah anda benar-benar ingin keluar dari Slide?</string>
     <string name="general_enable_shadowbox">Mode shadowbox</string>
-    <string name="pro_upgrade_msg">Tingkatkan ke Slide untuk Reddit Pro untuk menikmati fitur baru yang keren termasuk:\n\n- Pemblokir iklan dan Mode Baca di tampilan web\n- Potong dan lukis gambar untuk diunggah\n- Mode kolom tablet khusus\n- Mode malam otomatis\n- Tampilan Shadowbox dan Galeri\n- Tampilan komentar Shadowbox\n- Cadangkan dan pulihkan ke Google Drive dan berkas\n- Mendukung perangkat lunak sumber terbuka dan bebas iklan!\n\nApakah anda ingin mendukung Slide untuk Reddit?</string>
     <string name="general_open_settings">Bilah sisi</string>
     <string name="general_sub_sync">Menyinkronkan subscription</string>
+
     <!-- Used when viewing a thread -->
     <string name="submission_info_unsaved">Kiriman belum disimpan</string>
     <string name="submission_info_saved">Kiriman disimpan</string>
@@ -25,9 +25,9 @@
     <string name="submission_gild">Buka di browser</string>
     <string name="submission_save">Simpan post</string>
     <string name="submission_save_image">Menyimpan gambar</string>
+    <string name="submission_save_video">Simpan video</string>
     <string name="submission_load_full">Beban thread penuh</string>
     <string name="submission_np_link">Ini bukan tautan partisipasi. tolong jangan memilih atau komentar.</string>
-    <string name="submission_tap_gif">Tap untuk memuat GIF</string>
     <string name="submission_not_found">Uh oh, post tidak ditemukan!</string>
     <string name="submission_not_found_msg">Maaf, post ini tidak dapat ditemukan</string>
     <string name="submission_copy_text">Teks salinan</string>
@@ -38,7 +38,12 @@
     <string name="submission_text_copied">Selftext disalin</string>
     <string name="submission_nocontent">Kiriman tidak memiliki konten</string>
     <string name="submission_link_copied">Tautan disalin</string>
+    <string name="translate_with_google">Terjemahkan</string>
+    <string name="translate_no_app">Tidak ada aplikasi untuk menerjemahkan</string>
+    <string name="read_aloud">Bacakan</string>
+    <string name="read_aloud_unavailable">Text-to-speech tidak tersedia</string>
     <string name="submission_removed">Kiriman dihapus</string>
+
     <plurals name="new_messages">
         <item quantity="other">%d pesan baru</item>
     </plurals>
@@ -48,6 +53,7 @@
     <plurals name="comments">
         <item quantity="other">kmntr</item>
     </plurals>
+
     <!-- Theme settings -->
     <string name="theme_light">Terang</string>
     <string name="theme_dark">Gelap</string>
@@ -65,6 +71,7 @@
     <string name="theme_sepia">Sepia</string>
     <string name="theme_amoled_contrast">AMOLED dengan kontras</string>
     <string name="theme_night">Tema malam</string>
+
     <!-- Font settings -->
     <string name="font_size_comment">Ukuran fon komentar</string>
     <string name="font_size_post">Ukuran fon pos</string>
@@ -75,13 +82,18 @@
     <string name="font_size_small">Kecil</string>
     <string name="font_size_smaller">Lebih kecil</string>
     <string name="font_size_tiny">Sangat kecil</string>
+
     <!-- For editing the submission card layout -->
     <string name="card_hide_post_button">Tombol \"Sembunyikan pos\" di bilah tindakan</string>
     <string name="card_tint_outside">Warnai hanya di luar subreddit</string>
     <string name="card_save_button">Tombol \"Simpan pos\" di bilah tindakan</string>
+
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Multi kolom</string>
+    <string name="multi_column_portrait_count">Kolom pada mode potret</string>
+    <string name="multi_column_landscape_count">Kolom pada mode lanskap</string>
     <string name="single_column_multi_window">Kolom tunggal dalam mode banyak-jendela</string>
+
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Anda</string>
     <string name="drawer_support">Tingkatkan ke Pro</string>
@@ -89,19 +101,25 @@
     <string name="drawer_add_account">Tambahkan akun</string>
     <string name="drawer_hello">Hai,</string>
     <string name="drawer_search">Buka subreddit</string>
+    <!-- Subreddit name when submitting/crossposting: a single subreddit only (no multireddit, no dot). -->
+    <!-- Message recipient: a username or an /r/ or /u/ path. -->
+    <!-- Settings search field. The trailing space is intentional, so the value is quoted to preserve it. -->
     <string name="drawer_moderation">Moderasi</string>
     <string name="drawer_offline">Slide dalam mode luring</string>
     <string name="drawer_offline_retry"> Coba masuk ke mode daring</string>
     <string name="drawer_guest_mode">Jelajahi sbg tamu</string>
+
     <!-- Sidebar items (That's the one on the right) -->
     <string name="sidebar_wiki">Wiki subreddit</string>
     <string name="sidebar_mods">Moderator subreddit</string>
+
     <!-- User profile -->
     <string name="profile_karma_total">Jumlah karma</string>
     <string name="profile_karma_link">Karma pos</string>
     <string name="profile_karma_comment">Karma komentar</string>
     <string name="profile_message">Pesan privat</string>
     <string name="profile_saved">Disimpan</string>
+    <string name="local_saved">Tersimpan lokal</string>
     <string name="profile_read_later">Baca Nanti</string>
     <string name="profile_upvoted">Diupvote</string>
     <string name="profile_err_title">Pengguna tidak ditemukan</string>
@@ -115,6 +133,10 @@
     <string name="profile_friend">Teman</string>
     <string name="profile_add_friend">Tambah teman</string>
     <string name="profile_remove_friend">Hapus teman</string>
+    <string name="profile_follow_user">Ikuti</string>
+    <string name="profile_unfollow_user">Berhenti ikuti</string>
+    <string name="profile_add_user">Tambah pengguna</string>
+    <string name="profile_remove_user">Hapus pengguna</string>
     <string name="profile_remove_account">Apakah anda benar-benar ingin menghapus akun ini?</string>
     <string name="profile_remove">Hapus akun</string>
     <string name="profile_history">Riwayat</string>
@@ -127,7 +149,21 @@
     <string name="profile_btn_tag">Atur tag</string>
     <string name="profile_btn_untag">Hapus tag</string>
     <string name="profile_info">Informasi profil</string>
+    <string name="profile_options">Opsi pengguna</string>
     <string name="profile_block_user">Blokir pengguna</string>
+    <string name="profile_block_user_description">Memblokir pesan, kiriman, dan profil pengguna</string>
+    <string name="profile_unblock_user">Buka blokir pengguna</string>
+    <string name="profile_unblock_user_description">Membuka blokir pesan, kiriman, dan profil pengguna</string>
+    <string name="profile_search">Cari</string>
+    <string name="profile_search_title">Cari di %1$s</string>
+    <string name="profile_search_hint">Cari judul dan teks…</string>
+    <string name="profile_search_no_results">Tidak ada hasil</string>
+    <string name="profile_search_clear">Hapus pencarian</string>
+    <string name="profile_search_cleared">Pencarian dihapus</string>
+    <string name="profile_search_loading">Mencari…</string>
+    <string name="profile_search_progress">%1$d hasil · %2$d dicari</string>
+    <string name="profile_search_bypass_cache">Lewati cache</string>
+
     <!-- Comment text options -->
     <string name="comment_gild">Apresiasi komentar</string>
     <string name="comment_share">Bagikan komentar</string>
@@ -137,14 +173,15 @@
     <string name="comment_delete_err_msg">Apakah anda ingin mencobanya lagi?</string>
     <string name="comment_deleted">[dihapus]</string>
     <string name="comment_unsave">Batal simpan</string>
-    <string name="comment_load_more">Muat %1$d lainnya</string>
-    <string name="comment_load_more_string_new">Muat %1$s lainnya</string>
     <string name="comment_loading_more">Memuat komentar lainnya&#8230;</string>
     <string name="comment_permalink">Muat permalink komentar</string>
     <string name="comment_parent">Tampilkan induk komentar</string>
+    <string name="comment_video_play">Putar video</string>
+
     <!-- Welcome view (first time setup) -->
     <string name="welcome_start">Memulai</string>
     <string name="welcome_personalize">Personalisasi</string>
+
     <!-- Sorting options -->
     <string name="sorting_choose">Pilih tipe pengurutan</string>
     <string name="sorting_time_choose">Pilih jangka waktu</string>
@@ -164,6 +201,7 @@
     <string name="sorting_year">tahun</string>
     <string name="sorting_all">semua waktu</string>
     <string name="sorting_defaultfor">Default untuk /r/%1$s</string>
+
     <!-- Editor (save/submit a post) actions -->
     <string name="editor_url">URL</string>
     <string name="editor_text">Teks</string>
@@ -172,15 +210,31 @@
     <string name="editor_title">Judul</string>
     <string name="editor_err_msg">Silakan coba lagi dalam beberapa detik</string>
     <string name="editor_uploading_image">Mengunggah gambar ke Imgur</string>
-    <string name="editor_upload_image_question">Unggah gambar ke Imgur?</string>
+    <string name="editor_upload_image_title">Unggah gambar</string>
+    <string name="editor_upload_reddit">Reddit (gambar sebaris)</string>
+    <string name="editor_upload_imgur">Imgur (tautan)</string>
+    <string name="editor_uploading_reddit">Mengunggah gambar ke Reddit</string>
+    <string name="editor_reddit_upload_success">Gambar diunggah</string>
+    <string name="editor_reddit_upload_failed">Gagal mengunggah gambar</string>
+    <string name="submit_image_host_imgur">Imgur</string>
+    <string name="submit_image_host_reddit">Reddit</string>
+    <string name="submit_change_img">Ganti gambar</string>
+    <string name="submit_select_gallery">Tambah gambar</string>
+    <string name="submit_gallery_caption_hint">Keterangan (opsional)</string>
+    <string name="submit_gallery_count">%1$d dipilih</string>
+    <string name="submit_uploading_gallery">Mengunggah gambar %1$d dari %2$d</string>
     <string name="editor_select_img">Pilih gambar</string>
     <string name="editor_hint_optional_body">Teks (opsional)</string>
     <string name="editor_submit">Kirimkan pos</string>
     <string name="editor_hint_subreddit">Subreddit</string>
     <string name="editor_finding_title">Mencari judul</string>
+    <string name="submit_findingflairs">Mencari flair</string>
+    <string name="submit_flairchoices">Flair /r/%s</string>
+
     <string name="edit_selftext">Sunting selftext</string>
     <string name="delete_submission">Hapus kiriman</string>
     <string name="set_submission_flair">Atur flair kiriman</string>
+
     <!-- Editor buttons -->
     <string name="editor_save_draft">Simpan draf</string>
     <string name="editor_chose_draft">Pilih draf</string>
@@ -196,21 +250,26 @@
     <string name="editor_size">Fon besar</string>
     <string name="editor_strike">Coret</string>
     <string name="editor_spoiler">Spoiler</string>
+
     <!-- General information / information without a category -->
     <string name="info_photo_saved">Foto disimpan</string>
     <string name="gif_saved">GIF disimpan</string>
+
     <!-- General errors / errors without a category -->
     <string name="err_title">Uh oh, ada sesuatu yang tidak beres!</string>
     <string name="err_invalid_url">URL tidak valid</string>
     <string name="err_loading_content">Kesalahan saat memuat konten</string>
     <string name="err_general">Maaf, telah terjadi kesalahan</string>
     <string name="err_no_connection">Reddit tidak bisa terhubung. Apakah anda ingin mencobanya lagi?</string>
+    <string name="err_no_connection_toast">Reddit tidak dapat dihubungi. Coba lagi nanti</string>
     <string name="err_retry_later">Coba lagi nanti!</string>
-    <string name="err_permission">Izin ditolak</string>
-    <string name="err_permission_msg">Sepertinya anda menolak akses Slide untuk menulis ke penyimpanan eksternal. Ini dapat menyebabkan kegagalan dalam cache gambar, cache pos dan menyimpan gambar :(.\nApakah anda ingin mengizinkan Slide mengakses penyimpanan eksternal?  </string>
     <string name="err_authentication">Gagal otentikasi</string>
     <string name="err_submit_restricted">Subreddit ini dibatasi</string>
     <string name="err_submit_restricted_text">Anda tidak diperbolehkan mengirim pos di sini. Silakan pilih subreddit lainnya</string>
+    <string name="err_crosspost_disallowed_text">/r/%s tidak mengizinkan crosspost. Silakan pilih subreddit lain.</string>
+    <string name="err_crosspost_not_subscribed">Anda harus berlangganan /r/%s sebelum melakukan crosspost.</string>
+    <string name="err_crosspost_sub_not_found">/r/%s tidak ada.</string>
+    <string name="crosspost_flair_required_short">Flair diperlukan — silakan pilih flair sebelum mengirim.</string>
     <string name="error_video_not_found">Video tidak ditemukan</string>
     <string name="error_video_message">Terjadi kesalahan saat memuat video ini</string>
     <string name="error_album_not_found">Album tidak ditemukan</string>
@@ -223,17 +282,19 @@
     <string name="err_couldnt_save_choose_new">Slide tidak bisa menyimpan ke direktori yang dipilih. Apakah anda ingin memilih lokasi penyimpanan baru?</string>
     <string name="err_share_image">Galat berbagi gambar</string>
     <string name="err_file_not_found">Berkas tidak ditemukan</string>
-    <string name="err_not_valid_backup">Bukan berkas cadangan Slide yang valid</string>
-    <string name="err_not_valid_backup_msg">Berkas yang dipilih bukan berkas cadangan Slide yang valid</string>
     <string name="err_file_not_found_msg">Berkas yang dipilih tidak bisa ditemukan. Pastikan berkas ada dan Slide memiliki izin untuk mengakses berkas/folder tersebut</string>
     <string name="err_comment_post">Uh oh, gagal mengirim komentar ini!</string>
     <string name="err_comment_post_reason">Alasan: %1$s</string>
     <string name="err_comment_post_message">\n\nPesan anda disimpan sebagai draf. Silakan coba lagi nanti.</string>
     <string name="err_connection_failed_msg">Sambungan ke Reddit gagal. Silakan periksa koneksi internet anda dan coba lagi, atau beralih ke mode luring.</string>
-    <string name="err_block_user">Galat memblokir pengguna</string>
+    <string name="err_block_user">Galat saat memblokir pengguna. Apakah Anda baru saja membuka blokir pengguna ini?</string>
+
     <!-- Gif -->
     <string name="gif_err_title">GIF tidak ditemukan</string>
     <string name="gif_err_msg">Terjadi kesalahan saat memuat GIF ini. Silakan buka kembali GIF dan ulangi.</string>
+    <string name="gif_load_failed">Gagal memuat GIF</string>
+    <string name="gif_download_failed">Gagal mengunduh GIF</string>
+
     <!-- Multireddits -->
     <string name="multireddit_err_title">Tidak (belum) ada multireddit!</string>
     <string name="multireddit_err_msg">Apakah anda ingin membuat multireddit baru?</string>
@@ -256,6 +317,7 @@
     <string name="multi_saved_successfully">Berhasil disimpan</string>
     <string name="delete_multireddit_title">Apakah anda yakin ingin menghapus /m/%1$s?</string>
     <string name="multi_save_option">Apakah kamu ingin menyimpan multireddit ini</string>
+
     <!-- Content types -->
     <string name="type_nsfw_img">Gambar NSFW</string>
     <string name="type_nsfw_gif">GIF NSFW</string>
@@ -268,18 +330,36 @@
     <string name="type_xkcd">XKCD</string>
     <string name="type_nsfw_album">Album NSFW</string>
     <string name="type_nsfw_gallery">Galeri NSFW</string>
+    <string name="type_nsfw_albums">Album NSFW</string>
+    <string name="type_nsfw_galleries">Galeri NSFW</string>
+    <string name="type_nsfw_gifs">GIF NSFW</string>
+    <string name="type_nsfw_images">Gambar NSFW</string>
+    <string name="type_nsfw_links">Tautan NSFW</string>
+    <string name="type_nsfw_selftexts">Teks mandiri NSFW</string>
+    <string name="type_nsfw_tumblrs">Tumblr NSFW</string>
+    <string name="type_nsfw_videos">Video NSFW</string>
     <string name="type_gallery">Galeri</string>
+    <string name="type_galleries">Galeri</string>
     <string name="type_img">Gambar</string>
     <string name="type_videos">Video</string>
     <string name="type_nsfw_video">Video NSFW</string>
     <string name="type_imgur">Konten Imgur</string>
     <string name="type_nsfw_imgur">Konten Imgur NSFW</string>
+    <string name="type_nsfw_xkcd">XKCD NSFW</string>
+    <string name="type_nsfw_deviantart">DeviantArt NSFW</string>
+    <string name="type_nsfw_title_only">Kiriman hanya judul NSFW</string>
+    <string name="type_nsfw_reddit">Tautan Reddit NSFW</string>
+    <string name="type_nsfw_selftext">Teks mandiri NSFW</string>
+    <string name="type_spoiler">Spoiler</string>
+    <string name="type_nsfw_spoiler">Spoiler NSFW</string>
+    <string name="type_nsfw_streamable">Streamable NSFW</string>
     <string name="type_external">Eksternal</string>
+
     <!-- Content types plural (Content filters) -->
     <string name="type_gifs">GIF</string>
     <string name="type_albums">Album</string>
-    <string name="type_nsfw_content">Konten NSFW</string>
     <string name="type_links">Tautan</string>
+
     <!-- Inbox/mail -->
     <string name="mail_tab_inbox">Kotak Masuk</string>
     <string name="mail_tab_unread">Belum dibaca</string>
@@ -301,7 +381,6 @@
     <string name="mail_theirs">Lihat pesan mereka</string>
     <string name="mail_re">re: %1$s</string>
     <string name="mail_mark_read">Tandai dibaca</string>
-    <string name="mail_mark_unread">Tandai belum dibaca</string>
     <string name="mail_view_full_thread">Lihat utas penuh</string>
     <string name="mail_message_copied">Pesan disalin</string>
     <plurals name="mail_notification_title">
@@ -310,6 +389,7 @@
     <plurals name="mod_mail_notification_title">
         <item quantity="other">Anda memiliki %d pesan mod baru!</item>
     </plurals>
+
     <!-- Miscellaneous/generic things that don't have a category or strings that are used for multiple categories -->
     <string name="misc_err">Galat</string>
     <string name="misc_none">Nihil</string>
@@ -330,32 +410,49 @@
     <string name="misc_setting_up">Menyiapkan beberapa hal&#8230;</string>
     <string name="misc_setting_up_message">Tolong jangan tinggalkan layar ini. Tidak akan lama!</string>
     <string name="misc_more_info">Info lebih lanjut</string>
-    <string name="misc_rate_title">Suka Slide?</string>
-    <string name="misc_rate_msg">Berikan nilai!</string>
     <string name="misc_captcha_incorrect">Captcha salah, silakan coba lagi</string>
+
     <!-- Goto User -->
     <string name="user_enter">Masukkan nama pengguna</string>
     <string name="user_btn_goto">Kunjungi pengguna</string>
     <string name="user_btn_gotomultis">Kunjungi multi milik pengguna</string>
+
+    <!-- Saved users list -->
+    <string name="users_empty">Tidak ada pengguna tersimpan</string>
+    <string name="users_btn_add">Tambah pengguna</string>
+    <string name="users_btn_remove">Hapus pengguna</string>
+    <string name="users_added">%s ditambahkan ke Pengguna</string>
+    <string name="users_removed">%s dihapus dari Pengguna</string>
+    <string name="users_already_added">%s sudah ada di Pengguna</string>
+    <string name="users_copied">%s disalin</string>
+    <string name="users_checking">Memeriksa nama pengguna</string>
+    <string name="users_invalid_title">Tidak dapat menambah pengguna</string>
+    <string name="users_invalid">%s bukan pengguna Reddit</string>
+    <string name="users_check_failed">Tidak dapat memeriksa apakah %s ada. Periksa koneksi Anda dan coba lagi.</string>
+    <string name="users_friend_added">%s ditambahkan sebagai teman</string>
+    <string name="users_friend_removed">%s dihapus dari teman</string>
+    <string name="users_friend_failed">Tidak dapat memperbarui status pertemanan untuk %s</string>
+    <string name="btn_fab_add_user">Tambah pengguna</string>
+
     <!-- Buttons -->
     <string name="btn_add">Tambah</string>
     <string name="btn_cancel">Batal</string>
     <string name="btn_close">Tutup</string>
+    <string name="btn_toggle">Alihkan</string>
     <string name="btn_open">Buka</string>
     <string name="btn_discard">Buang</string>
     <string name="btn_done">Selesai</string>
     <string name="btn_go_back">Kembali</string>
-    <string name="btn_no_thanks">Tidak, terima kasih</string>
     <string name="btn_no">Tidak</string>
     <string name="btn_ok">OK</string>
     <string name="btn_remove">Hapus</string>
     <string name="btn_reply">Balas</string>
     <string name="btn_reset">Set ulang</string>
+    <string name="btn_retry">Coba lagi</string>
     <string name="btn_save">Simpan</string>
     <string name="btn_submit">Kirim</string>
     <string name="btn_undo">Urungkan</string>
     <string name="btn_yes">Ya</string>
-    <string name="btn_yes_exclaim">Ya!</string>
     <string name="btn_refresh">Segarkan</string>
     <string name="btn_cache">Cache komentar</string>
     <string name="btn_delete">Hapus</string>
@@ -367,7 +464,7 @@
     <string name="btn_set">SET</string>
     <string name="btn_create">Buat</string>
     <string name="btn_new">Baru</string>
-    <string name="btn_upload">Unggah</string>
+
     <!-- Buttons Content labels for TalkBack accessibility-->
     <string name="btn_edit">Sunting</string>
     <string name="btn_hide">Sembunyi</string>
@@ -380,15 +477,19 @@
     <string name="btn_expand">Perluas</string>
     <string name="btn_nav_up">Ke atas</string>
     <string name="btn_nav_mode">Mode navigasi</string>
+    <string name="btn_nav_collapse_expand">Ciutkan/bentangkan</string>
     <string name="btn_nav_down">Ke bawah</string>
     <string name="btn_fab_reply">Balas</string>
     <string name="btn_fab_post">Buat pos baru</string>
     <string name="btn_fab_hide">Sembunyikan yang sudah dibaca</string>
     <string name="btn_fab_search">Cari pos</string>
+
     <!-- Buttons Content labels for TalkBack accessibility active states-->
     <string name="btn_upvoted">Diupvote</string>
     <string name="btn_downvoted">Didownvote</string>
     <string name="btn_unsave">Batal simpan</string>
+    <string name="btn_collapse">Ciutkan</string>
+
     <!-- Backup -->
     <string name="backup_success">Berhasil mencadangkan!</string>
     <string name="backup_restoring">Memulihkan pengaturan anda</string>
@@ -402,13 +503,45 @@
     <string name="backup_btn_restore_file">Mengembalikan Berkas</string>
     <string name="backup_confirm">Apakah anda yakin ingin mencadangkan? Cadangan anda sebelumnya akan ditimpa</string>
     <string name="backup_restore_confirm">Apakah anda yakin ingin memulihkan cadangan? Pengaturan anda sekarang akan ditimpa</string>
+    <string name="backup_failed_msg">Pencadangan gagal. Silakan coba lagi nanti.</string>
+    <string name="backup_restore_failed_msg">Pemulihan gagal. Pastikan ada cadangan yang valid lalu coba lagi.</string>
+    <string name="backup_local_title">Cadangan lokal</string>
+    <string name="backup_drive_title">Cadangan Google Drive</string>
+    <string name="backup_button">Buat cadangan</string>
+    <string name="restore_button">Pulihkan cadangan</string>
+    <string name="backup_question">Cadangkan?</string>
+    <string name="backup_complete">Pencadangan selesai!</string>
+    <string name="err_not_valid_backup">Bukan berkas cadangan Slide yang valid</string>
+    <string name="err_not_valid_backup_msg">Berkas yang dipilih bukan berkas cadangan Slide yang valid</string>
+    <string name="backup_password_title">Atur kata sandi cadangan</string>
+    <string name="backup_password_message">Cadangan Anda berisi kredensial akun Reddit, jadi dienkripsi. Pilih kata sandi sepanjang %1$d sampai %2$d karakter. Kata sandi ini diperlukan untuk memulihkan dan tidak dapat dipulihkan kembali.</string>
+    <string name="backup_password_hint">Kata sandi</string>
+    <string name="restore_password_title">Masukkan kata sandi cadangan</string>
+    <string name="restore_password_message">Masukkan kata sandi yang digunakan untuk mengenkripsi cadangan ini.</string>
+    <string name="restore_password_wrong">Kata sandi salah. Silakan coba lagi.</string>
+    <string name="drive_authorization_failed">Otorisasi Google Drive gagal</string>
+    <string name="drive_authorization_failed_msg">Slide tidak bisa mengakses folder Google Drive pribadinya. Silakan coba lagi.</string>
+    <string name="drive_authorization_denied">Akses Google Drive diperlukan</string>
+    <string name="drive_authorization_denied_msg">Slide memerlukan akses ke folder Google Drive pribadinya untuk mencadangkan atau memulihkan pengaturan Anda.</string>
+
     <!-- Vote -->
     <string name="vote_err">Kesalahan pemilihan suara!</string>
     <string name="vote_err_login">Anda harus masuk untuk memilih!</string>
     <string name="vote_removed">Suara dihapus</string>
+
+    <!-- Subscribing -->
+    <string name="subscribe_err_login">Anda harus masuk untuk berlangganan!</string>
+
     <!-- Moderation tools -->
     <string name="mod_mail">Surat Mod</string>
     <string name="mod_mail_unread">Surat Mod belum dibaca</string>
+    <string name="modmail_internal_note">(catatan internal)</string>
+    <string name="modmail_scope_missing">Mod mail perlu autentikasi ulang. Masuk kembali (Pengaturan &#8594; akun) untuk mengaktifkannya.</string>
+    <string name="modmail_reply_sent">Balasan terkirim!</string>
+    <string name="modmail_reply_failed">Pengiriman gagal! Balasan disimpan sebagai draf.</string>
+    <plurals name="modmail_message_count">
+        <item quantity="other">%d pesan</item>
+    </plurals>
     <string name="mod_modqueue">Modqueue</string>
     <string name="mod_unmoderated">Tidak dimoderasi</string>
     <string name="mod_reports">Laporan</string>
@@ -422,8 +555,12 @@
     <string name="mod_btn_unmark_nsfw">Hapus tanda NSFW</string>
     <string name="mod_btn_mark_spoiler">Tandai spoiler</string>
     <string name="mod_btn_unmark_spoiler">Batal tandai spoiler</string>
+    <string name="mod_btn_lock_thread">Kunci utas</string>
+    <string name="mod_btn_unlock_thread">Buka kunci utas</string>
     <string name="mod_btn_lock_comment">Kunci komentar</string>
+    <string name="mod_btn_unlock_comment">Buka kunci komentar</string>
     <string name="mod_locked">Terkunci</string>
+    <string name="mod_unlocked">Tidak terkunci</string>
     <string name="mod_btn_pin">Semat</string>
     <string name="mod_btn_unpin">Lepas Sematan</string>
     <string name="mod_btn_remove">Hapus</string>
@@ -451,21 +588,28 @@
     <string name="mod_sticky">Lengket</string>
     <string name="mod_unsticky">Tidak lengket</string>
     <string name="reauth_complete">Kembali otentikasi dengan lengkap!</string>
+    <string name="reauth_in_progress">Mengautentikasi ulang…</string>
+    <string name="reauth_failed">Tidak dapat mengautentikasi ulang</string>
+
     <plurals name="mod_btn_reports">
         <item quantity="other">Lihat %d laporan</item>
     </plurals>
+
     <!-- If he did -->
     <string name="really_pin_submission_message">Kiriman tidak disematkan</string>
     <string name="really_unpin_submission_message">Kiriman tidak disematkan</string>
+
     <!-- Subreddit Wiki -->
     <string name="wiki_err">Wiki tidak ditemukan</string>
     <string name="wiki_err_msg">Subreddit ini tidak memiliki wiki!</string>
+
     <!-- Subreddits -->
     <string name="subreddit_subscribers_string">%1$s pelanggan</string>
     <string name="subreddit_active_users_string_new">%1$s di sini sekarang</string>
     <string name="subreddit_err_msg">Subreddit %1$s tidak dapat ditemukan. Mungkin terjadi kesalahan ejaan?</string>
     <string name="subreddit_err_msg_new">Subreddit %1$s tidak dapat ditemukan. Mungkin terjadi kesalahan ejaan, atau Anda tidak memiliki akses ke subreddit ini.</string>
     <string name="subreddit_err">Subreddit tidak ditemukan</string>
+
     <!-- Search -->
     <string name="search_comments_hint">Cari komentar</string>
     <string name="search_goto">Pergi ke</string>
@@ -478,6 +622,7 @@
     <string name="search_new">Baru</string>
     <string name="search_comments">Komentar</string>
     <string name="no_posts_found">Tidak ada posting yang ditemukan</string>
+
     <!-- Settings -->
     <string name="settings_reddit_prefs">Reddit preferensi</string>
     <string name="settings_accent_title">Edit warna aksen</string>
@@ -485,7 +630,9 @@
     <string name="settings_layout_default">Tata letak posting</string>
     <string name="settings_link_album">Lihat internal album</string>
     <string name="settings_link_peek">Mengintip konten (eksperimental)</string>
+    <string name="settings_link_peek_description">Menonaktifkan tekan lama pada gambar pratinjau</string>
     <string name="settings_link_gif">Lihat bagian dalam GIF</string>
+    <string name="settings_link_hqgif">Video Gfycat kualitas tinggi</string>
     <string name="settings_link_handling">Pengolahan tautan</string>
     <string name="settings_link_image">Lihat bagian dalam gambar</string>
     <string name="settings_mail_check">Periksa pesan baru</string>
@@ -503,14 +650,14 @@
     <string name="share_image">Bagikan gambar</string>
     <string name="settings_libs">Pustaka open source</string>
     <string name="settings_about_libs">Tentang Libs</string>
+    <string name="settings_privacy">Kebijakan privasi</string>
     <string name="settings_bugs">Laporkan bug</string>
     <string name="settings_changelog">Lihat daftar perubahan</string>
-    <string name="settings_google">Menyambungkan ke Google</string>
-    <string name="settings_google_msg">Halaman yang terhubung ke Google. Coba lagi dalam beberapa detik!</string>
     <string name="settings_fabclear_msg">Mengetuk tombol hapus akan menghapus pos dari tampilan saat ini, namun tidak akan menyembunyikan tulisan selamanya. \n Lama menekan tombol akan menyembunyikan tulisan selamanya!</string>
     <string name="settings_fabclear">FAB tindakan yang jelas</string>
     <string name="settings_notifdisabled">Pemberitahuan dinonaktifkan</string>
     <string name="settings_colored_navigation_bar">Bar navigasi berwarna</string>
+    <string name="settings_always_black_statusbar">Bilah status hitam (bilah notifikasi)</string>
     <string name="settings_colored_icon">Warna ikon apl (eksperimental)</string>
     <string name="settings_colored_icon_desc">Mungkin perlu memulai lagi telepon untuk bekerja. ini juga akan menghapus ikon dari layar depan anda.</string>
     <string name="settings_filter_domain">Filter domain</string>
@@ -527,7 +674,14 @@
     <string name="settings_set_storage_location">Gambar akan disimpan ke %s</string>
     <string name="settings_general_immersive_mode">Modus layar penuh mendalam</string>
     <string name="settings_general_immersive_mode_desc">Menyembunyikan status dan bar navigasi (eksperimental)</string>
+    <string name="settings_general_old_swipe_mode">Mode geser lama</string>
+    <string name="settings_general_old_swipe_mode_desc">Gaya geser lama Slide. Ditujukan untuk mode navigasi 3 tombol dan gestur Samsung.</string>
+    <string name="settings_general_hibernate">Lanjutkan dari tempat saya berhenti</string>
+    <string name="settings_general_hibernate_desc">Membuka kembali layar yang sama, pada posisi yang sama, menampilkan yang sudah dimuat alih-alih menyegarkan. Mengaktifkannya menambahkan kotak centang di menu tambahan untuk menyalakan dan mematikan fitur lanjut tanpa kembali ke sini.</string>
+
+    <string name="settings_general_title_drawer_items">Item laci</string>
     <string name="settings_general_subtitle_drawer_items">Pilih item bilah sisi untuk ditampilkan</string>
+
     <!-- Settings titles displayed in settings activity-->
     <string name="settings_title_backup">Cadangkan &amp; pulihkan</string>
     <string name="settings_title_default_theme">Tema utama</string>
@@ -537,7 +691,14 @@
     <string name="settings_title_pro">Go Pro</string>
     <string name="settings_title_sub_theme">Tema Subreddit</string>
     <string name="settings_title_sort">Menyetel ke semula</string>
+    <string name="settings_title_sort_frontpage">Urutan halaman depan</string>
     <string name="settings_title_about">Tentang</string>
+    <string name="settings_title_debug">Debug</string>
+    <string name="settings_section_debug_reauth">Autentikasi ulang</string>
+    <string name="settings_debug_break_reauth">Rusak autentikasi ulang</string>
+    <string name="settings_debug_break_reauth_desc">Menghentikan autentikasi ulang agar snackbar autentikasi ulang bisa diuji. Dapat dipulihkan: matikan opsi ini, lalu picu autentikasi ulang.</string>
+    <string name="settings_debug_trigger_reauth">Picu autentikasi ulang</string>
+    <string name="settings_debug_trigger_reauth_desc">Mulai autentikasi ulang sekarang. Gunakan ini untuk pulih setelah mematikan sakelar.</string>
     <string name="settings_title_multi_column">Multi kolom</string>
     <string name="settings_title_fab">Tombol tindakan mengambang</string>
     <string name="settings_title_comments">Komentar</string>
@@ -545,6 +706,7 @@
     <string name="settings_title_font">Huruf</string>
     <string name="settings_section_general">Umum</string>
     <string name="settings_section_appearance">Tampilan</string>
+    <string name="settings_section_hibernation">Hibernasi</string>
     <string name="settings_section_other">Lainnya</string>
     <string name="settings_section_browser">Browser</string>
     <string name="settings_section_internal_viewers">Penonton internal</string>
@@ -562,12 +724,16 @@
     <string name="settings_data_enable">Aktifkan pengaturan penyimpan data</string>
     <string name="settings_data_video_quality">Memilih video kualitas rendah ketika mode hemat data menyala</string>
     <string name="settings_comments_collapse_deleted">Tutup komentar terhapus secara default</string>
+    <string name="settings_comments_collapse_sticky">Selalu ciutkan penuh komentar yang disematkan</string>
+    <string name="settings_comments_collapse_blocked_users">Ciutkan komentar dari pengguna yang diblokir</string>
+    <string name="settings_comments_collapse_blocked_users_description">Juga mengaktifkan Ciutkan komentar sepenuhnya</string>
     <string name="settings_backup_occurs">Cadangan akan terjadi di %1$s</string>
     <string name="settings_backup_none">Subreddits tidak akan kembali</string>
     <string name="settings_backup_will_backup">\u0020will kembali ke atas</string>
     <string name="settings_backup_submission_only">pengajuan hanya</string>
     <string name="settings_backup_comments">\u0020(comments)</string>
     <string name="settings_filter_profile">Penyaring profil</string>
+    <string name="settings_subreddit_content_filters_till_restart">Filter konten subreddit sampai mulai ulang</string>
     <string name="settings_subredditspecific_selftext">Selalu menunjukkan preview selftext di subreddit ini</string>
     <string name="settings_font_system">Sistem</string>
     <string name="settings_manage_subscriptions">Kelola langganan Anda</string>
@@ -578,6 +744,8 @@
     <string name="settings_layout_picture_mode">Modus gambar</string>
     <string name="settings_general_expanded_toolbar">Menu toolbar diperluas</string>
     <string name="settings_general_expanded_toolbar_desc">Tampilkan lebih banyak pilihan di subreddit toolbar</string>
+    <string name="settings_always_show_floating_action_button">Selalu tampilkan tombol aksi mengambang</string>
+    <string name="settings_always_show_floating_action_button_desc">Jangan pernah sembunyikan tombol aksi mengambang saat menggulir</string>
     <string name="settings_theme_tinting">Mengatur mode pewarnaan warna</string>
     <string name="settings_layout_actionbar_mode">Modus Actionbar</string>
     <string name="settings_theme_tint_outside_desc">Hanya warna latar belakang dalam multireddits, halaman depan, dan semua</string>
@@ -585,6 +753,7 @@
     <string name="settings_links_force_external">Kekuatan browser bagian luar</string>
     <string name="settings_layout_show_domain">Domain Tampilkan info baris</string>
     <string name="settings_layout_show_content_type">Tampilkan jenis konten dalam info baris</string>
+    <string name="settings_layout_thumbnail_flags">Tampilkan penanda warna di sudut gambar mini</string>
     <string name="settings_layout_show_votes_comments">Tampilkan suara/komentar di info baris</string>
     <string name="settings_general_comment_last_visit">Tampilkan hitungan komentar sejak kunjungan terakhir</string>
     <string name="settings_fab_create">Tampilkan \"Buat komentar\" FAB</string>
@@ -592,41 +761,49 @@
     <string name="settings_reddit_description">Setelan ini mengubah apa yang API Reddit kembalikan ke Slide.\n\nUntuk melihat pratinjau di semua subreddit, nyalakan \'Abaikan preferensi media subreddit\'\n\nUntuk melihat konten NSFW, matikan \'Sembunyikan foto NSFW\' dan nyalakan \'Saya berusia di atas 18\'</string>
     <string name="settings_reddit_media_pref">Abaikan preferensi media subreddit</string>
     <string name="settings_description_view_type">Jenis tampilan mempengaruhi tampilan utama dan tampilan subreddit tunggal. \n\n panel Komentar: komentar meluncur dari sebelah posting dan status halaman komentar disimpan setelah digesek kembali (jadi Anda tidak kehilangan tempat Anda) \n\n Tidak ada subreddit tab: menonaktifkan swiping antara subreddits \n\n Subreddit tabs: geser antara subreddit Anda</string>
+    <string name="settings_short_description_view_type">Jenis tampilan memengaruhi tampilan utama maupun tampilan subreddit tunggal</string>
     <string name="settings_comment_hide_selftext_image">Menyembunyikan gambar utama pada posting selftext</string>
     <string name="settings_filter_flair">Penyaringan</string>
     <string name="settings_view_type">Tipe arah</string>
     <string name="settings_data">Penghematan data</string>
+    <string name="settings_card_show_selftext">Tampilkan teks mandiri</string>
+    <string name="settings_card_selftext_paragraph">Tampilkan paragraf pertama</string>
+    <string name="settings_card_selftext_ellipsize">Potong hingga 128 karakter pertama</string>
     <string name="settings_handling_external_desc">Domain yang masuk di bawah ini akan selalu terbuka eksternal</string>
     <string name="settings_handling_enterdomain">Masukkan domain atau bagian dari domain</string>
     <string name="settings_section_content">Konten</string>
     <string name="settings_backup_view">Lihat cadangan</string>
     <string name="settings_backup_err_no_explorer">Jelajah file tidak ditemukan, file yang terletak di %1$s</string>
     <string name="settings_about_version_copied_toast">Nomor versi disalin ke papan klip</string>
-    <string name="settings_support_slide">Dukungan Halaman untuk Reddit oleh Going Pro!</string>
     <string name="settings_theme_night_start_at">Mulai at\u0020</string>
     <string name="settings_theme_night_end_at">Akhir at\u0020</string>
     <string name="settings_general_inbox_snd">Suara dan bergetar</string>
     <string name="settings_enable_notifs">Mengaktifkan pemberitahuan inbox</string>
+
     <!-- Quick setting toggles in the drawer -->
     <string name="toggle_night_mode">Mode malam</string>
     <string name="toggle_immersive_mode">Modus mendalam</string>
     <string name="toggle_nsfw">Perlihatkan konten NSFW</string>
     <string name="toggle_right_thumbnails">Gambar kecil sejajar kanan</string>
     <string name="toggle_reader_mode">Gunakan mode pembaca</string>
+
     <!-- View types -->
     <string name="view_type_tabs">Subreddit tab</string>
     <string name="view_type_none">Tanpa tab subreddit</string>
     <string name="view_type_comments">Panel komentar</string>
+
     <!--Search methods -->
     <string name="subreddit_search_method_title">Metode pencarian Subreddit</string>
     <string name="subreddit_search_method_drawer">Bar pencarian di laci</string>
     <string name="subreddit_search_method_toolbar">Tekan agak lama pada judul toolbar</string>
     <string name="subreddit_search_method_both">Judul kedua laci dan toolbar</string>
+
     <!-- Back button behavior -->
     <string name="back_button_behavior_title">Perilaku tombol kembali</string>
     <string name="back_button_behavior_default">Tutup aplikasi</string>
     <string name="back_button_behavior_confirm_exit">Dialog konfirmasi keluar</string>
     <string name="back_button_behavior_drawer">Buka laci</string>
+
     <!-- Subscription managing -->
     <string name="reorder_add_domain">Menambah domain</string>
     <string name="reorder_add_subreddit">Tambahkan subreddit</string>
@@ -662,11 +839,33 @@
     <string name="reorder_sync_complete">Sinkronisasi selesai</string>
     <string name="reorder_loading_title">Memuat subreddits anda</string>
     <string name="reorder_url_err">URL tidak sah</string>
-    <!-- Save categories -->
+
+    <!-- Saved tags -->
+    <string name="tag_set_name_hint">Nama tag</string>
+    <string name="tag_tag_action">TANDAI</string>
+    <string name="profile_tag_select">Tag</string>
+    <string name="profile_saved_tags">Tag tersimpan</string>
+    <string name="tag_builtin_all">Semua</string>
+    <string name="tag_builtin_posts">Kiriman</string>
+    <string name="tag_builtin_comments">Komentar</string>
+    <string name="tag_types_header">Jenis</string>
+    <string name="tag_post_types_header">Jenis kiriman</string>
+    <string name="tag_custom_header">Tag kustom</string>
+    <string name="tag_new">Tag baru</string>
+    <string name="tag_manage">Kelola tag</string>
+    <string name="tag_add">Tambah tag</string>
+    <string name="tag_none_yet">Belum ada tag</string>
+    <string name="tag_rename">Ganti nama</string>
+    <string name="tag_delete_confirm">Yakin ingin menghapus \"%1$s\"? Item dengan tag ini tidak akan dihapus.</string>
+    <string name="tag_name_used_title">Nama sudah dipakai</string>
+    <string name="tag_name_used">Sudah ada tag dengan nama itu, silakan pilih nama yang unik.</string>
+    <string name="tag_name_reserved">Nama itu dicadangkan, silakan pilih yang lain.</string>
+
     <!-- Setting subheaders -->
     <string name="sorting">Mengurutkan</string>
     <string name="display">Tampilan</string>
     <string name="images">Gambar</string>
+    <string name="storage">Penyimpanan</string>
     <string name="app_theme">Tema aplikasi</string>
     <string name="tinting">Pewarnaan</string>
     <string name="post_info">Informasi posting</string>
@@ -676,6 +875,7 @@
     <string name="nsfw">Konten NSFW</string>
     <string name="view_reddit_settings">Buka Reddit pengaturan di browser</string>
     <string name="font_styles">Gaya huruf</string>
+
     <!-- Titles displayed in action bar / head / recents overview-->
     <string name="title_subreddit_settings">Tata letak tema Subreddit &amp;</string>
     <string name="title_edit_theme">Sunting Tema</string>
@@ -685,9 +885,11 @@
     <string name="title_share">Berbagi menggunakan</string>
     <string name="title_login">Masuk ke Reddit</string>
     <string name="title_multireddits">Multireddits</string>
+    <string name="title_users">Pengguna</string>
     <string name="title_inbox">Pesan Masuk</string>
     <string name="title_theme_settings">Tema</string>
     <string name="title_create_multi">Membuat multireddit</string>
+
     <!-- Offline mode -->
     <string name="offline_msg">Silakan online dan menyegarkan subreddit untuk melakukan itu</string>
     <string name="offline_last_update">Pembaruan terkahir: %1$s</string>
@@ -696,18 +898,21 @@
     <string name="offline_enter_online">Masukkan modus online</string>
     <string name="offline_caching_title">Caching %1$s</string>
     <string name="offline_caching_complete">Caching lengkap</string>
+
     <!-- Website -->
     <string name="website_external">Buka di browser eksternal</string>
+
     <plurals name="reorder_subs_added">
         <item quantity="other">%d subreddits ditambahkan</item>
     </plurals>
+
     <!-- Time -->
     <string name="time_just_now">Baru saja</string>
     <plurals name="time_years">
         <item quantity="other">%d tahun</item>
     </plurals>
     <plurals name="time_months">
-        <item quantity="other">%d sebulan</item>
+        <item quantity="other">%d bulan</item>
     </plurals>
     <plurals name="time_days">
         <item quantity="other">%d hari</item>
@@ -721,11 +926,13 @@
     <plurals name="time_seconds">
         <item quantity="other">%d detik</item>
     </plurals>
+
     <!-- Time: shorthand durations for example 1 hour → 1h -->
     <string name="time_years_short">%dy</string>
     <string name="time_days_short">%dd</string>
     <string name="time_hours_short">%d jam</string>
     <string name="time_minutes_short">%dm</string>
+
     <!-- Strings present during the login process -->
     <string name="login_subscribe_rslideforreddit">Berlangganan /r/slidereddit?</string>
     <string name="login_subscribe_rslideforreddit_desc">Apakah Anda ingin berlangganan untuk /r/slidereddit untuk berita terbaru dan laporan masalah?</string>
@@ -734,21 +941,25 @@
     <string name="login_authenticating">Slide otentikasi</string>
     <string name="login_starting">Menetapkan segalanya!</string>
     <string name="login_starting_desc">Ini hanya harus mengambil kedua&#8230;</string>
+
     <!-- Over 18 prompt when visiting a NSFW subreddit -->
     <string name="over18_title">/r/%1$s berisi konten dewasa</string>
     <string name="over18_desc">Apakah Anda selama delapan belas dan bersedia untuk melihat konten dewasa?</string>
     <string name="over18_desc_loggedout">Log in untuk menonaktifkan peringatan ini secara permanen</string>
     <string name="over18_desc_loggedin">Anda dapat menonaktifkan ini secara permanen dalam pengaturan → Reddit preferensi → Tampilkan NSFW konten</string>
+
     <!-- Subreddit color synchronization - https://reddit.com/comments/41054l -->
     <string name="color_sync_complete">Sinkronisasi lengkap</string>
     <plurals name="color_sync_colored">
         <item quantity="other">%d subreddits diwarnai</item>
     </plurals>
+
     <!-- Discover section: find -->
     <string name="discover_title">Temukan</string>
     <string name="discover_search">Istilah penelusuran atau topik</string>
     <string name="discover_popular">Populer</string>
     <string name="discover_trending">Tren</string>
+
     <!-- Subreddit post notifications -->
     <string name="sub_post_notifs_title">Diberitahu baru posting in\n/r/%1$s?</string>
     <string name="sub_post_notifs_title_settings">Memperoleh pemberitahuan tentang posting baru?</string>
@@ -760,19 +971,24 @@
     <string name="sub_post_notifs_notification_title">Posting baru di/r/%1$s</string>
     <string name="sub_post_notifs_notification_btn">Menghentikan pelacakan /r/%1$s</string>
     <string name="title_sub_post_notifs">Subreddit posting pemberitahuan</string>
+
     <!-- Internal browser -->
     <string name="internal_browser_extracting_error">Maaf, artikel tidak diekstraksi</string>
     <string name="internal_browser_storecookies">Menyimpan cookie situs web</string>
     <string name="internal_browser_readermode">Modus pembaca</string>
+
     <!-- Live thread -->
     <string name="livethread_loading_title">Memuat benang hidup&#8230;</string>
     <string name="livethread_not_found">Urutan langsung tidak ditemukan</string>
     <string name="livethread_recents_title">Urutan langsung: %1$s</string>
+
     <!-- Used when viewing media -->
     <string name="mediaview_notif_title">Mengunduh gambar&#8230;</string>
+    <string name="mediaview_notif_video">Mengunduh video…</string>
     <string name="mediaview_notif_text">Sedang mengunduh</string>
     <string name="mediaview_save">Simpan %1$s</string>
     <string name="mediaview_saving">Menyimpan %1$s</string>
+
     <!-- Drafts -->
     <string name="choose_draft">Pilih Konsep</string>
     <string name="dialog_no_drafts">Belum ada konsep</string>
@@ -780,6 +996,7 @@
     <string name="msg_save_draft">Pesan disimpan lagi di konsep</string>
     <string name="manage_drafts">Kelola konsep</string>
     <string name="really_delete_drafts">Yakin ingin menghapus konsep ini?</string>
+
     <!-- Strings for widgets -->
     <string name="widget_theme_dark">GELAP</string>
     <string name="widget_theme_light">CAHAYA</string>
@@ -794,6 +1011,7 @@
     <string name="widget_loading">Memuat&#8230;</string>
     <string name="widget_creation_title">Widget baru</string>
     <string name="shortcut_creation_title">Shortcut baru</string>
+
     <!-- Strings for alert dialogs -->
     <string name="force_change_subscription">Tidak dapat mengubah langganan</string>
     <string name="force_change_subscription_desc">Apakah Anda masih ingin mengubahnya secara lokal?</string>
@@ -806,6 +1024,7 @@
     <string name="mode_desktop_compact">Desktop compact</string>
     <string name="show_content_type_text_beside_links">Tampilkan teks jenis konten di samping tautan</string>
     <string name="comment_shadowbox">Komentar bayangan</string>
+
     <!-- Sidebar strings (multis, flairs) -->
     <string name="sidebar_select_flair">Pilih flair</string>
     <string name="sidebar_select_flair_text">Pilih flair teks</string>
@@ -818,6 +1037,7 @@
     <plurals name="reorder_selected">
         <item quantity="other">"%d dipilih"</item>
     </plurals>
+
     <!--Filtering dialog -->
     <string name="filter_title">Apa yang ingin Anda saring?</string>
     <string name="filter_posts_sub">Posting dari /r/%1$s</string>
@@ -826,6 +1046,7 @@
     <string name="filter_open_externally">Buka URL %s secara eksternal</string>
     <string name="filter_posts_flair">Rangkaian \"%1$s\" dari %2$s</string>
     <string name="filter_btn">Saring</string>
+
     <!-- Caching -->
     <string name="cache_no_comments_found">Tidak ada komentar yang ditemukan</string>
     <string name="cache_no_comments_found_snackbar">Tidak ditemukan komentar dalam cache</string>
@@ -836,9 +1057,11 @@
     <string name="cache_wifi_only">Hanya cache pada WiFi</string>
     <string name="comments_depth">Dalamkan komentar ke cache</string>
     <string name="comments_count">Jumlah komentar untuk cache</string>
+
     <!-- Saving location setting -->
     <string name="set_save_location">Setel lokasi penyimpanan gambar</string>
     <string name="set_save_location_msg">Lokasi penyimpanan gambar Slide belum ditetapkan. Apakah Anda ingin mengatur ini sekarang?</string>
+
     <!-- Report flow -->
     <string name="btn_report">Laporan</string>
     <string name="report_post">Laporkan postingan</string>
@@ -850,6 +1073,7 @@
     <string name="report_other">Lainnya</string>
     <string name="input_reason_for_report">Alasan untuk melaporkan</string>
     <string name="msg_report_sent">Laporan terkirim</string>
+
     <!-- Unsorted ¯\\_(ツ)_/¯ -->
     <string name="comment_load_more_number_unknown">Muat lebih banyak komentar</string>
     <string name="card_right_thumb">Thumbnail kanan sejajar</string>
@@ -871,18 +1095,26 @@
     <string name="mode_no_thumbnails">Tidak ada gambar kecil</string>
     <string name="mode_big_thumbnails">Lebarkan gambar kecil</string>
     <string name="mode_cropped">Keratkan gambar besar</string>
+    <string name="mode_letterbox">Gambar besar dengan bilah hitam</string>
     <string name="mode_bigpic">Gambar besar</string>
     <string name="press_actionbar">Tekan panah untuk menampilkan actionbar</string>
+    <string name="show_top_right">Tampilkan di kanan atas</string>
+    <string name="show_bottom_right">Tampilkan di kanan bawah</string>
+    <string name="small_tag_disabled">Nonaktif</string>
     <string name="tap_actionbar">Pendam untuk actionbar</string>
     <string name="always_actionbar">Selalu menampilkan actionbar</string>
     <string name="sub_content_filter">Penyaringan konten subreddit</string>
     <string name="submission_share_reddit_url">Bagikan komentar</string>
     <string name="filter_content">Saringkan konten ini</string>
-    <string name="content_to_hide">Sembunyikan konten pada %1$s</string>
+    <string name="content_to_show">Konten yang ditampilkan di %1$s</string>
     <string name="save_for_offline_viewing">Simpan kiriman pos untuk akses luring</string>
     <string name="btn_collapse_children_all">Tutup komentar anak</string>
     <string name="btn_open_content">Buka konten</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Masukkan teks untuk disaring (subreddit: flair_text), klik enter untuk menambahkan</string>
+    <plurals name="filter_count">
+        <item quantity="other">%1$d filter (maks. %2$d ditampilkan)</item>
+    </plurals>
+    <string name="filter_limit_reached">Menampilkan %1$d pertama dari %2$d. Cari untuk mempersempit hasil.</string>
     <string name="datasave_always">Data seluler dan Wi-Fi</string>
     <string name="datasave_mobile">Data Seluler</string>
     <string name="never">Tidak pernah</string>
@@ -891,6 +1123,9 @@
     <string name="card_background_tint">Warna Latar belakang</string>
     <string name="subreddit_name_tint">Nama Subreddit</string>
     <string name="login_failed_err_decline">Pastikan Anda tidak memilih \'Tolak\' pada layar terakhir, dan coba lagi dalam satu menit</string>
+    <string name="login_unsupported_redirect_uri">Redirect URI yang dikonfigurasi (%1$s) tidak bisa diterima peramban, sehingga proses masuk tidak dapat diselesaikan. Gunakan metode masuk WebView dalam aplikasi, atau atur Redirect URI yang didukung di Pengaturan.</string>
+    <string name="login_unsupported_redirect_uri_title">Gagal masuk</string>
+    <string name="login_failed_oauth_error_page">Gagal masuk — Reddit mengembalikan galat alih-alih menyelesaikan proses masuk. Periksa client ID dan redirect URI Anda di Pengaturan.</string>
     <string name="tutorial_swipe_navigation">Babatan navigasi</string>
     <string name="tutorial_swipe_description">Babatan dari tepi kiri untuk exit.\n\nThis berlaku untuk gambar, GIF, album, pengaturan dan banyak lagi!</string>
     <string name="handling_browser">Web browser</string>
@@ -901,6 +1136,7 @@
     <string name="content_deleted">[deleted]</string>
     <string name="thread_continue">Lanjutkan saat ini</string>
     <string name="type_selftext">Teks diri</string>
+    <string name="type_selftexts">Teks mandiri</string>
     <string name="submission_unhide">Jangan Sembunyikan posting</string>
     <string name="submission_info_unhidden">Kiriman tidak disematkan</string>
     <string name="msg_sent_success">Pesan telah dikirim</string>
@@ -913,6 +1149,7 @@
     <string name="open_externally">Buka secara eksternal</string>
     <string name="vertical_album_view">Lihat album vertikal</string>
     <string name="download_album">Mengunduh album</string>
+    <string name="download_gallery">Unduh galeri</string>
     <string name="compose_message">Tulis pesan</string>
     <string name="mark_all_as_read">Tandai semua sudah dibaca</string>
     <string name="clear_subreddit_history">Bersihkan riwayat subreddit</string>
@@ -932,7 +1169,6 @@
     <string name="btn_offline">Beralih ke mode luring</string>
     <string name="discard_comment_title">Buang komentar?</string>
     <string name="comment_discard_msg">Apakah anda benar-benar ingin membuang komentar anda?</string>
-    <string name="backup_complete">Pencadangan selesai!</string>
     <string name="backup_saved_downloads">Cadangan disimpan ke unduhan</string>
     <string name="really_remove_subreddit_title">Yakin hapus subreddit ini?</string>
     <string name="choose_sync_time">Pilih waktu sinkron</string>
@@ -943,20 +1179,24 @@
     <string name="really_delete_submission">Yakin hapus kiriman pos ini? Anda tidak bisa membatalkannya</string>
     <string name="comment_unstickied">Komentar tidak disematkan</string>
     <string name="comment_stickied">Komentar disematkan</string>
+    <string name="comment_undistinguished">Tanda komentar dihapus</string>
+    <string name="comment_distinguished">Komentar ditandai</string>
     <string name="comment_removed">Komentar dihapus</string>
     <string name="set_nav_mode">Setel mode navigasi</string>
     <string name="auto_hide_the_comment_nav_bar">Otomatis sembunyikan bilah navigasi komentar</string>
     <string name="rate_slide">Nilai slide</string>
     <string name="edit_query">Sunting kueri</string>
     <string name="share_slide">Bagikan Slide</string>
-    <string name="create_folder">Buat folder</string>
-    <string name="folder_name">Nama folder</string>
+    <string name="open_clipboard_reddit_link">Buka tautan Reddit di papan klip</string>
+    <string name="clipboard_no_reddit_link">Tidak ada tautan Reddit di papan klip</string>
     <string name="open_links_externally">Selalu buka host ini secara eksternal</string>
     <string name="hide_read_posts">Sembunyikan pos yang sudah dibaca</string>
     <string name="gallery_mode">Mode galeri</string>
+    <string name="settings_gallery_grid">Tampilkan kiriman galeri sebagai kisi</string>
+    <string name="gallery_grid_image">Gambar galeri %1$d dari %2$d</string>
+    <string name="gallery_grid_overflow">+%1$d</string>
     <string name="friends_sort_error">Teman /r/ tidak bisa diurutkan</string>
     <string name="shadowbox_comments_nolinks">Tidak ada link yang ditemukan dalam komentar</string>
-    <string name="pro_previews">Tinjauan (%d)</string>
     <string name="draw_undo">Kembali</string>
     <string name="empty_preview_text">Tidak ada yang bisa dilihat di sini ¯\\_(ツ)_/¯</string>
     <string name="theme_red_shift">Pergeseran merah</string>
@@ -969,6 +1209,7 @@
     <string name="enlarge_links">Memperbesar link</string>
     <string name="enlarge_links_warning">Dapat menyebabkan beberapa baris lebih besar daripada yang lain, tetapi membuat link mudah untuk menyentuh</string>
     <string name="type_tumblr">Tumblr</string>
+    <string name="type_tumblrs">Tumblr</string>
     <string name="type_nsfw_tumblr">NSFW Tumblr</string>
     <string name="submission_info_contest">Thread ini ada dalam modus kontes. Anda tidak bisa melakukan pemilahan.</string>
     <string name="sub_post_notifs_msg">Slide akan memeriksa posting baru saat memeriksa e-mail (e-mail pemberitahuan harus diaktifkan)</string>
@@ -981,6 +1222,8 @@
     <string name="theme_pixel">Piksel</string>
     <string name="save_images_to_subreddit_specific_subfolders">Simpan gambar ke subfolder khusus subreddit</string>
     <string name="description_save_subfolders">Bekerja dalam pengajuan dan komentar dilihat</string>
+    <string name="save_media_to_type_specific_subfolders">Simpan media ke subfolder sesuai jenis</string>
+    <string name="description_save_type_subfolders">Gambar masuk ke \"images\", video dan GIF ke \"videos\"</string>
     <string name="show_image_download_button">Shortcut mengunduh</string>
     <string name="description_image_download_button">Tampilkan tombol unduh di pembuka gambar</string>
     <string name="content_settings">Pengaturan konten</string>
@@ -989,6 +1232,8 @@
     <string name="setting_notification_piggybacking_desc">Periksa surat hanya saat aplikasi Reddit resmi mendapat pemberitahuan</string>
     <string name="install_notif_piggyback">Menginstal aplikasi Reddit resmi untuk mengaktifkan pemberitahuan Piggybacking</string>
     <string name="success_block_user">Pengguna berhasil diblokir</string>
+    <string name="err_unblock_user">Galat saat membuka blokir pengguna</string>
+    <string name="success_unblock_user">Blokir pengguna berhasil dibuka</string>
     <string name="settings_highlight_time_desc">Opsi \'Tampilkan jumlah komentar sejak kunjungan terakhir\' harus aktif di Pengaturan &gt; Tata Letak Pos</string>
     <string name="settings_colored_time">Gelembung waktu berwarna untuk komentar baru</string>
     <string name="theme_deep">Dalam</string>
@@ -1009,4 +1254,132 @@
     <string name="back_button_behavior_goto_first">Menuju ke subreddit pertama</string>
     <string name="settings_hide_post_awards">Sembunyikan penghargaan</string>
     <string name="settings_hide_comment_awards">Sembunyikan penghargaan</string>
+    <string name="settings_title_markdown">Markdown</string>
+    <string name="settings_markdown_new_reddit">Markdown gaya Reddit baru</string>
+    <string name="settings_markdown_new_reddit_desc">Merender blok kode dan format seperti Reddit baru (jika mati, memakai perender Reddit lama)</string>
+    <string name="comment_render_other">Tampilkan render lainnya</string>
+    <string name="recover_post">Pulihkan kiriman</string>
+    <string name="recover_loading">Mengambil versi asli dari arsip…</string>
+    <string name="recover_post_failed">Tidak dapat memulihkan kiriman ini</string>
+    <string name="recover_comment">Pulihkan komentar</string>
+    <string name="recover_comment_failed">Tidak dapat memulihkan komentar ini</string>
+    <string name="markdown_preview_new_reddit">Render Reddit baru</string>
+    <string name="markdown_preview_old_reddit">Render Reddit lama</string>
+    <string name="high_colorspace_images">Gambar ruang warna tinggi</string>
+    <string name="description_high_colorspace">Memuat ruang warna penuh pada gambar, yang dapat meningkatkan penggunaan memori</string>
+    <string name="wide_color_gamut">Gamut warna lebar</string>
+    <string name="description_wide_color_gamut">Merender penampil media dengan gamut warna lebar. Dapat memudarkan warna pada sebagian layar OLED</string>
+    <string name="comment_emote_animation">Animasi emote komentar</string>
+    <string name="description_comment_emote_animation">Menentukan apakah emote non-Giphy di komentar dianimasikan</string>
+    <string name="comment_image_size">Ukuran gambar komentar</string>
+    <string name="description_comment_image_size">Seberapa besar gambar sebaris ditampilkan di komentar</string>
+    <string name="comment_image_size_small">Kecil</string>
+    <string name="comment_image_size_medium">Sedang</string>
+    <string name="comment_image_size_large">Besar</string>
+    <string name="no_preview_image_longclick">Tanpa tekan lama pada gambar pratinjau untuk semua jenis konten</string>
+    <string name="description_no_preview_image_longclick">Menentukan apakah tekan lama berfungsi pada gambar pratinjau untuk semua jenis konten. Ini menonaktifkan fitur intip konten.</string>
+    <string name="editor_btn_select_flair">Pilih flair</string>
+    <string name="submit_selected_flair">Flair terpilih: %s</string>
+    <string name="mediaview_downloading">Mengunduh gambar&#8230;</string>
+    <string name="err_save_image">Galat saat menyimpan gambar</string>
+    <string name="error_directory_not_selected">Tidak ada direktori yang dipilih. Silakan coba lagi.</string>
+
+    <!-- Backup Operations -->
+
+    <!-- Additional Backup Operations -->
+    <string name="select_backup_file">Pilih berkas cadangan</string>
+
+    <string name="read_later">Baca nanti</string>
+    <string name="mark_as_read">Tandai sudah dibaca</string>
+
+    <string name="reddit_client_id">Client ID Reddit</string>
+    <string name="click_custom_client_id">Ketuk untuk mengatur client ID kustom</string>
+    <string name="client_id_scan_qr">Pindai kode QR</string>
+    <string name="client_id_scan_prompt">Pindai kode QR yang berisi Client ID Reddit Anda</string>
+    <string name="camera_permission_denied">Izin kamera diperlukan untuk memindai kode QR</string>
+    <string name="client_id_invalid_length">Client ID tidak valid: harus tepat 22 karakter</string>
+
+    <!-- Notification permission strings -->
+    <string name="notifications_permission_title">Aktifkan notifikasi</string>
+    <string name="notifications_permission_message">Slide memerlukan izin notifikasi untuk memberi tahu Anda tentang pesan baru, kiriman, dan pembaruan lain dari Reddit. Anda dapat mengelola pengaturan notifikasi nanti.</string>
+    <string name="notification_listener_permission_title">Aktifkan akses notifikasi</string>
+    <string name="notification_listener_permission_message">Slide memerlukan akses notifikasi untuk menangkap notifikasi Reddit dan memberi pengalaman notifikasi yang lebih baik. Aktifkan akses notifikasi untuk Slide pada layar berikut.</string>
+
+
+    <string name="reddit_redirect_uri_override">Penggantian Redirect URI Reddit</string>
+    <string name="click_custom_redirect_uri">Ketuk untuk mengatur redirect URI kustom</string>
+    <string name="settings_reddit_redirect_uri_invalid">Redirect URI tidak valid: harus berbentuk skema://namahost</string>
+    <string name="reddit_user_agent_override">Penggantian User Agent Reddit</string>
+    <string name="click_custom_user_agent">Ketuk untuk mengatur user agent kustom</string>
+    <string name="settings_enable_overrides">Aktifkan penggantian</string>
+    <string name="settings_enable_overrides_desc">Gunakan client ID, redirect URI, dan user agent kustom Anda alih-alih bawaan aplikasi. Biarkan mati kecuali Anda memang memerlukannya.</string>
+
+    <string name="settings_section_sound">Suara</string>
+    <string name="settings_unmute_default">Nyalakan suara video secara bawaan</string>
+
+    <string name="settings_subreddit_filter_prefix_matching">Aktifkan pencocokan awalan filter subreddit</string>
+    <string name="settings_subreddit_filter_prefix_matching_description">Awalan adalah nama subreddit utuh, dan minimal enam karakter. Contoh: subreddit social akan memblokir socialanxiety. Subreddit pokemongo akan memblokir pokemongoraids.</string>
+
+    <string name="settings_filter_old_posts">Saring kiriman yang lebih lama dari</string>
+    <plurals name="settings_filter_old_posts_days">
+        <item quantity="other">%1$d hari</item>
+    </plurals>
+    <string name="settings_filter_old_posts_description">Tidak diterapkan saat melihat subreddit tunggal, atau saat mengurutkan berdasarkan Top atau Controversial</string>
+
+    <!-- Pause on audio focus ducking setting -->
+    <string name="settings_pause_on_duck_title">Jeda video alih-alih memelankan suara</string>
+    <string name="settings_pause_on_duck_desc">Menjeda video saat aplikasi lain memutar audio. Memelankan suara berarti volume diturunkan, bukan videonya dijeda.</string>
+
+    <!-- Add this string resource for the play button content description -->
+    <string name="btn_play">Putar</string>
+
+    <string name="multireddit_name_title">Nama Multireddit</string>
+    <string name="multireddit_name_hint">Nama multireddit</string>
+    <string name="multireddit_err_empty_name">Nama multireddit tidak boleh kosong</string>
+    <string name="multireddit_err_no_valid_subs">Tidak ada subreddit valid yang dipilih. Silakan pilih setidaknya satu subreddit.</string>
+    <string name="multireddit_progress_title">Membuat Multireddit</string>
+    <string name="multireddit_progress_message">Mohon tunggu sementara kami membuat Multireddit Anda...</string>
+    <string name="multireddit_created_success">Multireddit berhasil dibuat</string>
+    <string name="multireddit_created_error">Gagal membuat Multireddit. Silakan coba lagi.</string>
+    <string name="multireddit_json_error">Terjadi galat saat menyiapkan data Multireddit Anda</string>
+
+    <string name="settings_dialog_colored_border">Beri bingkai berwarna di sekitar kotak dialog</string>
+    <string name="settings_dialog_colored_border_desc">Menampilkan bingkai berwarna tipis di sekitar sebagian kotak dialog.</string>
+
+    <string name="misc_err_sync_failed">Gagal menyinkronkan subreddit. Tidak ada subreddit yang dilanggan?</string>
+
+    <string name="mod_btn_distinguish">Tandai</string>
+    <string name="mod_btn_undistinguish">Hapus tanda</string>
+
+    <string name="nsfw_status_removed">Status NSFW dihapus</string>
+    <string name="nsfw_status_set">Status NSFW disetel</string>
+
+    <string name="spoiler_status_removed">Status spoiler dihapus</string>
+    <string name="spoiler_status_set">Status spoiler disetel</string>
+
+    <string name="submission_distinguished">Kiriman ditandai</string>
+    <string name="submission_distinguished_removed">Tanda kiriman dihapus</string>
+
+    <string name="settings_general_hide_subreddit_tabs">Sembunyikan tab subreddit yang dilanggan</string>
+    <string name="settings_general_hide_subreddit_tabs_desc">Menyembunyikan subreddit yang dilanggan sebagai tab, tetapi tetap menampilkan tombol navigasi</string>
+
+    <!-- Video playback speed control -->
+    <string name="video_speed">Kecepatan</string>
+    <string name="video_speed_0_25x">0.25x</string>
+    <string name="video_speed_0_5x">0.5x</string>
+    <string name="video_speed_0_75x">0.75x</string>
+    <string name="video_speed_1x">Normal</string>
+    <string name="video_speed_1_25x">1.25x</string>
+    <string name="video_speed_1_5x">1.5x</string>
+    <string name="video_speed_2x">2x</string>
+    <string name="video_speed_control_content_desc">Kontrol kecepatan pemutaran</string>
+    <string name="image_unavailable">Gambar tidak tersedia</string>
+    <string name="image_rotate_content_desc">Putar gambar 90 derajat searah jarum jam</string>
+    <string name="image_rotate_left_content_desc">Putar gambar 90 derajat berlawanan arah jarum jam</string>
+
+    <!-- Folder chooser dialog (formerly provided by afollestad material-dialogs commons) -->
+    <string name="md_error_label">Galat</string>
+    <string name="md_storage_perm_error">Fungsi ini memerlukan izin penyimpanan, yang belum diberikan.</string>
+    <string name="md_choose_label">PILIH</string>
+    <string name="new_folder">Folder baru</string>
 </resources>

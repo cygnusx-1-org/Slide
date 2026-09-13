@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Generic text used anywhere -->
+    <string name="general_confirm">Kumpirmahin</string>
     <string name="general_confirm_exit">Kumpirmahin ang pag-alis</string>
     <string name="general_confirm_exit_msg">Gusto mo ba talagang i-exit ang Slide?</string>
     <string name="general_enable_shadowbox">Shadowbox na mod</string>
-    <string name="pro_upgrade_msg">I-upgrade sa Slide for Reddit Pro upang ma-enjoy ang ilang mga kahanga-hangang baong feature kabilang ang:\n\n taga-block ng Ad at Reader na mod sa Website view\n- mag-Crop at mag-draw ng mga imahe na i-upload\n- napapasadyang mode ng kolum ng tablet\n- awtomatikong panggabi na mod\n- Shadowbox at mga view ng nilalaman ng Gallery\n- view ng Shadowbox ng komento\n- i-Backup at i-restore sa Google drive at sa file\n- sumusuporta sa open source at ad-free na software!\n\nGusto mo bang suportahan ang Slide for Reddit?</string>
     <string name="general_open_settings">Panggilid na bar</string>
     <string name="general_sub_sync">Nagsi-sync ang mga suskripsyon</string>
+
     <!-- Used when viewing a thread -->
     <string name="submission_info_unsaved">Ang pagsusumite ay hindi nai-save</string>
     <string name="submission_info_saved">Ang pagsusumite ay nai-save</string>
@@ -24,9 +25,9 @@
     <string name="submission_gild">Magbukas sa Browser</string>
     <string name="submission_save">I-save ang post</string>
     <string name="submission_save_image">I-save ang imahe</string>
+    <string name="submission_save_video">I-save ang video</string>
     <string name="submission_load_full">I-load ang buong thread</string>
     <string name="submission_np_link">Ito ay hindi isang link ng partisipasyon. pakiusap wag bomoto o mag-komento.</string>
-    <string name="submission_tap_gif">Tapikin upang mai-load ang GIF</string>
     <string name="submission_not_found">Uh oh. ang post ay hindi matagpuan!</string>
     <string name="submission_not_found_msg">Pasyensya, ang post na ito ay hindi matagpuan</string>
     <string name="submission_copy_text">Kupyahin ang teksto</string>
@@ -37,7 +38,12 @@
     <string name="submission_text_copied">Nakopya ang Selftext</string>
     <string name="submission_nocontent">Ang pagsumite ay walang laman</string>
     <string name="submission_link_copied">Nakopya ang link</string>
+    <string name="translate_with_google">Isalin</string>
+    <string name="translate_no_app">Walang app na available para magsalin</string>
+    <string name="read_aloud">Basahin nang malakas</string>
+    <string name="read_aloud_unavailable">Hindi available ang text-to-speech</string>
     <string name="submission_removed">Naalis ang pagsusumite</string>
+
     <plurals name="new_messages">
         <item quantity="one">%d bagong mensahe</item>
         <item quantity="other">%d bagong mensahe</item>
@@ -50,12 +56,16 @@
         <item quantity="one">cmt</item>
         <item quantity="other">cmt</item>
     </plurals>
+
     <!-- Theme settings -->
     <string name="theme_light">Liwanag</string>
     <string name="theme_dark">Madilim</string>
     <string name="theme_black">AMOLED na itim</string>
     <string name="theme_dark_blue">Asul na Madilim</string>
     <string name="night_mode">Pang-gabing mod</string>
+    <string name="disabled">Naka-disable</string>
+    <string name="manual">Manwal</string>
+    <string name="automatic">Awtomatiko</string>
     <string name="theme_default_color">Pangunahing kulay</string>
     <string name="theme_subreddit_color">Pagpalit ng kulay</string>
     <string name="theme_accent_color">Accent na Kulay</string>
@@ -64,7 +74,10 @@
     <string name="theme_sepia">Sepya</string>
     <string name="theme_amoled_contrast">AMOLED na may pagkakaiba</string>
     <string name="theme_night">Gabi na tema</string>
+
     <!-- Font settings -->
+    <string name="font_size_comment">Laki ng font ng komento</string>
+    <string name="font_size_post">Laki ng font ng post</string>
     <string name="font_size_huge">Malaking-malaki</string>
     <string name="font_size_larger">Mas malaki</string>
     <string name="font_size_large">Malaki</string>
@@ -72,13 +85,18 @@
     <string name="font_size_small">Maliit</string>
     <string name="font_size_smaller">Mas maliit</string>
     <string name="font_size_tiny">Napakaliit</string>
+
     <!-- For editing the submission card layout -->
     <string name="card_hide_post_button">\"Itago ang post\" button sa actionbar</string>
     <string name="card_tint_outside">Ang tint lamanag na nasa labas ng subreddit</string>
     <string name="card_save_button">\"I-save ang post\" button ng actionbar</string>
+
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Maramihang-kolum</string>
+    <string name="multi_column_portrait_count">Mga column sa portrait</string>
+    <string name="multi_column_landscape_count">Mga column sa landscape</string>
     <string name="single_column_multi_window">Isang kolum sa maramihang-window na mode</string>
+
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Ikaw</string>
     <string name="drawer_support">I-go Pro</string>
@@ -86,17 +104,25 @@
     <string name="drawer_add_account">Magdagdag ng isang account</string>
     <string name="drawer_hello">Kumusta,</string>
     <string name="drawer_search">Pumunta sa subreddit</string>
+    <!-- Subreddit name when submitting/crossposting: a single subreddit only (no multireddit, no dot). -->
+    <!-- Message recipient: a username or an /r/ or /u/ path. -->
+    <!-- Settings search field. The trailing space is intentional, so the value is quoted to preserve it. -->
     <string name="drawer_moderation">Moderasyon</string>
     <string name="drawer_offline">Ang slide ay nasa offline na mod</string>
     <string name="drawer_offline_retry">Subukang pumasok sa online na mod</string>
+    <string name="drawer_guest_mode">Mag-browse bilang bisita</string>
+
     <!-- Sidebar items (That's the one on the right) -->
     <string name="sidebar_wiki">Wiki ng Subreddit</string>
     <string name="sidebar_mods">Mga moderator ng Subreddit</string>
+
     <!-- User profile -->
+    <string name="profile_karma_total">Kabuuang karma</string>
     <string name="profile_karma_link">Karma ng Post</string>
     <string name="profile_karma_comment">Karma ng komento</string>
     <string name="profile_message">Pribadong Mensahe</string>
     <string name="profile_saved">Naka-save</string>
+    <string name="local_saved">Naka-save nang lokal</string>
     <string name="profile_read_later">Basahin mamaya</string>
     <string name="profile_upvoted">Nai-upvote</string>
     <string name="profile_err_title">Ang user ay hindi nakita</string>
@@ -110,6 +136,10 @@
     <string name="profile_friend">Kaibigan</string>
     <string name="profile_add_friend">Magdagdag ng Kaibigan</string>
     <string name="profile_remove_friend">Mag tanggal ng kaibigan</string>
+    <string name="profile_follow_user">Sundan</string>
+    <string name="profile_unfollow_user">Huwag nang sundan</string>
+    <string name="profile_add_user">Magdagdag ng user</string>
+    <string name="profile_remove_user">Alisin ang user</string>
     <string name="profile_remove_account">Gusto mo ba talagang tanggalin ang akawnt na ito?</string>
     <string name="profile_remove">Magtanggal ng akawnt</string>
     <string name="profile_history">Kasaysayan</string>
@@ -122,7 +152,23 @@
     <string name="profile_btn_tag">I-set ang tag</string>
     <string name="profile_btn_untag">Magtanggal ng tag</string>
     <string name="profile_info">Impormasyon ng profile</string>
+    <string name="profile_options">Mga opsyon ng user</string>
+    <string name="profile_block_user">I-block ang user</string>
+    <string name="profile_block_user_description">Hinaharangan ang mga mensahe, post, at profile ng user</string>
+    <string name="profile_unblock_user">I-unblock ang user</string>
+    <string name="profile_unblock_user_description">Inaalis ang harang sa mga mensahe, post, at profile ng user</string>
+    <string name="profile_search">Maghanap</string>
+    <string name="profile_search_title">Maghanap sa %1$s</string>
+    <string name="profile_search_hint">Maghanap sa mga pamagat at teksto…</string>
+    <string name="profile_search_no_results">Walang nahanap na resulta</string>
+    <string name="profile_search_clear">I-clear ang paghahanap</string>
+    <string name="profile_search_cleared">Na-clear ang paghahanap</string>
+    <string name="profile_search_loading">Naghahanap…</string>
+    <string name="profile_search_progress">%1$d na resulta · %2$d ang nahanapan</string>
+    <string name="profile_search_bypass_cache">Laktawan ang cache</string>
+
     <!-- Comment text options -->
+    <string name="comment_gild">Bigyan ng gantimpala ang komento</string>
     <string name="comment_share">Magbahagi ng komento</string>
     <string name="comment_delete">Magbura ng Komento</string>
     <string name="comment_delete_msg">Gusto mo ba talagang burahin ang komentong ito? ito ay hindi maaring bawiin</string>
@@ -130,14 +176,15 @@
     <string name="comment_delete_err_msg">Gusto mo bang subukan uli?</string>
     <string name="comment_deleted">[deleted]</string>
     <string name="comment_unsave">I-Unsave</string>
-    <string name="comment_load_more">I-load %1$d ng mas marami</string>
-    <string name="comment_load_more_string_new">I-load %1$s ng mas marami</string>
     <string name="comment_loading_more">Naglo-load ng maraming pang mga komento&#8230;</string>
     <string name="comment_permalink">I-load ang permalink ng komento</string>
     <string name="comment_parent">Ipakita ang komento ng magulang</string>
+    <string name="comment_video_play">I-play ang video</string>
+
     <!-- Welcome view (first time setup) -->
     <string name="welcome_start">Magsimula</string>
     <string name="welcome_personalize">I-Personalize</string>
+
     <!-- Sorting options -->
     <string name="sorting_choose">Pumili ng isang uri ng taga-sort</string>
     <string name="sorting_time_choose">Pumili ng isang time frame</string>
@@ -157,6 +204,7 @@
     <string name="sorting_year">taon</string>
     <string name="sorting_all">lahat ng oras</string>
     <string name="sorting_defaultfor">Default para sa /r%1$s</string>
+
     <!-- Editor (save/submit a post) actions -->
     <string name="editor_url">URL</string>
     <string name="editor_text">Teksto</string>
@@ -165,30 +213,114 @@
     <string name="editor_title">Pamagat</string>
     <string name="editor_err_msg">Paki-subukan nalang uli sa ilang mga segundo</string>
     <string name="editor_uploading_image">Nag a-upload ng image sa Imgur</string>
-    <string name="editor_upload_image_question">Mag-upload ng imahe sa Imgur?</string>
+    <string name="editor_upload_image_title">Mag-upload ng larawan</string>
+    <string name="editor_upload_reddit">Reddit (nakalakip na larawan)</string>
+    <string name="editor_upload_imgur">Imgur (link)</string>
+    <string name="editor_uploading_reddit">Ina-upload ang larawan sa Reddit</string>
+    <string name="editor_reddit_upload_success">Na-upload ang larawan</string>
+    <string name="editor_reddit_upload_failed">Nabigo ang pag-upload ng larawan</string>
+    <string name="submit_image_host_imgur">Imgur</string>
+    <string name="submit_image_host_reddit">Reddit</string>
+    <string name="submit_change_img">Palitan ang larawan</string>
+    <string name="submit_select_gallery">Magdagdag ng mga larawan</string>
+    <string name="submit_gallery_caption_hint">Caption (opsyonal)</string>
+    <string name="submit_gallery_count">%1$d ang napili</string>
+    <string name="submit_uploading_gallery">Ina-upload ang larawang %1$d ng %2$d</string>
     <string name="editor_select_img">Pumili ng larawan</string>
     <string name="editor_hint_optional_body">Teksto (opsyonal)</string>
     <string name="editor_submit">Magpasa ng isang post</string>
     <string name="editor_hint_subreddit">Subreddit</string>
     <string name="editor_finding_title">Hinahanap ang pamagat</string>
+    <string name="submit_findingflairs">Hinahanap ang mga flair</string>
+    <string name="submit_flairchoices">Mga flair ng /r/%s</string>
+
     <string name="edit_selftext">I-edit ang selftext</string>
     <string name="delete_submission">I-delete ang pagsusumite</string>
     <string name="set_submission_flair">I-set ang flair ng pagsusumite</string>
+
     <!-- Editor buttons -->
+    <string name="editor_save_draft">I-save ang draft</string>
+    <string name="editor_chose_draft">Pumili ng draft</string>
+    <string name="editor_insert_image">Maglagay ng larawan</string>
+    <string name="editor_draw">Maglagay ng larawan at gumuhit dito</string>
+    <string name="editor_link">Maglagay ng link</string>
+    <string name="editor_bold">Bold</string>
+    <string name="editor_italics">Italic</string>
+    <string name="editor_quote">Sipi</string>
+    <string name="editor_author">Banggitin ang may-akda</string>
+    <string name="editor_list">Bulleted na listahan</string>
+    <string name="editor_num_list">Nakanumerong listahan</string>
+    <string name="editor_size">Malaking font</string>
+    <string name="editor_strike">Strikethrough</string>
+    <string name="editor_spoiler">Spoiler</string>
+
     <!-- General information / information without a category -->
     <string name="info_photo_saved">Nai-save ang Larawan</string>
     <string name="gif_saved">Nai-save ang GIF</string>
+
     <!-- General errors / errors without a category -->
     <string name="err_title">Uh oh, may nangyaring mali!</string>
     <string name="err_invalid_url">Ang URL ay Imbalido</string>
     <string name="err_loading_content">Nag error sa paglo-load ng nilalaman</string>
     <string name="err_general">Uh oh, may isang error na nangyari</string>
     <string name="err_no_connection">Ang Reddit ay maaring hindi maabot. gusto mo bang subukan uli?</string>
+    <string name="err_no_connection_toast">Hindi maabot ang Reddit. Subukan ulit mamaya</string>
     <string name="err_retry_later">Subukan uli sa isang minuto!</string>
-    <string name="err_permission">Ang pagpapahintulot ay na-deny</string>
+    <string name="err_authentication">Nabigo ang authentication</string>
+    <string name="err_submit_restricted">Pinaghihigpitan ang subreddit na ito</string>
+    <string name="err_submit_restricted_text">Hindi ka pinapayagang mag-post dito. Pumili ng ibang subreddit</string>
+    <string name="err_crosspost_disallowed_text">Hindi pinapayagan ng /r/%s ang crosspost. Pumili ng ibang subreddit.</string>
+    <string name="err_crosspost_not_subscribed">Kailangan mo munang mag-subscribe sa /r/%s bago mag-crosspost.</string>
+    <string name="err_crosspost_sub_not_found">Walang /r/%s.</string>
+    <string name="crosspost_flair_required_short">Kailangan ng flair — pumili muna bago mag-post.</string>
+    <string name="error_video_not_found">Hindi nahanap ang video</string>
+    <string name="error_video_message">May naganap na error habang nilo-load ang video na ito</string>
+    <string name="error_album_not_found">Hindi nahanap ang album</string>
+    <string name="error_album_not_found_text">Gusto mo bang buksan ang link sa browser?</string>
+    <string name="err_comment_post_nosave_message">\nSubukan ulit pagkatapos ng isang minuto</string>
+    <string name="err_could_not_find_content_msg">Hindi nahanap ng Reddit ang hinihinging nilalaman</string>
+    <string name="err_refused_request_msg">Tinanggihan ng Reddit ang isang kahilingan. Gusto mo bang subukang kumonekta ulit sa Reddit?</string>
+    <string name="err_color_sync_login">Mag-log in para magamit ang Color Sync</string>
+    <string name="err_something_wrong">Naku, may nagkamali</string>
+    <string name="err_couldnt_save_choose_new">Hindi nakapag-save ang Slide sa napiling folder. Gusto mo bang pumili ng bagong lokasyon?</string>
+    <string name="err_share_image">May error sa pagbabahagi ng larawan</string>
+    <string name="err_file_not_found">Hindi nahanap ang file</string>
+    <string name="err_file_not_found_msg">Hindi mahanap ang napiling file. Siguraduhing umiiral ito at may pahintulot ang Slide na i-access ang file o folder na iyon</string>
+    <string name="err_comment_post">Naku, nabigo ang pag-post ng komentong ito!</string>
+    <string name="err_comment_post_reason">Dahilan: %1$s</string>
+    <string name="err_comment_post_message">\n\nNa-save ang iyong mensahe bilang draft. Pakisubukan ulit mamaya.</string>
+    <string name="err_connection_failed_msg">Nabigo ang koneksyon sa Reddit. Pakisuri ang iyong internet connection at subukan ulit, o pumasok sa offline mode.</string>
+    <string name="err_block_user">May error sa pag-block ng user. Kamakailan mo ba siyang na-unblock?</string>
+
     <!-- Gif -->
+    <string name="gif_err_title">Hindi nahanap ang GIF</string>
+    <string name="gif_err_msg">May naganap na error habang nilo-load ang GIF na ito. Buksan ulit ang GIF at subukan muli.</string>
+    <string name="gif_load_failed">Nabigong i-load ang GIF</string>
+    <string name="gif_download_failed">Nabigong i-download ang GIF</string>
+
     <!-- Multireddits -->
+    <string name="multireddit_err_title">Wala pang multireddit!</string>
+    <string name="multireddit_err_msg">Gusto mo bang gumawa ng bagong multireddit?</string>
+    <string name="public_multireddit_err_title">Walang multireddit!</string>
+    <string name="public_multireddit_err_msg">Walang pampublikong multireddit ang user na ito.</string>
+    <string name="multireddit_title_empty">Hindi pwedeng walang laman ang pamagat</string>
+    <string name="multireddit_title_empty_msg">Maglagay ng pamagat para sa iyong multireddit</string>
+    <string name="multireddit_no_subs">Walang naidagdag na subreddit</string>
+    <string name="multireddit_save_err">Umiiral na ang pamagat ng multireddit na ito o wala nang puwang para sa iba pang subreddit dito</string>
+    <string name="multireddit_no_subs_msg">Magdagdag ng ilang subreddit sa pamamagitan ng pag-click sa + button!</string>
+    <string name="multireddit_selector">Pumili ng mga subreddit na idaragdag</string>
+    <string name="multireddit_create_hint">Pangalan ng multireddit</string>
+    <string name="multireddit_invalid_name">Hindi wastong pangalan ng multireddit</string>
+    <string name="multireddit_invalid_name_msg">Ang mga pangalan ng multireddit ay maaari lang maglaman ng letra, numero, at underscore</string>
+    <string name="multi_add_to">Idagdag ang /r/%s sa</string>
+    <string name="multi_subreddit_added">Naidagdag ang subreddit sa /m/%1$s</string>
+    <string name="multi_error">May naganap na error, pakisubukan ulit mamaya</string>
+    <string name="btn_import_multi">Mag-import ng multireddit</string>
+    <string name="multi_submit_which_sub">Saang sub mo gustong mag-post?</string>
+    <string name="multi_saved_successfully">Matagumpay na na-save</string>
     <string name="delete_multireddit_title">Gusto mo ba talagang i-delete /m/%1$s?</string>
+    <string name="multi_save_option">Gusto mo bang i-save ang multireddit na ito?</string>
+
     <!-- Content types -->
     <string name="type_nsfw_img">Imahe ng NSFW</string>
     <string name="type_nsfw_gif">GIF ng NSFW</string>
@@ -200,17 +332,37 @@
     <string name="type_album">Album</string>
     <string name="type_xkcd">XKCD</string>
     <string name="type_nsfw_album">Album ng NSFW</string>
+    <string name="type_nsfw_gallery">NSFW na gallery</string>
+    <string name="type_nsfw_albums">Mga NSFW na album</string>
+    <string name="type_nsfw_galleries">Mga NSFW na gallery</string>
+    <string name="type_nsfw_gifs">Mga NSFW na GIF</string>
+    <string name="type_nsfw_images">Mga NSFW na larawan</string>
+    <string name="type_nsfw_links">Mga NSFW na link</string>
+    <string name="type_nsfw_selftexts">Mga NSFW na text post</string>
+    <string name="type_nsfw_tumblrs">Mga NSFW na Tumblr post</string>
+    <string name="type_nsfw_videos">Mga NSFW na video</string>
+    <string name="type_gallery">Gallery</string>
+    <string name="type_galleries">Mga gallery</string>
     <string name="type_img">Imahe</string>
     <string name="type_videos">Mga video</string>
     <string name="type_nsfw_video">NSFW na video</string>
     <string name="type_imgur">Nilalaman ng Imgur</string>
     <string name="type_nsfw_imgur">NSFW na nilalaman ng Imgur</string>
+    <string name="type_nsfw_xkcd">NSFW na XKCD</string>
+    <string name="type_nsfw_deviantart">NSFW na DeviantArt</string>
+    <string name="type_nsfw_title_only">NSFW na post na pamagat lang</string>
+    <string name="type_nsfw_reddit">NSFW na Reddit link</string>
+    <string name="type_nsfw_selftext">NSFW na text post</string>
+    <string name="type_spoiler">Spoiler</string>
+    <string name="type_nsfw_spoiler">NSFW na spoiler</string>
+    <string name="type_nsfw_streamable">NSFW na Streamable</string>
     <string name="type_external">Panlabas</string>
+
     <!-- Content types plural (Content filters) -->
     <string name="type_gifs">Mga GIF</string>
     <string name="type_albums">Mga album</string>
-    <string name="type_nsfw_content">Nilalaman ng NSFW</string>
     <string name="type_links">Mga link</string>
+
     <!-- Inbox/mail -->
     <string name="mail_tab_inbox">Inbox</string>
     <string name="mail_tab_unread">Hindi nabasa</string>
@@ -232,7 +384,6 @@
     <string name="mail_theirs">Tignan ang kanilang mga mensahe</string>
     <string name="mail_re">re:%1$s</string>
     <string name="mail_mark_read">I-mark read</string>
-    <string name="mail_mark_unread">I-mark bilang unread</string>
     <string name="mail_view_full_thread">I-view ang buong thread</string>
     <string name="mail_message_copied">Nakopya ang mensahe</string>
     <plurals name="mail_notification_title">
@@ -243,10 +394,74 @@
         <item quantity="one">Mayroon kang %d bagong modmail!</item>
         <item quantity="other">Mayroon kang %d bagong modmail!</item>
     </plurals>
+
     <!-- Miscellaneous/generic things that don't have a category or strings that are used for multiple categories -->
     <string name="misc_err">Mali</string>
+    <string name="misc_none">Wala</string>
+    <string name="misc_retry">Gusto mo bang subukan ulit?</string>
+    <string name="misc_retry_draft">Gusto mo bang subukan ulit? \nNa-save ang draft ng iyong post</string>
+    <string name="misc_score_hidden">nakatago ang score</string>
+    <string name="misc_subscribed">Naka-subscribe</string>
+    <string name="misc_continue">Magpatuloy</string>
+    <string name="misc_unsubscribed">Hindi na naka-subscribe</string>
+    <string name="misc_no_more_posts">Wala nang ibang post!</string>
+    <string name="misc_please_wait">Maghintay lamang…</string>
+    <string name="misc_img_share">Ibahagi ang larawan gamit ang</string>
+    <string name="misc_copy_text">Kopyahin ang teksto</string>
+    <string name="misc_maybe_later">Baka mamaya</string>
+    <string name="misc_try_again">Subukan ulit</string>
+    <string name="misc_please_try_again">Pakisubukan ulit</string>
+    <string name="misc_please_try_again_soon">Pakisubukan ulit mamaya</string>
+    <string name="misc_setting_up">Inihahanda ang ilang bagay…</string>
+    <string name="misc_setting_up_message">Huwag umalis sa screen na ito. Hindi ito magtatagal!</string>
+    <string name="misc_more_info">Higit pang impormasyon</string>
+    <string name="misc_captcha_incorrect">Mali ang captcha, pakisubukan ulit</string>
+
     <!-- Goto User -->
+    <string name="user_enter">Ilagay ang username</string>
+    <string name="user_btn_goto">Pumunta sa user</string>
+    <string name="user_btn_gotomultis">Pumunta sa mga multi ng user</string>
+
+    <!-- Saved users list -->
+    <string name="users_empty">Walang naka-save na user</string>
+    <string name="users_btn_add">Magdagdag ng user</string>
+    <string name="users_btn_remove">Alisin ang user</string>
+    <string name="users_added">Naidagdag si %s sa Mga User</string>
+    <string name="users_removed">Inalis si %s sa Mga User</string>
+    <string name="users_already_added">Nasa Mga User na si %s</string>
+    <string name="users_copied">Nakopya si %s</string>
+    <string name="users_checking">Sinusuri ang username</string>
+    <string name="users_invalid_title">Hindi maidagdag ang user</string>
+    <string name="users_invalid">Hindi Reddit user si %s</string>
+    <string name="users_check_failed">Hindi masuri kung umiiral si %s. Pakisuri ang iyong koneksyon at subukan ulit.</string>
+    <string name="users_friend_added">Naidagdag si %s bilang kaibigan</string>
+    <string name="users_friend_removed">Inalis si %s sa mga kaibigan</string>
+    <string name="users_friend_failed">Hindi ma-update ang katayuan ng pagkakaibigan para kay %s</string>
+    <string name="btn_fab_add_user">Magdagdag ng user</string>
+
     <!-- Buttons -->
+    <string name="btn_add">Idagdag</string>
+    <string name="btn_cancel">Kanselahin</string>
+    <string name="btn_close">Isara</string>
+    <string name="btn_toggle">I-toggle</string>
+    <string name="btn_open">Buksan</string>
+    <string name="btn_discard">Itapon</string>
+    <string name="btn_done">Tapos</string>
+    <string name="btn_go_back">Bumalik</string>
+    <string name="btn_no">Hindi</string>
+    <string name="btn_ok">OK</string>
+    <string name="btn_remove">Alisin</string>
+    <string name="btn_reply">Sumagot</string>
+    <string name="btn_reset">I-reset</string>
+    <string name="btn_retry">Subukan ulit</string>
+    <string name="btn_save">I-save</string>
+    <string name="btn_submit">Isumite</string>
+    <string name="btn_undo">I-undo</string>
+    <string name="btn_yes">Oo</string>
+    <string name="btn_refresh">I-refresh</string>
+    <string name="btn_cache">I-cache ang mga komento</string>
+    <string name="btn_delete">Tanggalin</string>
+    <string name="btn_time">Saklaw ng oras</string>
     <string name="btn_message">Mensahe</string>
     <string name="btn_select">Piliin</string>
     <string name="btn_view">I-view</string>
@@ -254,9 +469,32 @@
     <string name="btn_set">I-SET</string>
     <string name="btn_create">Lumikha</string>
     <string name="btn_new">Bago</string>
-    <string name="btn_upload">I-upload</string>
+
     <!-- Buttons Content labels for TalkBack accessibility-->
+    <string name="btn_edit">I-edit</string>
+    <string name="btn_hide">Itago</string>
+    <string name="btn_mod">Moderate</string>
+    <string name="btn_upvote">Upvote</string>
+    <string name="btn_downvote">Downvote</string>
+    <string name="btn_menu">Menu</string>
+    <string name="img_score">Score</string>
+    <string name="img_comments">Mga komento</string>
+    <string name="btn_expand">Palawakin</string>
+    <string name="btn_nav_up">Mag-navigate pataas</string>
+    <string name="btn_nav_mode">Itakda ang navigation mode</string>
+    <string name="btn_nav_collapse_expand">Tiklupin/palawakin</string>
+    <string name="btn_nav_down">Mag-navigate pababa</string>
+    <string name="btn_fab_reply">Sumagot</string>
+    <string name="btn_fab_post">Gumawa ng bagong post</string>
+    <string name="btn_fab_hide">Itago ang mga natingnang post</string>
+    <string name="btn_fab_search">Maghanap ng mga post</string>
+
     <!-- Buttons Content labels for TalkBack accessibility active states-->
+    <string name="btn_upvoted">Na-upvote</string>
+    <string name="btn_downvoted">Na-downvote</string>
+    <string name="btn_unsave">Alisin sa naka-save</string>
+    <string name="btn_collapse">Tiklupin</string>
+
     <!-- Backup -->
     <string name="backup_success">Matagumpay ang pag-Backup!</string>
     <string name="backup_restoring">Nagre-restore sa iyong mga setting</string>
@@ -264,42 +502,902 @@
     <string name="backup_restore_settings">Matagumpay ang paggre-restore ng mga setting!</string>
     <string name="backup_restarting">Ang app ay magre-restart ngayon</string>
     <string name="backup_info">I-Slide back up lahat ng iyong datos sa isang pribadong folder ng Google Drive. Pwede mong i-sync ang datos na ito sa mga aparato (o sa parihong aparato), at ang iyong datos ay hindi kailanman mapupunta sa isang third-party na serbisyo o server.</string>
+    <string name="backup_btn">Backup</string>
+    <string name="backup_btn_restore">Ibalik</string>
+    <string name="backup_btn_file">I-backup sa zip</string>
+    <string name="backup_btn_restore_file">Ibalik mula sa file o zip</string>
+    <string name="backup_confirm">Sigurado ka bang gusto mong mag-backup? Papalitan ang iyong dating backup</string>
+    <string name="backup_restore_confirm">Sigurado ka bang gusto mong magbalik? Papalitan ang iyong kasalukuyang mga setting</string>
+    <string name="backup_failed_msg">Nabigo ang backup. Pakisubukan ulit mamaya.</string>
+    <string name="backup_restore_failed_msg">Nabigo ang pagbabalik. Siguraduhing may wastong backup at subukan ulit.</string>
+    <string name="backup_local_title">Lokal na backup</string>
+    <string name="backup_drive_title">Backup sa Google Drive</string>
+    <string name="backup_button">Gumawa ng backup</string>
+    <string name="restore_button">Ibalik ang backup</string>
+    <string name="backup_question">Mag-backup?</string>
+    <string name="backup_complete">Kumpleto na ang backup!</string>
+    <string name="err_not_valid_backup">Hindi wastong Slide backup file</string>
+    <string name="err_not_valid_backup_msg">Ang napiling file ay hindi wastong Slide backup file</string>
+    <string name="backup_password_title">Magtakda ng password ng backup</string>
+    <string name="backup_password_message">Naglalaman ang iyong backup ng mga kredensyal ng iyong Reddit account, kaya naka-encrypt ito. Pumili ng password na %1$d hanggang %2$d karakter. Kakailanganin mo ito para magbalik, at hindi ito maibabawi.</string>
+    <string name="backup_password_hint">Password</string>
+    <string name="restore_password_title">Ilagay ang password ng backup</string>
+    <string name="restore_password_message">Ilagay ang password na ginamit sa pag-encrypt ng backup na ito.</string>
+    <string name="restore_password_wrong">Maling password. Pakisubukan ulit.</string>
+    <string name="drive_authorization_failed">Nabigo ang awtorisasyon sa Google Drive</string>
+    <string name="drive_authorization_failed_msg">Hindi ma-access ng Slide ang sarili nitong pribadong Google Drive folder. Pakisubukan ulit.</string>
+    <string name="drive_authorization_denied">Kailangan ng access sa Google Drive</string>
+    <string name="drive_authorization_denied_msg">Kailangan ng Slide ng access sa sarili nitong pribadong Google Drive folder para mag-backup o magbalik ng iyong mga setting.</string>
+
     <!-- Vote -->
+    <string name="vote_err">May error sa pagboto!</string>
+    <string name="vote_err_login">Kailangan mong naka-log in para makaboto!</string>
+    <string name="vote_removed">Inalis ang boto</string>
+
+    <!-- Subscribing -->
+    <string name="subscribe_err_login">Kailangan mong naka-log in para makapag-subscribe!</string>
+
     <!-- Moderation tools -->
+    <string name="mod_mail">Mod mail</string>
+    <string name="mod_mail_unread">Hindi pa nababasang mod mail</string>
+    <string name="modmail_internal_note">(panloob na tala)</string>
+    <string name="modmail_scope_missing">Kailangan ng mod mail ng muling pag-authenticate. Mag-log in ulit (Settings &#8594; account) para paganahin ito.</string>
+    <string name="modmail_reply_sent">Naipadala ang sagot!</string>
+    <string name="modmail_reply_failed">Nabigo ang pagpapadala! Na-save ang sagot bilang draft.</string>
+    <plurals name="modmail_message_count">
+        <item quantity="one">%d mensahe</item>
+        <item quantity="other">%d na mensahe</item>
+    </plurals>
+    <string name="mod_modqueue">Modqueue</string>
+    <string name="mod_unmoderated">Hindi pa namo-moderate</string>
+    <string name="mod_reports">Mga report</string>
+    <string name="mod_approved">Naaprubahan ang post</string>
+    <string name="mod_flair_hint">Teksto ng flair</string>
+    <string name="mod_no_reports">Walang report</string>
+    <string name="mod_btn_approve">Aprubahan</string>
+    <string name="mod_btn_submission_flair">Itakda ang flair</string>
+    <string name="mod_btn_submission_flair_text">Itakda ang teksto ng flair</string>
+    <string name="mod_btn_mark_nsfw">Markahan bilang NSFW</string>
+    <string name="mod_btn_unmark_nsfw">Alisin ang marka ng NSFW</string>
+    <string name="mod_btn_mark_spoiler">Markahan bilang spoiler</string>
+    <string name="mod_btn_unmark_spoiler">Alisin ang marka ng spoiler</string>
+    <string name="mod_btn_lock_thread">I-lock ang thread</string>
+    <string name="mod_btn_unlock_thread">I-unlock ang thread</string>
+    <string name="mod_btn_lock_comment">I-lock ang komento</string>
+    <string name="mod_btn_unlock_comment">I-unlock ang komento</string>
+    <string name="mod_locked">Naka-lock</string>
+    <string name="mod_unlocked">Naka-unlock</string>
+    <string name="mod_btn_pin">I-pin</string>
+    <string name="mod_btn_unpin">I-unpin</string>
+    <string name="mod_btn_remove">Alisin</string>
+    <string name="mod_btn_remove_reason">Alisin nang may dahilan</string>
+    <string name="mod_btn_spam">Markahan bilang spam</string>
+    <string name="mod_btn_author">Profile ng may-akda</string>
+    <string name="mod_btn_ban">I-ban</string>
+    <string name="mod_ban_user">I-ban ang user</string>
+    <string name="mod_ban_reauth">Para maka-ban ng mga user, kailangan kang i-authenticate muli ng Slide</string>
+    <string name="mod_ban_reauth_question">Gusto mo bang mag-log in ulit sa Slide ngayon?</string>
+    <string name="mod_ban_success">Na-ban ang user!</string>
+    <string name="mod_ban_fail">May error sa pag-ban sa user</string>
+    <string name="mod_ban_reason">Dahilan ng ban</string>
+    <string name="mod_ban_note_mod">Tala ng moderator (opsyonal)</string>
+    <string name="mod_ban_note_user">Mensahe sa user (opsyonal)</string>
+    <string name="mod_ban_time">Tagal ng ban - iwang blangko para permanente</string>
+    <string name="mod_ban_title">I-ban si /u/%1$s</string>
+    <string name="mod_remove_template">Inalis dahil sa\u0020</string>
+    <string name="mod_remove_hint">Dahilan ng pag-alis</string>
+    <string name="mod_remove_title">Ano ang dahilan ng pag-alis sa post na ito?</string>
+    <string name="mod_remove_insert_draft">Maglagay ng draft</string>
+    <string name="mod_flair_none_found">Walang nahanap na flair para sa subreddit na ito</string>
+    <string name="mod_distinguish">Ibukod</string>
+    <string name="mod_undistinguish">Alisin ang pagbukod</string>
+    <string name="mod_sticky">I-pin</string>
+    <string name="mod_unsticky">I-unpin</string>
+    <string name="reauth_complete">Kumpleto na ang muling pag-authenticate!</string>
+    <string name="reauth_in_progress">Muling ina-authenticate…</string>
+    <string name="reauth_failed">Hindi ma-authenticate muli</string>
+
+    <plurals name="mod_btn_reports">
+        <item quantity="one">Tingnan ang %d report</item>
+        <item quantity="other">Tingnan ang %d na report</item>
+    </plurals>
+
     <!-- If he did -->
+    <string name="really_pin_submission_message">Na-pin ang post</string>
+    <string name="really_unpin_submission_message">Na-unpin ang post</string>
+
     <!-- Subreddit Wiki -->
+    <string name="wiki_err">Walang nahanap na wiki</string>
+    <string name="wiki_err_msg">Walang wiki ang subreddit na ito!</string>
+
     <!-- Subreddits -->
+    <string name="subreddit_subscribers_string">%1$s na subscriber</string>
+    <string name="subreddit_active_users_string_new">%1$s ang nandito ngayon</string>
+    <string name="subreddit_err_msg">Hindi mahanap ang subreddit na %1$s. Baka mali ang spelling?</string>
+    <string name="subreddit_err_msg_new">Hindi mahanap ang subreddit na %1$s. Baka mali ang spelling, o wala kang access dito.</string>
+    <string name="subreddit_err">Hindi nahanap ang subreddit</string>
+
     <!-- Search -->
+    <string name="search_comments_hint">Maghanap sa mga komento</string>
+    <string name="search_goto">Pumunta sa</string>
+    <string name="search_title">Maghanap</string>
+    <string name="search_msg">Ano ang hinahanap mo?</string>
+    <string name="search_all">Maghanap sa lahat</string>
+    <string name="search_subreddit">Maghanap sa %1$s</string>
+    <string name="search_relevance">Kaugnayan</string>
+    <string name="search_top">Top</string>
+    <string name="search_new">Bago</string>
+    <string name="search_comments">Mga komento</string>
+    <string name="no_posts_found">Walang nahanap na post</string>
+
     <!-- Settings -->
+    <string name="settings_reddit_prefs">Mga kagustuhan sa Reddit</string>
+    <string name="settings_accent_title">I-edit ang accent color</string>
+    <string name="settings_delete_sub_settings">Gusto mo ba talagang tanggalin ang mga setting para sa %1$s?</string>
+    <string name="settings_layout_default">Layout ng post</string>
+    <string name="settings_link_album">Panloob na album view</string>
+    <string name="settings_link_peek">Sumilip sa nilalaman</string>
+    <string name="settings_link_peek_description">Hindi pinapagana ang matagal na pagpindot sa preview image</string>
+    <string name="settings_link_gif">Panloob na GIF view</string>
+    <string name="settings_link_hqgif">Mataas na kalidad na Gfycat video</string>
+    <string name="settings_link_handling">Paghawak ng mga link</string>
+    <string name="settings_link_image">Panloob na image view</string>
+    <string name="settings_mail_check">Tingnan kung may bagong mensahe</string>
+    <string name="settings_mail_info">Habang mas madalas ang pagtingin, mas maraming baterya ang maaaring gamitin ng Slide sa background!</string>
+    <string name="settings_main_color_title">I-edit ang pangunahing kulay</string>
+    <string name="settings_notification">Tingnan kung may bagong mensahe tuwing %1$s</string>
+    <string name="settings_notification_newline">Tingnan kung may bagong mensahe tuwing\n%1$s</string>
+    <string name="settings_notification_short">Tingnan tuwing %1$s</string>
+    <string name="settings_disable_nsfw_photo">Itago ang lahat ng NSFW na larawan</string>
+    <string name="settings_store_history">I-save ang kasaysayan</string>
+    <string name="settings_store_nsfw_history">I-save ang NSFW na kasaysayan</string>
+    <string name="settings_commentnav">Mag-navigate sa pagitan ng mga parent na komento</string>
+    <string name="share_link">Ibahagi ang link</string>
+    <string name="posts_hidden_forever">Mga post na permanenteng itinago</string>
+    <string name="share_image">Ibahagi ang larawan</string>
+    <string name="settings_libs">Mga open-source na library</string>
+    <string name="settings_about_libs">Tungkol sa mga library</string>
+    <string name="settings_privacy">Patakaran sa privacy</string>
+    <string name="settings_bugs">Mag-report ng bug</string>
+    <string name="settings_changelog">Tingnan ang changelog</string>
+    <string name="settings_fabclear_msg">Ang pag-tap sa clear button ay mag-aalis ng mga post sa kasalukuyang view, pero hindi ito magtatago ng mga post nang permanente. \nAng matagal na pagpindot sa button ay permanenteng magtatago ng mga post!</string>
+    <string name="settings_fabclear">Mga clear action ng floating button</string>
+    <string name="settings_notifdisabled">Naka-disable ang mga notification</string>
+    <string name="settings_colored_navigation_bar">May kulay na navigation bar</string>
+    <string name="settings_always_black_statusbar">Itim na status bar (notification bar)</string>
+    <string name="settings_colored_icon">Kulayan ang app icon (eksperimental)</string>
+    <string name="settings_colored_icon_desc">Maaaring kailanganin ang pag-restart ng telepono. Aalisin din nito ang icon sa iyong home screen.</string>
+    <string name="settings_filter_domain">Mga filter ng domain</string>
+    <string name="settings_filter_selfttext">Mga filter ng teksto ng post</string>
+    <string name="settings_filter_title">Mga filter ng pamagat</string>
+    <string name="settings_prefs_reddit">Tingnan ang lahat ng kagustuhan sa reddit.com</string>
+    <string name="settings_font_post">Font ng pamagat ng post</string>
+    <string name="settings_font_comment">Font ng komento</string>
+    <string name="settings_comment_crop">I-crop ang pangunahing larawan sa comment view</string>
+    <string name="settings_general_scroll_read">Markahan ang mga post bilang nakita kapag na-scroll na</string>
+    <string name="settings_link_chrome">Custom Tabs</string>
+    <string name="settings_storage_location">Pumili ng storage location</string>
+    <string name="settings_storage_location_unset">Hindi pa naitatakda</string>
+    <string name="settings_set_storage_location">Ise-save ang mga file sa %s</string>
+    <string name="settings_general_immersive_mode">Immersive fullscreen mode</string>
+    <string name="settings_general_immersive_mode_desc">Itago ang status at navigation bar (eksperimental)</string>
+    <string name="settings_general_old_swipe_mode">Lumang swipe mode</string>
+    <string name="settings_general_old_swipe_mode_desc">Lumang istilo ng pag-swipe ng Slide. Para sa 3-button navigation mode at mga galaw ng Samsung.</string>
+    <string name="settings_general_hibernate">Magpatuloy kung saan ako tumigil</string>
+    <string name="settings_general_hibernate_desc">Muling binubuksan ang parehong screen, sa parehong lugar, at ipinapakita ang na-load na kaysa mag-refresh. Ang pagpapagana nito ay nagdaragdag ng checkbox sa overflow menu na nagbubukas at nagsasara ng pagpapatuloy nang hindi na bumabalik dito.</string>
+
+    <string name="settings_general_title_drawer_items">Mga item sa drawer</string>
+    <string name="settings_general_subtitle_drawer_items">Piliin kung aling mga item sa drawer ang ipapakita</string>
+
     <!-- Settings titles displayed in settings activity-->
+    <string name="settings_title_backup">Backup &amp; pagbabalik</string>
+    <string name="settings_title_default_theme">Pangunahing tema</string>
+    <string name="settings_title_general">Pangkalahatan</string>
+    <string name="settings_title_history">Kasaysayan</string>
+    <string name="settings_title_notifications">Mga notification</string>
+    <string name="settings_title_pro">Kumuha ng Pro</string>
+    <string name="settings_title_sub_theme">Mga tema ng subreddit</string>
+    <string name="settings_title_sort">Default na pag-uuri</string>
+    <string name="settings_title_sort_frontpage">Pag-uuri ng frontpage</string>
+    <string name="settings_title_about">Tungkol sa</string>
+    <string name="settings_title_debug">Debug</string>
+    <string name="settings_section_debug_reauth">Muling pag-authenticate</string>
+    <string name="settings_debug_break_reauth">Sirain ang muling pag-authenticate</string>
+    <string name="settings_debug_break_reauth_desc">Pinipigilan ang muling pag-authenticate para masubukan ang kaukulang snackbar. Naibabalik: i-off ito, pagkatapos ay mag-trigger ng muling pag-authenticate.</string>
+    <string name="settings_debug_trigger_reauth">Mag-trigger ng muling pag-authenticate</string>
+    <string name="settings_debug_trigger_reauth_desc">Magsimula ng muling pag-authenticate ngayon. Gamitin ito para makabawi pagkatapos i-off ang toggle.</string>
+    <string name="settings_title_multi_column">Multi-column</string>
+    <string name="settings_title_fab">Floating action button</string>
+    <string name="settings_title_comments">Mga komento</string>
+    <string name="settings_title_filter">Mga filter</string>
+    <string name="settings_title_font">Font</string>
+    <string name="settings_section_general">Pangkalahatan</string>
+    <string name="settings_section_appearance">Hitsura</string>
+    <string name="settings_section_hibernation">Hibernation</string>
+    <string name="settings_section_other">Iba pa</string>
+    <string name="settings_section_browser">Browser</string>
+    <string name="settings_section_internal_viewers">Mga panloob na viewer</string>
+    <string name="settings_section_custom_domains">Mga custom na domain</string>
+    <string name="settings_section_save_history">Pag-save ng kasaysayan</string>
+    <string name="settings_section_clear_history">Pag-clear ng kasaysayan</string>
+    <string name="settings_section_data_saving_mode">Data saving mode</string>
+    <string name="settings_section_data_saving_quality">Kalidad sa data saving</string>
+    <string name="settings_comment_color">Makukulay na indicator ng lalim ng komento</string>
+    <string name="settings_volume_nav_comments">Mag-navigate sa mga komento gamit ang volume button</string>
+    <string name="settings_commentnav_description">Nagpapagana ng bottom bar na may mga navigation arrow</string>
+    <string name="settings_comment_collapse">Ganap na tiklupin ang mga komento</string>
+    <string name="settings_comment_collapse_description">Hindi rin pinapagana ang mga animation ng komento</string>
+    <string name="settings_comment_collapse_default">Tiklupin ang mga child na komento bilang default</string>
+    <string name="settings_data_enable">Paganahin ang mga setting ng data saving</string>
+    <string name="settings_data_video_quality">Piliin ang mababang kalidad na video kapag naka-on ang data saving</string>
+    <string name="settings_comments_collapse_deleted">Tiklupin ang mga natanggal na komento bilang default</string>
+    <string name="settings_comments_collapse_sticky">Palaging ganap na tiklupin ang naka-pin na komento</string>
+    <string name="settings_comments_collapse_blocked_users">Tiklupin ang mga komento ng mga naka-block na user</string>
+    <string name="settings_comments_collapse_blocked_users_description">Pinapagana rin ang Ganap na tiklupin ang mga komento</string>
+    <string name="settings_backup_occurs">Magaganap ang backup sa %1$s</string>
+    <string name="settings_backup_none">Walang subreddit na iba-back up</string>
+    <string name="settings_backup_will_backup">\u0020ay iba-back up</string>
+    <string name="settings_backup_submission_only">post lamang</string>
+    <string name="settings_backup_comments">\u0020(mga komento)</string>
+    <string name="settings_filter_profile">Mga filter ng profile</string>
+    <string name="settings_subreddit_content_filters_till_restart">Mga content filter ng subreddit hanggang sa pag-restart</string>
+    <string name="settings_subredditspecific_selftext">Palaging ipakita ang preview ng teksto sa subreddit na ito</string>
+    <string name="settings_font_system">System</string>
+    <string name="settings_manage_subscriptions">Pamahalaan ang iyong mga subscription</string>
+    <string name="settings_comments_swap_long">Palitan ang mga aksyon ng matagal na pagpindot at pag-tap</string>
+    <string name="settings_redditprefs_over18">Higit 18 na ako at gusto kong makita ang NSFW na nilalaman</string>
+    <string name="settings_layout_view">View mode</string>
+    <string name="settings_subredditspecific_bigpic">Palaging ipakita ang malalaking larawan sa subreddit na ito</string>
+    <string name="settings_layout_picture_mode">Picture mode</string>
+    <string name="settings_general_expanded_toolbar">Pinalawak na toolbar menu</string>
+    <string name="settings_general_expanded_toolbar_desc">Magpakita ng higit pang opsyon sa toolbar ng subreddit</string>
+    <string name="settings_always_show_floating_action_button">Palaging ipakita ang floating action button</string>
+    <string name="settings_always_show_floating_action_button_desc">Huwag kailanman itago ang floating action button kapag nag-scroll</string>
+    <string name="settings_theme_tinting">Mode ng pagkukulay ng post</string>
+    <string name="settings_layout_actionbar_mode">Mode ng actionbar</string>
+    <string name="settings_theme_tint_outside_desc">Kulayan lang ang background sa mga multireddit, frontpage, at all</string>
+    <string name="settings_layout_small_content_tag">Mas maliit na content tag</string>
+    <string name="settings_links_force_external">Piliting gamitin ang external browser</string>
+    <string name="settings_layout_show_domain">Ipakita ang domain sa info line</string>
+    <string name="settings_layout_show_content_type">Ipakita ang uri ng nilalaman sa info line</string>
+    <string name="settings_layout_thumbnail_flags">Magpakita ng makukulay na marka sa sulok ng mga thumbnail</string>
+    <string name="settings_layout_show_votes_comments">Ipakita ang mga boto/komento sa info line</string>
+    <string name="settings_general_comment_last_visit">Ipakita ang bilang ng komento mula noong huling pagbisita</string>
+    <string name="settings_fab_create">Ipakita ang floating button na \"gumawa ng komento\"</string>
+    <string name="settings_right_handed_comment_menu">Right-handed na comment reply menu</string>
+    <string name="settings_reddit_description">Binabago ng mga setting na ito kung ano ang ibinabalik ng Reddit API sa Slide.\n\nPara makita ang mga thumbnail sa lahat ng subreddit, i-on ang \'Huwag pansinin ang mga kagustuhan sa media ng subreddit\'\n\nPara makita ang lahat ng NSFW na nilalaman, i-off ang \'Itago ang mga NSFW na larawan\' at i-on ang \'Higit 18 na ako\'</string>
+    <string name="settings_reddit_media_pref">Huwag pansinin ang mga kagustuhan sa media ng subreddit</string>
+    <string name="settings_description_view_type">Nakakaapekto ang mga uri ng view sa pangunahing view at sa mga view ng isahang subreddit.\n\nComment pane: lumalabas ang mga komento sa tabi ng mga post at nase-save ang estado ng comment page pagkatapos mag-swipe pabalik (para hindi ka mawala sa pinanggalingan mo)\n\nWalang subreddit tab: hindi pinapagana ang pag-swipe sa pagitan ng mga subreddit\n\nMga subreddit tab: mag-swipe sa pagitan ng iyong mga subreddit</string>
+    <string name="settings_short_description_view_type">Nakakaapekto ang mga uri ng view sa pangunahing view at sa mga view ng isahang subreddit</string>
+    <string name="settings_comment_hide_selftext_image">Itago ang pangunahing larawan sa mga text post</string>
+    <string name="settings_filter_flair">Mga filter ng flair</string>
+    <string name="settings_view_type">Uri ng view</string>
+    <string name="settings_data">Data saving</string>
+    <string name="settings_card_show_selftext">Ipakita ang teksto ng post</string>
+    <string name="settings_card_selftext_paragraph">Ipakita ang unang talata</string>
+    <string name="settings_card_selftext_ellipsize">Paikliin sa unang 128 karakter</string>
+    <string name="settings_handling_external_desc">Ang mga domain na inilagay sa ibaba ay palaging bubuksan sa labas</string>
+    <string name="settings_handling_enterdomain">Maglagay ng domain o bahagi ng domain</string>
+    <string name="settings_section_content">Nilalaman</string>
+    <string name="settings_backup_view">Tingnan ang backup</string>
+    <string name="settings_backup_err_no_explorer">Walang nahanap na file explorer, nasa %1$s ang file</string>
+    <string name="settings_about_version_copied_toast">Nakopya ang version number sa clipboard</string>
+    <string name="settings_theme_night_start_at">Magsisimula sa\u0020</string>
+    <string name="settings_theme_night_end_at">Magtatapos sa\u0020</string>
+    <string name="settings_general_inbox_snd">Tunog at pag-vibrate</string>
+    <string name="settings_enable_notifs">Paganahin ang mga notification ng inbox</string>
+
     <!-- Quick setting toggles in the drawer -->
+    <string name="toggle_night_mode">Night mode</string>
+    <string name="toggle_immersive_mode">Immersive mode</string>
+    <string name="toggle_nsfw">Ipakita ang NSFW na nilalaman</string>
+    <string name="toggle_right_thumbnails">Mga thumbnail na naka-align sa kanan</string>
+    <string name="toggle_reader_mode">Gamitin ang reader mode</string>
+
     <!-- View types -->
+    <string name="view_type_tabs">Mga subreddit tab</string>
+    <string name="view_type_none">Walang subreddit tab</string>
+    <string name="view_type_comments">Comment pane</string>
+
     <!--Search methods -->
+    <string name="subreddit_search_method_title">Paraan ng paghahanap ng subreddit</string>
+    <string name="subreddit_search_method_drawer">Search bar sa drawer</string>
+    <string name="subreddit_search_method_toolbar">Matagal na pagpindot sa pamagat ng toolbar</string>
+    <string name="subreddit_search_method_both">Parehong drawer at pamagat ng toolbar</string>
+
     <!-- Back button behavior -->
+    <string name="back_button_behavior_title">Pag-uugali ng back button</string>
+    <string name="back_button_behavior_default">Isara ang application</string>
+    <string name="back_button_behavior_confirm_exit">Dialog ng pagkumpirma sa paglabas</string>
+    <string name="back_button_behavior_drawer">Buksan ang drawer</string>
+
     <!-- Subscription managing -->
-    <!-- Save categories -->
+    <string name="reorder_add_domain">Magdagdag ng domain</string>
+    <string name="reorder_add_subreddit">Magdagdag ng subreddit</string>
+    <string name="reorder_fab_collection">Multireddit</string>
+    <string name="reorder_fab_domain">Domain</string>
+    <string name="reorder_fab_subreddit">Subreddit</string>
+    <string name="reorder_add_subscribe">Idagdag &amp; mag-subscribe</string>
+    <string name="reorder_remove_unsubscribe">Alisin &amp; mag-unsubscribe</string>
+    <string name="reorder_move">Ilipat sa itaas</string>
+    <string name="reorder_domain_placeholder">\u0020(pangalan lang ng domain)</string>
+    <string name="reorder_not_found_err">Hindi nahanap ang subreddit, narito ang ilang mungkahi</string>
+    <string name="reorder_subscribed_toast">Naka-subscribe sa /r/%1$s</string>
+    <string name="reorder_unsubscribed_toast">Nag-unsubscribe sa /r/%1$s</string>
+    <string name="sorting_faq"><b>Paano ko ire-refresh ang mga subreddit?</b>\nPara mag-refresh ng mga subreddit, i-click ang refresh icon sa toolbar!\n\n<b>Nag-unsubscribe ako sa ilang subreddit pero nandoon pa rin sila sa listahan!</b>\nGagawing impormal na subscription ng Slide ang mga subreddit na inalis mo sa browser. Para alisin ang mga ito, pindutin nang matagal ang subreddit at i-click ang alisin!\n\n<b>Paano ko gagamitin ang mga collection?</b>\nPara gumawa ng collection, i-click ang + na floating button at piliin ang \'Gumawa ng collection\'. Nagbibigay-daan ito na maraming sub ang kumilos bilang isang subreddit sa pangunahing screen!</string>
+    <string name="alphabetize_subreddits">Ayusin ang mga subreddit ayon sa alpabeto</string>
+    <string name="sync_subscriptions">I-sync ang mga subscription</string>
+    <string name="cannot_be_undone">Hindi ito maaaring bawiin.</string>
+    <string name="deleting">Tinatanggal…</string>
+    <string name="create_or_import_multi">Gusto mo bang gumawa ng bagong multireddit o mag-import ng isa?</string>
+    <string name="sub_added">Naidagdag ang subreddit!</string>
+    <string name="reorder_subs_FAQ">FAQ sa pagsasaayos ng mga subreddit</string>
+    <string name="subscribe_to">Mag-subscribe sa /r/%1$s</string>
+    <string name="unsubscribe_from">Mag-unsubscribe sa /r/%1$s</string>
+    <string name="btn_add_to_sublist">IDAGDAG SA SUB LIST</string>
+    <string name="btn_remove_from_sublist">ALISIN SA SUB LIST</string>
+    <string name="just_unsub">MAG-UNSUBSCRIBE LANG</string>
+    <string name="subscribe_caps">MAG-SUBSCRIBE</string>
+    <string name="unsubscribe_caps">MAG-UNSUBSCRIBE</string>
+    <string name="reorder_subreddits_title">Pumili ng subreddit na idaragdag</string>
+    <string name="reorder_add_or_search_subreddit">Magdagdag o maghanap ng subreddit</string>
+    <string name="reorder_subreddit_name">Pangalan ng subreddit</string>
+    <string name="reorder_remove_title">Alisin ang subreddit na ito?</string>
+    <string name="reorder_sync_complete">Kumpleto na ang pag-sync</string>
+    <string name="reorder_loading_title">Nilo-load ang iyong mga subreddit</string>
+    <string name="reorder_url_err">Hindi wasto ang URL</string>
+
+    <!-- Saved tags -->
+    <string name="tag_set_name_hint">Pangalan ng tag</string>
+    <string name="tag_tag_action">TAGAN</string>
+    <string name="profile_tag_select">Mga tag</string>
+    <string name="profile_saved_tags">Mga naka-save na tag</string>
+    <string name="tag_builtin_all">Lahat</string>
+    <string name="tag_builtin_posts">Mga post</string>
+    <string name="tag_builtin_comments">Mga komento</string>
+    <string name="tag_types_header">Mga uri</string>
+    <string name="tag_post_types_header">Mga uri ng post</string>
+    <string name="tag_custom_header">Mga custom na tag</string>
+    <string name="tag_new">Bagong tag</string>
+    <string name="tag_manage">Pamahalaan ang mga tag</string>
+    <string name="tag_add">Magdagdag ng tag</string>
+    <string name="tag_none_yet">Wala pang tag</string>
+    <string name="tag_rename">Palitan ang pangalan</string>
+    <string name="tag_delete_confirm">Sigurado ka bang gusto mong tanggalin ang \"%1$s\"? Hindi matatanggal ang mga item na may tag na ito.</string>
+    <string name="tag_name_used_title">Ginagamit na ang pangalan</string>
+    <string name="tag_name_used">May tag nang ganiyang pangalan, pumili ng natatanging pangalan.</string>
+    <string name="tag_name_reserved">Nakalaan ang pangalang iyon, pumili ng iba.</string>
+
     <!-- Setting subheaders -->
+    <string name="sorting">Mga pag-uuri</string>
+    <string name="display">Display</string>
+    <string name="images">Mga larawan</string>
+    <string name="storage">Storage</string>
+    <string name="app_theme">Tema ng app</string>
+    <string name="tinting">Pagkukulay</string>
+    <string name="post_info">Impormasyon ng post</string>
+    <string name="post_buttons">Mga button ng post</string>
+    <string name="navigation">Navigation</string>
+    <string name="collapse_comments">Mga aksyon sa pagtiklop</string>
+    <string name="nsfw">NSFW na nilalaman</string>
+    <string name="view_reddit_settings">Buksan ang mga setting ng Reddit sa browser</string>
+    <string name="font_styles">Mga istilo ng font</string>
+
     <!-- Titles displayed in action bar / head / recents overview-->
-    <!-- Text in Donation-Activity -->
+    <string name="title_subreddit_settings">Mga tema &amp; layout ng subreddit</string>
+    <string name="title_edit_theme">I-edit ang tema</string>
+    <string name="title_submit_post">Magsumite ng post</string>
+    <string name="title_crosspost">Crosspost</string>
+    <string name="title_settings">Mga setting</string>
+    <string name="title_share">Ibahagi gamit ang</string>
+    <string name="title_login">Mag-log in sa Reddit</string>
+    <string name="title_multireddits">Mga multireddit</string>
+    <string name="title_users">Mga user</string>
+    <string name="title_inbox">Inbox</string>
+    <string name="title_theme_settings">Tema</string>
+    <string name="title_create_multi">Gumawa ng multireddit</string>
+
     <!-- Offline mode -->
+    <string name="offline_msg">Mag-online at i-refresh ang subreddit para magawa iyon</string>
+    <string name="offline_last_update">Huling na-update %1$s</string>
+    <string name="offline_comments_not_loaded">Bumalik sa online at piliin ang ‘I-cache ang mga komento’ sa 3-dot menu para matingnan ang mga komento offline</string>
+    <string name="offline_no_content_found">Walang nahanap na offline na nilalaman</string>
+    <string name="offline_enter_online">Pumasok sa online mode</string>
+    <string name="offline_caching_title">Kina-cache ang %1$s</string>
+    <string name="offline_caching_complete">Kumpleto na ang pag-cache</string>
+
     <!-- Website -->
+    <string name="website_external">Buksan sa external browser</string>
+
+    <plurals name="reorder_subs_added">
+        <item quantity="one">%d subreddit ang naidagdag</item>
+        <item quantity="other">%d na subreddit ang naidagdag</item>
+    </plurals>
+
     <!-- Time -->
+    <string name="time_just_now">Ngayon lang</string>
+    <plurals name="time_years">
+        <item quantity="one">%d taon</item>
+        <item quantity="other">%d na taon</item>
+    </plurals>
+    <plurals name="time_months">
+        <item quantity="one">%d buwan</item>
+        <item quantity="other">%d na buwan</item>
+    </plurals>
+    <plurals name="time_days">
+        <item quantity="one">%d araw</item>
+        <item quantity="other">%d na araw</item>
+    </plurals>
+    <plurals name="time_hours">
+        <item quantity="one">%d oras</item>
+        <item quantity="other">%d na oras</item>
+    </plurals>
+    <plurals name="time_minutes">
+        <item quantity="one">%d minuto</item>
+        <item quantity="other">%d na minuto</item>
+    </plurals>
+    <plurals name="time_seconds">
+        <item quantity="one">%d segundo</item>
+        <item quantity="other">%d na segundo</item>
+    </plurals>
+
     <!-- Time: shorthand durations for example 1 hour → 1h -->
+    <string name="time_years_short">%dt</string>
+    <string name="time_days_short">%da</string>
+    <string name="time_hours_short">%do</string>
+    <string name="time_minutes_short">%dm</string>
+
     <!-- Strings present during the login process -->
+    <string name="login_subscribe_rslideforreddit">Mag-subscribe sa /r/slidereddit?</string>
+    <string name="login_subscribe_rslideforreddit_desc">Gusto mo bang mag-subscribe sa /r/slidereddit para sa pinakabagong balita at para mag-report ng mga isyu?</string>
+    <string name="login_sync_colors">I-sync ang mga kulay ngayon?</string>
+    <string name="login_sync_colors_desc">Gusto mo bang i-sync ang mga kulay ng iyong subreddit ngayon? Magagawa ito mamaya sa Settings → Mga tema ng subreddit</string>
+    <string name="login_authenticating">Nag-a-authenticate ang Slide</string>
+    <string name="login_starting">Inihahanda ang lahat!</string>
+    <string name="login_starting_desc">Isang segundo lang ito…</string>
+
     <!-- Over 18 prompt when visiting a NSFW subreddit -->
-    <!-- Subreddit color synchronization - https://redd.it/41054l -->
+    <string name="over18_title">Naglalaman ang /r/%1$s ng nilalamang pang-adulto</string>
+    <string name="over18_desc">Higit labingwalo ka na ba at handang makita ang nilalamang pang-adulto?</string>
+    <string name="over18_desc_loggedout">Mag-log in para permanenteng i-off ang babalang ito</string>
+    <string name="over18_desc_loggedin">Maaari mo itong permanenteng i-off sa Settings → Mga kagustuhan sa Reddit → Ipakita ang NSFW na nilalaman</string>
+
+    <!-- Subreddit color synchronization - https://reddit.com/comments/41054l -->
+    <string name="color_sync_complete">Kumpleto na ang pag-sync</string>
+    <plurals name="color_sync_colored">
+        <item quantity="one">%d subreddit ang nakulayan</item>
+        <item quantity="other">%d na subreddit ang nakulayan</item>
+    </plurals>
+
     <!-- Discover section: find -->
+    <string name="discover_title">Tumuklas</string>
+    <string name="discover_search">Terminong hahanapin o paksa</string>
+    <string name="discover_popular">Sikat</string>
+    <string name="discover_trending">Trending</string>
+
     <!-- Subreddit post notifications -->
+    <string name="sub_post_notifs_title">Gusto mo bang maabisuhan tungkol sa mga bagong post sa\n/r/%1$s?</string>
+    <string name="sub_post_notifs_title_settings">Gusto mo bang maabisuhan tungkol sa mga bagong post?</string>
+    <string name="sub_post_notify">Abisuhan</string>
+    <string name="sub_post_notifs_threshold">Threshold ng score</string>
+    <string name="sub_post_notifs_err">Makakapagdagdag ka lang ng notification sa mga isahang subreddit</string>
+    <string name="sub_post_notifs_settings_none">Walang subreddit na aabisuhan</string>
+    <string name="sub_post_notifs_settings_search">Hanapin ang pangalan ng sub</string>
+    <string name="sub_post_notifs_notification_title">Bagong post sa /r/%1$s</string>
+    <string name="sub_post_notifs_notification_btn">Itigil ang pagsubaybay sa /r/%1$s</string>
+    <string name="title_sub_post_notifs">Mga notification ng post sa subreddit</string>
+
     <!-- Internal browser -->
+    <string name="internal_browser_extracting_error">Paumanhin, hindi makuha ang artikulo</string>
+    <string name="internal_browser_storecookies">Mag-imbak ng cookies ng website</string>
+    <string name="internal_browser_readermode">Reader mode</string>
+
     <!-- Live thread -->
+    <string name="livethread_loading_title">Nilo-load ang live thread…</string>
+    <string name="livethread_not_found">Hindi nahanap ang live thread</string>
+    <string name="livethread_recents_title">Live thread: %1$s</string>
+
     <!-- Used when viewing media -->
+    <string name="mediaview_notif_title">Dina-download ang larawan…</string>
+    <string name="mediaview_notif_video">Dina-download ang video…</string>
+    <string name="mediaview_notif_text">Isinasagawa ang pag-download</string>
+    <string name="mediaview_save">I-save ang %1$s</string>
+    <string name="mediaview_saving">Sine-save ang %1$s</string>
+
     <!-- Drafts -->
+    <string name="choose_draft">Pumili ng draft</string>
+    <string name="dialog_no_drafts">Wala pang draft</string>
+    <string name="dialog_no_drafts_msg">Makakapagdagdag ka ng draft sa pamamagitan ng pag-click sa icon na \'i-save\' sa editor bar!</string>
+    <string name="msg_save_draft">Na-save ang mensahe bilang draft</string>
+    <string name="manage_drafts">Pamahalaan ang mga draft</string>
+    <string name="really_delete_drafts">Talagang tatanggalin ang mga draft na ito?</string>
+
     <!-- Strings for widgets -->
+    <string name="widget_theme_dark">MADILIM</string>
+    <string name="widget_theme_light">MALIWANAG</string>
+    <string name="widget_theme_clear">MALINAW</string>
+    <string name="widget_posttype_title">Uri ng post</string>
+    <string name="widget_posttype_list">LISTAHAN</string>
+    <string name="widget_posttype_bigpic">MALAKING LARAWAN</string>
+    <string name="widget_posttype_compact">COMPACT</string>
+    <string name="widget_subname_hint">Pangalan ng subreddit</string>
+    <string name="widget_visuals">Hitsura</string>
+    <string name="widget_content">Nilalaman</string>
+    <string name="widget_loading">Nilo-load…</string>
+    <string name="widget_creation_title">Bagong widget</string>
+    <string name="shortcut_creation_title">Bagong shortcut</string>
+
     <!-- Strings for alert dialogs -->
+    <string name="force_change_subscription">Hindi mabago ang subscription</string>
+    <string name="force_change_subscription_desc">Gusto mo pa rin bang baguhin ito nang lokal?</string>
+    <string name="never_load_images">Huwag mag-load ng anumang larawan</string>
+    <string name="load_low_quality">Mag-load ng mababang kalidad na larawan (max 320x320)</string>
+    <string name="load_medium_quality">Mag-load ng katamtamang kalidad na larawan (max 640x640)</string>
+    <string name="load_high_quality">Mag-load ng mataas na kalidad na larawan (max 1080x1080)</string>
+    <string name="choose_color_title">Pumili ng kulay</string>
+    <string name="enter_text_to_filter_click_enter_to_add">Maglagay ng teksto para maghanap, pindutin ang enter para magdagdag ng filter</string>
+    <string name="mode_desktop_compact">Desktop compact</string>
+    <string name="show_content_type_text_beside_links">Ipakita ang teksto ng uri ng nilalaman sa tabi ng mga link</string>
+    <string name="comment_shadowbox">Comment shadowbox</string>
+
     <!-- Sidebar strings (multis, flairs) -->
+    <string name="sidebar_select_flair">Pumili ng flair</string>
+    <string name="sidebar_select_flair_text">Itakda ang teksto ng flair</string>
+    <string name="sidebar_findingmods">Hinahanap ang mga moderator</string>
+    <string name="snackbar_flair_success">Matagumpay na naitakda ang flair</string>
+    <string name="snackbar_flair_error">May error sa pagtatakda ng flair, subukan ulit mamaya</string>
+    <string name="sidebar_submods">Mga mod ng /r/%s</string>
+    <string name="sidebar_flair">Flair: %1$s</string>
+    <string name="sidebar_notfound">Walang nahanap na sidebar</string>
+    <plurals name="reorder_selected">
+        <item quantity="one">"%d ang napili"</item>
+        <item quantity="other">"%d ang napili"</item>
+    </plurals>
+
     <!--Filtering dialog -->
+    <string name="filter_title">Ano ang gusto mong i-filter?</string>
+    <string name="filter_posts_sub">Mga post mula sa /r/%1$s</string>
+    <string name="filter_posts_user">Mga post ni /u/%1$s</string>
+    <string name="filter_posts_urls">Mga post na may link sa %1$s</string>
+    <string name="filter_open_externally">Buksan ang mga %s URL sa labas</string>
+    <string name="filter_posts_flair">Flair na \"%1$s\" mula sa %2$s</string>
+    <string name="filter_btn">I-filter</string>
+
     <!-- Caching -->
+    <string name="cache_no_comments_found">Walang nahanap na komento</string>
+    <string name="cache_no_comments_found_snackbar">Walang nahanap na naka-cache na komento</string>
+    <string name="cache_no_comments_found_message">Walang naka-cache na komento ang post na ito. Para mag-cache ng mga komento sa hinaharap, i-click ang 3-dot menu sa pangunahing screen at piliin ang \'I-cache ang mga komento\', o mag-set up ng Auto Cache sa Offline Content tab sa nav drawer</string>
+    <string name="autocache_subreddits">Mga subreddit para sa autocache</string>
+    <string name="autocache_time">Oras ng autocache</string>
+    <string name="cache_subreddits_now">I-cache ang mga subreddit ngayon</string>
+    <string name="cache_wifi_only">Mag-cache lang sa WiFi</string>
+    <string name="comments_depth">Lalim ng mga komentong ica-cache</string>
+    <string name="comments_count">Bilang ng mga komentong ica-cache</string>
+
     <!-- Saving location setting -->
+    <string name="set_save_location">Itakda ang lokasyon ng pag-save ng media</string>
+    <string name="set_save_location_msg">Hindi pa naitatakda ang lokasyon ng pag-save ng media ng Slide.</string>
+
     <!-- Report flow -->
+    <string name="btn_report">I-report</string>
+    <string name="report_post">I-report ang post</string>
+    <string name="report_comment">I-report ang komento</string>
+    <string name="report_loading">Nilo-load ang mga dahilan…</string>
+    <string name="report_sub_rules">Mga tuntunin ng /r/%s</string>
+    <string name="report_site_rules">Mga tuntunin ng Reddit</string>
+    <string name="report_another_reason">Ibang dahilan</string>
+    <string name="report_other">Iba pa</string>
+    <string name="input_reason_for_report">Dahilan ng pag-report</string>
+    <string name="msg_report_sent">Naipadala ang report</string>
+
     <!-- Unsorted ¯\\_(ツ)_/¯ -->
+    <string name="comment_load_more_number_unknown">Mag-load pa ng mga komento</string>
+    <string name="card_right_thumb">Thumbnail na naka-align sa kanan</string>
+    <string name="setting_filter_subreddits">Mga filter ng subreddit</string>
+    <string name="subreddit_theme">Tema ng subreddit</string>
+    <string name="dialog_choose_subreddits_to_edit">Pumili ng mga subreddit na ie-edit</string>
+    <string name="dialog_color_sync_title">Pag-sync ng kulay</string>
+    <string name="dialog_color_sync_message">Susubukan nitong kunin ang ‘key color’ ng subreddit na itinakda ng mga moderator. Hindi nito papalitan ang mga subreddit na may kulay na.</string>
+    <string name="fab_hide">Itago ang mga natingnang post</string>
+    <string name="fab_create">Gumawa ng bagong post</string>
+    <string name="fab_disabled">Naka-disable</string>
+    <string name="fab_search">Maghanap ng mga post</string>
+    <string name="handling_internal_browser">Panloob na browser</string>
+    <string name="handling_external_browser">Panlabas na browser</string>
+    <string name="mode_list">Listahan</string>
+    <string name="mode_centered">Card na may nakasentrong larawan</string>
+    <string name="mode_card">Card</string>
+    <string name="mode_thumbnail">Thumbnail</string>
+    <string name="mode_no_thumbnails">Walang thumbnail</string>
+    <string name="mode_big_thumbnails">Malalapad na thumbnail</string>
+    <string name="mode_cropped">Naka-crop na malaking larawan</string>
+    <string name="mode_letterbox">Malaking larawan na may itim na gilid</string>
+    <string name="mode_bigpic">Malaking larawan</string>
+    <string name="press_actionbar">Pindutin ang arrow para ipakita ang actionbar</string>
+    <string name="show_top_right">Ipakita sa kanang itaas</string>
+    <string name="show_bottom_right">Ipakita sa kanang ibaba</string>
+    <string name="small_tag_disabled">Naka-disable</string>
+    <string name="tap_actionbar">Matagal na pagpindot para sa actionbar</string>
+    <string name="always_actionbar">Palaging ipakita ang actionbar</string>
+    <string name="sub_content_filter">Content filter ng subreddit</string>
+    <string name="submission_share_reddit_url">Ibahagi ang mga komento</string>
+    <string name="filter_content">I-filter ang nilalamang ito</string>
+    <string name="content_to_show">Nilalamang ipapakita sa %1$s</string>
+    <string name="save_for_offline_viewing">I-save ang mga post para sa offline na pagtingin</string>
+    <string name="btn_collapse_children_all">Tiklupin ang mga child na komento</string>
+    <string name="btn_open_content">Buksan ang nilalaman</string>
+    <string name="enter_text_to_filter_click_enter_to_add_flair">Maglagay ng tekstong ifi-filter (subreddit:flair_text), pindutin ang enter para idagdag</string>
+    <plurals name="filter_count">
+        <item quantity="one">%1$d filter (%2$d max ang ipinapakita)</item>
+        <item quantity="other">%1$d na filter (%2$d max ang ipinapakita)</item>
+    </plurals>
+    <string name="filter_limit_reached">Ipinapakita ang unang %1$d sa %2$d. Maghanap para paikliin ang mga resulta.</string>
+    <string name="datasave_always">Mobile data at Wi-Fi</string>
+    <string name="datasave_mobile">Mobile data</string>
+    <string name="never">Hindi kailanman</string>
+    <string name="multi_column_force_full">Piliting ipakita ang buong comment view</string>
+    <string name="submission_info_locked">Naka-lock na post ito. Hindi ka makakapagkomento.</string>
+    <string name="card_background_tint">Background ng card</string>
+    <string name="subreddit_name_tint">Pangalan ng subreddit</string>
+    <string name="login_failed_err_decline">Tiyaking hindi mo pinili ang ‘Decline’ sa nakaraang screen, at subukan ulit pagkatapos ng isang minuto</string>
+    <string name="login_unsupported_redirect_uri">Hindi matatanggap ng browser ang naka-configure na Redirect URI (%1$s), kaya hindi makukumpleto ang pag-log in. Gamitin na lang ang in-app na WebView na paraan ng pag-log in, o magtakda ng suportadong Redirect URI sa Settings.</string>
+    <string name="login_unsupported_redirect_uri_title">Nabigo ang pag-log in</string>
+    <string name="login_failed_oauth_error_page">Nabigo ang pag-log in — nagbalik ng error ang Reddit sa halip na kumpletuhin ang pag-log in. Suriin ang iyong client ID at redirect URI sa Settings.</string>
+    <string name="tutorial_swipe_navigation">Swipe navigation</string>
+    <string name="tutorial_swipe_description">Mag-swipe mula sa kaliwang gilid para lumabas.\n\nNalalapat ito sa mga larawan, GIF, album, setting at marami pa!</string>
+    <string name="handling_browser">Web browser</string>
+    <string name="submit_replies_to_inbox">Ipadala ang mga sagot sa inbox</string>
+    <string name="btn_open_comments">Buksan ang mga komento</string>
+    <string name="btn_preview">Preview</string>
+    <string name="default_comment_sort">Default na pag-uuri ng komento</string>
+    <string name="content_deleted">[tinanggal]</string>
+    <string name="thread_continue">Ipagpatuloy ang thread na ito</string>
+    <string name="type_selftext">Text post</string>
+    <string name="type_selftexts">Mga text post</string>
+    <string name="submission_unhide">Ipakita ulit ang post</string>
+    <string name="submission_info_unhidden">Ipinakita ulit ang post</string>
+    <string name="msg_sent_success">Naipadala ang mensahe</string>
+    <string name="msg_sent_failure">Nabigong maipadala ang mensahe</string>
+    <string name="msg_send_user_dne">Wala ang user na iyon</string>
+    <string name="editor_actions_quote_comment">Piliin ang tekstong sisipiin</string>
+    <string name="guest">Bisita</string>
+    <string name="album_slide_view">Sliding album view</string>
+    <string name="album_grid">Album grid</string>
+    <string name="open_externally">Buksan sa labas</string>
+    <string name="vertical_album_view">Patayong album view</string>
+    <string name="download_album">I-download ang album</string>
+    <string name="download_gallery">I-download ang gallery</string>
+    <string name="compose_message">Sumulat ng mensahe</string>
+    <string name="mark_all_as_read">Markahan lahat bilang nabasa</string>
+    <string name="clear_subreddit_history">I-clear ang kasaysayan ng subreddit</string>
+    <string name="clear_submission_history">I-clear ang kasaysayan ng post</string>
+    <string name="alert_history_cleared">Na-clear ang kasaysayan!</string>
+    <string name="manage_offline_content">Pamahalaan ang offline na nilalaman</string>
+    <string name="go_offline">Mag-offline</string>
+    <string name="sidebar_edit_flair">I-edit ang iyong flair</string>
+    <string name="go_online_view_content">Mag-online para makita ang nilalamang ito</string>
+    <string name="help">Tulong</string>
+    <string name="upvote_percentage">Ipakita ang porsyento ng upvote</string>
+    <string name="view_subreddits">Tingnan ang mga subreddit</string>
+    <string name="clear_saved_subreddits">I-clear ang lahat ng naka-save na subreddit</string>
+    <string name="download_the_slide_video_player_plugin">I-download ang Slide Video Player plugin</string>
+    <string name="btn_suggest_title">Magmungkahi ng pamagat</string>
+    <string name="navigate_comments_since">Mga komentong mas bago kaysa…</string>
+    <string name="btn_offline">Pumasok sa offline mode</string>
+    <string name="discard_comment_title">Itapon ang komento?</string>
+    <string name="comment_discard_msg">Gusto mo ba talagang itapon ang iyong komento?</string>
+    <string name="backup_saved_downloads">Na-save ang backup sa downloads</string>
+    <string name="really_remove_subreddit_title">Talagang aalisin ang subreddit na ito?</string>
+    <string name="choose_sync_time">Pumili ng oras ng pag-sync</string>
+    <string name="account_suspended">Suspendido ang account na ito</string>
+    <string name="clear_all_sub_themes">I-clear ang lahat ng tema ng subreddit?</string>
+    <string name="clear_all_sub_themes_msg">Hindi mo maibabalik ang aksyong ito</string>
+    <string name="title_not_found">Hindi nahanap ang pamagat</string>
+    <string name="really_delete_submission">Talagang tatanggalin ang post na ito? Hindi mo ito maibabalik</string>
+    <string name="comment_unstickied">Na-unpin ang komento</string>
+    <string name="comment_stickied">Na-pin ang komento</string>
+    <string name="comment_undistinguished">Inalis ang pagbukod sa komento</string>
+    <string name="comment_distinguished">Ibinukod ang komento</string>
+    <string name="comment_removed">Inalis ang komento</string>
+    <string name="set_nav_mode">Itakda ang navigation mode</string>
+    <string name="auto_hide_the_comment_nav_bar">Awtomatikong itago ang comment navigation bar</string>
+    <string name="rate_slide">I-rate ang Slide</string>
+    <string name="edit_query">I-edit ang query</string>
+    <string name="share_slide">Ibahagi ang Slide</string>
+    <string name="open_clipboard_reddit_link">Buksan ang Reddit link sa clipboard</string>
+    <string name="clipboard_no_reddit_link">Walang Reddit link sa clipboard</string>
+    <string name="open_links_externally">Palaging buksan ang host na ito sa labas</string>
+    <string name="hide_read_posts">Itago ang mga nabasang post</string>
+    <string name="gallery_mode">Gallery mode</string>
+    <string name="settings_gallery_grid">Ipakita ang mga gallery post bilang grid</string>
+    <string name="gallery_grid_image">Larawan ng gallery %1$d ng %2$d</string>
+    <string name="gallery_grid_overflow">+%1$d</string>
+    <string name="friends_sort_error">Hindi maaayos ang /r/friends</string>
+    <string name="shadowbox_comments_nolinks">Walang nahanap na link sa mga komento</string>
+    <string name="draw_undo">I-undo</string>
+    <string name="empty_preview_text">Walang makikita rito ¯\\_(ツ)_/¯</string>
+    <string name="theme_red_shift">Red shift</string>
+    <string name="view_sub_sidebar">Tingnan ang sidebar ng sub</string>
+    <string name="mod_log">Mod log</string>
+    <string name="navigation_bar_vote_gestures">Mga vote gesture sa navigation bar</string>
+    <string name="nav_gestures_description">Mag-upvote at downvote sa pamamagitan ng pag-swipe sa mga comment navigation arrow</string>
+    <string name="subreddit_sidebar_progress">Kinukuha ang sidebar…</string>
+    <string name="manage_your_subreddits">Pamahalaan ang iyong mga subreddit</string>
+    <string name="enlarge_links">Palakihin ang mga link</string>
+    <string name="enlarge_links_warning">Maaaring maging mas malaki ang ilang linya kaysa sa iba, pero mas madaling ma-tap ang mga link</string>
+    <string name="type_tumblr">Tumblr</string>
+    <string name="type_tumblrs">Mga Tumblr post</string>
+    <string name="type_nsfw_tumblr">NSFW na Tumblr</string>
+    <string name="submission_info_contest">Nasa contest mode ang thread na ito. Hindi mo mababago ang pag-uuri.</string>
+    <string name="sub_post_notifs_msg">Titingnan ng Slide kung may bagong post kapag tumitingin ito ng mail (kailangang naka-on ang mga notification ng mail)</string>
+    <string name="mod_ban_reason_required">Kailangan ang dahilan</string>
+    <string name="settings_abbreviate_post_scores">Paikliin ang mga score ng post (hal. 24.0k)</string>
+    <string name="settings_wide_depth_indicators">Malalapad na indicator ng lalim ng komento</string>
+    <string name="settings_link_reader_mode_title">Gamitin ang reader mode</string>
+    <string name="settings_link_reader_mode_description">Buksan ang lahat ng link sa reader mode. Gagamitin ang uri ng browser kapag nagbukas mula sa reader mode.</string>
+    <string name="settings_link_reader_night">Iugnay ang reader mode at night mode</string>
+    <string name="theme_pixel">Pixel</string>
+    <string name="save_images_to_subreddit_specific_subfolders">I-save ang mga larawan sa mga subfolder ayon sa subreddit</string>
+    <string name="description_save_subfolders">Gumagana sa mga view ng post at komento</string>
+    <string name="save_media_to_type_specific_subfolders">I-save ang media sa mga subfolder ayon sa uri</string>
+    <string name="description_save_type_subfolders">Ang mga larawan ay mapupunta sa \"images\", ang mga video at GIF sa \"videos\"</string>
+    <string name="show_image_download_button">Shortcut sa pag-download</string>
+    <string name="description_image_download_button">Ipakita ang download button sa image viewer</string>
+    <string name="content_settings">Mga setting ng nilalaman</string>
+    <string name="setting_titleTop">Ipakita ang pamagat sa itaas ng info line</string>
+    <string name="setting_notification_piggybacking">Notification Piggybacking</string>
+    <string name="setting_notification_piggybacking_desc">Tingnan lang ang mail kapag nakatanggap ng push notification ang opisyal na Reddit app</string>
+    <string name="install_notif_piggyback">I-install ang opisyal na Reddit app para paganahin ang Notification Piggybacking</string>
+    <string name="success_block_user">Matagumpay na na-block ang user</string>
+    <string name="err_unblock_user">May error sa pag-unblock sa user</string>
+    <string name="success_unblock_user">Matagumpay na na-unblock ang user</string>
+    <string name="settings_highlight_time_desc">Kailangang naka-on ang \'Ipakita ang bilang ng komento mula noong huling pagbisita\' sa Settings &gt; Layout ng post</string>
+    <string name="settings_colored_time">May kulay na time bubble para sa mga bagong komento</string>
+    <string name="theme_deep">Deep</string>
+    <string name="type_vreddit">Reddit video</string>
+    <string name="authors_above">Mga may-akda sa itaas</string>
+    <string name="btn_crosspost">Crosspost</string>
+    <string name="btn_reset_color">I-RESET ANG KULAY</string>
+    <string name="settings_shortlink_description">Ibabahagi ang mga link bilang \'https://reddit.com/comments/\'</string>
+    <string name="settings_shortlink">Ibahagi ang Reddit shortlink kung maaari</string>
+    <string name="disable_replies_comment">I-disable ang mga sagot sa inbox para sa komento</string>
+    <string name="replies_disabled_comment">Naka-disable ang mga sagot sa komento</string>
+    <string name="replies_enabled_comment">Naka-enable ang mga sagot sa komento</string>
+    <string name="replies_switch_accounts">Lumipat sa ibang account</string>
+    <string name="search_settings">Maghanap sa mga setting</string>
+    <string name="show_collapse_expand_nav_bar">Ipakita ang collapse/expand button sa comment navigation bar</string>
+    <string name="page_not_found">Hindi nahanap ang page</string>
+    <string name="page_does_not_exist">Wala ang page na hiniling mo</string>
+    <string name="back_button_behavior_goto_first">Pumunta sa unang subreddit</string>
+    <string name="settings_hide_post_awards">Itago ang mga award</string>
+    <string name="settings_hide_comment_awards">Itago ang mga award</string>
+    <string name="settings_title_markdown">Markdown</string>
+    <string name="settings_markdown_new_reddit">Markdown na istilo ng bagong Reddit</string>
+    <string name="settings_markdown_new_reddit_desc">Ipinapakita ang mga code block at formatting tulad ng bagong Reddit (kapag naka-off, ginagamit ang renderer ng lumang Reddit)</string>
+    <string name="comment_render_other">Ipakita ang isa pang pagpapakita</string>
+    <string name="recover_post">Bawiin ang post</string>
+    <string name="recover_loading">Kinukuha ang orihinal mula sa archive…</string>
+    <string name="recover_post_failed">Hindi mabawi ang post na ito</string>
+    <string name="recover_comment">Bawiin ang komento</string>
+    <string name="recover_comment_failed">Hindi mabawi ang komentong ito</string>
+    <string name="markdown_preview_new_reddit">Pagpapakita ng bagong Reddit</string>
+    <string name="markdown_preview_old_reddit">Pagpapakita ng lumang Reddit</string>
+    <string name="high_colorspace_images">Mga larawang may mataas na colorspace</string>
+    <string name="description_high_colorspace">Nilo-load ang buong colorspace sa mga larawan, na maaaring magdulot ng mas mataas na paggamit ng memory</string>
+    <string name="wide_color_gamut">Malawak na color gamut</string>
+    <string name="description_wide_color_gamut">Ipinapakita ang mga media viewer sa malawak na color gamut. Maaaring mapusyaw ang mga kulay sa ilang OLED display</string>
+    <string name="comment_emote_animation">Animation ng emote sa komento</string>
+    <string name="description_comment_emote_animation">Tinutukoy kung ang mga emote na hindi mula sa Giphy ay gumagalaw sa mga komento</string>
+    <string name="comment_image_size">Laki ng larawan sa komento</string>
+    <string name="description_comment_image_size">Kung gaano kalaki ipinapakita ang mga nakalakip na larawan sa mga komento</string>
+    <string name="comment_image_size_small">Maliit</string>
+    <string name="comment_image_size_medium">Katamtaman</string>
+    <string name="comment_image_size_large">Malaki</string>
+    <string name="no_preview_image_longclick">Walang matagal na pagpindot sa mga preview image ng anumang uri ng nilalaman</string>
+    <string name="description_no_preview_image_longclick">Tinutukoy kung gumagana ang matagal na pagpindot sa mga preview image ng anumang uri ng nilalaman. Hindi nito pinapagana ang peek content na tampok.</string>
+    <string name="editor_btn_select_flair">Pumili ng flair</string>
+    <string name="submit_selected_flair">Napiling flair: %s</string>
+    <string name="mediaview_downloading">Dina-download ang larawan&#8230;</string>
+    <string name="err_save_image">May error sa pag-save ng larawan</string>
+    <string name="error_directory_not_selected">Walang napiling direktoryo. Pakisubukan ulit.</string>
+
+    <!-- Backup Operations -->
+
+    <!-- Additional Backup Operations -->
+    <string name="select_backup_file">Pumili ng backup file</string>
+
+    <string name="read_later">Basahin mamaya</string>
+    <string name="mark_as_read">Markahan bilang nabasa</string>
+
+    <string name="reddit_client_id">Reddit Client ID</string>
+    <string name="click_custom_client_id">I-click para magtakda ng custom na client ID</string>
+    <string name="client_id_scan_qr">Mag-scan ng QR code</string>
+    <string name="client_id_scan_prompt">Mag-scan ng QR code na naglalaman ng iyong Reddit Client ID</string>
+    <string name="camera_permission_denied">Kailangan ng pahintulot sa camera para mag-scan ng QR code</string>
+    <string name="client_id_invalid_length">Hindi wastong client ID: kailangang eksaktong 22 karakter</string>
+
+    <!-- Notification permission strings -->
+    <string name="notifications_permission_title">Paganahin ang mga notification</string>
+    <string name="notifications_permission_message">Kailangan ng Slide ng pahintulot sa notification para ipaalam sa iyo ang mga bagong mensahe, post, at iba pang update mula sa Reddit. Mapapamahalaan mo ang mga setting ng notification mamaya.</string>
+    <string name="notification_listener_permission_title">Paganahin ang access sa notification</string>
+    <string name="notification_listener_permission_message">Kailangan ng Slide ng access sa notification para masalo ang mga notification ng Reddit at makapagbigay ng mas magandang karanasan. Paganahin ang access sa notification para sa Slide sa susunod na screen.</string>
+
+
+    <string name="reddit_redirect_uri_override">Reddit Redirect URI Override</string>
+    <string name="click_custom_redirect_uri">I-click para magtakda ng custom na redirect URI</string>
+    <string name="settings_reddit_redirect_uri_invalid">Hindi wastong redirect URI: kailangang nasa anyong scheme://hostname</string>
+    <string name="reddit_user_agent_override">Reddit User Agent Override</string>
+    <string name="click_custom_user_agent">I-click para magtakda ng custom na user agent</string>
+    <string name="settings_enable_overrides">Paganahin ang mga override</string>
+    <string name="settings_enable_overrides_desc">Gamitin ang iyong custom na client ID, redirect URI, at user agent sa halip na ang mga default ng app. Iwang naka-off maliban kung alam mong kailangan mo ito.</string>
+
+    <string name="settings_section_sound">Tunog</string>
+    <string name="settings_unmute_default">I-unmute ang mga video bilang default</string>
+
+    <string name="settings_subreddit_filter_prefix_matching">Paganahin ang prefix matching sa mga filter ng subreddit</string>
+    <string name="settings_subreddit_filter_prefix_matching_description">Ang prefix ay ang buong pangalan ng subreddit, at hindi bababa sa anim na karakter. Halimbawa: haharangan ng subreddit na social ang socialanxiety. Haharangan ng subreddit na pokemongo ang pokemongoraids.</string>
+
+    <string name="settings_filter_old_posts">I-filter ang mga post na mas luma kaysa</string>
+    <plurals name="settings_filter_old_posts_days">
+        <item quantity="one">%1$d araw</item>
+        <item quantity="other">%1$d na araw</item>
+    </plurals>
+    <string name="settings_filter_old_posts_description">Hindi inilalapat kapag tumitingin ng isahang subreddit, o kapag nag-uuri ayon sa Top o Controversial</string>
+
+    <!-- Pause on audio focus ducking setting -->
+    <string name="settings_pause_on_duck_title">I-pause ang video sa halip na hinaan</string>
+    <string name="settings_pause_on_duck_desc">Ipa-pause ang mga video kapag may tumutugtog na audio sa ibang app. Ang paghina ay ang pagbaba ng volume sa halip na i-pause ang video.</string>
+
+    <!-- Add this string resource for the play button content description -->
+    <string name="btn_play">I-play</string>
+
+    <string name="multireddit_name_title">Pangalan para sa multireddit</string>
+    <string name="multireddit_name_hint">Pangalan ng multireddit</string>
+    <string name="multireddit_err_empty_name">Hindi pwedeng walang laman ang pangalan ng multireddit</string>
+    <string name="multireddit_err_no_valid_subs">Walang napiling wastong subreddit. Pumili ng kahit isa.</string>
+    <string name="multireddit_progress_title">Ginagawa ang multireddit</string>
+    <string name="multireddit_progress_message">Maghintay habang ginagawa namin ang iyong multireddit...</string>
+    <string name="multireddit_created_success">Matagumpay na nagawa ang multireddit</string>
+    <string name="multireddit_created_error">Nabigong gawin ang multireddit. Pakisubukan ulit.</string>
+    <string name="multireddit_json_error">May naganap na error habang inihahanda ang data ng iyong multireddit</string>
+
+    <string name="settings_dialog_colored_border">Maglagay ng may kulay na border sa paligid ng mga dialog box</string>
+    <string name="settings_dialog_colored_border_desc">Nagpapakita ng manipis na may kulay na border sa paligid ng ilang dialog box.</string>
+
+    <string name="misc_err_sync_failed">Nabigong i-sync ang mga subreddit. Walang naka-subscribe na subreddit?</string>
+
+    <string name="mod_btn_distinguish">Ibukod</string>
+    <string name="mod_btn_undistinguish">Alisin ang pagbukod</string>
+
+    <string name="nsfw_status_removed">Inalis ang NSFW status</string>
+    <string name="nsfw_status_set">Itinakda ang NSFW status</string>
+
+    <string name="spoiler_status_removed">Inalis ang spoiler status</string>
+    <string name="spoiler_status_set">Itinakda ang spoiler status</string>
+
+    <string name="submission_distinguished">Ibinukod ang post</string>
+    <string name="submission_distinguished_removed">Inalis ang pagbukod sa post</string>
+
+    <string name="settings_general_hide_subreddit_tabs">Itago ang mga tab ng naka-subscribe na subreddit</string>
+    <string name="settings_general_hide_subreddit_tabs_desc">Itinatago ang mga naka-subscribe na subreddit bilang tab, pero pinapanatili ang mga navigation button</string>
+
+    <!-- Video playback speed control -->
+    <string name="video_speed">Bilis</string>
+    <string name="video_speed_0_25x">0.25x</string>
+    <string name="video_speed_0_5x">0.5x</string>
+    <string name="video_speed_0_75x">0.75x</string>
+    <string name="video_speed_1x">Normal</string>
+    <string name="video_speed_1_25x">1.25x</string>
+    <string name="video_speed_1_5x">1.5x</string>
+    <string name="video_speed_2x">2x</string>
+    <string name="video_speed_control_content_desc">Kontrol ng bilis ng pag-play</string>
+    <string name="image_unavailable">Hindi available ang larawan</string>
+    <string name="image_rotate_content_desc">Iikot ang larawan ng 90 degree pakanan</string>
+    <string name="image_rotate_left_content_desc">Iikot ang larawan ng 90 degree pakaliwa</string>
+
+    <!-- Folder chooser dialog (formerly provided by afollestad material-dialogs commons) -->
+    <string name="md_error_label">Error</string>
+    <string name="md_storage_perm_error">Kailangan ng feature na ito ang pahintulot sa storage, na hindi pa naibibigay.</string>
+    <string name="md_choose_label">PUMILI</string>
+    <string name="new_folder">Bagong folder</string>
 </resources>

@@ -5,9 +5,9 @@
     <string name="general_confirm_exit">Potvrdit ukončení</string>
     <string name="general_confirm_exit_msg">Opravdu chcete zavřít Slide?</string>
     <string name="general_enable_shadowbox">Režim Shadowbox</string>
-    <string name="pro_upgrade_msg">Upgradujte na Slide pro Reddit Pro a užijte si skvělé nové funkce včetně:\n\n- Režim blokování a čtení v zobrazení webové stránky\n- Oříznout a kreslit obrázky pro nahrání\n- upravitelný režim sloupec pro tablet\n- Automatický noční režim\n- Zobrazení obsahu Shadowbox a galerie\n- Komentovat náhled Shadowbox\n- Zálohování a obnovení do Google Drive a do souboru\n- Podpora open source a bez reklam!\n\nChcete podpořit Slide for Reddit?</string>
     <string name="general_open_settings">Postranní panel</string>
     <string name="general_sub_sync">Probíhá synchronizace odběrů</string>
+
     <!-- Used when viewing a thread -->
     <string name="submission_info_unsaved">Příspěvek odebrán z uložených</string>
     <string name="submission_info_saved">Příspěvek uložen</string>
@@ -25,9 +25,9 @@
     <string name="submission_gild">Otevřít v prohlížeči</string>
     <string name="submission_save">Uložit příspěvek</string>
     <string name="submission_save_image">Uložit obrázek</string>
+    <string name="submission_save_video">Uložit video</string>
     <string name="submission_load_full">Načíst celé vlákno</string>
     <string name="submission_np_link">Toto je odkaz nezúčastnění. Prosím, nehlasujte a nekomentujte.</string>
-    <string name="submission_tap_gif">Klepněte pro načtení GIFu</string>
     <string name="submission_not_found">Ale ne, příspěvek nenalezen!</string>
     <string name="submission_not_found_msg">Omlouváme se, tento příspěvek nelze nalézt</string>
     <string name="submission_copy_text">Kopírovat text</string>
@@ -38,12 +38,17 @@
     <string name="submission_text_copied">Vlastní text zkopírován</string>
     <string name="submission_nocontent">Příspěvek postrádá obsah</string>
     <string name="submission_link_copied">Odkaz zkopírován</string>
+    <string name="translate_with_google">Přeložit</string>
+    <string name="translate_no_app">Není k dispozici žádná aplikace pro překlad</string>
+    <string name="read_aloud">Číst nahlas</string>
+    <string name="read_aloud_unavailable">Převod textu na řeč není k dispozici</string>
     <string name="submission_removed">Příspěvek odstraněn</string>
+
     <plurals name="new_messages">
         <item quantity="one">%d nová zpráva</item>
         <item quantity="few">%d nové zprávy</item>
         <item quantity="many">%d nových zpráv</item>
-        <item quantity="other">%d nové zprávy</item>
+        <item quantity="other">%d nových zpráv</item>
     </plurals>
     <plurals name="points">
         <item quantity="one">b</item>
@@ -57,6 +62,7 @@
         <item quantity="many">koment</item>
         <item quantity="other">koment</item>
     </plurals>
+
     <!-- Theme settings -->
     <string name="theme_light">Světlý</string>
     <string name="theme_dark">Tmavý</string>
@@ -74,6 +80,7 @@
     <string name="theme_sepia">Sépiový tón</string>
     <string name="theme_amoled_contrast">AMOLED s kontrastem</string>
     <string name="theme_night">Noční téma</string>
+
     <!-- Font settings -->
     <string name="font_size_comment">Velikost písma komentáře</string>
     <string name="font_size_post">Velikost písma příspěvku</string>
@@ -84,13 +91,18 @@
     <string name="font_size_small">Malá</string>
     <string name="font_size_smaller">Menší</string>
     <string name="font_size_tiny">Nejmenší</string>
+
     <!-- For editing the submission card layout -->
     <string name="card_hide_post_button">Tlačítko \"skrýt příspěvek\" v liště akcí</string>
     <string name="card_tint_outside">Zabarvi jen mimo subreddit</string>
     <string name="card_save_button">Tlačítko “Ulož příspěvek” v liště akcí</string>
+
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Více sloupců</string>
+    <string name="multi_column_portrait_count">Sloupce na výšku</string>
+    <string name="multi_column_landscape_count">Sloupce na šířku</string>
     <string name="single_column_multi_window">Jednoduchý sloupec v režimu mnoha oken</string>
+
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Ty</string>
     <string name="drawer_support">Povýšit na verzi Pro</string>
@@ -98,18 +110,25 @@
     <string name="drawer_add_account">Přidat účet</string>
     <string name="drawer_hello">Ahoj,</string>
     <string name="drawer_search">Přejít na subreddit</string>
+    <!-- Subreddit name when submitting/crossposting: a single subreddit only (no multireddit, no dot). -->
+    <!-- Message recipient: a username or an /r/ or /u/ path. -->
+    <!-- Settings search field. The trailing space is intentional, so the value is quoted to preserve it. -->
     <string name="drawer_moderation">Moderace</string>
     <string name="drawer_offline">Slide je v offline režimu</string>
     <string name="drawer_offline_retry">Pokus se spustit online režim</string>
     <string name="drawer_guest_mode">Prohlížej jako host</string>
+
     <!-- Sidebar items (That's the one on the right) -->
     <string name="sidebar_wiki">Wiki subredditu</string>
     <string name="sidebar_mods">Moderátoři subredditu</string>
+
     <!-- User profile -->
+    <string name="profile_karma_total">Celková karma</string>
     <string name="profile_karma_link">Karma příspěvku</string>
     <string name="profile_karma_comment">karma komentáře</string>
     <string name="profile_message">Soukromá zpráva</string>
     <string name="profile_saved">uloženo</string>
+    <string name="local_saved">Uloženo lokálně</string>
     <string name="profile_read_later">Číst později</string>
     <string name="profile_upvoted">Hlasy na vzestupu</string>
     <string name="profile_err_title">Uživatel nenalezen</string>
@@ -123,6 +142,10 @@
     <string name="profile_friend">Přítel</string>
     <string name="profile_add_friend">Přidat přítele</string>
     <string name="profile_remove_friend">Odstranit přítele</string>
+    <string name="profile_follow_user">Sledovat</string>
+    <string name="profile_unfollow_user">Přestat sledovat</string>
+    <string name="profile_add_user">Přidat uživatele</string>
+    <string name="profile_remove_user">Odebrat uživatele</string>
     <string name="profile_remove_account">Opravdu chcete odstranit tento účet?</string>
     <string name="profile_remove">Smazat účet</string>
     <string name="profile_history">Historie</string>
@@ -135,7 +158,21 @@
     <string name="profile_btn_tag">Přidej značku</string>
     <string name="profile_btn_untag">Odeber značku</string>
     <string name="profile_info">Informace of profilu</string>
+    <string name="profile_options">Možnosti uživatele</string>
     <string name="profile_block_user">Blokuj uživatele</string>
+    <string name="profile_block_user_description">Zablokuje zprávy, příspěvky a profil uživatele</string>
+    <string name="profile_unblock_user">Odblokovat uživatele</string>
+    <string name="profile_unblock_user_description">Odblokuje zprávy, příspěvky a profil uživatele</string>
+    <string name="profile_search">Hledat</string>
+    <string name="profile_search_title">Hledat v %1$s</string>
+    <string name="profile_search_hint">Hledat v názvech a textu…</string>
+    <string name="profile_search_no_results">Nebyly nalezeny žádné výsledky</string>
+    <string name="profile_search_clear">Vymazat hledání</string>
+    <string name="profile_search_cleared">Hledání vymazáno</string>
+    <string name="profile_search_loading">Hledání…</string>
+    <string name="profile_search_progress">%1$d výsledků · prohledáno %2$d</string>
+    <string name="profile_search_bypass_cache">Obejít mezipaměť</string>
+
     <!-- Comment text options -->
     <string name="comment_gild">Oceň komentář</string>
     <string name="comment_share">Sdílet komentář</string>
@@ -145,14 +182,15 @@
     <string name="comment_delete_err_msg">Chcete to zkusit znovu?</string>
     <string name="comment_deleted">[deleted]</string>
     <string name="comment_unsave">Zrušit uložení</string>
-    <string name="comment_load_more">Načti dalších %1$d</string>
-    <string name="comment_load_more_string_new">Načti dalších %1$s</string>
     <string name="comment_loading_more">Načítám další komentáře&#8230;</string>
     <string name="comment_permalink">Načti trvalý odkaz na komentář</string>
     <string name="comment_parent">Ukaž nadřazený komentář</string>
+    <string name="comment_video_play">Přehrát video</string>
+
     <!-- Welcome view (first time setup) -->
     <string name="welcome_start">Začínáme</string>
     <string name="welcome_personalize">Přizpůsobte si</string>
+
     <!-- Sorting options -->
     <string name="sorting_choose">Vyberte typ třídění</string>
     <string name="sorting_time_choose">Vyberte časový rámec</string>
@@ -172,6 +210,7 @@
     <string name="sorting_year">rok</string>
     <string name="sorting_all">vše</string>
     <string name="sorting_defaultfor">Výchozí pro /r/%1$s</string>
+
     <!-- Editor (save/submit a post) actions -->
     <string name="editor_url">URL</string>
     <string name="editor_text">Text</string>
@@ -180,15 +219,31 @@
     <string name="editor_title">Titul</string>
     <string name="editor_err_msg">Prosím, zkuste znovu za pár vteřin</string>
     <string name="editor_uploading_image">Nahrávám obrázek na Imgur</string>
-    <string name="editor_upload_image_question">Nahrát obrázek na Imgur?</string>
+    <string name="editor_upload_image_title">Nahrát obrázek</string>
+    <string name="editor_upload_reddit">Reddit (vložený obrázek)</string>
+    <string name="editor_upload_imgur">Imgur (odkaz)</string>
+    <string name="editor_uploading_reddit">Nahrávání obrázku na Reddit</string>
+    <string name="editor_reddit_upload_success">Obrázek nahrán</string>
+    <string name="editor_reddit_upload_failed">Nahrání obrázku se nezdařilo</string>
+    <string name="submit_image_host_imgur">Imgur</string>
+    <string name="submit_image_host_reddit">Reddit</string>
+    <string name="submit_change_img">Změnit obrázek</string>
+    <string name="submit_select_gallery">Přidat obrázky</string>
+    <string name="submit_gallery_caption_hint">Popisek (volitelné)</string>
+    <string name="submit_gallery_count">Vybráno: %1$d</string>
+    <string name="submit_uploading_gallery">Nahrávání obrázku %1$d z %2$d</string>
     <string name="editor_select_img">Vybrat obrázek</string>
     <string name="editor_hint_optional_body">Tělo (volitelné)</string>
     <string name="editor_submit">Odeslat příspěvek</string>
     <string name="editor_hint_subreddit">Subreddit</string>
     <string name="editor_finding_title">Hledám titul</string>
+    <string name="submit_findingflairs">Hledání flairů</string>
+    <string name="submit_flairchoices">Flairy /r/%s</string>
+
     <string name="edit_selftext">Upravit selftext</string>
     <string name="delete_submission">Odstranit příspěvek</string>
     <string name="set_submission_flair">Nastavit flér příspěvku</string>
+
     <!-- Editor buttons -->
     <string name="editor_save_draft">Uložit koncept</string>
     <string name="editor_chose_draft">Vybrat koncept</string>
@@ -204,21 +259,26 @@
     <string name="editor_size">Velké písmo</string>
     <string name="editor_strike">Proškrtnuté</string>
     <string name="editor_spoiler">Spoiler</string>
+
     <!-- General information / information without a category -->
     <string name="info_photo_saved">Fotografie uložena</string>
     <string name="gif_saved">GIF uložen</string>
+
     <!-- General errors / errors without a category -->
     <string name="err_title">Ale ne, něco se pokazilo!</string>
     <string name="err_invalid_url">Neplatná URL</string>
     <string name="err_loading_content">Chyba při načítání obsahu</string>
     <string name="err_general">Ale ne, došlo k chybě</string>
     <string name="err_no_connection">Nelze se připojit k Redditu. Chcete připojení opakovat?</string>
+    <string name="err_no_connection_toast">Reddit není dostupný. Zkuste to brzy znovu</string>
     <string name="err_retry_later">Zkuste znovu za chvíli!</string>
-    <string name="err_permission">Přístup byl odepřen</string>
-    <string name="err_permission_msg">Vypadá to, že jste zakázali použití externího úložiště. To způsobí chyby při ukládání obrázků a mezipaměti příspěvků a obrazků:(. \nChcete povolit přístup do externího úložiště?</string>
     <string name="err_authentication">Ověření se nezdařilo</string>
     <string name="err_submit_restricted">Tento subreddit je vyhrazen</string>
     <string name="err_submit_restricted_text">Nemáte povoleno sem přispívat. Prosím, vyberte si jiný subreddit</string>
+    <string name="err_crosspost_disallowed_text">/r/%s nepovoluje křížové příspěvky. Zvolte prosím jiný subreddit.</string>
+    <string name="err_crosspost_not_subscribed">Před křížovým příspěvkem se musíte přihlásit k odběru /r/%s.</string>
+    <string name="err_crosspost_sub_not_found">/r/%s neexistuje.</string>
+    <string name="crosspost_flair_required_short">Flair je vyžadován — před odesláním prosím vyberte flair.</string>
     <string name="error_video_not_found">Video nebylo nalezeno</string>
     <string name="error_video_message">Při načítání tohoto videa došlo k chybě</string>
     <string name="error_album_not_found">Album nenalezeno</string>
@@ -231,17 +291,19 @@
     <string name="err_couldnt_save_choose_new">Slide nemohl uložit do vybraného adresáře. Chcete vybrat nové umístění?</string>
     <string name="err_share_image">Chyba při sdílení obrázku</string>
     <string name="err_file_not_found">Soubor nenalezen</string>
-    <string name="err_not_valid_backup">Neplatný soubor zálohy Slide</string>
-    <string name="err_not_valid_backup_msg">Vybraný soubor není platný soubor zálohy Slide</string>
     <string name="err_file_not_found_msg">Vybraný soubor nebyl nalezen. Ujistěte se, že existuje a Slide má oprávnění k přístupu k tomuto souboru/složce</string>
     <string name="err_comment_post">Ale ne, odeslání tohoto komentáře selhalo!</string>
     <string name="err_comment_post_reason">Důvod: %1$s</string>
     <string name="err_comment_post_message">\n\nVaše zpráva byla uložena jako koncept. Opakujte akci později.</string>
     <string name="err_connection_failed_msg">Připojení k Reddit se nezdařilo. Zkontrolujte prosím připojení k internetu a zkuste to znovu nebo zadejte offline režim.</string>
-    <string name="err_block_user">Chyba při blokování uživatele</string>
+    <string name="err_block_user">Chyba při blokování uživatele. Neodblokovali jste tohoto uživatele nedávno?</string>
+
     <!-- Gif -->
     <string name="gif_err_title">GIF nebyl nalezen</string>
     <string name="gif_err_msg">Došlo k chybě při načítání tohoto GIFu. Otevřete prosím GIF znovu a akci opakujte.</string>
+    <string name="gif_load_failed">Nepodařilo se načíst GIF</string>
+    <string name="gif_download_failed">Nepodařilo se stáhnout GIF</string>
+
     <!-- Multireddits -->
     <string name="multireddit_err_title">Žádné Multireddity (zatím)!</string>
     <string name="multireddit_err_msg">Chcete vytvořit nový Multireddit?</string>
@@ -263,6 +325,8 @@
     <string name="multi_submit_which_sub">Do kterého dílce chcete odeslat?</string>
     <string name="multi_saved_successfully">Úspěšně uloženo</string>
     <string name="delete_multireddit_title">Opravdu chcete odstranit /m/%1$s?</string>
+    <string name="multi_save_option">Chcete uložit tento multireddit?</string>
+
     <!-- Content types -->
     <string name="type_nsfw_img">NSFW obrázek</string>
     <string name="type_nsfw_gif">NSFW GIF</string>
@@ -274,17 +338,37 @@
     <string name="type_album">Album</string>
     <string name="type_xkcd">XKCD</string>
     <string name="type_nsfw_album">NSFW album</string>
+    <string name="type_nsfw_gallery">NSFW galerie</string>
+    <string name="type_nsfw_albums">NSFW alba</string>
+    <string name="type_nsfw_galleries">NSFW galerie</string>
+    <string name="type_nsfw_gifs">NSFW GIFy</string>
+    <string name="type_nsfw_images">NSFW obrázky</string>
+    <string name="type_nsfw_links">NSFW odkazy</string>
+    <string name="type_nsfw_selftexts">NSFW vlastní texty</string>
+    <string name="type_nsfw_tumblrs">NSFW Tumblry</string>
+    <string name="type_nsfw_videos">NSFW videa</string>
+    <string name="type_gallery">Galerie</string>
+    <string name="type_galleries">Galerie</string>
     <string name="type_img">Obrázek</string>
     <string name="type_videos">Videa</string>
     <string name="type_nsfw_video">NSFW video</string>
     <string name="type_imgur">Obsah Imgur</string>
     <string name="type_nsfw_imgur">Obsah Imgur NSFW</string>
+    <string name="type_nsfw_xkcd">NSFW XKCD</string>
+    <string name="type_nsfw_deviantart">NSFW DeviantArt</string>
+    <string name="type_nsfw_title_only">NSFW příspěvek s názvem</string>
+    <string name="type_nsfw_reddit">NSFW odkaz na Reddit</string>
+    <string name="type_nsfw_selftext">NSFW vlastní text</string>
+    <string name="type_spoiler">Spoiler</string>
+    <string name="type_nsfw_spoiler">NSFW spoiler</string>
+    <string name="type_nsfw_streamable">NSFW Streamable</string>
     <string name="type_external">Externí</string>
+
     <!-- Content types plural (Content filters) -->
     <string name="type_gifs">Obrázky GIF</string>
     <string name="type_albums">Alba</string>
-    <string name="type_nsfw_content">Obsah NSFW</string>
     <string name="type_links">Odkazy</string>
+
     <!-- Inbox/mail -->
     <string name="mail_tab_inbox">Schránka</string>
     <string name="mail_tab_unread">Nepřečtené</string>
@@ -306,7 +390,6 @@
     <string name="mail_theirs">Prohlédněte zprávu</string>
     <string name="mail_re">odp: %1$s</string>
     <string name="mail_mark_read">Označit přečtené</string>
-    <string name="mail_mark_unread">Označit jako nepřečtené</string>
     <string name="mail_view_full_thread">Ukaž celé vlákno</string>
     <string name="mail_message_copied">Zpráva zkopírována</string>
     <plurals name="mail_notification_title">
@@ -321,6 +404,7 @@
         <item quantity="many">Doručeno %d nových zpráv moderátora!</item>
         <item quantity="other">Doručeno %d nových zpráv moderátora!</item>
     </plurals>
+
     <!-- Miscellaneous/generic things that don't have a category or strings that are used for multiple categories -->
     <string name="misc_err">Chyba</string>
     <string name="misc_none">Žádný</string>
@@ -341,17 +425,35 @@
     <string name="misc_setting_up">Nastavuji jisté věci&#8230;</string>
     <string name="misc_setting_up_message">Prosím, zůstaňte u obrazovky. Nebude to dlouho trvat!</string>
     <string name="misc_more_info">Více informací</string>
-    <string name="misc_rate_title">Líbí se Vám Slide?</string>
-    <string name="misc_rate_msg">Ohodnoťte jej!</string>
     <string name="misc_captcha_incorrect">Captcha nesprávná, prosím, zkuste znovu</string>
+
     <!-- Goto User -->
     <string name="user_enter">Zadejte uživatelské jméno</string>
     <string name="user_btn_goto">Přejít na uživatele</string>
     <string name="user_btn_gotomultis">Přejít na multi uživatele</string>
+
+    <!-- Saved users list -->
+    <string name="users_empty">Žádní uložení uživatelé</string>
+    <string name="users_btn_add">Přidat uživatele</string>
+    <string name="users_btn_remove">Odebrat uživatele</string>
+    <string name="users_added">%s přidán mezi uživatele</string>
+    <string name="users_removed">%s odebrán z uživatelů</string>
+    <string name="users_already_added">%s je již mezi uživateli</string>
+    <string name="users_copied">Zkopírováno: %s</string>
+    <string name="users_checking">Kontrola uživatelského jména</string>
+    <string name="users_invalid_title">Uživatele nelze přidat</string>
+    <string name="users_invalid">%s není uživatel Redditu</string>
+    <string name="users_check_failed">Nepodařilo se ověřit, zda %s existuje. Zkontrolujte připojení a zkuste to znovu.</string>
+    <string name="users_friend_added">%s přidán mezi přátele</string>
+    <string name="users_friend_removed">%s odebrán z přátel</string>
+    <string name="users_friend_failed">Nepodařilo se aktualizovat stav přátelství pro %s</string>
+    <string name="btn_fab_add_user">Přidat uživatele</string>
+
     <!-- Buttons -->
     <string name="btn_add">Přidat</string>
     <string name="btn_cancel">Storno</string>
     <string name="btn_close">Zavřít</string>
+    <string name="btn_toggle">Přepnout</string>
     <string name="btn_open">Otevřít</string>
     <string name="btn_discard">Zrušit</string>
     <string name="btn_done">Hotovo</string>
@@ -361,11 +463,11 @@
     <string name="btn_remove">Odebrat</string>
     <string name="btn_reply">Odpověděť</string>
     <string name="btn_reset">Resetovat</string>
+    <string name="btn_retry">Zkusit znovu</string>
     <string name="btn_save">Uložit</string>
     <string name="btn_submit">Odeslat</string>
     <string name="btn_undo">Zpět</string>
     <string name="btn_yes">Ano</string>
-    <string name="btn_yes_exclaim">Ano!</string>
     <string name="btn_refresh">Aktualizovat</string>
     <string name="btn_cache">Vložit komentáře do vyrovnávací paměti</string>
     <string name="btn_delete">Odstranit</string>
@@ -377,7 +479,7 @@
     <string name="btn_set">NASTAVIT</string>
     <string name="btn_create">Vytvořit</string>
     <string name="btn_new">Nové</string>
-    <string name="btn_upload">Nahrát</string>
+
     <!-- Buttons Content labels for TalkBack accessibility-->
     <string name="btn_edit">Upravit</string>
     <string name="btn_hide">Skrýt</string>
@@ -396,11 +498,13 @@
     <string name="btn_fab_post">Vytvořit nový příspěvek</string>
     <string name="btn_fab_hide">Skrýt shlédnuté příspěvky</string>
     <string name="btn_fab_search">Prohledat příspěvky</string>
+
     <!-- Buttons Content labels for TalkBack accessibility active states-->
     <string name="btn_upvoted">Hlas pro</string>
     <string name="btn_downvoted">Hlas proti</string>
     <string name="btn_unsave">Zrušit uložení</string>
     <string name="btn_collapse">Sbalit</string>
+
     <!-- Backup -->
     <string name="backup_success">Záloha byla úspěšná!</string>
     <string name="backup_restoring">Obnovení nastavení</string>
@@ -414,13 +518,48 @@
     <string name="backup_btn_restore_file">Obnovit ze souboru</string>
     <string name="backup_confirm">Jste si jisti, že chcete zálohovat? Vaše předchozí záloha bude přepsána</string>
     <string name="backup_restore_confirm">Jste si jisti, že chcete spustit obnovu? Aktuální nastavení bude přepsáno</string>
+    <string name="backup_failed_msg">Zálohování se nezdařilo. Zkuste to prosím později.</string>
+    <string name="backup_restore_failed_msg">Obnovení se nezdařilo. Ujistěte se, že existuje platná záloha, a zkuste to znovu.</string>
+    <string name="backup_local_title">Místní záloha</string>
+    <string name="backup_drive_title">Záloha na Google Disk</string>
+    <string name="backup_button">Vytvořit zálohu</string>
+    <string name="restore_button">Obnovit ze zálohy</string>
+    <string name="backup_question">Zálohovat?</string>
+    <string name="backup_complete">Záloha dokončena!</string>
+    <string name="err_not_valid_backup">Neplatný soubor zálohy Slide</string>
+    <string name="err_not_valid_backup_msg">Vybraný soubor není platný soubor zálohy Slide</string>
+    <string name="backup_password_title">Nastavte heslo zálohy</string>
+    <string name="backup_password_message">Vaše záloha obsahuje přihlašovací údaje k účtu Reddit, proto je zašifrovaná. Zvolte heslo o délce %1$d až %2$d znaků. Budete ho potřebovat k obnovení a nelze ho obnovit.</string>
+    <string name="backup_password_hint">Heslo</string>
+    <string name="restore_password_title">Zadejte heslo zálohy</string>
+    <string name="restore_password_message">Zadejte heslo použité k zašifrování této zálohy.</string>
+    <string name="restore_password_wrong">Nesprávné heslo. Zkuste to prosím znovu.</string>
+    <string name="drive_authorization_failed">Autorizace Google Disku se nezdařila</string>
+    <string name="drive_authorization_failed_msg">Slide nezískal přístup ke své soukromé složce na Google Disku. Zkuste to prosím znovu.</string>
+    <string name="drive_authorization_denied">Je vyžadován přístup ke Google Disku</string>
+    <string name="drive_authorization_denied_msg">Slide potřebuje přístup ke své soukromé složce na Google Disku, aby mohl zálohovat nebo obnovit vaše nastavení.</string>
+
     <!-- Vote -->
     <string name="vote_err">Chyba při odesílání hlasu!</string>
     <string name="vote_err_login">Musíte být přihlášeni pro hlasování!</string>
     <string name="vote_removed">Hlasování odstraněny</string>
+
+    <!-- Subscribing -->
+    <string name="subscribe_err_login">Pro odběr musíte být přihlášeni!</string>
+
     <!-- Moderation tools -->
     <string name="mod_mail">Email moderátora</string>
     <string name="mod_mail_unread">Nepřečtený email moderátora</string>
+    <string name="modmail_internal_note">(interní poznámka)</string>
+    <string name="modmail_scope_missing">Modmail vyžaduje opětovné ověření. Přihlaste se znovu (Nastavení &#8594; účet), abyste ho povolili.</string>
+    <string name="modmail_reply_sent">Odpověď odeslána!</string>
+    <string name="modmail_reply_failed">Odeslání se nezdařilo! Odpověď byla uložena jako koncept.</string>
+    <plurals name="modmail_message_count">
+        <item quantity="one">%d zpráva</item>
+        <item quantity="few">%d zprávy</item>
+        <item quantity="many">%d zprávy</item>
+        <item quantity="other">%d zpráv</item>
+    </plurals>
     <string name="mod_modqueue">Fronta moderátora</string>
     <string name="mod_unmoderated">Bez moderátora</string>
     <string name="mod_reports">Hlášení</string>
@@ -434,6 +573,12 @@
     <string name="mod_btn_unmark_nsfw">Odebrat označení NSFW</string>
     <string name="mod_btn_mark_spoiler">Označit jako spoiler</string>
     <string name="mod_btn_unmark_spoiler">Odebrat označení spoiler</string>
+    <string name="mod_btn_lock_thread">Zamknout vlákno</string>
+    <string name="mod_btn_unlock_thread">Odemknout vlákno</string>
+    <string name="mod_btn_lock_comment">Zamknout komentář</string>
+    <string name="mod_btn_unlock_comment">Odemknout komentář</string>
+    <string name="mod_locked">Zamčeno</string>
+    <string name="mod_unlocked">Odemčeno</string>
     <string name="mod_btn_pin">Pin</string>
     <string name="mod_btn_unpin">Odepnout</string>
     <string name="mod_btn_remove">Odstranit</string>
@@ -461,24 +606,31 @@
     <string name="mod_sticky">Přilepeno</string>
     <string name="mod_unsticky">Odlepit</string>
     <string name="reauth_complete">Opakované ověření dokončeno!</string>
+    <string name="reauth_in_progress">Opětovné ověřování…</string>
+    <string name="reauth_failed">Opětovné ověření se nezdařilo</string>
+
     <plurals name="mod_btn_reports">
         <item quantity="one">Zobrazit %d report</item>
         <item quantity="few">Zobrazit %d hlášení</item>
         <item quantity="many">Zobrazit %d hlášení</item>
         <item quantity="other">Zobrazit %d hlášení</item>
     </plurals>
+
     <!-- If he did -->
     <string name="really_pin_submission_message">Příspěvek připnut</string>
     <string name="really_unpin_submission_message">Příspěvek odepnut</string>
+
     <!-- Subreddit Wiki -->
     <string name="wiki_err">Žádná wiki nenalezena</string>
     <string name="wiki_err_msg">Tento subreddit nemá wiki!</string>
+
     <!-- Subreddits -->
     <string name="subreddit_subscribers_string">%1$s odběratelů</string>
     <string name="subreddit_active_users_string_new">%1$s nyní tady</string>
     <string name="subreddit_err_msg">Subreddit %1$s nebyl nalezen. Možná je to napsáno špatně?</string>
     <string name="subreddit_err_msg_new">Subreddit %1$s nebyl nalezen. Možná je napsán špatně nebo nemáte přístup k tomuto subredditu.</string>
     <string name="subreddit_err">Subreddit nebyl nalezen</string>
+
     <!-- Search -->
     <string name="search_comments_hint">Hledat v komentářích</string>
     <string name="search_goto">Jít na</string>
@@ -491,6 +643,7 @@
     <string name="search_new">Nové</string>
     <string name="search_comments">Komentáře</string>
     <string name="no_posts_found">Nebyl nalezen žádný příspěvek</string>
+
     <!-- Settings -->
     <string name="settings_reddit_prefs">Předvolby Reddit</string>
     <string name="settings_accent_title">Upravit barvu zvýraznění</string>
@@ -498,7 +651,9 @@
     <string name="settings_layout_default">Vzhled příspěvku</string>
     <string name="settings_link_album">Interní prohlížeč alb</string>
     <string name="settings_link_peek">Nakouknout do obsahu (experimentální)</string>
+    <string name="settings_link_peek_description">Zakáže dlouhá stisknutí na náhledovém obrázku</string>
     <string name="settings_link_gif">Interní prohlížeč GIFů</string>
+    <string name="settings_link_hqgif">Videa Gfycat ve vysoké kvalitě</string>
     <string name="settings_link_handling">Zpracování odkazů</string>
     <string name="settings_link_image">Interní prohlížeč obrázků</string>
     <string name="settings_mail_check">Kontrola nových zpráv</string>
@@ -516,14 +671,14 @@
     <string name="share_image">Sdílet obrázek</string>
     <string name="settings_libs">Open-source knihovny</string>
     <string name="settings_about_libs">O knihovnách</string>
+    <string name="settings_privacy">Zásady ochrany osobních údajů</string>
     <string name="settings_bugs">Ohlásit chybu</string>
     <string name="settings_changelog">Zobrazit seznam změn</string>
-    <string name="settings_google">Připojování k Google</string>
-    <string name="settings_google_msg">Snlide se připojuje k Googlu. Opakujte akci za pár sekund!</string>
     <string name="settings_fabclear_msg">Klepnutím na tlačítko Vymazat odeberete aktuálně zobrazené příspěvky, ale nezmizí navždy. \nDlouhým stisknutím tlačítka skryjete příspěvky navždy!</string>
     <string name="settings_fabclear">Akce odstranění FAB</string>
     <string name="settings_notifdisabled">Upozornění vypnuta.</string>
     <string name="settings_colored_navigation_bar">Barevný navigační panel</string>
+    <string name="settings_always_black_statusbar">Černý stavový řádek (oznamovací lišta)</string>
     <string name="settings_colored_icon">Barevná ikona aplikace (experimentální)</string>
     <string name="settings_colored_icon_desc">Může vyžadovat restart telefonu. To také odstraní ikonu z domovské obrazovky.</string>
     <string name="settings_filter_domain">Doménové filtry</string>
@@ -540,8 +695,14 @@
     <string name="settings_set_storage_location">Obrázky budou uloženy do %s</string>
     <string name="settings_general_immersive_mode">Pohlcující režim celé obrazovky</string>
     <string name="settings_general_immersive_mode_desc">Skrýt stavové a navigační lišty (experimentální)</string>
+    <string name="settings_general_old_swipe_mode">Starý režim posunutí</string>
+    <string name="settings_general_old_swipe_mode_desc">Starý styl posunutí Slide. Určeno pro režim navigace se 3 tlačítky a gesta Samsung.</string>
+    <string name="settings_general_hibernate">Pokračovat tam, kde jsem skončil</string>
+    <string name="settings_general_hibernate_desc">Znovu otevře stejnou obrazovku na stejném místě a zobrazí to, co už bylo načteno, místo obnovení. Zapnutím se do nabídky přidá zaškrtávací políčko, kterým lze pokračování zapínat a vypínat bez návratu sem.</string>
+
     <string name="settings_general_title_drawer_items">Položky v zásuvce</string>
     <string name="settings_general_subtitle_drawer_items">Vyberte položky zásuvky k zobrazení</string>
+
     <!-- Settings titles displayed in settings activity-->
     <string name="settings_title_backup">Záloha &amp; Obnovení</string>
     <string name="settings_title_default_theme">Hlavní téma</string>
@@ -551,7 +712,14 @@
     <string name="settings_title_pro">Povýšit na verzi Pro</string>
     <string name="settings_title_sub_theme">Motivy Subredditů</string>
     <string name="settings_title_sort">Výchozí řazení</string>
+    <string name="settings_title_sort_frontpage">Řazení hlavní stránky</string>
     <string name="settings_title_about">O nás</string>
+    <string name="settings_title_debug">Ladění</string>
+    <string name="settings_section_debug_reauth">Opětovné ověření</string>
+    <string name="settings_debug_break_reauth">Rozbít opětovné ověření</string>
+    <string name="settings_debug_break_reauth_desc">Zastaví opětovné ověření, aby bylo možné otestovat příslušné oznámení. Vratné: vypněte tuto volbu a poté spusťte opětovné ověření.</string>
+    <string name="settings_debug_trigger_reauth">Spustit opětovné ověření</string>
+    <string name="settings_debug_trigger_reauth_desc">Spustit opětovné ověření hned teď. Použijte k obnovení po vypnutí přepínače.</string>
     <string name="settings_title_multi_column">Vícenásobný sloupec</string>
     <string name="settings_title_fab">Plovoucí tlačítko akce</string>
     <string name="settings_title_comments">Komentáře</string>
@@ -559,6 +727,7 @@
     <string name="settings_title_font">Písmo</string>
     <string name="settings_section_general">Obecné</string>
     <string name="settings_section_appearance">Vzhled</string>
+    <string name="settings_section_hibernation">Hibernace</string>
     <string name="settings_section_other">Ostatní</string>
     <string name="settings_section_browser">Prohlížeč</string>
     <string name="settings_section_internal_viewers">Interní prohlížeče</string>
@@ -566,6 +735,7 @@
     <string name="settings_section_save_history">Uložit historii</string>
     <string name="settings_section_clear_history">Smazat historii</string>
     <string name="settings_section_data_saving_mode">Úsporný datový režim</string>
+    <string name="settings_section_data_saving_quality">Kvalita při úspoře dat</string>
     <string name="settings_comment_color">Barevné ukazatele hloubky komentářů</string>
     <string name="settings_volume_nav_comments">Navigovat v komentářích tlačítky hlasitosti</string>
     <string name="settings_commentnav_description">Umožňuje spodní lištu se šipkami navigace</string>
@@ -573,12 +743,18 @@
     <string name="settings_comment_collapse_description">Také vypne animace komentářů</string>
     <string name="settings_comment_collapse_default">Sbalit podřízené komentáře ve výchozím nastavení</string>
     <string name="settings_data_enable">Povolit nastavení úspory dat</string>
+    <string name="settings_data_video_quality">Upřednostňovat videa v nízké kvalitě při zapnuté úspoře dat</string>
+    <string name="settings_comments_collapse_deleted">Ve výchozím nastavení sbalit smazané komentáře</string>
+    <string name="settings_comments_collapse_sticky">Vždy zcela sbalit připnutý komentář</string>
+    <string name="settings_comments_collapse_blocked_users">Sbalit komentáře od zablokovaných uživatelů</string>
+    <string name="settings_comments_collapse_blocked_users_description">Zapne také Zcela sbalit komentáře</string>
     <string name="settings_backup_occurs">Záloha proběhne v %1$s</string>
     <string name="settings_backup_none">Žádné subreddity nebudou zálohovány</string>
     <string name="settings_backup_will_backup">\u0020bude zálohováno</string>
     <string name="settings_backup_submission_only">pouze příspěvek</string>
     <string name="settings_backup_comments">\u0020(komentáře)</string>
     <string name="settings_filter_profile">Filtry profilu</string>
+    <string name="settings_subreddit_content_filters_till_restart">Filtry obsahu subredditu do restartu</string>
     <string name="settings_subredditspecific_selftext">Vždy zobrazovat samotextové náhledy v tomto subredditu</string>
     <string name="settings_font_system">Systém</string>
     <string name="settings_manage_subscriptions">Spravujte své odběry</string>
@@ -589,6 +765,8 @@
     <string name="settings_layout_picture_mode">Režim obrázku</string>
     <string name="settings_general_expanded_toolbar">Rozšířená nabídka panelu nástrojů</string>
     <string name="settings_general_expanded_toolbar_desc">Zobrazit další možnosti na panelu nástrojů subreddit</string>
+    <string name="settings_always_show_floating_action_button">Vždy zobrazovat plovoucí tlačítko akce</string>
+    <string name="settings_always_show_floating_action_button_desc">Nikdy neskrývat plovoucí tlačítko akce při posouvání</string>
     <string name="settings_theme_tinting">Režim barevného tónování příspěvku</string>
     <string name="settings_layout_actionbar_mode">Režim panelu akcí</string>
     <string name="settings_theme_tint_outside_desc">Barevné pozadí pouze pro multireddity, titulní stranu a všechny</string>
@@ -596,48 +774,57 @@
     <string name="settings_links_force_external">Vynutit externí prohlížeč</string>
     <string name="settings_layout_show_domain">Zobrazit doménu v info řádku</string>
     <string name="settings_layout_show_content_type">Zobrazit typ obsahu v info řádku</string>
+    <string name="settings_layout_thumbnail_flags">Zobrazovat barevné rohové vlaječky na náhledech</string>
     <string name="settings_layout_show_votes_comments">Zobrazit hlasy/komentáře v info řádku</string>
     <string name="settings_general_comment_last_visit">Zobrazit počet komentářů od poslední návštěvy</string>
     <string name="settings_fab_create">Zobrazit FAB \"vytvořit komentář\"</string>
     <string name="settings_right_handed_comment_menu">Menu odpovědi na komentář vpravo</string>
-    <string name="settings_reddit_description">Tato nastavení mění to, co Reddit API vrátí Slide.\n\nPro zobrazení náhledů ve všech subredditech, povolte \'Ignorovat nastavení médií subreddit médií\'\n\nChcete-li vidět veškerý NSFW obsah, vypněte \'Skrýt NSFW fotky\' a zapněte \'Jsem více než 18\'</string>
+    <string name="settings_reddit_description">Tato nastavení mění to, co Reddit API vrací aplikaci Slide.\n\nPro zobrazení náhledů ve všech subredditech zapněte \'Ignorovat nastavení médií subredditu\'\n\nChcete-li vidět veškerý NSFW obsah, vypněte \'Skrýt NSFW fotky\' a zapněte \'Je mi více než 18 let\'</string>
     <string name="settings_reddit_media_pref">Ignorovat nastavení médií subredditu</string>
     <string name="settings_description_view_type">Typy zobrazení ovlivňují jak hlavní zobrazení, tak zobrazení subredditu.\n\nKomentář: posunutí komentářů od dalších příspěvků a stav stránky komentáře je uložen po posunutí zpět (takže neztrácíte místo)\n\nŽádné záložky subredditu: zakáže přejetí mezi subreddity\n\nzáložkami Subreddit: posunutí mezi subreddity</string>
+    <string name="settings_short_description_view_type">Typy zobrazení ovlivňují hlavní zobrazení i zobrazení jednotlivých subredditů</string>
     <string name="settings_comment_hide_selftext_image">Skrýt úvodní obrázek na samotextových příspěvcích</string>
     <string name="settings_filter_flair">Flér filtry</string>
     <string name="settings_view_type">Typ zobrazení</string>
     <string name="settings_data">Úspora přenosových dat</string>
+    <string name="settings_card_show_selftext">Zobrazit vlastní text</string>
+    <string name="settings_card_selftext_paragraph">Zobrazit první odstavec</string>
+    <string name="settings_card_selftext_ellipsize">Zkrátit na prvních 128 znaků</string>
     <string name="settings_handling_external_desc">Domény zadané níže budou vždy otevřeny externě</string>
     <string name="settings_handling_enterdomain">Zadejte doménu nebo část domény</string>
     <string name="settings_section_content">Obsah</string>
     <string name="settings_backup_view">Zobrazit zálohu</string>
     <string name="settings_backup_err_no_explorer">Nebyl nalezen žádný průzkumník souborů, soubor umístěný v %1$s</string>
     <string name="settings_about_version_copied_toast">Číslo verze zkopírováno do schránky</string>
-    <string name="settings_support_slide">Podpořte Slide for Reddit povýšením na Pro!</string>
     <string name="settings_theme_night_start_at">Začít v\u0020</string>
     <string name="settings_theme_night_end_at">Konec v\u0020</string>
     <string name="settings_general_inbox_snd">Zvuk a vibrace</string>
     <string name="settings_enable_notifs">Povolit upozornění na schránku doručené</string>
+
     <!-- Quick setting toggles in the drawer -->
     <string name="toggle_night_mode">Noční režim</string>
     <string name="toggle_immersive_mode">Režim celé obrazovky</string>
     <string name="toggle_nsfw">Zobrazit NSFW obsah</string>
     <string name="toggle_right_thumbnails">Napravo zarovnané náhledy</string>
     <string name="toggle_reader_mode">Použít čtecí režim</string>
+
     <!-- View types -->
     <string name="view_type_tabs">Záložky Subredditů</string>
     <string name="view_type_none">Žádné záložky Subredditů</string>
     <string name="view_type_comments">Panel komentářů</string>
+
     <!--Search methods -->
     <string name="subreddit_search_method_title">Metoda vyhledávání subredditů</string>
     <string name="subreddit_search_method_drawer">Vyhledávací lišta v zásuvce</string>
     <string name="subreddit_search_method_toolbar">Dlouhým stiskem názvu panelu nástrojů</string>
     <string name="subreddit_search_method_both">Název zásuvky i panelu nástrojů</string>
+
     <!-- Back button behavior -->
     <string name="back_button_behavior_title">Chování tlačítka Zpět</string>
     <string name="back_button_behavior_default">Ukončit aplikaci</string>
     <string name="back_button_behavior_confirm_exit">Potvrdit ukončení</string>
     <string name="back_button_behavior_drawer">Otevřít zásuvku</string>
+
     <!-- Subscription managing -->
     <string name="reorder_add_domain">Přidat doménu</string>
     <string name="reorder_add_subreddit">Přidat subreddit</string>
@@ -645,6 +832,7 @@
     <string name="reorder_fab_domain">Doména</string>
     <string name="reorder_fab_subreddit">Subreddit</string>
     <string name="reorder_add_subscribe">Přidat &amp; Odebírat</string>
+    <string name="reorder_remove_unsubscribe">Odebrat &amp; odhlásit odběr</string>
     <string name="reorder_move">Přesunout k vrcholu</string>
     <string name="reorder_domain_placeholder">\u0020(pouze název domény)</string>
     <string name="reorder_not_found_err">Subreddit nebyl nalezen, zde jsou některé návrhy</string>
@@ -672,11 +860,33 @@
     <string name="reorder_sync_complete">Synchronizace dokončena</string>
     <string name="reorder_loading_title">Načítání subredditů</string>
     <string name="reorder_url_err">Neplatná adresa URL</string>
-    <!-- Save categories -->
+
+    <!-- Saved tags -->
+    <string name="tag_set_name_hint">Název štítku</string>
+    <string name="tag_tag_action">OZNAČIT</string>
+    <string name="profile_tag_select">Štítky</string>
+    <string name="profile_saved_tags">Uložené štítky</string>
+    <string name="tag_builtin_all">Vše</string>
+    <string name="tag_builtin_posts">Příspěvky</string>
+    <string name="tag_builtin_comments">Komentáře</string>
+    <string name="tag_types_header">Typy</string>
+    <string name="tag_post_types_header">Typy příspěvků</string>
+    <string name="tag_custom_header">Vlastní štítky</string>
+    <string name="tag_new">Nový štítek</string>
+    <string name="tag_manage">Spravovat štítky</string>
+    <string name="tag_add">Přidat štítek</string>
+    <string name="tag_none_yet">Zatím žádné štítky</string>
+    <string name="tag_rename">Přejmenovat</string>
+    <string name="tag_delete_confirm">Opravdu chcete smazat \"%1$s\"? Položky s tímto štítkem smazány nebudou.</string>
+    <string name="tag_name_used_title">Název je již použit</string>
+    <string name="tag_name_used">Štítek s tímto názvem už existuje, zvolte prosím jedinečný název.</string>
+    <string name="tag_name_reserved">Tento název je rezervovaný, zvolte prosím jiný.</string>
+
     <!-- Setting subheaders -->
     <string name="sorting">Třídění</string>
     <string name="display">Zobrazení</string>
     <string name="images">Obrázky</string>
+    <string name="storage">Úložiště</string>
     <string name="app_theme">Motiv aplikace</string>
     <string name="tinting">Tónování</string>
     <string name="post_info">Informace o příspěvku</string>
@@ -686,6 +896,7 @@
     <string name="nsfw">Obsah NSFW</string>
     <string name="view_reddit_settings">Otevřít nastavení Redditu v prohlížeči</string>
     <string name="font_styles">Styly písma</string>
+
     <!-- Titles displayed in action bar / head / recents overview-->
     <string name="title_subreddit_settings">Subreddit témata &amp; rozložení</string>
     <string name="title_edit_theme">Upravit motiv</string>
@@ -695,9 +906,11 @@
     <string name="title_share">Sdílet pomocí</string>
     <string name="title_login">Přihlásit se do Redditu</string>
     <string name="title_multireddits">Multireddity</string>
+    <string name="title_users">Uživatelé</string>
     <string name="title_inbox">Příchozí zprávy</string>
     <string name="title_theme_settings">Téma</string>
     <string name="title_create_multi">Vytvořit multireddit</string>
+
     <!-- Offline mode -->
     <string name="offline_msg">Chcete-li to provést, připojte se k internetu a obnovte subreddit</string>
     <string name="offline_last_update">Naposledy aktualizováno %1$s</string>
@@ -706,14 +919,17 @@
     <string name="offline_enter_online">Spustit online režim</string>
     <string name="offline_caching_title">Ukládání do mezipaměti %1$s</string>
     <string name="offline_caching_complete">Ukládání do mezipaměti dokončeno</string>
+
     <!-- Website -->
     <string name="website_external">Otevřít v externím prohlížeči</string>
+
     <plurals name="reorder_subs_added">
         <item quantity="one">%d subreddit přidán</item>
         <item quantity="few">%d subreddity přidány</item>
         <item quantity="many">%d subredditů přidáno</item>
         <item quantity="other">%d subredditů přidáno</item>
     </plurals>
+
     <!-- Time -->
     <string name="time_just_now">Právě teď</string>
     <plurals name="time_years">
@@ -742,7 +958,7 @@
     </plurals>
     <plurals name="time_minutes">
         <item quantity="one">%d minutu</item>
-        <item quantity="few">%d minut</item>
+        <item quantity="few">%d minuty</item>
         <item quantity="many">%d minut</item>
         <item quantity="other">%d minut</item>
     </plurals>
@@ -752,11 +968,13 @@
         <item quantity="many">%d vteřin</item>
         <item quantity="other">%d vteřin</item>
     </plurals>
+
     <!-- Time: shorthand durations for example 1 hour → 1h -->
     <string name="time_years_short">%dr</string>
     <string name="time_days_short">%dd</string>
     <string name="time_hours_short">%dh</string>
     <string name="time_minutes_short">%dm</string>
+
     <!-- Strings present during the login process -->
     <string name="login_subscribe_rslideforreddit">Přihlásit se k odběru /r/slidereddit?</string>
     <string name="login_subscribe_rslideforreddit_desc">Chcete se přihlásit k odběru /r/slidereddit pro nejnovější zprávy a hlášení chyb?</string>
@@ -765,11 +983,13 @@
     <string name="login_authenticating">Slide ověřuje</string>
     <string name="login_starting">Nastavuji!</string>
     <string name="login_starting_desc">To by mělo trvat vteřinu&#8230;</string>
+
     <!-- Over 18 prompt when visiting a NSFW subreddit -->
     <string name="over18_title">/r/%1$s obsahuje obsah pro dospělé</string>
     <string name="over18_desc">Je Vám přes osmnáct a chcete vidět obsah pro dospělé?</string>
     <string name="over18_desc_loggedout">Pro trvalé vypnutí tohoto varování se přihlaste</string>
     <string name="over18_desc_loggedin">Můžete to trvale zakázat v Nastavení → Reddit nastavení → Zobrazit NSFW obsah</string>
+
     <!-- Subreddit color synchronization - https://reddit.com/comments/41054l -->
     <string name="color_sync_complete">Synchronizace dokončena</string>
     <plurals name="color_sync_colored">
@@ -778,11 +998,13 @@
         <item quantity="many">%d subredditů bylo zabarveno</item>
         <item quantity="other">%d subredditů bylo zabarveno</item>
     </plurals>
+
     <!-- Discover section: find -->
     <string name="discover_title">Objevit</string>
     <string name="discover_search">Hledat termín nebo téma</string>
     <string name="discover_popular">Oblíbené</string>
     <string name="discover_trending">Trendující</string>
+
     <!-- Subreddit post notifications -->
     <string name="sub_post_notifs_title">Být informován o nových příspěvcích v\n/r/%1$s?</string>
     <string name="sub_post_notifs_title_settings">Být upozorněn na nové příspěvky?</string>
@@ -794,19 +1016,24 @@
     <string name="sub_post_notifs_notification_title">Nový příspěvek v /r/%1$s</string>
     <string name="sub_post_notifs_notification_btn">Zastavit sledování /r/%1$s</string>
     <string name="title_sub_post_notifs">Oznámení příspěvku v subredditu</string>
+
     <!-- Internal browser -->
     <string name="internal_browser_extracting_error">Omlouváme se, článek nelze extrahovat</string>
     <string name="internal_browser_storecookies">Ukládat cookies</string>
     <string name="internal_browser_readermode">Režim čtení</string>
+
     <!-- Live thread -->
     <string name="livethread_loading_title">Načítám živé vlákno&#8230;</string>
     <string name="livethread_not_found">Živé vlákno nebylo nalezeno</string>
     <string name="livethread_recents_title">Živé vlákno: %1$s</string>
+
     <!-- Used when viewing media -->
     <string name="mediaview_notif_title">Stahuji obrázek&#8230;</string>
+    <string name="mediaview_notif_video">Stahování videa…</string>
     <string name="mediaview_notif_text">Probíhá stahování</string>
     <string name="mediaview_save">Uložit %1$s</string>
     <string name="mediaview_saving">Ukládám %1$s</string>
+
     <!-- Drafts -->
     <string name="choose_draft">Vybrat koncept</string>
     <string name="dialog_no_drafts">Zatím žádné koncepty</string>
@@ -814,6 +1041,7 @@
     <string name="msg_save_draft">Zpráva byla uložena jako koncept</string>
     <string name="manage_drafts">Správa konceptů</string>
     <string name="really_delete_drafts">Opravdu chcete smazat tyto koncepty?</string>
+
     <!-- Strings for widgets -->
     <string name="widget_theme_dark">TEMNÝ</string>
     <string name="widget_theme_light">SVĚTLÝ</string>
@@ -828,6 +1056,7 @@
     <string name="widget_loading">Načítám&#8230;</string>
     <string name="widget_creation_title">Nový widget</string>
     <string name="shortcut_creation_title">Nová zkratka</string>
+
     <!-- Strings for alert dialogs -->
     <string name="force_change_subscription">Nelze změnit odběr</string>
     <string name="force_change_subscription_desc">Chcete to stále lokálně změnit?</string>
@@ -840,6 +1069,7 @@
     <string name="mode_desktop_compact">Kompaktní počítač</string>
     <string name="show_content_type_text_beside_links">Zobrazit vedle odkazů text typu obsahu</string>
     <string name="comment_shadowbox">Stínovací box komentáře</string>
+
     <!-- Sidebar strings (multis, flairs) -->
     <string name="sidebar_select_flair">Vybrat flér</string>
     <string name="sidebar_select_flair_text">Nastavit text fléru</string>
@@ -855,6 +1085,7 @@
         <item quantity="many">"%d vybráno"</item>
         <item quantity="other">"%d vybráno"</item>
     </plurals>
+
     <!--Filtering dialog -->
     <string name="filter_title">Co chcete filtrovat?</string>
     <string name="filter_posts_sub">Příspěvky od /r/%1$s</string>
@@ -863,6 +1094,7 @@
     <string name="filter_open_externally">Otevřít %s adres URL externě</string>
     <string name="filter_posts_flair">Flér \"%1$s\" od %2$s</string>
     <string name="filter_btn">Filtr</string>
+
     <!-- Caching -->
     <string name="cache_no_comments_found">Žádné komentáře nalezeny</string>
     <string name="cache_no_comments_found_snackbar">Nebyly nalezeny žádné komentáře v mezipaměti</string>
@@ -873,9 +1105,11 @@
     <string name="cache_wifi_only">Do mezipaměti pouze na WiFi</string>
     <string name="comments_depth">Hloubka komentářů v mezipaměti</string>
     <string name="comments_count">Počet komentářů v mezipaměti</string>
+
     <!-- Saving location setting -->
     <string name="set_save_location">Nastavit místo uložení obrázků</string>
     <string name="set_save_location_msg">Místo ukládání obrázků zatím nebylo nastaveno. Chcete to nyní nastavit?</string>
+
     <!-- Report flow -->
     <string name="btn_report">Nahlásit</string>
     <string name="report_post">Nahlásit příspěvek</string>
@@ -887,6 +1121,7 @@
     <string name="report_other">Ostatní</string>
     <string name="input_reason_for_report">Důvod nahlášení</string>
     <string name="msg_report_sent">Hlášení odesláno</string>
+
     <!-- Unsorted ¯\\_(ツ)_/¯ -->
     <string name="comment_load_more_number_unknown">Načíst další komentáře</string>
     <string name="card_right_thumb">Napravo zarovnané miniatury</string>
@@ -905,20 +1140,32 @@
     <string name="mode_centered">Karta s centrovaným obrázkem</string>
     <string name="mode_card">Karta</string>
     <string name="mode_thumbnail">Náhled</string>
+    <string name="mode_no_thumbnails">Bez náhledu</string>
     <string name="mode_big_thumbnails">Široké náhledy</string>
     <string name="mode_cropped">Oříznut velký obrázek</string>
+    <string name="mode_letterbox">Velký obrázek s pruhy</string>
     <string name="mode_bigpic">Velký obrázek</string>
     <string name="press_actionbar">Stiskněte šipku pro zobrazení panelu akcí</string>
+    <string name="show_top_right">Zobrazit vpravo nahoře</string>
+    <string name="show_bottom_right">Zobrazit vpravo dole</string>
+    <string name="small_tag_disabled">Zakázáno</string>
     <string name="tap_actionbar">Dlouze podržet pro lištu akcí</string>
     <string name="always_actionbar">Vždy zobrazovat lištu akcí</string>
     <string name="sub_content_filter">Filtr obsahu subredditu</string>
     <string name="submission_share_reddit_url">Sdílet komentáře</string>
     <string name="filter_content">Filtrovat tento obsah</string>
-    <string name="content_to_hide">Obsah skrýt na %1$s</string>
+    <string name="content_to_show">Obsah, který zobrazit na %1$s</string>
     <string name="save_for_offline_viewing">Uložit příspěvky pro offline prohlížení</string>
     <string name="btn_collapse_children_all">Sbalit podřízené komentáře</string>
     <string name="btn_open_content">Otevřít obsah</string>
     <string name="enter_text_to_filter_click_enter_to_add_flair">Zadejte text pro filtrování (subreddit:flair_text), klikněte enter pro přidání</string>
+    <plurals name="filter_count">
+        <item quantity="one">%1$d filtr (%2$d max. zobrazeno)</item>
+        <item quantity="few">%1$d filtry (%2$d max. zobrazeno)</item>
+        <item quantity="many">%1$d filtru (%2$d max. zobrazeno)</item>
+        <item quantity="other">%1$d filtrů (%2$d max. zobrazeno)</item>
+    </plurals>
+    <string name="filter_limit_reached">Zobrazeno prvních %1$d z %2$d. Hledáním zúžíte výsledky.</string>
     <string name="datasave_always">Mobilní data a Wi-Fi</string>
     <string name="datasave_mobile">Mobilní data</string>
     <string name="never">Nikdy</string>
@@ -927,6 +1174,9 @@
     <string name="card_background_tint">Pozadí karet</string>
     <string name="subreddit_name_tint">Název subredditu</string>
     <string name="login_failed_err_decline">Ujistěte se, že jste na poslední obrazovce nevybrali \'Odmítnout\' a zkuste to znovu za minutu</string>
+    <string name="login_unsupported_redirect_uri">Nastavené URI přesměrování (%1$s) nemůže přijmout prohlížeč, takže přihlášení nelze dokončit. Použijte místo toho přihlášení přes WebView v aplikaci, nebo nastavte podporované URI přesměrování v nastavení.</string>
+    <string name="login_unsupported_redirect_uri_title">Přihlášení se nezdařilo</string>
+    <string name="login_failed_oauth_error_page">Přihlášení se nezdařilo — Reddit místo dokončení přihlášení vrátil chybu. Zkontrolujte ID klienta a URI přesměrování v nastavení.</string>
     <string name="tutorial_swipe_navigation">Přejetí navigace</string>
     <string name="tutorial_swipe_description">Přejeďte prstem z levého okraje pro ukončení.\n\nToto platí pro obrázky, GIF, alba, nastavení a další!</string>
     <string name="handling_browser">Webový prohlížeč</string>
@@ -937,6 +1187,7 @@
     <string name="content_deleted">[deleted]</string>
     <string name="thread_continue">Pokračovat v tomto vlákně</string>
     <string name="type_selftext">Samotext</string>
+    <string name="type_selftexts">Vlastní texty</string>
     <string name="submission_unhide">Odkrýt příspěvek</string>
     <string name="submission_info_unhidden">Příspěvek odkryt</string>
     <string name="msg_sent_success">Zpráva odeslána</string>
@@ -949,6 +1200,7 @@
     <string name="open_externally">Otevřít externě</string>
     <string name="vertical_album_view">Vertikální náhled alb</string>
     <string name="download_album">Stáhnout album</string>
+    <string name="download_gallery">Stáhnout galerii</string>
     <string name="compose_message">Napsat zprávu</string>
     <string name="mark_all_as_read">Označit vše jako přečtené</string>
     <string name="clear_subreddit_history">Vymazat historii subredditů</string>
@@ -968,7 +1220,6 @@
     <string name="btn_offline">Přejít do offline režimu</string>
     <string name="discard_comment_title">Zahodit komentář?</string>
     <string name="comment_discard_msg">Opravdu chcete zahodit svůj komentář?</string>
-    <string name="backup_complete">Záloha dokončena!</string>
     <string name="backup_saved_downloads">Záloha uložena do adresáře stažených souborů</string>
     <string name="really_remove_subreddit_title">Opravdu odstranit tento subreddit?</string>
     <string name="choose_sync_time">Zvolte čas pro synchronizaci</string>
@@ -987,14 +1238,16 @@
     <string name="rate_slide">Ohodnotit Slide</string>
     <string name="edit_query">Upravit dotaz</string>
     <string name="share_slide">Sdílet Slide</string>
-    <string name="create_folder">Vytvořit složku</string>
-    <string name="folder_name">Název složky</string>
+    <string name="open_clipboard_reddit_link">Otevřít odkaz na Reddit ze schránky</string>
+    <string name="clipboard_no_reddit_link">Ve schránce není žádný odkaz na Reddit</string>
     <string name="open_links_externally">Vždy otevřít tohoto hostitele externě</string>
     <string name="hide_read_posts">Skrýt přečtené příspěvky</string>
     <string name="gallery_mode">Režim galerie</string>
+    <string name="settings_gallery_grid">Zobrazovat příspěvky s galerií jako mřížku</string>
+    <string name="gallery_grid_image">Obrázek galerie %1$d z %2$d</string>
+    <string name="gallery_grid_overflow">+%1$d</string>
     <string name="friends_sort_error">/r/ přátelé nelze třídit</string>
     <string name="shadowbox_comments_nolinks">V komentářích nebyly nalezeny žádné odkazy</string>
-    <string name="pro_previews">Náhled (%d)</string>
     <string name="draw_undo">Zpět</string>
     <string name="empty_preview_text">Nic zde není ¯\\_(ツ)_/¯</string>
     <string name="theme_red_shift">Červený posun</string>
@@ -1007,6 +1260,7 @@
     <string name="enlarge_links">Zvětšit odkazy</string>
     <string name="enlarge_links_warning">Může způsobit, že některé řádky jsou větší než jiné, ale usnadňuje dotyk odkazů</string>
     <string name="type_tumblr">Tumblr</string>
+    <string name="type_tumblrs">Tumblry</string>
     <string name="type_nsfw_tumblr">NSFW Tumblr</string>
     <string name="submission_info_contest">Toto vlákno je v soutěžním režimu. Nemůžete měnit třídění.</string>
     <string name="sub_post_notifs_msg">Snímek zkontroluje nové příspěvky při kontrole pošty (oznámení musí být povoleno)</string>
@@ -1019,12 +1273,18 @@
     <string name="theme_pixel">Pixel</string>
     <string name="save_images_to_subreddit_specific_subfolders">Ukládat obrázky do podsložek specifických pro subreddit</string>
     <string name="description_save_subfolders">Pracuje v příspěvcích a komentářích</string>
+    <string name="save_media_to_type_specific_subfolders">Ukládat média do podsložek podle typu</string>
+    <string name="description_save_type_subfolders">Obrázky jdou do \"images\", videa a GIFy do \"videos\"</string>
+    <string name="show_image_download_button">Zkratka pro stažení</string>
+    <string name="description_image_download_button">Zobrazit tlačítko stažení v prohlížeči obrázků</string>
     <string name="content_settings">Nastavení obsahu</string>
     <string name="setting_titleTop">Zobrazit název nad info řádkem</string>
     <string name="setting_notification_piggybacking">Piggyback oznámení</string>
     <string name="setting_notification_piggybacking_desc">Zaškrtnout pouze pokud oficiální aplikace Reddit obdrží push oznámení</string>
     <string name="install_notif_piggyback">Nainstalujte oficiální aplikaci Reddit pro povolení Piggybackingu oznámení</string>
     <string name="success_block_user">Uživatel byl úspěšně zablokován</string>
+    <string name="err_unblock_user">Chyba při odblokování uživatele</string>
+    <string name="success_unblock_user">Uživatel byl úspěšně odblokován</string>
     <string name="settings_highlight_time_desc">Vyžaduje povolení \'Zobrazit počet komentářů od poslední návštěvy\' v nastavení &gt; Post Layout</string>
     <string name="settings_colored_time">Barevná časová bublina pro nové komentáře</string>
     <string name="theme_deep">Hluboký</string>
@@ -1042,4 +1302,138 @@
     <string name="show_collapse_expand_nav_bar">Zobrazit tlačítko sbalit/rozbalit v navigační liště komentářů</string>
     <string name="page_not_found">Stránka nenalezena</string>
     <string name="page_does_not_exist">Požadovaná stránka neexistuje</string>
+    <string name="back_button_behavior_goto_first">Přejít na první subreddit</string>
+    <string name="settings_hide_post_awards">Skrýt ocenění</string>
+    <string name="settings_hide_comment_awards">Skrýt ocenění</string>
+    <string name="settings_title_markdown">Markdown</string>
+    <string name="settings_markdown_new_reddit">Markdown ve stylu nového Redditu</string>
+    <string name="settings_markdown_new_reddit_desc">Vykreslovat bloky kódu a formátování jako nový Reddit (vypnuto použije vykreslování starého Redditu)</string>
+    <string name="comment_render_other">Zobrazit jiné vykreslení</string>
+    <string name="recover_post">Obnovit příspěvek</string>
+    <string name="recover_loading">Načítání originálu z archivu…</string>
+    <string name="recover_post_failed">Tento příspěvek se nepodařilo obnovit</string>
+    <string name="recover_comment">Obnovit komentář</string>
+    <string name="recover_comment_failed">Tento komentář se nepodařilo obnovit</string>
+    <string name="markdown_preview_new_reddit">Vykreslení nového Redditu</string>
+    <string name="markdown_preview_old_reddit">Vykreslení starého Redditu</string>
+    <string name="high_colorspace_images">Obrázky s vysokým barevným prostorem</string>
+    <string name="description_high_colorspace">Načítá u obrázků plný barevný prostor, což může vést k vyšší spotřebě paměti</string>
+    <string name="wide_color_gamut">Široký barevný gamut</string>
+    <string name="description_wide_color_gamut">Vykreslovat prohlížeče médií v širokém barevném gamutu. Na některých OLED displejích to může vyblednout barvy</string>
+    <string name="comment_emote_animation">Animace emotů v komentářích</string>
+    <string name="description_comment_emote_animation">Určuje, zda se emoty v komentářích mimo Giphy animují</string>
+    <string name="comment_image_size">Velikost obrázků v komentářích</string>
+    <string name="description_comment_image_size">Jak velké jsou vložené obrázky v komentářích</string>
+    <string name="comment_image_size_small">Malá</string>
+    <string name="comment_image_size_medium">Střední</string>
+    <string name="comment_image_size_large">Velká</string>
+    <string name="no_preview_image_longclick">Žádná dlouhá stisknutí na náhledových obrázcích jakéhokoli typu obsahu</string>
+    <string name="description_no_preview_image_longclick">Určuje, zda dlouhá stisknutí fungují na náhledových obrázcích jakéhokoli typu obsahu. Zakáže funkci náhledu obsahu.</string>
+    <string name="editor_btn_select_flair">Vybrat flair</string>
+    <string name="submit_selected_flair">Vybraný flair: %s</string>
+    <string name="mediaview_downloading">Stahování obrázku&#8230;</string>
+    <string name="err_save_image">Chyba při ukládání obrázku</string>
+    <string name="error_directory_not_selected">Nebyl vybrán žádný adresář. Zkuste to prosím znovu.</string>
+
+    <!-- Backup Operations -->
+
+    <!-- Additional Backup Operations -->
+    <string name="select_backup_file">Vyberte soubor zálohy</string>
+
+    <string name="read_later">Přečíst později</string>
+    <string name="mark_as_read">Označit jako přečtené</string>
+
+    <string name="reddit_client_id">ID klienta Reddit</string>
+    <string name="click_custom_client_id">Klepnutím nastavíte vlastní ID klienta</string>
+    <string name="client_id_scan_qr">Naskenovat QR kód</string>
+    <string name="client_id_scan_prompt">Naskenujte QR kód obsahující vaše ID klienta Reddit</string>
+    <string name="camera_permission_denied">Ke skenování QR kódů je vyžadováno oprávnění fotoaparátu</string>
+    <string name="client_id_invalid_length">Neplatné ID klienta: musí mít přesně 22 znaků</string>
+
+    <!-- Notification permission strings -->
+    <string name="notifications_permission_title">Povolit oznámení</string>
+    <string name="notifications_permission_message">Slide potřebuje oprávnění k oznámením, aby vás mohl upozornit na nové zprávy, příspěvky a další novinky z Redditu. Nastavení oznámení můžete spravovat později.</string>
+    <string name="notification_listener_permission_title">Povolit přístup k oznámením</string>
+    <string name="notification_listener_permission_message">Slide potřebuje přístup k oznámením, aby mohl zachytit oznámení z Redditu a poskytnout lepší zážitek. Povolte prosím Slide přístup k oznámením na následující obrazovce.</string>
+
+
+    <string name="reddit_redirect_uri_override">Přepsání URI přesměrování Reddit</string>
+    <string name="click_custom_redirect_uri">Klepnutím nastavíte vlastní URI přesměrování</string>
+    <string name="settings_reddit_redirect_uri_invalid">Neplatné URI přesměrování: musí mít tvar schéma://hostitel</string>
+    <string name="reddit_user_agent_override">Přepsání user agenta Reddit</string>
+    <string name="click_custom_user_agent">Klepnutím nastavíte vlastního user agenta</string>
+    <string name="settings_enable_overrides">Povolit přepsání</string>
+    <string name="settings_enable_overrides_desc">Použít vaše vlastní ID klienta, URI přesměrování a user agenta místo výchozích hodnot aplikace. Nechte vypnuté, pokud nevíte, že to potřebujete.</string>
+
+    <string name="settings_section_sound">Zvuk</string>
+    <string name="settings_unmute_default">Ve výchozím nastavení zapnout zvuk videí</string>
+
+    <string name="settings_subreddit_filter_prefix_matching">Povolit shodu podle předpony u filtrů subredditů</string>
+    <string name="settings_subreddit_filter_prefix_matching_description">Předponou je celý název subredditu, minimálně šest znaků. Příklady: subreddit social zablokuje socialanxiety. Subreddit pokemongo zablokuje pokemongoraids.</string>
+
+    <string name="settings_filter_old_posts">Filtrovat příspěvky starší než</string>
+    <plurals name="settings_filter_old_posts_days">
+        <item quantity="one">%1$d den</item>
+        <item quantity="few">%1$d dny</item>
+        <item quantity="many">%1$d dne</item>
+        <item quantity="other">%1$d dní</item>
+    </plurals>
+    <string name="settings_filter_old_posts_description">Neuplatňuje se při prohlížení jednotlivého subredditu ani při řazení podle Top či Kontroverzní</string>
+
+    <!-- Pause on audio focus ducking setting -->
+    <string name="settings_pause_on_duck_title">Pozastavit video místo ztlumení</string>
+    <string name="settings_pause_on_duck_desc">Pozastaví videa, když jiné aplikace přehrávají zvuk. Ztlumení znamená snížení hlasitosti místo pozastavení videa.</string>
+
+    <!-- Add this string resource for the play button content description -->
+    <string name="btn_play">Přehrát</string>
+
+    <string name="multireddit_name_title">Název multiredditu</string>
+    <string name="multireddit_name_hint">Název multiredditu</string>
+    <string name="multireddit_err_empty_name">Název multiredditu nemůže být prázdný</string>
+    <string name="multireddit_err_no_valid_subs">Nebyly vybrány žádné platné subreddity. Vyberte prosím alespoň jeden subreddit.</string>
+    <string name="multireddit_progress_title">Vytváření multiredditu</string>
+    <string name="multireddit_progress_message">Počkejte prosím, než vytvoříme váš multireddit...</string>
+    <string name="multireddit_created_success">Multireddit byl úspěšně vytvořen</string>
+    <string name="multireddit_created_error">Nepodařilo se vytvořit multireddit. Zkuste to prosím znovu.</string>
+    <string name="multireddit_json_error">Při přípravě dat multiredditu došlo k chybě</string>
+
+    <string name="settings_dialog_colored_border">Přidat barevný okraj kolem dialogových oken</string>
+    <string name="settings_dialog_colored_border_desc">Zobrazí tenký barevný okraj kolem některých dialogových oken.</string>
+
+    <string name="misc_err_sync_failed">Nepodařilo se synchronizovat subreddity. Žádné odebírané subreddity?</string>
+
+    <string name="mod_btn_distinguish">Odlišit</string>
+    <string name="mod_btn_undistinguish">Zrušit odlišení</string>
+
+    <string name="nsfw_status_removed">Stav NSFW odebrán</string>
+    <string name="nsfw_status_set">Stav NSFW nastaven</string>
+
+    <string name="spoiler_status_removed">Stav spoileru odebrán</string>
+    <string name="spoiler_status_set">Stav spoileru nastaven</string>
+
+    <string name="submission_distinguished">Příspěvek odlišen</string>
+    <string name="submission_distinguished_removed">Odlišení příspěvku odebráno</string>
+
+    <string name="settings_general_hide_subreddit_tabs">Skrýt karty odebíraných subredditů</string>
+    <string name="settings_general_hide_subreddit_tabs_desc">Skryje odebírané subreddity jako karty, ale zachová navigační tlačítka</string>
+
+    <!-- Video playback speed control -->
+    <string name="video_speed">Rychlost</string>
+    <string name="video_speed_0_25x">0.25x</string>
+    <string name="video_speed_0_5x">0.5x</string>
+    <string name="video_speed_0_75x">0.75x</string>
+    <string name="video_speed_1x">Normální</string>
+    <string name="video_speed_1_25x">1.25x</string>
+    <string name="video_speed_1_5x">1.5x</string>
+    <string name="video_speed_2x">2x</string>
+    <string name="video_speed_control_content_desc">Ovládání rychlosti přehrávání</string>
+    <string name="image_unavailable">Obrázek není k dispozici</string>
+    <string name="image_rotate_content_desc">Otočit obrázek o 90 stupňů po směru hodinových ručiček</string>
+    <string name="image_rotate_left_content_desc">Otočit obrázek o 90 stupňů proti směru hodinových ručiček</string>
+
+    <!-- Folder chooser dialog (formerly provided by afollestad material-dialogs commons) -->
+    <string name="md_error_label">Chyba</string>
+    <string name="md_storage_perm_error">Tato funkce vyžaduje oprávnění k úložišti, které nebylo uděleno.</string>
+    <string name="md_choose_label">VYBRAT</string>
+    <string name="new_folder">Nová složka</string>
 </resources>

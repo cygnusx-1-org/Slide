@@ -4,13 +4,20 @@
     <string name="general_confirm">Konfirmi</string>
     <string name="general_confirm_exit">Konfirmu eliri</string>
     <string name="general_confirm_exit_msg">Ĉu vi vere volas eliri Slide?</string>
+    <string name="general_enable_shadowbox">Ombrokesta reĝimo</string>
     <string name="general_open_settings">Flanka strio</string>
     <string name="general_sub_sync">Sinkronigas abonojn</string>
+
     <!-- Used when viewing a thread -->
+    <string name="submission_info_unsaved">Afiŝo nekonservita</string>
+    <string name="submission_info_saved">Afiŝo konservita</string>
+    <string name="submission_info_archived">Ĉi tio estas arkivita afiŝo. Vi ne povos voĉdoni aŭ komenti.</string>
     <string name="submission_post_saved">Afiŝo konservita</string>
+    <string name="submission_info_hidden">Afiŝo kaŝita por ĉiam</string>
     <string name="submission_stickied">Pingl\'</string>
     <string name="submission_link_copy">Kopii ligilon</string>
     <string name="submission_link_share">Konigi ligilon</string>
+    <string name="submission_share_title">Kiun ligilon vi ŝatus kunhavigi?</string>
     <string name="submission_share_reddit">Reddit-ligilo</string>
     <string name="submission_share_content">Enhavoligilo</string>
     <string name="submission_hide">Kaŝi afiŝon</string>
@@ -18,6 +25,9 @@
     <string name="submission_gild">Malfermi en retumilo</string>
     <string name="submission_save">Konservi afiŝon</string>
     <string name="submission_save_image">Konservi bildon</string>
+    <string name="submission_save_video">Konservi videon</string>
+    <string name="submission_load_full">Ŝargi la tutan fadenon</string>
+    <string name="submission_np_link">Ĉi tio estas ne-partoprena ligilo. Bonvolu ne voĉdoni aŭ komenti.</string>
     <string name="submission_not_found">Ho ve, afiŝo netrovita!</string>
     <string name="submission_not_found_msg">Bedaŭrinde, netrovis ĉi tiu afiŝon</string>
     <string name="submission_copy_text">Kopii tekston</string>
@@ -25,7 +35,15 @@
     <string name="submission_comment_unsaved">Malkonservis komenton</string>
     <string name="submission_share_permalink">Konigi ligilon</string>
     <string name="submission_comment_copied">Komenta teksto kopiita</string>
+    <string name="submission_text_copied">Teksto de la afiŝo kopiita</string>
+    <string name="submission_nocontent">La afiŝo havas neniun enhavon</string>
     <string name="submission_link_copied">Ligilo kopiita</string>
+    <string name="translate_with_google">Traduki</string>
+    <string name="translate_no_app">Neniu aplikaĵo disponebla por traduki</string>
+    <string name="read_aloud">Laŭtlegi</string>
+    <string name="read_aloud_unavailable">Teksto-al-parolo nedisponebla</string>
+    <string name="submission_removed">Afiŝo forigita</string>
+
     <plurals name="new_messages">
         <item quantity="one">%d nova mesaĝo</item>
         <item quantity="other">%d novaj mesaĝoj</item>
@@ -38,6 +56,7 @@
         <item quantity="one">kmt</item>
         <item quantity="other">kmtj</item>
     </plurals>
+
     <!-- Theme settings -->
     <string name="theme_light">Hela</string>
     <string name="theme_dark">Malhela</string>
@@ -45,13 +64,20 @@
     <string name="theme_dark_blue">Malhelblua</string>
     <string name="night_mode">Nokta Reĝimo</string>
     <string name="disabled">Malŝaltita</string>
+    <string name="manual">Permana</string>
+    <string name="automatic">Aŭtomata</string>
     <string name="theme_default_color">Ĉefa koloro</string>
     <string name="theme_subreddit_color">Ŝanĝi koloron</string>
     <string name="theme_accent_color">Akcento koloro</string>
     <string name="theme_base">Baza temo</string>
     <string name="theme_card">Karto</string>
+    <string name="theme_sepia">Sepia</string>
+    <string name="theme_amoled_contrast">AMOLED kun kontrasto</string>
     <string name="theme_night">Nokta temo</string>
+
     <!-- Font settings -->
+    <string name="font_size_comment">Tipargrandeco de komentoj</string>
+    <string name="font_size_post">Tipargrandeco de afiŝoj</string>
     <string name="font_size_huge">Grandega</string>
     <string name="font_size_larger">Pli granda</string>
     <string name="font_size_large">Granda</string>
@@ -59,19 +85,48 @@
     <string name="font_size_small">Malgranda</string>
     <string name="font_size_smaller">Pli malgranda</string>
     <string name="font_size_tiny">Eta</string>
+
     <!-- For editing the submission card layout -->
+    <string name="card_hide_post_button">Butono \"Kaŝi afiŝon\" en la agbreto</string>
+    <string name="card_tint_outside">Nuancigi nur ekster la subredito</string>
+    <string name="card_save_button">Butono \"Konservi afiŝon\" en la agbreto</string>
+
     <!-- Settings for Multi-column view -->
+    <string name="multi_column_title">Plurkolumna</string>
+    <string name="multi_column_portrait_count">Kolumnoj en vertikala reĝimo</string>
+    <string name="multi_column_landscape_count">Kolumnoj en horizontala reĝimo</string>
+    <string name="single_column_multi_window">Unu kolumno en plurfenestra reĝimo</string>
+
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Vi</string>
+    <string name="drawer_support">Akiri Pro</string>
+    <string name="drawer_goto_profile">Iri al profilo</string>
     <string name="drawer_add_account">Aldoni konton</string>
     <string name="drawer_hello">Saluton,</string>
+    <string name="drawer_search">Iri al subredito</string>
+    <!-- Subreddit name when submitting/crossposting: a single subreddit only (no multireddit, no dot). -->
+    <!-- Message recipient: a username or an /r/ or /u/ path. -->
+    <!-- Settings search field. The trailing space is intentional, so the value is quoted to preserve it. -->
+    <string name="drawer_moderation">Moderigado</string>
+    <string name="drawer_offline">Slide estas en eksterreta reĝimo</string>
+    <string name="drawer_offline_retry">Provi eniri enretan reĝimon</string>
+    <string name="drawer_guest_mode">Foliumi kiel gasto</string>
+
     <!-- Sidebar items (That's the one on the right) -->
+    <string name="sidebar_wiki">Vikio de la subredito</string>
+    <string name="sidebar_mods">Moderigantoj de la subredito</string>
+
     <!-- User profile -->
+    <string name="profile_karma_total">Suma karmo</string>
+    <string name="profile_karma_link">Afiŝa karmo</string>
     <string name="profile_karma_comment">karmo el komentoj</string>
     <string name="profile_message">Privata mesaĝo</string>
     <string name="profile_saved">Konservita</string>
+    <string name="local_saved">Loke konservitaj</string>
+    <string name="profile_read_later">Legi poste</string>
     <string name="profile_upvoted">Porvoĉdonita</string>
     <string name="profile_err_title">Uzanto netrovita</string>
+    <string name="profile_err_msg">La Reddit-uzanto ne povis esti prenita</string>
     <string name="profile_overview">superrigardo</string>
     <string name="profile_comments">komentoj</string>
     <string name="profile_submitted">Afiŝita</string>
@@ -81,26 +136,63 @@
     <string name="profile_friend">Amiko</string>
     <string name="profile_add_friend">Aldoni amikon</string>
     <string name="profile_remove_friend">Forigi amikon</string>
+    <string name="profile_follow_user">Sekvi</string>
+    <string name="profile_unfollow_user">Ĉesi sekvi</string>
+    <string name="profile_add_user">Aldoni uzanton</string>
+    <string name="profile_remove_user">Forigi uzanton</string>
+    <string name="profile_remove_account">Ĉu vi vere ŝatus forigi ĉi tiun konton?</string>
     <string name="profile_remove">Forigi konton</string>
     <string name="profile_history">Historio</string>
     <string name="profile_share">%s-a profilo</string>
+    <string name="profile_age">Redditano de %s</string>
     <string name="profile_tag">Etikedo</string>
     <string name="profile_tag_set">Agordi etikedon por %s</string>
+    <string name="profile_tag_user">Etikedi uzanton</string>
+    <string name="profile_tag_user_existing">Uzanto etikedita kiel ‘%s’</string>
     <string name="profile_btn_tag">Agordi etikedon</string>
     <string name="profile_btn_untag">Forigi etikedon</string>
+    <string name="profile_info">Profilinformoj</string>
+    <string name="profile_options">Uzantagordoj</string>
     <string name="profile_block_user">Bloki uzanton</string>
+    <string name="profile_block_user_description">Blokas la mesaĝojn, afiŝojn kaj profilon de la uzanto</string>
+    <string name="profile_unblock_user">Malbloki uzanton</string>
+    <string name="profile_unblock_user_description">Malŝlosas la mesaĝojn, afiŝojn kaj profilon de la uzanto</string>
+    <string name="profile_search">Serĉi</string>
+    <string name="profile_search_title">Serĉi en %1$s</string>
+    <string name="profile_search_hint">Serĉi titolojn kaj tekston…</string>
+    <string name="profile_search_no_results">Neniu rezulto trovita</string>
+    <string name="profile_search_clear">Vakigi serĉon</string>
+    <string name="profile_search_cleared">Serĉo vakigita</string>
+    <string name="profile_search_loading">Serĉante…</string>
+    <string name="profile_search_progress">%1$d rezultoj · %2$d traserĉitaj</string>
+    <string name="profile_search_bypass_cache">Preteriri la kaŝmemoron</string>
+
     <!-- Comment text options -->
+    <string name="comment_gild">Premii komenton</string>
     <string name="comment_share">Konigi komenton</string>
     <string name="comment_delete">Forigi komenton</string>
+    <string name="comment_delete_msg">Ĉu vi vere volas forigi ĉi tiun komenton? Tio ne povas esti malfarita</string>
     <string name="comment_delete_err">Ho ve, io misokazis</string>
     <string name="comment_delete_err_msg">Ĉu vi volus reprovi?</string>
     <string name="comment_deleted">[forigita]</string>
     <string name="comment_unsave">Malkonservi</string>
+    <string name="comment_loading_more">Ŝargante pliajn komentojn…</string>
+    <string name="comment_permalink">Ŝargi la konstantan ligilon de la komento</string>
+    <string name="comment_parent">Montri la patran komenton</string>
+    <string name="comment_video_play">Ludi videon</string>
+
     <!-- Welcome view (first time setup) -->
+    <string name="welcome_start">Komenci</string>
+    <string name="welcome_personalize">Personecigi</string>
+
     <!-- Sorting options -->
+    <string name="sorting_choose">Elektu ordigan tipon</string>
+    <string name="sorting_time_choose">Elektu tempintervalon</string>
+    <string name="sorting_change_sorting">Ordiga reĝimo</string>
     <string name="sorting_best">Plej bonaj</string>
     <string name="sorting_top">Supraj</string>
     <string name="sorting_hot">Bonaj</string>
+    <string name="sorting_ama">Demandoj kaj respondoj (AMA)</string>
     <string name="sorting_new">Novaj</string>
     <string name="sorting_old">Malnovaj</string>
     <string name="sorting_controversial">Debatataj</string>
@@ -111,33 +203,124 @@
     <string name="sorting_month">monato</string>
     <string name="sorting_year">jaro</string>
     <string name="sorting_all">ĉiam</string>
+    <string name="sorting_defaultfor">Defaŭlta por /r/%1$s</string>
+
     <!-- Editor (save/submit a post) actions -->
     <string name="editor_url">Ligilo</string>
     <string name="editor_text">Teksto</string>
     <string name="editor_title_link">Enmeti ligilon</string>
+    <string name="editor_action_link">ENMETI</string>
     <string name="editor_title">Titolo</string>
+    <string name="editor_err_msg">Bonvolu reprovi post kelkaj sekundoj</string>
+    <string name="editor_uploading_image">Alŝutante bildon al Imgur</string>
+    <string name="editor_upload_image_title">Alŝuti bildon</string>
+    <string name="editor_upload_reddit">Reddit (enteksta bildo)</string>
+    <string name="editor_upload_imgur">Imgur (ligilo)</string>
+    <string name="editor_uploading_reddit">Alŝutante bildon al Reddit</string>
+    <string name="editor_reddit_upload_success">Bildo alŝutita</string>
+    <string name="editor_reddit_upload_failed">Alŝuto de la bildo malsukcesis</string>
+    <string name="submit_image_host_imgur">Imgur</string>
+    <string name="submit_image_host_reddit">Reddit</string>
+    <string name="submit_change_img">Ŝanĝi bildon</string>
+    <string name="submit_select_gallery">Aldoni bildojn</string>
+    <string name="submit_gallery_caption_hint">Apudskribo (nedeviga)</string>
+    <string name="submit_gallery_count">%1$d elektitaj</string>
+    <string name="submit_uploading_gallery">Alŝutante bildon %1$d el %2$d</string>
     <string name="editor_select_img">Elekti bildon</string>
+    <string name="editor_hint_optional_body">Teksto (nedeviga)</string>
     <string name="editor_submit">Afiŝi</string>
     <string name="editor_hint_subreddit">Subreddit</string>
+    <string name="editor_finding_title">Serĉante la titolon</string>
+    <string name="submit_findingflairs">Serĉante etikedojn</string>
+    <string name="submit_flairchoices">Etikedoj de /r/%s</string>
+
+    <string name="edit_selftext">Redakti la tekston</string>
+    <string name="delete_submission">Forigi afiŝon</string>
+    <string name="set_submission_flair">Agordi la etikedon de la afiŝo</string>
+
     <!-- Editor buttons -->
+    <string name="editor_save_draft">Konservi malneton</string>
+    <string name="editor_chose_draft">Elekti malneton</string>
     <string name="editor_insert_image">Enmeti bildon</string>
+    <string name="editor_draw">Enmeti kaj desegni sur bildo</string>
+    <string name="editor_link">Enmeti ligilon</string>
+    <string name="editor_bold">Grasa</string>
+    <string name="editor_italics">Kursiva</string>
     <string name="editor_quote">Citaĵo</string>
+    <string name="editor_author">Mencii la aŭtoron</string>
+    <string name="editor_list">Bula listo</string>
+    <string name="editor_num_list">Numerita listo</string>
+    <string name="editor_size">Granda tiparo</string>
+    <string name="editor_strike">Trastrekita</string>
     <string name="editor_spoiler">Malkaŝaĵo</string>
+
     <!-- General information / information without a category -->
     <string name="info_photo_saved">Foto konservita</string>
     <string name="gif_saved">Movbildo konservita</string>
+
     <!-- General errors / errors without a category -->
     <string name="err_title">Ho ve, io misokazis!</string>
     <string name="err_invalid_url">Malvalida ligilo</string>
+    <string name="err_loading_content">Eraro dum ŝargado de la enhavo</string>
     <string name="err_general">Ho ve, eraro okazis</string>
-    <string name="err_permission">Permeson neis!</string>
+    <string name="err_no_connection">Reddit ne estis atingebla. Ĉu vi ŝatus reprovi?</string>
+    <string name="err_no_connection_toast">Reddit ne estis atingebla. Reprovu baldaŭ</string>
+    <string name="err_retry_later">Reprovu post unu minuto!</string>
+    <string name="err_authentication">Aŭtentigo malsukcesis</string>
+    <string name="err_submit_restricted">Ĉi tiu subredito estas limigita</string>
+    <string name="err_submit_restricted_text">Vi ne rajtas afiŝi ĉi tie. Bonvolu elekti alian subrediton</string>
+    <string name="err_crosspost_disallowed_text">/r/%s ne permesas krucafiŝojn. Bonvolu elekti alian subrediton.</string>
+    <string name="err_crosspost_not_subscribed">Vi devas aboni /r/%s antaŭ ol krucafiŝi.</string>
+    <string name="err_crosspost_sub_not_found">/r/%s ne ekzistas.</string>
+    <string name="crosspost_flair_required_short">Etikedo estas necesa — bonvolu elekti etikedon antaŭ ol afiŝi.</string>
     <string name="error_video_not_found">Videaĵo netrovita</string>
+    <string name="error_video_message">Eraro okazis dum ŝargado de ĉi tiu video</string>
+    <string name="error_album_not_found">Albumo ne trovita</string>
+    <string name="error_album_not_found_text">Ĉu vi ŝatus malfermi la ligilon en foliumilo?</string>
+    <string name="err_comment_post_nosave_message">\nBonvolu reprovi post unu minuto</string>
+    <string name="err_could_not_find_content_msg">Reddit ne povis trovi la petitan enhavon</string>
+    <string name="err_refused_request_msg">Reddit rifuzis peton. Ĉu vi ŝatus provi rekonekti al Reddit?</string>
+    <string name="err_color_sync_login">Bonvolu ensaluti por uzi Kolorsinkronigon</string>
+    <string name="err_something_wrong">Ho ve, io misfunkciis</string>
+    <string name="err_couldnt_save_choose_new">Slide ne povis konservi al la elektita dosierujo. Ĉu vi ŝatus elekti novan konservlokon?</string>
+    <string name="err_share_image">Eraro dum kunhavigo de la bildo</string>
     <string name="err_file_not_found">Dosiero netrovita</string>
+    <string name="err_file_not_found_msg">La elektita dosiero ne troviĝis. Bonvolu certigi, ke ĝi ekzistas kaj ke Slide havas permesojn aliri tiun dosieron aŭ dosierujon</string>
+    <string name="err_comment_post">Ho ve, la afiŝado de ĉi tiu komento malsukcesis!</string>
+    <string name="err_comment_post_reason">Kialo: %1$s</string>
+    <string name="err_comment_post_message">\n\nVia mesaĝo estis konservita kiel malneto. Bonvolu reprovi poste.</string>
+    <string name="err_connection_failed_msg">La konekto al Reddit malsukcesis. Bonvolu kontroli vian interretan konekton kaj reprovi, aŭ eniri eksterretan reĝimon.</string>
+    <string name="err_block_user">Eraro dum blokado de la uzanto. Ĉu vi lastatempe malblokis ĉi tiun uzanton?</string>
+
     <!-- Gif -->
     <string name="gif_err_title">Movbildo ne trovita</string>
+    <string name="gif_err_msg">Eraro okazis dum ŝargado de ĉi tiu GIF. Bonvolu remalfermi la GIF-on kaj reprovi.</string>
+    <string name="gif_load_failed">Ŝargado de la GIF malsukcesis</string>
+    <string name="gif_download_failed">Elŝuto de la GIF malsukcesis</string>
+
     <!-- Multireddits -->
+    <string name="multireddit_err_title">Neniuj multreditoj (ankoraŭ)!</string>
+    <string name="multireddit_err_msg">Ĉu vi ŝatus krei novan multrediton?</string>
+    <string name="public_multireddit_err_title">Neniuj multreditoj!</string>
+    <string name="public_multireddit_err_msg">Ĉi tiu uzanto havas neniun publikan multrediton.</string>
     <string name="multireddit_title_empty">Titolo ne povas esti malplena</string>
+    <string name="multireddit_title_empty_msg">Bonvolu enigi titolon por via multredito</string>
+    <string name="multireddit_no_subs">Neniuj subreditoj estas aldonitaj</string>
+    <string name="multireddit_save_err">La titolo de ĉi tiu multredito jam ekzistas aŭ ne estas spaco por pliaj subreditoj ĉi tie</string>
+    <string name="multireddit_no_subs_msg">Bonvolu aldoni kelkajn subreditojn klakante la butonon +!</string>
+    <string name="multireddit_selector">Elektu subreditojn por aldoni</string>
+    <string name="multireddit_create_hint">Nomo de la multredito</string>
+    <string name="multireddit_invalid_name">Nevalida nomo de multredito</string>
+    <string name="multireddit_invalid_name_msg">Nomoj de multreditoj povas enhavi nur literojn, ciferojn kaj substrekojn</string>
     <string name="multi_add_to">Aldoni /r/%s al</string>
+    <string name="multi_subreddit_added">Subredito aldonita al /m/%1$s</string>
+    <string name="multi_error">Eraro okazis, bonvolu reprovi poste</string>
+    <string name="btn_import_multi">Importi multrediton</string>
+    <string name="multi_submit_which_sub">Al kiu subredito vi ŝatus afiŝi?</string>
+    <string name="multi_saved_successfully">Konservita sukcese</string>
+    <string name="delete_multireddit_title">Ĉu vi vere volas forigi /m/%1$s?</string>
+    <string name="multi_save_option">Ĉu vi ŝatus konservi ĉi tiun multrediton?</string>
+
     <!-- Content types -->
     <string name="type_nsfw_img">MDPL/NSFW-bildo</string>
     <string name="type_nsfw_gif">MDPL/NSFW-movbildo</string>
@@ -145,14 +328,47 @@
     <string name="type_link">Ligilo</string>
     <string name="type_nsfw_link">MDPL/NSFW-ligilo</string>
     <string name="type_gif">Movbildo</string>
+    <string name="type_title_only">Titola afiŝo</string>
     <string name="type_album">Albumo</string>
+    <string name="type_xkcd">XKCD</string>
     <string name="type_nsfw_album">MDPL/NSFW-albumo</string>
+    <string name="type_nsfw_gallery">NSFW-galerio</string>
+    <string name="type_nsfw_albums">NSFW-albumoj</string>
+    <string name="type_nsfw_galleries">NSFW-galerioj</string>
+    <string name="type_nsfw_gifs">NSFW-GIF-oj</string>
+    <string name="type_nsfw_images">NSFW-bildoj</string>
+    <string name="type_nsfw_links">NSFW-ligiloj</string>
+    <string name="type_nsfw_selftexts">NSFW-tekstaj afiŝoj</string>
+    <string name="type_nsfw_tumblrs">NSFW-Tumblr-oj</string>
+    <string name="type_nsfw_videos">NSFW-videoj</string>
+    <string name="type_gallery">Galerio</string>
+    <string name="type_galleries">Galerioj</string>
     <string name="type_img">Bildo</string>
+    <string name="type_videos">Videoj</string>
     <string name="type_nsfw_video">MDPL/NSFW-videaĵo</string>
+    <string name="type_imgur">Imgur-enhavo</string>
+    <string name="type_nsfw_imgur">NSFW-Imgur-enhavo</string>
+    <string name="type_nsfw_xkcd">NSFW-XKCD</string>
+    <string name="type_nsfw_deviantart">NSFW-DeviantArt</string>
+    <string name="type_nsfw_title_only">NSFW-titola afiŝo</string>
+    <string name="type_nsfw_reddit">NSFW-Reddit-ligilo</string>
+    <string name="type_nsfw_selftext">NSFW-teksta afiŝo</string>
+    <string name="type_spoiler">Malkaŝaĵo</string>
+    <string name="type_nsfw_spoiler">NSFW-malkaŝaĵo</string>
+    <string name="type_nsfw_streamable">NSFW-Streamable</string>
+    <string name="type_external">Ekstera</string>
+
     <!-- Content types plural (Content filters) -->
-    <string name="type_nsfw_content">MDPL/NSFW-enhavo</string>
+    <string name="type_gifs">GIF-oj</string>
+    <string name="type_albums">Albumoj</string>
     <string name="type_links">Ligiloj</string>
+
     <!-- Inbox/mail -->
+    <string name="mail_tab_inbox">Ricevujo</string>
+    <string name="mail_tab_unread">Nelegitaj</string>
+    <string name="mail_tab_messages">Mesaĝoj</string>
+    <string name="mail_tab_sent">Senditaj</string>
+    <string name="mail_tab_mentions">Mencioj</string>
     <string name="mail_author_wrote">%1$s skribis&#8230;</string>
     <string name="mail_hint_recipient">Ricevonto</string>
     <string name="mail_hint_subject">Temo</string>
@@ -160,113 +376,544 @@
     <string name="mail_send_to">Sendi mesaĝon al %1$s</string>
     <string name="mail_send">Sendi mesaĝon</string>
     <string name="mail_notification_msg_from">Nova mesaĝo de %1$s</string>
+    <string name="mail_notification_msg_via">Nova mesaĝo per /r/%1$s</string>
+    <string name="mod_mail_notification_msg">Nova moderiga mesaĝo de %1$s</string>
     <string name="mail_reply_to">Respondi al %1$s</string>
     <string name="mail_notification_author">%1$s de %2$s</string>
+    <string name="mail_notification_subreddit">%1$s per /r/%2$s</string>
+    <string name="mail_theirs">Vidi ilian mesaĝon</string>
+    <string name="mail_re">re: %1$s</string>
     <string name="mail_mark_read">Marki legita</string>
-    <string name="mail_mark_unread">Marki nelegita</string>
+    <string name="mail_view_full_thread">Vidi la tutan fadenon</string>
+    <string name="mail_message_copied">Mesaĝo kopiita</string>
     <plurals name="mail_notification_title">
         <item quantity="one">Vi havas %d novan mesaĝon!</item>
         <item quantity="other">Vi havas %d novajn mesaĝojn!</item>
     </plurals>
+    <plurals name="mod_mail_notification_title">
+        <item quantity="one">Vi havas %d novan moderigan mesaĝon!</item>
+        <item quantity="other">Vi havas %d novajn moderigajn mesaĝojn!</item>
+    </plurals>
+
     <!-- Miscellaneous/generic things that don't have a category or strings that are used for multiple categories -->
     <string name="misc_err">Eraro</string>
+    <string name="misc_none">Neniu</string>
+    <string name="misc_retry">Ĉu vi ŝatus reprovi?</string>
+    <string name="misc_retry_draft">Ĉu vi ŝatus reprovi? \nMalneto de via afiŝo estis konservita</string>
+    <string name="misc_score_hidden">poentaro kaŝita</string>
     <string name="misc_subscribed">Abonita</string>
     <string name="misc_continue">Daŭrigi</string>
     <string name="misc_unsubscribed">Malabonita</string>
+    <string name="misc_no_more_posts">Neniuj pliaj afiŝoj!</string>
     <string name="misc_please_wait">Bonvole atendu...</string>
+    <string name="misc_img_share">Kunhavigi bildon per</string>
     <string name="misc_copy_text">Kopii tekston</string>
+    <string name="misc_maybe_later">Eble poste</string>
+    <string name="misc_try_again">Reprovi</string>
+    <string name="misc_please_try_again">Bonvolu reprovi</string>
+    <string name="misc_please_try_again_soon">Bonvolu reprovi baldaŭ</string>
+    <string name="misc_setting_up">Preparante kelkajn aferojn…</string>
+    <string name="misc_setting_up_message">Bonvolu ne forlasi ĉi tiun ekranon. Ĝi ne daŭros longe!</string>
     <string name="misc_more_info">Pliaj informoj</string>
+    <string name="misc_captcha_incorrect">Malĝusta captcha, bonvolu reprovi</string>
+
     <!-- Goto User -->
     <string name="user_enter">Tajpu uzantnomon</string>
+    <string name="user_btn_goto">Iri al uzanto</string>
+    <string name="user_btn_gotomultis">Iri al la multreditoj de la uzanto</string>
+
+    <!-- Saved users list -->
+    <string name="users_empty">Neniuj konservitaj uzantoj</string>
+    <string name="users_btn_add">Aldoni uzanton</string>
+    <string name="users_btn_remove">Forigi uzanton</string>
+    <string name="users_added">%s aldonita al Uzantoj</string>
+    <string name="users_removed">%s forigita el Uzantoj</string>
+    <string name="users_already_added">%s jam estas en Uzantoj</string>
+    <string name="users_copied">%s kopiita</string>
+    <string name="users_checking">Kontrolante la uzantnomon</string>
+    <string name="users_invalid_title">Ne eblas aldoni la uzanton</string>
+    <string name="users_invalid">%s ne estas Reddit-uzanto</string>
+    <string name="users_check_failed">Ne eblis kontroli ĉu %s ekzistas. Bonvolu kontroli vian konekton kaj reprovi.</string>
+    <string name="users_friend_added">%s aldonita kiel amiko</string>
+    <string name="users_friend_removed">%s forigita kiel amiko</string>
+    <string name="users_friend_failed">Ne eblis ĝisdatigi la amikstaton por %s</string>
+    <string name="btn_fab_add_user">Aldoni uzanton</string>
+
     <!-- Buttons -->
     <string name="btn_add">Aldoni</string>
     <string name="btn_cancel">Nuligi</string>
     <string name="btn_close">Fermi</string>
+    <string name="btn_toggle">Baskuligi</string>
     <string name="btn_open">Malfermi</string>
     <string name="btn_discard">Ignori</string>
     <string name="btn_done">Farita</string>
     <string name="btn_go_back">Reen</string>
-    <string name="btn_no_thanks">Ne, dankon</string>
     <string name="btn_no">Ne</string>
     <string name="btn_ok">Bone</string>
     <string name="btn_remove">Forigi</string>
     <string name="btn_reply">Respondi</string>
+    <string name="btn_reset">Restarigi</string>
+    <string name="btn_retry">Reprovi</string>
     <string name="btn_save">Konservi</string>
+    <string name="btn_submit">Sendi</string>
     <string name="btn_undo">Malfari</string>
     <string name="btn_yes">Jes</string>
-    <string name="btn_yes_exclaim">Jes!</string>
+    <string name="btn_refresh">Aktualigi</string>
+    <string name="btn_cache">Kaŝmemorigi komentojn</string>
     <string name="btn_delete">Forigi</string>
+    <string name="btn_time">Tempintervalo</string>
+    <string name="btn_message">Mesaĝo</string>
     <string name="btn_select">Elekti</string>
+    <string name="btn_view">VIDI</string>
     <string name="btn_changelog">Ŝanĝoprotokolo</string>
+    <string name="btn_set">AGORDI</string>
+    <string name="btn_create">Krei</string>
+    <string name="btn_new">Nova</string>
+
     <!-- Buttons Content labels for TalkBack accessibility-->
     <string name="btn_edit">Redakti</string>
     <string name="btn_hide">Kaŝi</string>
+    <string name="btn_mod">Moderigi</string>
     <string name="btn_upvote">Porvoĉdoni</string>
     <string name="btn_downvote">Kontraŭvoĉdoni</string>
     <string name="btn_menu">Menuo</string>
+    <string name="img_score">Poentaro</string>
+    <string name="img_comments">Komentoj</string>
+    <string name="btn_expand">Etendi</string>
+    <string name="btn_nav_up">Navigi supren</string>
+    <string name="btn_nav_mode">Agordi navigadan reĝimon</string>
+    <string name="btn_nav_collapse_expand">Faldi/etendi</string>
+    <string name="btn_nav_down">Navigi malsupren</string>
+    <string name="btn_fab_reply">Respondi</string>
+    <string name="btn_fab_post">Krei novan afiŝon</string>
+    <string name="btn_fab_hide">Kaŝi viditajn afiŝojn</string>
+    <string name="btn_fab_search">Serĉi afiŝojn</string>
+
     <!-- Buttons Content labels for TalkBack accessibility active states-->
     <string name="btn_upvoted">Porvoĉdonis</string>
     <string name="btn_downvoted">Kontraŭvoĉdonis</string>
     <string name="btn_unsave">Malkonservi</string>
+    <string name="btn_collapse">Faldi</string>
+
     <!-- Backup -->
+    <string name="backup_success">Sekurkopio sukcesa!</string>
+    <string name="backup_restoring">Restaŭrante viajn agordojn</string>
+    <string name="backup_backing_up">Sekurkopiante viajn agordojn</string>
+    <string name="backup_restore_settings">Restaŭrado de la agordoj sukcesis!</string>
+    <string name="backup_restarting">La aplikaĵo nun rekomencos</string>
+    <string name="backup_info">Slide sekurkopias ĉiujn viajn datumojn al privata Google Drive-dosierujo. Vi povas sinkronigi ĉi tiujn datumojn inter aparatoj (aŭ al la sama aparato), kaj viaj datumoj neniam trapasas trian servon aŭ servilon. Sekurkopioj estas ĉifritaj per pasvorto, kiun vi elektas.</string>
     <string name="backup_btn">Savkopii</string>
     <string name="backup_btn_restore">Restaŭri</string>
+    <string name="backup_btn_file">Sekurkopii al zip</string>
+    <string name="backup_btn_restore_file">Restaŭri el dosiero aŭ zip</string>
+    <string name="backup_confirm">Ĉu vi certas, ke vi volas sekurkopii? Via antaŭa sekurkopio estos anstataŭigita</string>
+    <string name="backup_restore_confirm">Ĉu vi certas, ke vi volas restaŭri? Viaj nunaj agordoj estos anstataŭigitaj</string>
+    <string name="backup_failed_msg">Sekurkopiado malsukcesis. Bonvolu reprovi poste.</string>
+    <string name="backup_restore_failed_msg">Restaŭrado malsukcesis. Bonvolu certigi, ke valida sekurkopio ekzistas, kaj reprovi.</string>
+    <string name="backup_local_title">Loka sekurkopio</string>
+    <string name="backup_drive_title">Google Drive-sekurkopio</string>
+    <string name="backup_button">Krei sekurkopion</string>
+    <string name="restore_button">Restaŭri sekurkopion</string>
+    <string name="backup_question">Ĉu sekurkopii?</string>
+    <string name="backup_complete">Sekurkopio kompleta!</string>
+    <string name="err_not_valid_backup">Ne estas valida Slide-sekurkopia dosiero</string>
+    <string name="err_not_valid_backup_msg">La elektita dosiero ne estas valida Slide-sekurkopia dosiero</string>
+    <string name="backup_password_title">Agordu sekurkopian pasvorton</string>
+    <string name="backup_password_message">Via sekurkopio enhavas la akreditaĵojn de via Reddit-konto, do ĝi estas ĉifrita. Elektu pasvorton de %1$d ĝis %2$d signoj. Vi bezonos ĝin por restaŭri, kaj ĝi ne povas esti retrovita.</string>
+    <string name="backup_password_hint">Pasvorto</string>
+    <string name="restore_password_title">Enigu la sekurkopian pasvorton</string>
+    <string name="restore_password_message">Enigu la pasvorton uzitan por ĉifri ĉi tiun sekurkopion.</string>
+    <string name="restore_password_wrong">Malĝusta pasvorto. Bonvolu reprovi.</string>
+    <string name="drive_authorization_failed">Google Drive-rajtigo malsukcesis</string>
+    <string name="drive_authorization_failed_msg">Slide ne povis atingi sian privatan Google Drive-dosierujon. Bonvolu reprovi.</string>
+    <string name="drive_authorization_denied">Google Drive-aliro necesa</string>
+    <string name="drive_authorization_denied_msg">Slide bezonas aliron al sia privata Google Drive-dosierujo por sekurkopii aŭ restaŭri viajn agordojn.</string>
+
     <!-- Vote -->
+    <string name="vote_err">Eraro dum voĉdonado!</string>
+    <string name="vote_err_login">Vi devas esti ensalutinta por voĉdoni!</string>
+    <string name="vote_removed">Voĉdono forigita</string>
+
+    <!-- Subscribing -->
+    <string name="subscribe_err_login">Vi devas esti ensalutinta por aboni!</string>
+
     <!-- Moderation tools -->
+    <string name="mod_mail">Moderiga poŝto</string>
+    <string name="mod_mail_unread">Nelegita moderiga poŝto</string>
+    <string name="modmail_internal_note">(interna noto)</string>
+    <string name="modmail_scope_missing">Moderiga poŝto bezonas reaŭtentigon. Reensalutu (Agordoj &#8594; konto) por ebligi ĝin.</string>
+    <string name="modmail_reply_sent">Respondo sendita!</string>
+    <string name="modmail_reply_failed">Sendado malsukcesis! Respondo konservita kiel malneto.</string>
+    <plurals name="modmail_message_count">
+        <item quantity="one">%d mesaĝo</item>
+        <item quantity="other">%d mesaĝoj</item>
+    </plurals>
+    <string name="mod_modqueue">Moderiga atendovico</string>
+    <string name="mod_unmoderated">Nemoderigitaj</string>
+    <string name="mod_reports">Raportoj</string>
     <string name="mod_approved">Afiŝo aprobita</string>
+    <string name="mod_flair_hint">Teksto de la etikedo</string>
+    <string name="mod_no_reports">Neniuj raportoj</string>
     <string name="mod_btn_approve">Aprobi</string>
+    <string name="mod_btn_submission_flair">Agordi etikedon</string>
+    <string name="mod_btn_submission_flair_text">Agordi la tekston de la etikedo</string>
     <string name="mod_btn_mark_nsfw">Marki kiel MBPL/NSFW</string>
     <string name="mod_btn_unmark_nsfw">Malmarki kiel MBPL/NSFW</string>
+    <string name="mod_btn_mark_spoiler">Marki kiel malkaŝaĵon</string>
+    <string name="mod_btn_unmark_spoiler">Malmarki kiel malkaŝaĵon</string>
+    <string name="mod_btn_lock_thread">Ŝlosi la fadenon</string>
+    <string name="mod_btn_unlock_thread">Malŝlosi la fadenon</string>
+    <string name="mod_btn_lock_comment">Ŝlosi la komenton</string>
+    <string name="mod_btn_unlock_comment">Malŝlosi la komenton</string>
+    <string name="mod_locked">Ŝlosita</string>
+    <string name="mod_unlocked">Malŝlosita</string>
     <string name="mod_btn_pin">Alpingli</string>
     <string name="mod_btn_unpin">Depingli</string>
     <string name="mod_btn_remove">Forigi</string>
+    <string name="mod_btn_remove_reason">Forigi kun kialo</string>
+    <string name="mod_btn_spam">Marki kiel trudmesaĝon</string>
+    <string name="mod_btn_author">Profilo de la aŭtoro</string>
+    <string name="mod_btn_ban">Malpermesi</string>
+    <string name="mod_ban_user">Malpermesi uzanton</string>
+    <string name="mod_ban_reauth">Por malpermesi uzantojn, Slide devas reaŭtentigi vin</string>
+    <string name="mod_ban_reauth_question">Ĉu vi ŝatus reensaluti al Slide nun?</string>
+    <string name="mod_ban_success">Uzanto malpermesita!</string>
+    <string name="mod_ban_fail">Eraro dum malpermeso de la uzanto</string>
+    <string name="mod_ban_reason">Kialo de la malpermeso</string>
+    <string name="mod_ban_note_mod">Noto de la moderiganto (nedeviga)</string>
+    <string name="mod_ban_note_user">Mesaĝo al la uzanto (nedeviga)</string>
+    <string name="mod_ban_time">Daŭro de la malpermeso - lasu malplena por porĉiama</string>
+    <string name="mod_ban_title">Malpermesi /u/%1$s</string>
+    <string name="mod_remove_template">Forigita pro\u0020</string>
+    <string name="mod_remove_hint">Kialo de la forigo</string>
+    <string name="mod_remove_title">Kio estas la kialo por forigi ĉi tiun afiŝon?</string>
+    <string name="mod_remove_insert_draft">Enmeti malneton</string>
+    <string name="mod_flair_none_found">Neniu etikedo trovita por ĉi tiu subredito</string>
+    <string name="mod_distinguish">Distingi</string>
+    <string name="mod_undistinguish">Maldistingi</string>
+    <string name="mod_sticky">Alpingli</string>
+    <string name="mod_unsticky">Malalpingli</string>
+    <string name="reauth_complete">Reaŭtentigo kompleta!</string>
+    <string name="reauth_in_progress">Reaŭtentigante…</string>
+    <string name="reauth_failed">Ne eblis reaŭtentigi</string>
+
+    <plurals name="mod_btn_reports">
+        <item quantity="one">Vidi %d raporton</item>
+        <item quantity="other">Vidi %d raportojn</item>
+    </plurals>
+
     <!-- If he did -->
+    <string name="really_pin_submission_message">Afiŝo alpinglita</string>
+    <string name="really_unpin_submission_message">Afiŝo malalpinglita</string>
+
     <!-- Subreddit Wiki -->
+    <string name="wiki_err">Neniu vikio trovita</string>
+    <string name="wiki_err_msg">Ĉi tiu subredito ne havas vikion!</string>
+
     <!-- Subreddits -->
     <string name="subreddit_subscribers_string">%1$s abonantoj</string>
     <string name="subreddit_active_users_string_new">Nun %1$s ĉi tie</string>
+    <string name="subreddit_err_msg">La subredito %1$s ne troviĝis. Eble ĝi estas misskribita?</string>
+    <string name="subreddit_err_msg_new">La subredito %1$s ne troviĝis. Eble ĝi estas misskribita, aŭ vi ne havas aliron al ĉi tiu subredito.</string>
+    <string name="subreddit_err">Subredito ne trovita</string>
+
     <!-- Search -->
+    <string name="search_comments_hint">Serĉi komentojn</string>
+    <string name="search_goto">Iri al</string>
     <string name="search_title">Serĉi</string>
+    <string name="search_msg">Kion vi serĉas?</string>
+    <string name="search_all">Serĉi ĉion</string>
     <string name="search_subreddit">Serĉi en %1$s</string>
+    <string name="search_relevance">Graveco</string>
+    <string name="search_top">Plej bonaj</string>
+    <string name="search_new">Novaj</string>
     <string name="search_comments">Komentoj</string>
+    <string name="no_posts_found">Neniu afiŝo trovita</string>
+
     <!-- Settings -->
+    <string name="settings_reddit_prefs">Reddit-preferoj</string>
+    <string name="settings_accent_title">Redakti la akcentan koloron</string>
+    <string name="settings_delete_sub_settings">Ĉu vi vere volas forigi la agordojn por %1$s?</string>
+    <string name="settings_layout_default">Aranĝo de afiŝoj</string>
+    <string name="settings_link_album">Interna albumvido</string>
+    <string name="settings_link_peek">Rigardeti la enhavon</string>
+    <string name="settings_link_peek_description">Malebligas longajn klakojn sur la antaŭrigarda bildo</string>
+    <string name="settings_link_gif">Interna GIF-vido</string>
+    <string name="settings_link_hqgif">Altkvalitaj Gfycat-videoj</string>
+    <string name="settings_link_handling">Traktado de ligiloj</string>
+    <string name="settings_link_image">Interna bildvido</string>
+    <string name="settings_mail_check">Kontroli pri novaj mesaĝoj</string>
+    <string name="settings_mail_info">Ju pli alta la ofteco, des pli da baterio Slide eble uzos en la fono!</string>
+    <string name="settings_main_color_title">Redakti la ĉefan koloron</string>
+    <string name="settings_notification">Kontroli pri novaj mesaĝoj ĉiun %1$s</string>
+    <string name="settings_notification_newline">Kontroli pri novaj mesaĝoj ĉiun\n%1$s</string>
+    <string name="settings_notification_short">Kontroli ĉiun %1$s</string>
+    <string name="settings_disable_nsfw_photo">Kaŝi ĉiujn NSFW-bildojn</string>
+    <string name="settings_store_history">Konservi la historion</string>
+    <string name="settings_store_nsfw_history">Konservi la NSFW-historion</string>
+    <string name="settings_commentnav">Navigi inter patraj komentoj</string>
     <string name="share_link">Konigi ligilon</string>
+    <string name="posts_hidden_forever">Afiŝoj kaŝitaj por ĉiam</string>
     <string name="share_image">Konigi bildon</string>
     <string name="settings_libs">Malfermitkodaj bibliotekoj</string>
+    <string name="settings_about_libs">Pri la bibliotekoj</string>
+    <string name="settings_privacy">Privateca politiko</string>
     <string name="settings_bugs">Raporti cimojn</string>
+    <string name="settings_changelog">Vidi la ŝanĝoregistron</string>
+    <string name="settings_fabclear_msg">Tuŝeti la vakigan butonon forigos la afiŝojn el la nuna vido, sed ne kaŝos la afiŝojn por ĉiam. \nLonge premi la butonon kaŝos la afiŝojn por ĉiam!</string>
+    <string name="settings_fabclear">Vakigaj agoj de la ŝveba butono</string>
+    <string name="settings_notifdisabled">Sciigoj malebligitaj</string>
+    <string name="settings_colored_navigation_bar">Kolora naviga breto</string>
+    <string name="settings_always_black_statusbar">Nigra statobreto (sciiga breto)</string>
+    <string name="settings_colored_icon">Kolorigi la aplikaĵan piktogramon (eksperimenta)</string>
+    <string name="settings_colored_icon_desc">Eble postulas rekomencon de la telefono por funkcii. Tio ankaŭ forigos la piktogramon de via hejma ekrano.</string>
+    <string name="settings_filter_domain">Filtriloj de retregnomoj</string>
+    <string name="settings_filter_selfttext">Filtriloj de la teksto de afiŝoj</string>
+    <string name="settings_filter_title">Filtriloj de titoloj</string>
+    <string name="settings_prefs_reddit">Vidi ĉiujn preferojn de reddit.com</string>
+    <string name="settings_font_post">Tiparo de la titoloj de afiŝoj</string>
     <string name="settings_font_comment">Komenta tiparo</string>
+    <string name="settings_comment_crop">Tondi la ĉefan bildon en la komentvido</string>
+    <string name="settings_general_scroll_read">Marki afiŝojn kiel viditajn kiam vi rulumas preter ilin</string>
+    <string name="settings_link_chrome">Propraj langetoj</string>
+    <string name="settings_storage_location">Elekti konservlokon</string>
+    <string name="settings_storage_location_unset">Ankoraŭ ne agordita</string>
+    <string name="settings_set_storage_location">Dosieroj estos konservitaj al %s</string>
+    <string name="settings_general_immersive_mode">Enprofundiga plenekrana reĝimo</string>
+    <string name="settings_general_immersive_mode_desc">Kaŝi la statobreton kaj la navigan breton (eksperimenta)</string>
+    <string name="settings_general_old_swipe_mode">Malnova glita reĝimo</string>
+    <string name="settings_general_old_swipe_mode_desc">Malnova glita stilo de Slide. Celita por la 3-butona naviga reĝimo kaj la gestoj de Samsung.</string>
+    <string name="settings_general_hibernate">Daŭrigi kie mi haltis</string>
+    <string name="settings_general_hibernate_desc">Remalfermas la saman ekranon, ĉe la sama loko, montrante tion, kio jam estis ŝargita anstataŭ aktualigi. Ebligi ĉi tion aldonas markobutonon al la troflua menuo, kiu ŝaltas kaj malŝaltas la daŭrigon sen reveni ĉi tien.</string>
+
+    <string name="settings_general_title_drawer_items">Elementoj de la menubreto</string>
+    <string name="settings_general_subtitle_drawer_items">Elektu kiujn elementojn de la menubreto montri</string>
+
     <!-- Settings titles displayed in settings activity-->
+    <string name="settings_title_backup">Sekurkopiado kaj restaŭrado</string>
+    <string name="settings_title_default_theme">Ĉefa etoso</string>
     <string name="settings_title_general">Ĝenerala</string>
     <string name="settings_title_history">Historio</string>
     <string name="settings_title_notifications">Sciigoj</string>
+    <string name="settings_title_pro">Akiri Pro</string>
+    <string name="settings_title_sub_theme">Etosoj de subreditoj</string>
+    <string name="settings_title_sort">Defaŭlta ordigo</string>
+    <string name="settings_title_sort_frontpage">Ordigo de la ĉefpaĝo</string>
     <string name="settings_title_about">Pri</string>
+    <string name="settings_title_debug">Sencimigo</string>
+    <string name="settings_section_debug_reauth">Reaŭtentigo</string>
+    <string name="settings_debug_break_reauth">Rompi la reaŭtentigon</string>
+    <string name="settings_debug_break_reauth_desc">Haltigas la reaŭtentigon por ke la reaŭtentiga informstrio estu testebla. Riparebla: malŝaltu ĉi tion, poste ekigu reaŭtentigon.</string>
+    <string name="settings_debug_trigger_reauth">Ekigi reaŭtentigon</string>
+    <string name="settings_debug_trigger_reauth_desc">Komenci reaŭtentigon nun. Uzu ĉi tion por reakiri aliron post malŝalto de la baskulo.</string>
+    <string name="settings_title_multi_column">Plurkolumna</string>
+    <string name="settings_title_fab">Ŝveba aga butono</string>
     <string name="settings_title_comments">Komentoj</string>
+    <string name="settings_title_filter">Filtriloj</string>
     <string name="settings_title_font">Tiparo</string>
+    <string name="settings_section_general">Ĝenerala</string>
     <string name="settings_section_appearance">Aspekto</string>
+    <string name="settings_section_hibernation">Hibernado</string>
+    <string name="settings_section_other">Alia</string>
+    <string name="settings_section_browser">Foliumilo</string>
+    <string name="settings_section_internal_viewers">Internaj vidigiloj</string>
+    <string name="settings_section_custom_domains">Propraj retregnomoj</string>
+    <string name="settings_section_save_history">Konservado de la historio</string>
+    <string name="settings_section_clear_history">Vakigo de la historio</string>
+    <string name="settings_section_data_saving_mode">Datumŝpara reĝimo</string>
+    <string name="settings_section_data_saving_quality">Kvalito en datumŝpara reĝimo</string>
+    <string name="settings_comment_color">Koloraj indikiloj de la profundo de komentoj</string>
+    <string name="settings_volume_nav_comments">Navigi komentojn per la laŭtec-butonoj</string>
+    <string name="settings_commentnav_description">Ebligas malsupran breton kun navigaj sagoj</string>
+    <string name="settings_comment_collapse">Plene faldi komentojn</string>
+    <string name="settings_comment_collapse_description">Ankaŭ malebligas la animaciojn de komentoj</string>
+    <string name="settings_comment_collapse_default">Faldi la idajn komentojn defaŭlte</string>
+    <string name="settings_data_enable">Ebligi la datumŝparajn agordojn</string>
+    <string name="settings_data_video_quality">Preferi malaltkvalitajn videojn kiam datumŝparo estas ebligita</string>
+    <string name="settings_comments_collapse_deleted">Faldi forigitajn komentojn defaŭlte</string>
+    <string name="settings_comments_collapse_sticky">Ĉiam plene faldi la alpinglitan komenton</string>
+    <string name="settings_comments_collapse_blocked_users">Faldi komentojn de blokitaj uzantoj</string>
+    <string name="settings_comments_collapse_blocked_users_description">Ankaŭ ebligas Plene faldi komentojn</string>
+    <string name="settings_backup_occurs">La sekurkopio okazos je %1$s</string>
+    <string name="settings_backup_none">Neniu subredito estos sekurkopiita</string>
+    <string name="settings_backup_will_backup">\u0020estos sekurkopiita</string>
+    <string name="settings_backup_submission_only">nur la afiŝo</string>
+    <string name="settings_backup_comments">\u0020(komentoj)</string>
+    <string name="settings_filter_profile">Filtriloj de profiloj</string>
+    <string name="settings_subreddit_content_filters_till_restart">Enhavfiltriloj de subreditoj ĝis rekomenco</string>
+    <string name="settings_subredditspecific_selftext">Ĉiam montri antaŭrigardojn de la teksto en ĉi tiu subredito</string>
+    <string name="settings_font_system">Sistema</string>
+    <string name="settings_manage_subscriptions">Administri viajn abonojn</string>
+    <string name="settings_comments_swap_long">Interŝanĝi la agojn de longa premo kaj tuŝeto</string>
+    <string name="settings_redditprefs_over18">Mi estas pli ol 18-jara kaj volas vidi NSFW-enhavon</string>
+    <string name="settings_layout_view">Vidreĝimo</string>
+    <string name="settings_subredditspecific_bigpic">Ĉiam montri grandajn bildojn en ĉi tiu subredito</string>
+    <string name="settings_layout_picture_mode">Bildreĝimo</string>
+    <string name="settings_general_expanded_toolbar">Etendita ilobreta menuo</string>
+    <string name="settings_general_expanded_toolbar_desc">Montri pliajn opciojn en la ilobreto de la subredito</string>
+    <string name="settings_always_show_floating_action_button">Ĉiam montri la ŝveban agan butonon</string>
+    <string name="settings_always_show_floating_action_button_desc">Neniam kaŝi la ŝveban agan butonon dum rulumado</string>
+    <string name="settings_theme_tinting">Reĝimo de kolornuancigo de afiŝoj</string>
+    <string name="settings_layout_actionbar_mode">Reĝimo de la agbreto</string>
+    <string name="settings_theme_tint_outside_desc">Kolorigi la fonon nur en multreditoj, la ĉefpaĝo kaj all</string>
+    <string name="settings_layout_small_content_tag">Pli malgranda enhava etikedo</string>
+    <string name="settings_links_force_external">Devigi eksteran foliumilon</string>
+    <string name="settings_layout_show_domain">Montri la retregnomon en la informlinio</string>
+    <string name="settings_layout_show_content_type">Montri la enhavtipon en la informlinio</string>
+    <string name="settings_layout_thumbnail_flags">Montri kolorajn angulajn flagojn sur bildetoj</string>
+    <string name="settings_layout_show_votes_comments">Montri voĉdonojn kaj komentojn en la informlinio</string>
+    <string name="settings_general_comment_last_visit">Montri la nombron da komentoj ekde la lasta vizito</string>
+    <string name="settings_fab_create">Montri la ŝveban butonon \"krei komenton\"</string>
+    <string name="settings_right_handed_comment_menu">Dekstramana menuo por respondi al komentoj</string>
+    <string name="settings_reddit_description">Ĉi tiuj agordoj ŝanĝas tion, kion la Reddit-API redonas al Slide.\n\nPor vidi bildetojn en ĉiuj subreditoj, ebligu \'Ignori la aŭdvidajn preferojn de la subredito\'\n\nPor vidi la tutan NSFW-enhavon, malŝaltu \'Kaŝi NSFW-bildojn\' kaj ŝaltu \'Mi estas pli ol 18-jara\'</string>
+    <string name="settings_reddit_media_pref">Ignori la aŭdvidajn preferojn de la subredito</string>
+    <string name="settings_description_view_type">La vidtipoj efikas kaj sur la ĉefa vido kaj sur la vidoj de unuopaj subreditoj.\n\nKomenta panelo: la komentoj glitas el apud la afiŝoj kaj la stato de la komentpaĝo estas konservita post glito reen (por ke vi ne perdu vian lokon)\n\nNeniuj langetoj de subreditoj: malebligas gliton inter subreditoj\n\nLangetoj de subreditoj: glitu inter viaj subreditoj</string>
+    <string name="settings_short_description_view_type">La vidtipoj efikas kaj sur la ĉefa vido kaj sur la vidoj de unuopaj subreditoj</string>
+    <string name="settings_comment_hide_selftext_image">Kaŝi la ĉefan bildon en tekstaj afiŝoj</string>
+    <string name="settings_filter_flair">Filtriloj de etikedoj</string>
+    <string name="settings_view_type">Vidtipo</string>
+    <string name="settings_data">Datumŝparo</string>
+    <string name="settings_card_show_selftext">Montri la tekston de la afiŝo</string>
+    <string name="settings_card_selftext_paragraph">Montri la unuan alineon</string>
+    <string name="settings_card_selftext_ellipsize">Mallongigi al la unuaj 128 signoj</string>
+    <string name="settings_handling_external_desc">La retregnomoj enigitaj sube ĉiam malfermiĝos ekstere</string>
+    <string name="settings_handling_enterdomain">Enigu retregnomon aŭ parton de retregnomo</string>
     <string name="settings_section_content">Enhavo</string>
+    <string name="settings_backup_view">Vidi la sekurkopion</string>
+    <string name="settings_backup_err_no_explorer">Neniu dosierfoliumilo trovita, la dosiero troviĝas ĉe %1$s</string>
+    <string name="settings_about_version_copied_toast">Versinumero kopiita al la tondujo</string>
+    <string name="settings_theme_night_start_at">Komenci je\u0020</string>
+    <string name="settings_theme_night_end_at">Fini je\u0020</string>
+    <string name="settings_general_inbox_snd">Sono kaj vibrado</string>
+    <string name="settings_enable_notifs">Ebligi sciigojn pri la ricevujo</string>
+
     <!-- Quick setting toggles in the drawer -->
+    <string name="toggle_night_mode">Nokta reĝimo</string>
+    <string name="toggle_immersive_mode">Enprofundiga reĝimo</string>
     <string name="toggle_nsfw">Malkaŝi MDPL/NSFW-enhavon</string>
+    <string name="toggle_right_thumbnails">Dekstre vicigitaj bildetoj</string>
+    <string name="toggle_reader_mode">Uzi la legreĝimon</string>
+
     <!-- View types -->
+    <string name="view_type_tabs">Langetoj de subreditoj</string>
+    <string name="view_type_none">Neniuj langetoj de subreditoj</string>
+    <string name="view_type_comments">Komenta panelo</string>
+
     <!--Search methods -->
+    <string name="subreddit_search_method_title">Serĉmetodo por subreditoj</string>
+    <string name="subreddit_search_method_drawer">Serĉobreto en la menubreto</string>
+    <string name="subreddit_search_method_toolbar">Longa premo sur la titolo de la ilobreto</string>
+    <string name="subreddit_search_method_both">Kaj la menubreto kaj la titolo de la ilobreto</string>
+
     <!-- Back button behavior -->
+    <string name="back_button_behavior_title">Konduto de la reen-butono</string>
+    <string name="back_button_behavior_default">Fermi la aplikaĵon</string>
+    <string name="back_button_behavior_confirm_exit">Dialogo por konfirmi la eliron</string>
+    <string name="back_button_behavior_drawer">Malfermi la menubreton</string>
+
     <!-- Subscription managing -->
+    <string name="reorder_add_domain">Aldoni retregnomon</string>
+    <string name="reorder_add_subreddit">Aldoni subrediton</string>
+    <string name="reorder_fab_collection">Multredito</string>
+    <string name="reorder_fab_domain">Retregnomo</string>
+    <string name="reorder_fab_subreddit">Subredito</string>
+    <string name="reorder_add_subscribe">Aldoni kaj aboni</string>
+    <string name="reorder_remove_unsubscribe">Forigi kaj malaboni</string>
+    <string name="reorder_move">Movi supren</string>
+    <string name="reorder_domain_placeholder">\u0020(nur la retregnomo)</string>
+    <string name="reorder_not_found_err">Subredito ne trovita, jen kelkaj sugestoj</string>
     <string name="reorder_subscribed_toast">Abonis al /r/%1$s</string>
     <string name="reorder_unsubscribed_toast">Malabonis el /r/%1$s</string>
+    <string name="sorting_faq"><b>Kiel mi aktualigas subreditojn?</b>\nPor aktualigi subreditojn, klaku la aktualigan piktogramon en la ilobreto!\n\n<b>Mi malabonis kelkajn subreditojn, sed ili ankoraŭ estas en la listo!</b>\nSlide konvertas subreditojn malabonitajn en la foliumilo en neformalajn abonojn. Por forigi ilin, longe premu la subrediton kaj klaku forigi!\n\n<b>Kiel mi uzas kolektojn?</b>\nPor krei kolekton, klaku la ŝveban butonon + kaj elektu \'Krei kolekton\'. Tio permesas al vi havi plurajn subreditojn agantajn kiel unu subredito en la ĉefa ekrano!</string>
+    <string name="alphabetize_subreddits">Alfabetigi la subreditojn</string>
+    <string name="sync_subscriptions">Sinkronigi la abonojn</string>
+    <string name="cannot_be_undone">Tio ne povas esti malfarita.</string>
     <string name="deleting">Forigas...</string>
+    <string name="create_or_import_multi">Ĉu vi ŝatus krei novan multrediton aŭ importi multrediton?</string>
+    <string name="sub_added">Subredito aldonita!</string>
+    <string name="reorder_subs_FAQ">Oftaj demandoj pri reordigo de subreditoj</string>
+    <string name="subscribe_to">Aboni /r/%1$s</string>
+    <string name="unsubscribe_from">Malaboni /r/%1$s</string>
+    <string name="btn_add_to_sublist">ALDONI AL LA SUBREDITLISTO</string>
+    <string name="btn_remove_from_sublist">FORIGI EL LA SUBREDITLISTO</string>
+    <string name="just_unsub">NUR MALABONI</string>
     <string name="subscribe_caps">ABONI</string>
     <string name="unsubscribe_caps">MALABONI</string>
-    <!-- Save categories -->
+    <string name="reorder_subreddits_title">Elektu subrediton por aldoni</string>
+    <string name="reorder_add_or_search_subreddit">Aldoni aŭ serĉi subrediton</string>
+    <string name="reorder_subreddit_name">Nomo de la subredito</string>
+    <string name="reorder_remove_title">Ĉu forigi ĉi tiun subrediton?</string>
+    <string name="reorder_sync_complete">Sinkronigo kompleta</string>
+    <string name="reorder_loading_title">Ŝargante viajn subreditojn</string>
+    <string name="reorder_url_err">Nevalida URL</string>
+
+    <!-- Saved tags -->
+    <string name="tag_set_name_hint">Nomo de la etikedo</string>
+    <string name="tag_tag_action">ETIKEDI</string>
+    <string name="profile_tag_select">Etikedoj</string>
+    <string name="profile_saved_tags">Konservitaj etikedoj</string>
+    <string name="tag_builtin_all">Ĉiuj</string>
+    <string name="tag_builtin_posts">Afiŝoj</string>
+    <string name="tag_builtin_comments">Komentoj</string>
+    <string name="tag_types_header">Tipoj</string>
+    <string name="tag_post_types_header">Tipoj de afiŝoj</string>
+    <string name="tag_custom_header">Propraj etikedoj</string>
+    <string name="tag_new">Nova etikedo</string>
+    <string name="tag_manage">Administri etikedojn</string>
+    <string name="tag_add">Aldoni etikedon</string>
+    <string name="tag_none_yet">Ankoraŭ neniu etikedo</string>
+    <string name="tag_rename">Alinomi</string>
+    <string name="tag_delete_confirm">Ĉu vi certas, ke vi volas forigi \"%1$s\"? Elementoj kun ĉi tiu etikedo ne estos forigitaj.</string>
+    <string name="tag_name_used_title">Nomo jam uzata</string>
+    <string name="tag_name_used">Etikedo kun tiu nomo jam ekzistas, bonvolu elekti unikan nomon.</string>
+    <string name="tag_name_reserved">Tiu nomo estas rezervita, bonvolu elekti alian.</string>
+
     <!-- Setting subheaders -->
+    <string name="sorting">Ordigoj</string>
+    <string name="display">Montrado</string>
+    <string name="images">Bildoj</string>
+    <string name="storage">Memoro</string>
     <string name="app_theme">Apa etoso</string>
+    <string name="tinting">Kolornuancigo</string>
+    <string name="post_info">Informoj pri la afiŝo</string>
+    <string name="post_buttons">Butonoj de la afiŝo</string>
+    <string name="navigation">Navigado</string>
+    <string name="collapse_comments">Faldaj agoj</string>
     <string name="nsfw">MDPL/NSFW-enhavo</string>
+    <string name="view_reddit_settings">Malfermi la agordojn de Reddit en foliumilo</string>
+    <string name="font_styles">Tiparaj stiloj</string>
+
     <!-- Titles displayed in action bar / head / recents overview-->
+    <string name="title_subreddit_settings">Etosoj kaj aranĝoj de subreditoj</string>
     <string name="title_edit_theme">Redakti etoson</string>
     <string name="title_submit_post">Afiŝi</string>
+    <string name="title_crosspost">Krucafiŝo</string>
     <string name="title_settings">Agordoj</string>
     <string name="title_share">Konigi per</string>
+    <string name="title_login">Ensaluti al Reddit</string>
+    <string name="title_multireddits">Multreditoj</string>
+    <string name="title_users">Uzantoj</string>
+    <string name="title_inbox">Ricevujo</string>
     <string name="title_theme_settings">Etoso</string>
+    <string name="title_create_multi">Krei multrediton</string>
+
     <!-- Offline mode -->
+    <string name="offline_msg">Bonvolu konektiĝi kaj aktualigi la subrediton por fari tion</string>
+    <string name="offline_last_update">Laste ĝisdatigita %1$s</string>
+    <string name="offline_comments_not_loaded">Bonvolu reveni enreten kaj elekti ‘Kaŝmemorigi komentojn’ el la 3-punkta menuo por vidi komentojn eksterrete</string>
+    <string name="offline_no_content_found">Neniu eksterreta enhavo trovita</string>
+    <string name="offline_enter_online">Eniri enretan reĝimon</string>
+    <string name="offline_caching_title">Kaŝmemorigante %1$s</string>
+    <string name="offline_caching_complete">Kaŝmemorigo kompleta</string>
+
     <!-- Website -->
+    <string name="website_external">Malfermi en ekstera foliumilo</string>
+
+    <plurals name="reorder_subs_added">
+        <item quantity="one">%d subredito aldonita</item>
+        <item quantity="other">%d subreditoj aldonitaj</item>
+    </plurals>
+
     <!-- Time -->
     <string name="time_just_now">Ĵus</string>
     <plurals name="time_years">
@@ -293,42 +940,464 @@
         <item quantity="one">%d sekundo</item>
         <item quantity="other">%d sekundoj</item>
     </plurals>
+
     <!-- Time: shorthand durations for example 1 hour → 1h -->
     <string name="time_years_short">%dj</string>
     <string name="time_days_short">%dt</string>
     <string name="time_hours_short">%dh</string>
     <string name="time_minutes_short">%dm</string>
+
     <!-- Strings present during the login process -->
+    <string name="login_subscribe_rslideforreddit">Ĉu aboni /r/slidereddit?</string>
+    <string name="login_subscribe_rslideforreddit_desc">Ĉu vi ŝatus aboni /r/slidereddit por la plej novaj novaĵoj kaj por raporti problemojn?</string>
+    <string name="login_sync_colors">Ĉu sinkronigi la kolorojn nun?</string>
+    <string name="login_sync_colors_desc">Ĉu vi ŝatus sinkronigi la kolorojn de viaj subreditoj nun? Tio fareblas poste en Agordoj → Etosoj de subreditoj</string>
+    <string name="login_authenticating">Slide aŭtentigas</string>
+    <string name="login_starting">Preparante ĉion!</string>
+    <string name="login_starting_desc">Tio devus daŭri nur sekundon…</string>
+
     <!-- Over 18 prompt when visiting a NSFW subreddit -->
-    <!-- Subreddit color synchronization - https://redd.it/41054l -->
+    <string name="over18_title">/r/%1$s enhavas plenkreskulan enhavon</string>
+    <string name="over18_desc">Ĉu vi estas pli ol dekok-jara kaj preta vidi plenkreskulan enhavon?</string>
+    <string name="over18_desc_loggedout">Ensalutu por malebligi ĉi tiun averton porĉiame</string>
+    <string name="over18_desc_loggedin">Vi povas malebligi ĉi tion porĉiame en Agordoj → Reddit-preferoj → Montri NSFW-enhavon</string>
+
+    <!-- Subreddit color synchronization - https://reddit.com/comments/41054l -->
+    <string name="color_sync_complete">Sinkronigo kompleta</string>
+    <plurals name="color_sync_colored">
+        <item quantity="one">%d subredito estis kolorigita</item>
+        <item quantity="other">%d subreditoj estis kolorigitaj</item>
+    </plurals>
+
     <!-- Discover section: find -->
+    <string name="discover_title">Malkovri</string>
     <string name="discover_search">Serĉi terminoj aŭ temoj</string>
     <string name="discover_popular">Popularaj</string>
+    <string name="discover_trending">Populariĝantaj</string>
+
     <!-- Subreddit post notifications -->
+    <string name="sub_post_notifs_title">Ĉu esti sciigita pri novaj afiŝoj en\n/r/%1$s?</string>
+    <string name="sub_post_notifs_title_settings">Ĉu esti sciigita pri novaj afiŝoj?</string>
     <string name="sub_post_notify">Sciigi</string>
+    <string name="sub_post_notifs_threshold">Sojlo de la poentaro</string>
+    <string name="sub_post_notifs_err">Vi povas aldoni sciigojn nur al unuopaj subreditoj</string>
+    <string name="sub_post_notifs_settings_none">Neniu subredito por sciigi</string>
+    <string name="sub_post_notifs_settings_search">Serĉi la nomon de subredito</string>
     <string name="sub_post_notifs_notification_title">Nova afiŝo en /r/%1$s</string>
+    <string name="sub_post_notifs_notification_btn">Ĉesi sekvi /r/%1$s</string>
+    <string name="title_sub_post_notifs">Sciigoj pri afiŝoj en subreditoj</string>
+
     <!-- Internal browser -->
+    <string name="internal_browser_extracting_error">Bedaŭrinde, la artikolo ne povis esti eltirita</string>
+    <string name="internal_browser_storecookies">Konservi la kuketojn de la retejo</string>
+    <string name="internal_browser_readermode">Legreĝimo</string>
+
     <!-- Live thread -->
+    <string name="livethread_loading_title">Ŝargante la rektan fadenon…</string>
+    <string name="livethread_not_found">Rekta fadeno ne trovita</string>
+    <string name="livethread_recents_title">Rekta fadeno: %1$s</string>
+
     <!-- Used when viewing media -->
     <string name="mediaview_notif_title">Elŝutas bildon...</string>
+    <string name="mediaview_notif_video">Elŝutante videon…</string>
+    <string name="mediaview_notif_text">Elŝuto daŭras</string>
     <string name="mediaview_save">Konservi %1$s</string>
     <string name="mediaview_saving">Konservas %1$s</string>
+
     <!-- Drafts -->
+    <string name="choose_draft">Elektu malneton</string>
+    <string name="dialog_no_drafts">Ankoraŭ neniu malneto</string>
+    <string name="dialog_no_drafts_msg">Vi povas aldoni malneton klakante la piktogramon \'konservi\' en la redaktilobreto!</string>
+    <string name="msg_save_draft">Mesaĝo konservita kiel malneto</string>
+    <string name="manage_drafts">Administri malnetojn</string>
+    <string name="really_delete_drafts">Ĉu vere forigi ĉi tiujn malnetojn?</string>
+
     <!-- Strings for widgets -->
     <string name="widget_theme_dark">MALLUMA</string>
     <string name="widget_theme_light">LUMA</string>
     <string name="widget_theme_clear">KLARA</string>
+    <string name="widget_posttype_title">Tipo de afiŝo</string>
     <string name="widget_posttype_list">LISTO</string>
     <string name="widget_posttype_bigpic">BILDEGO</string>
+    <string name="widget_posttype_compact">KOMPAKTA</string>
+    <string name="widget_subname_hint">Nomo de la subredito</string>
+    <string name="widget_visuals">Aspekto</string>
     <string name="widget_content">Enhavo</string>
+    <string name="widget_loading">Ŝargante…</string>
     <string name="widget_creation_title">Nova fenestraĵo</string>
+    <string name="shortcut_creation_title">Nova ŝparvojo</string>
+
     <!-- Strings for alert dialogs -->
+    <string name="force_change_subscription">Ne eblis ŝanĝi la abonon</string>
+    <string name="force_change_subscription_desc">Ĉu vi tamen ŝatus ŝanĝi ĝin loke?</string>
+    <string name="never_load_images">Ne ŝargi iujn ajn bildojn</string>
+    <string name="load_low_quality">Ŝargi malaltkvalitajn bildojn (maks. 320x320)</string>
+    <string name="load_medium_quality">Ŝargi mezkvalitajn bildojn (maks. 640x640)</string>
+    <string name="load_high_quality">Ŝargi altkvalitajn bildojn (maks. 1080x1080)</string>
     <string name="choose_color_title">Elekti koloron</string>
+    <string name="enter_text_to_filter_click_enter_to_add">Enigu tekston por serĉi, premu enen por aldoni filtrilon</string>
+    <string name="mode_desktop_compact">Kompakta labortabla</string>
+    <string name="show_content_type_text_beside_links">Montri la tekston de la enhavtipo apud la ligiloj</string>
+    <string name="comment_shadowbox">Komenta ombrokesto</string>
+
     <!-- Sidebar strings (multis, flairs) -->
+    <string name="sidebar_select_flair">Elekti etikedon</string>
+    <string name="sidebar_select_flair_text">Agordi la tekston de la etikedo</string>
+    <string name="sidebar_findingmods">Serĉante moderigantojn</string>
+    <string name="snackbar_flair_success">Etikedo sukcese agordita</string>
+    <string name="snackbar_flair_error">Eraro dum agordo de la etikedo, reprovu baldaŭ</string>
+    <string name="sidebar_submods">Moderigantoj de /r/%s</string>
+    <string name="sidebar_flair">Etikedo: %1$s</string>
+    <string name="sidebar_notfound">Neniu flanka breto trovita</string>
+    <plurals name="reorder_selected">
+        <item quantity="one">"%d elektita"</item>
+        <item quantity="other">"%d elektitaj"</item>
+    </plurals>
+
     <!--Filtering dialog -->
+    <string name="filter_title">Kion vi ŝatus filtri?</string>
+    <string name="filter_posts_sub">Afiŝojn el /r/%1$s</string>
+    <string name="filter_posts_user">Afiŝojn de /u/%1$s</string>
+    <string name="filter_posts_urls">Afiŝojn ligantajn al %1$s</string>
+    <string name="filter_open_externally">Malfermi %s-URL-ojn ekstere</string>
+    <string name="filter_posts_flair">Etikedon \"%1$s\" el %2$s</string>
+    <string name="filter_btn">Filtri</string>
+
     <!-- Caching -->
+    <string name="cache_no_comments_found">Neniu komento trovita</string>
+    <string name="cache_no_comments_found_snackbar">Neniu kaŝmemorigita komento trovita</string>
+    <string name="cache_no_comments_found_message">Ĉi tiu afiŝo havas neniun kaŝmemorigitan komenton. Por kaŝmemorigi komentojn estonte, klaku la 3-punktan menuon en la ĉefa ekrano kaj klaku \'Kaŝmemorigi komentojn\', aŭ agordu Aŭtomatan kaŝmemorigon en la langeto Eksterreta enhavo en la naviga menubreto</string>
+    <string name="autocache_subreddits">Subreditoj por aŭtomata kaŝmemorigo</string>
+    <string name="autocache_time">Horo de la aŭtomata kaŝmemorigo</string>
+    <string name="cache_subreddits_now">Kaŝmemorigi la subreditojn nun</string>
+    <string name="cache_wifi_only">Kaŝmemorigi nur per WiFi</string>
+    <string name="comments_depth">Profundo de la kaŝmemorigotaj komentoj</string>
+    <string name="comments_count">Nombro da kaŝmemorigotaj komentoj</string>
+
     <!-- Saving location setting -->
+    <string name="set_save_location">Agordi la konservlokon de la aŭdvidaĵoj</string>
+    <string name="set_save_location_msg">La konservloko de la aŭdvidaĵoj de Slide ne estas agordita.</string>
+
     <!-- Report flow -->
     <string name="btn_report">Raporti</string>
+    <string name="report_post">Raporti la afiŝon</string>
+    <string name="report_comment">Raporti la komenton</string>
+    <string name="report_loading">Ŝargante la kialojn…</string>
+    <string name="report_sub_rules">Reguloj de /r/%s</string>
+    <string name="report_site_rules">Reguloj de Reddit</string>
+    <string name="report_another_reason">Alia kialo</string>
+    <string name="report_other">Alia</string>
+    <string name="input_reason_for_report">Kialo de la raporto</string>
+    <string name="msg_report_sent">Raporto sendita</string>
+
     <!-- Unsorted ¯\\_(ツ)_/¯ -->
+    <string name="comment_load_more_number_unknown">Ŝargi pliajn komentojn</string>
+    <string name="card_right_thumb">Dekstre vicigita bildeto</string>
+    <string name="setting_filter_subreddits">Filtriloj de subreditoj</string>
+    <string name="subreddit_theme">Etoso de la subredito</string>
+    <string name="dialog_choose_subreddits_to_edit">Elektu subreditojn por redakti</string>
+    <string name="dialog_color_sync_title">Kolorsinkronigo</string>
+    <string name="dialog_color_sync_message">Ĉi tio provos preni la ‘ŝlosilan koloron’ de la subredito agorditan de la moderigantoj. Ĝi ne anstataŭigos jam kolorigitajn subreditojn.</string>
+    <string name="fab_hide">Kaŝi viditajn afiŝojn</string>
+    <string name="fab_create">Krei novan afiŝon</string>
+    <string name="fab_disabled">Malebligita</string>
+    <string name="fab_search">Serĉi afiŝojn</string>
+    <string name="handling_internal_browser">Interna foliumilo</string>
+    <string name="handling_external_browser">Ekstera foliumilo</string>
+    <string name="mode_list">Listo</string>
+    <string name="mode_centered">Karto kun centrigita bildo</string>
+    <string name="mode_card">Karto</string>
+    <string name="mode_thumbnail">Bildeto</string>
+    <string name="mode_no_thumbnails">Neniu bildeto</string>
+    <string name="mode_big_thumbnails">Larĝaj bildetoj</string>
+    <string name="mode_cropped">Tondita granda bildo</string>
+    <string name="mode_letterbox">Granda bildo kun nigraj strioj</string>
+    <string name="mode_bigpic">Granda bildo</string>
+    <string name="press_actionbar">Premu la sagon por montri la agbreton</string>
+    <string name="show_top_right">Montri supre dekstre</string>
+    <string name="show_bottom_right">Montri malsupre dekstre</string>
+    <string name="small_tag_disabled">Malebligita</string>
+    <string name="tap_actionbar">Longe premu por la agbreto</string>
+    <string name="always_actionbar">Ĉiam montri la agbreton</string>
+    <string name="sub_content_filter">Enhavfiltrilo de la subredito</string>
+    <string name="submission_share_reddit_url">Kunhavigi la komentojn</string>
+    <string name="filter_content">Filtri ĉi tiun enhavon</string>
+    <string name="content_to_show">Enhavo montrota en %1$s</string>
+    <string name="save_for_offline_viewing">Konservi afiŝojn por eksterreta legado</string>
+    <string name="btn_collapse_children_all">Faldi la idajn komentojn</string>
+    <string name="btn_open_content">Malfermi la enhavon</string>
+    <string name="enter_text_to_filter_click_enter_to_add_flair">Enigu tekston por filtri (subredito:etikeda_teksto), klaku enen por aldoni</string>
+    <plurals name="filter_count">
+        <item quantity="one">%1$d filtrilo (%2$d maks. montrataj)</item>
+        <item quantity="other">%1$d filtriloj (%2$d maks. montrataj)</item>
+    </plurals>
+    <string name="filter_limit_reached">Montrante la unuajn %1$d el %2$d. Serĉu por malvastigi la rezultojn.</string>
+    <string name="datasave_always">Poŝtelefonaj datumoj kaj Wi-Fi</string>
+    <string name="datasave_mobile">Poŝtelefonaj datumoj</string>
+    <string name="never">Neniam</string>
+    <string name="multi_column_force_full">Devigi la plenan komentvidon</string>
+    <string name="submission_info_locked">Ĉi tio estas ŝlosita afiŝo. Vi ne povos komenti.</string>
+    <string name="card_background_tint">Fono de la karto</string>
+    <string name="subreddit_name_tint">Nomo de la subredito</string>
+    <string name="login_failed_err_decline">Certiĝu, ke vi ne elektis ‘Decline’ en la lasta ekrano, kaj reprovu post unu minuto</string>
+    <string name="login_unsupported_redirect_uri">La agordita alidirekta URI (%1$s) ne povas esti ricevita de foliumilo, do la ensaluto ne povas kompletiĝi. Uzu anstataŭe la enaplikaĵan WebView-ensalutmetodon, aŭ agordu subtenatan alidirektan URI en la Agordoj.</string>
+    <string name="login_unsupported_redirect_uri_title">Ensaluto malsukcesis</string>
+    <string name="login_failed_oauth_error_page">Ensaluto malsukcesis — Reddit redonis eraron anstataŭ kompletigi la ensaluton. Kontrolu vian klientan identigilon kaj alidirektan URI en la Agordoj.</string>
+    <string name="tutorial_swipe_navigation">Glita navigado</string>
+    <string name="tutorial_swipe_description">Glitu de la maldekstra rando por eliri.\n\nTio validas por bildoj, GIF-oj, albumoj, agordoj kaj pli!</string>
+    <string name="handling_browser">Retfoliumilo</string>
+    <string name="submit_replies_to_inbox">Sendi la respondojn al la ricevujo</string>
+    <string name="btn_open_comments">Malfermi la komentojn</string>
+    <string name="btn_preview">Antaŭrigardo</string>
+    <string name="default_comment_sort">Defaŭlta ordigo de komentoj</string>
+    <string name="content_deleted">[forigita]</string>
+    <string name="thread_continue">Daŭrigi ĉi tiun fadenon</string>
+    <string name="type_selftext">Teksta afiŝo</string>
+    <string name="type_selftexts">Tekstaj afiŝoj</string>
+    <string name="submission_unhide">Malkaŝi la afiŝon</string>
+    <string name="submission_info_unhidden">Afiŝo malkaŝita</string>
+    <string name="msg_sent_success">Mesaĝo sendita</string>
+    <string name="msg_sent_failure">La mesaĝo ne sendiĝis</string>
+    <string name="msg_send_user_dne">Tiu uzanto ne ekzistas</string>
+    <string name="editor_actions_quote_comment">Elektu tekston por citi</string>
+    <string name="guest">Gasto</string>
+    <string name="album_slide_view">Glita albumvido</string>
+    <string name="album_grid">Albuma krado</string>
+    <string name="open_externally">Malfermi ekstere</string>
+    <string name="vertical_album_view">Vertikala albumvido</string>
+    <string name="download_album">Elŝuti la albumon</string>
+    <string name="download_gallery">Elŝuti la galerion</string>
+    <string name="compose_message">Verki mesaĝon</string>
+    <string name="mark_all_as_read">Marki ĉion kiel legitan</string>
+    <string name="clear_subreddit_history">Vakigi la historion de subreditoj</string>
+    <string name="clear_submission_history">Vakigi la historion de afiŝoj</string>
+    <string name="alert_history_cleared">Historio vakigita!</string>
+    <string name="manage_offline_content">Administri la eksterretan enhavon</string>
+    <string name="go_offline">Iri eksterreten</string>
+    <string name="sidebar_edit_flair">Redakti vian etikedon</string>
+    <string name="go_online_view_content">Bonvolu konektiĝi por vidi ĉi tiun enhavon</string>
+    <string name="help">Helpo</string>
+    <string name="upvote_percentage">Montri la procenton de pozitivaj voĉdonoj</string>
+    <string name="view_subreddits">Vidi la subreditojn</string>
+    <string name="clear_saved_subreddits">Vakigi ĉiujn konservitajn subreditojn</string>
+    <string name="download_the_slide_video_player_plugin">Elŝuti la kromprogramon Slide Video Player</string>
+    <string name="btn_suggest_title">Sugesti titolon</string>
+    <string name="navigate_comments_since">Komentoj pli novaj ol…</string>
+    <string name="btn_offline">Eniri eksterretan reĝimon</string>
+    <string name="discard_comment_title">Ĉu forĵeti la komenton?</string>
+    <string name="comment_discard_msg">Ĉu vi vere volas forĵeti vian komenton?</string>
+    <string name="backup_saved_downloads">Sekurkopio konservita en la elŝutujo</string>
+    <string name="really_remove_subreddit_title">Ĉu vere forigi ĉi tiun subrediton?</string>
+    <string name="choose_sync_time">Elektu horon por la sinkronigo</string>
+    <string name="account_suspended">Ĉi tiu konto estas suspendita</string>
+    <string name="clear_all_sub_themes">Ĉu vakigi ĉiujn etosojn de subreditoj?</string>
+    <string name="clear_all_sub_themes_msg">Vi ne povas malfari ĉi tiun agon</string>
+    <string name="title_not_found">Titolo ne trovita</string>
+    <string name="really_delete_submission">Ĉu vere forigi ĉi tiun afiŝon? Vi ne povas malfari tion</string>
+    <string name="comment_unstickied">Komento malalpinglita</string>
+    <string name="comment_stickied">Komento alpinglita</string>
+    <string name="comment_undistinguished">Komento maldistingita</string>
+    <string name="comment_distinguished">Komento distingita</string>
+    <string name="comment_removed">Komento forigita</string>
+    <string name="set_nav_mode">Agordi la navigan reĝimon</string>
+    <string name="auto_hide_the_comment_nav_bar">Aŭtomate kaŝi la komentan navigan breton</string>
+    <string name="rate_slide">Taksi Slide</string>
+    <string name="edit_query">Redakti la serĉesprimon</string>
+    <string name="share_slide">Kunhavigi Slide</string>
+    <string name="open_clipboard_reddit_link">Malfermi la Reddit-ligilon en la tondujo</string>
+    <string name="clipboard_no_reddit_link">Neniu Reddit-ligilo en la tondujo</string>
+    <string name="open_links_externally">Ĉiam malfermi ĉi tiun gastiganton ekstere</string>
+    <string name="hide_read_posts">Kaŝi legitajn afiŝojn</string>
+    <string name="gallery_mode">Galeria reĝimo</string>
+    <string name="settings_gallery_grid">Montri galeriajn afiŝojn kiel kradon</string>
+    <string name="gallery_grid_image">Galeria bildo %1$d el %2$d</string>
+    <string name="gallery_grid_overflow">+%1$d</string>
+    <string name="friends_sort_error">/r/friends ne estas ordigebla</string>
+    <string name="shadowbox_comments_nolinks">Neniu ligilo trovita en la komentoj</string>
+    <string name="draw_undo">Malfari</string>
+    <string name="empty_preview_text">Nenio videbla ĉi tie ¯\\_(ツ)_/¯</string>
+    <string name="theme_red_shift">Ruĝa ŝovo</string>
+    <string name="view_sub_sidebar">Vidi la flankan breton de la subredito</string>
+    <string name="mod_log">Moderiga protokolo</string>
+    <string name="navigation_bar_vote_gestures">Voĉdonaj gestoj en la naviga breto</string>
+    <string name="nav_gestures_description">Voĉdonu pozitive kaj negative glitante sur la komentaj navigaj sagoj</string>
+    <string name="subreddit_sidebar_progress">Prenante la flankan breton…</string>
+    <string name="manage_your_subreddits">Administri viajn subreditojn</string>
+    <string name="enlarge_links">Grandigi la ligilojn</string>
+    <string name="enlarge_links_warning">Povas kaŭzi, ke kelkaj linioj estu pli grandaj ol aliaj, sed faciligas la tuŝadon de ligiloj</string>
+    <string name="type_tumblr">Tumblr</string>
+    <string name="type_tumblrs">Tumblr-oj</string>
+    <string name="type_nsfw_tumblr">NSFW-Tumblr</string>
+    <string name="submission_info_contest">Ĉi tiu fadeno estas en konkursa reĝimo. Vi ne povas ŝanĝi la ordigon.</string>
+    <string name="sub_post_notifs_msg">Slide kontrolos pri novaj afiŝoj kiam ĝi kontrolas pri poŝto (la poŝtaj sciigoj devas esti ebligitaj)</string>
+    <string name="mod_ban_reason_required">Kialo estas deviga</string>
+    <string name="settings_abbreviate_post_scores">Mallongigi la poentarojn de afiŝoj (ekz. 24,0k)</string>
+    <string name="settings_wide_depth_indicators">Larĝaj indikiloj de la profundo de komentoj</string>
+    <string name="settings_link_reader_mode_title">Uzi la legreĝimon</string>
+    <string name="settings_link_reader_mode_description">Malfermi ĉiujn ligilojn en la legreĝimo. La tipo de foliumilo estos uzata kiam vi malfermas el la legreĝimo.</string>
+    <string name="settings_link_reader_night">Kunligi la legreĝimon kaj la noktan reĝimon</string>
+    <string name="theme_pixel">Pixel</string>
+    <string name="save_images_to_subreddit_specific_subfolders">Konservi bildojn en subdosierujojn laŭ subredito</string>
+    <string name="description_save_subfolders">Funkcias en la afiŝaj kaj komentaj vidoj</string>
+    <string name="save_media_to_type_specific_subfolders">Konservi aŭdvidaĵojn en subdosierujojn laŭ tipo</string>
+    <string name="description_save_type_subfolders">Bildoj iras al \"images\", videoj kaj GIF-oj al \"videos\"</string>
+    <string name="show_image_download_button">Elŝuta ŝparvojo</string>
+    <string name="description_image_download_button">Montri la elŝutan butonon en la bildvidigilo</string>
+    <string name="content_settings">Enhavaj agordoj</string>
+    <string name="setting_titleTop">Montri la titolon super la informlinio</string>
+    <string name="setting_notification_piggybacking">Sciiga kunveturado</string>
+    <string name="setting_notification_piggybacking_desc">Kontroli pri poŝto nur kiam la oficiala Reddit-aplikaĵo ricevas puŝan sciigon</string>
+    <string name="install_notif_piggyback">Instalu la oficialan Reddit-aplikaĵon por ebligi la Sciigan kunveturadon</string>
+    <string name="success_block_user">Uzanto sukcese blokita</string>
+    <string name="err_unblock_user">Eraro dum malblokado de la uzanto</string>
+    <string name="success_unblock_user">Uzanto sukcese malblokita</string>
+    <string name="settings_highlight_time_desc">Postulas, ke \'Montri la nombron da komentoj ekde la lasta vizito\' estu ebligita en Agordoj &gt; Aranĝo de afiŝoj</string>
+    <string name="settings_colored_time">Kolora tempa veziko por novaj komentoj</string>
+    <string name="theme_deep">Profunda</string>
+    <string name="type_vreddit">Reddit-video</string>
+    <string name="authors_above">Aŭtoroj supre</string>
+    <string name="btn_crosspost">Krucafiŝi</string>
+    <string name="btn_reset_color">RESTARIGI LA KOLORON</string>
+    <string name="settings_shortlink_description">La ligiloj estos kunhavigitaj kiel \'https://reddit.com/comments/\'</string>
+    <string name="settings_shortlink">Kunhavigi Reddit-mallongligilon kiam eblas</string>
+    <string name="disable_replies_comment">Malebligi la respondojn al la komento en la ricevujo</string>
+    <string name="replies_disabled_comment">Respondoj al la komento malebligitaj</string>
+    <string name="replies_enabled_comment">Respondoj al la komento ebligitaj</string>
+    <string name="replies_switch_accounts">Ŝanĝi al alia konto</string>
+    <string name="search_settings">Serĉi en la agordoj</string>
+    <string name="show_collapse_expand_nav_bar">Montri la faldan/etendan butonon en la komenta naviga breto</string>
+    <string name="page_not_found">Paĝo ne trovita</string>
+    <string name="page_does_not_exist">La paĝo, kiun vi petis, ne ekzistas</string>
+    <string name="back_button_behavior_goto_first">Iri al la unua subredito</string>
+    <string name="settings_hide_post_awards">Kaŝi la premiojn</string>
+    <string name="settings_hide_comment_awards">Kaŝi la premiojn</string>
+    <string name="settings_title_markdown">Markdown</string>
+    <string name="settings_markdown_new_reddit">Markdown laŭ la stilo de la nova Reddit</string>
+    <string name="settings_markdown_new_reddit_desc">Prezentas kodblokojn kaj formatadon kiel la nova Reddit (malŝaltita uzas la prezentilon de la malnova Reddit)</string>
+    <string name="comment_render_other">Montri la alian prezentadon</string>
+    <string name="recover_post">Reakiri la afiŝon</string>
+    <string name="recover_loading">Prenante la originalon el la arkivo…</string>
+    <string name="recover_post_failed">Ne eblis reakiri ĉi tiun afiŝon</string>
+    <string name="recover_comment">Reakiri la komenton</string>
+    <string name="recover_comment_failed">Ne eblis reakiri ĉi tiun komenton</string>
+    <string name="markdown_preview_new_reddit">Prezentado de la nova Reddit</string>
+    <string name="markdown_preview_old_reddit">Prezentado de la malnova Reddit</string>
+    <string name="high_colorspace_images">Bildoj kun granda kolorspaco</string>
+    <string name="description_high_colorspace">Ŝargas la plenan kolorspacon de la bildoj, kio povas konduki al pli alta memoruzo</string>
+    <string name="wide_color_gamut">Larĝa kolorgamo</string>
+    <string name="description_wide_color_gamut">Prezenti la aŭdvidajn vidigilojn en larĝa kolorgamo. Povas paligi la kolorojn sur kelkaj OLED-ekranoj</string>
+    <string name="comment_emote_animation">Animacio de la emocibildoj en komentoj</string>
+    <string name="description_comment_emote_animation">Difinas ĉu la ne-Giphy-emocibildoj en komentoj estas animaciitaj aŭ ne</string>
+    <string name="comment_image_size">Grandeco de la bildoj en komentoj</string>
+    <string name="description_comment_image_size">Kiom grandaj la entekstaj bildoj en komentoj estas montrataj</string>
+    <string name="comment_image_size_small">Malgranda</string>
+    <string name="comment_image_size_medium">Meza</string>
+    <string name="comment_image_size_large">Granda</string>
+    <string name="no_preview_image_longclick">Neniuj longaj klakoj sur antaŭrigardaj bildoj de iu ajn enhavtipo</string>
+    <string name="description_no_preview_image_longclick">Difinas ĉu longaj klakoj funkcias sur antaŭrigardaj bildoj de iu ajn enhavtipo. Ĝi malebligas la funkcion rigardeti la enhavon.</string>
+    <string name="editor_btn_select_flair">Elekti etikedon</string>
+    <string name="submit_selected_flair">Elektita etikedo: %s</string>
+    <string name="mediaview_downloading">Elŝutante bildon&#8230;</string>
+    <string name="err_save_image">Eraro dum konservado de la bildo</string>
+    <string name="error_directory_not_selected">Neniu dosierujo elektita. Bonvolu reprovi.</string>
+
+    <!-- Backup Operations -->
+
+    <!-- Additional Backup Operations -->
+    <string name="select_backup_file">Elektu sekurkopian dosieron</string>
+
+    <string name="read_later">Legi poste</string>
+    <string name="mark_as_read">Marki kiel legitan</string>
+
+    <string name="reddit_client_id">Reddit-a kliento-identigilo</string>
+    <string name="click_custom_client_id">Klaku por agordi propran kliento-identigilon</string>
+    <string name="client_id_scan_qr">Skani QR-kodon</string>
+    <string name="client_id_scan_prompt">Skanu QR-kodon enhavantan vian Reddit-an kliento-identigilon</string>
+    <string name="camera_permission_denied">Permeso por la fotilo necesas por skani QR-kodojn</string>
+    <string name="client_id_invalid_length">Nevalida kliento-identigilo: devas havi precize 22 signojn</string>
+
+    <!-- Notification permission strings -->
+    <string name="notifications_permission_title">Ebligi la sciigojn</string>
+    <string name="notifications_permission_message">Slide bezonas la sciigan permeson por sciigi vin pri novaj mesaĝoj, afiŝoj kaj aliaj ĝisdatigoj de Reddit. Vi povos administri la sciigajn agordojn poste.</string>
+    <string name="notification_listener_permission_title">Ebligi la aliron al la sciigoj</string>
+    <string name="notification_listener_permission_message">Slide bezonas aliron al la sciigoj por kapti la sciigojn de Reddit kaj provizi pli bonan sciigan sperton. Bonvolu ebligi la aliron al la sciigoj por Slide en la sekva ekrano.</string>
+
+
+    <string name="reddit_redirect_uri_override">Transpaso de la Reddit-a alidirekta URI</string>
+    <string name="click_custom_redirect_uri">Klaku por agordi propran alidirektan URI</string>
+    <string name="settings_reddit_redirect_uri_invalid">Nevalida alidirekta URI: devas havi la formon skemo://gastigantnomo</string>
+    <string name="reddit_user_agent_override">Transpaso de la Reddit-a uzantagento</string>
+    <string name="click_custom_user_agent">Klaku por agordi propran uzantagenton</string>
+    <string name="settings_enable_overrides">Ebligi la transpasojn</string>
+    <string name="settings_enable_overrides_desc">Uzi vian propran kliento-identigilon, alidirektan URI kaj uzantagenton anstataŭ la defaŭltaj de la aplikaĵo. Lasu malŝaltita krom se vi scias, ke vi bezonas ĝin.</string>
+
+    <string name="settings_section_sound">Sono</string>
+    <string name="settings_unmute_default">Malsilentigi la videojn defaŭlte</string>
+
+    <string name="settings_subreddit_filter_prefix_matching">Ebligi la kongruon per prefikso en la filtriloj de subreditoj</string>
+    <string name="settings_subreddit_filter_prefix_matching_description">La prefikso estas la tuta nomo de la subredito, kaj minimume ses signoj. Ekzemploj: la subredito social blokos socialanxiety. La subredito pokemongo blokos pokemongoraids.</string>
+
+    <string name="settings_filter_old_posts">Filtri afiŝojn pli malnovajn ol</string>
+    <plurals name="settings_filter_old_posts_days">
+        <item quantity="one">%1$d tago</item>
+        <item quantity="other">%1$d tagoj</item>
+    </plurals>
+    <string name="settings_filter_old_posts_description">Ne aplikata dum vidado de unuopa subredito, aŭ dum ordigado laŭ Plej bonaj aŭ Polemikaj</string>
+
+    <!-- Pause on audio focus ducking setting -->
+    <string name="settings_pause_on_duck_title">Paŭzigi la videon anstataŭ mallaŭtigi</string>
+    <string name="settings_pause_on_duck_desc">Paŭzigi la videojn kiam aliaj aplikaĵoj ludas sonon. Mallaŭtigo estas kiam la sonvolumeno estas malaltigita anstataŭ ol la video estas paŭzigita.</string>
+
+    <!-- Add this string resource for the play button content description -->
+    <string name="btn_play">Ludi</string>
+
+    <string name="multireddit_name_title">Nomo por la multredito</string>
+    <string name="multireddit_name_hint">Nomo de la multredito</string>
+    <string name="multireddit_err_empty_name">La nomo de la multredito ne povas esti malplena</string>
+    <string name="multireddit_err_no_valid_subs">Neniu valida subredito elektita. Bonvolu elekti almenaŭ unu subrediton.</string>
+    <string name="multireddit_progress_title">Kreante la multrediton</string>
+    <string name="multireddit_progress_message">Bonvolu atendi dum ni kreas vian multrediton...</string>
+    <string name="multireddit_created_success">Multredito kreita sukcese</string>
+    <string name="multireddit_created_error">Ne eblis krei la multrediton. Bonvolu reprovi.</string>
+    <string name="multireddit_json_error">Eraro okazis dum preparado de la datumoj de via multredito</string>
+
+    <string name="settings_dialog_colored_border">Meti koloran randon ĉirkaŭ la dialogujoj</string>
+    <string name="settings_dialog_colored_border_desc">Montras maldikan koloran randon ĉirkaŭ kelkaj dialogujoj.</string>
+
+    <string name="misc_err_sync_failed">Ne eblis sinkronigi la subreditojn. Ĉu neniu abonita subredito?</string>
+
+    <string name="mod_btn_distinguish">Distingi</string>
+    <string name="mod_btn_undistinguish">Maldistingi</string>
+
+    <string name="nsfw_status_removed">NSFW-stato forigita</string>
+    <string name="nsfw_status_set">NSFW-stato agordita</string>
+
+    <string name="spoiler_status_removed">Malkaŝaĵa stato forigita</string>
+    <string name="spoiler_status_set">Malkaŝaĵa stato agordita</string>
+
+    <string name="submission_distinguished">Afiŝo distingita</string>
+    <string name="submission_distinguished_removed">Distingo de la afiŝo forigita</string>
+
+    <string name="settings_general_hide_subreddit_tabs">Kaŝi la langetojn de la abonitaj subreditoj</string>
+    <string name="settings_general_hide_subreddit_tabs_desc">Kaŝas la abonitajn subreditojn kiel langetojn, sed konservas la navigajn butonojn</string>
+
+    <!-- Video playback speed control -->
+    <string name="video_speed">Rapideco</string>
+    <string name="video_speed_0_25x">0,25x</string>
+    <string name="video_speed_0_5x">0,5x</string>
+    <string name="video_speed_0_75x">0,75x</string>
+    <string name="video_speed_1x">Normala</string>
+    <string name="video_speed_1_25x">1,25x</string>
+    <string name="video_speed_1_5x">1,5x</string>
+    <string name="video_speed_2x">2x</string>
+    <string name="video_speed_control_content_desc">Regilo de la ludrapideco</string>
+    <string name="image_unavailable">Bildo nedisponebla</string>
+    <string name="image_rotate_content_desc">Turni la bildon 90 gradojn dekstrume</string>
+    <string name="image_rotate_left_content_desc">Turni la bildon 90 gradojn maldekstrume</string>
+
+    <!-- Folder chooser dialog (formerly provided by afollestad material-dialogs commons) -->
+    <string name="md_error_label">Eraro</string>
+    <string name="md_storage_perm_error">Ĉi tiu funkcio postulas la permeson pri la memoro, kiu ne estis donita.</string>
+    <string name="md_choose_label">ELEKTI</string>
+    <string name="new_folder">Nova dosierujo</string>
 </resources>

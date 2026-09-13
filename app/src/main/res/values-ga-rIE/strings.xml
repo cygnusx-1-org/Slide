@@ -3,107 +3,1455 @@
     <!-- Generic text used anywhere -->
     <string name="general_confirm">An Bhfuil tú cínnte</string>
     <string name="general_confirm_exit">Dhearbhú scoir</string>
-    <string name="pro_upgrade_msg">Uasghrádú a dhéanamh ar Sleamhnán do Reddit Pro chun taitneamh a bhaint as gnéithe nua uilig, lena n-áirítear: \n\n• Módóir agus Léitheoir Ad Mód sa Láithreán Gréasáin féachaint ar na Barraí agus tarraing ar íomhánna chun uaslódáil Tuairimí ábhair Shadowbox agus Gallery san Comment Tuairim Shadowbox: Cúltaca agus athbhunú go Google Drive agus chun iad a chomhdú Tacú le bogearraí foinse oscailte agus saor-saor in aisce Ar mhaith leat tacú le Slide for Reddit?</string>
+    <string name="general_confirm_exit_msg">An bhfuil tú cinnte gur mian leat Slide a scor?</string>
+    <string name="general_enable_shadowbox">Mód Shadowbox</string>
+    <string name="general_open_settings">Barra taoibh</string>
+    <string name="general_sub_sync">Síntiúis á sioncronú</string>
+
     <!-- Used when viewing a thread -->
+    <string name="submission_info_unsaved">Baineadh an postáil de na cinn shábháilte</string>
+    <string name="submission_info_saved">Sábháladh an postáil</string>
+    <string name="submission_info_archived">Is postáil chartlainne í seo. Ní bheidh tú in ann vótáil ná trácht a dhéanamh.</string>
+    <string name="submission_post_saved">Sábháladh an postáil</string>
+    <string name="submission_info_hidden">Cuireadh an postáil i bhfolach go deo</string>
+    <string name="submission_stickied">Pionnáilte</string>
+    <string name="submission_link_copy">Cóipeáil an URL</string>
+    <string name="submission_link_share">Comhroinn an URL</string>
+    <string name="submission_share_title">Cén nasc ar mhaith leat a chomhroinnt?</string>
+    <string name="submission_share_reddit">URL Reddit</string>
+    <string name="submission_share_content">URL an ábhair</string>
+    <string name="submission_hide">Cuir an postáil i bhfolach</string>
+    <string name="submission_report">Tuairiscigh an postáil</string>
     <string name="submission_gild">Oscail i brabhsálaí</string>
+    <string name="submission_save">Sábháil an postáil</string>
+    <string name="submission_save_image">Sábháil an íomhá</string>
+    <string name="submission_save_video">Sábháil an físeán</string>
+    <string name="submission_load_full">Luchtaigh an snáithe iomlán</string>
+    <string name="submission_np_link">Is nasc gan rannpháirtíocht é seo. Ná vótáil agus ná déan trácht, le do thoil.</string>
     <string name="submission_not_found">Ó, ní faigh an posta!</string>
+    <string name="submission_not_found_msg">Ár leithscéal, níorbh fhéidir an postáil seo a aimsiú</string>
+    <string name="submission_copy_text">Cóipeáil an téacs</string>
+    <string name="submission_comment_saved">Sábháladh an nóta tráchta</string>
+    <string name="submission_comment_unsaved">Baineadh an nóta tráchta de na cinn shábháilte</string>
+    <string name="submission_share_permalink">Comhroinn an nasc</string>
+    <string name="submission_comment_copied">Cóipeáladh téacs an nóta tráchta</string>
+    <string name="submission_text_copied">Cóipeáladh téacs na postála</string>
+    <string name="submission_nocontent">Níl aon ábhar sa phostáil</string>
+    <string name="submission_link_copied">Cóipeáladh an nasc</string>
+    <string name="translate_with_google">Aistrigh</string>
+    <string name="translate_no_app">Níl aon aip ar fáil chun aistriú</string>
+    <string name="read_aloud">Léigh os ard</string>
+    <string name="read_aloud_unavailable">Níl téacs-go-caint ar fáil</string>
+    <string name="submission_removed">Baineadh an postáil</string>
+
+    <plurals name="new_messages">
+        <item quantity="one">%d teachtaireacht nua</item>
+        <item quantity="two">%d theachtaireacht nua</item>
+        <item quantity="few">%d theachtaireacht nua</item>
+        <item quantity="many">%d dteachtaireacht nua</item>
+        <item quantity="other">%d teachtaireacht nua</item>
+    </plurals>
+    <plurals name="points">
+        <item quantity="one">pnt</item>
+        <item quantity="two">pnt</item>
+        <item quantity="few">pnt</item>
+        <item quantity="many">pnt</item>
+        <item quantity="other">pnt</item>
+    </plurals>
+    <plurals name="comments">
+        <item quantity="one">nt</item>
+        <item quantity="two">nt</item>
+        <item quantity="few">nt</item>
+        <item quantity="many">nt</item>
+        <item quantity="other">nt</item>
+    </plurals>
+
     <!-- Theme settings -->
     <string name="theme_light">Gile</string>
     <string name="theme_dark">Dorcha</string>
     <string name="theme_black">AMOLED dubh</string>
+    <string name="theme_dark_blue">Gorm dorcha</string>
+    <string name="night_mode">Mód oíche</string>
+    <string name="disabled">Díchumasaithe</string>
+    <string name="manual">De láimh</string>
+    <string name="automatic">Uathoibríoch</string>
     <string name="theme_default_color">Príomhdath</string>
+    <string name="theme_subreddit_color">Athraigh an dath</string>
+    <string name="theme_accent_color">Dath aibhsithe</string>
+    <string name="theme_base">Bunthéama</string>
     <string name="theme_card">Cárta</string>
+    <string name="theme_sepia">Séipia</string>
+    <string name="theme_amoled_contrast">AMOLED le codarsnacht</string>
+    <string name="theme_night">Téama oíche</string>
+
     <!-- Font settings -->
+    <string name="font_size_comment">Méid an chló do nótaí tráchta</string>
+    <string name="font_size_post">Méid an chló do phostálacha</string>
+    <string name="font_size_huge">Ollmhór</string>
+    <string name="font_size_larger">Níos mó</string>
+    <string name="font_size_large">Mór</string>
+    <string name="font_size_medium">Measartha</string>
+    <string name="font_size_small">Beag</string>
+    <string name="font_size_smaller">Níos lú</string>
+    <string name="font_size_tiny">An-bheag</string>
+
     <!-- For editing the submission card layout -->
+    <string name="card_hide_post_button">Cnaipe "Cuir an postáil i bhfolach" sa bharra gníomhaíochta</string>
+    <string name="card_tint_outside">Ná cuir dath ach lasmuigh den subreddit</string>
+    <string name="card_save_button">Cnaipe "Sábháil an postáil" sa bharra gníomhaíochta</string>
+
     <!-- Settings for Multi-column view -->
+    <string name="multi_column_title">Ilcholúin</string>
+    <string name="multi_column_portrait_count">Colúin i mód portráide</string>
+    <string name="multi_column_landscape_count">Colúin i mód tírdhreacha</string>
+    <string name="single_column_multi_window">Colún amháin i mód ilfhuinneog</string>
+
     <!-- Drawer items (That's the one on the left) -->
+    <string name="drawer_profile">Tusa</string>
+    <string name="drawer_support">Faigh Pro</string>
+    <string name="drawer_goto_profile">Téigh chuig an bpróifíl</string>
+    <string name="drawer_add_account">Cuir cuntas leis</string>
     <string name="drawer_hello">Dia duit,</string>
     <string name="drawer_search">Téigh go dtí subreddit</string>
+    <!-- Subreddit name when submitting/crossposting: a single subreddit only (no multireddit, no dot). -->
+    <!-- Message recipient: a username or an /r/ or /u/ path. -->
+    <!-- Settings search field. The trailing space is intentional, so the value is quoted to preserve it. -->
+    <string name="drawer_moderation">Modhnóireacht</string>
+    <string name="drawer_offline">Tá Slide i mód as líne</string>
+    <string name="drawer_offline_retry">Bain triail as dul ar líne</string>
+    <string name="drawer_guest_mode">Brabhsáil mar aoi</string>
+
     <!-- Sidebar items (That's the one on the right) -->
+    <string name="sidebar_wiki">Vicí an subreddit</string>
+    <string name="sidebar_mods">Modhnóirí an subreddit</string>
+
     <!-- User profile -->
+    <string name="profile_karma_total">Karma iomlán</string>
+    <string name="profile_karma_link">Karma postálacha</string>
+    <string name="profile_karma_comment">Karma nótaí tráchta</string>
+    <string name="profile_message">Teachtaireacht phríobháideach</string>
+    <string name="profile_saved">Sábháilte</string>
+    <string name="local_saved">Sábháilte go háitiúil</string>
+    <string name="profile_read_later">Léigh níos déanaí</string>
+    <string name="profile_upvoted">Vótáilte i bhfabhar</string>
+    <string name="profile_err_title">Níor aimsíodh an t-úsáideoir</string>
+    <string name="profile_err_msg">Níorbh fhéidir an t-úsáideoir Reddit a fháil</string>
+    <string name="profile_overview">Forbhreathnú</string>
+    <string name="profile_comments">Nótaí tráchta</string>
+    <string name="profile_submitted">Postálacha</string>
+    <string name="profile_gilded">Duaiseanna faighte</string>
     <string name="profile_downvoted">Síos vótail</string>
+    <string name="profile_hidden">I bhfolach</string>
+    <string name="profile_friend">Cara</string>
+    <string name="profile_add_friend">Cuir cara leis</string>
+    <string name="profile_remove_friend">Bain an cara</string>
+    <string name="profile_follow_user">Lean</string>
+    <string name="profile_unfollow_user">Stop ag leanúint</string>
+    <string name="profile_add_user">Cuir úsáideoir leis</string>
+    <string name="profile_remove_user">Bain an t-úsáideoir</string>
+    <string name="profile_remove_account">An bhfuil tú cinnte gur mian leat an cuntas seo a bhaint?</string>
+    <string name="profile_remove">Scrios an cuntas</string>
+    <string name="profile_history">Stair</string>
+    <string name="profile_share">Próifíl %s</string>
+    <string name="profile_age">Redditor le %s</string>
+    <string name="profile_tag">Clib</string>
+    <string name="profile_tag_set">Socraigh clib do %s</string>
     <string name="profile_tag_user">Cuir clib ar úsáideoir</string>
+    <string name="profile_tag_user_existing">Clibeáladh an t-úsáideoir mar ‘%s’</string>
+    <string name="profile_btn_tag">Socraigh clib</string>
+    <string name="profile_btn_untag">Bain an chlib</string>
+    <string name="profile_info">Faisnéis phróifíle</string>
+    <string name="profile_options">Roghanna úsáideora</string>
+    <string name="profile_block_user">Cuir bac ar an úsáideoir</string>
+    <string name="profile_block_user_description">Cuireann bac ar theachtaireachtaí, postálacha agus próifíl an úsáideora</string>
+    <string name="profile_unblock_user">Bain an bac den úsáideoir</string>
+    <string name="profile_unblock_user_description">Baineann an bac de theachtaireachtaí, postálacha agus próifíl an úsáideora</string>
+    <string name="profile_search">Cuardaigh</string>
+    <string name="profile_search_title">Cuardaigh i %1$s</string>
+    <string name="profile_search_hint">Cuardaigh i dteidil agus i dtéacs…</string>
+    <string name="profile_search_no_results">Níor aimsíodh aon toradh</string>
+    <string name="profile_search_clear">Glan an cuardach</string>
+    <string name="profile_search_cleared">Glanadh an cuardach</string>
+    <string name="profile_search_loading">Á chuardach…</string>
+    <string name="profile_search_progress">%1$d toradh · %2$d cuardaithe</string>
+    <string name="profile_search_bypass_cache">Seachain an taisce</string>
+
     <!-- Comment text options -->
+    <string name="comment_gild">Bronn duais ar an nóta tráchta</string>
+    <string name="comment_share">Comhroinn an nóta tráchta</string>
+    <string name="comment_delete">Scrios an nóta tráchta</string>
+    <string name="comment_delete_msg">An bhfuil tú cinnte gur mian leat an nóta tráchta seo a scriosadh? Ní féidir é seo a chealú</string>
+    <string name="comment_delete_err">Ó a mhaisce, chuaigh rud éigin amú</string>
+    <string name="comment_delete_err_msg">Ar mhaith leat triail eile a bhaint as?</string>
+    <string name="comment_deleted">[scriosta]</string>
+    <string name="comment_unsave">Díshábháil</string>
+    <string name="comment_loading_more">Tuilleadh nótaí tráchta á luchtú…</string>
+    <string name="comment_permalink">Luchtaigh buannasc an nóta tráchta</string>
+    <string name="comment_parent">Taispeáin an nóta tráchta tuismitheora</string>
+    <string name="comment_video_play">Seinn an físeán</string>
+
     <!-- Welcome view (first time setup) -->
+    <string name="welcome_start">Tosaigh</string>
+    <string name="welcome_personalize">Pearsantaigh</string>
+
     <!-- Sorting options -->
+    <string name="sorting_choose">Roghnaigh cineál sórtála</string>
+    <string name="sorting_time_choose">Roghnaigh tréimhse ama</string>
+    <string name="sorting_change_sorting">Mód sórtála</string>
+    <string name="sorting_best">Is fearr</string>
+    <string name="sorting_top">Barr</string>
     <string name="sorting_hot">Beo</string>
     <string name="sorting_ama">C&amp;F (AMA)</string>
     <string name="sorting_new">Nua</string>
     <string name="sorting_old">Sean</string>
+    <string name="sorting_controversial">Conspóideach</string>
     <string name="sorting_rising">Ag ardú</string>
+    <string name="sorting_hour">uair</string>
+    <string name="sorting_day">24 uair</string>
+    <string name="sorting_week">seachtain</string>
+    <string name="sorting_month">mí</string>
+    <string name="sorting_year">bliain</string>
+    <string name="sorting_all">gach am</string>
+    <string name="sorting_defaultfor">Réamhshocrú do /r/%1$s</string>
+
     <!-- Editor (save/submit a post) actions -->
+    <string name="editor_url">URL</string>
     <string name="editor_text">Téacs</string>
     <string name="editor_title_link">Cuir téacs isteach</string>
     <string name="editor_action_link">Cuir isteach</string>
     <string name="editor_title">Teideal</string>
     <string name="editor_err_msg">Iarracht eile tar éis cúpla nóiméad le do thoil.</string>
     <string name="editor_uploading_image">Tá an íomhá ag uaslódáil chun Imgur</string>
+    <string name="editor_upload_image_title">Uaslódáil íomhá</string>
+    <string name="editor_upload_reddit">Reddit (íomhá inlíne)</string>
+    <string name="editor_upload_imgur">Imgur (nasc)</string>
+    <string name="editor_uploading_reddit">Íomhá á huaslódáil chuig Reddit</string>
+    <string name="editor_reddit_upload_success">Uaslódáladh an íomhá</string>
+    <string name="editor_reddit_upload_failed">Theip ar uaslódáil na híomhá</string>
+    <string name="submit_image_host_imgur">Imgur</string>
+    <string name="submit_image_host_reddit">Reddit</string>
+    <string name="submit_change_img">Athraigh an pictiúr</string>
+    <string name="submit_select_gallery">Cuir pictiúir leis</string>
+    <string name="submit_gallery_caption_hint">Fotheideal (roghnach)</string>
+    <string name="submit_gallery_count">%1$d roghnaithe</string>
+    <string name="submit_uploading_gallery">Íomhá %1$d as %2$d á huaslódáil</string>
     <string name="editor_select_img">Pioc an phictiúir</string>
     <string name="editor_hint_optional_body">Téacs (roghnach)</string>
     <string name="editor_submit">Cuir postáil insteach</string>
     <string name="editor_hint_subreddit">Subreddit</string>
+    <string name="editor_finding_title">An teideal á aimsiú</string>
+    <string name="submit_findingflairs">Flairs á n-aimsiú</string>
+    <string name="submit_flairchoices">Flairs /r/%s</string>
+
+    <string name="edit_selftext">Cuir téacs na postála in eagar</string>
+    <string name="delete_submission">Scrios an postáil</string>
+    <string name="set_submission_flair">Socraigh flair na postála</string>
+
     <!-- Editor buttons -->
+    <string name="editor_save_draft">Sábháil an dréacht</string>
+    <string name="editor_chose_draft">Roghnaigh dréacht</string>
+    <string name="editor_insert_image">Ionsáigh íomhá</string>
+    <string name="editor_draw">Ionsáigh íomhá agus déan líníocht uirthi</string>
+    <string name="editor_link">Ionsáigh nasc</string>
+    <string name="editor_bold">Trom</string>
+    <string name="editor_italics">Iodálach</string>
+    <string name="editor_quote">Athfhriotal</string>
+    <string name="editor_author">Luaigh an t-údar</string>
+    <string name="editor_list">Liosta urchar</string>
+    <string name="editor_num_list">Liosta uimhrithe</string>
+    <string name="editor_size">Cló mór</string>
+    <string name="editor_strike">Líne tríd</string>
+    <string name="editor_spoiler">Milleadh</string>
+
     <!-- General information / information without a category -->
+    <string name="info_photo_saved">Sábháladh an grianghraf</string>
+    <string name="gif_saved">Sábháladh an GIF</string>
+
     <!-- General errors / errors without a category -->
+    <string name="err_title">Ó a mhaisce, chuaigh rud éigin amú!</string>
+    <string name="err_invalid_url">URL neamhbhailí</string>
+    <string name="err_loading_content">Earráid agus an t-ábhar á luchtú</string>
+    <string name="err_general">Ó a mhaisce, tharla earráid</string>
+    <string name="err_no_connection">Níorbh fhéidir teagmháil a dhéanamh le Reddit. Ar mhaith leat triail eile a bhaint as?</string>
+    <string name="err_no_connection_toast">Níorbh fhéidir teagmháil a dhéanamh le Reddit. Bain triail eile as go luath</string>
+    <string name="err_retry_later">Bain triail eile as i gceann nóiméid!</string>
+    <string name="err_authentication">Theip ar an bhfíordheimhniú</string>
+    <string name="err_submit_restricted">Tá an subreddit seo srianta</string>
+    <string name="err_submit_restricted_text">Níl cead agat postáil anseo. Roghnaigh subreddit eile</string>
+    <string name="err_crosspost_disallowed_text">Ní cheadaíonn /r/%s traspostálacha. Roghnaigh subreddit eile.</string>
+    <string name="err_crosspost_not_subscribed">Caithfidh tú síntiús a ghlacadh le /r/%s sula ndéanfaidh tú traspostáil.</string>
+    <string name="err_crosspost_sub_not_found">Níl /r/%s ann.</string>
+    <string name="crosspost_flair_required_short">Tá flair ag teastáil — roghnaigh ceann roimh phostáil.</string>
+    <string name="error_video_not_found">Níor aimsíodh an físeán</string>
+    <string name="error_video_message">Tharla earráid agus an físeán seo á luchtú</string>
+    <string name="error_album_not_found">Níor aimsíodh an t-albam</string>
+    <string name="error_album_not_found_text">Ar mhaith leat an nasc a oscailt sa bhrabhsálaí?</string>
+    <string name="err_comment_post_nosave_message">\nBain triail eile as i gceann nóiméid</string>
+    <string name="err_could_not_find_content_msg">Níor aimsigh Reddit an t-ábhar a iarradh</string>
+    <string name="err_refused_request_msg">Dhiúltaigh Reddit iarratas. Ar mhaith leat iarracht a dhéanamh athcheangal le Reddit?</string>
+    <string name="err_color_sync_login">Logáil isteach chun Sioncronú Dathanna a úsáid</string>
+    <string name="err_something_wrong">Ó a mhaisce, chuaigh rud éigin amú</string>
+    <string name="err_couldnt_save_choose_new">Níorbh fhéidir le Slide sábháil san fhillteán roghnaithe. Ar mhaith leat suíomh sábhála nua a roghnú?</string>
+    <string name="err_share_image">Earráid agus an íomhá á comhroinnt</string>
+    <string name="err_file_not_found">Níor aimsíodh an comhad</string>
+    <string name="err_file_not_found_msg">Níorbh fhéidir an comhad roghnaithe a aimsiú. Cinntigh go bhfuil sé ann agus go bhfuil cead ag Slide rochtain a fháil ar an gcomhad/bhfillteán sin</string>
+    <string name="err_comment_post">Ó a mhaisce, theip ar phostáil an nóta tráchta seo!</string>
+    <string name="err_comment_post_reason">Cúis: %1$s</string>
+    <string name="err_comment_post_message">\n\nSábháladh do theachtaireacht mar dhréacht. Bain triail eile as níos déanaí.</string>
+    <string name="err_connection_failed_msg">Theip ar an gceangal le Reddit. Seiceáil do cheangal idirlín agus bain triail eile as, nó téigh i mód as líne.</string>
+    <string name="err_block_user">Earráid agus bac á chur ar an úsáideoir. Ar bhain tú an bac de le déanaí?</string>
+
     <!-- Gif -->
+    <string name="gif_err_title">Níor aimsíodh an GIF</string>
+    <string name="gif_err_msg">Tharla earráid agus an GIF seo á luchtú. Oscail an GIF arís agus bain triail eile as.</string>
+    <string name="gif_load_failed">Theip ar luchtú an GIF</string>
+    <string name="gif_download_failed">Theip ar íoslódáil an GIF</string>
+
     <!-- Multireddits -->
+    <string name="multireddit_err_title">Níl aon multireddit ann (fós)!</string>
+    <string name="multireddit_err_msg">Ar mhaith leat multireddit nua a chruthú?</string>
+    <string name="public_multireddit_err_title">Níl aon multireddit ann!</string>
+    <string name="public_multireddit_err_msg">Níl aon multireddit poiblí ag an úsáideoir seo.</string>
+    <string name="multireddit_title_empty">Ní féidir leis an teideal a bheith folamh</string>
+    <string name="multireddit_title_empty_msg">Cuir teideal isteach do do multireddit</string>
+    <string name="multireddit_no_subs">Níor cuireadh aon subreddit leis</string>
+    <string name="multireddit_save_err">Tá teideal an multireddit seo ann cheana nó níl spás do níos mó subreddit anseo</string>
+    <string name="multireddit_no_subs_msg">Cuir roinnt subreddit leis trí chliceáil ar an gcnaipe +!</string>
+    <string name="multireddit_selector">Roghnaigh subreddit le cur leis</string>
+    <string name="multireddit_create_hint">Ainm an multireddit</string>
+    <string name="multireddit_invalid_name">Ainm multireddit neamhbhailí</string>
+    <string name="multireddit_invalid_name_msg">Ní féidir ach litreacha, uimhreacha agus fostríoca a bheith in ainmneacha multireddit</string>
+    <string name="multi_add_to">Cuir /r/%s le</string>
+    <string name="multi_subreddit_added">Cuireadh an subreddit le /m/%1$s</string>
+    <string name="multi_error">Tharla earráid, bain triail eile as níos déanaí</string>
+    <string name="btn_import_multi">Iompórtáil multireddit</string>
+    <string name="multi_submit_which_sub">Cén sub ar mhaith leat postáil ann?</string>
+    <string name="multi_saved_successfully">Sábháladh go rathúil</string>
+    <string name="delete_multireddit_title">An bhfuil tú cinnte gur mian leat /m/%1$s a scriosadh?</string>
+    <string name="multi_save_option">Ar mhaith leat an multireddit seo a shábháil?</string>
+
     <!-- Content types -->
+    <string name="type_nsfw_img">Íomhá NSFW</string>
+    <string name="type_nsfw_gif">GIF NSFW</string>
+    <string name="type_reddit">Nasc Reddit</string>
+    <string name="type_link">Nasc</string>
+    <string name="type_nsfw_link">Nasc NSFW</string>
+    <string name="type_gif">GIF</string>
+    <string name="type_title_only">Postáil teidil amháin</string>
+    <string name="type_album">Albam</string>
+    <string name="type_xkcd">XKCD</string>
+    <string name="type_nsfw_album">Albam NSFW</string>
+    <string name="type_nsfw_gallery">Gailearaí NSFW</string>
+    <string name="type_nsfw_albums">Albaim NSFW</string>
+    <string name="type_nsfw_galleries">Gailearaithe NSFW</string>
+    <string name="type_nsfw_gifs">GIFanna NSFW</string>
+    <string name="type_nsfw_images">Íomhánna NSFW</string>
+    <string name="type_nsfw_links">Naisc NSFW</string>
+    <string name="type_nsfw_selftexts">Postálacha téacs NSFW</string>
+    <string name="type_nsfw_tumblrs">Postálacha Tumblr NSFW</string>
+    <string name="type_nsfw_videos">Físeáin NSFW</string>
+    <string name="type_gallery">Gailearaí</string>
+    <string name="type_galleries">Gailearaithe</string>
+    <string name="type_img">Íomhá</string>
+    <string name="type_videos">Físeáin</string>
+    <string name="type_nsfw_video">Físeán NSFW</string>
+    <string name="type_imgur">Ábhar Imgur</string>
+    <string name="type_nsfw_imgur">Ábhar Imgur NSFW</string>
+    <string name="type_nsfw_xkcd">XKCD NSFW</string>
+    <string name="type_nsfw_deviantart">DeviantArt NSFW</string>
+    <string name="type_nsfw_title_only">Postáil teidil amháin NSFW</string>
+    <string name="type_nsfw_reddit">Nasc Reddit NSFW</string>
+    <string name="type_nsfw_selftext">Postáil téacs NSFW</string>
+    <string name="type_spoiler">Milleadh</string>
+    <string name="type_nsfw_spoiler">Milleadh NSFW</string>
+    <string name="type_nsfw_streamable">Streamable NSFW</string>
+    <string name="type_external">Seachtrach</string>
+
     <!-- Content types plural (Content filters) -->
+    <string name="type_gifs">GIFanna</string>
+    <string name="type_albums">Albaim</string>
+    <string name="type_links">Naisc</string>
+
     <!-- Inbox/mail -->
+    <string name="mail_tab_inbox">Bosca isteach</string>
+    <string name="mail_tab_unread">Gan léamh</string>
+    <string name="mail_tab_messages">Teachtaireachtaí</string>
+    <string name="mail_tab_sent">Seolta</string>
+    <string name="mail_tab_mentions">Tagairtí</string>
     <string name="mail_author_wrote">Scríobh %1$s&#8230;</string>
+    <string name="mail_hint_recipient">Faighteoir</string>
+    <string name="mail_hint_subject">Ábhar</string>
+    <string name="mail_hint_body">Téacs</string>
+    <string name="mail_send_to">Seol teachtaireacht chuig %1$s</string>
+    <string name="mail_send">Seol teachtaireacht</string>
+    <string name="mail_notification_msg_from">Teachtaireacht nua ó %1$s</string>
+    <string name="mail_notification_msg_via">Teachtaireacht nua trí /r/%1$s</string>
+    <string name="mod_mail_notification_msg">Modmail nua ó %1$s</string>
+    <string name="mail_reply_to">Freagair %1$s</string>
+    <string name="mail_notification_author">%1$s ó %2$s</string>
+    <string name="mail_notification_subreddit">%1$s trí /r/%2$s</string>
+    <string name="mail_theirs">Féach ar a dteachtaireacht</string>
+    <string name="mail_re">fre: %1$s</string>
+    <string name="mail_mark_read">Marcáil mar léite</string>
+    <string name="mail_view_full_thread">Féach ar an snáithe iomlán</string>
+    <string name="mail_message_copied">Cóipeáladh an teachtaireacht</string>
+    <plurals name="mail_notification_title">
+        <item quantity="one">Tá %d teachtaireacht nua agat!</item>
+        <item quantity="two">Tá %d theachtaireacht nua agat!</item>
+        <item quantity="few">Tá %d theachtaireacht nua agat!</item>
+        <item quantity="many">Tá %d dteachtaireacht nua agat!</item>
+        <item quantity="other">Tá %d teachtaireacht nua agat!</item>
+    </plurals>
+    <plurals name="mod_mail_notification_title">
+        <item quantity="one">Tá %d modmail nua agat!</item>
+        <item quantity="two">Tá %d mhodmail nua agat!</item>
+        <item quantity="few">Tá %d mhodmail nua agat!</item>
+        <item quantity="many">Tá %d modmail nua agat!</item>
+        <item quantity="other">Tá %d modmail nua agat!</item>
+    </plurals>
+
     <!-- Miscellaneous/generic things that don't have a category or strings that are used for multiple categories -->
     <string name="misc_err">Earráid</string>
+    <string name="misc_none">Faic</string>
+    <string name="misc_retry">Ar mhaith leat triail eile a bhaint as?</string>
+    <string name="misc_retry_draft">Ar mhaith leat triail eile a bhaint as? \nSábháladh dréacht de do phostáil</string>
+    <string name="misc_score_hidden">scór i bhfolach</string>
+    <string name="misc_subscribed">Síntiús glactha</string>
+    <string name="misc_continue">Ar aghaidh</string>
+    <string name="misc_unsubscribed">Síntiús cealaithe</string>
+    <string name="misc_no_more_posts">Níl aon phostáil eile ann!</string>
+    <string name="misc_please_wait">Fan tamall…</string>
+    <string name="misc_img_share">Comhroinn an íomhá le</string>
     <string name="misc_copy_text">Cóipeáil na téacs</string>
+    <string name="misc_maybe_later">B\'fhéidir níos déanaí</string>
+    <string name="misc_try_again">Bain triail eile as</string>
+    <string name="misc_please_try_again">Bain triail eile as</string>
+    <string name="misc_please_try_again_soon">Bain triail eile as go luath</string>
+    <string name="misc_setting_up">Roinnt rudaí á socrú…</string>
+    <string name="misc_setting_up_message">Ná fág an scáileán seo. Ní thógfaidh sé i bhfad!</string>
+    <string name="misc_more_info">Tuilleadh eolais</string>
+    <string name="misc_captcha_incorrect">Captcha mícheart, bain triail eile as</string>
+
     <!-- Goto User -->
+    <string name="user_enter">Cuir ainm úsáideora isteach</string>
+    <string name="user_btn_goto">Téigh chuig an úsáideoir</string>
+    <string name="user_btn_gotomultis">Téigh chuig multis an úsáideora</string>
+
+    <!-- Saved users list -->
+    <string name="users_empty">Níl aon úsáideoir sábháilte ann</string>
+    <string name="users_btn_add">Cuir úsáideoir leis</string>
+    <string name="users_btn_remove">Bain an t-úsáideoir</string>
+    <string name="users_added">Cuireadh %s leis na hÚsáideoirí</string>
+    <string name="users_removed">Baineadh %s de na hÚsáideoirí</string>
+    <string name="users_already_added">Tá %s i measc na nÚsáideoirí cheana</string>
+    <string name="users_copied">Cóipeáladh %s</string>
+    <string name="users_checking">An t-ainm úsáideora á sheiceáil</string>
+    <string name="users_invalid_title">Ní féidir an t-úsáideoir a chur leis</string>
+    <string name="users_invalid">Ní úsáideoir Reddit é %s</string>
+    <string name="users_check_failed">Níorbh fhéidir a sheiceáil an bhfuil %s ann. Seiceáil do cheangal agus bain triail eile as.</string>
+    <string name="users_friend_added">Cuireadh %s leis na cairde</string>
+    <string name="users_friend_removed">Baineadh %s de na cairde</string>
+    <string name="users_friend_failed">Níorbh fhéidir stádas cairdeas %s a nuashonrú</string>
+    <string name="btn_fab_add_user">Cuir úsáideoir leis</string>
+
     <!-- Buttons -->
+    <string name="btn_add">Cuir leis</string>
+    <string name="btn_cancel">Cealaigh</string>
+    <string name="btn_close">Dún</string>
+    <string name="btn_toggle">Scoránaigh</string>
+    <string name="btn_open">Oscail</string>
+    <string name="btn_discard">Caith uait</string>
     <string name="btn_done">Caite</string>
+    <string name="btn_go_back">Téigh ar ais</string>
     <string name="btn_no">Ní hea</string>
     <string name="btn_ok">Ceart go leor</string>
+    <string name="btn_remove">Bain</string>
+    <string name="btn_reply">Freagair</string>
+    <string name="btn_reset">Athshocraigh</string>
+    <string name="btn_retry">Bain triail eile as</string>
+    <string name="btn_save">Sábháil</string>
+    <string name="btn_submit">Cuir isteach</string>
     <string name="btn_undo">Cealaigh</string>
     <string name="btn_yes">Tá</string>
     <string name="btn_refresh">Athnuaigh</string>
+    <string name="btn_cache">Taisc na nótaí tráchta</string>
+    <string name="btn_delete">Scrios</string>
+    <string name="btn_time">Tréimhse ama</string>
+    <string name="btn_message">Teachtaireacht</string>
+    <string name="btn_select">Roghnaigh</string>
+    <string name="btn_view">FÉACH</string>
+    <string name="btn_changelog">Logleabhar athruithe</string>
+    <string name="btn_set">SOCRAIGH</string>
+    <string name="btn_create">Cruthaigh</string>
+    <string name="btn_new">Nua</string>
+
     <!-- Buttons Content labels for TalkBack accessibility-->
+    <string name="btn_edit">Cuir in eagar</string>
+    <string name="btn_hide">Cuir i bhfolach</string>
+    <string name="btn_mod">Modhnaigh</string>
+    <string name="btn_upvote">Vótáil i bhfabhar</string>
+    <string name="btn_downvote">Vótáil ina choinne</string>
+    <string name="btn_menu">Roghchlár</string>
+    <string name="img_score">Scór</string>
+    <string name="img_comments">Nótaí tráchta</string>
+    <string name="btn_expand">Leathnaigh</string>
+    <string name="btn_nav_up">Nascleanúint suas</string>
+    <string name="btn_nav_mode">Socraigh an mód nascleanúna</string>
+    <string name="btn_nav_collapse_expand">Laghdaigh/leathnaigh</string>
+    <string name="btn_nav_down">Nascleanúint síos</string>
+    <string name="btn_fab_reply">Freagair</string>
+    <string name="btn_fab_post">Cruthaigh postáil nua</string>
+    <string name="btn_fab_hide">Cuir na postálacha feicthe i bhfolach</string>
+    <string name="btn_fab_search">Cuardaigh postálacha</string>
+
     <!-- Buttons Content labels for TalkBack accessibility active states-->
+    <string name="btn_upvoted">Vótáilte i bhfabhar</string>
+    <string name="btn_downvoted">Vótáilte ina choinne</string>
+    <string name="btn_unsave">Díshábháil</string>
+    <string name="btn_collapse">Laghdaigh</string>
+
     <!-- Backup -->
+    <string name="backup_success">D\'éirigh leis an gcúltaca!</string>
+    <string name="backup_restoring">Do chuid socruithe á n-athchóiriú</string>
+    <string name="backup_backing_up">Cúltaca á dhéanamh de do shocruithe</string>
+    <string name="backup_restore_settings">D\'éirigh le hathchóiriú na socruithe!</string>
+    <string name="backup_restarting">Atosóidh an aip anois</string>
+    <string name="backup_info">Déanann Slide cúltaca de do chuid sonraí uile i bhfillteán príobháideach ar Google Drive. Is féidir leat na sonraí seo a shioncronú idir gléasanna (nó chuig an ngléas céanna), agus ní théann do shonraí trí sheirbhís ná trí fhreastalaí tríú páirtí riamh. Criptítear na cúltacaí le pasfhocal a roghnaíonn tú féin.</string>
+    <string name="backup_btn">Cúltaca</string>
+    <string name="backup_btn_restore">Athchóirigh</string>
+    <string name="backup_btn_file">Cúltaca chuig zip</string>
+    <string name="backup_btn_restore_file">Athchóirigh ó chomhad nó ó zip</string>
+    <string name="backup_confirm">An bhfuil tú cinnte gur mian leat cúltaca a dhéanamh? Forscríobhfar do chúltaca roimhe seo</string>
+    <string name="backup_restore_confirm">An bhfuil tú cinnte gur mian leat athchóiriú? Forscríobhfar do shocruithe reatha</string>
+    <string name="backup_failed_msg">Theip ar an gcúltaca. Bain triail eile as níos déanaí.</string>
+    <string name="backup_restore_failed_msg">Theip ar an athchóiriú. Cinntigh go bhfuil cúltaca bailí ann agus bain triail eile as.</string>
+    <string name="backup_local_title">Cúltaca áitiúil</string>
+    <string name="backup_drive_title">Cúltaca Google Drive</string>
+    <string name="backup_button">Cruthaigh cúltaca</string>
+    <string name="restore_button">Athchóirigh an cúltaca</string>
+    <string name="backup_question">Cúltaca a dhéanamh?</string>
+    <string name="backup_complete">Tá an cúltaca críochnaithe!</string>
+    <string name="err_not_valid_backup">Ní comhad cúltaca bailí Slide é</string>
+    <string name="err_not_valid_backup_msg">Ní comhad cúltaca bailí Slide é an comhad roghnaithe</string>
+    <string name="backup_password_title">Socraigh pasfhocal cúltaca</string>
+    <string name="backup_password_message">Tá dintiúir do chuntais Reddit sa chúltaca, mar sin criptítear é. Roghnaigh pasfhocal idir %1$d agus %2$d carachtar. Beidh sé uait chun athchóiriú, agus ní féidir é a aisghabháil.</string>
+    <string name="backup_password_hint">Pasfhocal</string>
+    <string name="restore_password_title">Cuir pasfhocal an chúltaca isteach</string>
+    <string name="restore_password_message">Cuir isteach an pasfhocal a úsáideadh chun an cúltaca seo a chriptiú.</string>
+    <string name="restore_password_wrong">Pasfhocal mícheart. Bain triail eile as.</string>
+    <string name="drive_authorization_failed">Theip ar údarú Google Drive</string>
+    <string name="drive_authorization_failed_msg">Níorbh fhéidir le Slide rochtain a fháil ar a fhillteán príobháideach Google Drive. Bain triail eile as.</string>
+    <string name="drive_authorization_denied">Tá rochtain Google Drive ag teastáil</string>
+    <string name="drive_authorization_denied_msg">Teastaíonn rochtain óna fhillteán príobháideach Google Drive ó Slide chun cúltaca a dhéanamh de do shocruithe nó iad a athchóiriú.</string>
+
     <!-- Vote -->
+    <string name="vote_err">Earráid agus vóta á chaitheamh!</string>
+    <string name="vote_err_login">Caithfidh tú a bheith logáilte isteach chun vótáil!</string>
+    <string name="vote_removed">Baineadh an vóta</string>
+
+    <!-- Subscribing -->
+    <string name="subscribe_err_login">Caithfidh tú a bheith logáilte isteach chun síntiús a ghlacadh!</string>
+
     <!-- Moderation tools -->
+    <string name="mod_mail">Modmail</string>
+    <string name="mod_mail_unread">Modmail gan léamh</string>
+    <string name="modmail_internal_note">(nóta inmheánach)</string>
+    <string name="modmail_scope_missing">Teastaíonn athfhíordheimhniú ó modmail. Logáil isteach arís (Socruithe &#8594; cuntas) chun é a chumasú.</string>
+    <string name="modmail_reply_sent">Seoladh an freagra!</string>
+    <string name="modmail_reply_failed">Theip ar an seoladh! Sábháladh an freagra mar dhréacht.</string>
+    <plurals name="modmail_message_count">
+        <item quantity="one">%d teachtaireacht</item>
+        <item quantity="two">%d theachtaireacht</item>
+        <item quantity="few">%d theachtaireacht</item>
+        <item quantity="many">%d dteachtaireacht</item>
+        <item quantity="other">%d teachtaireacht</item>
+    </plurals>
+    <string name="mod_modqueue">Scuaine mhodhnóireachta</string>
+    <string name="mod_unmoderated">Gan mhodhnú</string>
+    <string name="mod_reports">Tuairiscí</string>
+    <string name="mod_approved">Ceadaíodh an postáil</string>
+    <string name="mod_flair_hint">Téacs an flair</string>
+    <string name="mod_no_reports">Níl aon tuairisc ann</string>
+    <string name="mod_btn_approve">Ceadaigh</string>
+    <string name="mod_btn_submission_flair">Socraigh flair</string>
+    <string name="mod_btn_submission_flair_text">Socraigh téacs an flair</string>
+    <string name="mod_btn_mark_nsfw">Marcáil mar NSFW</string>
+    <string name="mod_btn_unmark_nsfw">Bain marc NSFW</string>
+    <string name="mod_btn_mark_spoiler">Marcáil mar mhilleadh</string>
+    <string name="mod_btn_unmark_spoiler">Bain marc an mhillte</string>
+    <string name="mod_btn_lock_thread">Cuir glas ar an snáithe</string>
+    <string name="mod_btn_unlock_thread">Bain an glas den snáithe</string>
+    <string name="mod_btn_lock_comment">Cuir glas ar an nóta tráchta</string>
+    <string name="mod_btn_unlock_comment">Bain an glas den nóta tráchta</string>
+    <string name="mod_locked">Faoi ghlas</string>
+    <string name="mod_unlocked">Gan ghlas</string>
+    <string name="mod_btn_pin">Pionnáil</string>
+    <string name="mod_btn_unpin">Díphionnáil</string>
+    <string name="mod_btn_remove">Bain</string>
+    <string name="mod_btn_remove_reason">Bain le cúis</string>
+    <string name="mod_btn_spam">Marcáil mar thurscar</string>
+    <string name="mod_btn_author">Próifíl an údair</string>
+    <string name="mod_btn_ban">Coisc</string>
+    <string name="mod_ban_user">Coisc an t-úsáideoir</string>
+    <string name="mod_ban_reauth">Chun úsáideoirí a chosc, caithfidh Slide tú a athfhíordheimhniú</string>
+    <string name="mod_ban_reauth_question">Ar mhaith leat logáil isteach i Slide arís anois?</string>
+    <string name="mod_ban_success">Cuireadh cosc ar an úsáideoir!</string>
+    <string name="mod_ban_fail">Earráid agus cosc á chur ar an úsáideoir</string>
+    <string name="mod_ban_reason">Cúis an choisc</string>
+    <string name="mod_ban_note_mod">Nóta an mhodhnóra (roghnach)</string>
+    <string name="mod_ban_note_user">Teachtaireacht don úsáideoir (roghnach)</string>
+    <string name="mod_ban_time">Fad an choisc - fág folamh le haghaidh coisc bhuain</string>
+    <string name="mod_ban_title">Coisc /u/%1$s</string>
+    <string name="mod_remove_template">Baineadh mar gheall ar\u0020</string>
+    <string name="mod_remove_hint">Cúis an bhainte</string>
+    <string name="mod_remove_title">Cad is cúis leis an bpostáil seo a bhaint?</string>
+    <string name="mod_remove_insert_draft">Ionsáigh dréacht</string>
+    <string name="mod_flair_none_found">Níor aimsíodh aon flair don subreddit seo</string>
+    <string name="mod_distinguish">Idirdhealaigh</string>
+    <string name="mod_undistinguish">Bain an t-idirdhealú</string>
+    <string name="mod_sticky">Pionnáil</string>
+    <string name="mod_unsticky">Díphionnáil</string>
+    <string name="reauth_complete">Tá an t-athfhíordheimhniú críochnaithe!</string>
+    <string name="reauth_in_progress">Á athfhíordheimhniú…</string>
+    <string name="reauth_failed">Níorbh fhéidir athfhíordheimhniú a dhéanamh</string>
+
+    <plurals name="mod_btn_reports">
+        <item quantity="one">Féach ar %d tuairisc</item>
+        <item quantity="two">Féach ar %d thuairisc</item>
+        <item quantity="few">Féach ar %d thuairisc</item>
+        <item quantity="many">Féach ar %d dtuairisc</item>
+        <item quantity="other">Féach ar %d tuairisc</item>
+    </plurals>
+
     <!-- If he did -->
+    <string name="really_pin_submission_message">Pionnáladh an postáil</string>
+    <string name="really_unpin_submission_message">Díphionnáladh an postáil</string>
+
     <!-- Subreddit Wiki -->
+    <string name="wiki_err">Níor aimsíodh aon vicí</string>
+    <string name="wiki_err_msg">Níl vicí ag an subreddit seo!</string>
+
     <!-- Subreddits -->
+    <string name="subreddit_subscribers_string">%1$s síntiúsóir</string>
+    <string name="subreddit_active_users_string_new">%1$s anseo anois</string>
+    <string name="subreddit_err_msg">Níorbh fhéidir an subreddit %1$s a aimsiú. B\'fhéidir go bhfuil sé litrithe mícheart?</string>
+    <string name="subreddit_err_msg_new">Níorbh fhéidir an subreddit %1$s a aimsiú. B\'fhéidir go bhfuil sé litrithe mícheart, nó nach bhfuil rochtain agat air.</string>
+    <string name="subreddit_err">Níor aimsíodh an subreddit</string>
+
     <!-- Search -->
+    <string name="search_comments_hint">Cuardaigh na nótaí tráchta</string>
     <string name="search_goto">Téigh go dtí</string>
+    <string name="search_title">Cuardach</string>
+    <string name="search_msg">Cad atá á lorg agat?</string>
+    <string name="search_all">Cuardaigh gach rud</string>
+    <string name="search_subreddit">Cuardaigh %1$s</string>
+    <string name="search_relevance">Ábharthacht</string>
+    <string name="search_top">Barr</string>
+    <string name="search_new">Nua</string>
+    <string name="search_comments">Nótaí tráchta</string>
+    <string name="no_posts_found">Níor aimsíodh aon phostáil</string>
+
     <!-- Settings -->
+    <string name="settings_reddit_prefs">Sainroghanna Reddit</string>
+    <string name="settings_accent_title">Cuir an dath aibhsithe in eagar</string>
+    <string name="settings_delete_sub_settings">An bhfuil tú cinnte gur mian leat socruithe %1$s a scriosadh?</string>
+    <string name="settings_layout_default">Leagan amach na bpostálacha</string>
+    <string name="settings_link_album">Amharc albaim inmheánach</string>
+    <string name="settings_link_peek">Spléachadh ar an ábhar</string>
+    <string name="settings_link_peek_description">Díchumasaíonn brú fada ar an íomhá réamhamhairc</string>
+    <string name="settings_link_gif">Amharc GIF inmheánach</string>
+    <string name="settings_link_hqgif">Físeáin Gfycat ardcháilíochta</string>
+    <string name="settings_link_handling">Láimhseáil nasc</string>
+    <string name="settings_link_image">Amharc íomhánna inmheánach</string>
+    <string name="settings_mail_check">Seiceáil teachtaireachtaí nua</string>
+    <string name="settings_mail_info">Dá mhinice an tseiceáil, is ea is mó ceallra a d\'fhéadfadh Slide a úsáid sa chúlra!</string>
+    <string name="settings_main_color_title">Cuir an príomhdhath in eagar</string>
+    <string name="settings_notification">Seiceáil teachtaireachtaí nua gach %1$s</string>
+    <string name="settings_notification_newline">Seiceáil teachtaireachtaí nua gach\n%1$s</string>
+    <string name="settings_notification_short">Seiceáil gach %1$s</string>
+    <string name="settings_disable_nsfw_photo">Cuir gach grianghraf NSFW i bhfolach</string>
+    <string name="settings_store_history">Sábháil an stair</string>
+    <string name="settings_store_nsfw_history">Sábháil stair NSFW</string>
+    <string name="settings_commentnav">Nascleanúint idir nótaí tráchta tuismitheora</string>
+    <string name="share_link">Comhroinn an nasc</string>
+    <string name="posts_hidden_forever">Postálacha i bhfolach go deo</string>
+    <string name="share_image">Comhroinn an íomhá</string>
+    <string name="settings_libs">Leabharlanna foinse oscailte</string>
+    <string name="settings_about_libs">Maidir leis na leabharlanna</string>
+    <string name="settings_privacy">Polasaí príobháideachais</string>
+    <string name="settings_bugs">Tuairiscigh fabhtanna</string>
+    <string name="settings_changelog">Féach ar an logleabhar athruithe</string>
+    <string name="settings_fabclear_msg">Má thapálann tú an cnaipe glanta, bainfear na postálacha den amharc reatha, ach ní chuirfear i bhfolach go deo iad. \nMá bhrúnn tú go fada ar an gcnaipe, cuirfear na postálacha i bhfolach go deo!</string>
+    <string name="settings_fabclear">Gníomhartha glanta an chnaipe ar snámh</string>
+    <string name="settings_notifdisabled">Fógraí díchumasaithe</string>
+    <string name="settings_colored_navigation_bar">Barra nascleanúna daite</string>
+    <string name="settings_always_black_statusbar">Barra stádais dubh (barra fógraí)</string>
+    <string name="settings_colored_icon">Dathaigh deilbhín na haipe (turgnamhach)</string>
+    <string name="settings_colored_icon_desc">D\'fhéadfadh atosú an ghutháin a bheith riachtanach. Bainfidh sé seo an deilbhín de do scáileán baile freisin.</string>
+    <string name="settings_filter_domain">Scagairí fearainn</string>
+    <string name="settings_filter_selfttext">Scagairí téacs postála</string>
+    <string name="settings_filter_title">Scagairí teidil</string>
+    <string name="settings_prefs_reddit">Féach ar gach sainrogha reddit.com</string>
+    <string name="settings_font_post">Cló theideal na postála</string>
+    <string name="settings_font_comment">Cló na nótaí tráchta</string>
+    <string name="settings_comment_crop">Bearr an phríomhíomhá in amharc na nótaí tráchta</string>
+    <string name="settings_general_scroll_read">Marcáil postálacha mar fheicthe agus tú ag scrollú thart orthu</string>
+    <string name="settings_link_chrome">Cluaisíní saincheaptha</string>
+    <string name="settings_storage_location">Roghnaigh suíomh stórála</string>
+    <string name="settings_storage_location_unset">Gan socrú fós</string>
+    <string name="settings_set_storage_location">Sábhálfar comhaid chuig %s</string>
+    <string name="settings_general_immersive_mode">Mód lánscáileáin tumthach</string>
+    <string name="settings_general_immersive_mode_desc">Cuir na barraí stádais agus nascleanúna i bhfolach (turgnamhach)</string>
+    <string name="settings_general_old_swipe_mode">Seanmhód svaidhpeála</string>
+    <string name="settings_general_old_swipe_mode_desc">Seanstíl svaidhpeála Slide. Ceaptha don mhód nascleanúna trí chnaipe agus do ghothaí Samsung.</string>
+    <string name="settings_general_hibernate">Lean ar aghaidh ón áit ar stad mé</string>
+    <string name="settings_general_hibernate_desc">Osclaíonn an scáileán céanna arís, san áit chéanna, agus taispeánann sé an méid a bhí luchtaithe cheana in ionad athnuachan a dhéanamh. Nuair a chumasaítear é, cuirtear ticbhosca leis an roghchlár breise a chasann an t-atosú air agus as gan filleadh anseo.</string>
+
+    <string name="settings_general_title_drawer_items">Míreanna an tarraiceáin</string>
+    <string name="settings_general_subtitle_drawer_items">Roghnaigh cé na míreanna tarraiceáin a thaispeánfar</string>
+
     <!-- Settings titles displayed in settings activity-->
+    <string name="settings_title_backup">Cúltaca &amp; athchóiriú</string>
+    <string name="settings_title_default_theme">Príomhthéama</string>
+    <string name="settings_title_general">Ginearálta</string>
+    <string name="settings_title_history">Stair</string>
+    <string name="settings_title_notifications">Fógraí</string>
+    <string name="settings_title_pro">Faigh Pro</string>
+    <string name="settings_title_sub_theme">Téamaí subreddit</string>
+    <string name="settings_title_sort">Sórtáil réamhshocraithe</string>
+    <string name="settings_title_sort_frontpage">Sórtáil an leathanaigh tosaigh</string>
+    <string name="settings_title_about">Maidir leis</string>
+    <string name="settings_title_debug">Dífhabhtú</string>
+    <string name="settings_section_debug_reauth">Athfhíordheimhniú</string>
+    <string name="settings_debug_break_reauth">Bris an t-athfhíordheimhniú</string>
+    <string name="settings_debug_break_reauth_desc">Stopann an t-athfhíordheimhniú ionas gur féidir an fógra a thástáil. Inchúlaithe: múch é seo, agus ansin spreag athfhíordheimhniú.</string>
+    <string name="settings_debug_trigger_reauth">Spreag athfhíordheimhniú</string>
+    <string name="settings_debug_trigger_reauth_desc">Tosaigh athfhíordheimhniú anois. Úsáid é seo chun teacht chugat féin tar éis an lasc a mhúchadh.</string>
+    <string name="settings_title_multi_column">Ilcholúin</string>
+    <string name="settings_title_fab">Cnaipe gnímh ar snámh</string>
+    <string name="settings_title_comments">Nótaí tráchta</string>
+    <string name="settings_title_filter">Scagairí</string>
+    <string name="settings_title_font">Cló</string>
+    <string name="settings_section_general">Ginearálta</string>
+    <string name="settings_section_appearance">Cuma</string>
+    <string name="settings_section_hibernation">Geimhriú</string>
+    <string name="settings_section_other">Eile</string>
+    <string name="settings_section_browser">Brabhsálaí</string>
+    <string name="settings_section_internal_viewers">Amharcáin inmheánacha</string>
+    <string name="settings_section_custom_domains">Fearainn shaincheaptha</string>
+    <string name="settings_section_save_history">Sábháil an stair</string>
+    <string name="settings_section_clear_history">Glan an stair</string>
+    <string name="settings_section_data_saving_mode">Mód coigilte sonraí</string>
+    <string name="settings_section_data_saving_quality">Cáilíocht le coigilt sonraí</string>
+    <string name="settings_comment_color">Táscairí doimhneachta daite do nótaí tráchta</string>
+    <string name="settings_volume_nav_comments">Nascleanúint trí nótaí tráchta leis na cnaipí airde</string>
+    <string name="settings_commentnav_description">Cumasaíonn barra bun le saigheada nascleanúna</string>
+    <string name="settings_comment_collapse">Laghdaigh na nótaí tráchta go hiomlán</string>
+    <string name="settings_comment_collapse_description">Díchumasaíonn beochana na nótaí tráchta freisin</string>
+    <string name="settings_comment_collapse_default">Laghdaigh na nótaí tráchta linbh de réir réamhshocraithe</string>
+    <string name="settings_data_enable">Cumasaigh socruithe coigilte sonraí</string>
+    <string name="settings_data_video_quality">Tabhair tosaíocht d\'fhíseáin ar cháilíocht íseal nuair a bhíonn coigilt sonraí ann</string>
+    <string name="settings_comments_collapse_deleted">Laghdaigh na nótaí tráchta scriosta de réir réamhshocraithe</string>
+    <string name="settings_comments_collapse_sticky">Laghdaigh an nóta tráchta pionnáilte go hiomlán i gcónaí</string>
+    <string name="settings_comments_collapse_blocked_users">Laghdaigh nótaí tráchta ó úsáideoirí bactha</string>
+    <string name="settings_comments_collapse_blocked_users_description">Cumasaíonn Laghdaigh na nótaí tráchta go hiomlán freisin</string>
+    <string name="settings_backup_occurs">Déanfar an cúltaca ag %1$s</string>
+    <string name="settings_backup_none">Ní dhéanfar cúltaca d\'aon subreddit</string>
+    <string name="settings_backup_will_backup">\u0020déanfar cúltaca de</string>
+    <string name="settings_backup_submission_only">an postáil amháin</string>
+    <string name="settings_backup_comments">\u0020(nótaí tráchta)</string>
+    <string name="settings_filter_profile">Scagairí próifíle</string>
+    <string name="settings_subreddit_content_filters_till_restart">Scagairí ábhair an subreddit go dtí atosú</string>
+    <string name="settings_subredditspecific_selftext">Taispeáin réamhamhairc téacs sa subreddit seo i gcónaí</string>
+    <string name="settings_font_system">Córas</string>
+    <string name="settings_manage_subscriptions">Bainistigh do shíntiúis</string>
+    <string name="settings_comments_swap_long">Malartaigh gníomhartha an bhrú fhada agus an tapála</string>
+    <string name="settings_redditprefs_over18">Tá mé os cionn 18 agus ba mhaith liom ábhar NSFW a fheiceáil</string>
+    <string name="settings_layout_view">Mód amhairc</string>
+    <string name="settings_subredditspecific_bigpic">Taispeáin pictiúir mhóra sa subreddit seo i gcónaí</string>
+    <string name="settings_layout_picture_mode">Mód pictiúr</string>
+    <string name="settings_general_expanded_toolbar">Roghchlár leathnaithe an bharra uirlisí</string>
+    <string name="settings_general_expanded_toolbar_desc">Taispeáin tuilleadh roghanna ar bharra uirlisí an subreddit</string>
+    <string name="settings_always_show_floating_action_button">Taispeáin an cnaipe gnímh ar snámh i gcónaí</string>
+    <string name="settings_always_show_floating_action_button_desc">Ná cuir an cnaipe gnímh ar snámh i bhfolach riamh agus tú ag scrollú</string>
+    <string name="settings_theme_tinting">Mód dathaithe na bpostálacha</string>
+    <string name="settings_layout_actionbar_mode">Mód an bharra gníomhaíochta</string>
+    <string name="settings_theme_tint_outside_desc">Ná dathaigh an cúlra ach i multireddits, ar an leathanach tosaigh agus i ngach rud</string>
+    <string name="settings_layout_small_content_tag">Clib ábhair níos lú</string>
+    <string name="settings_links_force_external">Cuir iallach ar bhrabhsálaí seachtrach</string>
+    <string name="settings_layout_show_domain">Taispeáin an fearann sa líne eolais</string>
+    <string name="settings_layout_show_content_type">Taispeáin cineál an ábhair sa líne eolais</string>
+    <string name="settings_layout_thumbnail_flags">Taispeáin bratacha daite ar chúinní na mionsamhlacha</string>
+    <string name="settings_layout_show_votes_comments">Taispeáin vótaí/nótaí tráchta sa líne eolais</string>
+    <string name="settings_general_comment_last_visit">Taispeáin líon na nótaí tráchta ón gcuairt dheireanach</string>
+    <string name="settings_fab_create">Taispeáin an cnaipe ar snámh \"cruthaigh nóta tráchta\"</string>
+    <string name="settings_right_handed_comment_menu">Roghchlár freagartha nótaí tráchta do dhaoine deasacha</string>
+    <string name="settings_reddit_description">Athraíonn na socruithe seo an méid a chuireann API Reddit ar ais chuig Slide.\n\nChun mionsamhlacha a fheiceáil i ngach subreddit, cumasaigh \'Déan neamhaird de shainroghanna meán an subreddit\'\n\nChun an t-ábhar NSFW go léir a fheiceáil, múch \'Cuir grianghraif NSFW i bhfolach\' agus cas air \'Tá mé os cionn 18\'</string>
+    <string name="settings_reddit_media_pref">Déan neamhaird de shainroghanna meán an subreddit</string>
+    <string name="settings_description_view_type">Bíonn tionchar ag na cineálacha amhairc ar an bpríomhamharc agus ar amhairc subreddit aonair araon.\n\nPána nótaí tráchta: sleamhnaíonn na nótaí tráchta amach in aice leis na postálacha agus sábháiltear staid an leathanaigh tar éis svaidhpeáil ar ais (ionas nach gcaillfidh tú d\'áit)\n\nGan cluaisíní subreddit: díchumasaíonn svaidhpeáil idir subreddits\n\nCluaisíní subreddit: sleamhnaigh idir do chuid subreddits</string>
+    <string name="settings_short_description_view_type">Bíonn tionchar ag na cineálacha amhairc ar an bpríomhamharc agus ar amhairc subreddit aonair araon</string>
+    <string name="settings_comment_hide_selftext_image">Cuir an phríomhíomhá i bhfolach ar phostálacha téacs</string>
+    <string name="settings_filter_flair">Scagairí flair</string>
+    <string name="settings_view_type">Cineál amhairc</string>
+    <string name="settings_data">Coigilt sonraí</string>
+    <string name="settings_card_show_selftext">Taispeáin téacs na postála</string>
+    <string name="settings_card_selftext_paragraph">Taispeáin an chéad alt</string>
+    <string name="settings_card_selftext_ellipsize">Giorraigh go dtí an chéad 128 carachtar</string>
+    <string name="settings_handling_external_desc">Osclófar na fearainn a chuirtear isteach thíos go seachtrach i gcónaí</string>
+    <string name="settings_handling_enterdomain">Cuir fearann nó cuid d\'fhearann isteach</string>
+    <string name="settings_section_content">Ábhar</string>
+    <string name="settings_backup_view">Féach ar an gcúltaca</string>
+    <string name="settings_backup_err_no_explorer">Níor aimsíodh aon bhainisteoir comhad, tá an comhad ag %1$s</string>
+    <string name="settings_about_version_copied_toast">Cóipeáladh uimhir an leagain chuig an ngearrthaisce</string>
+    <string name="settings_theme_night_start_at">Tosaíonn ag\u0020</string>
+    <string name="settings_theme_night_end_at">Críochnaíonn ag\u0020</string>
+    <string name="settings_general_inbox_snd">Fuaim agus creathadh</string>
+    <string name="settings_enable_notifs">Cumasaigh fógraí an bhosca isteach</string>
+
     <!-- Quick setting toggles in the drawer -->
+    <string name="toggle_night_mode">Mód oíche</string>
+    <string name="toggle_immersive_mode">Mód tumthach</string>
+    <string name="toggle_nsfw">Taispeáin ábhar NSFW</string>
+    <string name="toggle_right_thumbnails">Mionsamhlacha ailínithe ar dheis</string>
+    <string name="toggle_reader_mode">Úsáid an mód léitheoireachta</string>
+
     <!-- View types -->
+    <string name="view_type_tabs">Cluaisíní subreddit</string>
+    <string name="view_type_none">Gan cluaisíní subreddit</string>
+    <string name="view_type_comments">Pána nótaí tráchta</string>
+
     <!--Search methods -->
+    <string name="subreddit_search_method_title">Modh cuardaigh subreddit</string>
+    <string name="subreddit_search_method_drawer">Barra cuardaigh sa tarraiceán</string>
+    <string name="subreddit_search_method_toolbar">Brú fada ar theideal an bharra uirlisí</string>
+    <string name="subreddit_search_method_both">An tarraiceán agus teideal an bharra uirlisí araon</string>
+
     <!-- Back button behavior -->
+    <string name="back_button_behavior_title">Iompar an chnaipe ar ais</string>
+    <string name="back_button_behavior_default">Dún an aip</string>
+    <string name="back_button_behavior_confirm_exit">Dialóg dheimhnithe scortha</string>
+    <string name="back_button_behavior_drawer">Oscail an tarraiceán</string>
+
     <!-- Subscription managing -->
-    <!-- Save categories -->
+    <string name="reorder_add_domain">Cuir fearann leis</string>
+    <string name="reorder_add_subreddit">Cuir subreddit leis</string>
+    <string name="reorder_fab_collection">Multireddit</string>
+    <string name="reorder_fab_domain">Fearann</string>
+    <string name="reorder_fab_subreddit">Subreddit</string>
+    <string name="reorder_add_subscribe">Cuir leis &amp; glac síntiús</string>
+    <string name="reorder_remove_unsubscribe">Bain &amp; cealaigh an síntiús</string>
+    <string name="reorder_move">Bog go dtí an barr</string>
+    <string name="reorder_domain_placeholder">\u0020(ainm an fhearainn amháin)</string>
+    <string name="reorder_not_found_err">Níor aimsíodh an subreddit, seo roinnt moltaí</string>
+    <string name="reorder_subscribed_toast">Glacadh síntiús le /r/%1$s</string>
+    <string name="reorder_unsubscribed_toast">Cealaíodh an síntiús le /r/%1$s</string>
+    <string name="sorting_faq"><b>Conas a dhéanaim subreddits a athnuachan?</b>\nChun subreddits a athnuachan, cliceáil ar an deilbhín athnuachana sa bharra uirlisí!\n\n<b>Chealaigh mé síntiús le roinnt subreddits ach tá siad fós ar an liosta!</b>\nDéanfaidh Slide síntiúis neamhfhoirmiúla de na subreddits ar chealaigh tú síntiús leo sa bhrabhsálaí. Chun iad a bhaint, brúigh go fada ar an subreddit agus cliceáil bain!\n\n<b>Conas a úsáidim bailiúcháin?</b>\nChun bailiúchán a chruthú, cliceáil ar an gcnaipe + ar snámh agus roghnaigh \'Cruthaigh bailiúchán\'. Ligeann sé sin do roinnt sub feidhmiú mar aon subreddit amháin ar an bpríomhscáileán!</string>
+    <string name="alphabetize_subreddits">Cuir na subreddits in ord aibítre</string>
+    <string name="sync_subscriptions">Sioncronaigh na síntiúis</string>
+    <string name="cannot_be_undone">Ní féidir é seo a chealú.</string>
+    <string name="deleting">Á scriosadh…</string>
+    <string name="create_or_import_multi">Ar mhaith leat multireddit nua a chruthú nó ceann a iompórtáil?</string>
+    <string name="sub_added">Cuireadh an subreddit leis!</string>
+    <string name="reorder_subs_FAQ">Ceisteanna coitianta faoi athordú subreddits</string>
+    <string name="subscribe_to">Glac síntiús le /r/%1$s</string>
+    <string name="unsubscribe_from">Cealaigh an síntiús le /r/%1$s</string>
+    <string name="btn_add_to_sublist">CUIR LE LIOSTA NA SUBS</string>
+    <string name="btn_remove_from_sublist">BAIN DE LIOSTA NA SUBS</string>
+    <string name="just_unsub">NÁ DÉAN ACH SÍNTIÚS A CHEALÚ</string>
+    <string name="subscribe_caps">GLAC SÍNTIÚS</string>
+    <string name="unsubscribe_caps">CEALAIGH SÍNTIÚS</string>
+    <string name="reorder_subreddits_title">Roghnaigh subreddit le cur leis</string>
+    <string name="reorder_add_or_search_subreddit">Cuir subreddit leis nó cuardaigh ceann</string>
+    <string name="reorder_subreddit_name">Ainm an subreddit</string>
+    <string name="reorder_remove_title">An subreddit seo a bhaint?</string>
+    <string name="reorder_sync_complete">Sioncronú críochnaithe</string>
+    <string name="reorder_loading_title">Do chuid subreddits á luchtú</string>
+    <string name="reorder_url_err">URL neamhbhailí</string>
+
+    <!-- Saved tags -->
+    <string name="tag_set_name_hint">Ainm na clibe</string>
+    <string name="tag_tag_action">CLIBEÁIL</string>
+    <string name="profile_tag_select">Clibeanna</string>
+    <string name="profile_saved_tags">Clibeanna sábháilte</string>
+    <string name="tag_builtin_all">Gach rud</string>
+    <string name="tag_builtin_posts">Postálacha</string>
+    <string name="tag_builtin_comments">Nótaí tráchta</string>
+    <string name="tag_types_header">Cineálacha</string>
+    <string name="tag_post_types_header">Cineálacha postála</string>
+    <string name="tag_custom_header">Clibeanna saincheaptha</string>
+    <string name="tag_new">Clib nua</string>
+    <string name="tag_manage">Bainistigh na clibeanna</string>
+    <string name="tag_add">Cuir clib leis</string>
+    <string name="tag_none_yet">Níl aon chlib ann fós</string>
+    <string name="tag_rename">Athainmnigh</string>
+    <string name="tag_delete_confirm">An bhfuil tú cinnte gur mian leat \"%1$s\" a scriosadh? Ní scriosfar na míreanna a bhfuil an chlib seo orthu.</string>
+    <string name="tag_name_used_title">Tá an t-ainm in úsáid cheana</string>
+    <string name="tag_name_used">Tá clib leis an ainm sin ann cheana, roghnaigh ainm uathúil.</string>
+    <string name="tag_name_reserved">Tá an t-ainm sin curtha in áirithe, roghnaigh ceann eile.</string>
+
     <!-- Setting subheaders -->
+    <string name="sorting">Sórtálacha</string>
+    <string name="display">Taispeáint</string>
+    <string name="images">Íomhánna</string>
+    <string name="storage">Stóráil</string>
+    <string name="app_theme">Téama na haipe</string>
+    <string name="tinting">Dathú</string>
+    <string name="post_info">Faisnéis na postála</string>
+    <string name="post_buttons">Cnaipí na postála</string>
+    <string name="navigation">Nascleanúint</string>
+    <string name="collapse_comments">Gníomhartha laghdaithe</string>
+    <string name="nsfw">Ábhar NSFW</string>
+    <string name="view_reddit_settings">Oscail socruithe Reddit sa bhrabhsálaí</string>
+    <string name="font_styles">Stíleanna cló</string>
+
     <!-- Titles displayed in action bar / head / recents overview-->
-    <!-- Text in Donation-Activity -->
+    <string name="title_subreddit_settings">Téamaí &amp; leaganacha amach subreddit</string>
+    <string name="title_edit_theme">Cuir an téama in eagar</string>
+    <string name="title_submit_post">Cuir postáil isteach</string>
+    <string name="title_crosspost">Traspostáil</string>
+    <string name="title_settings">Socruithe</string>
+    <string name="title_share">Comhroinn le</string>
+    <string name="title_login">Logáil isteach i Reddit</string>
+    <string name="title_multireddits">Multireddits</string>
+    <string name="title_users">Úsáideoirí</string>
+    <string name="title_inbox">Bosca isteach</string>
+    <string name="title_theme_settings">Téama</string>
+    <string name="title_create_multi">Cruthaigh multireddit</string>
+
     <!-- Offline mode -->
+    <string name="offline_msg">Téigh ar líne agus athnuaigh an subreddit chun é sin a dhéanamh</string>
+    <string name="offline_last_update">Nuashonraithe %1$s</string>
+    <string name="offline_comments_not_loaded">Téigh ar líne arís agus roghnaigh ‘Taisc na nótaí tráchta’ ón roghchlár trí phonc chun nótaí tráchta a fheiceáil as líne</string>
+    <string name="offline_no_content_found">Níor aimsíodh aon ábhar as líne</string>
+    <string name="offline_enter_online">Téigh i mód ar líne</string>
+    <string name="offline_caching_title">%1$s á thaisceadh</string>
+    <string name="offline_caching_complete">Taisceadh críochnaithe</string>
+
     <!-- Website -->
+    <string name="website_external">Oscail i mbrabhsálaí seachtrach</string>
+
+    <plurals name="reorder_subs_added">
+        <item quantity="one">Cuireadh %d subreddit leis</item>
+        <item quantity="two">Cuireadh %d subreddit leis</item>
+        <item quantity="few">Cuireadh %d subreddit leis</item>
+        <item quantity="many">Cuireadh %d subreddit leis</item>
+        <item quantity="other">Cuireadh %d subreddit leis</item>
+    </plurals>
+
     <!-- Time -->
+    <string name="time_just_now">Anois beag</string>
+    <plurals name="time_years">
+        <item quantity="one">%d bhliain</item>
+        <item quantity="two">%d bhliain</item>
+        <item quantity="few">%d bliana</item>
+        <item quantity="many">%d mbliana</item>
+        <item quantity="other">%d bliain</item>
+    </plurals>
+    <plurals name="time_months">
+        <item quantity="one">%d mhí</item>
+        <item quantity="two">%d mhí</item>
+        <item quantity="few">%d mhí</item>
+        <item quantity="many">%d mí</item>
+        <item quantity="other">%d mí</item>
+    </plurals>
+    <plurals name="time_days">
+        <item quantity="one">%d lá</item>
+        <item quantity="two">%d lá</item>
+        <item quantity="few">%d lá</item>
+        <item quantity="many">%d lá</item>
+        <item quantity="other">%d lá</item>
+    </plurals>
+    <plurals name="time_hours">
+        <item quantity="one">%d uair</item>
+        <item quantity="two">%d uair</item>
+        <item quantity="few">%d huaire</item>
+        <item quantity="many">%d n-uaire</item>
+        <item quantity="other">%d uair</item>
+    </plurals>
+    <plurals name="time_minutes">
+        <item quantity="one">%d nóiméad</item>
+        <item quantity="two">%d nóiméad</item>
+        <item quantity="few">%d nóiméad</item>
+        <item quantity="many">%d nóiméad</item>
+        <item quantity="other">%d nóiméad</item>
+    </plurals>
+    <plurals name="time_seconds">
+        <item quantity="one">%d soicind</item>
+        <item quantity="two">%d shoicind</item>
+        <item quantity="few">%d shoicind</item>
+        <item quantity="many">%d soicind</item>
+        <item quantity="other">%d soicind</item>
+    </plurals>
+
     <!-- Time: shorthand durations for example 1 hour → 1h -->
+    <string name="time_years_short">%db</string>
+    <string name="time_days_short">%dl</string>
+    <string name="time_hours_short">%du</string>
+    <string name="time_minutes_short">%dn</string>
+
     <!-- Strings present during the login process -->
+    <string name="login_subscribe_rslideforreddit">Síntiús a ghlacadh le /r/slidereddit?</string>
+    <string name="login_subscribe_rslideforreddit_desc">Ar mhaith leat síntiús a ghlacadh le /r/slidereddit le haghaidh na nuachta is déanaí agus chun fadhbanna a thuairisciú?</string>
+    <string name="login_sync_colors">Dathanna a shioncronú anois?</string>
+    <string name="login_sync_colors_desc">Ar mhaith leat dathanna do chuid subreddits a shioncronú anois? Is féidir é seo a dhéanamh níos déanaí i Socruithe → Téamaí subreddit</string>
+    <string name="login_authenticating">Tá Slide á fhíordheimhniú</string>
+    <string name="login_starting">Rudaí á socrú!</string>
+    <string name="login_starting_desc">Níor cheart go dtógfadh sé seo ach soicind…</string>
+
     <!-- Over 18 prompt when visiting a NSFW subreddit -->
-    <!-- Subreddit color synchronization - https://redd.it/41054l -->
+    <string name="over18_title">Tá ábhar aosaigh in /r/%1$s</string>
+    <string name="over18_desc">An bhfuil tú os cionn ocht mbliana déag agus ar mhaith leat ábhar aosaigh a fheiceáil?</string>
+    <string name="over18_desc_loggedout">Logáil isteach chun an rabhadh seo a dhíchumasú go buan</string>
+    <string name="over18_desc_loggedin">Is féidir leat é seo a dhíchumasú go buan i Socruithe → Sainroghanna Reddit → Taispeáin ábhar NSFW</string>
+
+    <!-- Subreddit color synchronization - https://reddit.com/comments/41054l -->
+    <string name="color_sync_complete">Sioncronú críochnaithe</string>
+    <plurals name="color_sync_colored">
+        <item quantity="one">Dathaíodh %d subreddit</item>
+        <item quantity="two">Dathaíodh %d subreddit</item>
+        <item quantity="few">Dathaíodh %d subreddit</item>
+        <item quantity="many">Dathaíodh %d subreddit</item>
+        <item quantity="other">Dathaíodh %d subreddit</item>
+    </plurals>
+
     <!-- Discover section: find -->
     <string name="discover_title">Faigh amach</string>
+    <string name="discover_search">Téarma cuardaigh nó topaic</string>
+    <string name="discover_popular">Coitianta</string>
+    <string name="discover_trending">Ag treochtáil</string>
+
     <!-- Subreddit post notifications -->
+    <string name="sub_post_notifs_title">Fógra a fháil faoi phostálacha nua in\n/r/%1$s?</string>
+    <string name="sub_post_notifs_title_settings">Fógra a fháil faoi phostálacha nua?</string>
+    <string name="sub_post_notify">Cuir in iúl</string>
+    <string name="sub_post_notifs_threshold">Tairseach scóir</string>
+    <string name="sub_post_notifs_err">Ní féidir fógraí a chur ach le subreddits aonair</string>
+    <string name="sub_post_notifs_settings_none">Níl aon subreddit ann le fógra a thabhairt faoi</string>
+    <string name="sub_post_notifs_settings_search">Cuardaigh ainm an sub</string>
+    <string name="sub_post_notifs_notification_title">Postáil nua in /r/%1$s</string>
+    <string name="sub_post_notifs_notification_btn">Stop ag rianú /r/%1$s</string>
+    <string name="title_sub_post_notifs">Fógraí faoi phostálacha subreddit</string>
+
     <!-- Internal browser -->
+    <string name="internal_browser_extracting_error">Ár leithscéal, níorbh fhéidir an t-alt a bhaint amach</string>
+    <string name="internal_browser_storecookies">Stóráil fianáin na suíomhanna</string>
+    <string name="internal_browser_readermode">Mód léitheoireachta</string>
+
     <!-- Live thread -->
+    <string name="livethread_loading_title">Snáithe beo á luchtú…</string>
+    <string name="livethread_not_found">Níor aimsíodh an snáithe beo</string>
+    <string name="livethread_recents_title">Snáithe beo: %1$s</string>
+
     <!-- Used when viewing media -->
+    <string name="mediaview_notif_title">Íomhá á híoslódáil…</string>
+    <string name="mediaview_notif_video">Físeán á íoslódáil…</string>
+    <string name="mediaview_notif_text">Íoslódáil ar siúl</string>
+    <string name="mediaview_save">Sábháil %1$s</string>
+    <string name="mediaview_saving">%1$s á shábháil</string>
+
     <!-- Drafts -->
+    <string name="choose_draft">Roghnaigh dréacht</string>
+    <string name="dialog_no_drafts">Níl aon dréacht ann fós</string>
+    <string name="dialog_no_drafts_msg">Is féidir leat dréacht a chur leis trí chliceáil ar an deilbhín \'sábháil\' i mbarra an eagarthóra!</string>
+    <string name="msg_save_draft">Sábháladh an teachtaireacht mar dhréacht</string>
+    <string name="manage_drafts">Bainistigh na dréachtaí</string>
+    <string name="really_delete_drafts">Na dréachtaí seo a scriosadh i ndáiríre?</string>
+
     <!-- Strings for widgets -->
+    <string name="widget_theme_dark">DORCHA</string>
+    <string name="widget_theme_light">SORCHA</string>
+    <string name="widget_theme_clear">TRÉDHEARCACH</string>
+    <string name="widget_posttype_title">Cineál na postála</string>
+    <string name="widget_posttype_list">LIOSTA</string>
+    <string name="widget_posttype_bigpic">PICTIÚR MÓR</string>
+    <string name="widget_posttype_compact">DLÚTH</string>
+    <string name="widget_subname_hint">Ainm an subreddit</string>
+    <string name="widget_visuals">Cuma</string>
+    <string name="widget_content">Ábhar</string>
+    <string name="widget_loading">Á luchtú…</string>
+    <string name="widget_creation_title">Giuirléid nua</string>
+    <string name="shortcut_creation_title">Aicearra nua</string>
+
     <!-- Strings for alert dialogs -->
+    <string name="force_change_subscription">Níorbh fhéidir an síntiús a athrú</string>
+    <string name="force_change_subscription_desc">Ar mhaith leat é a athrú go háitiúil mar sin féin?</string>
+    <string name="never_load_images">Ná luchtaigh aon íomhá</string>
+    <string name="load_low_quality">Luchtaigh íomhánna ar cháilíocht íseal (uas. 320x320)</string>
+    <string name="load_medium_quality">Luchtaigh íomhánna ar mheánchaighdeán (uas. 640x640)</string>
+    <string name="load_high_quality">Luchtaigh íomhánna ar ardcháilíocht (uas. 1080x1080)</string>
+    <string name="choose_color_title">Roghnaigh dath</string>
+    <string name="enter_text_to_filter_click_enter_to_add">Cuir téacs isteach le cuardach, brúigh enter chun scagaire a chur leis</string>
+    <string name="mode_desktop_compact">Deasc dlúth</string>
+    <string name="show_content_type_text_beside_links">Taispeáin téacs chineál an ábhair in aice leis na naisc</string>
+    <string name="comment_shadowbox">Shadowbox nótaí tráchta</string>
+
     <!-- Sidebar strings (multis, flairs) -->
+    <string name="sidebar_select_flair">Roghnaigh flair</string>
+    <string name="sidebar_select_flair_text">Socraigh téacs an flair</string>
+    <string name="sidebar_findingmods">Modhnóirí á n-aimsiú</string>
+    <string name="snackbar_flair_success">Socraíodh an flair go rathúil</string>
+    <string name="snackbar_flair_error">Earráid agus an flair á shocrú, bain triail eile as go luath</string>
+    <string name="sidebar_submods">Modhnóirí /r/%s</string>
+    <string name="sidebar_flair">Flair: %1$s</string>
+    <string name="sidebar_notfound">Níor aimsíodh aon bharra taoibh</string>
+    <plurals name="reorder_selected">
+        <item quantity="one">"%d roghnaithe"</item>
+        <item quantity="two">"%d roghnaithe"</item>
+        <item quantity="few">"%d roghnaithe"</item>
+        <item quantity="many">"%d roghnaithe"</item>
+        <item quantity="other">"%d roghnaithe"</item>
+    </plurals>
+
     <!--Filtering dialog -->
+    <string name="filter_title">Cad ba mhaith leat a scagadh?</string>
+    <string name="filter_posts_sub">Postálacha ó /r/%1$s</string>
+    <string name="filter_posts_user">Postálacha ó /u/%1$s</string>
+    <string name="filter_posts_urls">Postálacha a nascann le %1$s</string>
+    <string name="filter_open_externally">Oscail naisc %s go seachtrach</string>
+    <string name="filter_posts_flair">Flair \"%1$s\" ó %2$s</string>
+    <string name="filter_btn">Scag</string>
+
     <!-- Caching -->
+    <string name="cache_no_comments_found">Níor aimsíodh aon nóta tráchta</string>
+    <string name="cache_no_comments_found_snackbar">Níor aimsíodh aon nóta tráchta taiscthe</string>
+    <string name="cache_no_comments_found_message">Níl aon nóta tráchta taiscthe ag an bpostáil seo. Chun nótaí tráchta a thaisceadh amach anseo, cliceáil ar an roghchlár trí phonc ar an bpríomhscáileán agus roghnaigh \'Taisc na nótaí tráchta\', nó socraigh Uath-thaisceadh sa chluaisín Ábhar As Líne sa tarraiceán nascleanúna</string>
+    <string name="autocache_subreddits">Subreddits le huath-thaisceadh</string>
+    <string name="autocache_time">Am an uath-thaiscthe</string>
+    <string name="cache_subreddits_now">Taisc na subreddits anois</string>
+    <string name="cache_wifi_only">Ná taisc ach ar Wi-Fi</string>
+    <string name="comments_depth">Doimhneacht na nótaí tráchta le taisceadh</string>
+    <string name="comments_count">Líon na nótaí tráchta le taisceadh</string>
+
     <!-- Saving location setting -->
+    <string name="set_save_location">Socraigh suíomh sábhála na meán</string>
+    <string name="set_save_location_msg">Níl suíomh sábhála na meán ag Slide socraithe.</string>
+
     <!-- Report flow -->
+    <string name="btn_report">Tuairiscigh</string>
+    <string name="report_post">Tuairiscigh an postáil</string>
+    <string name="report_comment">Tuairiscigh an nóta tráchta</string>
+    <string name="report_loading">Cúiseanna á luchtú…</string>
+    <string name="report_sub_rules">Rialacha /r/%s</string>
+    <string name="report_site_rules">Rialacha Reddit</string>
+    <string name="report_another_reason">Cúis eile</string>
+    <string name="report_other">Eile</string>
+    <string name="input_reason_for_report">Cúis an tuairiscithe</string>
+    <string name="msg_report_sent">Seoladh an tuairisc</string>
+
     <!-- Unsorted ¯\\_(ツ)_/¯ -->
+    <string name="comment_load_more_number_unknown">Luchtaigh tuilleadh nótaí tráchta</string>
+    <string name="card_right_thumb">Mionsamhail ailínithe ar dheis</string>
+    <string name="setting_filter_subreddits">Scagairí subreddit</string>
+    <string name="subreddit_theme">Téama an subreddit</string>
+    <string name="dialog_choose_subreddits_to_edit">Roghnaigh subreddits le cur in eagar</string>
+    <string name="dialog_color_sync_title">Sioncronú dathanna</string>
+    <string name="dialog_color_sync_message">Déanfaidh sé seo iarracht ‘príomhdhath’ an subreddit a shocraigh na modhnóirí a fháil. Ní fhorscríobhfaidh sé subreddits a bhfuil dath orthu cheana.</string>
+    <string name="fab_hide">Cuir na postálacha feicthe i bhfolach</string>
+    <string name="fab_create">Cruthaigh postáil nua</string>
+    <string name="fab_disabled">Díchumasaithe</string>
+    <string name="fab_search">Cuardaigh postálacha</string>
+    <string name="handling_internal_browser">Brabhsálaí inmheánach</string>
+    <string name="handling_external_browser">Brabhsálaí seachtrach</string>
     <string name="mode_list">Liosta</string>
+    <string name="mode_centered">Cárta le híomhá lárnaithe</string>
+    <string name="mode_card">Cárta</string>
+    <string name="mode_thumbnail">Mionsamhail</string>
+    <string name="mode_no_thumbnails">Gan mionsamhail</string>
+    <string name="mode_big_thumbnails">Mionsamhlacha leathana</string>
+    <string name="mode_cropped">Pictiúr mór bearrtha</string>
+    <string name="mode_letterbox">Pictiúr mór le bandaí</string>
+    <string name="mode_bigpic">Pictiúr mór</string>
+    <string name="press_actionbar">Brúigh an tsaighead chun an barra gníomhaíochta a thaispeáint</string>
+    <string name="show_top_right">Taispeáin ar bharr ar dheis</string>
+    <string name="show_bottom_right">Taispeáin ag bun ar dheis</string>
+    <string name="small_tag_disabled">Díchumasaithe</string>
+    <string name="tap_actionbar">Brú fada don bharra gníomhaíochta</string>
+    <string name="always_actionbar">Taispeáin an barra gníomhaíochta i gcónaí</string>
+    <string name="sub_content_filter">Scagaire ábhair an subreddit</string>
+    <string name="submission_share_reddit_url">Comhroinn na nótaí tráchta</string>
+    <string name="filter_content">Scag an t-ábhar seo</string>
+    <string name="content_to_show">Ábhar le taispeáint ar %1$s</string>
+    <string name="save_for_offline_viewing">Sábháil postálacha le haghaidh amhairc as líne</string>
+    <string name="btn_collapse_children_all">Laghdaigh na nótaí tráchta linbh</string>
+    <string name="btn_open_content">Oscail an t-ábhar</string>
+    <string name="enter_text_to_filter_click_enter_to_add_flair">Cuir téacs isteach le scagadh (subreddit:flair_text), brúigh enter chun é a chur leis</string>
+    <plurals name="filter_count">
+        <item quantity="one">%1$d scagaire (%2$d ar a mhéad ar taispeáint)</item>
+        <item quantity="two">%1$d scagaire (%2$d ar a mhéad ar taispeáint)</item>
+        <item quantity="few">%1$d scagaire (%2$d ar a mhéad ar taispeáint)</item>
+        <item quantity="many">%1$d scagaire (%2$d ar a mhéad ar taispeáint)</item>
+        <item quantity="other">%1$d scagaire (%2$d ar a mhéad ar taispeáint)</item>
+    </plurals>
+    <string name="filter_limit_reached">Ag taispeáint an chéad %1$d as %2$d. Cuardaigh chun na torthaí a chúngú.</string>
+    <string name="datasave_always">Sonraí soghluaiste agus Wi-Fi</string>
+    <string name="datasave_mobile">Sonraí soghluaiste</string>
+    <string name="never">Riamh</string>
+    <string name="multi_column_force_full">Cuir iallach ar amharc iomlán na nótaí tráchta</string>
+    <string name="submission_info_locked">Is postáil faoi ghlas í seo. Ní bheidh tú in ann trácht a dhéanamh.</string>
+    <string name="card_background_tint">Cúlra an chárta</string>
+    <string name="subreddit_name_tint">Ainm an subreddit</string>
+    <string name="login_failed_err_decline">Bí cinnte nár roghnaigh tú ‘Diúltaigh’ ar an scáileán deireanach, agus bain triail eile as i gceann nóiméid</string>
+    <string name="login_unsupported_redirect_uri">Ní féidir le brabhsálaí an URI atreoraithe atá cumraithe (%1$s) a fháil, agus mar sin ní féidir an logáil isteach a chríochnú. Úsáid an modh logála isteach WebView san aip ina ionad, nó socraigh URI atreoraithe tacaithe sna Socruithe.</string>
+    <string name="login_unsupported_redirect_uri_title">Theip ar an logáil isteach</string>
+    <string name="login_failed_oauth_error_page">Theip ar an logáil isteach — sheol Reddit earráid ar ais in ionad an logáil isteach a chríochnú. Seiceáil d\'aitheantas cliaint agus an URI atreoraithe sna Socruithe.</string>
+    <string name="tutorial_swipe_navigation">Nascleanúint svaidhpeála</string>
+    <string name="tutorial_swipe_description">Svaidhpeáil ón imeall clé chun scor.\n\nBaineann sé seo le híomhánna, GIFanna, albaim, socruithe agus tuilleadh!</string>
+    <string name="handling_browser">Brabhsálaí gréasáin</string>
+    <string name="submit_replies_to_inbox">Seol freagraí chuig an mbosca isteach</string>
+    <string name="btn_open_comments">Oscail na nótaí tráchta</string>
+    <string name="btn_preview">Réamhamharc</string>
+    <string name="default_comment_sort">Sórtáil réamhshocraithe na nótaí tráchta</string>
+    <string name="content_deleted">[scriosta]</string>
+    <string name="thread_continue">Lean ar aghaidh leis an snáithe seo</string>
+    <string name="type_selftext">Postáil téacs</string>
+    <string name="type_selftexts">Postálacha téacs</string>
+    <string name="submission_unhide">Nocht an postáil</string>
+    <string name="submission_info_unhidden">Nochtadh an postáil</string>
+    <string name="msg_sent_success">Seoladh an teachtaireacht</string>
+    <string name="msg_sent_failure">Theip ar sheoladh na teachtaireachta</string>
+    <string name="msg_send_user_dne">Níl an t-úsáideoir sin ann</string>
+    <string name="editor_actions_quote_comment">Roghnaigh an téacs le lua</string>
+    <string name="guest">Aoi</string>
+    <string name="album_slide_view">Amharc albaim sleamhnáin</string>
+    <string name="album_grid">Greille albaim</string>
+    <string name="open_externally">Oscail go seachtrach</string>
+    <string name="vertical_album_view">Amharc albaim ingearach</string>
+    <string name="download_album">Íoslódáil an t-albam</string>
+    <string name="download_gallery">Íoslódáil an gailearaí</string>
+    <string name="compose_message">Cum teachtaireacht</string>
+    <string name="mark_all_as_read">Marcáil gach rud mar léite</string>
+    <string name="clear_subreddit_history">Glan stair na subreddits</string>
+    <string name="clear_submission_history">Glan stair na bpostálacha</string>
+    <string name="alert_history_cleared">Glanadh an stair!</string>
+    <string name="manage_offline_content">Bainistigh ábhar as líne</string>
+    <string name="go_offline">Téigh as líne</string>
+    <string name="sidebar_edit_flair">Cuir do flair in eagar</string>
+    <string name="go_online_view_content">Téigh ar líne chun an t-ábhar seo a fheiceáil</string>
+    <string name="help">Cabhair</string>
+    <string name="upvote_percentage">Taispeáin céatadán na vótaí i bhfabhar</string>
+    <string name="view_subreddits">Féach ar na subreddits</string>
+    <string name="clear_saved_subreddits">Glan na subreddits sábháilte go léir</string>
+    <string name="download_the_slide_video_player_plugin">Íoslódáil breiseán Slide Video Player</string>
+    <string name="btn_suggest_title">Mol teideal</string>
+    <string name="navigate_comments_since">Nótaí tráchta níos nuaí ná…</string>
+    <string name="btn_offline">Téigh i mód as líne</string>
+    <string name="discard_comment_title">An nóta tráchta a chaitheamh uait?</string>
+    <string name="comment_discard_msg">An bhfuil tú cinnte gur mian leat do nóta tráchta a chaitheamh uait?</string>
+    <string name="backup_saved_downloads">Sábháladh an cúltaca sna híoslódálacha</string>
+    <string name="really_remove_subreddit_title">An subreddit seo a bhaint i ndáiríre?</string>
+    <string name="choose_sync_time">Roghnaigh am sioncronaithe</string>
+    <string name="account_suspended">Tá an cuntas seo ar fionraí</string>
+    <string name="clear_all_sub_themes">Gach téama subreddit a ghlanadh?</string>
+    <string name="clear_all_sub_themes_msg">Ní féidir leat an gníomh seo a chealú</string>
+    <string name="title_not_found">Níor aimsíodh an teideal</string>
+    <string name="really_delete_submission">An phostáil seo a scriosadh i ndáiríre? Ní féidir é seo a chealú</string>
+    <string name="comment_unstickied">Díphionnáladh an nóta tráchta</string>
+    <string name="comment_stickied">Pionnáladh an nóta tráchta</string>
+    <string name="comment_undistinguished">Baineadh idirdhealú an nóta tráchta</string>
+    <string name="comment_distinguished">Idirdhealaíodh an nóta tráchta</string>
+    <string name="comment_removed">Baineadh an nóta tráchta</string>
+    <string name="set_nav_mode">Socraigh an mód nascleanúna</string>
+    <string name="auto_hide_the_comment_nav_bar">Cuir barra nascleanúna na nótaí tráchta i bhfolach go huathoibríoch</string>
+    <string name="rate_slide">Tabhair rátáil do Slide</string>
+    <string name="edit_query">Cuir an fiosrúchán in eagar</string>
+    <string name="share_slide">Comhroinn Slide</string>
+    <string name="open_clipboard_reddit_link">Oscail an nasc Reddit sa ghearrthaisce</string>
+    <string name="clipboard_no_reddit_link">Níl aon nasc Reddit sa ghearrthaisce</string>
+    <string name="open_links_externally">Oscail an t-óstach seo go seachtrach i gcónaí</string>
+    <string name="hide_read_posts">Cuir na postálacha léite i bhfolach</string>
+    <string name="gallery_mode">Mód gailearaí</string>
+    <string name="settings_gallery_grid">Taispeáin postálacha gailearaí mar ghreille</string>
+    <string name="gallery_grid_image">Íomhá ghailearaí %1$d as %2$d</string>
+    <string name="gallery_grid_overflow">+%1$d</string>
+    <string name="friends_sort_error">Ní féidir /r/friends a shórtáil</string>
+    <string name="shadowbox_comments_nolinks">Níor aimsíodh aon nasc sna nótaí tráchta</string>
+    <string name="draw_undo">Cealaigh</string>
+    <string name="empty_preview_text">Níl faic le feiceáil anseo ¯\\_(ツ)_/¯</string>
+    <string name="theme_red_shift">Deargaistriú</string>
+    <string name="view_sub_sidebar">Féach ar bharra taoibh an sub</string>
+    <string name="mod_log">Logleabhar modhnóireachta</string>
+    <string name="navigation_bar_vote_gestures">Gothaí vótála ar an mbarra nascleanúna</string>
+    <string name="nav_gestures_description">Vótáil i bhfabhar agus ina choinne trí svaidhpeáil ar shaigheada nascleanúna na nótaí tráchta</string>
+    <string name="subreddit_sidebar_progress">Barra taoibh á fháil…</string>
+    <string name="manage_your_subreddits">Bainistigh do chuid subreddits</string>
+    <string name="enlarge_links">Méadaigh na naisc</string>
+    <string name="enlarge_links_warning">D\'fhéadfadh sé go mbeadh roinnt línte níos mó ná a chéile, ach déanann sé níos éasca na naisc a theagmháil</string>
+    <string name="type_tumblr">Tumblr</string>
+    <string name="type_tumblrs">Postálacha Tumblr</string>
+    <string name="type_nsfw_tumblr">Tumblr NSFW</string>
+    <string name="submission_info_contest">Tá an snáithe seo i mód comórtais. Ní féidir leat an tsórtáil a athrú.</string>
+    <string name="sub_post_notifs_msg">Seiceálfaidh Slide postálacha nua nuair a sheiceálfaidh sé an post (caithfidh fógraí poist a bheith cumasaithe)</string>
+    <string name="mod_ban_reason_required">Tá cúis riachtanach</string>
+    <string name="settings_abbreviate_post_scores">Giorraigh scóir na bpostálacha (m.sh. 24.0k)</string>
+    <string name="settings_wide_depth_indicators">Táscairí doimhneachta leathana do nótaí tráchta</string>
+    <string name="settings_link_reader_mode_title">Úsáid an mód léitheoireachta</string>
+    <string name="settings_link_reader_mode_description">Oscail gach nasc sa mhód léitheoireachta. Úsáidfear cineál an bhrabhsálaí agus tú ag oscailt ón mód léitheoireachta.</string>
+    <string name="settings_link_reader_night">Nasc an mód léitheoireachta agus an mód oíche</string>
+    <string name="theme_pixel">Pixel</string>
+    <string name="save_images_to_subreddit_specific_subfolders">Sábháil íomhánna i bhfofhillteáin de réir subreddit</string>
+    <string name="description_save_subfolders">Oibríonn sé in amhairc na bpostálacha agus na nótaí tráchta</string>
+    <string name="save_media_to_type_specific_subfolders">Sábháil meáin i bhfofhillteáin de réir cineáil</string>
+    <string name="description_save_type_subfolders">Téann íomhánna go \"images\", físeáin agus GIFanna go \"videos\"</string>
+    <string name="show_image_download_button">Aicearra íoslódála</string>
+    <string name="description_image_download_button">Taispeáin an cnaipe íoslódála san amharcán íomhánna</string>
+    <string name="content_settings">Socruithe ábhair</string>
+    <string name="setting_titleTop">Taispeáin an teideal os cionn na líne eolais</string>
+    <string name="setting_notification_piggybacking">Fógraí Reddit a shaothrú</string>
+    <string name="setting_notification_piggybacking_desc">Ná seiceáil an post ach nuair a fhaigheann aip oifigiúil Reddit fógra brú</string>
+    <string name="install_notif_piggyback">Suiteáil aip oifigiúil Reddit chun saothrú na bhfógraí a chumasú</string>
+    <string name="success_block_user">Cuireadh bac ar an úsáideoir go rathúil</string>
+    <string name="err_unblock_user">Earráid agus an bac á bhaint den úsáideoir</string>
+    <string name="success_unblock_user">Baineadh an bac den úsáideoir go rathúil</string>
+    <string name="settings_highlight_time_desc">Teastaíonn go mbeadh \'Taispeáin líon na nótaí tráchta ón gcuairt dheireanach\' cumasaithe i Socruithe &gt; Leagan amach na bpostálacha</string>
+    <string name="settings_colored_time">Bolgán ama daite do nótaí tráchta nua</string>
+    <string name="theme_deep">Domhain</string>
+    <string name="type_vreddit">Físeán Reddit</string>
+    <string name="authors_above">Údair thuas</string>
+    <string name="btn_crosspost">Traspostáil</string>
+    <string name="btn_reset_color">ATHSHOCRAIGH AN DATH</string>
+    <string name="settings_shortlink_description">Comhroinnfear naisc mar \'https://reddit.com/comments/\'</string>
+    <string name="settings_shortlink">Comhroinn gearrnasc Reddit nuair is féidir</string>
+    <string name="disable_replies_comment">Díchumasaigh freagraí bosca isteach don nóta tráchta</string>
+    <string name="replies_disabled_comment">Díchumasaíodh freagraí na nótaí tráchta</string>
+    <string name="replies_enabled_comment">Cumasaíodh freagraí na nótaí tráchta</string>
+    <string name="replies_switch_accounts">Athraigh go cuntas eile</string>
+    <string name="search_settings">Cuardaigh na socruithe</string>
+    <string name="show_collapse_expand_nav_bar">Taispeáin an cnaipe laghdaithe/leathnaithe i mbarra nascleanúna na nótaí tráchta</string>
+    <string name="page_not_found">Níor aimsíodh an leathanach</string>
+    <string name="page_does_not_exist">Níl an leathanach a d\'iarr tú ann</string>
+    <string name="back_button_behavior_goto_first">Téigh chuig an gcéad subreddit</string>
+    <string name="settings_hide_post_awards">Cuir na duaiseanna i bhfolach</string>
+    <string name="settings_hide_comment_awards">Cuir na duaiseanna i bhfolach</string>
+    <string name="settings_title_markdown">Markdown</string>
+    <string name="settings_markdown_new_reddit">Markdown i stíl an Reddit nua</string>
+    <string name="settings_markdown_new_reddit_desc">Rindreálann bloic chóid agus formáidiú mar an Reddit nua (múchta, úsáidtear rindreálaí an tseanReddit)</string>
+    <string name="comment_render_other">Taispeáin an rindreáil eile</string>
+    <string name="recover_post">Aisghabh an postáil</string>
+    <string name="recover_loading">An bunleagan á fháil ón gcartlann…</string>
+    <string name="recover_post_failed">Níorbh fhéidir an postáil seo a aisghabháil</string>
+    <string name="recover_comment">Aisghabh an nóta tráchta</string>
+    <string name="recover_comment_failed">Níorbh fhéidir an nóta tráchta seo a aisghabháil</string>
+    <string name="markdown_preview_new_reddit">Rindreáil an Reddit nua</string>
+    <string name="markdown_preview_old_reddit">Rindreáil an tseanReddit</string>
+    <string name="high_colorspace_images">Íomhánna le spás dathanna leathan</string>
+    <string name="description_high_colorspace">Luchtaíonn sé an spás dathanna iomlán ar íomhánna, rud a d\'fhéadfadh cuimhne bhreise a úsáid</string>
+    <string name="wide_color_gamut">Réimse dathanna leathan</string>
+    <string name="description_wide_color_gamut">Rindreálann sé na hamharcáin meán le réimse dathanna leathan. D\'fhéadfadh sé dathanna a mhaolú ar roinnt scáileán OLED</string>
+    <string name="comment_emote_animation">Beochan emote sna nótaí tráchta</string>
+    <string name="description_comment_emote_animation">Socraíonn sé an mbeidh emotes nach ó Giphy iad beoite sna nótaí tráchta</string>
+    <string name="comment_image_size">Méid na n-íomhánna sna nótaí tráchta</string>
+    <string name="description_comment_image_size">Cé chomh mór is a thaispeántar íomhánna inlíne sna nótaí tráchta</string>
+    <string name="comment_image_size_small">Beag</string>
+    <string name="comment_image_size_medium">Measartha</string>
+    <string name="comment_image_size_large">Mór</string>
+    <string name="no_preview_image_longclick">Gan brúnna fada ar íomhánna réamhamhairc d\'aon chineál ábhair</string>
+    <string name="description_no_preview_image_longclick">Socraíonn sé an n-oibríonn brúnna fada ar íomhánna réamhamhairc d\'aon chineál ábhair. Díchumasaíonn sé an ghné spléachadh ar ábhar.</string>
+    <string name="editor_btn_select_flair">Roghnaigh flair</string>
+    <string name="submit_selected_flair">Flair roghnaithe: %s</string>
+    <string name="mediaview_downloading">Íomhá á híoslódáil&#8230;</string>
+    <string name="err_save_image">Earráid agus an íomhá á sábháil</string>
+    <string name="error_directory_not_selected">Níor roghnaíodh aon chomhadlann. Bain triail eile as.</string>
+
+    <!-- Backup Operations -->
+
+    <!-- Additional Backup Operations -->
+    <string name="select_backup_file">Roghnaigh comhad cúltaca</string>
+
+    <string name="read_later">Léigh níos déanaí</string>
+    <string name="mark_as_read">Marcáil mar léite</string>
+
+    <string name="reddit_client_id">Aitheantas cliaint Reddit</string>
+    <string name="click_custom_client_id">Tapáil chun aitheantas cliaint saincheaptha a shocrú</string>
+    <string name="client_id_scan_qr">Scan cód QR</string>
+    <string name="client_id_scan_prompt">Scan cód QR ina bhfuil d\'aitheantas cliaint Reddit</string>
+    <string name="camera_permission_denied">Tá cead ceamara ag teastáil chun cóid QR a scanadh</string>
+    <string name="client_id_invalid_length">Aitheantas cliaint neamhbhailí: caithfidh 22 carachtar go beacht a bheith ann</string>
+
+    <!-- Notification permission strings -->
+    <string name="notifications_permission_title">Cumasaigh fógraí</string>
+    <string name="notifications_permission_message">Teastaíonn cead fógraí ó Slide chun tú a chur ar an eolas faoi theachtaireachtaí nua, postálacha agus nuashonruithe eile ó Reddit. Is féidir leat socruithe na bhfógraí a bhainistiú níos déanaí.</string>
+    <string name="notification_listener_permission_title">Cumasaigh rochtain ar fhógraí</string>
+    <string name="notification_listener_permission_message">Teastaíonn rochtain ar fhógraí ó Slide chun fógraí Reddit a idircheapadh agus taithí níos fearr a sholáthar. Cumasaigh rochtain ar fhógraí do Slide ar an gcéad scáileán eile.</string>
+
+
+    <string name="reddit_redirect_uri_override">Sárú URI atreoraithe Reddit</string>
+    <string name="click_custom_redirect_uri">Tapáil chun URI atreoraithe saincheaptha a shocrú</string>
+    <string name="settings_reddit_redirect_uri_invalid">URI atreoraithe neamhbhailí: caithfidh sé a bheith san fhoirm scéim://óstainm</string>
+    <string name="reddit_user_agent_override">Sárú user agent Reddit</string>
+    <string name="click_custom_user_agent">Tapáil chun user agent saincheaptha a shocrú</string>
+    <string name="settings_enable_overrides">Cumasaigh na sáruithe</string>
+    <string name="settings_enable_overrides_desc">Úsáid d\'aitheantas cliaint, URI atreoraithe agus user agent saincheaptha féin in ionad réamhshocruithe na haipe. Fág múchta é mura bhfuil a fhios agat go dteastaíonn sé uait.</string>
+
+    <string name="settings_section_sound">Fuaim</string>
+    <string name="settings_unmute_default">Bain an balbhú d\'fhíseáin de réir réamhshocraithe</string>
+
+    <string name="settings_subreddit_filter_prefix_matching">Cumasaigh meaitseáil réimíre i scagairí subreddit</string>
+    <string name="settings_subreddit_filter_prefix_matching_description">Is é an réimír ainm iomlán an subreddit, agus sé charachtar ar a laghad. Samplaí: cuirfidh an subreddit social bac ar socialanxiety. Cuirfidh an subreddit pokemongo bac ar pokemongoraids.</string>
+
+    <string name="settings_filter_old_posts">Scag postálacha níos sine ná</string>
+    <plurals name="settings_filter_old_posts_days">
+        <item quantity="one">%1$d lá</item>
+        <item quantity="two">%1$d lá</item>
+        <item quantity="few">%1$d lá</item>
+        <item quantity="many">%1$d lá</item>
+        <item quantity="other">%1$d lá</item>
+    </plurals>
+    <string name="settings_filter_old_posts_description">Ní chuirtear i bhfeidhm é agus subreddit aonair á fheiceáil, ná agus sórtáil de réir Top nó Controversial</string>
+
+    <!-- Pause on audio focus ducking setting -->
+    <string name="settings_pause_on_duck_title">Cuir an físeán ar sos in ionad an fhuaim a ísliú</string>
+    <string name="settings_pause_on_duck_desc">Cuireann físeáin ar sos nuair a sheinneann aipeanna eile fuaim. Ciallaíonn ísliú go laghdaítear an airde in ionad an físeán a chur ar sos.</string>
+
+    <!-- Add this string resource for the play button content description -->
+    <string name="btn_play">Seinn</string>
+
+    <string name="multireddit_name_title">Ainm don mhultireddit</string>
+    <string name="multireddit_name_hint">Ainm an mhultireddit</string>
+    <string name="multireddit_err_empty_name">Ní féidir le hainm an mhultireddit a bheith folamh</string>
+    <string name="multireddit_err_no_valid_subs">Níor roghnaíodh aon subreddit bailí. Roghnaigh ceann amháin ar a laghad.</string>
+    <string name="multireddit_progress_title">Multireddit á chruthú</string>
+    <string name="multireddit_progress_message">Fan tamall fad is a chruthaímid do mhultireddit...</string>
+    <string name="multireddit_created_success">Cruthaíodh an multireddit go rathúil</string>
+    <string name="multireddit_created_error">Theip ar chruthú an mhultireddit. Bain triail eile as.</string>
+    <string name="multireddit_json_error">Tharla earráid agus sonraí do mhultireddit á n-ullmhú</string>
+
+    <string name="settings_dialog_colored_border">Cuir imlíne daite timpeall ar bhoscaí dialóige</string>
+    <string name="settings_dialog_colored_border_desc">Taispeánann imlíne chaol dhaite timpeall ar roinnt boscaí dialóige.</string>
+
+    <string name="misc_err_sync_failed">Theip ar shioncronú na subreddits. Nach bhfuil aon subreddit ar síntiús?</string>
+
+    <string name="mod_btn_distinguish">Idirdhealaigh</string>
+    <string name="mod_btn_undistinguish">Bain an t-idirdhealú</string>
+
+    <string name="nsfw_status_removed">Baineadh an stádas NSFW</string>
+    <string name="nsfw_status_set">Socraíodh an stádas NSFW</string>
+
+    <string name="spoiler_status_removed">Baineadh stádas an mhillte</string>
+    <string name="spoiler_status_set">Socraíodh stádas an mhillte</string>
+
+    <string name="submission_distinguished">Idirdhealaíodh an postáil</string>
+    <string name="submission_distinguished_removed">Baineadh idirdhealú na postála</string>
+
+    <string name="settings_general_hide_subreddit_tabs">Cuir cluaisíní na subreddits ar síntiús i bhfolach</string>
+    <string name="settings_general_hide_subreddit_tabs_desc">Cuireann sé na subreddits ar síntiús i bhfolach mar chluaisíní, ach coinníonn sé na cnaipí nascleanúna</string>
+
+    <!-- Video playback speed control -->
+    <string name="video_speed">Luas</string>
+    <string name="video_speed_0_25x">0.25x</string>
+    <string name="video_speed_0_5x">0.5x</string>
+    <string name="video_speed_0_75x">0.75x</string>
+    <string name="video_speed_1x">Gnáth</string>
+    <string name="video_speed_1_25x">1.25x</string>
+    <string name="video_speed_1_5x">1.5x</string>
+    <string name="video_speed_2x">2x</string>
+    <string name="video_speed_control_content_desc">Rialú luais athsheinnte</string>
+    <string name="image_unavailable">Níl an íomhá ar fáil</string>
+    <string name="image_rotate_content_desc">Rothlaigh an íomhá 90 céim ar deiseal</string>
+    <string name="image_rotate_left_content_desc">Rothlaigh an íomhá 90 céim ar tuathal</string>
+
+    <!-- Folder chooser dialog (formerly provided by afollestad material-dialogs commons) -->
+    <string name="md_error_label">Earráid</string>
+    <string name="md_storage_perm_error">Teastaíonn an cead stórála ón bhfeidhmiúlacht seo, agus níor deonaíodh é.</string>
+    <string name="md_choose_label">ROGHNAIGH</string>
+    <string name="new_folder">Fillteán nua</string>
 </resources>

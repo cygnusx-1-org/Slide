@@ -4,7 +4,6 @@
     <string name="general_confirm_exit">Confirm exit</string>
     <string name="general_confirm_exit_msg">Do you really want to exit Slide?</string>
     <string name="general_enable_shadowbox">Shadowbox mode</string>
-    <string name="pro_upgrade_msg">Upgrade to Slide for Reddit Pro to enjoy some awesome new features including:\n\n- Ad Blocker and Reader Mode in Website view\n- Crop and draw on images to upload\n- Customizable tablet column mode\n- Automatic night mode\n- Shadowbox and Gallery content views\n- Comment Shadowbox view\n- Backup and restore to Google Drive and to file\n- Supporting open source and ad-free software!\n\nWould you like to support Slide for Reddit?</string>
     <string name="general_open_settings">Sidebar</string>
     <string name="general_sub_sync">Syncing subscriptions</string>
 
@@ -28,7 +27,6 @@
     <string name="submission_save_video">Save video</string>
     <string name="submission_load_full">Load full thread</string>
     <string name="submission_np_link">This is a no participation link. Please don\'t vote or comment.</string>
-    <string name="submission_tap_gif">Tap to load GIF</string>
     <string name="submission_not_found">Uh oh, post not found!</string>
     <string name="submission_not_found_msg">Sorry, this post could not be found</string>
     <string name="submission_copy_text">Copy text</string>
@@ -177,7 +175,6 @@
     <string name="profile_search_title">Search in %1$s</string>
     <string name="profile_search_hint">Search titles and text…</string>
     <string name="profile_search_no_results">No results found</string>
-    <string name="profile_search_results">%1$d results for \'%2$s\'</string>
     <string name="profile_search_clear">Clear search</string>
     <string name="profile_search_cleared">Search cleared</string>
     <string name="profile_search_loading">Searching…</string>
@@ -193,8 +190,6 @@
     <string name="comment_delete_err_msg">Would you like to try again?</string>
     <string name="comment_deleted">[deleted]</string>
     <string name="comment_unsave">Unsave</string>
-    <string name="comment_load_more">Load %1$d more</string>
-    <string name="comment_load_more_string_new">Load %1$s more</string>
     <string name="comment_loading_more">Loading more comments…</string>
     <string name="comment_permalink">Load comment permalink</string>
     <string name="comment_parent">Show parent comment</string>
@@ -235,7 +230,6 @@
     <string name="editor_title">Title</string>
     <string name="editor_err_msg">Please try again in a few seconds</string>
     <string name="editor_uploading_image">Uploading image to Imgur</string>
-    <string name="editor_upload_image_question">Upload image to Imgur?</string>
     <string name="editor_upload_image_title">Upload image</string>
     <string name="editor_upload_reddit">Reddit (inline image)</string>
     <string name="editor_upload_imgur">Imgur (link)</string>
@@ -290,16 +284,12 @@
     <string name="err_no_connection">Reddit could not be reached. Would you like to try again?</string>
     <string name="err_no_connection_toast">Reddit could not be reached. Try again soon</string>
     <string name="err_retry_later">Try again in a minute!</string>
-    <string name="err_permission">Permission was denied</string>
-    <string name="err_permission_msg">It looks like you denied Slide access to write to external storage. This will cause image cache, post cache, and saving images to fail :(. \nWould you like to allow Slide to access external storage?</string>
     <string name="err_authentication">Authentication failed</string>
     <string name="err_submit_restricted">This subreddit is restricted</string>
     <string name="err_submit_restricted_text">You are not allowed to post here. Please choose another subreddit</string>
-    <string name="err_crosspost_disallowed">This subreddit does not allow crossposts</string>
     <string name="err_crosspost_disallowed_text">/r/%s does not allow crossposts. Please choose another subreddit.</string>
     <string name="err_crosspost_not_subscribed">You must subscribe to /r/%s before crossposting.</string>
     <string name="err_crosspost_sub_not_found">/r/%s does not exist.</string>
-    <string name="crosspost_flair_required">Flair is required to post in /r/%s. Please select a flair.</string>
     <string name="crosspost_flair_required_short">Flair is required — please select a flair before posting.</string>
     <string name="error_video_not_found">Video not found</string>
     <string name="error_video_message">An error occurred while loading this video</string>
@@ -391,7 +381,6 @@
     <!-- Content types plural (Content filters) -->
     <string name="type_gifs">GIFs</string>
     <string name="type_albums">Albums</string>
-    <string name="type_nsfw_content">NSFW content</string>
     <string name="type_links">Links</string>
 
 
@@ -416,7 +405,6 @@
     <string name="mail_theirs">View their message</string>
     <string name="mail_re">re: %1$s</string>
     <string name="mail_mark_read">Mark read</string>
-    <string name="mail_mark_unread">Mark unread</string>
     <string name="mail_view_full_thread">View full thread</string>
     <string name="mail_message_copied">Message copied</string>
     <plurals name="mail_notification_title">
@@ -449,8 +437,6 @@
     <string name="misc_setting_up">Setting some things up…</string>
     <string name="misc_setting_up_message">Please don\'t leave this screen. Shouldn\'t take long!</string>
     <string name="misc_more_info">More info</string>
-    <string name="misc_rate_title">Like Slide?</string>
-    <string name="misc_rate_msg">Rate it!</string>
     <string name="misc_captcha_incorrect">Captcha incorrect, please try again</string>
 
     <!-- Goto User -->
@@ -486,7 +472,6 @@
     <string name="btn_discard">Discard</string>
     <string name="btn_done">Done</string>
     <string name="btn_go_back">Go back</string>
-    <string name="btn_no_thanks">No thank you</string>
     <string name="btn_no">No</string>
     <string name="btn_ok">OK</string>
     <string name="btn_remove">Remove</string>
@@ -497,7 +482,6 @@
     <string name="btn_submit">Submit</string>
     <string name="btn_undo">Undo</string>
     <string name="btn_yes">Yes</string>
-    <string name="btn_yes_exclaim">Yes!</string>
     <string name="btn_refresh">Refresh</string>
     <string name="btn_cache">Cache comments</string>
     <string name="btn_delete">Delete</string>
@@ -509,7 +493,6 @@
     <string name="btn_set">SET</string>
     <string name="btn_create">Create</string>
     <string name="btn_new">New</string>
-    <string name="btn_upload">Upload</string>
 
     <!-- Buttons Content labels for TalkBack accessibility-->
     <string name="btn_edit">Edit</string>
@@ -555,13 +538,8 @@
     <string name="backup_drive_title">Google Drive Backup</string>
     <string name="backup_button">Create Backup</string>
     <string name="restore_button">Restore Backup</string>
-    <string name="backup_title">Backup Settings</string>
     <string name="backup_question">Backup?</string>
-    <string name="backup_message">Choose backup type</string>
     <string name="backup_complete">Backup Complete!</string>
-    <string name="backup_complete_msg">Your settings have been backed up successfully</string>
-    <string name="err_backup_failed">Backup Failed</string>
-    <string name="err_backup_failed_msg">There was an error creating the backup. Please try again.</string>
     <string name="err_not_valid_backup">Not a valid Slide backup file</string>
     <string name="err_not_valid_backup_msg">The selected file is not a valid Slide backup file</string>
     <string name="backup_password_title">Set a backup password</string>
@@ -574,7 +552,6 @@
     <string name="drive_authorization_failed_msg">Slide could not get access to its private Google Drive folder. Please try again.</string>
     <string name="drive_authorization_denied">Google Drive Access Needed</string>
     <string name="drive_authorization_denied_msg">Slide needs access to its private Google Drive folder to back up or restore your settings.</string>
-    <string name="set_storage_location">Try setting a storage location in General settings.</string>
 
     <!-- Vote -->
     <string name="vote_err">Error casting vote!</string>
@@ -710,8 +687,6 @@
     <string name="settings_privacy">Privacy policy</string>
     <string name="settings_bugs">Report bugs</string>
     <string name="settings_changelog">View changelog</string>
-    <string name="settings_google">Connecting to Google</string>
-    <string name="settings_google_msg">Slide is connecting to Google. Try again in a few seconds!</string>
     <string name="settings_fabclear_msg">Tapping the clear button will remove the posts from the current view, but will not hide the posts forever. \nLong pressing the button will hide the posts forever!</string>
     <string name="settings_fabclear">FAB clear actions</string>
     <string name="settings_notifdisabled">Notifications disabled</string>
@@ -835,7 +810,6 @@
     <string name="settings_backup_view">View backup</string>
     <string name="settings_backup_err_no_explorer">No file explorer found, file located at %1$s</string>
     <string name="settings_about_version_copied_toast">Version number copied to clipboard</string>
-    <string name="settings_support_slide">Support Slide for Reddit by Going Pro!</string>
     <string name="settings_theme_night_start_at">Start at\u0020</string>
     <string name="settings_theme_night_end_at">End at\u0020</string>
     <string name="settings_general_inbox_snd">Sound and vibrate</string>
@@ -1183,7 +1157,6 @@
     <string name="sub_content_filter">Subreddit content filter</string>
     <string name="submission_share_reddit_url">Share comments</string>
     <string name="filter_content">Filter this content</string>
-    <string name="content_to_hide">Content to hide on %1$s</string>
     <string name="content_to_show">Content to show on %1$s</string>
     <string name="save_for_offline_viewing">Save submissions for offline viewing</string>
     <string name="btn_collapse_children_all">Collapse child comments</string>
@@ -1268,8 +1241,6 @@
     <string name="share_slide">Share Slide</string>
     <string name="open_clipboard_reddit_link">Open Reddit link in the clipboard</string>
     <string name="clipboard_no_reddit_link">No Reddit link in clipboard</string>
-    <string name="create_folder">Create folder</string>
-    <string name="folder_name">Folder name</string>
     <string name="open_links_externally">Always open this host externally</string>
     <string name="hide_read_posts">Hide read posts</string>
     <string name="gallery_mode">Gallery mode</string>
@@ -1278,7 +1249,6 @@
     <string name="gallery_grid_overflow">+%1$d</string>
     <string name="friends_sort_error">/r/ friends is unsortable</string>
     <string name="shadowbox_comments_nolinks">No links found in comments</string>
-    <string name="pro_previews">Preview (%d)</string>
     <string name="draw_undo">Undo</string>
     <string name="empty_preview_text">Nothing to see here ¯\\_(ツ)_/¯</string>
     <string name="theme_red_shift">Red shift</string>
@@ -1362,35 +1332,21 @@
     <string name="description_no_preview_image_longclick">Toggles if longclicks work on preview images of any content type. It disables the peek content feature.</string>
     <string name="editor_btn_select_flair">Select flair</string>
     <string name="submit_selected_flair">Selected flair: %s</string>
-    <string name="save_location_error">Failed to set save location. Please try again.</string>
     <string name="mediaview_downloading">Downloading image&#8230;</string>
     <string name="err_save_image">Error saving image</string>
-    <string name="error_no_storage_access">No storage access. Please select a directory to save the file.</string>
     <string name="error_directory_not_selected">No directory selected. Please try again.</string>
 
 
     <!-- Backup Operations -->
-    <string name="backup_no_prefs_found">No Shared Preferences Found</string>
-    <string name="backup_no_prefs_found_msg">No shared preferences were found to backup.</string>
-    <string name="backup_no_prefs_dir">Preferences Directory Not Found</string>
-    <string name="backup_no_prefs_dir_msg">The shared preferences directory does not exist.</string>
 
     <!-- Additional Backup Operations -->
     <string name="select_backup_file">Select Backup File</string>
-    <string name="sign_in_failed">Sign-In Failed</string>
-    <string name="sign_in_failed_msg">Unable to sign in to your Google account. Please try again.</string>
-    <string name="backup_no_files">No Backup Files Found</string>
-    <string name="backup_no_files_msg">There are no backup files available to restore.</string>
 
-    <string name="settings_set_image_location">Images will be saved to %s</string>
     <string name="read_later">Read later</string>
     <string name="mark_as_read">Mark As Read</string>
-    <string name="read_later_location_title">Save Location Required</string>
-    <string name="read_later_location_msg">To use Read Later, you need to set a storage location in General settings first.</string>
 
     <string name="reddit_client_id">Reddit Client ID</string>
     <string name="click_custom_client_id">Click to set custom client ID</string>
-    <string name="client_id_saved">Client ID saved: </string>
     <string name="client_id_scan_qr">Scan QR Code</string>
     <string name="client_id_scan_prompt">Scan a QR code containing your Reddit Client ID</string>
     <string name="camera_permission_denied">Camera permission is required to scan QR codes</string>
@@ -1402,7 +1358,6 @@
     <string name="notification_listener_permission_title">Enable Notification Access</string>
     <string name="notification_listener_permission_message">Slide needs notification access to intercept Reddit notifications and provide a better notification experience. Please enable notification access for Slide in the following screen.</string>
 
-    <string name="enter_client_id">Enter Client ID</string>
 
     <string name="reddit_redirect_uri_override">Reddit Redirect URI Override</string>
     <string name="click_custom_redirect_uri">Click to set custom redirect URI</string>
@@ -1416,7 +1371,7 @@
     <string name="settings_unmute_default">Unmute videos by default</string>
 
     <string name="settings_subreddit_filter_prefix_matching">Enable subreddit filter prefix matching</string>
-    <string name="settings_subreddit_filter_prefix_matching_description">The prefix is the whole subreddit name, and a minimum of six characters. Examples: The subreddit social will allow block socialanxiety. The subreddit pokemongo will block pokemongoraids.</string>
+    <string name="settings_subreddit_filter_prefix_matching_description">The prefix is the whole subreddit name, and a minimum of six characters. Examples: The subreddit social will block socialanxiety. The subreddit pokemongo will block pokemongoraids.</string>
 
     <string name="settings_filter_old_posts">Filter posts older than</string>
     <plurals name="settings_filter_old_posts_days">
@@ -1427,7 +1382,7 @@
 
     <!-- Pause on audio focus ducking setting -->
     <string name="settings_pause_on_duck_title">Pause video instead of ducking</string>
-    <string name="settings_pause_on_duck_desc">Pause videos when other apps play audio. Ducking is when the the audio volume is lowered instead of the video being paused.</string>
+    <string name="settings_pause_on_duck_desc">Pause videos when other apps play audio. Ducking is when the audio volume is lowered instead of the video being paused.</string>
 
     <!-- Add this string resource for the play button content description -->
     <string name="btn_play">Play</string>
@@ -1458,7 +1413,6 @@
 
     <string name="submission_distinguished">Submission distinguished</string>
     <string name="submission_distinguished_removed">Submission distinguish removed</string>
-    <string name="setup_md_url">https://github.com/edgan/Slide/blob/master/docs/SETUP.md#reddit-client-id</string>
 
     <string name="settings_general_hide_subreddit_tabs">Hide subscribed subreddit tabs</string>
     <string name="settings_general_hide_subreddit_tabs_desc">Hide subscribed subreddits as tabs, but keep navigation buttons</string>

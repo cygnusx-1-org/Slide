@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Generic text used anywhere -->
+    <string name="general_confirm">Bekræft</string>
     <string name="general_confirm_exit">Bekræft lukning</string>
     <string name="general_confirm_exit_msg">Er du sikker på at du vil lukke Slide?</string>
     <string name="general_enable_shadowbox">Aktiver Shadowbox tilstand</string>
     <string name="general_open_settings">Åben Subreddit indstillinger</string>
     <string name="general_sub_sync">Synkroniser abonnementer</string>
+
     <!-- Used when viewing a thread -->
     <string name="submission_info_unsaved">Indlæg er ikke gemt</string>
     <string name="submission_info_saved">Indlæg er gemt</string>
@@ -23,9 +25,9 @@
     <string name="submission_gild">Åbn i browser</string>
     <string name="submission_save">Gem indlæg</string>
     <string name="submission_save_image">Gem billede</string>
+    <string name="submission_save_video">Gem video</string>
     <string name="submission_load_full">Indlæs hele tråden</string>
     <string name="submission_np_link">Der er ikke noget deltagelseslink. Stem eller kommenter venligst ikke</string>
-    <string name="submission_tap_gif">Tryk for at indlæse GIF</string>
     <string name="submission_not_found">Ups! Indlæg ikke fundet!</string>
     <string name="submission_not_found_msg">Beklager. Dette indlæg kunne ikke findes</string>
     <string name="submission_copy_text">Kopier tekst</string>
@@ -33,15 +35,37 @@
     <string name="submission_comment_unsaved">Kommentar fjernet</string>
     <string name="submission_share_permalink">Del link</string>
     <string name="submission_comment_copied">Kommentartekst kopieret</string>
+    <string name="submission_text_copied">Opslagsteksten er kopieret</string>
     <string name="submission_nocontent">Indlæg har ikke noget indholde</string>
     <string name="submission_link_copied">Link kopieret</string>
+    <string name="translate_with_google">Oversæt</string>
+    <string name="translate_no_app">Ingen app tilgængelig til oversættelse</string>
+    <string name="read_aloud">Læs højt</string>
+    <string name="read_aloud_unavailable">Tekst-til-tale er ikke tilgængelig</string>
     <string name="submission_removed">Indlæg fjernet</string>
+
+    <plurals name="new_messages">
+        <item quantity="one">%d ny besked</item>
+        <item quantity="other">%d nye beskeder</item>
+    </plurals>
+    <plurals name="points">
+        <item quantity="one">p</item>
+        <item quantity="other">p</item>
+    </plurals>
+    <plurals name="comments">
+        <item quantity="one">kom.</item>
+        <item quantity="other">kom.</item>
+    </plurals>
+
     <!-- Theme settings -->
     <string name="theme_light">Lys</string>
     <string name="theme_dark">Mørk</string>
     <string name="theme_black">AMOLED-sort</string>
     <string name="theme_dark_blue">Mørkeblå</string>
     <string name="night_mode">Nattilstand</string>
+    <string name="disabled">Deaktiveret</string>
+    <string name="manual">Manuelt</string>
+    <string name="automatic">Automatisk</string>
     <string name="theme_default_color">Primær farve</string>
     <string name="theme_subreddit_color">Skift farve</string>
     <string name="theme_accent_color">Sekundær farve</string>
@@ -50,7 +74,10 @@
     <string name="theme_sepia">Sepia</string>
     <string name="theme_amoled_contrast">AMOLED med kontrast</string>
     <string name="theme_night">Nat tema</string>
+
     <!-- Font settings -->
+    <string name="font_size_comment">Skriftstørrelse for kommentarer</string>
+    <string name="font_size_post">Skriftstørrelse for opslag</string>
     <string name="font_size_huge">Stor</string>
     <string name="font_size_larger">Større</string>
     <string name="font_size_large">Stor</string>
@@ -58,12 +85,18 @@
     <string name="font_size_small">Lille</string>
     <string name="font_size_smaller">Mindre</string>
     <string name="font_size_tiny">Meget lille</string>
+
     <!-- For editing the submission card layout -->
     <string name="card_hide_post_button">\"Skjul indlæg\"-knap i handlingsmenuen</string>
     <string name="card_tint_outside">Farv kun uden for subreddits</string>
     <string name="card_save_button">\"Gem indlæg\"-knap i handlingsmenuen</string>
+
     <!-- Settings for Multi-column view -->
     <string name="multi_column_title">Multi-kolonne</string>
+    <string name="multi_column_portrait_count">Kolonner i portrættilstand</string>
+    <string name="multi_column_landscape_count">Kolonner i landskabstilstand</string>
+    <string name="single_column_multi_window">Én kolonne i flervinduestilstand</string>
+
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Dig</string>
     <string name="drawer_support">Skift til Pro</string>
@@ -71,17 +104,25 @@
     <string name="drawer_add_account">Tilføj en konto</string>
     <string name="drawer_hello">Hej,</string>
     <string name="drawer_search">Gå til subreddit</string>
+    <!-- Subreddit name when submitting/crossposting: a single subreddit only (no multireddit, no dot). -->
+    <!-- Message recipient: a username or an /r/ or /u/ path. -->
+    <!-- Settings search field. The trailing space is intentional, so the value is quoted to preserve it. -->
     <string name="drawer_moderation">Moderation</string>
     <string name="drawer_offline">Slide er i offlinetilstand</string>
     <string name="drawer_offline_retry">Prøv at skifte til onlinetilstand</string>
+    <string name="drawer_guest_mode">Gennemse som gæst</string>
+
     <!-- Sidebar items (That's the one on the right) -->
     <string name="sidebar_wiki">Subreddit-wiki</string>
     <string name="sidebar_mods">Subreddit-moderatorer</string>
+
     <!-- User profile -->
+    <string name="profile_karma_total">Samlet karma</string>
     <string name="profile_karma_link">Post karma</string>
     <string name="profile_karma_comment">Kommentarkarma</string>
     <string name="profile_message">Privat besked</string>
     <string name="profile_saved">Gemt</string>
+    <string name="local_saved">Gemt lokalt</string>
     <string name="profile_read_later">Læs Senere</string>
     <string name="profile_upvoted">Stemt op</string>
     <string name="profile_err_title">Bruger ikke fundet</string>
@@ -95,6 +136,10 @@
     <string name="profile_friend">Ven</string>
     <string name="profile_add_friend">Tilføj ven</string>
     <string name="profile_remove_friend">Fjern ven</string>
+    <string name="profile_follow_user">Følg</string>
+    <string name="profile_unfollow_user">Stop med at følge</string>
+    <string name="profile_add_user">Tilføj bruger</string>
+    <string name="profile_remove_user">Fjern bruger</string>
     <string name="profile_remove_account">Vil du virkelig fjerne din konto?</string>
     <string name="profile_remove">Slet konto</string>
     <string name="profile_history">Historik</string>
@@ -107,7 +152,23 @@
     <string name="profile_btn_tag">Angiv tag</string>
     <string name="profile_btn_untag">Fjern tag</string>
     <string name="profile_info">Profiloplysninger</string>
+    <string name="profile_options">Brugerindstillinger</string>
+    <string name="profile_block_user">Blokér bruger</string>
+    <string name="profile_block_user_description">Blokerer brugerens beskeder, opslag og profil</string>
+    <string name="profile_unblock_user">Ophæv blokering af bruger</string>
+    <string name="profile_unblock_user_description">Ophæver blokeringen af brugerens beskeder, opslag og profil</string>
+    <string name="profile_search">Søg</string>
+    <string name="profile_search_title">Søg i %1$s</string>
+    <string name="profile_search_hint">Søg i titler og tekst…</string>
+    <string name="profile_search_no_results">Ingen resultater fundet</string>
+    <string name="profile_search_clear">Ryd søgningen</string>
+    <string name="profile_search_cleared">Søgningen er ryddet</string>
+    <string name="profile_search_loading">Søger…</string>
+    <string name="profile_search_progress">%1$d resultater · %2$d gennemsøgt</string>
+    <string name="profile_search_bypass_cache">Omgå cachen</string>
+
     <!-- Comment text options -->
+    <string name="comment_gild">Beløn kommentaren</string>
     <string name="comment_share">Del kommentar</string>
     <string name="comment_delete">Slet kommentar</string>
     <string name="comment_delete_msg">Vil du virkelig slette denne kommentar? Det kan ikke fortrydes</string>
@@ -115,14 +176,15 @@
     <string name="comment_delete_err_msg">Vil du prøve igen?</string>
     <string name="comment_deleted">[slettet]</string>
     <string name="comment_unsave">Gem ikke</string>
-    <string name="comment_load_more">Indlæs %1$d mere</string>
-    <string name="comment_load_more_string_new">Indlæs %1$s mere</string>
     <string name="comment_loading_more">Indlæser flere kommentarer&#8230;</string>
     <string name="comment_permalink">Indlæs kommentars permalink</string>
     <string name="comment_parent">Vis oprindelig kommentar</string>
+    <string name="comment_video_play">Afspil video</string>
+
     <!-- Welcome view (first time setup) -->
     <string name="welcome_start">Kom i gang</string>
     <string name="welcome_personalize">Tilpas</string>
+
     <!-- Sorting options -->
     <string name="sorting_choose">Vælg sortering</string>
     <string name="sorting_time_choose">Vælg en tidsramme</string>
@@ -142,6 +204,7 @@
     <string name="sorting_year">år</string>
     <string name="sorting_all">altid</string>
     <string name="sorting_defaultfor">Standard for /r/%1$s</string>
+
     <!-- Editor (save/submit a post) actions -->
     <string name="editor_url">URL</string>
     <string name="editor_text">Tekst</string>
@@ -150,36 +213,114 @@
     <string name="editor_title">Titel</string>
     <string name="editor_err_msg">Prøv venligst igen om et par sekunder</string>
     <string name="editor_uploading_image">Upload billede til Imgur</string>
+    <string name="editor_upload_image_title">Upload billede</string>
+    <string name="editor_upload_reddit">Reddit (indlejret billede)</string>
+    <string name="editor_upload_imgur">Imgur (link)</string>
+    <string name="editor_uploading_reddit">Uploader billedet til Reddit</string>
+    <string name="editor_reddit_upload_success">Billedet er uploadet</string>
+    <string name="editor_reddit_upload_failed">Upload af billedet mislykkedes</string>
+    <string name="submit_image_host_imgur">Imgur</string>
+    <string name="submit_image_host_reddit">Reddit</string>
+    <string name="submit_change_img">Skift billede</string>
+    <string name="submit_select_gallery">Tilføj billeder</string>
+    <string name="submit_gallery_caption_hint">Billedtekst (valgfrit)</string>
+    <string name="submit_gallery_count">%1$d valgt</string>
+    <string name="submit_uploading_gallery">Uploader billede %1$d af %2$d</string>
     <string name="editor_select_img">Vælg billede</string>
     <string name="editor_hint_optional_body">Tekst (valgfrit)</string>
     <string name="editor_submit">Indsend et indlæg</string>
     <string name="editor_hint_subreddit">Subreddit</string>
+    <string name="editor_finding_title">Finder titlen</string>
+    <string name="submit_findingflairs">Finder flairs</string>
+    <string name="submit_flairchoices">Flairs for /r/%s</string>
+
+    <string name="edit_selftext">Redigér opslagstekst</string>
     <string name="delete_submission">Slet indlæg</string>
+    <string name="set_submission_flair">Angiv flair for opslaget</string>
+
     <!-- Editor buttons -->
+    <string name="editor_save_draft">Gem kladde</string>
+    <string name="editor_chose_draft">Vælg kladde</string>
+    <string name="editor_insert_image">Indsæt billede</string>
+    <string name="editor_draw">Indsæt billede og tegn på det</string>
+    <string name="editor_link">Indsæt link</string>
+    <string name="editor_bold">Fed</string>
+    <string name="editor_italics">Kursiv</string>
+    <string name="editor_quote">Citat</string>
+    <string name="editor_author">Nævn forfatteren</string>
+    <string name="editor_list">Punktopstilling</string>
+    <string name="editor_num_list">Nummereret liste</string>
+    <string name="editor_size">Stor skrift</string>
+    <string name="editor_strike">Gennemstreget</string>
+    <string name="editor_spoiler">Spoiler</string>
+
     <!-- General information / information without a category -->
     <string name="info_photo_saved">Billede gemt</string>
     <string name="gif_saved">GIF gemt</string>
+
     <!-- General errors / errors without a category -->
     <string name="err_title">Ups! Noget gik galt</string>
     <string name="err_invalid_url">Ugyldig URL</string>
     <string name="err_loading_content">Fejl ved indlæsning af indhold</string>
     <string name="err_general">Ups! En fejl opstod</string>
     <string name="err_no_connection">Kunne ikke forbinde til Reddit. Vil du prøve igen?</string>
+    <string name="err_no_connection_toast">Reddit kunne ikke nås. Prøv igen snart</string>
     <string name="err_retry_later">Prøv igen om et minut!</string>
-    <string name="err_permission">Tilladelse nægtet</string>
-    <string name="err_permission_msg">Det ser ud til at du ikke har givet Slide lov til at bruge eksternt lagering. Dette vil føre til at du ikke kan gemme billede og at billed-/indlægscache vil fejle :(. \nVil du give Slide lov til at bruge ekstern lagring?</string>
     <string name="err_authentication">Godkendelse fejlede</string>
     <string name="err_submit_restricted">Dette subreddit er begrænset</string>
     <string name="err_submit_restricted_text">Du har ikke lov til at skrive her. Vælg et andet subreddit</string>
+    <string name="err_crosspost_disallowed_text">/r/%s tillader ikke krydsopslag. Vælg en anden subreddit.</string>
+    <string name="err_crosspost_not_subscribed">Du skal abonnere på /r/%s, før du kan lave et krydsopslag.</string>
+    <string name="err_crosspost_sub_not_found">/r/%s findes ikke.</string>
+    <string name="crosspost_flair_required_short">Der kræves en flair — vælg en, før du slår op.</string>
+    <string name="error_video_not_found">Videoen blev ikke fundet</string>
+    <string name="error_video_message">Der opstod en fejl under indlæsningen af denne video</string>
+    <string name="error_album_not_found">Albummet blev ikke fundet</string>
+    <string name="error_album_not_found_text">Vil du åbne linket i browseren?</string>
+    <string name="err_comment_post_nosave_message">\nPrøv igen om et minut</string>
+    <string name="err_could_not_find_content_msg">Reddit kunne ikke finde det ønskede indhold</string>
+    <string name="err_refused_request_msg">Reddit afviste en anmodning. Vil du prøve at oprette forbindelse til Reddit igen?</string>
+    <string name="err_color_sync_login">Log ind for at bruge farvesynkronisering</string>
+    <string name="err_something_wrong">Ups, noget gik galt</string>
+    <string name="err_couldnt_save_choose_new">Slide kunne ikke gemme i den valgte mappe. Vil du vælge en ny placering?</string>
+    <string name="err_share_image">Fejl ved deling af billedet</string>
+    <string name="err_file_not_found">Filen blev ikke fundet</string>
+    <string name="err_file_not_found_msg">Den valgte fil blev ikke fundet. Kontrollér, at den findes, og at Slide har adgang til filen/mappen</string>
+    <string name="err_comment_post">Ups, det lykkedes ikke at sende kommentaren!</string>
+    <string name="err_comment_post_reason">Årsag: %1$s</string>
+    <string name="err_comment_post_message">\n\nDin besked er gemt som kladde. Prøv igen senere.</string>
+    <string name="err_connection_failed_msg">Forbindelsen til Reddit mislykkedes. Kontrollér din internetforbindelse og prøv igen, eller skift til offlinetilstand.</string>
+    <string name="err_block_user">Fejl ved blokering af brugeren. Har du for nylig ophævet blokeringen af denne bruger?</string>
+
     <!-- Gif -->
+    <string name="gif_err_title">GIF\'en blev ikke fundet</string>
+    <string name="gif_err_msg">Der opstod en fejl under indlæsningen af denne GIF. Åbn GIF\'en igen og prøv forfra.</string>
+    <string name="gif_load_failed">GIF\'en kunne ikke indlæses</string>
+    <string name="gif_download_failed">GIF\'en kunne ikke downloades</string>
+
     <!-- Multireddits -->
+    <string name="multireddit_err_title">Ingen multireddits (endnu)!</string>
+    <string name="multireddit_err_msg">Vil du oprette en ny multireddit?</string>
+    <string name="public_multireddit_err_title">Ingen multireddits!</string>
+    <string name="public_multireddit_err_msg">Denne bruger har ingen offentlige multireddits.</string>
+    <string name="multireddit_title_empty">Titlen må ikke være tom</string>
     <string name="multireddit_title_empty_msg">Angiv venligst en titel til din multireddit</string>
     <string name="multireddit_no_subs">Ingen subreddits er tilføjet</string>
+    <string name="multireddit_save_err">Titlen på denne multireddit findes allerede, eller der er ikke plads til flere subreddits her</string>
     <string name="multireddit_no_subs_msg">Tilføj venligst nogle subreddits ved at klikke på +-knappen!</string>
     <string name="multireddit_selector">Vælg hvilke subreddits du vil tilføje</string>
     <string name="multireddit_create_hint">Navn til multireddit</string>
     <string name="multireddit_invalid_name">Ugyldigt navn til multireddit</string>
     <string name="multireddit_invalid_name_msg">Navne til multireddits kan kun indeholde bogstaver, tal og understreger</string>
+    <string name="multi_add_to">Tilføj /r/%s til</string>
+    <string name="multi_subreddit_added">Subreddit tilføjet til /m/%1$s</string>
+    <string name="multi_error">Der opstod en fejl, prøv igen senere</string>
+    <string name="btn_import_multi">Importér multireddit</string>
+    <string name="multi_submit_which_sub">Hvilken sub vil du skrive i?</string>
+    <string name="multi_saved_successfully">Gemt</string>
+    <string name="delete_multireddit_title">Vil du virkelig slette /m/%1$s?</string>
+    <string name="multi_save_option">Vil du gemme denne multireddit?</string>
+
     <!-- Content types -->
     <string name="type_nsfw_img">NSFW-billede</string>
     <string name="type_nsfw_gif">NSFW-GIF</string>
@@ -189,13 +330,39 @@
     <string name="type_gif">GIF</string>
     <string name="type_title_only">Tekst</string>
     <string name="type_album">Album</string>
+    <string name="type_xkcd">XKCD</string>
     <string name="type_nsfw_album">NSWF-album</string>
+    <string name="type_nsfw_gallery">NSFW-galleri</string>
+    <string name="type_nsfw_albums">NSFW-album</string>
+    <string name="type_nsfw_galleries">NSFW-gallerier</string>
+    <string name="type_nsfw_gifs">NSFW-GIF\'er</string>
+    <string name="type_nsfw_images">NSFW-billeder</string>
+    <string name="type_nsfw_links">NSFW-links</string>
+    <string name="type_nsfw_selftexts">NSFW-tekstopslag</string>
+    <string name="type_nsfw_tumblrs">NSFW-Tumblr-opslag</string>
+    <string name="type_nsfw_videos">NSFW-videoer</string>
+    <string name="type_gallery">Galleri</string>
+    <string name="type_galleries">Gallerier</string>
     <string name="type_img">Billede</string>
+    <string name="type_videos">Videoer</string>
     <string name="type_nsfw_video">NSWF-video</string>
     <string name="type_imgur">Imgur-indhold</string>
     <string name="type_nsfw_imgur">NSWF-indhold fra Imgur</string>
+    <string name="type_nsfw_xkcd">NSFW-XKCD</string>
+    <string name="type_nsfw_deviantart">NSFW-DeviantArt</string>
+    <string name="type_nsfw_title_only">NSFW-opslag kun med titel</string>
+    <string name="type_nsfw_reddit">NSFW-Reddit-link</string>
+    <string name="type_nsfw_selftext">NSFW-tekstopslag</string>
+    <string name="type_spoiler">Spoiler</string>
+    <string name="type_nsfw_spoiler">NSFW-spoiler</string>
+    <string name="type_nsfw_streamable">NSFW-Streamable</string>
     <string name="type_external">Ekstern</string>
+
     <!-- Content types plural (Content filters) -->
+    <string name="type_gifs">GIF\'er</string>
+    <string name="type_albums">Album</string>
+    <string name="type_links">Links</string>
+
     <!-- Inbox/mail -->
     <string name="mail_tab_inbox">Indbakke</string>
     <string name="mail_tab_unread">Ulæst</string>
@@ -208,71 +375,1029 @@
     <string name="mail_hint_body">Tekst</string>
     <string name="mail_send_to">Send en besked til %1$s</string>
     <string name="mail_send">Send en besked</string>
+    <string name="mail_notification_msg_from">Ny besked fra %1$s</string>
+    <string name="mail_notification_msg_via">Ny besked via /r/%1$s</string>
     <string name="mod_mail_notification_msg">Ny moderatorbesked fra %1$s</string>
     <string name="mail_reply_to">Svar på %1$s</string>
     <string name="mail_notification_author">%1$s fra %2$s</string>
+    <string name="mail_notification_subreddit">%1$s via /r/%2$s</string>
     <string name="mail_theirs">Vis deres besked</string>
     <string name="mail_re">re: %1$s</string>
     <string name="mail_mark_read">Markér som læst</string>
-    <string name="mail_mark_unread">Markér som ulæst</string>
     <string name="mail_view_full_thread">Vis hele tråden</string>
     <string name="mail_message_copied">Besked kopieret</string>
+    <plurals name="mail_notification_title">
+        <item quantity="one">Du har %d ny besked!</item>
+        <item quantity="other">Du har %d nye beskeder!</item>
+    </plurals>
+    <plurals name="mod_mail_notification_title">
+        <item quantity="one">Du har %d ny modmail!</item>
+        <item quantity="other">Du har %d nye modmails!</item>
+    </plurals>
+
     <!-- Miscellaneous/generic things that don't have a category or strings that are used for multiple categories -->
     <string name="misc_err">Fejl</string>
     <string name="misc_none">Ingen</string>
     <string name="misc_retry">Vil du prøve igen?</string>
+    <string name="misc_retry_draft">Vil du prøve igen? \nEn kladde af dit opslag er gemt</string>
+    <string name="misc_score_hidden">point skjult</string>
+    <string name="misc_subscribed">Abonnerer</string>
+    <string name="misc_continue">Fortsæt</string>
+    <string name="misc_unsubscribed">Afmeldt</string>
+    <string name="misc_no_more_posts">Ikke flere opslag!</string>
+    <string name="misc_please_wait">Vent venligst…</string>
+    <string name="misc_img_share">Del billede med</string>
     <string name="misc_copy_text">Kopier tekst</string>
+    <string name="misc_maybe_later">Måske senere</string>
+    <string name="misc_try_again">Prøv igen</string>
+    <string name="misc_please_try_again">Prøv igen</string>
+    <string name="misc_please_try_again_soon">Prøv igen snart</string>
+    <string name="misc_setting_up">Sætter et par ting op…</string>
+    <string name="misc_setting_up_message">Forlad ikke denne skærm. Det tager ikke lang tid!</string>
+    <string name="misc_more_info">Flere oplysninger</string>
+    <string name="misc_captcha_incorrect">Forkert captcha, prøv igen</string>
+
     <!-- Goto User -->
+    <string name="user_enter">Indtast brugernavn</string>
+    <string name="user_btn_goto">Gå til bruger</string>
+    <string name="user_btn_gotomultis">Gå til brugerens multis</string>
+
+    <!-- Saved users list -->
+    <string name="users_empty">Ingen gemte brugere</string>
+    <string name="users_btn_add">Tilføj bruger</string>
+    <string name="users_btn_remove">Fjern bruger</string>
+    <string name="users_added">%s er tilføjet til Brugere</string>
+    <string name="users_removed">%s er fjernet fra Brugere</string>
+    <string name="users_already_added">%s findes allerede under Brugere</string>
+    <string name="users_copied">%s kopieret</string>
+    <string name="users_checking">Kontrollerer brugernavnet</string>
+    <string name="users_invalid_title">Brugeren kan ikke tilføjes</string>
+    <string name="users_invalid">%s er ikke en Reddit-bruger</string>
+    <string name="users_check_failed">Det kunne ikke kontrolleres, om %s findes. Kontrollér din forbindelse og prøv igen.</string>
+    <string name="users_friend_added">%s er tilføjet som ven</string>
+    <string name="users_friend_removed">%s er fjernet som ven</string>
+    <string name="users_friend_failed">Venstatussen for %s kunne ikke opdateres</string>
+    <string name="btn_fab_add_user">Tilføj en bruger</string>
+
     <!-- Buttons -->
+    <string name="btn_add">Tilføj</string>
+    <string name="btn_cancel">Annullér</string>
+    <string name="btn_close">Luk</string>
+    <string name="btn_toggle">Skift</string>
+    <string name="btn_open">Åbn</string>
+    <string name="btn_discard">Kassér</string>
+    <string name="btn_done">Færdig</string>
+    <string name="btn_go_back">Gå tilbage</string>
+    <string name="btn_no">Nej</string>
+    <string name="btn_ok">OK</string>
+    <string name="btn_remove">Fjern</string>
+    <string name="btn_reply">Svar</string>
+    <string name="btn_reset">Nulstil</string>
+    <string name="btn_retry">Prøv igen</string>
+    <string name="btn_save">Gem</string>
+    <string name="btn_submit">Send</string>
+    <string name="btn_undo">Fortryd</string>
+    <string name="btn_yes">Ja</string>
+    <string name="btn_refresh">Opdatér</string>
+    <string name="btn_cache">Cachelagr kommentarer</string>
+    <string name="btn_delete">Slet</string>
+    <string name="btn_time">Tidsperiode</string>
+    <string name="btn_message">Besked</string>
+    <string name="btn_select">Vælg</string>
+    <string name="btn_view">VIS</string>
+    <string name="btn_changelog">Ændringslog</string>
+    <string name="btn_set">ANGIV</string>
+    <string name="btn_create">Opret</string>
+    <string name="btn_new">Ny</string>
+
     <!-- Buttons Content labels for TalkBack accessibility-->
+    <string name="btn_edit">Redigér</string>
+    <string name="btn_hide">Skjul</string>
+    <string name="btn_mod">Modererér</string>
+    <string name="btn_upvote">Stem op</string>
+    <string name="btn_downvote">Stem ned</string>
+    <string name="btn_menu">Menu</string>
+    <string name="img_score">Point</string>
+    <string name="img_comments">Kommentarer</string>
+    <string name="btn_expand">Udvid</string>
+    <string name="btn_nav_up">Naviger op</string>
+    <string name="btn_nav_mode">Angiv navigationstilstand</string>
+    <string name="btn_nav_collapse_expand">Fold sammen/ud</string>
+    <string name="btn_nav_down">Naviger ned</string>
+    <string name="btn_fab_reply">Svar</string>
+    <string name="btn_fab_post">Opret nyt opslag</string>
+    <string name="btn_fab_hide">Skjul viste opslag</string>
+    <string name="btn_fab_search">Søg i opslag</string>
+
     <!-- Buttons Content labels for TalkBack accessibility active states-->
+    <string name="btn_upvoted">Stemt op</string>
+    <string name="btn_downvoted">Stemt ned</string>
+    <string name="btn_unsave">Fjern fra gemte</string>
+    <string name="btn_collapse">Fold sammen</string>
+
     <!-- Backup -->
+    <string name="backup_success">Sikkerhedskopieringen lykkedes!</string>
+    <string name="backup_restoring">Gendanner dine indstillinger</string>
+    <string name="backup_backing_up">Sikkerhedskopierer dine indstillinger</string>
+    <string name="backup_restore_settings">Gendannelsen af indstillingerne lykkedes!</string>
+    <string name="backup_restarting">Appen genstarter nu</string>
+    <string name="backup_info">Slide sikkerhedskopierer alle dine data til en privat mappe på Google Drev. Du kan synkronisere disse data mellem enheder (eller til den samme enhed), og dine data går aldrig gennem en tredjepartstjeneste eller -server. Sikkerhedskopier krypteres med en adgangskode, du selv vælger.</string>
     <string name="backup_btn">Sikkerkedskopiér</string>
     <string name="backup_btn_restore">Gendan</string>
     <string name="backup_btn_file">Sikkerhedskopiér til fil</string>
     <string name="backup_btn_restore_file">Gendan fra fil</string>
+    <string name="backup_confirm">Er du sikker på, at du vil sikkerhedskopiere? Din tidligere sikkerhedskopi overskrives</string>
+    <string name="backup_restore_confirm">Er du sikker på, at du vil gendanne? Dine nuværende indstillinger overskrives</string>
+    <string name="backup_failed_msg">Sikkerhedskopieringen mislykkedes. Prøv igen senere.</string>
+    <string name="backup_restore_failed_msg">Gendannelsen mislykkedes. Kontrollér, at der findes en gyldig sikkerhedskopi, og prøv igen.</string>
+    <string name="backup_local_title">Lokal sikkerhedskopi</string>
+    <string name="backup_drive_title">Sikkerhedskopi på Google Drev</string>
+    <string name="backup_button">Opret sikkerhedskopi</string>
+    <string name="restore_button">Gendan sikkerhedskopi</string>
+    <string name="backup_question">Sikkerhedskopiér?</string>
+    <string name="backup_complete">Sikkerhedskopieringen er fuldført!</string>
+    <string name="err_not_valid_backup">Ikke en gyldig Slide-sikkerhedskopi</string>
+    <string name="err_not_valid_backup_msg">Den valgte fil er ikke en gyldig Slide-sikkerhedskopi</string>
+    <string name="backup_password_title">Angiv en adgangskode til sikkerhedskopien</string>
+    <string name="backup_password_message">Din sikkerhedskopi indeholder loginoplysningerne til din Reddit-konto og krypteres derfor. Vælg en adgangskode på %1$d til %2$d tegn. Du skal bruge den til at gendanne, og den kan ikke gendannes.</string>
+    <string name="backup_password_hint">Adgangskode</string>
+    <string name="restore_password_title">Indtast adgangskoden til sikkerhedskopien</string>
+    <string name="restore_password_message">Indtast den adgangskode, der blev brugt til at kryptere denne sikkerhedskopi.</string>
+    <string name="restore_password_wrong">Forkert adgangskode. Prøv igen.</string>
+    <string name="drive_authorization_failed">Godkendelsen af Google Drev mislykkedes</string>
+    <string name="drive_authorization_failed_msg">Slide kunne ikke få adgang til sin private mappe på Google Drev. Prøv igen.</string>
+    <string name="drive_authorization_denied">Adgang til Google Drev er påkrævet</string>
+    <string name="drive_authorization_denied_msg">Slide skal have adgang til sin private mappe på Google Drev for at sikkerhedskopiere eller gendanne dine indstillinger.</string>
+
     <!-- Vote -->
     <string name="vote_err">Fejl ved afgivelse af stemme!</string>
     <string name="vote_err_login">Du skal være logget ind for at stemme!</string>
+    <string name="vote_removed">Stemmen er fjernet</string>
+
+    <!-- Subscribing -->
+    <string name="subscribe_err_login">Du skal være logget ind for at abonnere!</string>
+
     <!-- Moderation tools -->
     <string name="mod_mail">Moderatorbesked</string>
     <string name="mod_mail_unread">Moderatorbesked ulæst</string>
+    <string name="modmail_internal_note">(intern note)</string>
+    <string name="modmail_scope_missing">Modmail kræver ny godkendelse. Log ind igen (Indstillinger &#8594; konto) for at aktivere det.</string>
+    <string name="modmail_reply_sent">Svaret er sendt!</string>
+    <string name="modmail_reply_failed">Afsendelsen mislykkedes! Svaret er gemt som kladde.</string>
+    <plurals name="modmail_message_count">
+        <item quantity="one">%d besked</item>
+        <item quantity="other">%d beskeder</item>
+    </plurals>
     <string name="mod_modqueue">Moderatorkø</string>
+    <string name="mod_unmoderated">Umodereret</string>
+    <string name="mod_reports">Rapporter</string>
     <string name="mod_approved">Indlæg godkendt</string>
+    <string name="mod_flair_hint">Flair-tekst</string>
+    <string name="mod_no_reports">Ingen rapporter</string>
+    <string name="mod_btn_approve">Godkend</string>
+    <string name="mod_btn_submission_flair">Angiv flair</string>
+    <string name="mod_btn_submission_flair_text">Angiv flair-tekst</string>
+    <string name="mod_btn_mark_nsfw">Markér som NSFW</string>
+    <string name="mod_btn_unmark_nsfw">Fjern NSFW-markering</string>
+    <string name="mod_btn_mark_spoiler">Markér som spoiler</string>
+    <string name="mod_btn_unmark_spoiler">Fjern spoilermarkering</string>
+    <string name="mod_btn_lock_thread">Lås tråden</string>
+    <string name="mod_btn_unlock_thread">Lås tråden op</string>
+    <string name="mod_btn_lock_comment">Lås kommentaren</string>
+    <string name="mod_btn_unlock_comment">Lås kommentaren op</string>
+    <string name="mod_locked">Låst</string>
+    <string name="mod_unlocked">Låst op</string>
+    <string name="mod_btn_pin">Fastgør</string>
+    <string name="mod_btn_unpin">Frigør</string>
+    <string name="mod_btn_remove">Fjern</string>
+    <string name="mod_btn_remove_reason">Fjern med begrundelse</string>
+    <string name="mod_btn_spam">Markér som spam</string>
+    <string name="mod_btn_author">Forfatterens profil</string>
+    <string name="mod_btn_ban">Udeluk</string>
+    <string name="mod_ban_user">Udeluk bruger</string>
+    <string name="mod_ban_reauth">For at udelukke brugere skal Slide godkende dig på ny</string>
+    <string name="mod_ban_reauth_question">Vil du logge ind i Slide igen nu?</string>
+    <string name="mod_ban_success">Brugeren er udelukket!</string>
+    <string name="mod_ban_fail">Fejl ved udelukkelse af brugeren</string>
+    <string name="mod_ban_reason">Årsag til udelukkelsen</string>
+    <string name="mod_ban_note_mod">Moderatornote (valgfrit)</string>
+    <string name="mod_ban_note_user">Besked til brugeren (valgfrit)</string>
+    <string name="mod_ban_time">Udelukkelsestid - lad stå tom for permanent</string>
+    <string name="mod_ban_title">Udeluk /u/%1$s</string>
+    <string name="mod_remove_template">Fjernet på grund af\u0020</string>
+    <string name="mod_remove_hint">Årsag til fjernelse</string>
+    <string name="mod_remove_title">Hvad er årsagen til, at dette opslag fjernes?</string>
+    <string name="mod_remove_insert_draft">Indsæt kladde</string>
+    <string name="mod_flair_none_found">Der blev ikke fundet nogen flair til denne subreddit</string>
+    <string name="mod_distinguish">Fremhæv</string>
+    <string name="mod_undistinguish">Fjern fremhævning</string>
+    <string name="mod_sticky">Fastgør</string>
+    <string name="mod_unsticky">Frigør</string>
+    <string name="reauth_complete">Den nye godkendelse er fuldført!</string>
+    <string name="reauth_in_progress">Godkender på ny…</string>
+    <string name="reauth_failed">Kunne ikke godkende på ny</string>
+
+    <plurals name="mod_btn_reports">
+        <item quantity="one">Vis %d rapport</item>
+        <item quantity="other">Vis %d rapporter</item>
+    </plurals>
+
     <!-- If he did -->
+    <string name="really_pin_submission_message">Opslaget er fastgjort</string>
+    <string name="really_unpin_submission_message">Opslaget er frigjort</string>
+
     <!-- Subreddit Wiki -->
+    <string name="wiki_err">Ingen wiki fundet</string>
+    <string name="wiki_err_msg">Denne subreddit har ingen wiki!</string>
+
     <!-- Subreddits -->
+    <string name="subreddit_subscribers_string">%1$s abonnenter</string>
+    <string name="subreddit_active_users_string_new">%1$s her nu</string>
+    <string name="subreddit_err_msg">Subredditen %1$s blev ikke fundet. Måske er den stavet forkert?</string>
+    <string name="subreddit_err_msg_new">Subredditen %1$s blev ikke fundet. Måske er den stavet forkert, eller også har du ikke adgang til den.</string>
+    <string name="subreddit_err">Subredditen blev ikke fundet</string>
+
     <!-- Search -->
+    <string name="search_comments_hint">Søg i kommentarer</string>
+    <string name="search_goto">Gå til</string>
+    <string name="search_title">Søg</string>
+    <string name="search_msg">Hvad søger du efter?</string>
+    <string name="search_all">Søg i alt</string>
+    <string name="search_subreddit">Søg i %1$s</string>
+    <string name="search_relevance">Relevans</string>
+    <string name="search_top">Top</string>
+    <string name="search_new">Nye</string>
+    <string name="search_comments">Kommentarer</string>
+    <string name="no_posts_found">Ingen opslag fundet</string>
+
     <!-- Settings -->
+    <string name="settings_reddit_prefs">Reddit-indstillinger</string>
+    <string name="settings_accent_title">Redigér accentfarve</string>
+    <string name="settings_delete_sub_settings">Vil du virkelig slette indstillingerne for %1$s?</string>
+    <string name="settings_layout_default">Opslagslayout</string>
+    <string name="settings_link_album">Intern albumvisning</string>
+    <string name="settings_link_peek">Se indhold hurtigt</string>
+    <string name="settings_link_peek_description">Deaktiverer langt tryk på forhåndsvisningsbilledet</string>
+    <string name="settings_link_gif">Intern GIF-visning</string>
+    <string name="settings_link_hqgif">Gfycat-videoer i høj kvalitet</string>
+    <string name="settings_link_handling">Håndtering af links</string>
+    <string name="settings_link_image">Intern billedvisning</string>
+    <string name="settings_mail_check">Se efter nye beskeder</string>
+    <string name="settings_mail_info">Jo højere frekvens, jo mere batteri kan Slide bruge i baggrunden!</string>
+    <string name="settings_main_color_title">Redigér primær farve</string>
+    <string name="settings_notification">Se efter nye beskeder hver %1$s</string>
+    <string name="settings_notification_newline">Se efter nye beskeder hver\n%1$s</string>
+    <string name="settings_notification_short">Tjek hver %1$s</string>
+    <string name="settings_disable_nsfw_photo">Skjul alle NSFW-billeder</string>
+    <string name="settings_store_history">Gem historik</string>
+    <string name="settings_store_nsfw_history">Gem NSFW-historik</string>
+    <string name="settings_commentnav">Naviger mellem hovedkommentarer</string>
+    <string name="share_link">Del link</string>
+    <string name="posts_hidden_forever">Opslag skjult for altid</string>
+    <string name="share_image">Del billede</string>
+    <string name="settings_libs">Open source-biblioteker</string>
+    <string name="settings_about_libs">Om biblioteker</string>
+    <string name="settings_privacy">Privatlivspolitik</string>
+    <string name="settings_bugs">Rapportér fejl</string>
+    <string name="settings_changelog">Vis ændringslog</string>
+    <string name="settings_fabclear_msg">Et tryk på ryd-knappen fjerner opslagene fra den aktuelle visning, men skjuler dem ikke for altid. \nEt langt tryk på knappen skjuler opslagene for altid!</string>
+    <string name="settings_fabclear">Ryd-handlinger for den flydende knap</string>
+    <string name="settings_notifdisabled">Notifikationer deaktiveret</string>
+    <string name="settings_colored_navigation_bar">Farvet navigationslinje</string>
+    <string name="settings_always_black_statusbar">Sort statuslinje (notifikationslinje)</string>
+    <string name="settings_colored_icon">Farvelæg appikonet (eksperimentelt)</string>
+    <string name="settings_colored_icon_desc">Kan kræve genstart af telefonen. Dette fjerner også ikonet fra din startskærm.</string>
+    <string name="settings_filter_domain">Domænefiltre</string>
+    <string name="settings_filter_selfttext">Filtre for opslagstekst</string>
+    <string name="settings_filter_title">Titelfiltre</string>
+    <string name="settings_prefs_reddit">Vis alle reddit.com-indstillinger</string>
+    <string name="settings_font_post">Skrifttype til opslagstitler</string>
+    <string name="settings_font_comment">Skrifttype til kommentarer</string>
+    <string name="settings_comment_crop">Beskær hovedbilledet i kommentarvisningen</string>
+    <string name="settings_general_scroll_read">Markér opslag som set, når du scroller forbi</string>
+    <string name="settings_link_chrome">Brugerdefinerede faner</string>
+    <string name="settings_storage_location">Vælg lagerplacering</string>
+    <string name="settings_storage_location_unset">Ikke angivet endnu</string>
+    <string name="settings_set_storage_location">Filer gemmes i %s</string>
+    <string name="settings_general_immersive_mode">Fordybende fuldskærmstilstand</string>
+    <string name="settings_general_immersive_mode_desc">Skjul status- og navigationslinjen (eksperimentelt)</string>
+    <string name="settings_general_old_swipe_mode">Gammel strygetilstand</string>
+    <string name="settings_general_old_swipe_mode_desc">Slides gamle strygestil. Beregnet til navigation med 3 knapper og Samsung-bevægelser.</string>
+    <string name="settings_general_hibernate">Fortsæt, hvor jeg slap</string>
+    <string name="settings_general_hibernate_desc">Åbner den samme skærm samme sted igen og viser det, der allerede var indlæst, i stedet for at opdatere. Når du slår dette til, tilføjes der et afkrydsningsfelt i overløbsmenuen, som slår genoptagelse til og fra, uden at du skal herind igen.</string>
+
+    <string name="settings_general_title_drawer_items">Elementer i skuffen</string>
+    <string name="settings_general_subtitle_drawer_items">Vælg hvilke elementer i skuffen der skal vises</string>
+
     <!-- Settings titles displayed in settings activity-->
+    <string name="settings_title_backup">Sikkerhedskopiering &amp; gendannelse</string>
+    <string name="settings_title_default_theme">Hovedtema</string>
+    <string name="settings_title_general">Generelt</string>
+    <string name="settings_title_history">Historik</string>
+    <string name="settings_title_notifications">Notifikationer</string>
+    <string name="settings_title_pro">Gå Pro</string>
+    <string name="settings_title_sub_theme">Subreddit-temaer</string>
+    <string name="settings_title_sort">Standardsortering</string>
+    <string name="settings_title_sort_frontpage">Sortering af forsiden</string>
+    <string name="settings_title_about">Om</string>
+    <string name="settings_title_debug">Fejlfinding</string>
+    <string name="settings_section_debug_reauth">Ny godkendelse</string>
+    <string name="settings_debug_break_reauth">Ødelæg ny godkendelse</string>
+    <string name="settings_debug_break_reauth_desc">Stopper den nye godkendelse, så den tilhørende meddelelse kan testes. Kan fortrydes: slå dette fra, og udløs derefter en ny godkendelse.</string>
+    <string name="settings_debug_trigger_reauth">Udløs ny godkendelse</string>
+    <string name="settings_debug_trigger_reauth_desc">Start en ny godkendelse nu. Brug dette til at komme videre, efter at du har slået kontakten fra.</string>
+    <string name="settings_title_multi_column">Flere kolonner</string>
+    <string name="settings_title_fab">Flydende handlingsknap</string>
+    <string name="settings_title_comments">Kommentarer</string>
+    <string name="settings_title_filter">Filtre</string>
+    <string name="settings_title_font">Skrifttype</string>
+    <string name="settings_section_general">Generelt</string>
+    <string name="settings_section_appearance">Udseende</string>
+    <string name="settings_section_hibernation">Dvale</string>
+    <string name="settings_section_other">Andet</string>
+    <string name="settings_section_browser">Browser</string>
+    <string name="settings_section_internal_viewers">Interne visninger</string>
+    <string name="settings_section_custom_domains">Brugerdefinerede domæner</string>
+    <string name="settings_section_save_history">Gem historik</string>
+    <string name="settings_section_clear_history">Ryd historik</string>
+    <string name="settings_section_data_saving_mode">Databesparelsestilstand</string>
+    <string name="settings_section_data_saving_quality">Kvalitet ved databesparelse</string>
+    <string name="settings_comment_color">Farverige dybdeindikatorer for kommentarer</string>
+    <string name="settings_volume_nav_comments">Naviger i kommentarer med lydstyrkeknapperne</string>
+    <string name="settings_commentnav_description">Aktiverer en bundlinje med navigationspile</string>
+    <string name="settings_comment_collapse">Fold kommentarer helt sammen</string>
+    <string name="settings_comment_collapse_description">Deaktiverer også kommentaranimationer</string>
+    <string name="settings_comment_collapse_default">Fold underordnede kommentarer sammen som standard</string>
+    <string name="settings_data_enable">Aktivér indstillinger for databesparelse</string>
+    <string name="settings_data_video_quality">Foretræk videoer i lav kvalitet, når databesparelse er slået til</string>
+    <string name="settings_comments_collapse_deleted">Fold slettede kommentarer sammen som standard</string>
+    <string name="settings_comments_collapse_sticky">Fold altid den fastgjorte kommentar helt sammen</string>
+    <string name="settings_comments_collapse_blocked_users">Fold kommentarer fra blokerede brugere sammen</string>
+    <string name="settings_comments_collapse_blocked_users_description">Aktiverer også Fold kommentarer helt sammen</string>
+    <string name="settings_backup_occurs">Sikkerhedskopien tages kl. %1$s</string>
+    <string name="settings_backup_none">Ingen subreddits sikkerhedskopieres</string>
+    <string name="settings_backup_will_backup">\u0020sikkerhedskopieres</string>
+    <string name="settings_backup_submission_only">kun opslaget</string>
+    <string name="settings_backup_comments">\u0020(kommentarer)</string>
+    <string name="settings_filter_profile">Profilfiltre</string>
+    <string name="settings_subreddit_content_filters_till_restart">Indholdsfiltre for subredditen indtil genstart</string>
+    <string name="settings_subredditspecific_selftext">Vis altid forhåndsvisning af tekst i denne subreddit</string>
+    <string name="settings_font_system">System</string>
+    <string name="settings_manage_subscriptions">Administrer dine abonnementer</string>
+    <string name="settings_comments_swap_long">Byt om på langt tryk og tryk</string>
+    <string name="settings_redditprefs_over18">Jeg er over 18 og vil se NSFW-indhold</string>
+    <string name="settings_layout_view">Visningstilstand</string>
+    <string name="settings_subredditspecific_bigpic">Vis altid store billeder i denne subreddit</string>
+    <string name="settings_layout_picture_mode">Billedtilstand</string>
+    <string name="settings_general_expanded_toolbar">Udvidet værktøjslinjemenu</string>
+    <string name="settings_general_expanded_toolbar_desc">Vis flere valgmuligheder på subredditens værktøjslinje</string>
+    <string name="settings_always_show_floating_action_button">Vis altid den flydende handlingsknap</string>
+    <string name="settings_always_show_floating_action_button_desc">Skjul aldrig den flydende handlingsknap, når du scroller</string>
+    <string name="settings_theme_tinting">Farvetilstand for opslag</string>
+    <string name="settings_layout_actionbar_mode">Tilstand for handlingslinjen</string>
+    <string name="settings_theme_tint_outside_desc">Farvelæg kun baggrunden i multireddits, på forsiden og i alle</string>
+    <string name="settings_layout_small_content_tag">Mindre indholdsmærkat</string>
+    <string name="settings_links_force_external">Gennemtving ekstern browser</string>
+    <string name="settings_layout_show_domain">Vis domæne på infolinjen</string>
+    <string name="settings_layout_show_content_type">Vis indholdstype på infolinjen</string>
+    <string name="settings_layout_thumbnail_flags">Vis farvede hjørnemarkeringer på miniaturer</string>
+    <string name="settings_layout_show_votes_comments">Vis stemmer/kommentarer på infolinjen</string>
+    <string name="settings_general_comment_last_visit">Vis antal kommentarer siden sidste besøg</string>
+    <string name="settings_fab_create">Vis den flydende knap \"opret kommentar\"</string>
+    <string name="settings_right_handed_comment_menu">Højrehåndet svarmenu til kommentarer</string>
+    <string name="settings_reddit_description">Disse indstillinger ændrer, hvad Reddits API returnerer til Slide.\n\nFor at se miniaturer i alle subreddits skal du slå \'Ignorér subredditens medieindstillinger\' til\n\nFor at se alt NSFW-indhold skal du slå \'Skjul NSFW-billeder\' fra og \'Jeg er over 18\' til</string>
+    <string name="settings_reddit_media_pref">Ignorér subredditens medieindstillinger</string>
+    <string name="settings_description_view_type">Visningstyper påvirker både hovedvisningen og visningen af enkelte subreddits.\n\nKommentarpanel: kommentarerne glider ud ved siden af opslagene, og kommentarsidens tilstand gemmes, når du stryger tilbage (så du ikke mister din plads)\n\nIngen subreddit-faner: slår strygning mellem subreddits fra\n\nSubreddit-faner: stryg mellem dine subreddits</string>
+    <string name="settings_short_description_view_type">Visningstyper påvirker både hovedvisningen og visningen af enkelte subreddits</string>
+    <string name="settings_comment_hide_selftext_image">Skjul hovedbilledet på tekstopslag</string>
+    <string name="settings_filter_flair">Flair-filtre</string>
+    <string name="settings_view_type">Visningstype</string>
+    <string name="settings_data">Databesparelse</string>
+    <string name="settings_card_show_selftext">Vis opslagstekst</string>
+    <string name="settings_card_selftext_paragraph">Vis første afsnit</string>
+    <string name="settings_card_selftext_ellipsize">Forkort til de første 128 tegn</string>
+    <string name="settings_handling_external_desc">Domæner, der angives nedenfor, åbnes altid eksternt</string>
+    <string name="settings_handling_enterdomain">Indtast et domæne eller en del af et domæne</string>
+    <string name="settings_section_content">Indhold</string>
+    <string name="settings_backup_view">Vis sikkerhedskopi</string>
+    <string name="settings_backup_err_no_explorer">Ingen filstifinder fundet, filen ligger på %1$s</string>
+    <string name="settings_about_version_copied_toast">Versionsnummeret er kopieret til udklipsholderen</string>
+    <string name="settings_theme_night_start_at">Starter kl.\u0020</string>
+    <string name="settings_theme_night_end_at">Slutter kl.\u0020</string>
+    <string name="settings_general_inbox_snd">Lyd og vibration</string>
+    <string name="settings_enable_notifs">Aktivér notifikationer for indbakken</string>
+
     <!-- Quick setting toggles in the drawer -->
+    <string name="toggle_night_mode">Nattilstand</string>
+    <string name="toggle_immersive_mode">Fordybende tilstand</string>
+    <string name="toggle_nsfw">Vis NSFW-indhold</string>
+    <string name="toggle_right_thumbnails">Højrestillede miniaturer</string>
+    <string name="toggle_reader_mode">Brug læsetilstand</string>
+
     <!-- View types -->
+    <string name="view_type_tabs">Subreddit-faner</string>
+    <string name="view_type_none">Ingen subreddit-faner</string>
+    <string name="view_type_comments">Kommentarpanel</string>
+
     <!--Search methods -->
+    <string name="subreddit_search_method_title">Søgemetode for subreddits</string>
+    <string name="subreddit_search_method_drawer">Søgefelt i skuffen</string>
+    <string name="subreddit_search_method_toolbar">Langt tryk på værktøjslinjens titel</string>
+    <string name="subreddit_search_method_both">Både skuffen og værktøjslinjens titel</string>
+
     <!-- Back button behavior -->
+    <string name="back_button_behavior_title">Tilbageknappens adfærd</string>
+    <string name="back_button_behavior_default">Luk applikationen</string>
+    <string name="back_button_behavior_confirm_exit">Bekræftelsesdialog ved afslutning</string>
+    <string name="back_button_behavior_drawer">Åbn skuffen</string>
+
     <!-- Subscription managing -->
-    <!-- Save categories -->
+    <string name="reorder_add_domain">Tilføj et domæne</string>
+    <string name="reorder_add_subreddit">Tilføj en subreddit</string>
+    <string name="reorder_fab_collection">Multireddit</string>
+    <string name="reorder_fab_domain">Domæne</string>
+    <string name="reorder_fab_subreddit">Subreddit</string>
+    <string name="reorder_add_subscribe">Tilføj &amp; abonnér</string>
+    <string name="reorder_remove_unsubscribe">Fjern &amp; afmeld</string>
+    <string name="reorder_move">Flyt til toppen</string>
+    <string name="reorder_domain_placeholder">\u0020(kun domænenavnet)</string>
+    <string name="reorder_not_found_err">Subredditen blev ikke fundet, her er nogle forslag</string>
+    <string name="reorder_subscribed_toast">Abonnerer på /r/%1$s</string>
+    <string name="reorder_unsubscribed_toast">Abonnementet på /r/%1$s er afmeldt</string>
+    <string name="sorting_faq"><b>Hvordan opdaterer jeg subreddits?</b>\nFor at opdatere subreddits skal du klikke på opdateringsikonet i værktøjslinjen!\n\n<b>Jeg har afmeldt nogle subreddits, men de er der stadig!</b>\nSlide omdanner subreddits, du har afmeldt i browseren, til uformelle abonnementer. For at fjerne dem skal du trykke længe på subredditen/subredditerne og klikke på fjern!\n\n<b>Hvordan bruger jeg samlinger?</b>\nFor at oprette en samling skal du klikke på +-knappen og vælge \'Opret en samling\'. Så kan flere subs optræde som én subreddit på hovedskærmen!</string>
+    <string name="alphabetize_subreddits">Sortér subreddits alfabetisk</string>
+    <string name="sync_subscriptions">Synkronisér abonnementer</string>
+    <string name="cannot_be_undone">Dette kan ikke fortrydes.</string>
+    <string name="deleting">Sletter…</string>
+    <string name="create_or_import_multi">Vil du oprette en ny multireddit eller importere en?</string>
+    <string name="sub_added">Subreddit tilføjet!</string>
+    <string name="reorder_subs_FAQ">Ofte stillede spørgsmål om at omarrangere subreddits</string>
+    <string name="subscribe_to">Abonnér på /r/%1$s</string>
+    <string name="unsubscribe_from">Afmeld /r/%1$s</string>
+    <string name="btn_add_to_sublist">TILFØJ TIL SUB-LISTEN</string>
+    <string name="btn_remove_from_sublist">FJERN FRA SUB-LISTEN</string>
+    <string name="just_unsub">AFMELD KUN</string>
+    <string name="subscribe_caps">ABONNÉR</string>
+    <string name="unsubscribe_caps">AFMELD</string>
+    <string name="reorder_subreddits_title">Vælg en subreddit at tilføje</string>
+    <string name="reorder_add_or_search_subreddit">Tilføj eller søg efter en subreddit</string>
+    <string name="reorder_subreddit_name">Subreddit-navn</string>
+    <string name="reorder_remove_title">Fjern denne subreddit?</string>
+    <string name="reorder_sync_complete">Synkroniseringen er fuldført</string>
+    <string name="reorder_loading_title">Indlæser dine subreddits</string>
+    <string name="reorder_url_err">Ugyldig URL</string>
+
+    <!-- Saved tags -->
+    <string name="tag_set_name_hint">Mærkatnavn</string>
+    <string name="tag_tag_action">MÆRK</string>
+    <string name="profile_tag_select">Mærkater</string>
+    <string name="profile_saved_tags">Gemte mærkater</string>
+    <string name="tag_builtin_all">Alle</string>
+    <string name="tag_builtin_posts">Opslag</string>
+    <string name="tag_builtin_comments">Kommentarer</string>
+    <string name="tag_types_header">Typer</string>
+    <string name="tag_post_types_header">Opslagstyper</string>
+    <string name="tag_custom_header">Brugerdefinerede mærkater</string>
+    <string name="tag_new">Nyt mærkat</string>
+    <string name="tag_manage">Administrer mærkater</string>
+    <string name="tag_add">Tilføj mærkat</string>
+    <string name="tag_none_yet">Ingen mærkater endnu</string>
+    <string name="tag_rename">Omdøb</string>
+    <string name="tag_delete_confirm">Er du sikker på, at du vil slette \"%1$s\"? Elementer med dette mærkat bliver ikke slettet.</string>
+    <string name="tag_name_used_title">Navnet er allerede i brug</string>
+    <string name="tag_name_used">Der findes allerede et mærkat med det navn, vælg et unikt navn.</string>
+    <string name="tag_name_reserved">Det navn er reserveret, vælg et andet.</string>
+
     <!-- Setting subheaders -->
+    <string name="sorting">Sorteringer</string>
+    <string name="display">Visning</string>
+    <string name="images">Billeder</string>
+    <string name="storage">Lagring</string>
+    <string name="app_theme">Apptema</string>
+    <string name="tinting">Farvelægning</string>
+    <string name="post_info">Oplysninger om opslaget</string>
+    <string name="post_buttons">Opslagsknapper</string>
+    <string name="navigation">Navigation</string>
+    <string name="collapse_comments">Handlinger for sammenfoldning</string>
+    <string name="nsfw">NSFW-indhold</string>
+    <string name="view_reddit_settings">Åbn Reddits indstillinger i browseren</string>
+    <string name="font_styles">Skriftstile</string>
+
     <!-- Titles displayed in action bar / head / recents overview-->
-    <!-- Text in Donation-Activity -->
+    <string name="title_subreddit_settings">Subreddit-temaer &amp; -layouts</string>
+    <string name="title_edit_theme">Redigér tema</string>
+    <string name="title_submit_post">Opret opslag</string>
+    <string name="title_crosspost">Krydsopslag</string>
+    <string name="title_settings">Indstillinger</string>
+    <string name="title_share">Del med</string>
+    <string name="title_login">Log ind på Reddit</string>
+    <string name="title_multireddits">Multireddits</string>
+    <string name="title_users">Brugere</string>
+    <string name="title_inbox">Indbakke</string>
+    <string name="title_theme_settings">Tema</string>
+    <string name="title_create_multi">Opret en multireddit</string>
+
     <!-- Offline mode -->
+    <string name="offline_msg">Gå online og opdatér subredditen for at gøre det</string>
+    <string name="offline_last_update">Sidst opdateret %1$s</string>
+    <string name="offline_comments_not_loaded">Gå online igen og vælg ‘Cachelagr kommentarer’ i menuen med tre prikker for at læse kommentarer offline</string>
+    <string name="offline_no_content_found">Intet offlineindhold fundet</string>
+    <string name="offline_enter_online">Skift til onlinetilstand</string>
+    <string name="offline_caching_title">Cachelagrer %1$s</string>
+    <string name="offline_caching_complete">Cachelagringen er fuldført</string>
+
     <!-- Website -->
+    <string name="website_external">Åbn i ekstern browser</string>
+
+    <plurals name="reorder_subs_added">
+        <item quantity="one">%d subreddit tilføjet</item>
+        <item quantity="other">%d subreddits tilføjet</item>
+    </plurals>
+
     <!-- Time -->
+    <string name="time_just_now">Lige nu</string>
+    <plurals name="time_years">
+        <item quantity="one">%d år</item>
+        <item quantity="other">%d år</item>
+    </plurals>
+    <plurals name="time_months">
+        <item quantity="one">%d måned</item>
+        <item quantity="other">%d måneder</item>
+    </plurals>
+    <plurals name="time_days">
+        <item quantity="one">%d dag</item>
+        <item quantity="other">%d dage</item>
+    </plurals>
+    <plurals name="time_hours">
+        <item quantity="one">%d time</item>
+        <item quantity="other">%d timer</item>
+    </plurals>
+    <plurals name="time_minutes">
+        <item quantity="one">%d minut</item>
+        <item quantity="other">%d minutter</item>
+    </plurals>
+    <plurals name="time_seconds">
+        <item quantity="one">%d sekund</item>
+        <item quantity="other">%d sekunder</item>
+    </plurals>
+
     <!-- Time: shorthand durations for example 1 hour → 1h -->
+    <string name="time_years_short">%då</string>
+    <string name="time_days_short">%dd</string>
+    <string name="time_hours_short">%dt</string>
+    <string name="time_minutes_short">%dm</string>
+
     <!-- Strings present during the login process -->
+    <string name="login_subscribe_rslideforreddit">Abonnér på /r/slidereddit?</string>
+    <string name="login_subscribe_rslideforreddit_desc">Vil du abonnere på /r/slidereddit for de seneste nyheder og for at rapportere problemer?</string>
+    <string name="login_sync_colors">Synkronisér farver nu?</string>
+    <string name="login_sync_colors_desc">Vil du synkronisere dine subreddit-farver nu? Det kan også gøres senere under Indstillinger → Subreddit-temaer</string>
+    <string name="login_authenticating">Slide godkender</string>
+    <string name="login_starting">Sætter tingene op!</string>
+    <string name="login_starting_desc">Det tager kun et øjeblik…</string>
+
     <!-- Over 18 prompt when visiting a NSFW subreddit -->
-    <!-- Subreddit color synchronization - https://redd.it/41054l -->
+    <string name="over18_title">/r/%1$s indeholder voksenindhold</string>
+    <string name="over18_desc">Er du over atten år og indstillet på at se indhold for voksne?</string>
+    <string name="over18_desc_loggedout">Log ind for at slå denne advarsel fra permanent</string>
+    <string name="over18_desc_loggedin">Du kan slå dette fra permanent under Indstillinger → Reddit-indstillinger → Vis NSFW-indhold</string>
+
+    <!-- Subreddit color synchronization - https://reddit.com/comments/41054l -->
+    <string name="color_sync_complete">Synkroniseringen er fuldført</string>
+    <plurals name="color_sync_colored">
+        <item quantity="one">%d subreddit blev farvelagt</item>
+        <item quantity="other">%d subreddits blev farvelagt</item>
+    </plurals>
+
     <!-- Discover section: find -->
+    <string name="discover_title">Opdag</string>
+    <string name="discover_search">Søgeord eller emne</string>
+    <string name="discover_popular">Populært</string>
+    <string name="discover_trending">Trending</string>
+
     <!-- Subreddit post notifications -->
+    <string name="sub_post_notifs_title">Vil du have besked om nye opslag i\n/r/%1$s?</string>
+    <string name="sub_post_notifs_title_settings">Vil du have besked om nye opslag?</string>
+    <string name="sub_post_notify">Giv besked</string>
+    <string name="sub_post_notifs_threshold">Pointgrænse</string>
+    <string name="sub_post_notifs_err">Du kan kun tilføje notifikationer til enkelte subreddits</string>
+    <string name="sub_post_notifs_settings_none">Ingen subreddits at give besked om</string>
+    <string name="sub_post_notifs_settings_search">Søg efter subnavn</string>
+    <string name="sub_post_notifs_notification_title">Nyt opslag i /r/%1$s</string>
+    <string name="sub_post_notifs_notification_btn">Stop med at følge /r/%1$s</string>
+    <string name="title_sub_post_notifs">Notifikationer om subreddit-opslag</string>
+
     <!-- Internal browser -->
+    <string name="internal_browser_extracting_error">Beklager, artiklen kunne ikke udtrækkes</string>
+    <string name="internal_browser_storecookies">Gem cookies fra websteder</string>
+    <string name="internal_browser_readermode">Læsetilstand</string>
+
     <!-- Live thread -->
+    <string name="livethread_loading_title">Indlæser livetråd…</string>
+    <string name="livethread_not_found">Livetråden blev ikke fundet</string>
+    <string name="livethread_recents_title">Livetråd: %1$s</string>
+
     <!-- Used when viewing media -->
+    <string name="mediaview_notif_title">Downloader billede…</string>
+    <string name="mediaview_notif_video">Downloader video…</string>
+    <string name="mediaview_notif_text">Download i gang</string>
+    <string name="mediaview_save">Gem %1$s</string>
+    <string name="mediaview_saving">Gemmer %1$s</string>
+
     <!-- Drafts -->
+    <string name="choose_draft">Vælg en kladde</string>
+    <string name="dialog_no_drafts">Ingen kladder endnu</string>
+    <string name="dialog_no_drafts_msg">Du kan tilføje en kladde ved at klikke på ikonet \'gem\' i redigeringslinjen!</string>
+    <string name="msg_save_draft">Beskeden er gemt som kladde</string>
+    <string name="manage_drafts">Administrer kladder</string>
+    <string name="really_delete_drafts">Vil du virkelig slette disse kladder?</string>
+
     <!-- Strings for widgets -->
+    <string name="widget_theme_dark">MØRKT</string>
+    <string name="widget_theme_light">LYST</string>
+    <string name="widget_theme_clear">GENNEMSIGTIGT</string>
+    <string name="widget_posttype_title">Opslagstype</string>
+    <string name="widget_posttype_list">LISTE</string>
+    <string name="widget_posttype_bigpic">STORT BILLEDE</string>
+    <string name="widget_posttype_compact">KOMPAKT</string>
+    <string name="widget_subname_hint">Subreddit-navn</string>
+    <string name="widget_visuals">Udseende</string>
+    <string name="widget_content">Indhold</string>
+    <string name="widget_loading">Indlæser…</string>
+    <string name="widget_creation_title">Ny widget</string>
+    <string name="shortcut_creation_title">Ny genvej</string>
+
     <!-- Strings for alert dialogs -->
+    <string name="force_change_subscription">Abonnementet kunne ikke ændres</string>
+    <string name="force_change_subscription_desc">Vil du alligevel ændre det lokalt?</string>
+    <string name="never_load_images">Indlæs ingen billeder</string>
+    <string name="load_low_quality">Indlæs billeder i lav kvalitet (maks. 320x320)</string>
+    <string name="load_medium_quality">Indlæs billeder i mellemkvalitet (maks. 640x640)</string>
+    <string name="load_high_quality">Indlæs billeder i høj kvalitet (maks. 1080x1080)</string>
+    <string name="choose_color_title">Vælg en farve</string>
+    <string name="enter_text_to_filter_click_enter_to_add">Skriv tekst for at søge, tryk på enter for at tilføje et filter</string>
+    <string name="mode_desktop_compact">Computer kompakt</string>
+    <string name="show_content_type_text_beside_links">Vis indholdstypens tekst ved siden af links</string>
+    <string name="comment_shadowbox">Kommentar-shadowbox</string>
+
     <!-- Sidebar strings (multis, flairs) -->
+    <string name="sidebar_select_flair">Vælg flair</string>
+    <string name="sidebar_select_flair_text">Angiv flair-tekst</string>
+    <string name="sidebar_findingmods">Finder moderatorer</string>
+    <string name="snackbar_flair_success">Flairen er angivet</string>
+    <string name="snackbar_flair_error">Fejl ved angivelse af flair, prøv igen snart</string>
+    <string name="sidebar_submods">Moderatorer for /r/%s</string>
+    <string name="sidebar_flair">Flair: %1$s</string>
+    <string name="sidebar_notfound">Ingen sidepanel fundet</string>
+    <plurals name="reorder_selected">
+        <item quantity="one">"%d valgt"</item>
+        <item quantity="other">"%d valgt"</item>
+    </plurals>
+
     <!--Filtering dialog -->
+    <string name="filter_title">Hvad vil du filtrere?</string>
+    <string name="filter_posts_sub">Opslag fra /r/%1$s</string>
+    <string name="filter_posts_user">Opslag af /u/%1$s</string>
+    <string name="filter_posts_urls">Opslag der linker til %1$s</string>
+    <string name="filter_open_externally">Åbn %s-links eksternt</string>
+    <string name="filter_posts_flair">Flair \"%1$s\" fra %2$s</string>
+    <string name="filter_btn">Filtrér</string>
+
     <!-- Caching -->
+    <string name="cache_no_comments_found">Ingen kommentarer fundet</string>
+    <string name="cache_no_comments_found_snackbar">Ingen cachelagrede kommentarer fundet</string>
+    <string name="cache_no_comments_found_message">Dette opslag har ingen cachelagrede kommentarer. For at cachelagre kommentarer fremover skal du klikke på menuen med tre prikker på hovedskærmen og vælge \'Cachelagr kommentarer\', eller opsætte automatisk cachelagring under fanen Offlineindhold i navigationsskuffen</string>
+    <string name="autocache_subreddits">Subreddits til automatisk cachelagring</string>
+    <string name="autocache_time">Tidspunkt for automatisk cachelagring</string>
+    <string name="cache_subreddits_now">Cachelagr subreddits nu</string>
+    <string name="cache_wifi_only">Cachelagr kun via Wi-Fi</string>
+    <string name="comments_depth">Dybde af kommentarer der cachelagres</string>
+    <string name="comments_count">Antal kommentarer der cachelagres</string>
+
     <!-- Saving location setting -->
+    <string name="set_save_location">Angiv placering til at gemme medier</string>
+    <string name="set_save_location_msg">Slides placering til at gemme medier er ikke angivet.</string>
+
     <!-- Report flow -->
+    <string name="btn_report">Rapportér</string>
+    <string name="report_post">Rapportér opslag</string>
+    <string name="report_comment">Rapportér kommentar</string>
+    <string name="report_loading">Indlæser årsager…</string>
+    <string name="report_sub_rules">Regler for /r/%s</string>
+    <string name="report_site_rules">Reddits regler</string>
+    <string name="report_another_reason">En anden årsag</string>
+    <string name="report_other">Andet</string>
+    <string name="input_reason_for_report">Årsag til rapporteringen</string>
+    <string name="msg_report_sent">Rapporten er sendt</string>
+
     <!-- Unsorted ¯\\_(ツ)_/¯ -->
+    <string name="comment_load_more_number_unknown">Indlæs flere kommentarer</string>
+    <string name="card_right_thumb">Højrestillet miniature</string>
+    <string name="setting_filter_subreddits">Subreddit-filtre</string>
+    <string name="subreddit_theme">Subreddit-tema</string>
+    <string name="dialog_choose_subreddits_to_edit">Vælg subreddits der skal redigeres</string>
+    <string name="dialog_color_sync_title">Farvesynkronisering</string>
+    <string name="dialog_color_sync_message">Dette forsøger at hente subredditens ‘nøglefarve’, som moderatorerne har angivet. Allerede farvelagte subreddits overskrives ikke.</string>
+    <string name="fab_hide">Skjul viste opslag</string>
+    <string name="fab_create">Opret nyt opslag</string>
+    <string name="fab_disabled">Deaktiveret</string>
+    <string name="fab_search">Søg i opslag</string>
+    <string name="handling_internal_browser">Intern browser</string>
+    <string name="handling_external_browser">Ekstern browser</string>
+    <string name="mode_list">Liste</string>
+    <string name="mode_centered">Kort med centreret billede</string>
+    <string name="mode_card">Kort</string>
+    <string name="mode_thumbnail">Miniature</string>
+    <string name="mode_no_thumbnails">Ingen miniature</string>
+    <string name="mode_big_thumbnails">Brede miniaturer</string>
+    <string name="mode_cropped">Beskåret stort billede</string>
+    <string name="mode_letterbox">Stort billede med bjælker</string>
+    <string name="mode_bigpic">Stort billede</string>
+    <string name="press_actionbar">Tryk på pilen for at vise handlingslinjen</string>
+    <string name="show_top_right">Vis øverst til højre</string>
+    <string name="show_bottom_right">Vis nederst til højre</string>
+    <string name="small_tag_disabled">Deaktiveret</string>
+    <string name="tap_actionbar">Langt tryk for handlingslinjen</string>
+    <string name="always_actionbar">Vis altid handlingslinjen</string>
+    <string name="sub_content_filter">Indholdsfilter for subreddit</string>
+    <string name="submission_share_reddit_url">Del kommentarer</string>
+    <string name="filter_content">Filtrér dette indhold</string>
+    <string name="content_to_show">Indhold der vises på %1$s</string>
+    <string name="save_for_offline_viewing">Gem opslag til offlinelæsning</string>
+    <string name="btn_collapse_children_all">Fold underordnede kommentarer sammen</string>
+    <string name="btn_open_content">Åbn indholdet</string>
+    <string name="enter_text_to_filter_click_enter_to_add_flair">Skriv tekst der skal filtreres (subreddit:flair_text), tryk på enter for at tilføje</string>
+    <plurals name="filter_count">
+        <item quantity="one">%1$d filter (maks. %2$d vises)</item>
+        <item quantity="other">%1$d filtre (maks. %2$d vises)</item>
+    </plurals>
+    <string name="filter_limit_reached">Viser de første %1$d af %2$d. Søg for at indsnævre resultaterne.</string>
+    <string name="datasave_always">Mobildata og Wi-Fi</string>
+    <string name="datasave_mobile">Mobildata</string>
+    <string name="never">Aldrig</string>
+    <string name="multi_column_force_full">Gennemtving fuld kommentarvisning</string>
+    <string name="submission_info_locked">Dette er et låst opslag. Du kan ikke kommentere.</string>
+    <string name="card_background_tint">Kortbaggrund</string>
+    <string name="subreddit_name_tint">Subreddit-navn</string>
+    <string name="login_failed_err_decline">Sørg for, at du ikke valgte ‘Afvis’ på den forrige skærm, og prøv igen om et minut</string>
+    <string name="login_unsupported_redirect_uri">Den konfigurerede omdirigerings-URI (%1$s) kan ikke modtages af en browser, så login kan ikke fuldføres. Brug i stedet WebView-login i appen, eller angiv en understøttet omdirigerings-URI i indstillingerne.</string>
+    <string name="login_unsupported_redirect_uri_title">Login mislykkedes</string>
+    <string name="login_failed_oauth_error_page">Login mislykkedes — Reddit returnerede en fejl i stedet for at fuldføre login. Kontrollér dit klient-ID og din omdirigerings-URI i indstillingerne.</string>
+    <string name="tutorial_swipe_navigation">Strygenavigation</string>
+    <string name="tutorial_swipe_description">Stryg fra venstre kant for at afslutte.\n\nDette gælder billeder, GIF\'er, album, indstillinger og mere!</string>
+    <string name="handling_browser">Webbrowser</string>
+    <string name="submit_replies_to_inbox">Send svar til indbakken</string>
+    <string name="btn_open_comments">Åbn kommentarer</string>
+    <string name="btn_preview">Forhåndsvisning</string>
+    <string name="default_comment_sort">Standardsortering af kommentarer</string>
+    <string name="content_deleted">[slettet]</string>
+    <string name="thread_continue">Fortsæt denne tråd</string>
+    <string name="type_selftext">Tekstopslag</string>
+    <string name="type_selftexts">Tekstopslag</string>
+    <string name="submission_unhide">Vis opslaget igen</string>
+    <string name="submission_info_unhidden">Opslaget vises igen</string>
+    <string name="msg_sent_success">Beskeden er sendt</string>
+    <string name="msg_sent_failure">Beskeden kunne ikke sendes</string>
+    <string name="msg_send_user_dne">Den bruger findes ikke</string>
+    <string name="editor_actions_quote_comment">Markér den tekst, du vil citere</string>
+    <string name="guest">Gæst</string>
+    <string name="album_slide_view">Glidende albumvisning</string>
+    <string name="album_grid">Albumgitter</string>
+    <string name="open_externally">Åbn eksternt</string>
+    <string name="vertical_album_view">Lodret albumvisning</string>
+    <string name="download_album">Download albummet</string>
+    <string name="download_gallery">Download galleriet</string>
+    <string name="compose_message">Skriv besked</string>
+    <string name="mark_all_as_read">Markér alle som læst</string>
+    <string name="clear_subreddit_history">Ryd subreddit-historikken</string>
+    <string name="clear_submission_history">Ryd opslagshistorikken</string>
+    <string name="alert_history_cleared">Historikken er ryddet!</string>
+    <string name="manage_offline_content">Administrer offlineindhold</string>
+    <string name="go_offline">Gå offline</string>
+    <string name="sidebar_edit_flair">Redigér din flair</string>
+    <string name="go_online_view_content">Gå online for at se dette indhold</string>
+    <string name="help">Hjælp</string>
+    <string name="upvote_percentage">Vis andel af opstemmer</string>
+    <string name="view_subreddits">Vis subreddits</string>
+    <string name="clear_saved_subreddits">Ryd alle gemte subreddits</string>
+    <string name="download_the_slide_video_player_plugin">Download Slide Video Player-tilføjelsen</string>
+    <string name="btn_suggest_title">Foreslå titel</string>
+    <string name="navigate_comments_since">Kommentarer nyere end…</string>
+    <string name="btn_offline">Skift til offlinetilstand</string>
+    <string name="discard_comment_title">Kassér kommentaren?</string>
+    <string name="comment_discard_msg">Vil du virkelig kassere din kommentar?</string>
+    <string name="backup_saved_downloads">Sikkerhedskopien er gemt i downloads</string>
+    <string name="really_remove_subreddit_title">Vil du virkelig fjerne denne subreddit?</string>
+    <string name="choose_sync_time">Vælg et synkroniseringstidspunkt</string>
+    <string name="account_suspended">Denne konto er suspenderet</string>
+    <string name="clear_all_sub_themes">Ryd alle subreddit-temaer?</string>
+    <string name="clear_all_sub_themes_msg">Du kan ikke fortryde denne handling</string>
+    <string name="title_not_found">Titlen blev ikke fundet</string>
+    <string name="really_delete_submission">Vil du virkelig slette dette opslag? Det kan ikke fortrydes</string>
+    <string name="comment_unstickied">Kommentaren er frigjort</string>
+    <string name="comment_stickied">Kommentaren er fastgjort</string>
+    <string name="comment_undistinguished">Fremhævningen af kommentaren er fjernet</string>
+    <string name="comment_distinguished">Kommentaren er fremhævet</string>
+    <string name="comment_removed">Kommentaren er fjernet</string>
+    <string name="set_nav_mode">Angiv navigationstilstand</string>
+    <string name="auto_hide_the_comment_nav_bar">Skjul kommentarnavigationslinjen automatisk</string>
+    <string name="rate_slide">Bedøm Slide</string>
+    <string name="edit_query">Redigér søgningen</string>
+    <string name="share_slide">Del Slide</string>
+    <string name="open_clipboard_reddit_link">Åbn Reddit-linket i udklipsholderen</string>
+    <string name="clipboard_no_reddit_link">Intet Reddit-link i udklipsholderen</string>
+    <string name="open_links_externally">Åbn altid denne vært eksternt</string>
+    <string name="hide_read_posts">Skjul læste opslag</string>
+    <string name="gallery_mode">Galleritilstand</string>
+    <string name="settings_gallery_grid">Vis galleriopslag som gitter</string>
+    <string name="gallery_grid_image">Galleribillede %1$d af %2$d</string>
+    <string name="gallery_grid_overflow">+%1$d</string>
+    <string name="friends_sort_error">/r/friends kan ikke sorteres</string>
+    <string name="shadowbox_comments_nolinks">Ingen links fundet i kommentarerne</string>
+    <string name="draw_undo">Fortryd</string>
+    <string name="empty_preview_text">Intet at se her ¯\\_(ツ)_/¯</string>
+    <string name="theme_red_shift">Rødforskydning</string>
+    <string name="view_sub_sidebar">Vis subens sidepanel</string>
+    <string name="mod_log">Modlog</string>
+    <string name="navigation_bar_vote_gestures">Stemmebevægelser på navigationslinjen</string>
+    <string name="nav_gestures_description">Stem op og ned ved at stryge på kommentarnavigationspilene</string>
+    <string name="subreddit_sidebar_progress">Henter sidepanelet…</string>
+    <string name="manage_your_subreddits">Administrer dine subreddits</string>
+    <string name="enlarge_links">Forstør links</string>
+    <string name="enlarge_links_warning">Kan gøre nogle linjer større end andre, men gør links lettere at ramme</string>
+    <string name="type_tumblr">Tumblr</string>
+    <string name="type_tumblrs">Tumblr-opslag</string>
+    <string name="type_nsfw_tumblr">NSFW-Tumblr</string>
+    <string name="submission_info_contest">Denne tråd er i konkurrencetilstand. Du kan ikke ændre sorteringen.</string>
+    <string name="sub_post_notifs_msg">Slide ser efter nye opslag, når den ser efter post (postnotifikationer skal være slået til)</string>
+    <string name="mod_ban_reason_required">Årsag er påkrævet</string>
+    <string name="settings_abbreviate_post_scores">Forkort opslagspoint (f.eks. 24.0k)</string>
+    <string name="settings_wide_depth_indicators">Brede dybdeindikatorer for kommentarer</string>
+    <string name="settings_link_reader_mode_title">Brug læsetilstand</string>
+    <string name="settings_link_reader_mode_description">Åbn alle links i læsetilstand. Browsertypen bruges, når du åbner fra læsetilstand.</string>
+    <string name="settings_link_reader_night">Forbind læsetilstand og nattilstand</string>
+    <string name="theme_pixel">Pixel</string>
+    <string name="save_images_to_subreddit_specific_subfolders">Gem billeder i undermapper pr. subreddit</string>
+    <string name="description_save_subfolders">Virker i opslags- og kommentarvisningen</string>
+    <string name="save_media_to_type_specific_subfolders">Gem medier i undermapper pr. type</string>
+    <string name="description_save_type_subfolders">Billeder ryger i \"images\", videoer og GIF\'er i \"videos\"</string>
+    <string name="show_image_download_button">Downloadgenvej</string>
+    <string name="description_image_download_button">Vis downloadknappen i billedfremviseren</string>
+    <string name="content_settings">Indholdsindstillinger</string>
+    <string name="setting_titleTop">Vis titlen over infolinjen</string>
+    <string name="setting_notification_piggybacking">Udnyt Reddit-notifikationer</string>
+    <string name="setting_notification_piggybacking_desc">Se kun efter post, når den officielle Reddit-app modtager en push-notifikation</string>
+    <string name="install_notif_piggyback">Installér den officielle Reddit-app for at udnytte notifikationer</string>
+    <string name="success_block_user">Brugeren er blokeret</string>
+    <string name="err_unblock_user">Fejl ved ophævelse af blokeringen</string>
+    <string name="success_unblock_user">Blokeringen af brugeren er ophævet</string>
+    <string name="settings_highlight_time_desc">Kræver, at \'Vis antal kommentarer siden sidste besøg\' er slået til under Indstillinger &gt; Opslagslayout</string>
+    <string name="settings_colored_time">Farvet tidsboble til nye kommentarer</string>
+    <string name="theme_deep">Dyb</string>
+    <string name="type_vreddit">Reddit-video</string>
+    <string name="authors_above">Forfattere ovenover</string>
+    <string name="btn_crosspost">Krydspost</string>
+    <string name="btn_reset_color">NULSTIL FARVE</string>
+    <string name="settings_shortlink_description">Links deles som \'https://reddit.com/comments/\'</string>
+    <string name="settings_shortlink">Del kort Reddit-link hvor det er muligt</string>
+    <string name="disable_replies_comment">Slå indbakkesvar på kommentaren fra</string>
+    <string name="replies_disabled_comment">Kommentarsvar er slået fra</string>
+    <string name="replies_enabled_comment">Kommentarsvar er slået til</string>
+    <string name="replies_switch_accounts">Skift til en anden konto</string>
+    <string name="search_settings">Søg i indstillingerne</string>
+    <string name="show_collapse_expand_nav_bar">Vis knappen til at folde sammen/ud i kommentarnavigationslinjen</string>
+    <string name="page_not_found">Siden blev ikke fundet</string>
+    <string name="page_does_not_exist">Den side, du bad om, findes ikke</string>
+    <string name="back_button_behavior_goto_first">Gå til den første subreddit</string>
+    <string name="settings_hide_post_awards">Skjul udmærkelser</string>
+    <string name="settings_hide_comment_awards">Skjul udmærkelser</string>
+    <string name="settings_title_markdown">Markdown</string>
+    <string name="settings_markdown_new_reddit">Markdown i nye Reddits stil</string>
+    <string name="settings_markdown_new_reddit_desc">Gengiver kodeblokke og formatering som nye Reddit (slået fra bruger gamle Reddits gengivelse)</string>
+    <string name="comment_render_other">Vis den anden gengivelse</string>
+    <string name="recover_post">Gendan opslaget</string>
+    <string name="recover_loading">Henter originalen fra arkivet…</string>
+    <string name="recover_post_failed">Dette opslag kunne ikke gendannes</string>
+    <string name="recover_comment">Gendan kommentaren</string>
+    <string name="recover_comment_failed">Denne kommentar kunne ikke gendannes</string>
+    <string name="markdown_preview_new_reddit">Gengivelse fra nye Reddit</string>
+    <string name="markdown_preview_old_reddit">Gengivelse fra gamle Reddit</string>
+    <string name="high_colorspace_images">Billeder med stort farverum</string>
+    <string name="description_high_colorspace">Indlæser billeder med fuldt farverum, hvilket kan give højere hukommelsesforbrug</string>
+    <string name="wide_color_gamut">Bredt farveområde</string>
+    <string name="description_wide_color_gamut">Gengiver mediefremviserne med bredt farveområde. Kan gøre farver blege på visse OLED-skærme</string>
+    <string name="comment_emote_animation">Animation af emotes i kommentarer</string>
+    <string name="description_comment_emote_animation">Bestemmer, om emotes der ikke er fra Giphy, animeres i kommentarer</string>
+    <string name="comment_image_size">Størrelse på billeder i kommentarer</string>
+    <string name="description_comment_image_size">Hvor store indlejrede billeder vises i kommentarer</string>
+    <string name="comment_image_size_small">Lille</string>
+    <string name="comment_image_size_medium">Mellem</string>
+    <string name="comment_image_size_large">Stor</string>
+    <string name="no_preview_image_longclick">Ingen lange tryk på forhåndsvisningsbilleder uanset indholdstype</string>
+    <string name="description_no_preview_image_longclick">Bestemmer, om lange tryk virker på forhåndsvisningsbilleder uanset indholdstype. Slår funktionen til hurtigt at se indhold fra.</string>
+    <string name="editor_btn_select_flair">Vælg flair</string>
+    <string name="submit_selected_flair">Valgt flair: %s</string>
+    <string name="mediaview_downloading">Downloader billede&#8230;</string>
+    <string name="err_save_image">Fejl ved lagring af billedet</string>
+    <string name="error_directory_not_selected">Ingen mappe valgt. Prøv igen.</string>
+
+    <!-- Backup Operations -->
+
+    <!-- Additional Backup Operations -->
+    <string name="select_backup_file">Vælg sikkerhedskopifil</string>
+
+    <string name="read_later">Læs senere</string>
+    <string name="mark_as_read">Markér som læst</string>
+
+    <string name="reddit_client_id">Reddit-klient-ID</string>
+    <string name="click_custom_client_id">Tryk for at angive et eget klient-ID</string>
+    <string name="client_id_scan_qr">Scan QR-kode</string>
+    <string name="client_id_scan_prompt">Scan en QR-kode, der indeholder dit Reddit-klient-ID</string>
+    <string name="camera_permission_denied">Kameratilladelse kræves for at scanne QR-koder</string>
+    <string name="client_id_invalid_length">Ugyldigt klient-ID: skal være præcis 22 tegn</string>
+
+    <!-- Notification permission strings -->
+    <string name="notifications_permission_title">Aktivér notifikationer</string>
+    <string name="notifications_permission_message">Slide har brug for notifikationstilladelse for at give dig besked om nye beskeder, opslag og andre nyheder fra Reddit. Du kan administrere notifikationsindstillingerne senere.</string>
+    <string name="notification_listener_permission_title">Aktivér notifikationsadgang</string>
+    <string name="notification_listener_permission_message">Slide har brug for notifikationsadgang for at opfange Reddits notifikationer og give en bedre oplevelse. Aktivér notifikationsadgang for Slide på den næste skærm.</string>
+
+
+    <string name="reddit_redirect_uri_override">Tilsidesættelse af Reddits omdirigerings-URI</string>
+    <string name="click_custom_redirect_uri">Tryk for at angive en egen omdirigerings-URI</string>
+    <string name="settings_reddit_redirect_uri_invalid">Ugyldig omdirigerings-URI: skal have formen skema://værtsnavn</string>
+    <string name="reddit_user_agent_override">Tilsidesættelse af Reddits user agent</string>
+    <string name="click_custom_user_agent">Tryk for at angive en egen user agent</string>
+    <string name="settings_enable_overrides">Aktivér tilsidesættelser</string>
+    <string name="settings_enable_overrides_desc">Brug dit eget klient-ID, omdirigerings-URI og user agent i stedet for appens standardværdier. Lad det være slået fra, medmindre du ved, at du har brug for det.</string>
+
+    <string name="settings_section_sound">Lyd</string>
+    <string name="settings_unmute_default">Slå lyden til på videoer som standard</string>
+
+    <string name="settings_subreddit_filter_prefix_matching">Aktivér præfiksmatchning for subreddit-filtre</string>
+    <string name="settings_subreddit_filter_prefix_matching_description">Præfikset er hele subreddit-navnet og mindst seks tegn. Eksempler: subredditen social blokerer socialanxiety. Subredditen pokemongo blokerer pokemongoraids.</string>
+
+    <string name="settings_filter_old_posts">Filtrér opslag ældre end</string>
+    <plurals name="settings_filter_old_posts_days">
+        <item quantity="one">%1$d dag</item>
+        <item quantity="other">%1$d dage</item>
+    </plurals>
+    <string name="settings_filter_old_posts_description">Anvendes ikke, når du ser en enkelt subreddit, eller når du sorterer efter Top eller Controversial</string>
+
+    <!-- Pause on audio focus ducking setting -->
+    <string name="settings_pause_on_duck_title">Sæt videoen på pause i stedet for at dæmpe</string>
+    <string name="settings_pause_on_duck_desc">Sætter videoer på pause, når andre apps afspiller lyd. Dæmpning betyder, at lydstyrken sænkes i stedet for, at videoen sættes på pause.</string>
+
+    <!-- Add this string resource for the play button content description -->
+    <string name="btn_play">Afspil</string>
+
+    <string name="multireddit_name_title">Navn på multiredditen</string>
+    <string name="multireddit_name_hint">Navn på multiredditen</string>
+    <string name="multireddit_err_empty_name">Navnet på multiredditen må ikke være tomt</string>
+    <string name="multireddit_err_no_valid_subs">Ingen gyldige subreddits valgt. Vælg mindst én.</string>
+    <string name="multireddit_progress_title">Opretter multireddit</string>
+    <string name="multireddit_progress_message">Vent, mens vi opretter din multireddit...</string>
+    <string name="multireddit_created_success">Multiredditen er oprettet</string>
+    <string name="multireddit_created_error">Multiredditen kunne ikke oprettes. Prøv igen.</string>
+    <string name="multireddit_json_error">Der opstod en fejl under klargøringen af dine multireddit-data</string>
+
+    <string name="settings_dialog_colored_border">Sæt en farvet kant om dialogbokse</string>
+    <string name="settings_dialog_colored_border_desc">Viser en tynd farvet kant om nogle dialogbokse.</string>
+
+    <string name="misc_err_sync_failed">Subreddits kunne ikke synkroniseres. Ingen abonnementer?</string>
+
+    <string name="mod_btn_distinguish">Fremhæv</string>
+    <string name="mod_btn_undistinguish">Fjern fremhævning</string>
+
+    <string name="nsfw_status_removed">NSFW-markeringen er fjernet</string>
+    <string name="nsfw_status_set">NSFW-markeringen er sat</string>
+
+    <string name="spoiler_status_removed">Spoilermarkeringen er fjernet</string>
+    <string name="spoiler_status_set">Spoilermarkeringen er sat</string>
+
+    <string name="submission_distinguished">Opslaget er fremhævet</string>
+    <string name="submission_distinguished_removed">Fremhævningen af opslaget er fjernet</string>
+
+    <string name="settings_general_hide_subreddit_tabs">Skjul faner for abonnerede subreddits</string>
+    <string name="settings_general_hide_subreddit_tabs_desc">Skjuler abonnerede subreddits som faner, men beholder navigationsknapperne</string>
+
+    <!-- Video playback speed control -->
+    <string name="video_speed">Hastighed</string>
+    <string name="video_speed_0_25x">0.25x</string>
+    <string name="video_speed_0_5x">0.5x</string>
+    <string name="video_speed_0_75x">0.75x</string>
+    <string name="video_speed_1x">Normal</string>
+    <string name="video_speed_1_25x">1.25x</string>
+    <string name="video_speed_1_5x">1.5x</string>
+    <string name="video_speed_2x">2x</string>
+    <string name="video_speed_control_content_desc">Kontrol af afspilningshastighed</string>
+    <string name="image_unavailable">Billedet er ikke tilgængeligt</string>
+    <string name="image_rotate_content_desc">Rotér billedet 90 grader med uret</string>
+    <string name="image_rotate_left_content_desc">Rotér billedet 90 grader mod uret</string>
+
+    <!-- Folder chooser dialog (formerly provided by afollestad material-dialogs commons) -->
+    <string name="md_error_label">Fejl</string>
+    <string name="md_storage_perm_error">Denne funktion kræver lagringstilladelse, som ikke er givet.</string>
+    <string name="md_choose_label">VÆLG</string>
+    <string name="new_folder">Ny mappe</string>
 </resources>

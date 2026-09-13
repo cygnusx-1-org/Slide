@@ -4,7 +4,52 @@
     <string name="general_confirm">Підтвердити</string>
     <string name="general_confirm_exit">Підтвердіть вихід</string>
     <string name="general_confirm_exit_msg">Ви дійсно бажаєте вийти?</string>
+    <string name="general_enable_shadowbox">Режим Shadowbox</string>
+    <string name="general_open_settings">Бічна панель</string>
+    <string name="general_sub_sync">Синхронізація підписок</string>
+
     <!-- Used when viewing a thread -->
+    <string name="submission_info_unsaved">Допис вилучено зі збережених</string>
+    <string name="submission_info_saved">Допис збережено</string>
+    <string name="submission_info_archived">Це архівний допис. Ви не зможете голосувати або коментувати.</string>
+    <string name="submission_post_saved">Допис збережено</string>
+    <string name="submission_info_hidden">Допис приховано назавжди</string>
+    <string name="submission_stickied">Закріплено</string>
+    <string name="submission_link_copy">Копіювати URL</string>
+    <string name="submission_link_share">Поділитися URL</string>
+    <string name="submission_share_title">Яким посиланням хочете поділитися?</string>
+    <string name="submission_share_reddit">URL Reddit</string>
+    <string name="submission_share_content">URL вмісту</string>
+    <string name="submission_hide">Приховати допис</string>
+    <string name="submission_report">Поскаржитися на допис</string>
+    <string name="submission_gild">Відкрити у браузері</string>
+    <string name="submission_save">Зберегти допис</string>
+    <string name="submission_save_image">Зберегти зображення</string>
+    <string name="submission_save_video">Зберегти відео</string>
+    <string name="submission_load_full">Завантажити всю гілку</string>
+    <string name="submission_np_link">Це посилання без участі. Будь ласка, не голосуйте і не коментуйте.</string>
+    <string name="submission_not_found">Ой, допис не знайдено!</string>
+    <string name="submission_not_found_msg">На жаль, цей допис не вдалося знайти</string>
+    <string name="submission_copy_text">Копіювати текст</string>
+    <string name="submission_comment_saved">Коментар збережено</string>
+    <string name="submission_comment_unsaved">Коментар вилучено зі збережених</string>
+    <string name="submission_share_permalink">Поділитися посиланням</string>
+    <string name="submission_comment_copied">Текст коментаря скопійовано</string>
+    <string name="submission_text_copied">Текст допису скопійовано</string>
+    <string name="submission_nocontent">Допис не містить вмісту</string>
+    <string name="submission_link_copied">Посилання скопійовано</string>
+    <string name="translate_with_google">Перекласти</string>
+    <string name="translate_no_app">Немає застосунку для перекладу</string>
+    <string name="read_aloud">Прочитати вголос</string>
+    <string name="read_aloud_unavailable">Синтез мовлення недоступний</string>
+    <string name="submission_removed">Допис вилучено</string>
+
+    <plurals name="new_messages">
+        <item quantity="one">%d нове повідомлення</item>
+        <item quantity="few">%d нові повідомлення</item>
+        <item quantity="many">%d нових повідомлень</item>
+        <item quantity="other">%d нових повідомлень</item>
+    </plurals>
     <plurals name="points">
         <item quantity="one">бал</item>
         <item quantity="few">бали</item>
@@ -17,10 +62,28 @@
         <item quantity="many">кмт</item>
         <item quantity="other">кмт</item>
     </plurals>
+
     <!-- Theme settings -->
     <string name="theme_light">Світла</string>
+    <string name="theme_dark">Темна</string>
+    <string name="theme_black">AMOLED чорна</string>
+    <string name="theme_dark_blue">Темно-синя</string>
+    <string name="night_mode">Нічний режим</string>
+    <string name="disabled">Вимкнено</string>
+    <string name="manual">Вручну</string>
+    <string name="automatic">Автоматично</string>
+    <string name="theme_default_color">Основний колір</string>
+    <string name="theme_subreddit_color">Змінити колір</string>
+    <string name="theme_accent_color">Акцентний колір</string>
+    <string name="theme_base">Базова тема</string>
+    <string name="theme_card">Картка</string>
+    <string name="theme_sepia">Сепія</string>
+    <string name="theme_amoled_contrast">AMOLED з контрастом</string>
     <string name="theme_night">Нічна тема</string>
+
     <!-- Font settings -->
+    <string name="font_size_comment">Розмір шрифту коментарів</string>
+    <string name="font_size_post">Розмір шрифту дописів</string>
     <string name="font_size_huge">Величезний</string>
     <string name="font_size_larger">Більший</string>
     <string name="font_size_large">Великий</string>
@@ -28,68 +91,1349 @@
     <string name="font_size_small">Малий</string>
     <string name="font_size_smaller">Менший</string>
     <string name="font_size_tiny">Мінімальний</string>
+
     <!-- For editing the submission card layout -->
+    <string name="card_hide_post_button">Кнопка "Приховати допис" на панелі дій</string>
+    <string name="card_tint_outside">Забарвлювати лише поза субредитом</string>
+    <string name="card_save_button">Кнопка "Зберегти допис" на панелі дій</string>
+
     <!-- Settings for Multi-column view -->
+    <string name="multi_column_title">Кілька колонок</string>
+    <string name="multi_column_portrait_count">Колонки у книжковій орієнтації</string>
+    <string name="multi_column_landscape_count">Колонки в альбомній орієнтації</string>
+    <string name="single_column_multi_window">Одна колонка в багатовіконному режимі</string>
+
     <!-- Drawer items (That's the one on the left) -->
     <string name="drawer_profile">Ти</string>
     <string name="drawer_support">Перейти на Pro</string>
     <string name="drawer_goto_profile">Перейти до профілю</string>
+    <string name="drawer_add_account">Додати обліковий запис</string>
+    <string name="drawer_hello">Вітаємо,</string>
+    <string name="drawer_search">Перейти до субредиту</string>
+    <!-- Subreddit name when submitting/crossposting: a single subreddit only (no multireddit, no dot). -->
+    <!-- Message recipient: a username or an /r/ or /u/ path. -->
+    <!-- Settings search field. The trailing space is intentional, so the value is quoted to preserve it. -->
+    <string name="drawer_moderation">Модерація</string>
+    <string name="drawer_offline">Slide працює в автономному режимі</string>
+    <string name="drawer_offline_retry">Спробувати перейти в онлайн-режим</string>
+    <string name="drawer_guest_mode">Переглядати як гість</string>
+
     <!-- Sidebar items (That's the one on the right) -->
+    <string name="sidebar_wiki">Вікі субредиту</string>
+    <string name="sidebar_mods">Модератори субредиту</string>
+
     <!-- User profile -->
+    <string name="profile_karma_total">Загальна карма</string>
+    <string name="profile_karma_link">Карма за дописи</string>
+    <string name="profile_karma_comment">Карма за коментарі</string>
+    <string name="profile_message">Особисте повідомлення</string>
+    <string name="profile_saved">Збережені</string>
+    <string name="local_saved">Збережені локально</string>
+    <string name="profile_read_later">Прочитати пізніше</string>
+    <string name="profile_upvoted">Схвалені</string>
+    <string name="profile_err_title">Користувача не знайдено</string>
+    <string name="profile_err_msg">Не вдалося отримати користувача Reddit</string>
+    <string name="profile_overview">Огляд</string>
+    <string name="profile_comments">Коментарі</string>
+    <string name="profile_submitted">Дописи</string>
+    <string name="profile_gilded">Нагороджені</string>
+    <string name="profile_downvoted">Несхвалені</string>
+    <string name="profile_hidden">Приховані</string>
+    <string name="profile_friend">Друг</string>
+    <string name="profile_add_friend">Додати в друзі</string>
+    <string name="profile_remove_friend">Вилучити з друзів</string>
+    <string name="profile_follow_user">Стежити</string>
+    <string name="profile_unfollow_user">Не стежити</string>
+    <string name="profile_add_user">Додати користувача</string>
+    <string name="profile_remove_user">Вилучити користувача</string>
+    <string name="profile_remove_account">Ви справді хочете вилучити цей обліковий запис?</string>
+    <string name="profile_remove">Видалити обліковий запис</string>
+    <string name="profile_history">Історія</string>
+    <string name="profile_share">Профіль %s</string>
+    <string name="profile_age">Redditor уже %s</string>
+    <string name="profile_tag">Мітка</string>
+    <string name="profile_tag_set">Встановити мітку для %s</string>
+    <string name="profile_tag_user">Позначити користувача</string>
+    <string name="profile_tag_user_existing">Користувач має мітку ‘%s’</string>
+    <string name="profile_btn_tag">Встановити мітку</string>
+    <string name="profile_btn_untag">Вилучити мітку</string>
+    <string name="profile_info">Інформація профілю</string>
+    <string name="profile_options">Параметри користувача</string>
+    <string name="profile_block_user">Заблокувати користувача</string>
+    <string name="profile_block_user_description">Блокує повідомлення, дописи та профіль користувача</string>
+    <string name="profile_unblock_user">Розблокувати користувача</string>
+    <string name="profile_unblock_user_description">Розблоковує повідомлення, дописи та профіль користувача</string>
+    <string name="profile_search">Пошук</string>
+    <string name="profile_search_title">Пошук у %1$s</string>
+    <string name="profile_search_hint">Шукати в заголовках і тексті…</string>
+    <string name="profile_search_no_results">Результатів не знайдено</string>
+    <string name="profile_search_clear">Очистити пошук</string>
+    <string name="profile_search_cleared">Пошук очищено</string>
+    <string name="profile_search_loading">Пошук…</string>
+    <string name="profile_search_progress">%1$d результатів · переглянуто %2$d</string>
+    <string name="profile_search_bypass_cache">Обійти кеш</string>
+
     <!-- Comment text options -->
+    <string name="comment_gild">Нагородити коментар</string>
+    <string name="comment_share">Поділитися коментарем</string>
+    <string name="comment_delete">Видалити коментар</string>
+    <string name="comment_delete_msg">Ви справді хочете видалити цей коментар? Цю дію не можна скасувати</string>
+    <string name="comment_delete_err">Ой, щось пішло не так</string>
+    <string name="comment_delete_err_msg">Хочете спробувати ще раз?</string>
+    <string name="comment_deleted">[видалено]</string>
+    <string name="comment_unsave">Вилучити зі збережених</string>
+    <string name="comment_loading_more">Завантаження інших коментарів…</string>
+    <string name="comment_permalink">Завантажити постійне посилання на коментар</string>
+    <string name="comment_parent">Показати батьківський коментар</string>
+    <string name="comment_video_play">Відтворити відео</string>
+
     <!-- Welcome view (first time setup) -->
+    <string name="welcome_start">Почати</string>
+    <string name="welcome_personalize">Персоналізувати</string>
+
     <!-- Sorting options -->
+    <string name="sorting_choose">Виберіть тип сортування</string>
+    <string name="sorting_time_choose">Виберіть часовий проміжок</string>
+    <string name="sorting_change_sorting">Режим сортування</string>
+    <string name="sorting_best">Найкращі</string>
+    <string name="sorting_top">Найпопулярніші</string>
+    <string name="sorting_hot">Гарячі</string>
+    <string name="sorting_ama">П&amp;В (AMA)</string>
+    <string name="sorting_new">Нові</string>
+    <string name="sorting_old">Старі</string>
+    <string name="sorting_controversial">Суперечливі</string>
+    <string name="sorting_rising">Зростаючі</string>
+    <string name="sorting_hour">година</string>
+    <string name="sorting_day">24 години</string>
+    <string name="sorting_week">тиждень</string>
+    <string name="sorting_month">місяць</string>
+    <string name="sorting_year">рік</string>
+    <string name="sorting_all">увесь час</string>
+    <string name="sorting_defaultfor">Типово для /r/%1$s</string>
+
     <!-- Editor (save/submit a post) actions -->
+    <string name="editor_url">URL</string>
+    <string name="editor_text">Текст</string>
+    <string name="editor_title_link">Вставити посилання</string>
+    <string name="editor_action_link">ВСТАВИТИ</string>
+    <string name="editor_title">Заголовок</string>
+    <string name="editor_err_msg">Спробуйте ще раз за кілька секунд</string>
+    <string name="editor_uploading_image">Завантаження зображення на Imgur</string>
+    <string name="editor_upload_image_title">Завантажити зображення</string>
+    <string name="editor_upload_reddit">Reddit (вбудоване зображення)</string>
+    <string name="editor_upload_imgur">Imgur (посилання)</string>
+    <string name="editor_uploading_reddit">Завантаження зображення на Reddit</string>
+    <string name="editor_reddit_upload_success">Зображення завантажено</string>
+    <string name="editor_reddit_upload_failed">Не вдалося завантажити зображення</string>
+    <string name="submit_image_host_imgur">Imgur</string>
+    <string name="submit_image_host_reddit">Reddit</string>
+    <string name="submit_change_img">Змінити зображення</string>
+    <string name="submit_select_gallery">Додати зображення</string>
+    <string name="submit_gallery_caption_hint">Підпис (необов\'язково)</string>
+    <string name="submit_gallery_count">Вибрано: %1$d</string>
+    <string name="submit_uploading_gallery">Завантаження зображення %1$d з %2$d</string>
+    <string name="editor_select_img">Вибрати зображення</string>
+    <string name="editor_hint_optional_body">Текст (необов\'язково)</string>
+    <string name="editor_submit">Створити допис</string>
+    <string name="editor_hint_subreddit">Субредит</string>
+    <string name="editor_finding_title">Пошук заголовка</string>
+    <string name="submit_findingflairs">Пошук флеїрів</string>
+    <string name="submit_flairchoices">Флеїри /r/%s</string>
+
+    <string name="edit_selftext">Редагувати текст допису</string>
+    <string name="delete_submission">Видалити допис</string>
+    <string name="set_submission_flair">Встановити флеїр допису</string>
+
     <!-- Editor buttons -->
+    <string name="editor_save_draft">Зберегти чернетку</string>
+    <string name="editor_chose_draft">Вибрати чернетку</string>
+    <string name="editor_insert_image">Вставити зображення</string>
+    <string name="editor_draw">Вставити зображення та малювати на ньому</string>
+    <string name="editor_link">Вставити посилання</string>
+    <string name="editor_bold">Жирний</string>
+    <string name="editor_italics">Курсив</string>
+    <string name="editor_quote">Цитата</string>
+    <string name="editor_author">Згадати автора</string>
+    <string name="editor_list">Маркований список</string>
+    <string name="editor_num_list">Нумерований список</string>
+    <string name="editor_size">Великий шрифт</string>
+    <string name="editor_strike">Закреслений</string>
+    <string name="editor_spoiler">Спойлер</string>
+
     <!-- General information / information without a category -->
+    <string name="info_photo_saved">Фото збережено</string>
+    <string name="gif_saved">GIF збережено</string>
+
     <!-- General errors / errors without a category -->
+    <string name="err_title">Ой, щось пішло не так!</string>
+    <string name="err_invalid_url">Недійсний URL</string>
+    <string name="err_loading_content">Помилка завантаження вмісту</string>
+    <string name="err_general">Ой, сталася помилка</string>
+    <string name="err_no_connection">Не вдалося зв\'язатися з Reddit. Хочете спробувати ще раз?</string>
+    <string name="err_no_connection_toast">Не вдалося зв\'язатися з Reddit. Спробуйте незабаром ще раз</string>
+    <string name="err_retry_later">Спробуйте ще раз за хвилину!</string>
+    <string name="err_authentication">Автентифікація не вдалася</string>
+    <string name="err_submit_restricted">Цей субредит обмежений</string>
+    <string name="err_submit_restricted_text">Вам не дозволено тут публікувати. Виберіть інший субредит</string>
+    <string name="err_crosspost_disallowed_text">/r/%s не дозволяє перехресні дописи. Виберіть інший субредит.</string>
+    <string name="err_crosspost_not_subscribed">Перед перехресним дописом потрібно підписатися на /r/%s.</string>
+    <string name="err_crosspost_sub_not_found">/r/%s не існує.</string>
+    <string name="crosspost_flair_required_short">Потрібен флеїр — виберіть його перед публікацією.</string>
+    <string name="error_video_not_found">Відео не знайдено</string>
+    <string name="error_video_message">Під час завантаження цього відео сталася помилка</string>
+    <string name="error_album_not_found">Альбом не знайдено</string>
+    <string name="error_album_not_found_text">Бажаєте відкрити посилання у браузері?</string>
+    <string name="err_comment_post_nosave_message">\nСпробуйте ще раз за хвилину</string>
+    <string name="err_could_not_find_content_msg">Reddit не зміг знайти запитаний вміст</string>
+    <string name="err_refused_request_msg">Reddit відхилив запит. Бажаєте спробувати підключитися до Reddit знову?</string>
+    <string name="err_color_sync_login">Увійдіть, щоб скористатися синхронізацією кольорів</string>
+    <string name="err_something_wrong">Ой, щось пішло не так</string>
+    <string name="err_couldnt_save_choose_new">Slide не зміг зберегти у вибрану теку. Бажаєте вибрати нове місце збереження?</string>
+    <string name="err_share_image">Помилка під час надсилання зображення</string>
+    <string name="err_file_not_found">Файл не знайдено</string>
+    <string name="err_file_not_found_msg">Не вдалося знайти вибраний файл. Переконайтеся, що він існує і що Slide має доступ до цього файлу чи теки</string>
+    <string name="err_comment_post">Ой, не вдалося опублікувати цей коментар!</string>
+    <string name="err_comment_post_reason">Причина: %1$s</string>
+    <string name="err_comment_post_message">\n\nВаше повідомлення збережено як чернетку. Спробуйте пізніше.</string>
+    <string name="err_connection_failed_msg">Не вдалося підключитися до Reddit. Перевірте інтернет-з\'єднання і спробуйте ще раз або перейдіть в автономний режим.</string>
+    <string name="err_block_user">Помилка блокування користувача. Можливо, ви нещодавно його розблокували?</string>
+
     <!-- Gif -->
+    <string name="gif_err_title">GIF не знайдено</string>
+    <string name="gif_err_msg">Під час завантаження цього GIF сталася помилка. Відкрийте GIF знову і спробуйте ще раз.</string>
+    <string name="gif_load_failed">Не вдалося завантажити GIF</string>
+    <string name="gif_download_failed">Не вдалося звантажити GIF</string>
+
     <!-- Multireddits -->
+    <string name="multireddit_err_title">Мультиредитів (поки) немає!</string>
+    <string name="multireddit_err_msg">Бажаєте створити новий мультиредит?</string>
+    <string name="public_multireddit_err_title">Мультиредитів немає!</string>
+    <string name="public_multireddit_err_msg">У цього користувача немає публічних мультиредитів.</string>
+    <string name="multireddit_title_empty">Заголовок не може бути порожнім</string>
+    <string name="multireddit_title_empty_msg">Введіть назву для свого мультиредиту</string>
+    <string name="multireddit_no_subs">Жодного субредиту не додано</string>
+    <string name="multireddit_save_err">Мультиредит із такою назвою вже існує, або тут немає місця для більшої кількості субредитів</string>
+    <string name="multireddit_no_subs_msg">Додайте кілька субредитів, натиснувши кнопку +!</string>
+    <string name="multireddit_selector">Виберіть субредити для додавання</string>
+    <string name="multireddit_create_hint">Назва мультиредиту</string>
+    <string name="multireddit_invalid_name">Недійсна назва мультиредиту</string>
+    <string name="multireddit_invalid_name_msg">Назви мультиредитів можуть містити лише літери, цифри та символи підкреслення</string>
+    <string name="multi_add_to">Додати /r/%s до</string>
+    <string name="multi_subreddit_added">Субредит додано до /m/%1$s</string>
+    <string name="multi_error">Сталася помилка, спробуйте пізніше</string>
+    <string name="btn_import_multi">Імпортувати мультиредит</string>
+    <string name="multi_submit_which_sub">У який суб хочете опублікувати?</string>
+    <string name="multi_saved_successfully">Успішно збережено</string>
+    <string name="delete_multireddit_title">Ви справді хочете видалити /m/%1$s?</string>
+    <string name="multi_save_option">Бажаєте зберегти цей мультиредит?</string>
+
     <!-- Content types -->
+    <string name="type_nsfw_img">NSFW-зображення</string>
+    <string name="type_nsfw_gif">NSFW-GIF</string>
+    <string name="type_reddit">Посилання Reddit</string>
+    <string name="type_link">Посилання</string>
+    <string name="type_nsfw_link">NSFW-посилання</string>
+    <string name="type_gif">GIF</string>
+    <string name="type_title_only">Допис лише із заголовком</string>
+    <string name="type_album">Альбом</string>
+    <string name="type_xkcd">XKCD</string>
+    <string name="type_nsfw_album">NSFW-альбом</string>
+    <string name="type_nsfw_gallery">NSFW-галерея</string>
+    <string name="type_nsfw_albums">NSFW-альбоми</string>
+    <string name="type_nsfw_galleries">NSFW-галереї</string>
+    <string name="type_nsfw_gifs">NSFW-GIF</string>
+    <string name="type_nsfw_images">NSFW-зображення</string>
+    <string name="type_nsfw_links">NSFW-посилання</string>
+    <string name="type_nsfw_selftexts">NSFW-текстові дописи</string>
+    <string name="type_nsfw_tumblrs">NSFW-дописи Tumblr</string>
+    <string name="type_nsfw_videos">NSFW-відео</string>
+    <string name="type_gallery">Галерея</string>
+    <string name="type_galleries">Галереї</string>
+    <string name="type_img">Зображення</string>
+    <string name="type_videos">Відео</string>
+    <string name="type_nsfw_video">NSFW-відео</string>
+    <string name="type_imgur">Вміст Imgur</string>
+    <string name="type_nsfw_imgur">NSFW-вміст Imgur</string>
+    <string name="type_nsfw_xkcd">NSFW-XKCD</string>
+    <string name="type_nsfw_deviantart">NSFW-DeviantArt</string>
+    <string name="type_nsfw_title_only">NSFW-допис лише із заголовком</string>
+    <string name="type_nsfw_reddit">NSFW-посилання Reddit</string>
+    <string name="type_nsfw_selftext">NSFW-текстовий допис</string>
+    <string name="type_spoiler">Спойлер</string>
+    <string name="type_nsfw_spoiler">NSFW-спойлер</string>
+    <string name="type_nsfw_streamable">NSFW-Streamable</string>
+    <string name="type_external">Зовнішнє</string>
+
     <!-- Content types plural (Content filters) -->
+    <string name="type_gifs">GIF</string>
+    <string name="type_albums">Альбоми</string>
+    <string name="type_links">Посилання</string>
+
     <!-- Inbox/mail -->
+    <string name="mail_tab_inbox">Вхідні</string>
+    <string name="mail_tab_unread">Непрочитані</string>
+    <string name="mail_tab_messages">Повідомлення</string>
+    <string name="mail_tab_sent">Надіслані</string>
+    <string name="mail_tab_mentions">Згадки</string>
+    <string name="mail_author_wrote">%1$s написав(-ла)…</string>
+    <string name="mail_hint_recipient">Одержувач</string>
+    <string name="mail_hint_subject">Тема</string>
+    <string name="mail_hint_body">Текст</string>
+    <string name="mail_send_to">Надіслати повідомлення до %1$s</string>
+    <string name="mail_send">Надіслати повідомлення</string>
+    <string name="mail_notification_msg_from">Нове повідомлення від %1$s</string>
+    <string name="mail_notification_msg_via">Нове повідомлення через /r/%1$s</string>
+    <string name="mod_mail_notification_msg">Новий modmail від %1$s</string>
+    <string name="mail_reply_to">Відповісти %1$s</string>
+    <string name="mail_notification_author">%1$s від %2$s</string>
+    <string name="mail_notification_subreddit">%1$s через /r/%2$s</string>
+    <string name="mail_theirs">Переглянути їхнє повідомлення</string>
+    <string name="mail_re">відп: %1$s</string>
+    <string name="mail_mark_read">Позначити прочитаним</string>
+    <string name="mail_view_full_thread">Переглянути всю гілку</string>
+    <string name="mail_message_copied">Повідомлення скопійовано</string>
+    <plurals name="mail_notification_title">
+        <item quantity="one">У вас %d нове повідомлення!</item>
+        <item quantity="few">У вас %d нові повідомлення!</item>
+        <item quantity="many">У вас %d нових повідомлень!</item>
+        <item quantity="other">У вас %d нових повідомлень!</item>
+    </plurals>
+    <plurals name="mod_mail_notification_title">
+        <item quantity="one">У вас %d новий modmail!</item>
+        <item quantity="few">У вас %d нові modmail!</item>
+        <item quantity="many">У вас %d нових modmail!</item>
+        <item quantity="other">У вас %d нових modmail!</item>
+    </plurals>
+
     <!-- Miscellaneous/generic things that don't have a category or strings that are used for multiple categories -->
+    <string name="misc_err">Помилка</string>
+    <string name="misc_none">Немає</string>
+    <string name="misc_retry">Хочете спробувати ще раз?</string>
+    <string name="misc_retry_draft">Хочете спробувати ще раз? \nЧернетку вашого допису збережено</string>
+    <string name="misc_score_hidden">рейтинг приховано</string>
+    <string name="misc_subscribed">Підписано</string>
+    <string name="misc_continue">Продовжити</string>
+    <string name="misc_unsubscribed">Підписку скасовано</string>
+    <string name="misc_no_more_posts">Більше дописів немає!</string>
+    <string name="misc_please_wait">Зачекайте…</string>
+    <string name="misc_img_share">Поділитися зображенням через</string>
+    <string name="misc_copy_text">Копіювати текст</string>
+    <string name="misc_maybe_later">Можливо, пізніше</string>
+    <string name="misc_try_again">Спробувати ще раз</string>
+    <string name="misc_please_try_again">Спробуйте ще раз</string>
+    <string name="misc_please_try_again_soon">Спробуйте незабаром ще раз</string>
+    <string name="misc_setting_up">Налаштовуємо дещо…</string>
+    <string name="misc_setting_up_message">Не залишайте цей екран. Це не забере багато часу!</string>
+    <string name="misc_more_info">Докладніше</string>
+    <string name="misc_captcha_incorrect">Неправильна капча, спробуйте ще раз</string>
+
     <!-- Goto User -->
+    <string name="user_enter">Введіть ім\'я користувача</string>
+    <string name="user_btn_goto">Перейти до користувача</string>
+    <string name="user_btn_gotomultis">Перейти до мультиредитів користувача</string>
+
+    <!-- Saved users list -->
+    <string name="users_empty">Немає збережених користувачів</string>
+    <string name="users_btn_add">Додати користувача</string>
+    <string name="users_btn_remove">Вилучити користувача</string>
+    <string name="users_added">%s додано до Користувачів</string>
+    <string name="users_removed">%s вилучено з Користувачів</string>
+    <string name="users_already_added">%s уже є серед Користувачів</string>
+    <string name="users_copied">%s скопійовано</string>
+    <string name="users_checking">Перевірка імені користувача</string>
+    <string name="users_invalid_title">Не вдалося додати користувача</string>
+    <string name="users_invalid">%s не є користувачем Reddit</string>
+    <string name="users_check_failed">Не вдалося перевірити, чи існує %s. Перевірте з\'єднання і спробуйте ще раз.</string>
+    <string name="users_friend_added">%s додано до друзів</string>
+    <string name="users_friend_removed">%s вилучено з друзів</string>
+    <string name="users_friend_failed">Не вдалося оновити статус дружби для %s</string>
+    <string name="btn_fab_add_user">Додати користувача</string>
+
     <!-- Buttons -->
+    <string name="btn_add">Додати</string>
+    <string name="btn_cancel">Скасувати</string>
+    <string name="btn_close">Закрити</string>
+    <string name="btn_toggle">Перемкнути</string>
+    <string name="btn_open">Відкрити</string>
+    <string name="btn_discard">Відхилити</string>
+    <string name="btn_done">Готово</string>
+    <string name="btn_go_back">Назад</string>
+    <string name="btn_no">Ні</string>
+    <string name="btn_ok">OK</string>
+    <string name="btn_remove">Вилучити</string>
+    <string name="btn_reply">Відповісти</string>
+    <string name="btn_reset">Скинути</string>
+    <string name="btn_retry">Повторити</string>
+    <string name="btn_save">Зберегти</string>
+    <string name="btn_submit">Надіслати</string>
+    <string name="btn_undo">Скасувати</string>
+    <string name="btn_yes">Так</string>
+    <string name="btn_refresh">Оновити</string>
+    <string name="btn_cache">Кешувати коментарі</string>
+    <string name="btn_delete">Видалити</string>
+    <string name="btn_time">Часовий проміжок</string>
+    <string name="btn_message">Повідомлення</string>
+    <string name="btn_select">Вибрати</string>
+    <string name="btn_view">ПЕРЕГЛЯНУТИ</string>
+    <string name="btn_changelog">Журнал змін</string>
+    <string name="btn_set">ВСТАНОВИТИ</string>
+    <string name="btn_create">Створити</string>
+    <string name="btn_new">Новий</string>
+
     <!-- Buttons Content labels for TalkBack accessibility-->
+    <string name="btn_edit">Редагувати</string>
+    <string name="btn_hide">Приховати</string>
+    <string name="btn_mod">Модерувати</string>
+    <string name="btn_upvote">Схвалити</string>
+    <string name="btn_downvote">Несхвалити</string>
+    <string name="btn_menu">Меню</string>
+    <string name="img_score">Рейтинг</string>
+    <string name="img_comments">Коментарі</string>
+    <string name="btn_expand">Розгорнути</string>
+    <string name="btn_nav_up">Перейти вгору</string>
+    <string name="btn_nav_mode">Встановити режим навігації</string>
+    <string name="btn_nav_collapse_expand">Згорнути/розгорнути</string>
+    <string name="btn_nav_down">Перейти вниз</string>
+    <string name="btn_fab_reply">Відповісти</string>
+    <string name="btn_fab_post">Створити новий допис</string>
+    <string name="btn_fab_hide">Приховати переглянуті дописи</string>
+    <string name="btn_fab_search">Шукати дописи</string>
+
     <!-- Buttons Content labels for TalkBack accessibility active states-->
+    <string name="btn_upvoted">Схвалено</string>
+    <string name="btn_downvoted">Несхвалено</string>
+    <string name="btn_unsave">Вилучити зі збережених</string>
+    <string name="btn_collapse">Згорнути</string>
+
     <!-- Backup -->
+    <string name="backup_success">Резервну копію створено!</string>
+    <string name="backup_restoring">Відновлення ваших налаштувань</string>
+    <string name="backup_backing_up">Створення резервної копії ваших налаштувань</string>
+    <string name="backup_restore_settings">Налаштування успішно відновлено!</string>
+    <string name="backup_restarting">Застосунок зараз перезапуститься</string>
+    <string name="backup_info">Slide створює резервну копію всіх ваших даних у приватній теці Google Drive. Ви можете синхронізувати ці дані між пристроями (або на той самий пристрій), і ваші дані ніколи не проходять через сторонні сервіси чи сервери. Резервні копії шифруються паролем, який ви обираєте.</string>
+    <string name="backup_btn">Резервне копіювання</string>
+    <string name="backup_btn_restore">Відновити</string>
+    <string name="backup_btn_file">Резервна копія у zip</string>
+    <string name="backup_btn_restore_file">Відновити з файлу або zip</string>
+    <string name="backup_confirm">Ви впевнені, що хочете створити резервну копію? Попередню копію буде перезаписано</string>
+    <string name="backup_restore_confirm">Ви впевнені, що хочете відновити? Поточні налаштування буде перезаписано</string>
+    <string name="backup_failed_msg">Не вдалося створити резервну копію. Спробуйте пізніше.</string>
+    <string name="backup_restore_failed_msg">Не вдалося відновити. Переконайтеся, що є дійсна резервна копія, і спробуйте ще раз.</string>
+    <string name="backup_local_title">Локальна резервна копія</string>
+    <string name="backup_drive_title">Резервна копія на Google Drive</string>
+    <string name="backup_button">Створити резервну копію</string>
+    <string name="restore_button">Відновити з резервної копії</string>
+    <string name="backup_question">Створити резервну копію?</string>
+    <string name="backup_complete">Резервне копіювання завершено!</string>
+    <string name="err_not_valid_backup">Не є дійсним файлом резервної копії Slide</string>
+    <string name="err_not_valid_backup_msg">Вибраний файл не є дійсним файлом резервної копії Slide</string>
+    <string name="backup_password_title">Встановіть пароль резервної копії</string>
+    <string name="backup_password_message">Ваша резервна копія містить облікові дані вашого акаунта Reddit, тому вона шифрується. Виберіть пароль довжиною від %1$d до %2$d символів. Він знадобиться для відновлення, і його неможливо відновити.</string>
+    <string name="backup_password_hint">Пароль</string>
+    <string name="restore_password_title">Введіть пароль резервної копії</string>
+    <string name="restore_password_message">Введіть пароль, яким було зашифровано цю резервну копію.</string>
+    <string name="restore_password_wrong">Неправильний пароль. Спробуйте ще раз.</string>
+    <string name="drive_authorization_failed">Не вдалося авторизуватися в Google Drive</string>
+    <string name="drive_authorization_failed_msg">Slide не зміг отримати доступ до своєї приватної теки на Google Drive. Спробуйте ще раз.</string>
+    <string name="drive_authorization_denied">Потрібен доступ до Google Drive</string>
+    <string name="drive_authorization_denied_msg">Slide потрібен доступ до своєї приватної теки на Google Drive, щоб створити резервну копію або відновити ваші налаштування.</string>
+
     <!-- Vote -->
+    <string name="vote_err">Помилка під час голосування!</string>
+    <string name="vote_err_login">Щоб голосувати, потрібно увійти!</string>
+    <string name="vote_removed">Голос вилучено</string>
+
+    <!-- Subscribing -->
+    <string name="subscribe_err_login">Щоб підписатися, потрібно увійти!</string>
+
     <!-- Moderation tools -->
+    <string name="mod_mail">Modmail</string>
+    <string name="mod_mail_unread">Непрочитаний modmail</string>
+    <string name="modmail_internal_note">(внутрішня примітка)</string>
+    <string name="modmail_scope_missing">Modmail потребує повторної автентифікації. Увійдіть знову (Налаштування &#8594; акаунт), щоб увімкнути її.</string>
+    <string name="modmail_reply_sent">Відповідь надіслано!</string>
+    <string name="modmail_reply_failed">Не вдалося надіслати! Відповідь збережено як чернетку.</string>
+    <plurals name="modmail_message_count">
+        <item quantity="one">%d повідомлення</item>
+        <item quantity="few">%d повідомлення</item>
+        <item quantity="many">%d повідомлень</item>
+        <item quantity="other">%d повідомлень</item>
+    </plurals>
+    <string name="mod_modqueue">Черга модерації</string>
+    <string name="mod_unmoderated">Немодероване</string>
+    <string name="mod_reports">Скарги</string>
+    <string name="mod_approved">Допис схвалено</string>
+    <string name="mod_flair_hint">Текст флеїра</string>
+    <string name="mod_no_reports">Скарг немає</string>
+    <string name="mod_btn_approve">Схвалити</string>
+    <string name="mod_btn_submission_flair">Встановити флеїр</string>
+    <string name="mod_btn_submission_flair_text">Встановити текст флеїра</string>
+    <string name="mod_btn_mark_nsfw">Позначити як NSFW</string>
+    <string name="mod_btn_unmark_nsfw">Зняти позначку NSFW</string>
+    <string name="mod_btn_mark_spoiler">Позначити як спойлер</string>
+    <string name="mod_btn_unmark_spoiler">Зняти позначку спойлера</string>
+    <string name="mod_btn_lock_thread">Заблокувати гілку</string>
+    <string name="mod_btn_unlock_thread">Розблокувати гілку</string>
+    <string name="mod_btn_lock_comment">Заблокувати коментар</string>
+    <string name="mod_btn_unlock_comment">Розблокувати коментар</string>
+    <string name="mod_locked">Заблоковано</string>
+    <string name="mod_unlocked">Розблоковано</string>
+    <string name="mod_btn_pin">Закріпити</string>
+    <string name="mod_btn_unpin">Відкріпити</string>
+    <string name="mod_btn_remove">Вилучити</string>
+    <string name="mod_btn_remove_reason">Вилучити з причиною</string>
+    <string name="mod_btn_spam">Позначити як спам</string>
+    <string name="mod_btn_author">Профіль автора</string>
+    <string name="mod_btn_ban">Заблокувати</string>
+    <string name="mod_ban_user">Заблокувати користувача</string>
+    <string name="mod_ban_reauth">Щоб блокувати користувачів, Slide має повторно вас автентифікувати</string>
+    <string name="mod_ban_reauth_question">Бажаєте увійти до Slide знову зараз?</string>
+    <string name="mod_ban_success">Користувача заблоковано!</string>
+    <string name="mod_ban_fail">Помилка блокування користувача</string>
+    <string name="mod_ban_reason">Причина блокування</string>
+    <string name="mod_ban_note_mod">Примітка модератора (необов\'язково)</string>
+    <string name="mod_ban_note_user">Повідомлення користувачу (необов\'язково)</string>
+    <string name="mod_ban_time">Термін блокування - залиште порожнім для постійного</string>
+    <string name="mod_ban_title">Заблокувати /u/%1$s</string>
+    <string name="mod_remove_template">Вилучено через\u0020</string>
+    <string name="mod_remove_hint">Причина вилучення</string>
+    <string name="mod_remove_title">Яка причина вилучення цього допису?</string>
+    <string name="mod_remove_insert_draft">Вставити чернетку</string>
+    <string name="mod_flair_none_found">Для цього субредиту флеїрів не знайдено</string>
+    <string name="mod_distinguish">Виділити</string>
+    <string name="mod_undistinguish">Зняти виділення</string>
+    <string name="mod_sticky">Закріпити</string>
+    <string name="mod_unsticky">Відкріпити</string>
+    <string name="reauth_complete">Повторну автентифікацію завершено!</string>
+    <string name="reauth_in_progress">Повторна автентифікація…</string>
+    <string name="reauth_failed">Не вдалося повторно автентифікуватися</string>
+
+    <plurals name="mod_btn_reports">
+        <item quantity="one">Переглянути %d скаргу</item>
+        <item quantity="few">Переглянути %d скарги</item>
+        <item quantity="many">Переглянути %d скарг</item>
+        <item quantity="other">Переглянути %d скарг</item>
+    </plurals>
+
     <!-- If he did -->
+    <string name="really_pin_submission_message">Допис закріплено</string>
+    <string name="really_unpin_submission_message">Допис відкріплено</string>
+
     <!-- Subreddit Wiki -->
+    <string name="wiki_err">Вікі не знайдено</string>
+    <string name="wiki_err_msg">У цього субредиту немає вікі!</string>
+
     <!-- Subreddits -->
+    <string name="subreddit_subscribers_string">%1$s підписників</string>
+    <string name="subreddit_active_users_string_new">%1$s зараз тут</string>
+    <string name="subreddit_err_msg">Субредит %1$s не знайдено. Можливо, назву написано з помилкою?</string>
+    <string name="subreddit_err_msg_new">Субредит %1$s не знайдено. Можливо, назву написано з помилкою, або у вас немає доступу до нього.</string>
+    <string name="subreddit_err">Субредит не знайдено</string>
+
     <!-- Search -->
+    <string name="search_comments_hint">Шукати в коментарях</string>
+    <string name="search_goto">Перейти до</string>
+    <string name="search_title">Пошук</string>
+    <string name="search_msg">Що ви шукаєте?</string>
+    <string name="search_all">Шукати скрізь</string>
+    <string name="search_subreddit">Шукати в %1$s</string>
+    <string name="search_relevance">Релевантність</string>
+    <string name="search_top">Найпопулярніші</string>
+    <string name="search_new">Нові</string>
+    <string name="search_comments">Коментарі</string>
+    <string name="no_posts_found">Дописів не знайдено</string>
+
     <!-- Settings -->
+    <string name="settings_reddit_prefs">Налаштування Reddit</string>
+    <string name="settings_accent_title">Змінити акцентний колір</string>
+    <string name="settings_delete_sub_settings">Ви справді хочете видалити налаштування для %1$s?</string>
+    <string name="settings_layout_default">Макет допису</string>
+    <string name="settings_link_album">Внутрішній перегляд альбомів</string>
+    <string name="settings_link_peek">Швидкий перегляд вмісту</string>
+    <string name="settings_link_peek_description">Вимикає довге натискання на зображенні попереднього перегляду</string>
+    <string name="settings_link_gif">Внутрішній перегляд GIF</string>
+    <string name="settings_link_hqgif">Відео Gfycat високої якості</string>
+    <string name="settings_link_handling">Обробка посилань</string>
+    <string name="settings_link_image">Внутрішній перегляд зображень</string>
+    <string name="settings_mail_check">Перевіряти нові повідомлення</string>
+    <string name="settings_mail_info">Що вища частота, то більше заряду батареї Slide може витрачати у фоновому режимі!</string>
+    <string name="settings_main_color_title">Змінити основний колір</string>
+    <string name="settings_notification">Перевіряти нові повідомлення кожні %1$s</string>
+    <string name="settings_notification_newline">Перевіряти нові повідомлення кожні\n%1$s</string>
+    <string name="settings_notification_short">Перевіряти кожні %1$s</string>
+    <string name="settings_disable_nsfw_photo">Приховувати всі NSFW-фото</string>
+    <string name="settings_store_history">Зберігати історію</string>
+    <string name="settings_store_nsfw_history">Зберігати історію NSFW</string>
+    <string name="settings_commentnav">Переходити між батьківськими коментарями</string>
+    <string name="share_link">Поділитися посиланням</string>
+    <string name="posts_hidden_forever">Дописи приховано назавжди</string>
+    <string name="share_image">Поділитися зображенням</string>
+    <string name="settings_libs">Бібліотеки з відкритим кодом</string>
+    <string name="settings_about_libs">Про бібліотеки</string>
+    <string name="settings_privacy">Політика конфіденційності</string>
+    <string name="settings_bugs">Повідомити про помилки</string>
+    <string name="settings_changelog">Переглянути журнал змін</string>
+    <string name="settings_fabclear_msg">Натискання кнопки очищення вилучить дописи з поточного перегляду, але не приховає їх назавжди. \nДовге натискання кнопки приховає дописи назавжди!</string>
+    <string name="settings_fabclear">Дії очищення плаваючої кнопки</string>
+    <string name="settings_notifdisabled">Сповіщення вимкнено</string>
+    <string name="settings_colored_navigation_bar">Кольорова панель навігації</string>
+    <string name="settings_always_black_statusbar">Чорна панель стану (панель сповіщень)</string>
+    <string name="settings_colored_icon">Кольорова піктограма застосунку (експериментально)</string>
+    <string name="settings_colored_icon_desc">Може знадобитися перезапуск телефона. Це також вилучить піктограму з головного екрана.</string>
+    <string name="settings_filter_domain">Фільтри доменів</string>
+    <string name="settings_filter_selfttext">Фільтри тексту допису</string>
+    <string name="settings_filter_title">Фільтри заголовків</string>
+    <string name="settings_prefs_reddit">Переглянути всі налаштування reddit.com</string>
+    <string name="settings_font_post">Шрифт заголовка допису</string>
+    <string name="settings_font_comment">Шрифт коментарів</string>
+    <string name="settings_comment_crop">Обрізати головне зображення у перегляді коментарів</string>
+    <string name="settings_general_scroll_read">Позначати дописи як переглянуті під час прокручування</string>
+    <string name="settings_link_chrome">Користувацькі вкладки</string>
+    <string name="settings_storage_location">Вибрати місце збереження</string>
+    <string name="settings_storage_location_unset">Ще не вказано</string>
+    <string name="settings_set_storage_location">Файли зберігатимуться в %s</string>
+    <string name="settings_general_immersive_mode">Занурювальний повноекранний режим</string>
+    <string name="settings_general_immersive_mode_desc">Приховати панелі стану та навігації (експериментально)</string>
+    <string name="settings_general_old_swipe_mode">Старий режим свайпів</string>
+    <string name="settings_general_old_swipe_mode_desc">Старий стиль свайпів Slide. Призначений для навігації трьома кнопками та жестів Samsung.</string>
+    <string name="settings_general_hibernate">Продовжити з того місця, де я зупинився</string>
+    <string name="settings_general_hibernate_desc">Знову відкриває той самий екран у тому самому місці й показує вже завантажене замість оновлення. Увімкнення додає до додаткового меню прапорець, який вмикає й вимикає продовження без повернення сюди.</string>
+
+    <string name="settings_general_title_drawer_items">Елементи бічної панелі</string>
+    <string name="settings_general_subtitle_drawer_items">Виберіть, які елементи бічної панелі показувати</string>
+
     <!-- Settings titles displayed in settings activity-->
+    <string name="settings_title_backup">Резервне копіювання &amp; відновлення</string>
+    <string name="settings_title_default_theme">Основна тема</string>
+    <string name="settings_title_general">Загальні</string>
+    <string name="settings_title_history">Історія</string>
+    <string name="settings_title_notifications">Сповіщення</string>
+    <string name="settings_title_pro">Отримати Pro</string>
+    <string name="settings_title_sub_theme">Теми субредитів</string>
+    <string name="settings_title_sort">Типове сортування</string>
+    <string name="settings_title_sort_frontpage">Сортування головної сторінки</string>
+    <string name="settings_title_about">Про застосунок</string>
+    <string name="settings_title_debug">Налагодження</string>
+    <string name="settings_section_debug_reauth">Повторна автентифікація</string>
+    <string name="settings_debug_break_reauth">Зламати повторну автентифікацію</string>
+    <string name="settings_debug_break_reauth_desc">Зупиняє повторну автентифікацію, щоб можна було перевірити відповідне сповіщення. Оборотно: вимкніть це, а потім запустіть повторну автентифікацію.</string>
+    <string name="settings_debug_trigger_reauth">Запустити повторну автентифікацію</string>
+    <string name="settings_debug_trigger_reauth_desc">Запустіть повторну автентифікацію зараз. Використовуйте це для відновлення після вимкнення перемикача.</string>
+    <string name="settings_title_multi_column">Кілька колонок</string>
+    <string name="settings_title_fab">Плаваюча кнопка дій</string>
+    <string name="settings_title_comments">Коментарі</string>
+    <string name="settings_title_filter">Фільтри</string>
+    <string name="settings_title_font">Шрифт</string>
+    <string name="settings_section_general">Загальні</string>
+    <string name="settings_section_appearance">Вигляд</string>
+    <string name="settings_section_hibernation">Режим сну</string>
+    <string name="settings_section_other">Інше</string>
+    <string name="settings_section_browser">Браузер</string>
+    <string name="settings_section_internal_viewers">Внутрішні переглядачі</string>
+    <string name="settings_section_custom_domains">Користувацькі домени</string>
+    <string name="settings_section_save_history">Збереження історії</string>
+    <string name="settings_section_clear_history">Очищення історії</string>
+    <string name="settings_section_data_saving_mode">Режим економії трафіку</string>
+    <string name="settings_section_data_saving_quality">Якість при економії трафіку</string>
+    <string name="settings_comment_color">Кольорові позначки глибини коментарів</string>
+    <string name="settings_volume_nav_comments">Переходити між коментарями кнопками гучності</string>
+    <string name="settings_commentnav_description">Вмикає нижню панель зі стрілками навігації</string>
+    <string name="settings_comment_collapse">Повністю згортати коментарі</string>
+    <string name="settings_comment_collapse_description">Також вимикає анімації коментарів</string>
+    <string name="settings_comment_collapse_default">Типово згортати дочірні коментарі</string>
+    <string name="settings_data_enable">Увімкнути налаштування економії трафіку</string>
+    <string name="settings_data_video_quality">Надавати перевагу відео низької якості при увімкненій економії трафіку</string>
+    <string name="settings_comments_collapse_deleted">Типово згортати видалені коментарі</string>
+    <string name="settings_comments_collapse_sticky">Завжди повністю згортати закріплений коментар</string>
+    <string name="settings_comments_collapse_blocked_users">Згортати коментарі заблокованих користувачів</string>
+    <string name="settings_comments_collapse_blocked_users_description">Також вмикає «Повністю згортати коментарі»</string>
+    <string name="settings_backup_occurs">Резервну копію буде створено о %1$s</string>
+    <string name="settings_backup_none">Жоден субредит не буде збережено</string>
+    <string name="settings_backup_will_backup">\u0020буде збережено</string>
+    <string name="settings_backup_submission_only">лише допис</string>
+    <string name="settings_backup_comments">\u0020(коментарі)</string>
+    <string name="settings_filter_profile">Фільтри профілю</string>
+    <string name="settings_subreddit_content_filters_till_restart">Фільтри вмісту субредиту до перезапуску</string>
+    <string name="settings_subredditspecific_selftext">Завжди показувати попередній перегляд тексту в цьому субредиті</string>
+    <string name="settings_font_system">Системний</string>
+    <string name="settings_manage_subscriptions">Керувати вашими підписками</string>
+    <string name="settings_comments_swap_long">Поміняти місцями дії довгого натискання й дотику</string>
+    <string name="settings_redditprefs_over18">Мені більше 18 років, і я хочу бачити NSFW-вміст</string>
+    <string name="settings_layout_view">Режим перегляду</string>
+    <string name="settings_subredditspecific_bigpic">Завжди показувати великі зображення в цьому субредиті</string>
+    <string name="settings_layout_picture_mode">Режим зображень</string>
+    <string name="settings_general_expanded_toolbar">Розширене меню панелі інструментів</string>
+    <string name="settings_general_expanded_toolbar_desc">Показувати більше параметрів на панелі інструментів субредиту</string>
+    <string name="settings_always_show_floating_action_button">Завжди показувати плаваючу кнопку дій</string>
+    <string name="settings_always_show_floating_action_button_desc">Ніколи не приховувати плаваючу кнопку дій під час прокручування</string>
+    <string name="settings_theme_tinting">Режим забарвлення дописів</string>
+    <string name="settings_layout_actionbar_mode">Режим панелі дій</string>
+    <string name="settings_theme_tint_outside_desc">Забарвлювати тло лише в мультиредитах, на головній сторінці та в «усьому»</string>
+    <string name="settings_layout_small_content_tag">Менша позначка вмісту</string>
+    <string name="settings_links_force_external">Примусово використовувати зовнішній браузер</string>
+    <string name="settings_layout_show_domain">Показувати домен у рядку інформації</string>
+    <string name="settings_layout_show_content_type">Показувати тип вмісту в рядку інформації</string>
+    <string name="settings_layout_thumbnail_flags">Показувати кольорові позначки в кутах мініатюр</string>
+    <string name="settings_layout_show_votes_comments">Показувати голоси/коментарі в рядку інформації</string>
+    <string name="settings_general_comment_last_visit">Показувати кількість коментарів від останнього відвідування</string>
+    <string name="settings_fab_create">Показувати плаваючу кнопку \"створити коментар\"</string>
+    <string name="settings_right_handed_comment_menu">Меню відповіді на коментарі для правші</string>
+    <string name="settings_reddit_description">Ці налаштування змінюють те, що API Reddit повертає до Slide.\n\nЩоб бачити мініатюри в усіх субредитах, увімкніть \'Ігнорувати налаштування медіа субредиту\'\n\nЩоб бачити весь NSFW-вміст, вимкніть \'Приховувати NSFW-фото\' та увімкніть \'Мені більше 18\'</string>
+    <string name="settings_reddit_media_pref">Ігнорувати налаштування медіа субредиту</string>
+    <string name="settings_description_view_type">Типи перегляду впливають і на головний перегляд, і на перегляди окремих субредитів.\n\nПанель коментарів: коментарі висуваються поруч із дописами, а стан сторінки коментарів зберігається після свайпу назад (щоб ви не втратили своє місце)\n\nБез вкладок субредитів: вимикає гортання між субредитами\n\nВкладки субредитів: гортайте між вашими субредитами</string>
+    <string name="settings_short_description_view_type">Типи перегляду впливають і на головний перегляд, і на перегляди окремих субредитів</string>
+    <string name="settings_comment_hide_selftext_image">Приховувати головне зображення в текстових дописах</string>
+    <string name="settings_filter_flair">Фільтри флеїрів</string>
+    <string name="settings_view_type">Тип перегляду</string>
+    <string name="settings_data">Економія трафіку</string>
+    <string name="settings_card_show_selftext">Показувати текст допису</string>
+    <string name="settings_card_selftext_paragraph">Показувати перший абзац</string>
+    <string name="settings_card_selftext_ellipsize">Скорочувати до перших 128 символів</string>
+    <string name="settings_handling_external_desc">Введені нижче домени завжди відкриватимуться зовні</string>
+    <string name="settings_handling_enterdomain">Введіть домен або його частину</string>
+    <string name="settings_section_content">Вміст</string>
+    <string name="settings_backup_view">Переглянути резервну копію</string>
+    <string name="settings_backup_err_no_explorer">Файловий менеджер не знайдено, файл розташовано в %1$s</string>
+    <string name="settings_about_version_copied_toast">Номер версії скопійовано до буфера обміну</string>
+    <string name="settings_theme_night_start_at">Початок о\u0020</string>
+    <string name="settings_theme_night_end_at">Кінець о\u0020</string>
+    <string name="settings_general_inbox_snd">Звук і вібрація</string>
+    <string name="settings_enable_notifs">Увімкнути сповіщення вхідних</string>
+
     <!-- Quick setting toggles in the drawer -->
+    <string name="toggle_night_mode">Нічний режим</string>
+    <string name="toggle_immersive_mode">Занурювальний режим</string>
+    <string name="toggle_nsfw">Показувати NSFW-вміст</string>
+    <string name="toggle_right_thumbnails">Мініатюри, вирівняні праворуч</string>
+    <string name="toggle_reader_mode">Використовувати режим читання</string>
+
     <!-- View types -->
+    <string name="view_type_tabs">Вкладки субредитів</string>
+    <string name="view_type_none">Без вкладок субредитів</string>
+    <string name="view_type_comments">Панель коментарів</string>
+
     <!--Search methods -->
+    <string name="subreddit_search_method_title">Спосіб пошуку субредитів</string>
+    <string name="subreddit_search_method_drawer">Рядок пошуку в бічній панелі</string>
+    <string name="subreddit_search_method_toolbar">Довге натискання на заголовку панелі інструментів</string>
+    <string name="subreddit_search_method_both">І бічна панель, і заголовок панелі інструментів</string>
+
     <!-- Back button behavior -->
+    <string name="back_button_behavior_title">Поведінка кнопки «Назад»</string>
+    <string name="back_button_behavior_default">Закрити застосунок</string>
+    <string name="back_button_behavior_confirm_exit">Діалог підтвердження виходу</string>
+    <string name="back_button_behavior_drawer">Відкрити бічну панель</string>
+
     <!-- Subscription managing -->
-    <!-- Save categories -->
+    <string name="reorder_add_domain">Додати домен</string>
+    <string name="reorder_add_subreddit">Додати субредит</string>
+    <string name="reorder_fab_collection">Мультиредит</string>
+    <string name="reorder_fab_domain">Домен</string>
+    <string name="reorder_fab_subreddit">Субредит</string>
+    <string name="reorder_add_subscribe">Додати &amp; підписатися</string>
+    <string name="reorder_remove_unsubscribe">Вилучити &amp; скасувати підписку</string>
+    <string name="reorder_move">Перемістити вгору</string>
+    <string name="reorder_domain_placeholder">\u0020(лише доменне ім\'я)</string>
+    <string name="reorder_not_found_err">Субредит не знайдено, ось кілька пропозицій</string>
+    <string name="reorder_subscribed_toast">Підписано на /r/%1$s</string>
+    <string name="reorder_unsubscribed_toast">Підписку на /r/%1$s скасовано</string>
+    <string name="sorting_faq"><b>Як оновити субредити?</b>\nЩоб оновити субредити, натисніть піктограму оновлення на панелі інструментів!\n\n<b>Я скасував підписку на деякі субредити, але вони досі в списку!</b>\nSlide перетворює субредити, підписку на які скасовано в браузері, на неформальні підписки. Щоб вилучити їх, довго натисніть на субредит і виберіть «вилучити»!\n\n<b>Як користуватися колекціями?</b>\nЩоб створити колекцію, натисніть плаваючу кнопку + і виберіть \'Створити колекцію\'. Так кілька субів можуть діяти як один субредит на головному екрані!</string>
+    <string name="alphabetize_subreddits">Впорядкувати субредити за абеткою</string>
+    <string name="sync_subscriptions">Синхронізувати підписки</string>
+    <string name="cannot_be_undone">Цю дію не можна скасувати.</string>
+    <string name="deleting">Видалення…</string>
+    <string name="create_or_import_multi">Бажаєте створити новий мультиредит чи імпортувати наявний?</string>
+    <string name="sub_added">Субредит додано!</string>
+    <string name="reorder_subs_FAQ">Часті питання про впорядкування субредитів</string>
+    <string name="subscribe_to">Підписатися на /r/%1$s</string>
+    <string name="unsubscribe_from">Скасувати підписку на /r/%1$s</string>
+    <string name="btn_add_to_sublist">ДОДАТИ ДО СПИСКУ СУБІВ</string>
+    <string name="btn_remove_from_sublist">ВИЛУЧИТИ ЗІ СПИСКУ СУБІВ</string>
+    <string name="just_unsub">ЛИШЕ СКАСУВАТИ ПІДПИСКУ</string>
+    <string name="subscribe_caps">ПІДПИСАТИСЯ</string>
+    <string name="unsubscribe_caps">СКАСУВАТИ ПІДПИСКУ</string>
+    <string name="reorder_subreddits_title">Виберіть субредит для додавання</string>
+    <string name="reorder_add_or_search_subreddit">Додайте або знайдіть субредит</string>
+    <string name="reorder_subreddit_name">Назва субредиту</string>
+    <string name="reorder_remove_title">Вилучити цей субредит?</string>
+    <string name="reorder_sync_complete">Синхронізацію завершено</string>
+    <string name="reorder_loading_title">Завантаження ваших субредитів</string>
+    <string name="reorder_url_err">Недійсний URL</string>
+
+    <!-- Saved tags -->
+    <string name="tag_set_name_hint">Назва мітки</string>
+    <string name="tag_tag_action">ПОЗНАЧИТИ</string>
+    <string name="profile_tag_select">Мітки</string>
+    <string name="profile_saved_tags">Збережені мітки</string>
+    <string name="tag_builtin_all">Усі</string>
+    <string name="tag_builtin_posts">Дописи</string>
+    <string name="tag_builtin_comments">Коментарі</string>
+    <string name="tag_types_header">Типи</string>
+    <string name="tag_post_types_header">Типи дописів</string>
+    <string name="tag_custom_header">Власні мітки</string>
+    <string name="tag_new">Нова мітка</string>
+    <string name="tag_manage">Керувати мітками</string>
+    <string name="tag_add">Додати мітку</string>
+    <string name="tag_none_yet">Міток поки немає</string>
+    <string name="tag_rename">Перейменувати</string>
+    <string name="tag_delete_confirm">Ви впевнені, що хочете видалити \"%1$s\"? Елементи з цією міткою не буде видалено.</string>
+    <string name="tag_name_used_title">Назву вже використано</string>
+    <string name="tag_name_used">Мітка з такою назвою вже існує, виберіть унікальну назву.</string>
+    <string name="tag_name_reserved">Цю назву зарезервовано, виберіть іншу.</string>
+
     <!-- Setting subheaders -->
+    <string name="sorting">Сортування</string>
+    <string name="display">Відображення</string>
+    <string name="images">Зображення</string>
+    <string name="storage">Сховище</string>
+    <string name="app_theme">Тема застосунку</string>
+    <string name="tinting">Забарвлення</string>
+    <string name="post_info">Інформація про допис</string>
+    <string name="post_buttons">Кнопки допису</string>
+    <string name="navigation">Навігація</string>
+    <string name="collapse_comments">Дії згортання</string>
+    <string name="nsfw">NSFW-вміст</string>
+    <string name="view_reddit_settings">Відкрити налаштування Reddit у браузері</string>
+    <string name="font_styles">Стилі шрифтів</string>
+
     <!-- Titles displayed in action bar / head / recents overview-->
-    <!-- Text in Donation-Activity -->
+    <string name="title_subreddit_settings">Теми &amp; макети субредитів</string>
+    <string name="title_edit_theme">Редагувати тему</string>
+    <string name="title_submit_post">Опублікувати допис</string>
+    <string name="title_crosspost">Перехресний допис</string>
+    <string name="title_settings">Налаштування</string>
+    <string name="title_share">Поділитися через</string>
+    <string name="title_login">Увійти до Reddit</string>
+    <string name="title_multireddits">Мультиредити</string>
+    <string name="title_users">Користувачі</string>
+    <string name="title_inbox">Вхідні</string>
+    <string name="title_theme_settings">Тема</string>
+    <string name="title_create_multi">Створити мультиредит</string>
+
     <!-- Offline mode -->
+    <string name="offline_msg">Підключіться до мережі та оновіть субредит, щоб це зробити</string>
+    <string name="offline_last_update">Востаннє оновлено %1$s</string>
+    <string name="offline_comments_not_loaded">Поверніться в онлайн-режим і виберіть ‘Кешувати коментарі’ з меню з трьох крапок, щоб переглядати коментарі офлайн</string>
+    <string name="offline_no_content_found">Автономного вмісту не знайдено</string>
+    <string name="offline_enter_online">Перейти в онлайн-режим</string>
+    <string name="offline_caching_title">Кешування %1$s</string>
+    <string name="offline_caching_complete">Кешування завершено</string>
+
     <!-- Website -->
+    <string name="website_external">Відкрити в зовнішньому браузері</string>
+
+    <plurals name="reorder_subs_added">
+        <item quantity="one">Додано %d субредит</item>
+        <item quantity="few">Додано %d субредити</item>
+        <item quantity="many">Додано %d субредитів</item>
+        <item quantity="other">Додано %d субредитів</item>
+    </plurals>
+
     <!-- Time -->
+    <string name="time_just_now">Щойно</string>
+    <plurals name="time_years">
+        <item quantity="one">%d рік</item>
+        <item quantity="few">%d роки</item>
+        <item quantity="many">%d років</item>
+        <item quantity="other">%d років</item>
+    </plurals>
+    <plurals name="time_months">
+        <item quantity="one">%d місяць</item>
+        <item quantity="few">%d місяці</item>
+        <item quantity="many">%d місяців</item>
+        <item quantity="other">%d місяців</item>
+    </plurals>
+    <plurals name="time_days">
+        <item quantity="one">%d день</item>
+        <item quantity="few">%d дні</item>
+        <item quantity="many">%d днів</item>
+        <item quantity="other">%d днів</item>
+    </plurals>
+    <plurals name="time_hours">
+        <item quantity="one">%d година</item>
+        <item quantity="few">%d години</item>
+        <item quantity="many">%d годин</item>
+        <item quantity="other">%d годин</item>
+    </plurals>
+    <plurals name="time_minutes">
+        <item quantity="one">%d хвилина</item>
+        <item quantity="few">%d хвилини</item>
+        <item quantity="many">%d хвилин</item>
+        <item quantity="other">%d хвилин</item>
+    </plurals>
+    <plurals name="time_seconds">
+        <item quantity="one">%d секунда</item>
+        <item quantity="few">%d секунди</item>
+        <item quantity="many">%d секунд</item>
+        <item quantity="other">%d секунд</item>
+    </plurals>
+
     <!-- Time: shorthand durations for example 1 hour → 1h -->
+    <string name="time_years_short">%dр</string>
+    <string name="time_days_short">%dд</string>
+    <string name="time_hours_short">%dг</string>
+    <string name="time_minutes_short">%dхв</string>
+
     <!-- Strings present during the login process -->
+    <string name="login_subscribe_rslideforreddit">Підписатися на /r/slidereddit?</string>
+    <string name="login_subscribe_rslideforreddit_desc">Бажаєте підписатися на /r/slidereddit, щоб отримувати новини та повідомляти про проблеми?</string>
+    <string name="login_sync_colors">Синхронізувати кольори зараз?</string>
+    <string name="login_sync_colors_desc">Бажаєте синхронізувати кольори ваших субредитів зараз? Це можна зробити пізніше в Налаштування → Теми субредитів</string>
+    <string name="login_authenticating">Slide виконує автентифікацію</string>
+    <string name="login_starting">Готуємо все!</string>
+    <string name="login_starting_desc">Це займе лише мить…</string>
+
     <!-- Over 18 prompt when visiting a NSFW subreddit -->
-    <!-- Subreddit color synchronization - https://redd.it/41054l -->
+    <string name="over18_title">/r/%1$s містить матеріали для дорослих</string>
+    <string name="over18_desc">Вам більше вісімнадцяти років і ви бажаєте бачити матеріали для дорослих?</string>
+    <string name="over18_desc_loggedout">Увійдіть, щоб назавжди вимкнути це попередження</string>
+    <string name="over18_desc_loggedin">Ви можете назавжди вимкнути це в Налаштування → Налаштування Reddit → Показувати NSFW-вміст</string>
+
+    <!-- Subreddit color synchronization - https://reddit.com/comments/41054l -->
+    <string name="color_sync_complete">Синхронізацію завершено</string>
+    <plurals name="color_sync_colored">
+        <item quantity="one">Забарвлено %d субредит</item>
+        <item quantity="few">Забарвлено %d субредити</item>
+        <item quantity="many">Забарвлено %d субредитів</item>
+        <item quantity="other">Забарвлено %d субредитів</item>
+    </plurals>
+
     <!-- Discover section: find -->
+    <string name="discover_title">Огляд</string>
+    <string name="discover_search">Пошуковий запит або тема</string>
+    <string name="discover_popular">Популярні</string>
+    <string name="discover_trending">У тренді</string>
+
     <!-- Subreddit post notifications -->
+    <string name="sub_post_notifs_title">Сповіщати про нові дописи в\n/r/%1$s?</string>
+    <string name="sub_post_notifs_title_settings">Сповіщати про нові дописи?</string>
+    <string name="sub_post_notify">Сповіщати</string>
+    <string name="sub_post_notifs_threshold">Поріг рейтингу</string>
+    <string name="sub_post_notifs_err">Сповіщення можна додавати лише до окремих субредитів</string>
+    <string name="sub_post_notifs_settings_none">Немає субредитів для сповіщень</string>
+    <string name="sub_post_notifs_settings_search">Пошук назви суба</string>
+    <string name="sub_post_notifs_notification_title">Новий допис у /r/%1$s</string>
+    <string name="sub_post_notifs_notification_btn">Припинити стежити за /r/%1$s</string>
+    <string name="title_sub_post_notifs">Сповіщення про дописи субредитів</string>
+
     <!-- Internal browser -->
+    <string name="internal_browser_extracting_error">На жаль, не вдалося витягти статтю</string>
+    <string name="internal_browser_storecookies">Зберігати файли cookie вебсайтів</string>
+    <string name="internal_browser_readermode">Режим читання</string>
+
     <!-- Live thread -->
+    <string name="livethread_loading_title">Завантаження живої гілки…</string>
+    <string name="livethread_not_found">Живу гілку не знайдено</string>
+    <string name="livethread_recents_title">Жива гілка: %1$s</string>
+
     <!-- Used when viewing media -->
+    <string name="mediaview_notif_title">Завантаження зображення…</string>
+    <string name="mediaview_notif_video">Завантаження відео…</string>
+    <string name="mediaview_notif_text">Завантаження триває</string>
+    <string name="mediaview_save">Зберегти %1$s</string>
+    <string name="mediaview_saving">Збереження %1$s</string>
+
     <!-- Drafts -->
+    <string name="choose_draft">Виберіть чернетку</string>
+    <string name="dialog_no_drafts">Чернеток поки немає</string>
+    <string name="dialog_no_drafts_msg">Ви можете додати чернетку, натиснувши піктограму \'зберегти\' на панелі редактора!</string>
+    <string name="msg_save_draft">Повідомлення збережено як чернетку</string>
+    <string name="manage_drafts">Керувати чернетками</string>
+    <string name="really_delete_drafts">Справді видалити ці чернетки?</string>
+
     <!-- Strings for widgets -->
+    <string name="widget_theme_dark">ТЕМНА</string>
+    <string name="widget_theme_light">СВІТЛА</string>
+    <string name="widget_theme_clear">ПРОЗОРА</string>
+    <string name="widget_posttype_title">Тип допису</string>
+    <string name="widget_posttype_list">СПИСОК</string>
+    <string name="widget_posttype_bigpic">ВЕЛИКЕ ЗОБРАЖЕННЯ</string>
+    <string name="widget_posttype_compact">КОМПАКТНО</string>
+    <string name="widget_subname_hint">Назва субредиту</string>
+    <string name="widget_visuals">Вигляд</string>
+    <string name="widget_content">Вміст</string>
+    <string name="widget_loading">Завантаження…</string>
+    <string name="widget_creation_title">Новий віджет</string>
+    <string name="shortcut_creation_title">Новий ярлик</string>
+
     <!-- Strings for alert dialogs -->
+    <string name="force_change_subscription">Не вдалося змінити підписку</string>
+    <string name="force_change_subscription_desc">Усе одно змінити її локально?</string>
+    <string name="never_load_images">Не завантажувати зображення</string>
+    <string name="load_low_quality">Завантажувати зображення низької якості (макс. 320x320)</string>
+    <string name="load_medium_quality">Завантажувати зображення середньої якості (макс. 640x640)</string>
+    <string name="load_high_quality">Завантажувати зображення високої якості (макс. 1080x1080)</string>
+    <string name="choose_color_title">Виберіть колір</string>
+    <string name="enter_text_to_filter_click_enter_to_add">Введіть текст для пошуку, натисніть Enter, щоб додати фільтр</string>
+    <string name="mode_desktop_compact">Компактний як на комп\'ютері</string>
+    <string name="show_content_type_text_beside_links">Показувати текст типу вмісту поруч із посиланнями</string>
+    <string name="comment_shadowbox">Shadowbox коментарів</string>
+
     <!-- Sidebar strings (multis, flairs) -->
+    <string name="sidebar_select_flair">Вибрати флеїр</string>
+    <string name="sidebar_select_flair_text">Встановити текст флеїра</string>
+    <string name="sidebar_findingmods">Пошук модераторів</string>
+    <string name="snackbar_flair_success">Флеїр успішно встановлено</string>
+    <string name="snackbar_flair_error">Помилка встановлення флеїра, спробуйте незабаром ще раз</string>
+    <string name="sidebar_submods">Модератори /r/%s</string>
+    <string name="sidebar_flair">Флеїр: %1$s</string>
+    <string name="sidebar_notfound">Бічну панель не знайдено</string>
+    <plurals name="reorder_selected">
+        <item quantity="one">"Вибрано %d"</item>
+        <item quantity="few">"Вибрано %d"</item>
+        <item quantity="many">"Вибрано %d"</item>
+        <item quantity="other">"Вибрано %d"</item>
+    </plurals>
+
     <!--Filtering dialog -->
+    <string name="filter_title">Що ви хочете відфільтрувати?</string>
+    <string name="filter_posts_sub">Дописи з /r/%1$s</string>
+    <string name="filter_posts_user">Дописи /u/%1$s</string>
+    <string name="filter_posts_urls">Дописи з посиланнями на %1$s</string>
+    <string name="filter_open_externally">Відкривати посилання %s зовні</string>
+    <string name="filter_posts_flair">Флеїр \"%1$s\" з %2$s</string>
+    <string name="filter_btn">Фільтрувати</string>
+
     <!-- Caching -->
+    <string name="cache_no_comments_found">Коментарів не знайдено</string>
+    <string name="cache_no_comments_found_snackbar">Кешованих коментарів не знайдено</string>
+    <string name="cache_no_comments_found_message">Цей допис не має кешованих коментарів. Щоб кешувати коментарі надалі, натисніть меню з трьох крапок на головному екрані та виберіть \'Кешувати коментарі\', або налаштуйте автокешування на вкладці «Автономний вміст» у бічній панелі</string>
+    <string name="autocache_subreddits">Субредити для автокешування</string>
+    <string name="autocache_time">Час автокешування</string>
+    <string name="cache_subreddits_now">Кешувати субредити зараз</string>
+    <string name="cache_wifi_only">Кешувати лише через Wi-Fi</string>
+    <string name="comments_depth">Глибина коментарів для кешування</string>
+    <string name="comments_count">Кількість коментарів для кешування</string>
+
     <!-- Saving location setting -->
+    <string name="set_save_location">Вкажіть місце збереження медіа</string>
+    <string name="set_save_location_msg">Місце збереження медіа у Slide не вказано.</string>
+
     <!-- Report flow -->
+    <string name="btn_report">Поскаржитися</string>
+    <string name="report_post">Поскаржитися на допис</string>
+    <string name="report_comment">Поскаржитися на коментар</string>
+    <string name="report_loading">Завантаження причин…</string>
+    <string name="report_sub_rules">Правила /r/%s</string>
+    <string name="report_site_rules">Правила Reddit</string>
+    <string name="report_another_reason">Інша причина</string>
+    <string name="report_other">Інше</string>
+    <string name="input_reason_for_report">Причина скарги</string>
+    <string name="msg_report_sent">Скаргу надіслано</string>
+
     <!-- Unsorted ¯\\_(ツ)_/¯ -->
+    <string name="comment_load_more_number_unknown">Завантажити більше коментарів</string>
+    <string name="card_right_thumb">Мініатюра, вирівняна праворуч</string>
+    <string name="setting_filter_subreddits">Фільтри субредитів</string>
+    <string name="subreddit_theme">Тема субредиту</string>
+    <string name="dialog_choose_subreddits_to_edit">Виберіть субредити для редагування</string>
+    <string name="dialog_color_sync_title">Синхронізація кольорів</string>
+    <string name="dialog_color_sync_message">Буде здійснено спробу отримати ‘ключовий колір’ субредиту, встановлений модераторами. Уже забарвлені субредити не буде перезаписано.</string>
+    <string name="fab_hide">Приховати переглянуті дописи</string>
+    <string name="fab_create">Створити новий допис</string>
+    <string name="fab_disabled">Вимкнено</string>
+    <string name="fab_search">Шукати дописи</string>
+    <string name="handling_internal_browser">Внутрішній браузер</string>
+    <string name="handling_external_browser">Зовнішній браузер</string>
+    <string name="mode_list">Список</string>
+    <string name="mode_centered">Картка з центрованим зображенням</string>
+    <string name="mode_card">Картка</string>
+    <string name="mode_thumbnail">Мініатюра</string>
+    <string name="mode_no_thumbnails">Без мініатюри</string>
+    <string name="mode_big_thumbnails">Широкі мініатюри</string>
+    <string name="mode_cropped">Обрізане велике зображення</string>
+    <string name="mode_letterbox">Велике зображення зі смугами</string>
+    <string name="mode_bigpic">Велике зображення</string>
+    <string name="press_actionbar">Натисніть стрілку, щоб показати панель дій</string>
+    <string name="show_top_right">Показувати вгорі праворуч</string>
+    <string name="show_bottom_right">Показувати внизу праворуч</string>
+    <string name="small_tag_disabled">Вимкнено</string>
+    <string name="tap_actionbar">Довге натискання для панелі дій</string>
+    <string name="always_actionbar">Завжди показувати панель дій</string>
+    <string name="sub_content_filter">Фільтр вмісту субредиту</string>
+    <string name="submission_share_reddit_url">Поділитися коментарями</string>
+    <string name="filter_content">Відфільтрувати цей вміст</string>
+    <string name="content_to_show">Вміст, який показувати на %1$s</string>
+    <string name="save_for_offline_viewing">Зберігати дописи для автономного перегляду</string>
+    <string name="btn_collapse_children_all">Згорнути дочірні коментарі</string>
+    <string name="btn_open_content">Відкрити вміст</string>
+    <string name="enter_text_to_filter_click_enter_to_add_flair">Введіть текст для фільтрування (subreddit:flair_text), натисніть Enter, щоб додати</string>
+    <plurals name="filter_count">
+        <item quantity="one">%1$d фільтр (макс. показано %2$d)</item>
+        <item quantity="few">%1$d фільтри (макс. показано %2$d)</item>
+        <item quantity="many">%1$d фільтрів (макс. показано %2$d)</item>
+        <item quantity="other">%1$d фільтрів (макс. показано %2$d)</item>
+    </plurals>
+    <string name="filter_limit_reached">Показано перші %1$d з %2$d. Скористайтеся пошуком, щоб звузити результати.</string>
+    <string name="datasave_always">Мобільні дані та Wi-Fi</string>
+    <string name="datasave_mobile">Мобільні дані</string>
+    <string name="never">Ніколи</string>
+    <string name="multi_column_force_full">Примусовий повний перегляд коментарів</string>
+    <string name="submission_info_locked">Це заблокований допис. Ви не зможете коментувати.</string>
+    <string name="card_background_tint">Тло картки</string>
+    <string name="subreddit_name_tint">Назва субредиту</string>
+    <string name="login_failed_err_decline">Переконайтеся, що ви не вибрали ‘Відхилити’ на попередньому екрані, і спробуйте ще раз за хвилину</string>
+    <string name="login_unsupported_redirect_uri">Налаштований URI перенаправлення (%1$s) не може бути отриманий браузером, тому вхід неможливо завершити. Скористайтеся входом через WebView усередині застосунку або вкажіть підтримуваний URI перенаправлення в налаштуваннях.</string>
+    <string name="login_unsupported_redirect_uri_title">Не вдалося увійти</string>
+    <string name="login_failed_oauth_error_page">Не вдалося увійти — Reddit повернув помилку замість завершення входу. Перевірте ідентифікатор клієнта та URI перенаправлення в налаштуваннях.</string>
+    <string name="tutorial_swipe_navigation">Навігація свайпами</string>
+    <string name="tutorial_swipe_description">Проведіть від лівого краю, щоб вийти.\n\nЦе стосується зображень, GIF, альбомів, налаштувань тощо!</string>
+    <string name="handling_browser">Вебпереглядач</string>
+    <string name="submit_replies_to_inbox">Надсилати відповіді у вхідні</string>
+    <string name="btn_open_comments">Відкрити коментарі</string>
+    <string name="btn_preview">Попередній перегляд</string>
+    <string name="default_comment_sort">Типове сортування коментарів</string>
+    <string name="content_deleted">[видалено]</string>
+    <string name="thread_continue">Продовжити цю гілку</string>
+    <string name="type_selftext">Текстовий допис</string>
+    <string name="type_selftexts">Текстові дописи</string>
+    <string name="submission_unhide">Показати допис знову</string>
+    <string name="submission_info_unhidden">Допис знову видно</string>
+    <string name="msg_sent_success">Повідомлення надіслано</string>
+    <string name="msg_sent_failure">Не вдалося надіслати повідомлення</string>
+    <string name="msg_send_user_dne">Такого користувача не існує</string>
+    <string name="editor_actions_quote_comment">Виділіть текст для цитування</string>
+    <string name="guest">Гість</string>
+    <string name="album_slide_view">Перегляд альбому гортанням</string>
+    <string name="album_grid">Сітка альбому</string>
+    <string name="open_externally">Відкрити зовні</string>
+    <string name="vertical_album_view">Вертикальний перегляд альбому</string>
+    <string name="download_album">Звантажити альбом</string>
+    <string name="download_gallery">Звантажити галерею</string>
+    <string name="compose_message">Написати повідомлення</string>
+    <string name="mark_all_as_read">Позначити всі як прочитані</string>
+    <string name="clear_subreddit_history">Очистити історію субредитів</string>
+    <string name="clear_submission_history">Очистити історію дописів</string>
+    <string name="alert_history_cleared">Історію очищено!</string>
+    <string name="manage_offline_content">Керувати автономним вмістом</string>
+    <string name="go_offline">Перейти в автономний режим</string>
+    <string name="sidebar_edit_flair">Редагувати ваш флеїр</string>
+    <string name="go_online_view_content">Підключіться до мережі, щоб переглянути цей вміст</string>
+    <string name="help">Довідка</string>
+    <string name="upvote_percentage">Показувати відсоток схвалень</string>
+    <string name="view_subreddits">Переглянути субредити</string>
+    <string name="clear_saved_subreddits">Очистити всі збережені субредити</string>
+    <string name="download_the_slide_video_player_plugin">Звантажити додаток Slide Video Player</string>
+    <string name="btn_suggest_title">Запропонувати заголовок</string>
+    <string name="navigate_comments_since">Коментарі новіші за…</string>
+    <string name="btn_offline">Перейти в автономний режим</string>
+    <string name="discard_comment_title">Відхилити коментар?</string>
+    <string name="comment_discard_msg">Ви справді хочете відхилити свій коментар?</string>
+    <string name="backup_saved_downloads">Резервну копію збережено в завантаженнях</string>
+    <string name="really_remove_subreddit_title">Справді вилучити цей субредит?</string>
+    <string name="choose_sync_time">Виберіть час синхронізації</string>
+    <string name="account_suspended">Цей обліковий запис призупинено</string>
+    <string name="clear_all_sub_themes">Очистити всі теми субредитів?</string>
+    <string name="clear_all_sub_themes_msg">Цю дію не можна скасувати</string>
+    <string name="title_not_found">Заголовок не знайдено</string>
+    <string name="really_delete_submission">Справді видалити цей допис? Цю дію не можна скасувати</string>
+    <string name="comment_unstickied">Коментар відкріплено</string>
+    <string name="comment_stickied">Коментар закріплено</string>
+    <string name="comment_undistinguished">Виділення коментаря знято</string>
+    <string name="comment_distinguished">Коментар виділено</string>
+    <string name="comment_removed">Коментар вилучено</string>
+    <string name="set_nav_mode">Встановити режим навігації</string>
+    <string name="auto_hide_the_comment_nav_bar">Автоматично приховувати панель навігації коментарів</string>
+    <string name="rate_slide">Оцінити Slide</string>
+    <string name="edit_query">Редагувати запит</string>
+    <string name="share_slide">Поділитися Slide</string>
+    <string name="open_clipboard_reddit_link">Відкрити посилання Reddit із буфера обміну</string>
+    <string name="clipboard_no_reddit_link">У буфері обміну немає посилання Reddit</string>
+    <string name="open_links_externally">Завжди відкривати цей хост зовні</string>
+    <string name="hide_read_posts">Приховувати прочитані дописи</string>
+    <string name="gallery_mode">Режим галереї</string>
+    <string name="settings_gallery_grid">Показувати дописи-галереї сіткою</string>
+    <string name="gallery_grid_image">Зображення галереї %1$d з %2$d</string>
+    <string name="gallery_grid_overflow">+%1$d</string>
+    <string name="friends_sort_error">/r/friends не можна сортувати</string>
+    <string name="shadowbox_comments_nolinks">У коментарях посилань не знайдено</string>
+    <string name="draw_undo">Скасувати</string>
+    <string name="empty_preview_text">Тут нічого немає ¯\\_(ツ)_/¯</string>
+    <string name="theme_red_shift">Червоне зміщення</string>
+    <string name="view_sub_sidebar">Переглянути бічну панель суба</string>
+    <string name="mod_log">Журнал модерації</string>
+    <string name="navigation_bar_vote_gestures">Жести голосування на панелі навігації</string>
+    <string name="nav_gestures_description">Голосуйте за і проти, проводячи по стрілках навігації коментарів</string>
+    <string name="subreddit_sidebar_progress">Отримання бічної панелі…</string>
+    <string name="manage_your_subreddits">Керувати вашими субредитами</string>
+    <string name="enlarge_links">Збільшити посилання</string>
+    <string name="enlarge_links_warning">Деякі рядки можуть стати більшими за інші, але в посилання буде легше влучити</string>
+    <string name="type_tumblr">Tumblr</string>
+    <string name="type_tumblrs">Дописи Tumblr</string>
+    <string name="type_nsfw_tumblr">NSFW-Tumblr</string>
+    <string name="submission_info_contest">Ця гілка в режимі конкурсу. Ви не можете змінити сортування.</string>
+    <string name="sub_post_notifs_msg">Slide перевірятиме нові дописи одночасно з перевіркою пошти (сповіщення про пошту мають бути увімкнені)</string>
+    <string name="mod_ban_reason_required">Причина обов\'язкова</string>
+    <string name="settings_abbreviate_post_scores">Скорочувати рейтинг дописів (напр. 24.0k)</string>
+    <string name="settings_wide_depth_indicators">Широкі позначки глибини коментарів</string>
+    <string name="settings_link_reader_mode_title">Використовувати режим читання</string>
+    <string name="settings_link_reader_mode_description">Відкривати всі посилання в режимі читання. Тип браузера використовуватиметься під час відкриття з режиму читання.</string>
+    <string name="settings_link_reader_night">Пов\'язати режим читання і нічний режим</string>
+    <string name="theme_pixel">Pixel</string>
+    <string name="save_images_to_subreddit_specific_subfolders">Зберігати зображення в підтеках за субредитами</string>
+    <string name="description_save_subfolders">Працює в переглядах дописів і коментарів</string>
+    <string name="save_media_to_type_specific_subfolders">Зберігати медіа в підтеках за типом</string>
+    <string name="description_save_type_subfolders">Зображення потрапляють до \"images\", відео та GIF — до \"videos\"</string>
+    <string name="show_image_download_button">Ярлик звантаження</string>
+    <string name="description_image_download_button">Показувати кнопку звантаження в переглядачі зображень</string>
+    <string name="content_settings">Налаштування вмісту</string>
+    <string name="setting_titleTop">Показувати заголовок над рядком інформації</string>
+    <string name="setting_notification_piggybacking">Використання сповіщень Reddit</string>
+    <string name="setting_notification_piggybacking_desc">Перевіряти пошту лише тоді, коли офіційний застосунок Reddit отримує push-сповіщення</string>
+    <string name="install_notif_piggyback">Встановіть офіційний застосунок Reddit, щоб увімкнути використання сповіщень</string>
+    <string name="success_block_user">Користувача успішно заблоковано</string>
+    <string name="err_unblock_user">Помилка розблокування користувача</string>
+    <string name="success_unblock_user">Користувача успішно розблоковано</string>
+    <string name="settings_highlight_time_desc">Потребує увімкненого \'Показувати кількість коментарів від останнього відвідування\' в Налаштування &gt; Макет допису</string>
+    <string name="settings_colored_time">Кольорова бульбашка часу для нових коментарів</string>
+    <string name="theme_deep">Глибока</string>
+    <string name="type_vreddit">Відео Reddit</string>
+    <string name="authors_above">Автори зверху</string>
+    <string name="btn_crosspost">Перехресний допис</string>
+    <string name="btn_reset_color">СКИНУТИ КОЛІР</string>
+    <string name="settings_shortlink_description">Посилання надсилатимуться у вигляді \'https://reddit.com/comments/\'</string>
+    <string name="settings_shortlink">Ділитися коротким посиланням Reddit, коли це можливо</string>
+    <string name="disable_replies_comment">Вимкнути відповіді на коментар у вхідних</string>
+    <string name="replies_disabled_comment">Відповіді на коментарі вимкнено</string>
+    <string name="replies_enabled_comment">Відповіді на коментарі увімкнено</string>
+    <string name="replies_switch_accounts">Перейти на інший обліковий запис</string>
+    <string name="search_settings">Шукати в налаштуваннях</string>
+    <string name="show_collapse_expand_nav_bar">Показувати кнопку згортання/розгортання на панелі навігації коментарів</string>
+    <string name="page_not_found">Сторінку не знайдено</string>
+    <string name="page_does_not_exist">Запитаної сторінки не існує</string>
+    <string name="back_button_behavior_goto_first">Перейти до першого субредиту</string>
+    <string name="settings_hide_post_awards">Приховувати нагороди</string>
+    <string name="settings_hide_comment_awards">Приховувати нагороди</string>
+    <string name="settings_title_markdown">Markdown</string>
+    <string name="settings_markdown_new_reddit">Markdown у стилі нового Reddit</string>
+    <string name="settings_markdown_new_reddit_desc">Відображає блоки коду та форматування як новий Reddit (якщо вимкнено, використовується відображення старого Reddit)</string>
+    <string name="comment_render_other">Показати інше відображення</string>
+    <string name="recover_post">Відновити допис</string>
+    <string name="recover_loading">Отримання оригіналу з архіву…</string>
+    <string name="recover_post_failed">Не вдалося відновити цей допис</string>
+    <string name="recover_comment">Відновити коментар</string>
+    <string name="recover_comment_failed">Не вдалося відновити цей коментар</string>
+    <string name="markdown_preview_new_reddit">Відображення нового Reddit</string>
+    <string name="markdown_preview_old_reddit">Відображення старого Reddit</string>
+    <string name="high_colorspace_images">Зображення з широким колірним простором</string>
+    <string name="description_high_colorspace">Завантажує зображення з повним колірним простором, що може збільшити споживання пам\'яті</string>
+    <string name="wide_color_gamut">Широкий колірний охоплення</string>
+    <string name="description_wide_color_gamut">Відображає переглядачі медіа з широким колірним охопленням. На деяких OLED-екранах кольори можуть виглядати блідими</string>
+    <string name="comment_emote_animation">Анімація емоцій у коментарях</string>
+    <string name="description_comment_emote_animation">Визначає, чи анімуються в коментарях емоції не з Giphy</string>
+    <string name="comment_image_size">Розмір зображень у коментарях</string>
+    <string name="description_comment_image_size">Наскільки великими показуються вбудовані зображення в коментарях</string>
+    <string name="comment_image_size_small">Малий</string>
+    <string name="comment_image_size_medium">Середній</string>
+    <string name="comment_image_size_large">Великий</string>
+    <string name="no_preview_image_longclick">Без довгих натискань на зображеннях попереднього перегляду будь-якого типу вмісту</string>
+    <string name="description_no_preview_image_longclick">Визначає, чи працюють довгі натискання на зображеннях попереднього перегляду будь-якого типу вмісту. Вимикає функцію швидкого перегляду вмісту.</string>
+    <string name="editor_btn_select_flair">Вибрати флеїр</string>
+    <string name="submit_selected_flair">Вибраний флеїр: %s</string>
+    <string name="mediaview_downloading">Завантаження зображення&#8230;</string>
+    <string name="err_save_image">Помилка збереження зображення</string>
+    <string name="error_directory_not_selected">Теку не вибрано. Спробуйте ще раз.</string>
+
+    <!-- Backup Operations -->
+
+    <!-- Additional Backup Operations -->
+    <string name="select_backup_file">Виберіть файл резервної копії</string>
+
+    <string name="read_later">Прочитати пізніше</string>
+    <string name="mark_as_read">Позначити як прочитане</string>
+
+    <string name="reddit_client_id">Ідентифікатор клієнта Reddit</string>
+    <string name="click_custom_client_id">Торкніться, щоб вказати власний ідентифікатор клієнта</string>
+    <string name="client_id_scan_qr">Сканувати QR-код</string>
+    <string name="client_id_scan_prompt">Відскануйте QR-код, що містить ваш ідентифікатор клієнта Reddit</string>
+    <string name="camera_permission_denied">Для сканування QR-кодів потрібен дозвіл на камеру</string>
+    <string name="client_id_invalid_length">Недійсний ідентифікатор клієнта: має містити рівно 22 символи</string>
+
+    <!-- Notification permission strings -->
+    <string name="notifications_permission_title">Увімкнути сповіщення</string>
+    <string name="notifications_permission_message">Slide потрібен дозвіл на сповіщення, щоб повідомляти вас про нові повідомлення, дописи та інші оновлення з Reddit. Налаштування сповіщень можна змінити пізніше.</string>
+    <string name="notification_listener_permission_title">Увімкнути доступ до сповіщень</string>
+    <string name="notification_listener_permission_message">Slide потрібен доступ до сповіщень, щоб перехоплювати сповіщення Reddit і забезпечити кращу роботу. Увімкніть доступ до сповіщень для Slide на наступному екрані.</string>
+
+
+    <string name="reddit_redirect_uri_override">Заміна URI перенаправлення Reddit</string>
+    <string name="click_custom_redirect_uri">Торкніться, щоб вказати власний URI перенаправлення</string>
+    <string name="settings_reddit_redirect_uri_invalid">Недійсний URI перенаправлення: має мати вигляд схема://хост</string>
+    <string name="reddit_user_agent_override">Заміна user agent Reddit</string>
+    <string name="click_custom_user_agent">Торкніться, щоб вказати власний user agent</string>
+    <string name="settings_enable_overrides">Увімкнути заміни</string>
+    <string name="settings_enable_overrides_desc">Використовуйте власний ідентифікатор клієнта, URI перенаправлення та user agent замість типових значень застосунку. Залиште вимкненим, якщо не впевнені, що це потрібно.</string>
+
+    <string name="settings_section_sound">Звук</string>
+    <string name="settings_unmute_default">Типово вмикати звук відео</string>
+
+    <string name="settings_subreddit_filter_prefix_matching">Увімкнути збіг за префіксом у фільтрах субредитів</string>
+    <string name="settings_subreddit_filter_prefix_matching_description">Префіксом є повна назва субредиту завдовжки щонайменше шість символів. Приклади: субредит social заблокує socialanxiety. Субредит pokemongo заблокує pokemongoraids.</string>
+
+    <string name="settings_filter_old_posts">Фільтрувати дописи, старші за</string>
+    <plurals name="settings_filter_old_posts_days">
+        <item quantity="one">%1$d день</item>
+        <item quantity="few">%1$d дні</item>
+        <item quantity="many">%1$d днів</item>
+        <item quantity="other">%1$d днів</item>
+    </plurals>
+    <string name="settings_filter_old_posts_description">Не застосовується під час перегляду окремого субредиту або під час сортування за Top чи Controversial</string>
+
+    <!-- Pause on audio focus ducking setting -->
+    <string name="settings_pause_on_duck_title">Призупиняти відео замість зменшення гучності</string>
+    <string name="settings_pause_on_duck_desc">Призупиняє відео, коли інші застосунки відтворюють звук. Зменшення гучності означає, що гучність знижується замість призупинення відео.</string>
+
+    <!-- Add this string resource for the play button content description -->
+    <string name="btn_play">Відтворити</string>
+
+    <string name="multireddit_name_title">Назва мультиредиту</string>
+    <string name="multireddit_name_hint">Назва мультиредиту</string>
+    <string name="multireddit_err_empty_name">Назва мультиредиту не може бути порожньою</string>
+    <string name="multireddit_err_no_valid_subs">Не вибрано жодного дійсного субредиту. Виберіть щонайменше один.</string>
+    <string name="multireddit_progress_title">Створення мультиредиту</string>
+    <string name="multireddit_progress_message">Зачекайте, поки ми створимо ваш мультиредит...</string>
+    <string name="multireddit_created_success">Мультиредит успішно створено</string>
+    <string name="multireddit_created_error">Не вдалося створити мультиредит. Спробуйте ще раз.</string>
+    <string name="multireddit_json_error">Під час підготовки даних мультиредиту сталася помилка</string>
+
+    <string name="settings_dialog_colored_border">Кольорова рамка навколо діалогових вікон</string>
+    <string name="settings_dialog_colored_border_desc">Показує тонку кольорову рамку навколо деяких діалогових вікон.</string>
+
+    <string name="misc_err_sync_failed">Не вдалося синхронізувати субредити. Немає підписок?</string>
+
+    <string name="mod_btn_distinguish">Виділити</string>
+    <string name="mod_btn_undistinguish">Зняти виділення</string>
+
+    <string name="nsfw_status_removed">Позначку NSFW знято</string>
+    <string name="nsfw_status_set">Позначку NSFW встановлено</string>
+
+    <string name="spoiler_status_removed">Позначку спойлера знято</string>
+    <string name="spoiler_status_set">Позначку спойлера встановлено</string>
+
+    <string name="submission_distinguished">Допис виділено</string>
+    <string name="submission_distinguished_removed">Виділення допису знято</string>
+
+    <string name="settings_general_hide_subreddit_tabs">Приховувати вкладки субредитів, на які ви підписані</string>
+    <string name="settings_general_hide_subreddit_tabs_desc">Приховує субредити, на які ви підписані, як вкладки, але залишає кнопки навігації</string>
+
+    <!-- Video playback speed control -->
+    <string name="video_speed">Швидкість</string>
+    <string name="video_speed_0_25x">0.25x</string>
+    <string name="video_speed_0_5x">0.5x</string>
+    <string name="video_speed_0_75x">0.75x</string>
+    <string name="video_speed_1x">Звичайна</string>
+    <string name="video_speed_1_25x">1.25x</string>
+    <string name="video_speed_1_5x">1.5x</string>
+    <string name="video_speed_2x">2x</string>
+    <string name="video_speed_control_content_desc">Керування швидкістю відтворення</string>
+    <string name="image_unavailable">Зображення недоступне</string>
+    <string name="image_rotate_content_desc">Повернути зображення на 90 градусів за годинниковою стрілкою</string>
+    <string name="image_rotate_left_content_desc">Повернути зображення на 90 градусів проти годинникової стрілки</string>
+
+    <!-- Folder chooser dialog (formerly provided by afollestad material-dialogs commons) -->
+    <string name="md_error_label">Помилка</string>
+    <string name="md_storage_perm_error">Ця функція потребує дозволу на доступ до сховища, який не надано.</string>
+    <string name="md_choose_label">ВИБРАТИ</string>
+    <string name="new_folder">Нова тека</string>
 </resources>
