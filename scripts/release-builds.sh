@@ -111,7 +111,7 @@ case "${1}" in
     2
     ;;
   *)
-    echo "Usage: ${0} [1|2|3|all]"
+    echo "Usage: ${0} [1|2|all]"
     exit 1
     ;;
 esac
