@@ -62,8 +62,15 @@ public class CommentStateUtil {
         }
 
         // If a comment is hidden and (Swap long press == true), then a single click will un-hide
-        // the comment and expand to show all children comments
-        if (SettingValues.swap && holder.firstTextView.getVisibility() == View.GONE && !isReplying) {
+        // the comment and expand to show all children comments.
+        // A collapsed body always hides BOTH views together, so the overflow has to be checked as
+        // well: a comment whose body is only an inline image has an empty firstTextView (hidden so
+        // there is no blank gap above the image) while its overflow is visible, and treating that
+        // as "hidden" left its menu unreachable from every part of the row. See issue #305.
+        if (SettingValues.swap
+                && holder.firstTextView.getVisibility() == View.GONE
+                && holder.commentOverflow.getVisibility() == View.GONE
+                && !isReplying) {
             adapter.hiddenPersons.remove(n.getFullName());
             adapter.unhideAll(baseNode, holder.getBindingAdapterPosition() + 1);
             boolean blockedBody = false;
