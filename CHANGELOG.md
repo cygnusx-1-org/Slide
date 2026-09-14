@@ -4,6 +4,14 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+8.0.3 / 2026-9-14
+============
+* Drew a self post's inlined body image as its feed card lead image
+* Put the card's selftext preview under the lead image in the comments screen's order
+* Rendered a post's selftext images at full width on the comments screen
+* Stopped the big-picture card modes from persisting noThumbnails
+* Increased the comments font sizes to match each other
+
 8.0.2 / 2026-9-13
 ============
 * Implemented Improve translations of all strings #58
