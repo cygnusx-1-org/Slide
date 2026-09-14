@@ -47,6 +47,7 @@ import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
+import me.edgan.redditslide.SpoilerRobotoTextView;
 import me.edgan.redditslide.SubmissionCache;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Views.CreateCardView;
@@ -523,7 +524,34 @@ public class PopulateSubmissionViewHolder {
                     && !submission.isNsfw()
                     && !submission.getDataNode().path("spoiler").asBoolean()
                     && !submission.getDataNode().path("selftext_html").asText("").trim().isEmpty()) {
-                cardHolder.body.setVisibility(View.VISIBLE);
+                // When the card drew the body's inlined image as its lead image, the preview skips
+                // the line that image is on and shows the words that follow it instead — the post
+                // renders as its picture and its text, not one of them twice.
+                final boolean leadIsInlineImage =
+                        holder.leadImage.getSelftextInlineImageUrl() != null;
+                final String bodyPreview =
+                        SubmissionCache.getSelftextPreview(submission, leadIsInlineImage);
+                // And under the lead image, as the comments screen has it, in the seat only the
+                // middle-image card has (the other three already draw the image above the title).
+                // A picture drawn from the body goes in the body's own order, so only leads when
+                // the body opened with it. The seat not in use is gone, every bind, or a recycled
+                // card would show the last post's text there.
+                final boolean leadImageShown = holder.leadImage.getVisibility() == View.VISIBLE;
+                final SpoilerRobotoTextView body;
+                if (cardHolder.bodyBelow != null
+                        && SubmissionCache.selftextPreviewBelowLeadImage(
+                                submission, leadImageShown, leadIsInlineImage)) {
+                    body = cardHolder.bodyBelow;
+                    cardHolder.body.setVisibility(View.GONE);
+                } else {
+                    body = cardHolder.body;
+                    if (cardHolder.bodyBelow != null) {
+                        cardHolder.bodyBelow.setVisibility(View.GONE);
+                    }
+                }
+                // A body that was nothing but that image has no preview left: hidden, as an empty
+                // body always is.
+                body.setVisibility(bodyPreview.isEmpty() ? View.GONE : View.VISIBLE);
                 int typef = new FontPreferences(mContext).getFontTypeComment().getTypeface();
                 Typeface typeface;
                 if (typef >= 0) {
@@ -531,17 +559,17 @@ public class PopulateSubmissionViewHolder {
                 } else {
                     typeface = Typeface.DEFAULT;
                 }
-                cardHolder.body.setTypeface(typeface);
+                body.setTypeface(typeface);
 
-                cardHolder.body.setTextHtml(SubmissionCache.getSelftextPreview(submission), "none ");
-                cardHolder.body.setOnClickListener(
+                body.setTextHtml(bodyPreview, "none ");
+                body.setOnClickListener(
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 holder.itemView.callOnClick();
                             }
                         });
-                cardHolder.body.setOnLongClickListener(
+                body.setOnLongClickListener(
                         new View.OnLongClickListener() {
                             @Override
                             public boolean onLongClick(View v) {
@@ -551,6 +579,9 @@ public class PopulateSubmissionViewHolder {
                         });
             } else {
                 cardHolder.body.setVisibility(View.GONE);
+                if (cardHolder.bodyBelow != null) {
+                    cardHolder.bodyBelow.setVisibility(View.GONE);
+                }
             }
         }
 
@@ -1443,11 +1474,11 @@ public class PopulateSubmissionViewHolder {
 
         if (HasSeen.getSeen(submission) && holder instanceof CardSubmissionViewHolder cardHolder) {
             holder.title.setAlpha(0.54f);
-            cardHolder.body.setAlpha(0.54f);
+            cardHolder.setBodyAlpha(0.54f);
         } else {
             holder.title.setAlpha(1f);
             if (holder instanceof CardSubmissionViewHolder cardHolder) {
-                cardHolder.body.setAlpha(1f);
+                cardHolder.setBodyAlpha(1f);
             }
         }
     }

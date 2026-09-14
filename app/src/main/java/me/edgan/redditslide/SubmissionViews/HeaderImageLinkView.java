@@ -123,6 +123,18 @@ public class HeaderImageLinkView extends RelativeLayout {
     private int galleryPreviewMaxWidth;
     @Nullable private PhotoLoader.GalleryPreview galleryPreviewCache;
 
+    // Same again for the image a selftext post inlines in its body: such a post has no "preview"
+    // node, so media_metadata is the only description of the picture, and walking it on every bind
+    // is exactly what these caches exist to avoid.
+    @Nullable private JsonNode selftextPreviewKey;
+    private int selftextPreviewMaxWidth;
+    @Nullable private PhotoLoader.GalleryPreview selftextPreviewCache;
+
+    // The inlined selftext image this bind drew as the lead image, or null when it drew something
+    // else. PopulateSubmissionViewHolder reads it so the card's selftext preview does not draw the
+    // same picture a second time, directly underneath.
+    @Nullable private String selftextInlineImageUrl;
+
     // Same idea for single-image posts. The chosen URL also depends on the low-quality decision
     // (which varies with network state) and the display width (thumbnail vs card), so those are
     // part of the key too.
@@ -226,6 +238,7 @@ public class HeaderImageLinkView extends RelativeLayout {
 
         boolean fullImage = ContentType.fullImage(type);
         thumbUsed = false;
+        selftextInlineImageUrl = null;
 
         setVisibility(View.VISIBLE);
         String url = "";
@@ -250,17 +263,46 @@ public class HeaderImageLinkView extends RelativeLayout {
         JsonNode thumbnail =
                 (dataNode != null) ? dataNode.path("thumbnail") : MissingNode.getInstance();
 
+        final JsonNode previewSource = getPreviewSource(dataNode);
+
+        // A selftext post whose body inlines a reddit image has no "preview" node at all, so every
+        // path below finds nothing to draw and the card falls back to reddit's 140x70 thumbnail.
+        // The inlined image is the post's picture. Only where there is no preview to prefer, and
+        // only where something below acts on it: the comments screen (which drops the thumbnail),
+        // or a feed card that draws big images. The thumbnail layouts keep their thumbnail, and
+        // skip the lookup — sizing it can cost binder calls into ConnectivityManager.
+        final PhotoLoader.GalleryPreview selftextImage =
+                (previewSource == null
+                                && submission.isSelfPost()
+                                && (full || SettingValues.isPicsEnabled(baseSub)))
+                        ? selftextImagePreview(dataNode)
+                        : null;
+
         if ((type == ContentType.Type.SELF && SettingValues.hideSelftextLeadImage)
-                || (SettingValues.noImages && submission.isSelfPost())) {
+                || (SettingValues.noImages && submission.isSelfPost())
+                // The comments screen renders the selftext itself, image and all, so all this
+                // header could add for such a post is the thumbnail reddit attached to it — a
+                // stock placeholder graphic for a post that links nothing, in a row no other self
+                // post gets. Nothing, as for the others.
+                || (full && selftextImage != null)) {
             setVisibility(View.GONE);
             if (wrapArea != null) wrapArea.setVisibility(View.GONE);
             thumbImage2.setVisibility(View.GONE);
         } else {
-            JsonNode previewSource = getPreviewSource(dataNode);
+            // Stand the inlined image in as the lead image, in the feed only.
+            final PhotoLoader.GalleryPreview selftextLeadImage = full ? null : selftextImage;
+
             if (previewSource != null) {
                 int height = previewSource.path("height").asInt();
                 int width = previewSource.path("width").asInt();
                 setBackdropLayoutParams(height, width, full, fullImage, type);
+            } else if (selftextLeadImage != null
+                    && selftextLeadImage.width > 0
+                    && selftextLeadImage.height > 0) {
+                // Reserve the height from the known aspect ratio, as the gallery path does, so the
+                // asynchronously loaded image never resizes the row mid-scroll.
+                setBackdropLayoutParams(
+                        selftextLeadImage.height, selftextLeadImage.width, full, fullImage, type);
             } else if (type == ContentType.Type.REDDIT_GALLERY) {
                 if (full) {
                     setFixedHeightLayoutParams(200);
@@ -355,6 +397,9 @@ public class HeaderImageLinkView extends RelativeLayout {
                 handleImageType(submission, baseSub, full, forceThumb, loadLq);
             } else if (PhotoLoader.usableThumbnails(submission) != null) {
                 handleThumbnailDisplay(submission, full, forceThumb, loadLq, baseSub);
+            } else if (selftextLeadImage != null) {
+                selftextInlineImageUrl = selftextLeadImage.url;
+                handleFullPreviewImage(selftextLeadImage.url, full);
             } else if (!thumbnail.isNull()
                     && submission.getThumbnail() != null
                     && (submission.getThumbnailType() == Submission.ThumbnailType.URL
@@ -571,8 +616,15 @@ public class HeaderImageLinkView extends RelativeLayout {
                         if (SettingValues.storeHistory && !full) {
                             if (!submission.isNsfw() || SettingValues.storeNSFWHistory) {
                                 HasSeen.addSeen(submission.getFullName());
-                                ((View) getParent()).requireViewById(R.id.title).setAlpha(0.54f);
-                                ((View) getParent()).requireViewById(R.id.body).setAlpha(0.54f);
+                                final View card = (View) getParent();
+                                card.requireViewById(R.id.title).setAlpha(0.54f);
+                                card.requireViewById(R.id.body).setAlpha(0.54f);
+                                // The other seat the preview can be in; absent from the three
+                                // cards that draw their image above the title.
+                                final View bodyBelow = card.findViewById(R.id.body_below);
+                                if (bodyBelow != null) {
+                                    bodyBelow.setAlpha(0.54f);
+                                }
                             }
                         }
                         onLinkLongClick(submission.getUrl(), event, submission);
@@ -703,6 +755,40 @@ public class HeaderImageLinkView extends RelativeLayout {
         if (!images.isArray() || images.isEmpty()) return null;
         JsonNode source = images.path(0).path("source");
         return source.isObject() ? source : null;
+    }
+
+    /**
+     * The image this post inlines in its selftext, cached by data-node identity so a re-bind of the
+     * same card skips re-traversing media_metadata and a refreshed submission recomputes.
+     *
+     * <p>The width cap is {@link PhotoLoader#galleryMaxWidth}, the cap both sides of the warm can
+     * compute identically — the preloader sizes off the global "big pictures" flag and the card
+     * off the per-subreddit override, so a cap built on either would have them choose different
+     * rungs of the same image and the card would download a picture the preloader never warmed.
+     */
+    @Nullable private PhotoLoader.GalleryPreview selftextImagePreview(@Nullable JsonNode dataNode) {
+        // Before the cap, because computing it can cost three binder calls into ConnectivityManager
+        // (PhotoLoader.isLowRes, for a user who limits resolution on mobile) and this runs on the
+        // main thread for every text post in the feed. Only a post that carries media_metadata can
+        // have inlined an image, and that is a map lookup.
+        if (dataNode == null || !dataNode.has("media_metadata")) {
+            return null;
+        }
+        final int maxWidth = PhotoLoader.galleryMaxWidth(getContext());
+        if (dataNode == selftextPreviewKey && maxWidth == selftextPreviewMaxWidth) {
+            return selftextPreviewCache;
+        }
+        final PhotoLoader.GalleryPreview preview =
+                PhotoLoader.getSelftextImagePreview(dataNode, maxWidth);
+        selftextPreviewKey = dataNode;
+        selftextPreviewMaxWidth = maxWidth;
+        selftextPreviewCache = preview;
+        return preview;
+    }
+
+    /** The inlined selftext image drawn as this card's lead image, or null if none was. */
+    @Nullable public String getSelftextInlineImageUrl() {
+        return selftextInlineImageUrl;
     }
 
     private void handleRedditGalleryType(Submission submission, @Nullable String baseSub, boolean full, boolean forceThumb) {

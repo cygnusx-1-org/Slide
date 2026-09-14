@@ -265,7 +265,7 @@ public class CreateCardView {
     }
 
     public static View setBigPicEnabled(Boolean b, ViewGroup parent) {
-        SettingValues.prefs.edit().putBoolean("noThumbnails", b).apply();
+        SettingValues.prefs.edit().putBoolean("noThumbnails", false).apply();
         SettingValues.noThumbnails = false;
 
         SettingValues.prefs.edit().putBoolean("bigPicEnabled", b).apply();
@@ -281,7 +281,7 @@ public class CreateCardView {
     }
 
     public static View setBigPicCropped(Boolean b, ViewGroup parent) {
-        SettingValues.prefs.edit().putBoolean("noThumbnails", b).apply();
+        SettingValues.prefs.edit().putBoolean("noThumbnails", false).apply();
         SettingValues.noThumbnails = false;
 
         SettingValues.prefs.edit().putBoolean("bigPicLetterboxed", false).apply();
@@ -297,7 +297,7 @@ public class CreateCardView {
     }
 
     public static View setBigPicLetterboxed(Boolean b, ViewGroup parent) {
-        SettingValues.prefs.edit().putBoolean("noThumbnails", b).apply();
+        SettingValues.prefs.edit().putBoolean("noThumbnails", false).apply();
         SettingValues.noThumbnails = false;
 
         SettingValues.prefs.edit().putBoolean("bigPicCropped", false).apply();

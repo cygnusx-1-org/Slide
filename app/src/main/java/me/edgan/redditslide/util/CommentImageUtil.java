@@ -131,6 +131,24 @@ public final class CommentImageUtil {
      */
     public static void display(
             final MaxHeightImageView imageView, final String rawUrl, final String subreddit) {
+        display(imageView, rawUrl, subreddit, false);
+    }
+
+    /**
+     * As {@link #display(MaxHeightImageView, String, String)}, sized one of two ways.
+     *
+     * @param fullWidth the slot is the container's width and the height that width implies at the
+     *     image's own aspect ratio — the post's selftext is the post, so its pictures get the width
+     *     the post's lead image would, not the constant on-screen area comment images share. The
+     *     height is derived at measure time ({@link MaxHeightImageView#setAspectRatio}) so a slot
+     *     reserved from a known ratio is already right when the bitmap arrives, and one reserved
+     *     with no ratio known grows exactly once, when the load reports the ratio.
+     */
+    public static void display(
+            final MaxHeightImageView imageView,
+            final String rawUrl,
+            final String subreddit,
+            final boolean fullWidth) {
         // Normalize HTML entities so the cache key matches what the preloader warmed (and what the
         // shared loader stores) — escaped vs unescaped here was the cause of images popping in.
         final String url = StringEscapeUtils.unescapeHtml4(rawUrl);
@@ -145,23 +163,21 @@ public final class CommentImageUtil {
         if (isGifUrl(url)
                 && SettingValues.commentEmoteAnimation
                 && !SettingValues.shouldSkipImages(context)
-                && displayAnimatedGif(imageView, loader, url)) {
+                && displayAnimatedGif(imageView, loader, url, fullWidth)) {
             return;
         }
 
         Bitmap cached = syncBitmap(loader, url);
         if (cached != null) {
             recordRatio(url, cached);
-            int[] size = boundedSize(cached.getWidth(), cached.getHeight());
-            applySize(imageView, size[0], size[1]);
+            sizeSlot(imageView, cached.getWidth(), cached.getHeight(), fullWidth);
             imageView.setImageBitmap(cached);
             return;
         }
 
         // Not cached yet (e.g. data-saving off but preload skipped): reserve the slot from the known
         // ratio so there is no reflow, then load asynchronously.
-        int[] reserved = boundedFromRatio(knownRatio(url));
-        applySize(imageView, reserved[0], reserved[1]);
+        reserveSlot(imageView, knownRatio(url), fullWidth);
         // Whether the slot should animate once the bytes arrive (same gate as the synchronous path).
         final boolean animate =
                 isGifUrl(url)
@@ -179,14 +195,17 @@ public final class CommentImageUtil {
                             // back but declares it nullable, and the cache-hit path above already
                             // keys on url.
                             recordRatio(url, loadedImage);
-                            int[] s = boundedSize(loadedImage.getWidth(), loadedImage.getHeight());
-                            applySize(imageView, s[0], s[1]);
+                            sizeSlot(
+                                    imageView,
+                                    loadedImage.getWidth(),
+                                    loadedImage.getHeight(),
+                                    fullWidth);
                         }
                         // The async load just wrote the gif bytes to disk, so upgrade the static
                         // first frame to the looping animation now instead of waiting for a rebind
                         // (scroll) to pick it up. ImageViewAware already guards against recycling.
                         if (animate) {
-                            displayAnimatedGif(imageView, loader, url);
+                            displayAnimatedGif(imageView, loader, url, fullWidth);
                         }
                     }
                 });
@@ -205,7 +224,7 @@ public final class CommentImageUtil {
      * disk yet, is a single still frame, or cannot be decoded by {@link Movie}.
      */
     private static boolean displayAnimatedGif(
-            MaxHeightImageView imageView, ImageLoader loader, String url) {
+            MaxHeightImageView imageView, ImageLoader loader, String url, boolean fullWidth) {
         try {
             File diskFile = loader.getDiskCache().get(url);
             if (diskFile == null || !diskFile.exists()) {
@@ -220,8 +239,7 @@ public final class CommentImageUtil {
                 return false;
             }
             RATIO_CACHE.put(url, (double) movie.height() / movie.width());
-            int[] size = boundedSize(movie.width(), movie.height());
-            applySize(imageView, size[0], size[1]);
+            sizeSlot(imageView, movie.width(), movie.height(), fullWidth);
             // Movie.draw is unreliable on a hardware-accelerated canvas; force software for this view.
             imageView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
             GifDrawable drawable = new GifDrawable(movie, null);
@@ -347,6 +365,41 @@ public final class CommentImageUtil {
             width = screen;
         }
         return new int[] {Math.max(1, width), Math.max(1, height)};
+    }
+
+    /**
+     * The slot for an image whose pixel size is known: see {@link #display}'s two sizings. Public
+     * so a test can exercise the sizing without an image loader — {@link #display} reaches one
+     * through {@code (Reddit) context.getApplicationContext()}, which no unit test has.
+     */
+    public static void sizeSlot(
+            MaxHeightImageView imageView, int width, int height, boolean fullWidth) {
+        if (fullWidth) {
+            if (width > 0 && height > 0) {
+                imageView.setAspectRatio((double) height / width);
+            }
+            return;
+        }
+        int[] size = boundedSize(width, height);
+        applySize(imageView, size[0], size[1]);
+    }
+
+    /**
+     * The slot for an image not yet loaded, from its {@code ratio} (height/width) if one is known.
+     * Full-width with no ratio known leaves the view at its container's width and no height — the
+     * layout params it was added with — until the load reports one.
+     *
+     * <p>Public for the same reason as {@link #sizeSlot}.
+     */
+    public static void reserveSlot(MaxHeightImageView imageView, double ratio, boolean fullWidth) {
+        if (fullWidth) {
+            if (ratio > 0) {
+                imageView.setAspectRatio(ratio);
+            }
+            return;
+        }
+        int[] reserved = boundedFromRatio(ratio);
+        applySize(imageView, reserved[0], reserved[1]);
     }
 
     private static void applySize(ImageView imageView, int width, int height) {

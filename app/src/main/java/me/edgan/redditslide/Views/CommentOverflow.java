@@ -41,6 +41,13 @@ public class CommentOverflow extends LinearLayout {
     @Nullable private Typeface typeface = null;
     private int textColor;
     private int fontSize;
+
+    /**
+     * Whether image blocks take the container's width at their own aspect ratio, rather than the
+     * constant on-screen area comment images share. Set for the one overflow that renders a post's
+     * selftext (the comments screen's header): those pictures are the post's, not a comment's.
+     */
+    private boolean fullWidthImages;
     private static final MarginLayoutParams COLUMN_PARAMS;
     private static final MarginLayoutParams MARGIN_PARAMS;
     private static final MarginLayoutParams HR_PARAMS;
@@ -91,6 +98,11 @@ public class CommentOverflow extends LinearLayout {
 
     private void init(Context context) {
         colorPreferences = new ColorPreferences(context);
+    }
+
+    /** See {@link #fullWidthImages}. Applies to blocks added after the call. */
+    public void setFullWidthImages(boolean fullWidth) {
+        fullWidthImages = fullWidth;
     }
 
     /**
@@ -219,7 +231,7 @@ public class CommentOverflow extends LinearLayout {
                             ViewGroup.LayoutParams.WRAP_CONTENT);
             imageParams.setMargins(0, 16, 0, 16);
             imageView.setLayoutParams(imageParams);
-            CommentImageUtil.display(imageView, url, subreddit);
+            CommentImageUtil.display(imageView, url, subreddit, fullWidthImages);
             if (longClick != null) imageView.setOnLongClickListener(longClick);
             addView(imageView);
         } else if (block.startsWith(SubmissionParser.VIDEO_BLOCK_PREFIX)) {

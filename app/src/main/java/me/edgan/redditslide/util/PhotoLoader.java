@@ -16,6 +16,7 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -343,6 +344,21 @@ public class PhotoLoader {
         // IMAGE post with an empty thumbnail field). getSubmissionUrl mirrors that path exactly.
         if (usableThumbnails(submission) != null) {
             return getSubmissionUrl(submission, loadLq, maxW);
+        }
+
+        // A selftext post with no preview node draws the image inlined in its body instead — the
+        // card's selftext-image branch. Sized with the same cap the card uses (galleryMaxWidth), or
+        // the two pick different rungs of the one picture and the warm misses.
+        //
+        // Only where the caller is sizing for a big image, which is the card's own gate for drawing
+        // it: a thumbnail-width maxW means the card shows reddit's small thumbnail instead, and
+        // warming this would spend a full-size download on an image nothing draws while leaving the
+        // thumbnail that is drawn cold.
+        if (type == ContentType.Type.SELF && maxW >= feedImageWidth(c, true)) {
+            final GalleryPreview inline = getSelftextImagePreview(dataNode, galleryMaxWidth(c));
+            if (inline != null) {
+                return inline.url;
+            }
         }
 
         // Direct thumbnail-URL fallback (HeaderImageLinkView's thumbnailType == URL branch).
@@ -1408,8 +1424,12 @@ public class PhotoLoader {
                     }
                 }
                 if (chosen.has("u")) {
+                    // Unescaped: a rung's url keeps its signed query, and reddit html-escapes the
+                    // ampersands in it. The CDN answers 403 to that form, so the card drew nothing
+                    // and the warm cached nothing. (The source below needs no unescaping — it
+                    // throws the query away.)
                     return new GalleryPreview(
-                            chosen.path("u").asText(), dimOf(chosen, "x"), dimOf(chosen, "y"));
+                            unescapedMediaUrl(chosen), dimOf(chosen, "x"), dimOf(chosen, "y"));
                 }
             }
             // Fall back to the full-resolution source, normalized to the unsigned i.redd.it host
@@ -1422,6 +1442,126 @@ public class PhotoLoader {
             }
         }
         return null;
+    }
+
+    /**
+     * Lead image for a selftext post whose body inlines a reddit-hosted image. Reddit gives those
+     * posts no {@code preview} node at all — the pasted image lives only in {@code media_metadata},
+     * which is what the {@code preview.redd.it} link in the selftext resolves to — so every
+     * preview-based path comes up empty for them and the card is left with reddit's 140x70
+     * thumbnail. Returns the body's first still image, sized the way a gallery's lead image is, or
+     * null when the post inlines no usable image.
+     *
+     * <p>Shared by the feed card (HeaderImageLinkView) and the preloader so both reference the same
+     * cache entry.
+     */
+    public static @Nullable GalleryPreview getSelftextImagePreview(
+            final @Nullable JsonNode dataNode, final int maxWidth) {
+        if (dataNode == null) {
+            return null;
+        }
+        final JsonNode mediaMetadata = dataNode.path("media_metadata");
+        if (!mediaMetadata.isObject()) {
+            return null;
+        }
+        for (final Map.Entry<String, JsonNode> entry : inBodyOrder(mediaMetadata, dataNode)) {
+            // Emotes are media_metadata entries too, keyed "emote|t5_2qh1i|2180". They belong
+            // to the text, and one is never the image the post is about.
+            if (entry.getKey().contains("|")) {
+                continue;
+            }
+            final JsonNode media = entry.getValue();
+            if ("failed".equals(media.path("status").asText())) {
+                continue;
+            }
+            // Only stills: an animation's "s" carries gif/mp4 rather than a url the image
+            // loader can decode, and a post with a RedditVideo entry is routed by content type
+            // long before this.
+            final String e = media.path("e").asText();
+            if (!e.isEmpty() && !"Image".equals(e)) {
+                continue;
+            }
+
+            final JsonNode source = media.path("s");
+            final String sourceUrl = unescapedMediaUrl(source);
+            // Uncapped, the source wins: it is the very url the selftext links to, and reddit's
+            // rungs for an image pasted into a body stop far below the card's width — 108, 216 and
+            // 320 for a 576px picture — which is visibly soft stretched across a phone.
+            if (maxWidth == Integer.MAX_VALUE && !sourceUrl.isEmpty()) {
+                return new GalleryPreview(sourceUrl, dimOf(source, "x"), dimOf(source, "y"));
+            }
+
+            // Capped, which is how the "low resolution images" setting reaches this post: the
+            // smallest rung that still covers the cap, else the largest there is. "p" is ordered
+            // smallest-to-largest, the same order getGalleryPreview reads it in.
+            final JsonNode previews = media.path("p");
+            if (previews.isArray() && previews.size() > 0) {
+                JsonNode chosen = previews.path(previews.size() - 1);
+                for (final JsonNode rung : previews) {
+                    if (rung.has("u") && dimOf(rung, "x") >= maxWidth) {
+                        chosen = rung;
+                        break;
+                    }
+                }
+                final String rungUrl = unescapedMediaUrl(chosen);
+                if (!rungUrl.isEmpty()) {
+                    return new GalleryPreview(rungUrl, dimOf(chosen, "x"), dimOf(chosen, "y"));
+                }
+            }
+
+            if (!sourceUrl.isEmpty()) {
+                return new GalleryPreview(sourceUrl, dimOf(source, "x"), dimOf(source, "y"));
+            }
+        }
+        return null;
+    }
+
+    /**
+     * The {@code media_metadata} entries ordered by where each key first occurs in the post's body,
+     * because the map itself is not in that order: r/test 1wfusrn opens its body with
+     * {@code g7lc0ajdbfph1} while its map opens with {@code u80t999ebfph1}. The post's picture is
+     * the first one the author wrote — the one reddit cuts its own thumbnail from — so the order
+     * that decides has to be the body's.
+     *
+     * <p>Matched on the id rather than on the link, which covers both ways a body carries an image:
+     * the pasted {@code preview.redd.it/<id>.png} url, and an {@code ![img](<id>)} reference still
+     * waiting on its {@code Processing img <id>...} placeholder. Entries the body never names keep
+     * their map order, after the rest.
+     */
+    private static List<Map.Entry<String, JsonNode>> inBodyOrder(
+            final JsonNode mediaMetadata, final JsonNode dataNode) {
+        final List<Map.Entry<String, JsonNode>> entries = new ArrayList<>();
+        final Iterator<Map.Entry<String, JsonNode>> fields = mediaMetadata.fields();
+        while (fields.hasNext()) {
+            entries.add(fields.next());
+        }
+        final String body = dataNode.path("selftext_html").asText("");
+        if (body.isEmpty() || entries.size() < 2) {
+            return entries;
+        }
+        // Stable, so the entries the body does not name stay in the order the map gave them.
+        Collections.sort(
+                entries,
+                (a, b) ->
+                        Integer.compare(
+                                indexOfKey(body, a.getKey()), indexOfKey(body, b.getKey())));
+        return entries;
+    }
+
+    /** Where {@code key} first appears in {@code body}, or past the end when it does not. */
+    private static int indexOfKey(final String body, final String key) {
+        final int index = body.indexOf(key);
+        return index < 0 ? Integer.MAX_VALUE : index;
+    }
+
+    /**
+     * The {@code u} of a media_metadata node, HTML-unescaped. Reddit html-escapes the ampersands of
+     * the signed query, and the CDN answers 403 to that form: the escaped separator makes the
+     * signature parameter parse under a mangled name, so the signature the CDN checks is not the
+     * one it was handed. Measured, not assumed — the unescaped url returns 200 for that image.
+     */
+    private static String unescapedMediaUrl(final JsonNode node) {
+        return StringEscapeUtils.unescapeHtml4(node.path("u").asText());
     }
 
     private static int dimOf(JsonNode node, String field) {

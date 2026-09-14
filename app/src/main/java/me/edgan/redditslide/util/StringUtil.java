@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.regex.Pattern;
 import org.jspecify.annotations.NullMarked;
 
 /** Created by TacoTheDank on 03/15/2021. */
@@ -63,6 +64,65 @@ public class StringUtil {
             return "";
         }
         return input.trim();
+    }
+
+    /** Html tags and comments, for asking whether a fragment still has text in it. */
+    private static final Pattern TAGS = Pattern.compile("<[^>]*>");
+
+    /**
+     * A reddit-hosted image linked from a post body. Snudown renders a pasted image as a link to
+     * it, so it arrives as an anchor whose href names one of reddit's image hosts — matching
+     * {@code preview.redd.it} also covers {@code external-preview.redd.it}.
+     */
+    private static final String IMAGE_HOST = "(?:preview\\.redd\\.it|i\\.redd\\.it)";
+
+    private static final Pattern IMAGE_ANCHOR =
+            Pattern.compile("<a\\b[^>]*" + IMAGE_HOST + "[^>]*>(.*?)</a>", Pattern.DOTALL);
+
+    /**
+     * The same anchor with no {@code </a>}: {@link #ellipsizeHtml} cuts at a character budget
+     * without closing what it opened, so a truncated image link arrives as an opening tag and
+     * whatever of its text fitted.
+     */
+    private static final Pattern IMAGE_ANCHOR_UNCLOSED =
+            Pattern.compile("<a\\b[^>]*" + IMAGE_HOST + "[^>]*>.*", Pattern.DOTALL);
+
+    /**
+     * A bare image url. Bounded by the markup characters as well as by whitespace: a url inside an
+     * attribute has no space before the quote that ends it, so a {@code \\S*} run would swallow the
+     * rest of the tag and the elements after it.
+     */
+    private static final Pattern IMAGE_URL =
+            Pattern.compile("https?://[^\\s<>\"']*" + IMAGE_HOST + "[^\\s<>\"']*");
+
+    /**
+     * {@code html} with every link to a reddit-hosted image removed. The card draws such an image
+     * as the post's lead image, and the body would otherwise draw the same picture again right
+     * underneath it.
+     */
+    public static String withoutRedditImageLinks(final String html) {
+        // The anchor gives up its text, not its whole self: an image reddit pasted in is linked
+        // under its own url and that text goes with it below, but an author who wrote
+        // "[this](url)" put a word in the middle of a sentence, and deleting the word leaves the
+        // sentence broken.
+        String stripped = IMAGE_ANCHOR.matcher(html).replaceAll("$1");
+        stripped = IMAGE_ANCHOR_UNCLOSED.matcher(stripped).replaceAll("");
+        return IMAGE_URL.matcher(stripped).replaceAll("");
+    }
+
+    /**
+     * Whether {@code html} carries nothing a reader would see except links to reddit-hosted images
+     * — the shape of a body whose first line is an image the author pasted on its own. The ellipsis
+     * counts as nothing: it only marks where a link was cut.
+     */
+    public static boolean isOnlyRedditImageLinks(final String html) {
+        final String text =
+                TAGS.matcher(withoutRedditImageLinks(html))
+                        .replaceAll("")
+                        .replace("&nbsp;", " ")
+                        .replace("\u00a0", " ")
+                        .replace("\u2026", "");
+        return text.trim().isEmpty();
     }
 
     /**

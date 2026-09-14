@@ -19,5 +19,8 @@ public class FullSubmissionViewHolder extends SubmissionViewHolder {
         super(v);
         firstTextView = v.requireViewById(R.id.firstTextView);
         commentOverflow = v.requireViewById(R.id.commentOverflow);
+        // The selftext's pictures are the post's: drawn at the body's full width, at their own
+        // aspect ratio, rather than at the constant area a comment's images share.
+        commentOverflow.setFullWidthImages(true);
     }
 }

@@ -570,7 +570,13 @@ public class SettingValues {
         cropImage = prefs.getBoolean(PREF_CROP_IMAGE, true);
         switchThumb = prefs.getBoolean(PREF_SWITCH_THUMB, true);
         bigThumbnails = prefs.getBoolean(PREF_BIG_THUMBS, false);
-        noThumbnails = prefs.getBoolean(PREF_NO_THUMB, false);
+        // The no-thumbnail picture mode is exclusive with the three big-picture modes
+        // (setNoThumbnails turns all of them off), so a stored true alongside bigPicEnabled
+        // can only be a leftover from the setters that used to persist it. Honouring it
+        // there sized every thumbnail to 0dp while the Picture mode row still read "Big
+        // picture", so a post with no preview image (a selftext post whose only image is
+        // inline) drew nothing at all.
+        noThumbnails = prefs.getBoolean(PREF_NO_THUMB, false) && !bigPicEnabled;
 
         swipeAnywhere = true; // override this always now
         album = prefs.getBoolean(PREF_ALBUM, true);

@@ -71,7 +71,7 @@ public class SubmissionClickActions {
                 || contextActivity instanceof Search
                 || contextActivity instanceof Profile) {
             holder.title.setAlpha(0.54f);
-            cardHolder.body.setAlpha(0.54f);
+            cardHolder.setBodyAlpha(0.54f);
         }
     }
 

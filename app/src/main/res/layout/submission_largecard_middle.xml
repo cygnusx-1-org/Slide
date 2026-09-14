@@ -94,11 +94,31 @@
             android:layout_below="@id/innerrelative"
             android:layout_marginTop="4dp" />
 
-        <!-- Bottom section below headerimage -->
+        <!-- The selftext preview's other seat, for a post whose card leads with its picture
+             (SubmissionCache.selftextPreviewBelowLeadImage): the text comes here instead of into
+             @id/body. Same margins and type as @id/body, and exactly one of the two is ever
+             visible. Gone by default; RelativeLayout follows a gone anchor's own layout_below, so
+             the action row lands under headerimage (or innerrelative) as before. -->
+        <me.edgan.redditslide.SpoilerRobotoTextView
+            android:id="@+id/body_below"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/headerimage"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="4dp"
+            android:gravity="center_vertical"
+            android:tag="tintsecond"
+            android:textColor="?attr/tintColor"
+            android:textSize="?attr/font_commentbody"
+            android:visibility="gone" />
+
+        <!-- Bottom section below headerimage (or body_below when that is showing) -->
         <me.edgan.redditslide.Views.RevealRelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/headerimage">
+            android:layout_below="@id/body_below">
 
             <LinearLayout
                 android:id="@+id/vote"

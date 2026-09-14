@@ -246,7 +246,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                 // in (its own full-width path — never the thumbnail).
                                 PhotoLoader.warmFull(context, submission);
                                 holder.title.setAlpha(0.54f);
-                                holder.body.setAlpha(0.54f);
+                                holder.setBodyAlpha(0.54f);
 
                                 if (context instanceof MainActivity) {
                                     final MainActivity a = (MainActivity) context;

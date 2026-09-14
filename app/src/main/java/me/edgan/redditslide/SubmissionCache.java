@@ -50,27 +50,96 @@ public class SubmissionCache {
      * because building it runs a full Html.fromHtml parse, and the feed did that on every bind of
      * every self post. Keyed on the source html and the mode too, so an edited post or a flipped
      * setting re-renders on its own.
+     *
+     * @param skipImageLines the card is drawing the body's inlined image as its lead image, so the
+     *     line holding that image is not the preview — the first line with words on it is, and any
+     *     link to a reddit image left in it comes out. Without this, a post that opens with a
+     *     pasted image has an empty preview and the card shows the picture and none of the text.
      */
-    public static String getSelftextPreview(Submission submission) {
+    public static String getSelftextPreview(Submission submission, boolean skipImageLines) {
         final String source = submission.getDataNode().path("selftext_html").asText("");
-        final String mode = SettingValues.cardTextEllipsize ? "ellipsized" : "paragraph";
+        final String mode =
+                (SettingValues.cardTextEllipsize ? "ellipsized" : "paragraph")
+                        + (skipImageLines ? "+noimg" : "");
         final String[] cached = selftextPreviews.get(submission.getFullName());
         if (cached != null && cached[0].equals(source) && cached[1].equals(mode)) {
             return cached[2];
         }
 
-        final String firstLine =
-                source.substring(0, source.contains("\n") ? source.indexOf("\n") : source.length());
-        String preview =
-                CompatUtil.fromHtml(firstLine)
-                        .toString()
-                        .replace("<sup>", "<sup><small>")
-                        .replace("</sup>", "</small></sup>");
+        String preview = null;
+        if (skipImageLines) {
+            for (final String line : source.split("\n")) {
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+                final String text = CompatUtil.fromHtml(line).toString();
+                if (!StringUtil.isOnlyRedditImageLinks(text)) {
+                    preview = StringUtil.withoutRedditImageLinks(text);
+                    break;
+                }
+            }
+            if (preview == null) {
+                // Every line was an image the lead image is already showing.
+                preview = "";
+            }
+        } else {
+            final String firstLine =
+                    source.substring(
+                            0, source.contains("\n") ? source.indexOf("\n") : source.length());
+            preview = CompatUtil.fromHtml(firstLine).toString();
+        }
+        preview = preview.replace("<sup>", "<sup><small>").replace("</sup>", "</small></sup>");
         if (SettingValues.cardTextEllipsize) {
             preview = StringUtil.ellipsizeHtml(preview, SettingValues.CARD_TEXT_ELLIPSIZE_CHARS);
         }
         selftextPreviews.put(submission.getFullName(), new String[] {source, mode, preview});
         return preview;
+    }
+
+    /** fullname -> {source selftext_html, "1" if the body opens with an image}. */
+    private static WeakHashMap<String, String[]> selftextImageFirst = new WeakHashMap<>();
+
+    /**
+     * Whether the first line of the body with anything on it is a link to a reddit-hosted image
+     * and nothing else — the shape of a post written as its picture and then its words. The card
+     * follows that order: the lead image it drew from the body goes above the preview text rather
+     * than below it. Cached like {@link #getSelftextPreview}, and for the same reason.
+     */
+    public static boolean selftextStartsWithImage(Submission submission) {
+        final String source = submission.getDataNode().path("selftext_html").asText("");
+        final String[] cached = selftextImageFirst.get(submission.getFullName());
+        if (cached != null && cached[0].equals(source)) {
+            return "1".equals(cached[1]);
+        }
+        boolean imageFirst = false;
+        for (final String line : source.split("\n")) {
+            if (line.trim().isEmpty()) {
+                continue;
+            }
+            imageFirst = StringUtil.isOnlyRedditImageLinks(CompatUtil.fromHtml(line).toString());
+            break;
+        }
+        selftextImageFirst.put(
+                submission.getFullName(), new String[] {source, imageFirst ? "1" : "0"});
+        return imageFirst;
+    }
+
+    /**
+     * Whether the card's selftext preview goes under its lead image rather than above it — the
+     * middle-image card is the one with a seat on each side.
+     *
+     * <p>A card leads with its picture, the way the comments screen does (image, title, body): a
+     * preview reddit built from a link in the body is the post's picture, not a line of the body,
+     * so the words follow it wherever the link sat. The one exception is a picture the card took
+     * out of the body itself — that one keeps the body's own order, and only goes first when the
+     * body opened with it. No picture, nothing to be under: the preview stays in its usual seat.
+     *
+     * @param leadImageShown the card is drawing a big lead image for this post
+     * @param leadIsInlineImage that image came out of the body, via {@code media_metadata}
+     */
+    public static boolean selftextPreviewBelowLeadImage(
+            Submission submission, boolean leadImageShown, boolean leadIsInlineImage) {
+        return leadImageShown && (!leadIsInlineImage || selftextStartsWithImage(submission));
     }
 
     public static void cacheSubmissions(
