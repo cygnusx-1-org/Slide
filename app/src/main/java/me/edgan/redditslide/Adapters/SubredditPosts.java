@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.ActionBar;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -158,8 +159,13 @@ public class SubredditPosts implements PostLoader {
      * token is not cleared here: the paginator drops its own copy once a request has actually
      * succeeded, so a 500-retry that rebuilds the paginator re-seeds rather than jumping to the top
      * of the listing.
+     *
+     * <p>Package-private as a seam: this is where the user's chosen sort and time period are read,
+     * and the only place a fetch can pick them up. A reload that never reaches here -- one served
+     * from the cache instead -- is a sort change the user never sees.
      */
-    private Paginator createPaginator(String sub, int limit) {
+    @VisibleForTesting
+    Paginator createPaginator(String sub, int limit) {
         final Paginator built;
         if (sub.equals("frontpage")) {
             built = new ResumableSubredditPaginator(Authentication.reddit);

@@ -137,6 +137,35 @@ public class FeedRestoreStateTest {
         assertFalse(rebuilt.getBoolean(SubmissionsView.ARG_RESTORE_FROM_CACHE, false));
     }
 
+    /**
+     * A host about to rebuild its feed as a different listing throws the restore away rather than
+     * waiting for {@code applyTo} to spend it -- which for a listing reopened under a name other
+     * than the one it was recorded under never happens. See {@code SubredditView.reloadSubs()}.
+     */
+    @Test
+    public void aDiscardedRestoreIsHandedToNoPage() {
+        final FeedRestoreState restore = new FeedRestoreState();
+        restore.read(captured());
+        assertTrue(restore.isPending());
+
+        restore.discard();
+
+        assertFalse(restore.isPending());
+        final Bundle args = new Bundle();
+        assertFalse(restore.applyTo("AndroidDev", null, args));
+        assertFalse(args.getBoolean(SubmissionsView.ARG_RESTORE_FROM_CACHE, false));
+    }
+
+    /** Nothing to throw away is not an error; the reload path calls this unconditionally. */
+    @Test
+    public void discardingAnEmptyStateIsHarmless() {
+        final FeedRestoreState restore = new FeedRestoreState();
+
+        restore.discard();
+
+        assertFalse(restore.isPending());
+    }
+
     @Test
     public void aMultiredditMatchesOnItsResolvedPath() {
         final Bundle state = captured();

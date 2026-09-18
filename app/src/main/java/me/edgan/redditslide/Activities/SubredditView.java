@@ -1786,8 +1786,45 @@ public class SubredditView extends BaseActivity implements HibernateState.Restor
         }
     }
 
+    /**
+     * Rebuilds the feed after something that changes what the listing is -- a sort, a time period,
+     * a content filter, the subreddit's default sorting. The pager adapter is replaced in place,
+     * which drops the fragment holding the old listing and builds a fresh {@link SubmissionsView}
+     * that fetches with the new setting, the same way {@code MainActivity} and {@code
+     * MultiredditOverview} rebuild for the same menus.
+     *
+     * <p>Not {@link #restartTheme()}: that carries the scroll restore on the relaunch intent, and a
+     * restore rebuilds the listing out of the offline cache instead of fetching it. The new sort
+     * was saved, but the posts that came back were the old sort's, until the user left the screen
+     * and came back.
+     */
     private void reloadSubs() {
-        restartTheme();
+        // A restore that no page has claimed -- a /r/random resume, which comes back under the
+        // name it was opened with rather than the one it was recorded under -- is still waiting,
+        // and the fragment built below is a page it could match. Putting the cached listing back
+        // is the one thing this rebuild exists to avoid.
+        restore.discard();
+        // Detached first so the adapter constructors, which read pager.getAdapter(), take the same
+        // branch they do in onCreate rather than moving the page of an adapter being replaced.
+        pager.setAdapter(null);
+        if (commentPager) {
+            adapter = new SubredditPagerAdapterComment(getSupportFragmentManager());
+            pager.setSwipeLeftOnly(false);
+            pager.setSwipingEnabled(true);
+        } else {
+            adapter = new SubredditPagerAdapter(getSupportFragmentManager());
+        }
+        pager.setAdapter(adapter);
+        // Page 1 is the feed in every configuration, and ViewPager clamps it to the last page for
+        // the single-page one. Without animation, because detaching the adapter leaves the pager
+        // on page 0 and an animated hop off it scrolls across that page: in oldSwipeMode page 0 is
+        // the swipe-away-to-exit page, whose scroll handler drags the app bar along by margin and
+        // calls finish() the moment it settles there.
+        pager.setCurrentItem(1, false);
+        // The app bar auto-hides on scroll and is left wherever the old feed put it; the new one
+        // starts at the top, which is the one position it has to be showing for.
+        header.animate().cancel();
+        header.setTranslationY(0f);
     }
 
     private void setViews(

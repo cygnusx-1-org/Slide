@@ -49,6 +49,24 @@ public final class FeedRestoreState {
     }
 
     /**
+     * Throws away a restore that has not been handed over, for a host that is about to rebuild its
+     * feed as something else. A restore describes the listing the user was looking at; once they
+     * have asked for a different sort, time period or filter, putting it back is putting the old
+     * listing back.
+     *
+     * <p>{@link #applyTo} normally clears it on the way past, but only for the page it names, and
+     * {@code /r/random} can be recorded under one name and reopened under another. A hibernate
+     * entry keeps the intent extras the screen was opened with, which stay {@code random}, while
+     * {@link #capture} writes the name the screen took once the listing resolved. The resumed
+     * screen is {@code random} again and the restore is for the subreddit it landed on, so nothing
+     * matches and it stays pending -- until the listing resolves the same way a second time and a
+     * rebuild hands it to a page it was never meant for.
+     */
+    public void discard() {
+        subreddit = null;
+    }
+
+    /**
      * Records the state of the feed currently on screen.
      *
      * @param header the auto-hiding app bar. Whether it was hidden is part of what the screen
