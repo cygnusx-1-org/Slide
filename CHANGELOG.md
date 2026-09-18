@@ -4,6 +4,10 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+8.0.4 / 2026-9-17
+============
+* Fixed Sorting options don't work for non subscribed subreddits #307
+
 8.0.3 / 2026-9-14
 ============
 * Drew a self post's inlined body image as its feed card lead image
