@@ -3,6 +3,7 @@ package me.edgan.redditslide.ui.settings.dragSort;
 import static me.edgan.redditslide.UserSubscriptions.setPinned;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -42,8 +43,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import me.edgan.redditslide.Activities.BaseActivityAnim;
+import me.edgan.redditslide.Activities.CreateMegareddit;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.CaseInsensitiveArrayList;
+import me.edgan.redditslide.Megareddit;
+import me.edgan.redditslide.Megareddits;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.UserSubscriptions;
@@ -84,6 +88,9 @@ public class ReorderSubreddits extends BaseActivityAnim {
     @Nullable private String input;
 
     public static final String MULTI_REDDIT = "/m/";
+
+    /** Result code for the Megareddit editor opened to add a tab. */
+    private static final int RC_NEW_MEGAREDDIT = 1803;
 
     @SuppressWarnings("NullAway.Init") // assigned in onCreateOptionsMenu
     MenuItem subscribe;
@@ -396,6 +403,11 @@ public class ReorderSubreddits extends BaseActivityAnim {
                             }
                         }
                     });
+        }
+        {
+            final FabOption megaredditFab =
+                    (FabOption) requireViewById(R.id.sort_fabOption_megareddit);
+            megaredditFab.setOnClickListener(v -> showAddMegaredditDialog());
         }
         {
             final FabOption subFab = (FabOption) requireViewById(R.id.sort_fabOption_sub);
@@ -1332,7 +1344,7 @@ public class ReorderSubreddits extends BaseActivityAnim {
      * @return if the subreddit is single
      */
     private boolean isSingle(String subreddit) {
-        return !(isSpecial(subreddit) || subreddit.contains("+") || subreddit.contains(".") || subreddit.contains(MULTI_REDDIT));
+        return !(isSpecial(subreddit) || subreddit.contains("+") || subreddit.contains(".") || subreddit.contains(MULTI_REDDIT) || Megareddits.isKey(subreddit));
     }
 
     /**
@@ -1346,6 +1358,64 @@ public class ReorderSubreddits extends BaseActivityAnim {
             if (subreddit.equalsIgnoreCase(specialSubreddit)) return true;
         }
         return false;
+    }
+
+    /** Opens the Megareddit editor; what it saves is added as a tab in {@link #onActivityResult}. */
+    private void createMegareddit() {
+        startActivityForResult(
+                new Intent(ReorderSubreddits.this, CreateMegareddit.class), RC_NEW_MEGAREDDIT);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode != RC_NEW_MEGAREDDIT || resultCode != RESULT_OK || data == null) {
+            return;
+        }
+        final String name =
+                MiscUtil.orEmpty(data.getStringExtra(CreateMegareddit.EXTRA_MEGAREDDIT));
+        final String key = Megareddits.keyFor(name);
+        if (name.isEmpty() || subs.contains(key)) {
+            return;
+        }
+        int pos = addSubAlphabetically(key);
+        adapter.notifyDataSetChanged();
+        recyclerView.smoothScrollToPosition(pos);
+    }
+
+    /**
+     * Offers the account's Megareddits that are not tabs yet. With none of them left to offer, goes
+     * straight to creating one.
+     */
+    private void showAddMegaredditDialog() {
+        final List<String> names = new ArrayList<>();
+        for (Megareddit m : Megareddits.getAll()) {
+            if (!subs.contains(m.key())) {
+                names.add(m.getName());
+            }
+        }
+        if (names.isEmpty()) {
+            createMegareddit();
+            return;
+        }
+
+        final String[] items = names.toArray(new String[0]);
+        AlertDialog dialog = new MaterialAlertDialogBuilder(ReorderSubreddits.this)
+                .setTitle(R.string.reorder_megareddit_title)
+                .setSingleChoiceItems(items, -1, (dialogInterface, which) -> {
+                    int pos = addSubAlphabetically(Megareddits.keyFor(items[which]));
+                    adapter.notifyDataSetChanged();
+                    recyclerView.smoothScrollToPosition(pos);
+                    dialogInterface.dismiss();
+                })
+                .setNeutralButton(
+                        R.string.title_create_megareddit,
+                        (dialogInterface, which) -> createMegareddit())
+                .setPositiveButton(R.string.btn_cancel, null)
+                .create();
+
+        DialogUtil.applyCustomBorderToAlertDialog(ReorderSubreddits.this, dialog);
+        dialog.show();
     }
 
     /**

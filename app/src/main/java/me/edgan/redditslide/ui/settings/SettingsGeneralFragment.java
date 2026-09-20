@@ -53,6 +53,7 @@ import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.CaseInsensitiveArrayList;
 import me.edgan.redditslide.Fragments.DrawerItemsDialog;
 import me.edgan.redditslide.HibernateState;
+import me.edgan.redditslide.Megareddits;
 import me.edgan.redditslide.Notifications.CheckForMail;
 import me.edgan.redditslide.Notifications.NotificationJobScheduler;
 import me.edgan.redditslide.R;
@@ -1674,7 +1675,8 @@ public class SettingsGeneralFragment<ActivityType extends AppCompatActivity> {
                     && !s.equals("frontpage")
                     && !s.contains("+")
                     && !s.contains(".")
-                    && !s.contains("/m/")) {
+                    && !s.contains("/m/")
+                    && !Megareddits.isKey(s)) {
                 all[i] = s.toLowerCase(Locale.ENGLISH);
                 i++;
             }

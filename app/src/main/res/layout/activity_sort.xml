@@ -111,6 +111,15 @@
             app:label_text="@string/reorder_fab_collection" />
 
         <com.nambimobile.widgets.efab.FabOption
+            android:id="@+id/sort_fabOption_megareddit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_color="@color/md_green_A400"
+            app:fab_icon="@drawable/ic_dashboard"
+            app:fab_orientation="portrait"
+            app:label_text="@string/reorder_fab_megareddit" />
+
+        <com.nambimobile.widgets.efab.FabOption
             android:id="@+id/sort_fabOption_domain"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

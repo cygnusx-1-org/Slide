@@ -129,7 +129,9 @@ public class CommentCacheAsync extends AsyncTask<Void, Void, Void> {
                                             R.string.offline_caching_title,
                                             sub.equalsIgnoreCase("frontpage")
                                                     ? fSub
-                                                    : (fSub.contains("/m/") ? fSub : "/r/" + fSub)))
+                                                    : (fSub.contains("/m/") || Megareddits.isKey(fSub)
+                                                            ? fSub
+                                                            : "/r/" + fSub)))
                             .setSmallIcon(R.drawable.ic_save);
                 }
                 List<Submission> submissions = new ArrayList<>();

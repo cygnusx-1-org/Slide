@@ -26,6 +26,7 @@ import me.edgan.redditslide.Activities.MainPagerAdapterComment;
 import me.edgan.redditslide.Activities.SubredditView;
 import me.edgan.redditslide.CaseInsensitiveArrayList;
 import me.edgan.redditslide.Constants;
+import me.edgan.redditslide.Megareddits;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.UserSubscriptions;
@@ -166,7 +167,7 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
             }
 
             final String subreddit =
-                    (sub.contains("+") || sub.contains("/m/"))
+                    (sub.contains("+") || sub.contains("/m/") || Megareddits.isKey(sub))
                             ? sub
                             : StringUtil.sanitizeString(
                                     sub.replace(
@@ -181,7 +182,7 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            boolean isSpecialOrMulti = UserSubscriptions.specialSubreddits.contains(subreddit.toLowerCase(Locale.ENGLISH)) || subreddit.startsWith("/m/");
+                            boolean isSpecialOrMulti = UserSubscriptions.specialSubreddits.contains(subreddit.toLowerCase(Locale.ENGLISH)) || subreddit.startsWith("/m/") || Megareddits.isKey(subreddit);
                             if (SettingValues.hideSubredditTabs) {
                                 // WHEN TABS ARE HIDDEN:
                                 if (isSpecialOrMulti) {

@@ -89,6 +89,7 @@ import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.HasSeen;
 import me.edgan.redditslide.HibernateState;
 import me.edgan.redditslide.InboxCount;
+import me.edgan.redditslide.Megareddits;
 import me.edgan.redditslide.Notifications.CheckForMail;
 import me.edgan.redditslide.OfflineSubreddit;
 import me.edgan.redditslide.OpenRedditLink;
@@ -515,6 +516,7 @@ public class MainActivity extends BaseActivity
             final String subreddit = usedArray.get(pager.getCurrentItem());
 
             if (subreddit.contains("/m/")
+                    || Megareddits.isKey(subreddit)
                     || subreddit.contains(".")
                     || subreddit.contains("+")
                     || subreddit.equals("frontpage")
@@ -648,7 +650,8 @@ public class MainActivity extends BaseActivity
                     && !subreddit.equals("frontpage")
                     && !subreddit.contains(".")
                     && !subreddit.contains("+")
-                    && !subreddit.contains("/m/")) {
+                    && !subreddit.contains("/m/")
+                    && !Megareddits.isKey(subreddit)) {
                 drawerLayout.openDrawer(GravityCompat.END);
             } else {
                 Toast.makeText(this, R.string.sidebar_notfound, Toast.LENGTH_SHORT).show();
@@ -766,6 +769,7 @@ public class MainActivity extends BaseActivity
                         && !currentSubreddit.equalsIgnoreCase("all")
                         && !currentSubreddit.contains(".")
                         && !currentSubreddit.contains("/m/")
+                        && !Megareddits.isKey(currentSubreddit)
                         && !currentSubreddit.equalsIgnoreCase("friends")
                         && !currentSubreddit.equalsIgnoreCase("random")
                         && !currentSubreddit.equalsIgnoreCase("popular")
@@ -2143,7 +2147,7 @@ public class MainActivity extends BaseActivity
                     if (count == 2 || count == subs.size()) {
                         break;
                     }
-                    if (!s.contains("/m/")) {
+                    if (!s.contains("/m/") && !Megareddits.isKey(s)) {
                         Intent sub =
                                 new Intent(Intent.ACTION_VIEW, null, this, SubredditView.class);
                         sub.putExtra(SubredditView.EXTRA_SUBREDDIT, s);
@@ -2165,7 +2169,7 @@ public class MainActivity extends BaseActivity
                     if (count == 4 || count == subs.size()) {
                         break;
                     }
-                    if (!s.contains("/m/")) {
+                    if (!s.contains("/m/") && !Megareddits.isKey(s)) {
 
                         Intent sub =
                                 new Intent(Intent.ACTION_VIEW, null, this, SubredditView.class);

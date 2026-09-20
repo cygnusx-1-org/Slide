@@ -19,6 +19,8 @@ import me.edgan.redditslide.BuildConfig;
 import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.HasSeen;
 import me.edgan.redditslide.LastComments;
+import me.edgan.redditslide.Megareddit;
+import me.edgan.redditslide.Megareddits;
 import me.edgan.redditslide.OfflineSubreddit;
 import me.edgan.redditslide.PostLoader;
 import me.edgan.redditslide.PostMatch;
@@ -37,6 +39,7 @@ import net.dean.jraw.models.Listing;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.paginators.DomainPaginator;
 import net.dean.jraw.paginators.Paginator;
+import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.SubredditPaginator;
 
 /**
@@ -104,6 +107,36 @@ public class SubredditPosts implements PostLoader {
     private static final int MAX_EMPTY_PAGES = 3;
 
     /**
+     * How many posts one load of a Megareddit tries to come back with. A Megareddit is r/all with
+     * most of it filtered away -- for tags "cat" and "dog", about one post in 36 is kept -- so a
+     * single page yields two or three. That is too few to fill the screen, and a list that does not
+     * fill the screen never scrolls, so the listener that asks for the next page never fires.
+     *
+     * <p>A goal, not a ceiling on the feed: pagination carries on into the next page and the next
+     * sort as the listing is scrolled, so what the feed ends up holding is every post r/all will
+     * hand over, the same set the Subreddits screen counts.
+     */
+    private static final int MEGA_MIN_MATCHES_PER_LOAD = 10;
+
+    /**
+     * Pages one load may fetch while trying to reach {@link #MEGA_MIN_MATCHES_PER_LOAD}. Hot and
+     * rising never run out, so without a budget a Megareddit whose tags match nothing -- a typo is
+     * enough -- would page r/all forever behind a spinner that never resolves. It bounds one load,
+     * not the feed: the next load starts where this one stopped.
+     */
+    private static final int MEGA_MAX_PAGES_PER_LOAD = 12;
+
+    /**
+     * For a Megareddit sorted "All": the sort its paginator is on, and the ones still to walk. Each
+     * sort surfaces a different slice of r/all, so the listing runs on into the next one instead of
+     * ending when a sort does. Duplicates between them are dropped where the pages are merged,
+     * which is by post id.
+     */
+    @Nullable private Sorting megaSort;
+
+    private final List<Sorting> megaSortsLeft = new ArrayList<>();
+
+    /**
      * Which listing the posts in this loader belong to. Bumped by every reset load, on the main
      * thread, before that load clears {@link #posts}.
      *
@@ -169,16 +202,40 @@ public class SubredditPosts implements PostLoader {
         final Paginator built;
         if (sub.equals("frontpage")) {
             built = new ResumableSubredditPaginator(Authentication.reddit);
+        } else if (Megareddits.isKey(sub)) {
+            // A Megareddit is a filter over r/all; getNextFiltered applies it.
+            built = new ResumableSubredditPaginator(Authentication.reddit, "all");
         } else if (!sub.contains(".")) {
             built = new ResumableSubredditPaginator(Authentication.reddit, sub);
         } else {
             built = new ResumableDomainPaginator(Authentication.reddit, sub);
         }
-        built.setSorting(SettingValues.getSubmissionSort(subreddit));
+        if (Megareddits.isKey(subreddit) && Megareddits.isSortAll(subreddit)) {
+            if (megaSort == null) {
+                megaSortsLeft.clear();
+                megaSortsLeft.addAll(Megareddits.ALL_SORTS);
+                megaSort = megaSortsLeft.remove(0);
+            }
+            built.setSorting(megaSort);
+        } else {
+            built.setSorting(SettingValues.getSubmissionSort(subreddit));
+        }
         built.setTimePeriod(SettingValues.getSubmissionTimePeriod(subreddit));
         built.setLimit(limit);
         ((ResumablePaginator) built).setResumeAfter(restoreAfterToken);
         return built;
+    }
+
+    /**
+     * Whether the listing {@code listing} keeps {@code s} as far as a Megareddit is concerned.
+     * Anything that is not a Megareddit keeps everything; one whose definition {@code mega} has
+     * since been deleted keeps nothing.
+     */
+    private static boolean megaKeeps(String listing, @Nullable Megareddit mega, Submission s) {
+        if (!Megareddits.isKey(listing)) {
+            return true;
+        }
+        return mega != null && mega.matches(s.getSubredditName());
     }
 
     /**
@@ -209,9 +266,10 @@ public class SubredditPosts implements PostLoader {
         // What the previous restore path published here; the offline gallery and shadowbox read it
         // for the snapshot timestamp to open.
         cached = stored;
+        final Megareddit mega = Megareddits.forKey(subreddit);
         final List<Submission> restored = new ArrayList<>();
         for (Submission s : stored.submissions) {
-            if (!PostMatch.doesMatch(s, subreddit, force18)) {
+            if (!PostMatch.doesMatch(s, subreddit, force18) && megaKeeps(subreddit, mega, s)) {
                 restored.add(s);
             }
         }
@@ -563,6 +621,9 @@ public class SubredditPosts implements PostLoader {
                     // A refresh is a request for the top of the listing, which is the one thing a
                     // resume token must not do.
                     restoreAfterToken = null;
+                    // ...and for a Megareddit on "All", the top means the first sort again.
+                    megaSort = null;
+                    megaSortsLeft.clear();
                 }
                 paginator = createPaginator(sub, Paginator.RECOMMENDED_MAX_LIMIT);
             }
@@ -622,7 +683,32 @@ public class SubredditPosts implements PostLoader {
         }
 
         public ArrayList<Submission> getNextFiltered() {
-            return getNextFiltered(0);
+            final ArrayList<Submission> filtered = getNextFiltered(0);
+            if (Megareddits.isKey(subreddit)) {
+                // Keeps fetching until there is a screenful to show, the listing is spent --
+                // across sorts, since a Megareddit on "All" runs on into the next one -- or this
+                // load has used its page budget. A refresh landing underneath also stops it.
+                int pages = 1;
+                while (filtered.size() < MEGA_MIN_MATCHES_PER_LOAD
+                        && pages < MEGA_MAX_PAGES_PER_LOAD
+                        && error == null
+                        && !nomore
+                        && paginator != null
+                        && (paginator.hasNext() || !megaSortsLeft.isEmpty())
+                        && !stale()) {
+                    filtered.addAll(getNextFiltered(0));
+                    pages++;
+                }
+                if (!stale() && filtered.isEmpty() && pages >= MEGA_MAX_PAGES_PER_LOAD) {
+                    // A whole budget of r/all and not one post kept -- a tag with a typo in it
+                    // does this. Nothing here can trigger another load, because a feed with no
+                    // rows cannot be scrolled, so report the end rather than leave the footer
+                    // spinning for good. Pull to refresh starts the walk again. Never from a
+                    // stale load: the listing it would end is the refresh's, not its own.
+                    nomore = true;
+                }
+            }
+            return filtered;
         }
 
         /**
@@ -637,7 +723,29 @@ public class SubredditPosts implements PostLoader {
             ArrayList<Submission> filteredSubmissions = new ArrayList<>();
             ArrayList<Submission> adding = new ArrayList<>();
 
+            // Looked up for every page rather than held, so a subreddit the overflow menu has
+            // just made negative is gone from the next page of the listing already on screen.
+            final boolean isMega = Megareddits.isKey(subreddit);
+            final Megareddit mega = Megareddits.forKey(subreddit);
+            if (isMega && mega == null) {
+                // Deleted while still open, or left behind as a tab: nothing belongs in it.
+                nomore = true;
+                return filteredSubmissions;
+            }
+
             try {
+                if (paginator != null && !paginator.hasNext() && !megaSortsLeft.isEmpty()) {
+                    // This sort is spent; "All" carries the listing on into the next one. The
+                    // resume token belongs to the sort being left behind -- handing it to the next
+                    // one resumes that listing at a cursor from a different ordering.
+                    restoreAfterToken = null;
+                    megaSort = megaSortsLeft.remove(0);
+                    paginator =
+                            createPaginator(
+                                    subreddit.toLowerCase(Locale.ENGLISH),
+                                    Paginator.RECOMMENDED_MAX_LIMIT);
+                }
+
                 if (paginator != null && paginator.hasNext()) {
                     if (force18 && paginator instanceof SubredditPaginator) {
                         ((SubredditPaginator) paginator).setObeyOver18(false);
@@ -648,16 +756,24 @@ public class SubredditPosts implements PostLoader {
                 }
 
                 for (Submission s : adding) {
-                    if (!PostMatch.doesMatch(
-                            s,
-                            paginator instanceof SubredditPaginator
-                                    ? ((SubredditPaginator) paginator).getSubreddit()
-                                    : ((DomainPaginator) paginator).getDomain(),
-                            force18)) {
+                    // A Megareddit is matched against its own key rather than against "all": the
+                    // key is what its sort and its content filters are stored under.
+                    final String base;
+                    if (isMega) {
+                        base = subreddit;
+                    } else if (paginator instanceof SubredditPaginator) {
+                        base = ((SubredditPaginator) paginator).getSubreddit();
+                    } else {
+                        base = ((DomainPaginator) paginator).getDomain();
+                    }
+                    if (!PostMatch.doesMatch(s, base, force18)
+                            && megaKeeps(subreddit, mega, s)) {
                         filteredSubmissions.add(s);
                     }
                 }
-                if (paginator != null
+                // A Megareddit pages on through getNextFiltered() instead, which counts matches.
+                if (!isMega
+                        && paginator != null
                         && paginator.hasNext()
                         && filteredSubmissions.isEmpty()
                         && emptyPages < MAX_EMPTY_PAGES) {
@@ -738,9 +854,11 @@ public class SubredditPosts implements PostLoader {
                                         cached =
                                                 OfflineSubreddit.getSubreddit(
                                                         subreddit, Long.valueOf(s2[1]), true, c);
+                                        final Megareddit mega = Megareddits.forKey(subreddit);
                                         List<Submission> finalSubs = new ArrayList<>();
                                         for (Submission s : cached.submissions) {
-                                            if (!PostMatch.doesMatch(s, subreddit, force18)) {
+                                            if (!PostMatch.doesMatch(s, subreddit, force18)
+                                                    && megaKeeps(subreddit, mega, s)) {
                                                 finalSubs.add(s);
                                             }
                                         }

@@ -272,7 +272,9 @@ public class UserSubscriptions {
         } else {
             CaseInsensitiveArrayList subredditsForHome = new CaseInsensitiveArrayList();
             for (String s2 : s.split(",")) {
-                if (!s2.contains("/m/")) subredditsForHome.add(s2.toLowerCase(Locale.ENGLISH));
+                if (!s2.contains("/m/") && !Megareddits.isKey(s2)) {
+                    subredditsForHome.add(s2.toLowerCase(Locale.ENGLISH));
+                }
             }
             return subredditsForHome;
         }

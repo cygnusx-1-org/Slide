@@ -26,6 +26,7 @@ import me.edgan.redditslide.Adapters.SubredditPosts;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.Fragments.SubmissionsView;
+import me.edgan.redditslide.Megareddits;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
@@ -72,7 +73,9 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
     // Helper method to check if a subreddit is special (frontpage, all) or a multi-reddit
     protected boolean isSpecialOrMulti(String subreddit) {
         String lowercase = subreddit.toLowerCase(Locale.ENGLISH);
-        return UserSubscriptions.specialSubreddits.contains(lowercase) || lowercase.contains("/m/");
+        return UserSubscriptions.specialSubreddits.contains(lowercase)
+                || lowercase.contains("/m/")
+                || Megareddits.isKey(lowercase);
     }
 
     // Modified constructor to accept MainActivity

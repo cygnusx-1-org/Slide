@@ -20,6 +20,7 @@ import java.util.Locale;
 import java.util.Map;
 import me.edgan.redditslide.Autocache.AutoCacheScheduler;
 import me.edgan.redditslide.CommentCacheAsync;
+import me.edgan.redditslide.Megareddits;
 import me.edgan.redditslide.OfflineSubreddit;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
@@ -282,7 +283,7 @@ public class ManageOfflineContentFragment {
                         sub = multiNameToSubsMap.get(sub);
                     }
                     final String name =
-                            (sub.contains("/m/") ? sub : "/r/" + sub)
+                            (sub.contains("/m/") || Megareddits.isKey(sub) ? sub : "/r/" + sub)
                                     + " → "
                                     + (Long.parseLong(split[1]) == 0
                                             ? context.getString(

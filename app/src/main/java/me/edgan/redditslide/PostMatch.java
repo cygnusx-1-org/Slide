@@ -127,7 +127,14 @@ public class PostMatch {
                     || subredditForSort.equalsIgnoreCase("all")
                     || subredditForSort.contains("+") // Combined subreddits like "programming+coding"
                     || subredditForSort.contains("/m/") // Multireddits like "/m/tech"
-                    || subredditForSort.startsWith("multi_"); // Multireddits in overview like "multi_tech"
+                    || subredditForSort.startsWith("multi_") // Multireddits in overview like "multi_tech"
+                    || Megareddits.isKey(subredditForSort); // Megareddits, filters over r/all
+
+            // A Megareddit on "All" draws from Top and Controversial as well, where an old post is
+            // the point rather than a stale one.
+            if (Megareddits.isKey(subredditForSort) && Megareddits.isSortAll(subredditForSort)) {
+                isFrontpageOrAll = false;
+            }
 
             if (isFrontpageOrAll) {
                 // Get current sort type for this subreddit

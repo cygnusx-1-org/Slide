@@ -333,6 +333,17 @@ public class SubmissionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                         context.startActivityForResult(i2, 940);
                                         clicked = holder2.getBindingAdapterPosition();
                                     }
+                                } else {
+                                    // Any other host, such as MegaredditOverview, has no comment
+                                    // pager of its own to slide into.
+                                    Intent i2 = new Intent(context, CommentsScreen.class);
+                                    i2.putExtra(
+                                            CommentsScreen.EXTRA_PAGE,
+                                            holder2.getBindingAdapterPosition() - 1);
+                                    i2.putExtra(CommentsScreen.EXTRA_SUBREDDIT, subreddit);
+                                    i2.putExtra("fullname", submission.getFullName());
+                                    context.startActivityForResult(i2, 940);
+                                    clicked = holder2.getBindingAdapterPosition();
                                 }
                             } else {
                                 if (!Reddit.appRestart.contains("offlinepopup")) {

@@ -28,6 +28,7 @@ import java.util.Locale;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.ImageFlairs;
+import me.edgan.redditslide.Megareddits;
 import me.edgan.redditslide.Notifications.CheckForMail;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
@@ -99,7 +100,8 @@ public class SidebarController {
                 && !subreddit.equalsIgnoreCase("mod")
                 && !subreddit.contains("+")
                 && !subreddit.contains(".")
-                && !subreddit.contains("/m/")) {
+                && !subreddit.contains("/m/")
+                && !Megareddits.isKey(subreddit)) {
             if (mainActivity.drawerLayout != null) {
                 mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.END);
             }
@@ -626,7 +628,8 @@ public class SidebarController {
                 && !subreddit.equalsIgnoreCase("mod")
                 && !subreddit.contains("+")
                 && !subreddit.contains(".")
-                && !subreddit.contains("/m/")) {
+                && !subreddit.contains("/m/")
+                && !Megareddits.isKey(subreddit)) {
             if (mainActivity.drawerLayout != null) {
                 mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.END);
             }

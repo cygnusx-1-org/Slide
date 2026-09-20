@@ -101,6 +101,11 @@ public class DrawerItemsDialog {
                 R.id.settings_drawer_profile_checkbox,
                 R.id.prof_click),
         INBOX(1 << 1, R.id.settings_drawer_inbox, R.id.settings_drawer_inbox_checkbox, R.id.inbox),
+        MEGAREDDITS(
+                1 << 6,
+                R.id.settings_drawer_megareddits,
+                R.id.settings_drawer_megareddits_checkbox,
+                R.id.mega),
         MULTIREDDITS(
                 1 << 2,
                 R.id.settings_drawer_multireddits,

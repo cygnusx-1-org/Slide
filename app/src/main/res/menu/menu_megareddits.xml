@@ -1,0 +1,28 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_edit"
+        android:icon="@drawable/ic_edit"
+        android:title="@string/megareddit_edit"
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/create"
+        android:icon="@drawable/ic_add"
+        android:title="@string/title_create_megareddit"
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/action_sort"
+        android:icon="@drawable/ic_sort"
+        android:title="@string/sorting_change_sorting"
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/count"
+        android:title="@string/megareddit_subreddits"
+        app:showAsAction="never"/>
+    <item android:id="@+id/import_megareddits"
+        android:title="@string/megareddit_import"
+        app:showAsAction="never"/>
+    <item android:id="@+id/export"
+        android:title="@string/megareddit_export"
+        app:showAsAction="never"/>
+    <item android:id="@+id/export_all"
+        android:title="@string/megareddit_export_all"
+        app:showAsAction="never"/>
+</menu>

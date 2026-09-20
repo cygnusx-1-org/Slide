@@ -47,6 +47,7 @@ import java.util.List;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.Drafts;
 import me.edgan.redditslide.Flair.RichFlair;
+import me.edgan.redditslide.Megareddits;
 import me.edgan.redditslide.OpenRedditLink;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
@@ -210,6 +211,7 @@ public class Submit extends BaseActivity {
                 && !subreddit.equals("friends")
                 && !subreddit.equals("mod")
                 && !subreddit.contains("/m/")
+                && !Megareddits.isKey(subreddit)
                 && !subreddit.contains("+")) {
             subredditText.setText(subreddit);
         }

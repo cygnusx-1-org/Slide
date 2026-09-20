@@ -108,6 +108,7 @@ public class DrawerController {
 
             drawerSubList.addHeaderView(header, null, false);
             ((TextView) header.requireViewById(R.id.name)).setText(Authentication.name);
+            setMegaredditsClick(header);
             header.requireViewById(R.id.multi)
                     .setOnClickListener(
                             new OnSingleClickListener() {
@@ -677,6 +678,7 @@ public class DrawerController {
                             });
             mainActivity.headerMain = header;
 
+            setMegaredditsClick(header);
             header.requireViewById(R.id.multi)
                     .setOnClickListener(
                             new View.OnClickListener() {
@@ -927,6 +929,22 @@ public class DrawerController {
 
         setDrawerSubList();
         hideDrawerItems();
+    }
+
+    /** The Megareddits row, in the logged-in and the guest drawer alike: they need no account. */
+    private void setMegaredditsClick(View header) {
+        header.requireViewById(R.id.mega)
+                .setOnClickListener(
+                        new OnSingleClickListener() {
+                            @Override
+                            public void onSingleClick(View view) {
+                                if (mainActivity.runAfterLoad == null) {
+                                    Intent inte =
+                                            new Intent(mainActivity, MegaredditOverview.class);
+                                    mainActivity.startActivity(inte);
+                                }
+                            }
+                        });
     }
 
     public void hideDrawerItems() {

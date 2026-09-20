@@ -47,6 +47,7 @@ import java.util.Locale;
 import java.util.Set;
 import me.edgan.redditslide.Activities.BaseActivity;
 import me.edgan.redditslide.Activities.MainActivity;
+import me.edgan.redditslide.Activities.MegaredditOverview;
 import me.edgan.redditslide.Activities.MultiredditOverview;
 import me.edgan.redditslide.Activities.Search;
 import me.edgan.redditslide.Activities.Submit;
@@ -58,6 +59,7 @@ import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.HasSeen;
 import me.edgan.redditslide.HibernateState;
 import me.edgan.redditslide.Hidden;
+import me.edgan.redditslide.Megareddits;
 import me.edgan.redditslide.OfflineSubreddit;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
@@ -434,6 +436,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                                         && !id.equalsIgnoreCase("all")
                                         && !id.contains(".")
                                         && !id.contains("/m/")
+                                        && !Megareddits.isKey(id)
                                         && !id.equalsIgnoreCase("friends")
                                         && !id.equalsIgnoreCase("random")
                                         && !id.equalsIgnoreCase("popular")
@@ -874,6 +877,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                                     // refresh the footer only, do not scroll to top.
                                     adapter.notifyItemChanged(posts.posts.size() + 1);
                                 }
+                                reportMegaredditCount();
                             });
 
             // startIndex is -1 on a reset/refresh (and 0 for a degenerate first append); reset the
@@ -953,6 +957,18 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                 mSwipeRefreshLayout.setRefreshing(false);
             }
             adapter.notifyDataSetChanged();
+            reportMegaredditCount();
+        }
+    }
+
+    /**
+     * Tells a {@link MegaredditOverview} host how many posts this page is showing, for the count
+     * beside its tab name. A Megareddit is r/all filtered down, so that number is the feature
+     * working or not, and it climbs with every page this feed loads.
+     */
+    private void reportMegaredditCount() {
+        if (getActivity() instanceof MegaredditOverview && posts != null && posts.posts != null) {
+            ((MegaredditOverview) getActivity()).onFeedCountChanged(id, posts.posts.size());
         }
     }
 

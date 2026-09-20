@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import me.edgan.redditslide.Megareddits;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import org.jspecify.annotations.NullMarked;
@@ -52,6 +53,8 @@ public class FilterContentUtil {
             displayName = "frontpage";
         } else if (subreddit.contains("/m/")) {
             displayName = subreddit.substring(subreddit.indexOf("/m/"));
+        } else if (Megareddits.isKey(subreddit)) {
+            displayName = subreddit;
         } else {
             displayName = "/r/" + subreddit;
         }

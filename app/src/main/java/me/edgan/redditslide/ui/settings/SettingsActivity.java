@@ -447,6 +447,18 @@ public class SettingsActivity extends BaseActivity implements RestartActivity {
                             }
                         });
 
+        requireViewById(R.id.settings_child_megareddits)
+                .setOnClickListener(
+                        new OnSingleClickListener() {
+                            @Override
+                            public void onSingleClick(View v) {
+                                Intent i =
+                                        new Intent(
+                                                SettingsActivity.this, SettingsMegareddits.class);
+                                startActivity(i);
+                            }
+                        });
+
         requireViewById(R.id.settings_child_maintheme)
                 .setOnClickListener(
                         new OnSingleClickListener() {

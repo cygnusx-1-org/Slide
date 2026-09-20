@@ -11,8 +11,10 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import me.edgan.redditslide.Activities.Search;
+import me.edgan.redditslide.Megareddits;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
+import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.SubmissionSearchPaginator;
@@ -111,6 +113,27 @@ public class SortingUtil {
 
     public static Spannable[] getSortingSpannables(Sorting sorting) {
         return getSortingSpannables(getSortingId(sorting), " ");
+    }
+
+    /**
+     * The sort menu for a Megareddit: "All" first, then the ordinary sorts in the order "All"
+     * walks them. "Best" is left out, as it is offered nowhere but the frontpage.
+     *
+     * <p>Shared by the Megareddits screen and a Megareddit's main-screen tab, which have to offer
+     * the same menu and mark the same entry in it.
+     */
+    public static Spannable[] getMegaredditSortingSpannables(String key) {
+        final Context appContext = Reddit.getAppContext();
+        final String[] names = getSortingStrings();
+        final String[] entries = new String[Megareddits.ALL_SORTS.size() + 1];
+        entries[0] = appContext.getString(R.string.megareddit_sort_all);
+        for (int i = 0; i < Megareddits.ALL_SORTS.size(); i++) {
+            entries[i + 1] = names[getSortingId(Megareddits.ALL_SORTS.get(i))];
+        }
+        // A sort that "All" does not walk, such as Best, marks nothing rather than marking "All".
+        final int index = Megareddits.ALL_SORTS.indexOf(SettingValues.getSubmissionSort(key));
+        final int chosen = Megareddits.isSortAll(key) ? 0 : (index < 0 ? -1 : index + 1);
+        return createSortingSpannableStrings(entries, chosen, key);
     }
 
     public static Integer getSortingSearchId(Search s) {

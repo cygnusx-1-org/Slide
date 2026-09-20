@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import me.edgan.redditslide.Activities.MainActivity;
 import me.edgan.redditslide.Activities.SubredditView;
 import me.edgan.redditslide.Constants;
+import me.edgan.redditslide.Megareddits;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import me.edgan.redditslide.SettingValues;
@@ -62,7 +63,9 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
                 colorView.getBackground(), Palette.getColor(subreddit));
 
         final String DELETE_SUB_SETTINGS_TITLE =
-                (subreddit.contains("/m/")) ? subreddit : ("/r/" + subreddit);
+                (subreddit.contains("/m/") || Megareddits.isKey(subreddit))
+                        ? subreddit
+                        : ("/r/" + subreddit);
         convertView
                 .requireViewById(R.id.remove)
                 .setOnClickListener(
@@ -204,7 +207,7 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
                 if (sub.equals("frontpage")) {
                     titleStringBuilder.append(sub).append(", ");
                 } else {
-                    if (sub.contains("/m/")) {
+                    if (sub.contains("/m/") || Megareddits.isKey(sub)) {
                         titleStringBuilder.append(sub).append(", ");
                     } else {
                         titleStringBuilder.append("/r/").append(sub).append(", ");
@@ -216,7 +219,7 @@ public class SettingsSubAdapter extends RecyclerView.Adapter<SettingsSubAdapter.
             title.setMaxLines(3);
             title.setText(titleString);
         } else {
-            if (subreddit.contains("/m/")) {
+            if (subreddit.contains("/m/") || Megareddits.isKey(subreddit)) {
                 title.setText(subreddit);
             } else {
                 // if the subreddit is the frontpage, don't put "/r/" in front of it

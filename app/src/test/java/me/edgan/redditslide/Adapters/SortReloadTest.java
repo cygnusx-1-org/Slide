@@ -13,10 +13,12 @@ import androidx.test.core.app.ApplicationProvider;
 import me.edgan.redditslide.FeedRestoreState;
 import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.HibernateState;
+import me.edgan.redditslide.Megareddits;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.SortingUtil;
 import net.dean.jraw.paginators.Paginator;
 import net.dean.jraw.paginators.Sorting;
+import net.dean.jraw.paginators.SubredditPaginator;
 import net.dean.jraw.paginators.TimePeriod;
 import org.junit.After;
 import org.junit.Before;
@@ -53,6 +55,9 @@ public class SortReloadTest {
 
     /** A subreddit with no tab of its own, which is what the report was about. */
     private static final String SUB = "androiddev";
+
+    /** A Megareddit's key, which is a listing name like any other as far as a sort is concerned. */
+    private static final String MEGA = Megareddits.KEY_PREFIX + "cuteanimals";
 
     private Context context;
     private SharedPreferences prefsWas;
@@ -101,8 +106,10 @@ public class SortReloadTest {
     private static void clearRememberedSorts() {
         SortingUtil.sorting.remove(SUB);
         SortingUtil.sorting.remove("frontpage");
+        SortingUtil.sorting.remove(MEGA);
         SortingUtil.times.remove(SUB);
         SortingUtil.times.remove("frontpage");
+        SortingUtil.times.remove(MEGA);
     }
 
     // --- the sort, as the two toolbar menus record it -----------------------------------------
@@ -200,6 +207,41 @@ public class SortReloadTest {
         final Paginator fetch = fetchFor(feedPageArgs(restore, SUB));
         assertEquals(Sorting.TOP, fetch.getSorting());
         assertEquals(TimePeriod.MONTH, fetch.getTimePeriod());
+    }
+
+    @Test
+    public void aMegaredditWalksEverySortByDefault() {
+        // "All" is what a Megareddit is on until one sort is picked for it: r/all under a single
+        // sort holds too few of its posts to fill a feed. The first request is the first sort;
+        // SubredditPosts moves on to the next one as each is spent.
+        final Paginator fetch =
+                new SubredditPosts(MEGA, context)
+                        .createPaginator(MEGA, Paginator.RECOMMENDED_MAX_LIMIT);
+
+        assertEquals("all", ((SubredditPaginator) fetch).getSubreddit());
+        assertEquals(Megareddits.ALL_SORTS.get(0), fetch.getSorting());
+    }
+
+    @Test
+    public void aMegaredditFetchesRAllUnderThePickedSort() {
+        // A Megareddit is a filter over r/all, so the request is r/all's -- but the sort is the
+        // one stored for this Megareddit, not the one stored for r/all. The old-post filter reads
+        // the same key, which is why the loader hands PostMatch the key rather than "all".
+        SortingUtil.setSorting("all", Sorting.NEW);
+        Megareddits.setSortAll(MEGA, false);
+        userPicksTopOfMonth(MEGA);
+
+        final Paginator fetch =
+                new SubredditPosts(MEGA, context)
+                        .createPaginator(MEGA, Paginator.RECOMMENDED_MAX_LIMIT);
+
+        assertTrue(fetch instanceof SubredditPaginator);
+        assertEquals("all", ((SubredditPaginator) fetch).getSubreddit());
+        assertEquals(Sorting.TOP, fetch.getSorting());
+        assertEquals(TimePeriod.MONTH, fetch.getTimePeriod());
+
+        SortingUtil.sorting.remove("all");
+        Megareddits.setSortAll(MEGA, true);
     }
 
     @Test

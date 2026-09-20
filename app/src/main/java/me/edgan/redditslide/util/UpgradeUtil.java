@@ -32,7 +32,7 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class UpgradeUtil {
     // Increment for each needed change
-    private static final int VERSION = 4;
+    private static final int VERSION = 5;
 
     private UpgradeUtil() {}
 
@@ -224,6 +224,20 @@ public class UpgradeUtil {
             }
 
             prefsEditor.apply();
+        }
+
+        // Show the new "Megareddits" drawer item by default, for the same reason as USERS above.
+        if (CURRENT < 5) {
+            SharedPreferences prefs = context.getSharedPreferences("SETTINGS", 0);
+            long selected = prefs.getLong(SettingValues.PREF_SELECTED_DRAWER_ITEMS, -1);
+
+            if (selected != -1) {
+                prefs.edit()
+                        .putLong(
+                                SettingValues.PREF_SELECTED_DRAWER_ITEMS,
+                                selected | DrawerItemsDialog.SettingsDrawerEnum.MEGAREDDITS.value)
+                        .apply();
+            }
         }
 
         upgradePrefs.edit().putInt("VERSION", VERSION).apply();

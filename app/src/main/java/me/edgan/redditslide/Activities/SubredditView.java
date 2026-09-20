@@ -55,6 +55,7 @@ import me.edgan.redditslide.Fragments.CommentPage;
 import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.HibernateState;
 import me.edgan.redditslide.ImageFlairs;
+import me.edgan.redditslide.Megareddits;
 import me.edgan.redditslide.Notifications.CheckForMail;
 import me.edgan.redditslide.OfflineSubreddit;
 import me.edgan.redditslide.R;
@@ -270,7 +271,10 @@ public class SubredditView extends BaseActivity implements HibernateState.Restor
                 && !subreddit.equals("myrandom")
                 && !subreddit.equals("randnsfw")
                 && !subreddit.equals("popular")
-                && !subreddit.contains("+")) {
+                && !subreddit.contains("+")
+                // A Megareddit is a filter over r/all, not a subreddit: asking reddit for one by
+                // name 404s, and the failure closes this screen before its feed is ever seen.
+                && !Megareddits.isKey(subreddit)) {
             executeAsyncSubreddit(subreddit);
         } else {
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END);
@@ -561,7 +565,8 @@ public class SubredditView extends BaseActivity implements HibernateState.Restor
                 && !subOverride.equalsIgnoreCase("mod")
                 && !subOverride.contains("+")
                 && !subOverride.contains(".")
-                && !subOverride.contains("/m/")) {
+                && !subOverride.contains("/m/")
+                && !Megareddits.isKey(subOverride)) {
             if (drawerLayout != null) {
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.END);
             }
@@ -993,7 +998,8 @@ public class SubredditView extends BaseActivity implements HibernateState.Restor
                 && !subOverride.equalsIgnoreCase("mod")
                 && !subOverride.contains("+")
                 && !subOverride.contains(".")
-                && !subOverride.contains("/m/")) {
+                && !subOverride.contains("/m/")
+                && !Megareddits.isKey(subOverride)) {
             if (drawerLayout != null) {
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.END);
             }
@@ -1126,7 +1132,13 @@ public class SubredditView extends BaseActivity implements HibernateState.Restor
     public void openPopup() {
         PopupMenu popup =
                 new PopupMenu(SubredditView.this, requireViewById(R.id.anchor), Gravity.RIGHT);
-        final Spannable[] base = SortingUtil.getSortingSpannables(subreddit);
+        // With tabs hidden, a Megareddit opens here rather than as a main tab, and it draws from
+        // every sort at once unless one is picked -- so it is offered "All", and nothing else is.
+        final boolean mega = Megareddits.isKey(subreddit);
+        final Spannable[] base =
+                mega
+                        ? SortingUtil.getMegaredditSortingSpannables(subreddit)
+                        : SortingUtil.getSortingSpannables(subreddit);
         for (Spannable s : base) {
             // Do not add option for "Best" in any subreddit except for the frontpage.
             if (!subreddit.equalsIgnoreCase("frontpage")
@@ -1145,6 +1157,10 @@ public class SubredditView extends BaseActivity implements HibernateState.Restor
                                 break;
                             }
                             i++;
+                        }
+                        if (mega) {
+                            chooseMegaredditSort(i);
+                            return true;
                         }
                         switch (i) {
                             case 0:
@@ -1176,6 +1192,29 @@ public class SubredditView extends BaseActivity implements HibernateState.Restor
                     }
                 });
         popup.show();
+    }
+
+    /**
+     * Applies the Megareddit sort menu's {@code chosen} entry: 0 is "All", and the rest are the
+     * ordinary sorts in the order {@link Megareddits#ALL_SORTS} walks them.
+     */
+    private void chooseMegaredditSort(int chosen) {
+        if (chosen == 0) {
+            Megareddits.setSortAll(subreddit, true);
+            reloadSubs();
+            return;
+        }
+        if (chosen < 1 || chosen > Megareddits.ALL_SORTS.size()) {
+            return;
+        }
+        Sorting sorting = Megareddits.ALL_SORTS.get(chosen - 1);
+        Megareddits.setSortAll(subreddit, false);
+        SortingUtil.setSorting(subreddit, sorting);
+        if (sorting == Sorting.TOP || sorting == Sorting.CONTROVERSIAL) {
+            openPopupTime();
+        } else {
+            reloadSubs();
+        }
     }
 
     public void openPopupTime() {

@@ -40,6 +40,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import me.edgan.redditslide.Authentication;
+import me.edgan.redditslide.Megareddits;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Visuals.Palette;
@@ -175,7 +176,8 @@ public class CreateMulti extends BaseActivityAnim {
                     && !s.equals("frontpage")
                     && !s.contains("+")
                     && !s.contains(".")
-                    && !s.contains("/m/")) {
+                    && !s.contains("/m/")
+                    && !Megareddits.isKey(s)) {
                 all[i] = s;
                 i++;
             }

@@ -457,6 +457,19 @@
                         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
                         android:theme="@style/swipeable"/>
                 <activity
+                        android:name=".ui.settings.SettingsMegareddits"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.MegaredditCount"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.MegaredditOverview"
+                        android:alwaysRetainTaskState="true"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
                         android:name=".Activities.MultiredditOverview"
                         android:alwaysRetainTaskState="true"
                         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
@@ -728,6 +741,14 @@
                                 <action android:name="APPWIDGET_CONFIGURE"/>
                         </intent-filter>
                 </activity>
+                <activity
+                        android:name=".Activities.CreateMegareddit"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
+                <activity
+                        android:name=".Activities.MegaredditSection"
+                        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
+                        android:theme="@style/swipeable"/>
                 <activity
                         android:name=".Activities.CreateMulti"
                         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"

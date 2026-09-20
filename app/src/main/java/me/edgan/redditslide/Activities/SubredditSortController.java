@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
 import me.edgan.redditslide.Fragments.SubmissionsView;
+import me.edgan.redditslide.Megareddits;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.DialogUtil;
@@ -40,7 +41,13 @@ public class SubredditSortController {
                 ((SubmissionsView) (((MainPagerAdapter) java.util.Objects.requireNonNull(activity.pager.getAdapter())).getCurrentFragment()))
                         .id;
 
-        final Spannable[] base = SortingUtil.getSortingSpannables(id);
+        // A Megareddit draws from every sort at once unless one is picked, so it is the only kind
+        // of tab that is offered "All", and the only one whose menu starts there.
+        final boolean mega = Megareddits.isKey(id);
+        final Spannable[] base =
+                mega
+                        ? SortingUtil.getMegaredditSortingSpannables(id)
+                        : SortingUtil.getSortingSpannables(id);
         for (Spannable s : base) {
             // Do not add option for "Best" in any subreddit except for the frontpage.
             if (!id.equals("frontpage") && s.toString().equals(activity.getString(R.string.sorting_best))) {
@@ -60,6 +67,10 @@ public class SubredditSortController {
                         }
 
                         LogUtil.v("Chosen is " + i);
+                        if (mega) {
+                            chooseMegaredditSort(id, i);
+                            return true;
+                        }
                         switch (i) {
                             case 0:
                                 if (id.equals("frontpage")) {
@@ -114,6 +125,29 @@ public class SubredditSortController {
                     }
                 });
         popup.show();
+    }
+
+    /**
+     * Applies the Megareddit sort menu's {@code chosen} entry: 0 is "All", and the rest are the
+     * ordinary sorts in the order {@link Megareddits#ALL_SORTS} walks them.
+     */
+    private void chooseMegaredditSort(String id, int chosen) {
+        if (chosen == 0) {
+            Megareddits.setSortAll(id, true);
+            activity.reloadSubs();
+            return;
+        }
+        if (chosen < 1 || chosen > Megareddits.ALL_SORTS.size()) {
+            return;
+        }
+        Sorting sorting = Megareddits.ALL_SORTS.get(chosen - 1);
+        Megareddits.setSortAll(id, false);
+        SortingUtil.setSorting(id, sorting);
+        if (sorting == Sorting.TOP || sorting == Sorting.CONTROVERSIAL) {
+            openPopupTime();
+        } else {
+            activity.reloadSubs();
+        }
     }
 
     public void openPopupTime() {

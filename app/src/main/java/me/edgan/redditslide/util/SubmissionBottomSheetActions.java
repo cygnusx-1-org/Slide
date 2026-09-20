@@ -33,7 +33,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Predicate;
 import me.edgan.redditslide.ActionStates;
+import me.edgan.redditslide.Activities.MegaredditOverview;
 import me.edgan.redditslide.Activities.PostReadLater;
 import me.edgan.redditslide.Activities.Profile;
 import me.edgan.redditslide.Activities.SubredditView;
@@ -42,6 +44,8 @@ import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.CommentCacheAsync;
 import me.edgan.redditslide.ContentType;
 import me.edgan.redditslide.Hidden;
+import me.edgan.redditslide.Megareddit;
+import me.edgan.redditslide.Megareddits;
 import me.edgan.redditslide.OfflineSubreddit;
 import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.R;
@@ -104,8 +108,10 @@ public class SubmissionBottomSheetActions {
         Drawable translate = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_translate, null);
         Drawable readAloud = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_volume_on, null);
         Drawable tags = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_folder, null);
+        Drawable positive = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_add, null);
+        Drawable negative = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.ic_remove, null);
 
-        final List<Drawable> drawableSet = Arrays.asList(profile, sub, saved, hide, report, copy, open, link, reddit, readLater, filter, crosspost, viewmode, history, translate, readAloud, tags);
+        final List<Drawable> drawableSet = Arrays.asList(profile, sub, saved, hide, report, copy, open, link, reddit, readLater, filter, crosspost, viewmode, history, translate, readAloud, tags, positive, negative);
         BlendModeUtil.tintDrawablesAsSrcAtop(drawableSet, color);
 
         ta.recycle();
@@ -180,6 +186,31 @@ public class SubmissionBottomSheetActions {
         b.sheet(4, link, mContext.getString(R.string.submission_share_permalink)).sheet(8, reddit, mContext.getString(R.string.submission_share_reddit_url));
         if ((mContext instanceof me.edgan.redditslide.Activities.MainActivity) || (mContext instanceof SubredditView)) {
             b.sheet(10, filter, mContext.getString(R.string.filter_content));
+        }
+
+        // In a Megareddit's feed, whether on its own screen or as a main tab: keep or drop this
+        // post's subreddit for good. r/all is offered the same two, because it is the listing every
+        // Megareddit is drawn from -- there the Megareddit to act on is asked for.
+        final Megareddit mega = full ? null : Megareddits.forKey(baseSub);
+        final String postSubreddit = MiscUtil.orEmpty(submission.getSubredditName());
+        final boolean inAll = !full && baseSub != null && baseSub.equalsIgnoreCase("all");
+        final boolean offerMegareddit =
+                !postSubreddit.isEmpty()
+                        && (mega != null || (inAll && !Megareddits.getAll().isEmpty()));
+        if (offerMegareddit) {
+            // Nothing to add when this Megareddit already keeps this subreddit by name.
+            if (mega == null
+                    || !mega.getPositiveSubreddits()
+                            .contains(postSubreddit.toLowerCase(Locale.ENGLISH))) {
+                b.sheet(
+                        66,
+                        positive,
+                        mContext.getString(R.string.megareddit_add_positive, postSubreddit));
+            }
+            b.sheet(
+                    65,
+                    negative,
+                    mContext.getString(R.string.megareddit_add_negative, postSubreddit));
         }
 
         b.listener(new DialogInterface.OnClickListener() {
@@ -326,51 +357,38 @@ public class SubmissionBottomSheetActions {
                                 if (filtered) {
                                     e.apply();
 
-                                    RecyclerView.Adapter<?> adapter =
-                                            recyclerview == null ? null : recyclerview.getAdapter();
-                                    if (adapter == null) {
-                                        return;
-                                    }
-
-                                    // Operate on the list the adapter is actually displaying;
-                                    // the captured reference can be stale after a refresh.
-                                    final List<T> livePosts = resolveLivePosts(recyclerview, posts);
-
-                                    ArrayList<Contribution> toRemove = new ArrayList<>();
-
-                                    for (Contribution s : livePosts) {
-                                        if (s instanceof Submission && PostMatch.doesMatch((Submission) s)) {
-                                            toRemove.add(s);
-                                        }
-                                    }
-
-                                    OfflineSubreddit s = OfflineSubreddit.getSubreddit(baseSub, false, mContext);
-
-                                    for (Contribution remove : toRemove) {
-                                        final int pos = livePosts.indexOf(remove);
-                                        if (pos < 0) {
-                                            continue;
-                                        }
-                                        livePosts.remove(pos);
-                                        if (baseSub != null && s.submissions != null) {
-                                            // The offline cache is a separate list that may not
-                                            // be index-aligned with the live feed, so match by
-                                            // identity instead of reusing the display index.
-                                            final int offlinePos = s.submissions.indexOf(remove);
-                                            if (offlinePos >= 0) {
-                                                s.hideMulti(offlinePos);
-                                            }
-                                        }
-                                        // Header/spacer at position 0; the helper applies the
-                                        // offset and falls back to a full reset if this
-                                        // removal empties the list (no transient inconsistent
-                                        // state to reconcile afterwards).
-                                        notifyRemovedOrReset(adapter, livePosts, pos);
-                                    }
-
-                                    s.writeToMemoryNoStorage();
+                                    removeMatchingPosts(
+                                            recyclerview, posts, baseSub, mContext, PostMatch::doesMatch);
                                 }
                             }).setNegativeButton(R.string.btn_cancel, null));
+
+                        break;
+                    case 66:
+                    case 65:
+                        {
+                            final boolean keep = which == 66;
+                            if (mega != null) {
+                                applyToMegareddit(
+                                        mContext,
+                                        holder,
+                                        recyclerview,
+                                        posts,
+                                        baseSub,
+                                        mega,
+                                        postSubreddit,
+                                        keep);
+                            } else {
+                                // From r/all, where no one Megareddit is in context.
+                                pickMegareddit(
+                                        mContext,
+                                        holder,
+                                        recyclerview,
+                                        posts,
+                                        baseSub,
+                                        postSubreddit,
+                                        keep);
+                            }
+                        }
 
                         break;
                     case 3:
@@ -963,6 +981,164 @@ final AlertDialog reportDialog =
                 LayoutUtils.showSnackbar(snack);
             }
         }
+    }
+
+    /**
+     * Asks which Megareddit to add {@code subreddit} to, and adds it. Offered from r/all, where the
+     * listing itself belongs to no Megareddit; with only one to choose from there is nothing to
+     * ask, so it is applied straight away.
+     */
+    private static <T extends Contribution> void pickMegareddit(
+            final Activity mContext,
+            final SubmissionViewHolder holder,
+            final @Nullable RecyclerView recyclerview,
+            final List<T> posts,
+            final @Nullable String baseSub,
+            final String subreddit,
+            final boolean keep) {
+        final List<Megareddit> all = Megareddits.getAll();
+        if (all.isEmpty()) {
+            return;
+        }
+        if (all.size() == 1) {
+            applyToMegareddit(
+                    mContext, holder, recyclerview, posts, baseSub, all.get(0), subreddit, keep);
+            return;
+        }
+
+        final String[] names = new String[all.size()];
+        for (int i = 0; i < all.size(); i++) {
+            names[i] = all.get(i).getName();
+        }
+
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
+                .setTitle(
+                        keep
+                                ? R.string.megareddit_pick_positive
+                                : R.string.megareddit_pick_negative)
+                .setItems(
+                        names,
+                        (dialog, which) ->
+                                applyToMegareddit(
+                                        mContext,
+                                        holder,
+                                        recyclerview,
+                                        posts,
+                                        baseSub,
+                                        all.get(which),
+                                        subreddit,
+                                        keep))
+                .setNegativeButton(R.string.btn_cancel, null));
+    }
+
+    /**
+     * Adds {@code subreddit} to {@code mega}'s positive or negative list. Dropping it only clears
+     * the posts on screen when they are that Megareddit's own: r/all is not filtered by one.
+     */
+    private static <T extends Contribution> void applyToMegareddit(
+            final Activity mContext,
+            final SubmissionViewHolder holder,
+            final @Nullable RecyclerView recyclerview,
+            final List<T> posts,
+            final @Nullable String baseSub,
+            final Megareddit mega,
+            final String subreddit,
+            final boolean keep) {
+        final boolean changed =
+                keep
+                        ? Megareddits.addPositive(mega.key(), subreddit)
+                        : Megareddits.addNegative(mega.key(), subreddit);
+        if (!changed) {
+            return;
+        }
+
+        if (!keep && baseSub != null && Megareddits.isKey(baseSub)) {
+            // Later pages are filtered by the loader, which reads the definition afresh; what is
+            // already on screen goes now.
+            removeMatchingPosts(
+                    recyclerview,
+                    posts,
+                    baseSub,
+                    mContext,
+                    post -> subreddit.equalsIgnoreCase(post.getSubredditName()));
+        }
+
+        showMegaredditSnackbar(
+                recyclerview,
+                holder,
+                mContext.getString(
+                        keep
+                                ? R.string.megareddit_added_positive
+                                : R.string.megareddit_added_negative,
+                        subreddit));
+    }
+
+    /**
+     * Takes every loaded post that {@code matches} out of the feed on screen and out of its offline
+     * copy, so that a filter just added applies to what is already showing.
+     */
+    private static <T extends Contribution> void removeMatchingPosts(
+            final @Nullable RecyclerView recyclerview,
+            final List<T> posts,
+            final @Nullable String baseSub,
+            final Activity mContext,
+            final Predicate<Submission> matches) {
+        RecyclerView.Adapter<?> adapter = recyclerview == null ? null : recyclerview.getAdapter();
+        if (adapter == null) {
+            return;
+        }
+
+        // Operate on the list the adapter is actually displaying;
+        // the captured reference can be stale after a refresh.
+        final List<T> livePosts = resolveLivePosts(recyclerview, posts);
+
+        ArrayList<Contribution> toRemove = new ArrayList<>();
+
+        for (Contribution s : livePosts) {
+            if (s instanceof Submission && matches.test((Submission) s)) {
+                toRemove.add(s);
+            }
+        }
+
+        OfflineSubreddit s = OfflineSubreddit.getSubreddit(baseSub, false, mContext);
+
+        for (Contribution remove : toRemove) {
+            final int pos = livePosts.indexOf(remove);
+            if (pos < 0) {
+                continue;
+            }
+            livePosts.remove(pos);
+            if (baseSub != null && s.submissions != null) {
+                // The offline cache is a separate list that may not
+                // be index-aligned with the live feed, so match by
+                // identity instead of reusing the display index.
+                final int offlinePos = s.submissions.indexOf(remove);
+                if (offlinePos >= 0) {
+                    s.hideMulti(offlinePos);
+                }
+            }
+            // Header/spacer at position 0; the helper applies the
+            // offset and falls back to a full reset if this
+            // removal empties the list (no transient inconsistent
+            // state to reconcile afterwards).
+            notifyRemovedOrReset(adapter, livePosts, pos);
+        }
+
+        s.writeToMemoryNoStorage();
+
+        // The Megareddits screen counts what its tab is showing, and no feed update reports a
+        // removal done here.
+        if (mContext instanceof MegaredditOverview && baseSub != null) {
+            ((MegaredditOverview) mContext).onFeedCountChanged(baseSub, livePosts.size());
+        }
+    }
+
+    private static void showMegaredditSnackbar(
+            final @Nullable RecyclerView recyclerview,
+            final SubmissionViewHolder holder,
+            final String text) {
+        final View anchor = recyclerview != null ? recyclerview : holder.itemView;
+        LayoutUtils.showSnackbar(Snackbar.make(anchor, text, Snackbar.LENGTH_SHORT));
     }
 
     /**
