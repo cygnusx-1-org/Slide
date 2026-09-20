@@ -4,6 +4,63 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+8.0.5 / 2026-9-20
+============
+* Added a Megareddit feature
+
+Megareddits, local only, let you filter r/all to create something like a virtual
+Multireddit. The goal is to bypass the 100 subreddit limit of Multireddits. In
+my testing, as an example I created /mega/cuteanimals.
+
+Megareddits have their own left navigation bar entry about Multireddits, and
+can also be added as tabs.
+
+Megareddits adds a new default for them sort, All. It combines all other sorts
+into one, and deduplicates the posts. The goal is to maximize results.
+
+/mega/cuteanimals uses two positive tags, cat and dog. It uses 10 negative tags,
+and 42 negative subreddits. It uses 130 positive subreddits. Most of the
+positive subreddits are not required to be added, and would still be applied
+by positive tags. Note though that 130 is greater than 100. It proves over
+time a Megareddit will show you more posts than the best possible Multireddit.
+
+1. Positive tags, substrings to match a subreddit name and add those r/all
+posts to the feed
+  - cat matches cats, blackcats, and catholic
+  - dog matches dogs, hotdogs, and dogvideos
+2. Negative tags, substrings to match a subreddit name, and to remove those
+r/all posts from the feed
+  - catholic matches catholic, catholicism, and easterncatholicism
+  - wildcats matches wildcats
+  - catprep matches catpreparation, catprep, and catpreparationchannel
+3. Positive subreddits, literal subreddit names, and add those r/all posts to
+the feed
+  - r/aww
+  - r/bengalcats
+  - r/bigcats
+  - r/bulldogs
+  - r/dogpictures
+  - r/dogvideos
+4. Negative subreddits, literal subreddit names, and remove those r/all posts
+from the feed
+  - r/batcat
+  - r/catwoman1966
+  - r/dojacat
+  - r/wobbledogs
+  - r/internetwatchdogs
+  - r/dogowners
+
+Additional features in the overflow menu are Subreddits, Import, Export, and
+Export All.
+
+Subreddits does a full scan of as much of r/all to list subreddits that match
+the positive tags. Then it lets you add those subreddits to the positive or
+negative subreddits lists.
+
+Import, Export, and Export All are about being able to backup and restore
+Megareddits. The exports are written as JSON files. It also lets you share
+your Megareddit with others, or them with you.
+
 8.0.4 / 2026-9-17
 ============
 * Fixed Sorting options don't work for non subscribed subreddits #307
