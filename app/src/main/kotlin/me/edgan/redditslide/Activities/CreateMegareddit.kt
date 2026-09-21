@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,8 +30,8 @@ class CreateMegareddit : BaseActivityAnim() {
 
     /** One of the four lists a Megareddit is made of, as [MegaredditSection] edits it. */
     enum class Section(
-        @StringRes val title: Int,
-        @StringRes val hint: Int,
+        @param:StringRes val title: Int,
+        @param:StringRes val hint: Int,
         val isSubreddit: Boolean,
     ) {
         POSITIVE_TAGS(R.string.megareddit_positive_tags, R.string.megareddit_tag_hint, false),
@@ -94,31 +95,33 @@ class CreateMegareddit : BaseActivityAnim() {
         list.adapter = SectionAdapter()
     }
 
+    /** Takes back whatever [MegaredditSection] was handed, once it closes. */
+    private val sectionLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val data = result.data
+            if (result.resultCode != RESULT_OK || data == null) {
+                return@registerForActivityResult
+            }
+            val ordinal = data.getIntExtra(MegaredditSection.EXTRA_SECTION, -1)
+            if (ordinal !in Section.entries.indices) {
+                return@registerForActivityResult
+            }
+            applyEdited(
+                Section.entries[ordinal],
+                data.getStringArrayListExtra(MegaredditSection.EXTRA_VALUES)
+                    ?: return@registerForActivityResult,
+            )
+        }
+
     /** Hands one list to [MegaredditSection] to be edited, and waits for it to come back. */
     private fun openSection(section: Section) {
-        startActivityForResult(
+        sectionLauncher.launch(
             Intent(this, MegaredditSection::class.java)
                 .putExtra(MegaredditSection.EXTRA_SECTION, section.ordinal)
                 .putStringArrayListExtra(
                     MegaredditSection.EXTRA_VALUES,
                     ArrayList(values.getValue(section)),
-                ),
-            RC_SECTION,
-        )
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode != RC_SECTION || resultCode != RESULT_OK || data == null) {
-            return
-        }
-        val ordinal = data.getIntExtra(MegaredditSection.EXTRA_SECTION, -1)
-        if (ordinal !in Section.entries.indices) {
-            return
-        }
-        applyEdited(
-            Section.entries[ordinal],
-            data.getStringArrayListExtra(MegaredditSection.EXTRA_VALUES) ?: return,
+                )
         )
     }
 
@@ -246,7 +249,5 @@ class CreateMegareddit : BaseActivityAnim() {
 
     companion object {
         const val EXTRA_MEGAREDDIT = "megareddit"
-
-        private const val RC_SECTION = 1803
     }
 }

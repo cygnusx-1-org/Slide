@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    activity_multireddits.xml with a ViewPager2 in place of the ViewPager. The multireddit and
+    Discover screens still page with a ViewPager, so the pager cannot be swapped in the shared
+    layout; everything else here is the same view tree, so the insets and the bar scrims land
+    where they do on those screens.
+-->
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/activity_background">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <View
+            android:id="@+id/anchor"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:layout_gravity="top|end"
+            android:layout_marginEnd="3dp"
+            android:layout_marginTop="4dp" />
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/content_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/orange"
+            android:elevation="16dp"
+            android:orientation="vertical"
+            android:theme="@style/Theme.AppCompat">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/standard_toolbar_height"
+                android:minHeight="@dimen/standard_toolbar_height" />
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/sliding_tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent" />
+        </com.google.android.material.appbar.AppBarLayout>
+    </FrameLayout>
+
+    <ScrollView
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:background="?attr/card_background"
+        android:layout_gravity="end">
+
+        <LinearLayout
+            android:id="@+id/sidebar_scroll"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="vertical" />
+    </ScrollView>
+</androidx.drawerlayout.widget.DrawerLayout>

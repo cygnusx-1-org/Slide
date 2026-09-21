@@ -3,7 +3,6 @@ package me.edgan.redditslide.Activities
 import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Spannable
 import android.view.Gravity
@@ -11,16 +10,17 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
-import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import me.edgan.redditslide.Fragments.SubmissionsView
 import me.edgan.redditslide.Megareddit
 import me.edgan.redditslide.Megareddits
@@ -38,8 +38,6 @@ import net.dean.jraw.paginators.Sorting
 import net.dean.jraw.paginators.TimePeriod
 
 private const val JSON_MIME = "application/json"
-private const val RC_EXPORT = 1801
-private const val RC_IMPORT = 1802
 
 /**
  * The account's Megareddits, one tab each. A page is the same [SubmissionsView] a main-screen tab
@@ -47,15 +45,28 @@ private const val RC_IMPORT = 1802
  */
 class MegaredditOverview : BaseActivityAnim() {
 
-    private lateinit var pager: ViewPager
+    private lateinit var pager: ViewPager2
     private lateinit var tabs: TabLayout
-    private var adapter: MegaredditPagerAdapter? = null
+    private lateinit var adapter: MegaredditPagerAdapter
+
+    /**
+     * Bumped every time the pages are rebuilt, and carried in the adapter's item ids: a page whose
+     * id the adapter has not seen before is dropped and built again, which is how an edited
+     * Megareddit is made to re-run its filter rather than show what the old one kept.
+     */
+    private var pageGeneration = 0
 
     /** What the tabs were built from, so a return to this screen only rebuilds them on a change. */
     private var shown: List<Megareddit> = emptyList()
 
-    /** Set while the editor is open: whatever it saved has to reload the pages. */
-    private var editing = false
+    /**
+     * What [shown] held, spelled out. The editor, the subreddit count screen and an import can all
+     * come back having changed nothing, and rebuilding then would throw away loaded feeds and the
+     * scroll positions they are sitting at for the very same posts -- so what the pages were built
+     * from is compared against what the store now holds, rather than trusting that a screen which
+     * *can* edit a Megareddit *did*.
+     */
+    private var shownSignature: String = ""
 
     /** The JSON an export is waiting to write, until the picker says where to put it. */
     private var pendingExport: String? = null
@@ -73,7 +84,7 @@ class MegaredditOverview : BaseActivityAnim() {
         super.onCreate(savedInstanceState)
 
         applyColorTheme("")
-        setContentView(R.layout.activity_multireddits)
+        setContentView(R.layout.activity_megareddits)
         MiscUtil.setupOldSwipeModeBackground(this, window.decorView)
 
         setupAppBar(R.id.toolbar, R.string.title_megareddits, true, false)
@@ -82,15 +93,21 @@ class MegaredditOverview : BaseActivityAnim() {
         tabs = requireViewById(R.id.sliding_tabs)
         tabs.tabMode = TabLayout.MODE_SCROLLABLE
         pager = requireViewById(R.id.content_view)
+        pager.offscreenPageLimit = 1
+        adapter = MegaredditPagerAdapter()
+        pager.adapter = adapter
+        // Attached once, for the life of the screen: the pages are rebuilt through the adapter
+        // rather than by handing the pager a new one, so the tabs never need re-attaching.
+        TabLayoutMediator(tabs, pager) { tab, position -> tab.text = titleFor(position) }.attach()
         requireToolbar().popupTheme = ColorPreferences(this).fontStyle.baseId
 
-        // The shared layout carries the multireddit screen's subreddit drawer, which has nothing
-        // to list here.
+        // This layout carries the multireddit screen's subreddit drawer, which has nothing to
+        // list here.
         requireViewById<DrawerLayout>(R.id.drawer_layout)
             .setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END)
 
-        pager.addOnPageChangeListener(
-            object : ViewPager.SimpleOnPageChangeListener() {
+        pager.registerOnPageChangeCallback(
+            object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     requireViewById<ViewGroup>(R.id.header)
                         .animate()
@@ -109,36 +126,66 @@ class MegaredditOverview : BaseActivityAnim() {
     override fun onResume() {
         super.onResume()
         val all = Megareddits.getAll()
+        val signature = signatureOf(all)
         if (all.isEmpty()) {
-            // Detach first: an attached adapter whose count drops without a notify throws.
-            pager.adapter = null
-            adapter = null
             shown = all
-            editing = false
+            shownSignature = signature
+            // Notified rather than detached: the adapter stays on the pager for the life of the
+            // screen, and a count that drops without a notify throws.
+            rebuildPages()
             showCreateDialog()
             return
         }
-        if (editing || all.map { it.name } != shown.map { it.name }) {
+        if (signature != shownSignature) {
             val current = pager.currentItem
             shown = all
+            shownSignature = signature
             // The pages are about to be rebuilt, so nothing counted against the old ones holds.
             counts.clear()
-            adapter = MegaredditPagerAdapter(supportFragmentManager)
-            pager.adapter = adapter
-            pager.offscreenPageLimit = 1
-            tabs.setupWithViewPager(pager)
-            pager.currentItem = current.coerceAtMost(all.size - 1)
+            rebuildPages()
+            // Not animated: the page being landed on is a new one, not one scrolled to.
+            pager.setCurrentItem(current.coerceAtMost(all.size - 1), false)
             colorFor(pager.currentItem)
         } else {
-            // Same tabs; keep the pages, and their scroll positions, as they are.
+            // Same Megareddits; keep the pages, their feeds and their scroll positions as they are.
             shown = all
             recountCurrentPage()
             // The setting that decides whether the number shows at all lives a screen away, so
             // every title is rewritten on the way back rather than only the one that changed.
             refreshTabTitles()
         }
-        editing = false
     }
+
+    /**
+     * The store as it stands when this screen leaves the foreground, which is what its pages are
+     * already showing. The long-press sheet can drop a subreddit from a Megareddit while the
+     * screen is up and then fix its own page in place, reporting the new count rather than going
+     * through a rebuild; without re-taking the signature here, the next return from anywhere at
+     * all would read that edit as news and rebuild every page for something already applied.
+     */
+    override fun onPause() {
+        super.onPause()
+        shownSignature = signatureOf(Megareddits.getAll())
+    }
+
+    /**
+     * Everything a page is built from, as one string: the names in tab order, and every term each
+     * Megareddit filters on. A Megareddit carries no value equality of its own, and the name alone
+     * is not enough -- an edit that only adds a tag leaves the names identical while changing what
+     * the feed should hold.
+     */
+    private fun signatureOf(list: List<Megareddit>): String =
+        list.joinToString("\n") {
+            it.name +
+                "\u0000" +
+                it.positiveTags +
+                "\u0000" +
+                it.negativeTags +
+                "\u0000" +
+                it.positiveSubreddits +
+                "\u0000" +
+                it.negativeSubreddits
+        }
 
     /**
      * The posts a page is showing, reported by [SubmissionsView] as its feed loads, pages and
@@ -161,9 +208,27 @@ class MegaredditOverview : BaseActivityAnim() {
         }
     }
 
+    /** Drops every page and builds it again, so an edited Megareddit re-runs its filter. */
+    private fun rebuildPages() {
+        pageGeneration++
+        adapter.notifyDataSetChanged()
+    }
+
+    /**
+     * The page on screen. The adapter owns its fragments and hands none of them back, so the one
+     * being shown is looked up by the key it was built with rather than held onto.
+     */
+    private fun currentPage(): SubmissionsView? {
+        val key = currentKey() ?: return null
+        return supportFragmentManager.fragments.filterIsInstance<SubmissionsView>().firstOrNull {
+            // A fragment that has not reached onCreate yet has no key, hence the null-safe side.
+            key.equals(it.id, ignoreCase = true)
+        }
+    }
+
     /** Asks the page on screen what it is showing, for the changes no feed update reports. */
     private fun recountCurrentPage() {
-        val page = adapter?.currentFragment as? SubmissionsView ?: return
+        val page = currentPage() ?: return
         val loaded = page.posts?.posts ?: return
         onFeedCountChanged(page.id, loaded.size)
     }
@@ -182,8 +247,10 @@ class MegaredditOverview : BaseActivityAnim() {
     private fun colorFor(position: Int) {
         val key = shown.getOrNull(position)?.key() ?: return
         requireViewById<ViewGroup>(R.id.header).setBackgroundColor(Palette.getColor(key))
-        window.statusBarColor =
-            if (SettingValues.alwaysBlackStatusbar) Color.BLACK else Palette.getDarkerColor(key)
+        // Routed through BaseActivity so the system-bar scrims are colored too; a direct
+        // Window.setStatusBarColor() no-ops under edge-to-edge enforcement, and this applies
+        // alwaysBlackStatusbar internally.
+        themeSystemBars(Palette.getDarkerColor(key))
         tabs.setSelectedTabIndicatorColor(ColorPreferences(this).getColor(key))
     }
 
@@ -204,7 +271,6 @@ class MegaredditOverview : BaseActivityAnim() {
     }
 
     private fun openEditor(name: String?) {
-        editing = true
         val i = Intent(this, CreateMegareddit::class.java)
         if (name != null) {
             i.putExtra(CreateMegareddit.EXTRA_MEGAREDDIT, name)
@@ -237,6 +303,25 @@ class MegaredditOverview : BaseActivityAnim() {
 
     private fun currentKey(): String? = shown.getOrNull(pager.currentItem)?.key()
 
+    private val exportLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val uri = result.data?.data
+            if (result.resultCode != RESULT_OK || uri == null) {
+                // Nothing was written, so the JSON waiting for a destination is dropped.
+                pendingExport = null
+                return@registerForActivityResult
+            }
+            writeExport(uri)
+        }
+
+    private val importLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val uri = result.data?.data
+            if (result.resultCode == RESULT_OK && uri != null) {
+                readImport(uri)
+            }
+        }
+
     /**
      * Writes [json] wherever the picker is pointed. The file is the store's own shape, so an export
      * is readable by hand and an import of it needs no translation.
@@ -251,7 +336,7 @@ class MegaredditOverview : BaseActivityAnim() {
         StorageUtil.getStorageUri(this)?.let {
             intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, it)
         }
-        startActivityForResult(intent, RC_EXPORT)
+        exportLauncher.launch(intent)
     }
 
     private fun importMegareddits() {
@@ -264,20 +349,7 @@ class MegaredditOverview : BaseActivityAnim() {
         StorageUtil.getStorageUri(this)?.let {
             intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, it)
         }
-        startActivityForResult(intent, RC_IMPORT)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        val uri = data?.data
-        if (resultCode != RESULT_OK || uri == null) {
-            pendingExport = null
-            return
-        }
-        when (requestCode) {
-            RC_EXPORT -> writeExport(uri)
-            RC_IMPORT -> readImport(uri)
-        }
+        importLauncher.launch(intent)
     }
 
     private fun writeExport(uri: Uri) {
@@ -317,8 +389,6 @@ class MegaredditOverview : BaseActivityAnim() {
             snack(getString(R.string.megareddit_import_failed))
             return
         }
-        // Whatever it brought in, the tabs are rebuilt on the way back rather than left stale.
-        editing = true
         snack(resources.getQuantityString(R.plurals.megareddits_imported, imported, imported))
     }
 
@@ -328,10 +398,10 @@ class MegaredditOverview : BaseActivityAnim() {
 
     /**
      * Opens the count screen, which scans r/all and can add any subreddit it finds to this
-     * Megareddit's lists -- so the pages reload on the way back, as they do after the editor.
+     * Megareddit's lists -- so the pages reload on the way back, as they do after the editor, but
+     * only if it added one.
      */
     private fun openCount(mega: Megareddit) {
-        editing = true
         startActivity(
             Intent(this, MegaredditCount::class.java)
                 .putExtra(MegaredditCount.EXTRA_MEGAREDDIT, mega.name)
@@ -339,7 +409,7 @@ class MegaredditOverview : BaseActivityAnim() {
     }
 
     private fun refreshCurrent() {
-        (adapter?.currentFragment as? SubmissionsView)?.forceRefresh()
+        currentPage()?.forceRefresh()
     }
 
     /**
@@ -354,18 +424,26 @@ class MegaredditOverview : BaseActivityAnim() {
 
         popup.setOnMenuItemClickListener { item ->
             val chosen = entries.indexOfFirst { it == item.title }
+            // The sort the menu marks is the one already on; picking it again asks for the posts
+            // that are already on screen, and refreshing would fetch them afresh and throw the
+            // scroll position away for nothing. Read the current sort before it is overwritten.
             if (chosen == 0) {
+                val changed = !Megareddits.isSortAll(key)
                 Megareddits.setSortAll(key, true)
-                refreshCurrent()
+                if (changed) {
+                    refreshCurrent()
+                }
                 return@setOnMenuItemClickListener true
             }
             val sorting =
                 sortings.getOrNull(chosen - 1) ?: return@setOnMenuItemClickListener true
+            val changed =
+                Megareddits.isSortAll(key) || SettingValues.getSubmissionSort(key) != sorting
             Megareddits.setSortAll(key, false)
             SortingUtil.setSorting(key, sorting)
             if (sorting == Sorting.TOP || sorting == Sorting.CONTROVERSIAL) {
-                openTimePopup(key)
-            } else {
+                openTimePopup(key, changed)
+            } else if (changed) {
                 refreshCurrent()
             }
             true
@@ -373,7 +451,11 @@ class MegaredditOverview : BaseActivityAnim() {
         popup.show()
     }
 
-    private fun openTimePopup(key: String) {
+    /**
+     * The period the TOP and CONTROVERSIAL sorts run over. [sortChanged] carries whether the sort
+     * it belongs to just moved, so that keeping the period still refreshes when the sort did not.
+     */
+    private fun openTimePopup(key: String, sortChanged: Boolean) {
         val popup = PopupMenu(this, requireViewById(R.id.anchor), Gravity.END)
         val base: Array<Spannable> = SortingUtil.getSortingTimesSpannables(key)
         val times =
@@ -389,33 +471,33 @@ class MegaredditOverview : BaseActivityAnim() {
         popup.setOnMenuItemClickListener { item ->
             val time = times.getOrNull(base.indexOfFirst { it == item.title })
             if (time != null) {
+                val changed = sortChanged || SettingValues.getSubmissionTimePeriod(key) != time
                 SortingUtil.setTime(key, time)
-                refreshCurrent()
+                if (changed) {
+                    refreshCurrent()
+                }
             }
             true
         }
         popup.show()
     }
 
-    private inner class MegaredditPagerAdapter(fm: FragmentManager) :
-        FragmentStatePagerAdapter(fm, FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+    /** One page per Megareddit, in [shown]'s order, with [pageGeneration] baked into the ids. */
+    private inner class MegaredditPagerAdapter : FragmentStateAdapter(this@MegaredditOverview) {
 
-        var currentFragment: Fragment? = null
-            private set
+        override fun getItemCount(): Int = shown.size
 
-        override fun getItem(position: Int): Fragment {
+        override fun getItemId(position: Int): Long = pageId(position)
+
+        override fun containsItem(itemId: Long): Boolean =
+            shown.indices.any { pageId(it) == itemId }
+
+        override fun createFragment(position: Int): Fragment {
             val f = SubmissionsView()
             f.arguments = Bundle().apply { putString("id", shown[position].key()) }
             return f
         }
-
-        override fun setPrimaryItem(container: ViewGroup, position: Int, `object`: Any) {
-            currentFragment = `object` as Fragment
-            super.setPrimaryItem(container, position, `object`)
-        }
-
-        override fun getCount(): Int = shown.size
-
-        override fun getPageTitle(position: Int): CharSequence = titleFor(position)
     }
+
+    private fun pageId(position: Int): Long = (pageGeneration.toLong() shl 32) or position.toLong()
 }
