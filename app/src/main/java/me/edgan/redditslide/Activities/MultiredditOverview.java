@@ -763,12 +763,19 @@ public class MultiredditOverview extends BaseActivityAnim implements HibernateSt
                 }
             }
             applyRestoredPage();
+            // The page landed on, not the first: either selection above may have moved the pager,
+            // and its onPageSelected styled that page only for the lines below to overwrite it --
+            // a resume onto a later multireddit came back with the first one's colors and its
+            // subreddits in the drawer.
+            final int landed = pager.getCurrentItem();
             tabs.setSelectedTabIndicatorColor(
                     new ColorPreferences(MultiredditOverview.this)
-                            .getColor(usedArray.get(0).getDisplayName()));
-            doDrawerSubs(0);
+                            .getColor(usedArray.get(landed).getDisplayName()));
+            doDrawerSubs(landed);
             Window window = this.getWindow();
-            int color = Palette.getDarkerColor(MiscUtil.orEmpty(usedArray.get(0).getDisplayName()));
+            int color =
+                    Palette.getDarkerColor(
+                            MiscUtil.orEmpty(usedArray.get(landed).getDisplayName()));
 
             if (SettingValues.alwaysBlackStatusbar) {
                 color = Color.BLACK;

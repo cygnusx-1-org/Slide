@@ -270,8 +270,15 @@ public class BaseActivity extends PeekViewActivity
         // right screen, right tab, no posts. Launching after a force-stop has no saved state, so
         // getItem runs and the same screen restores correctly -- which is exactly why `am kill`
         // failed where force-stop passed.
+        //
+        // Except when the dead process was waiting on a result. The request code a launcher
+        // registered is kept only in this state, so dropping it delivered the file the user had
+        // just picked to nothing: an import from the picker, with the process reclaimed while the
+        // picker was open, silently did nothing.
         discardedSystemState =
-                savedInstanceState != null && HibernateState.hasPendingRestore(this);
+                savedInstanceState != null
+                        && !awaitsActivityResult(savedInstanceState)
+                        && HibernateState.hasPendingRestore(this);
         super.onCreate(discardedSystemState ? null : savedInstanceState);
         setAutofill();
 
@@ -314,6 +321,22 @@ public class BaseActivity extends PeekViewActivity
         getWindow()
                 .getDecorView()
                 .setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS);
+    }
+
+    /**
+     * Whether {@code saved} holds a result launch that has not come back yet -- a file picker the
+     * process was killed behind. Read from the keys ComponentActivity and its SavedStateRegistry
+     * write; were they ever to move, this answers false and the restore behaves as it did.
+     */
+    private static boolean awaitsActivityResult(Bundle saved) {
+        final Bundle registry = saved.getBundle("androidx.lifecycle.BundlableSavedStateRegistry.key");
+        final Bundle results =
+                registry == null ? null : registry.getBundle("android:support:activity-result");
+        final List<String> launched =
+                results == null
+                        ? null
+                        : results.getStringArrayList("KEY_COMPONENT_ACTIVITY_LAUNCHED_KEYS");
+        return launched != null && !launched.isEmpty();
     }
 
     @Override
