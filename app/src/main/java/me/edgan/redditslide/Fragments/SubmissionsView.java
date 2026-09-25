@@ -92,6 +92,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
     public static final String ARG_RESTORE_EXPECTED_COUNT = "restoreExpectedCount";
     public static final String ARG_RESTORE_AFTER_TOKEN = "restoreAfterToken";
     public static final String ARG_RESTORE_TOOLBAR_HIDDEN = "restoreToolbarHidden";
+    public static final String ARG_RESTORE_FAB_HIDDEN = "restoreFabHidden";
 
     private static int adapterPosition;
     private static int currentPosition;
@@ -135,6 +136,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
 
     @Nullable private String restoreAfterToken;
     private boolean restoreToolbarHidden;
+    private boolean restoreFabHidden;
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -763,6 +765,7 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
         restoreExpectedCount = bundle.getInt(ARG_RESTORE_EXPECTED_COUNT, 0);
         restoreAfterToken = bundle.getString(ARG_RESTORE_AFTER_TOKEN);
         restoreToolbarHidden = bundle.getBoolean(ARG_RESTORE_TOOLBAR_HIDDEN, false);
+        restoreFabHidden = bundle.getBoolean(ARG_RESTORE_FAB_HIDDEN, false);
     }
 
     @Override
@@ -866,8 +869,23 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                                         // the top here is what would undo it.
                                         rv.scrollToPosition(0);
                                     }
+                                    // Read before applyRestoreAnchor consumes it: a restore
+                                    // records itself after its jump has landed (see there), and
+                                    // a capture posted now would run first and write the list at
+                                    // the top, which is exactly the position the jump is about
+                                    // to leave.
+                                    final boolean jumping =
+                                            restoreFromCache && posts.restoredFromCache;
                                     adapter.notifyDataSetChanged();
                                     applyRestoreAnchor();
+                                    if (!jumping) {
+                                        // A listing that arrived fresh is somewhere the user
+                                        // might leave from, and nothing else records it: the
+                                        // tab was captured on arrival with no rows to anchor to,
+                                        // and no scroll has happened to settle. Posted so the
+                                        // rows have laid out and can be anchored.
+                                        rv.post(this::captureSettled);
+                                    }
                                     // Re-arm the initial-display sweep: SubredditPosts clears its list
                                     // in place (same reference) so the content-change watcher can't
                                     // see a refresh; warm the fresh top rows once they've laid out.
@@ -942,7 +960,59 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                                     if (toolbarScroll != null) {
                                         toolbarScroll.settleAfterJump(restoreToolbarHidden);
                                     }
+                                    applyRestoredFab();
+                                    // The restored listing is back where it was, toolbar
+                                    // included, and a programmatic jump never reaches the idle
+                                    // callback that would record it. Without this the snapshot
+                                    // on disk stays whatever the arrival capture wrote -- the
+                                    // tab with no position -- until the user scrolls or leaves.
+                                    captureSettled();
                                 }));
+    }
+
+    /** Whether the post button is scrolled away, for {@link me.edgan.redditslide.FeedRestoreState}. */
+    public boolean isFabHidden() {
+        // Visibility rather than isShown(), and the null check rather than a VISIBLE test, so that
+        // each of the three states this has to tell apart is read off the thing that defines it.
+        // hide() leaves the view INVISIBLE or GONE depending on its behaviour, so either counts;
+        // a page that never had a button has no fab at all and is not "hidden".
+        //
+        // isShown() is also false for a button that is perfectly visible but whose window is not
+        // attached yet, which is what a capture taken as a screen arrives sees. Recording that as
+        // "hidden" is how a subreddit opened and never scrolled came back with its post button
+        // gone.
+        //
+        // isOrWillBeHidden() rather than the visibility alone: hide() animates, and the view stays
+        // VISIBLE until the animation ends. applyRestoreAnchor hides the button and captures in
+        // the same breath, so the bare visibility recorded it as showing, and the next restore
+        // put it back over the rows.
+        return fab != null && (fab.getVisibility() != View.VISIBLE || fab.isOrWillBeHidden());
+    }
+
+    /**
+     * Puts the post button back the way the scroll position left it.
+     *
+     * <p>A restored jump never runs the scroll listener that hides it, so a feed restored well
+     * down the list came back with the button showing over the rows it had been scrolled clear
+     * of. The two settings that pin it are honoured here the same way the listener honours them.
+     */
+    private void applyRestoredFab() {
+        if (fab == null || !SettingValues.fab) {
+            return;
+        }
+        if (restoreFabHidden && !SettingValues.alwaysShowFAB) {
+            fab.hide();
+        } else {
+            fab.show();
+        }
+    }
+
+    /** Records the screen, once this page is on an activity that can be recorded. */
+    private void captureSettled() {
+        final FragmentActivity settled = getActivity();
+        if (settled != null) {
+            HibernateState.onContentSettled(settled);
+        }
     }
 
     @Override
@@ -1140,7 +1210,18 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                             } else {
                                 diff = 0;
                             }
-                            if (fab != null) {
+                            // A zero delta is not a scroll: it says nothing about direction and
+                            // must move the button neither way. Layout passes deliver one after a
+                            // programmatic jump, and the old `dy <= 0` read that as "scrolled up"
+                            // and showed the post button a frame after a restore had just put it
+                            // away -- the feed came back at the right row with the button sitting
+                            // over it.
+                            //
+                            // Except at the very top, where the button belongs whatever the
+                            // delta: a jump to the top (a refresh, re-tapping the tab) delivers
+                            // only the zero, and ignoring it there left the button hidden.
+                            if (fab != null
+                                    && (dy != 0 || !recyclerView.canScrollVertically(-1))) {
                                 if (dy <= 0 && fab.getId() != 0 && SettingValues.fab) {
                                     if (recyclerView.getScrollState()
                                                     != RecyclerView.SCROLL_STATE_DRAGGING
@@ -1183,10 +1264,6 @@ public class SubmissionsView extends Fragment implements SubmissionDisplay {
                             // deduped per post so repeated micro-stops don't re-warm the same rows.
                             if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                                 warmVisibleTapTargets();
-                                final FragmentActivity settled = getActivity();
-                                if (settled != null) {
-                                    HibernateState.onContentSettled(settled);
-                                }
                             }
 
                             // If the toolbar search is open, and the user scrolls in the Main

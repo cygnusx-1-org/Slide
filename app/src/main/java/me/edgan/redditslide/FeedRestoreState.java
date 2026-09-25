@@ -30,6 +30,7 @@ public final class FeedRestoreState {
     public static final String EXTRA_EXPECTED_COUNT = "restoreExpectedCount";
     public static final String EXTRA_AFTER_TOKEN = "restoreAfterToken";
     public static final String EXTRA_TOOLBAR_HIDDEN = "restoreToolbarHidden";
+    public static final String EXTRA_FAB_HIDDEN = "restoreFabHidden";
 
     /** The listing this restore is for; null once it has been handed over, or when there is none. */
     @Nullable public String subreddit;
@@ -40,6 +41,9 @@ public final class FeedRestoreState {
     public int anchorOffset;
     public int expectedCount;
     public boolean toolbarHidden;
+
+    /** Whether the post button was scrolled out of sight; it hides with the toolbar. */
+    public boolean fabHidden;
 
     /** The page of a tabbed host the listing was on; meaningless for a single-feed host. */
     public int page;
@@ -98,6 +102,9 @@ public final class FeedRestoreState {
         if (header != null) {
             out.putBoolean(HibernateState.STATE_TOOLBAR_HIDDEN, header.getTranslationY() != 0f);
         }
+        // Scrolling down hides the post button along with the toolbar, and a restored feed came
+        // back with it showing over the very rows it was scrolled away from.
+        out.putBoolean(HibernateState.STATE_FAB_HIDDEN, view.isFabHidden());
         out.putInt(HibernateState.STATE_ANCHOR_POSITION, anchor.position);
         out.putInt(HibernateState.STATE_ANCHOR_OFFSET, anchor.offset);
         out.putString(HibernateState.STATE_AFTER_TOKEN, view.posts.getAfterToken());
@@ -132,6 +139,7 @@ public final class FeedRestoreState {
         anchorOffset = in.getInt(HibernateState.STATE_ANCHOR_OFFSET, 0);
         expectedCount = in.getInt(HibernateState.STATE_EXPECTED_COUNT, 0);
         toolbarHidden = in.getBoolean(HibernateState.STATE_TOOLBAR_HIDDEN, false);
+        fabHidden = in.getBoolean(HibernateState.STATE_FAB_HIDDEN, false);
         page = in.getInt(HibernateState.STATE_PAGE, 0);
     }
 
@@ -154,6 +162,8 @@ public final class FeedRestoreState {
         intent.putExtra(
                 EXTRA_EXPECTED_COUNT, state.getInt(HibernateState.STATE_EXPECTED_COUNT, 0));
         intent.putExtra(
+                EXTRA_FAB_HIDDEN, state.getBoolean(HibernateState.STATE_FAB_HIDDEN, false));
+        intent.putExtra(
                 EXTRA_TOOLBAR_HIDDEN,
                 state.getBoolean(HibernateState.STATE_TOOLBAR_HIDDEN, false));
     }
@@ -175,6 +185,7 @@ public final class FeedRestoreState {
         anchorOffset = intent.getIntExtra(EXTRA_ANCHOR_OFFSET, 0);
         expectedCount = intent.getIntExtra(EXTRA_EXPECTED_COUNT, 0);
         toolbarHidden = intent.getBooleanExtra(EXTRA_TOOLBAR_HIDDEN, false);
+        fabHidden = intent.getBooleanExtra(EXTRA_FAB_HIDDEN, false);
         intent.removeExtra(EXTRA_SUB);
         intent.removeExtra(EXTRA_ANCHOR_ID);
         intent.removeExtra(EXTRA_AFTER_TOKEN);
@@ -182,6 +193,7 @@ public final class FeedRestoreState {
         intent.removeExtra(EXTRA_ANCHOR_OFFSET);
         intent.removeExtra(EXTRA_EXPECTED_COUNT);
         intent.removeExtra(EXTRA_TOOLBAR_HIDDEN);
+        intent.removeExtra(EXTRA_FAB_HIDDEN);
     }
 
     /**
@@ -207,6 +219,7 @@ public final class FeedRestoreState {
         args.putInt(SubmissionsView.ARG_RESTORE_ANCHOR_OFFSET, anchorOffset);
         args.putInt(SubmissionsView.ARG_RESTORE_EXPECTED_COUNT, expectedCount);
         args.putBoolean(SubmissionsView.ARG_RESTORE_TOOLBAR_HIDDEN, toolbarHidden);
+        args.putBoolean(SubmissionsView.ARG_RESTORE_FAB_HIDDEN, fabHidden);
         subreddit = null;
         return true;
     }

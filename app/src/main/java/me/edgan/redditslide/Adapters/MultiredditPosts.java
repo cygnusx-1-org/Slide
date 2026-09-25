@@ -22,6 +22,7 @@ import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.PhotoLoader;
+import net.dean.jraw.models.Listing;
 import net.dean.jraw.models.MultiReddit;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.paginators.MultiRedditPaginator;
@@ -39,6 +40,34 @@ public class MultiredditPosts implements PostLoader {
     public boolean offline;
     public boolean loading;
     public String profile;
+
+    /**
+     * Rebuild this listing from the on-disk cache instead of fetching it, for the first load only.
+     * Set when the app is coming back to a multireddit the user left -- a hibernate resume after
+     * the process died -- so the feed they left is the feed they get back. Without it the page
+     * refetches, and a listing that has moved on since comes back with a different post at the
+     * top under a scroll offset restored for the old one.
+     */
+    public boolean restoreFromCache;
+
+    /**
+     * How many posts the listing held when it was recorded. A blob in the cache directory can be
+     * reclaimed by the system at any time and {@code OfflineSubreddit} simply skips the ones that
+     * have gone, so a restore can silently come back a fraction of its old length -- at which
+     * point the recorded scroll position means nothing and a normal load is the better answer.
+     */
+    public int restoreExpectedCount;
+
+    /** Fraction of the recorded post count a restore has to reach to be worth showing. */
+    private static final double MIN_RESTORE_FRACTION = 0.5;
+
+    /**
+     * Listing cursor recorded with the restored posts, so the first "load more" after a restore
+     * continues the listing instead of re-fetching page one. Held until a page actually comes
+     * back: a failed request leaves it in place for the retry.
+     */
+    @Nullable public String restoreAfterToken;
+
     @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
     private MultiRedditPaginator paginator;
     @SuppressWarnings("NullAway.Init") // assigned in loadMore
@@ -100,6 +129,78 @@ public class MultiredditPosts implements PostLoader {
     /** Cache key part for a multireddit; empty when it could not be resolved. */
     private static String multiName(final @Nullable MultiReddit multi) {
         return multi == null ? "" : MiscUtil.orEmpty(multi.getDisplayName()).toLowerCase(Locale.ENGLISH);
+    }
+
+    /** The full cache key this listing is written under and read back from. */
+    private String cacheKey() {
+        return "multi_" + multiName(multiReddit);
+    }
+
+    /**
+     * The cursor for the page after the last one fetched, or {@code null} if nothing has been
+     * fetched yet. Recorded alongside a hibernated feed so it can be handed back to {@link
+     * #restoreAfterToken}.
+     */
+    @Nullable
+    public String getAfterToken() {
+        if (paginator == null) {
+            // Restored from cache and not paged since, so there is no paginator to ask -- but the
+            // cursor the restore came with is still the right one.
+            return restoreAfterToken;
+        }
+        final Listing<Submission> listing = paginator.getCurrentListing();
+        final String after = listing == null ? null : listing.getAfter();
+        return after != null ? after : restoreAfterToken;
+    }
+
+    /**
+     * The listing as it was last written to disk, rebuilt and ready to display, or {@code null}
+     * when there is not enough of it left to be worth restoring.
+     *
+     * <p>Everything the online path does to a freshly fetched page happens here too, so a restored
+     * listing does not come back reading as unseen, with no new-comment counts and no warmed
+     * previews.
+     *
+     * <p>Runs on the loader's background thread: rebuilding a hundred posts means a hundred file
+     * reads and as many JSON parses.
+     */
+    @Nullable
+    private List<Submission> rebuildFromCache(Context context) {
+        final String key = cacheKey();
+        // offline=false: read each blob as a bare submission rather than deserializing every
+        // comment tree the user has since opened from this listing.
+        final OfflineSubreddit stored = OfflineSubreddit.getSubreddit(key, 0L, false, context);
+        if (stored == null) {
+            return null;
+        }
+        final List<Submission> restored = new ArrayList<>();
+        for (Submission s : stored.submissions) {
+            if (!PostMatch.doesMatch(s, key, false)) {
+                restored.add(s);
+            }
+        }
+        if (restored.isEmpty()) {
+            return null;
+        }
+        // A blob in the cache directory can be reclaimed at any point and the read back above
+        // simply skips the ones that have gone, without shortening the stored name list.
+        // Comparing against the count recorded with the scroll position is the only signal that
+        // the listing came back a fraction of what it was.
+        if (restoreExpectedCount > 0
+                && restored.size() < restoreExpectedCount * MIN_RESTORE_FRACTION) {
+            return null;
+        }
+        if (!(SettingValues.noImages
+                && ((!NetworkUtil.isConnectedWifi(context) && SettingValues.lowResMobile)
+                        || SettingValues.lowResAlways))) {
+            PhotoLoader.loadPhotos(context, restored, key);
+        }
+        if (SettingValues.storeHistory) {
+            HasSeen.setHasSeenSubmission(restored);
+            LastComments.setCommentsSince(restored);
+        }
+        SubmissionCache.cacheSubmissions(restored, context, displayName());
+        return restored;
     }
 
     @Override
@@ -203,6 +304,22 @@ public class MultiredditPosts implements PostLoader {
 
         @Override
         protected @Nullable List<Submission> doInBackground(MultiReddit... subredditPaginators) {
+            if (restoreFromCache && reset) {
+                restoreFromCache = false;
+                final List<Submission> restored = rebuildFromCache(context);
+                if (restored != null) {
+                    // A restore is not an offline fallback: the listing is live, it simply has
+                    // not been asked for again. Leaving these set is what would put the offline
+                    // banner over a feed the user can still page.
+                    offline = false;
+                    usedOffline = false;
+                    stillShow = true;
+                    return restored;
+                }
+                // Too little of the recorded listing survived in the cache directory to be worth
+                // showing. Fall through and fetch it: a short feed at a scroll offset that no
+                // longer means anything is worse than a fresh one.
+            }
             if (!NetworkUtil.isConnected(context)) {
                 offline = true;
                 return null;
@@ -215,7 +332,19 @@ public class MultiredditPosts implements PostLoader {
             if (reset || paginator == null) {
                 offline = false;
 
-                paginator = new MultiRedditPaginator(Authentication.reddit, subredditPaginators[0]);
+                if (reset) {
+                    // A refresh is a request for the top of the listing, which is the one thing a
+                    // resume token must not do.
+                    restoreAfterToken = null;
+                }
+                final ResumableMultiRedditPaginator resumable =
+                        new ResumableMultiRedditPaginator(
+                                Authentication.reddit, subredditPaginators[0]);
+                // Not cleared here: the paginator drops its own copy once a request has actually
+                // succeeded, so a retry that rebuilds the paginator re-seeds rather than jumping
+                // to the top of the listing.
+                resumable.setResumeAfter(restoreAfterToken);
+                paginator = resumable;
                 paginator.setSorting(
                         SettingValues.getSubmissionSort(
                                 "multi_"

@@ -242,6 +242,7 @@ public class Reddit extends Application implements Application.ActivityLifecycle
         // Keep the background keep-warm token refresh aligned with the current token expiry so a
         // later re-open usually finds a fresh token instead of relying on the resume-time refresh.
         TokenRefreshReceiver.schedule(this);
+        HibernateState.onActivityResumed(this);
     }
 
     @Override

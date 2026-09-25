@@ -13,9 +13,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 import me.edgan.redditslide.Fragments.SubredditListView;
+import me.edgan.redditslide.HibernateState;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
@@ -25,8 +27,10 @@ import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 9/17/2015. */
 @NullMarked
-public class Discover extends BaseActivityAnim {
+public class Discover extends BaseActivityAnim implements HibernateState.Restorable {
 
+    @SuppressWarnings("NullAway.Init") // assigned in onCreate
+    private ViewPager pager;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -84,7 +88,7 @@ public class Discover extends BaseActivityAnim {
         tabs.setTabMode(TabLayout.MODE_FIXED);
         tabs.setSelectedTabIndicatorColor(new ColorPreferences(Discover.this).getColor("no sub"));
 
-        ViewPager pager = (ViewPager) requireViewById(R.id.content_view);
+        pager = (ViewPager) requireViewById(R.id.content_view);
         pager.setAdapter(new DiscoverPagerAdapter(getSupportFragmentManager()));
         tabs.setupWithViewPager(pager);
         pager.addOnPageChangeListener(
@@ -98,6 +102,26 @@ public class Discover extends BaseActivityAnim {
                                 .setDuration(180);
                     }
                 });
+    }
+
+    @Override
+    public void saveHibernateState(Bundle out) {
+        super.saveHibernateState(out);
+        out.putInt(HibernateState.STATE_PAGE, pager.getCurrentItem());
+    }
+
+    @Override
+    public void restoreHibernateState(Bundle in) {
+        super.restoreHibernateState(in);
+        // Applied here rather than deferred to a field, because BaseActivity claims for this
+        // screen from onPostCreate -- by which point onCreate has built the pager. Both tabs
+        // are fixed and built by the adapter's getItem, so the index is the tab's identity and
+        // cannot drift the way a list of the user's own multireddits can.
+        final PagerAdapter built = pager.getAdapter();
+        final int page = in.getInt(HibernateState.STATE_PAGE, -1);
+        if (built != null && page >= 0 && page < built.getCount()) {
+            pager.setCurrentItem(page, false);
+        }
     }
 
     private class DiscoverPagerAdapter extends FragmentStatePagerAdapter {

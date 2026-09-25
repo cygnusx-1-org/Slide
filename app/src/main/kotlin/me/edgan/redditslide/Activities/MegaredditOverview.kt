@@ -22,6 +22,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import me.edgan.redditslide.Fragments.SubmissionsView
+import me.edgan.redditslide.HibernateState
 import me.edgan.redditslide.Megareddit
 import me.edgan.redditslide.Megareddits
 import me.edgan.redditslide.R
@@ -43,7 +44,7 @@ private const val JSON_MIME = "application/json"
  * The account's Megareddits, one tab each. A page is the same [SubmissionsView] a main-screen tab
  * uses, loading the Megareddit's key, so its feed, sort and cache are shared with the tab.
  */
-class MegaredditOverview : BaseActivityAnim() {
+class MegaredditOverview : BaseActivityAnim(), HibernateState.Restorable {
 
     private lateinit var pager: ViewPager2
     private lateinit var tabs: TabLayout
@@ -72,6 +73,15 @@ class MegaredditOverview : BaseActivityAnim() {
     private var pendingExport: String? = null
 
     /**
+     * The Megareddit this screen was last looking at, and its tab index as a fallback. Consumed
+     * by [applyRestoredPage] in [onResume], because that is where the pages first exist: onCreate
+     * attaches an adapter with nothing in it, and the tabs are built from the store on resume.
+     */
+    private var restoreName: String = ""
+
+    private var restorePosition: Int = -1
+
+    /**
      * Posts on screen per Megareddit key, as each page reports them. A Megareddit is r/all filtered
      * down, so this is the number that says how much of it survived the filter, and it climbs as
      * the feed pages. Empty until a page has loaded; a tab with nothing counted yet shows no
@@ -84,6 +94,10 @@ class MegaredditOverview : BaseActivityAnim() {
         super.onCreate(savedInstanceState)
 
         applyColorTheme("")
+        // Claimed here rather than left to BaseActivity's onPostCreate: the tabs are built from
+        // the store in onResume, so the page to land on is only decidable there, and a snapshot
+        // entry is handed out once -- letting onPostCreate take it would discard it.
+        HibernateState.claim(this)?.let { restoreHibernateState(it) }
         setContentView(R.layout.activity_megareddits)
         MiscUtil.setupOldSwipeModeBackground(this, window.decorView)
 
@@ -154,7 +168,54 @@ class MegaredditOverview : BaseActivityAnim() {
             // every title is rewritten on the way back rather than only the one that changed.
             refreshTabTitles()
         }
+        // After the branches, not inside one: the pages exist either way by this point, and the
+        // rebuild above lands on the old index, which on the launch after a restore is 0.
+        applyRestoredPage()
     }
+
+    /**
+     * Lands on the recorded Megareddit once the tabs exist. One-shot, so a later return to this
+     * screen keeps whatever tab the user moved to.
+     *
+     * Matched by name rather than by index: [shown] is rebuilt from the store on every resume and
+     * a Megareddit can be added, removed or reordered between two visits, so an index alone
+     * resumes onto whichever one has since taken that slot.
+     */
+    private fun applyRestoredPage() {
+        if (restoreName.isEmpty() && restorePosition < 0) return
+        val wanted = restoreName
+        val fallback = restorePosition
+        restoreName = ""
+        restorePosition = -1
+        val found = shown.indexOfFirst { it.name.equals(wanted, ignoreCase = true) }
+        val target =
+            when {
+                found >= 0 -> found
+                // Deleted or renamed since. Its old slot is the closest thing left to where the
+                // user was, and beats silently landing on the first tab.
+                fallback in shown.indices -> fallback
+                else -> return
+            }
+        pager.setCurrentItem(target, false)
+        colorFor(target)
+    }
+
+    override fun saveHibernateState(out: Bundle) {
+        super.saveHibernateState(out)
+        val position = pager.currentItem
+        val megareddit = shown.getOrNull(position) ?: return
+        out.putInt(HibernateState.STATE_PAGE, position)
+        out.putString(HibernateState.STATE_SUBREDDIT, megareddit.name)
+    }
+
+    override fun restoreHibernateState(inState: Bundle) {
+        super.restoreHibernateState(inState)
+        restoreName = inState.getString(HibernateState.STATE_SUBREDDIT).orEmpty()
+        restorePosition = inState.getInt(HibernateState.STATE_PAGE, -1)
+    }
+
+    override fun hasPendingPageRestore(): Boolean =
+        restoreName.isNotEmpty() || restorePosition >= 0
 
     /**
      * The store as it stands when this screen leaves the foreground, which is what its pages are

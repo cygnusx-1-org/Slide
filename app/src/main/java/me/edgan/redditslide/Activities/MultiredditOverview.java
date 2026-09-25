@@ -35,6 +35,8 @@ import me.edgan.redditslide.Adapters.MultiredditPosts;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.CaseInsensitiveArrayList;
 import me.edgan.redditslide.Fragments.MultiredditView;
+import me.edgan.redditslide.Fragments.SubmissionsView;
+import me.edgan.redditslide.HibernateState;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.UserSubscriptions;
@@ -57,7 +59,7 @@ import org.jspecify.annotations.NullMarked;
 
 /** Created by ccrama on 9/17/2015. */
 @NullMarked
-public class MultiredditOverview extends BaseActivityAnim {
+public class MultiredditOverview extends BaseActivityAnim implements HibernateState.Restorable {
 
     public static final String EXTRA_PROFILE = "profile";
     public static final String EXTRA_MULTI = "multi";
@@ -75,6 +77,32 @@ public class MultiredditOverview extends BaseActivityAnim {
     @SuppressWarnings("NullAway.Init") // setDataSet assigns this before any page exists to read it
     private List<MultiReddit> usedArray;
     private String initialMulti;
+
+    /** How many times, and how far apart, to re-ask for the multireddit list before giving up. */
+    private static final int MULTI_LOAD_ATTEMPTS = 6;
+
+    private static final long MULTI_LOAD_RETRY_MS = 500;
+
+    /**
+     * The multireddit this screen was last looking at, and its page index as a fallback. Both
+     * stay unset until a snapshot is claimed; {@code setDataSet} consumes them once the list has
+     * arrived, since it arrives from the network long after onCreate has finished.
+     */
+    private String restoreMulti = "";
+
+    private int restorePage = -1;
+
+    /**
+     * The listing the resumed page was showing, handed to that one page as fragment arguments so
+     * it rebuilds from the cache instead of fetching. Restoring the scroll offset is not enough on
+     * its own: a refetched multireddit has moved on since it was recorded, and the offset then
+     * lands on whatever post has taken that row.
+     */
+    private String restoreFeedMulti = "";
+
+    private int restoreExpectedCount;
+
+    @Nullable private String restoreAfterToken;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -321,6 +349,14 @@ public class MultiredditOverview extends BaseActivityAnim {
         super.onCreate(savedInstance);
 
         applyColorTheme("");
+        // Claimed here, not left to BaseActivity's onPostCreate: the multireddit list is fetched
+        // asynchronously, so the page this screen must land on is chosen in setDataSet, whenever
+        // that answer comes back. A snapshot entry is handed out once, so taking it now is also
+        // what keeps onPostCreate from consuming it and throwing it away.
+        final Bundle hibernated = HibernateState.claim(this);
+        if (hibernated != null) {
+            restoreHibernateState(hibernated);
+        }
         setContentView(R.layout.activity_multireddits);
         MiscUtil.setupOldSwipeModeBackground(this, getWindow().getDecorView());
 
@@ -345,16 +381,50 @@ public class MultiredditOverview extends BaseActivityAnim {
 
         UserSubscriptions.MultiCallback callback =
                 new UserSubscriptions.MultiCallback() {
+                    private int attempts;
+
                     @Override
                     public void onComplete(List<MultiReddit> multiReddits) {
+                        final UserSubscriptions.MultiCallback self = this;
                         if (multiReddits != null && !multiReddits.isEmpty()) {
                             setDataSet(multiReddits);
-                        } else {
+                            return;
+                        }
+                        // Null is "could not load", not "you have none" -- and the two were
+                        // answered with the same dialog. UserSubscriptions.loadMultireddits does
+                        // not even attempt the fetch until Authentication.isLoggedIn and
+                        // didOnline are both up, and those come up asynchronously after the
+                        // process is killed, so a resume lands here first. The screen the user
+                        // was just reading then came back as "No multireddits (yet)! Would you
+                        // like to create a new multireddit?" over an empty pager.
+                        if (multiReddits == null && ++attempts <= MULTI_LOAD_ATTEMPTS) {
+                            pager.postDelayed(
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (isFinishing() || isDestroyed()) {
+                                                return;
+                                            }
+                                            requestMultis(self);
+                                        }
+                                    },
+                                    MULTI_LOAD_RETRY_MS);
+                            return;
+                        }
+                        if (multiReddits != null) {
+                            // A real answer, and it is empty: the account genuinely has none.
                             buildDialog();
                         }
+                        // Still null after retrying. Leave the screen be rather than claim
+                        // something about the account that has not been established.
                     }
                 };
 
+        requestMultis(callback);
+    }
+
+    /** Asks for the list the same way whichever account's multireddits this screen is showing. */
+    private void requestMultis(UserSubscriptions.MultiCallback callback) {
         if (profile.isEmpty()) {
             UserSubscriptions.getMultireddits(callback);
         } else {
@@ -565,6 +635,110 @@ public class MultiredditOverview extends BaseActivityAnim {
         pager.setCurrentItem(current);
     }
 
+    @Override
+    public void saveHibernateState(Bundle out) {
+        super.saveHibernateState(out);
+        if (usedArray == null || usedArray.isEmpty()) {
+            return;
+        }
+        final int page = pager.getCurrentItem();
+        if (page < 0 || page >= usedArray.size()) {
+            return;
+        }
+        out.putInt(HibernateState.STATE_PAGE, page);
+        // The name is what actually identifies the page. The list is refetched on every launch
+        // and its order is the server's, so a bare index resumes onto whichever multireddit has
+        // since taken that slot -- exactly the "left on X, came back on Y" this is meant to fix.
+        out.putString(
+                HibernateState.STATE_SUBREDDIT,
+                MiscUtil.orEmpty(usedArray.get(page).getDisplayName()));
+        // Enough to put the listing itself back, not just the tab it was on. getCurrentFragment
+        // is the page at pager.getCurrentItem(), which is the page recorded above.
+        final Fragment current = adapter == null ? null : adapter.getCurrentFragment();
+        if (!(current instanceof MultiredditView)) {
+            return;
+        }
+        final MultiredditPosts loaded = ((MultiredditView) current).posts;
+        if (loaded == null || loaded.posts == null || loaded.posts.isEmpty()) {
+            // Nothing drawn yet. The count is what tells a restore whether the cache came back
+            // whole, and a recorded zero would say the listing was empty rather than unread.
+            return;
+        }
+        out.putInt(HibernateState.STATE_EXPECTED_COUNT, loaded.posts.size());
+        out.putString(HibernateState.STATE_AFTER_TOKEN, loaded.getAfterToken());
+    }
+
+    @Override
+    public void restoreHibernateState(Bundle in) {
+        super.restoreHibernateState(in);
+        restoreMulti = MiscUtil.orEmpty(in.getString(HibernateState.STATE_SUBREDDIT));
+        restorePage = in.getInt(HibernateState.STATE_PAGE, -1);
+        restoreExpectedCount = in.getInt(HibernateState.STATE_EXPECTED_COUNT, 0);
+        restoreAfterToken = in.getString(HibernateState.STATE_AFTER_TOKEN);
+        // Only a snapshot that recorded a drawn listing asks for one back. Without a count there
+        // is no way to tell a cache that survived from one the system reclaimed most of, and the
+        // page is better off fetching.
+        restoreFeedMulti = restoreExpectedCount > 0 ? restoreMulti : "";
+    }
+
+    /**
+     * Hands the pending feed restore to the one page it was recorded for, and to no other.
+     * One-shot: cleared here so a later {@code reloadSubs()} -- which rebuilds the adapter and
+     * calls {@code getItem} again -- fetches normally instead of putting the cached listing back
+     * on screen.
+     */
+    private void applyRestoreArgs(int position, Bundle args) {
+        if (restoreFeedMulti.isEmpty()
+                || usedArray == null
+                || position < 0
+                || position >= usedArray.size()) {
+            return;
+        }
+        if (!MiscUtil.orEmpty(usedArray.get(position).getDisplayName())
+                .equalsIgnoreCase(restoreFeedMulti)) {
+            return;
+        }
+        restoreFeedMulti = "";
+        args.putBoolean(SubmissionsView.ARG_RESTORE_FROM_CACHE, true);
+        args.putInt(SubmissionsView.ARG_RESTORE_EXPECTED_COUNT, restoreExpectedCount);
+        args.putString(SubmissionsView.ARG_RESTORE_AFTER_TOKEN, restoreAfterToken);
+    }
+
+    @Override
+    protected boolean hasPendingPageRestore() {
+        return !restoreMulti.isEmpty() || restorePage >= 0;
+    }
+
+    /**
+     * Lands on the recorded multireddit once the list exists. One-shot, and after the intent's own
+     * {@code EXTRA_MULTI}: a restored screen replays the intent it was opened with, so one first
+     * opened on a particular multireddit carries that extra for the rest of its life, and letting
+     * it win would pin every resume to that multireddit whatever the user moved to. Inbox and
+     * Profile order these the same way and for the same reason.
+     */
+    private void applyRestoredPage() {
+        if (restoreMulti.isEmpty() && restorePage < 0) {
+            return;
+        }
+        final String wanted = restoreMulti;
+        final int fallback = restorePage;
+        restoreMulti = "";
+        restorePage = -1;
+        if (!wanted.isEmpty()) {
+            for (int i = 0; i < usedArray.size(); i++) {
+                if (MiscUtil.orEmpty(usedArray.get(i).getDisplayName()).equalsIgnoreCase(wanted)) {
+                    pager.setCurrentItem(i, false);
+                    return;
+                }
+            }
+        }
+        // The multireddit is gone -- deleted, or renamed since. Its old slot is the closest thing
+        // left to where the user was, and is still better than silently landing on the first tab.
+        if (fallback >= 0 && fallback < usedArray.size()) {
+            pager.setCurrentItem(fallback, false);
+        }
+    }
+
     private void setDataSet(List<MultiReddit> data) {
         usedArray = data;
 
@@ -588,6 +762,7 @@ public class MultiredditOverview extends BaseActivityAnim {
                     }
                 }
             }
+            applyRestoredPage();
             tabs.setSelectedTabIndicatorColor(
                     new ColorPreferences(MultiredditOverview.this)
                             .getColor(usedArray.get(0).getDisplayName()));
@@ -722,6 +897,7 @@ public class MultiredditOverview extends BaseActivityAnim {
 
             args.putInt("id", i);
             args.putString(EXTRA_PROFILE, profile);
+            applyRestoreArgs(i, args);
 
             f.setArguments(args);
 

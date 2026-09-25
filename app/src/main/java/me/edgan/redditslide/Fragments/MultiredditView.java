@@ -76,6 +76,20 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
     private int pastVisiblesItems;
     private String profile;
 
+    /**
+     * Rebuild this page's listing from the on-disk cache instead of fetching it. Set by {@code
+     * MultiredditOverview} on the one page a hibernate resume was recorded for, so the feed the
+     * user left is the feed they get back: the activity restores the scroll offset either way,
+     * and over a refetched listing that offset lands on whatever post has since taken the row.
+     *
+     * <p>The keys are {@code SubmissionsView}'s: the same snapshot fields, written by the same
+     * {@link me.edgan.redditslide.FeedRestoreState}, for the other screen that hosts a feed.
+     */
+    private boolean restoreFromCache;
+
+    private int restoreExpectedCount;
+    @Nullable private String restoreAfterToken;
+
     @NonNull
     private RecyclerView.LayoutManager createLayoutManager(final int numColumns) {
         return new CatchStaggeredGridLayoutManager(
@@ -308,16 +322,23 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
                 Constants.TAB_HEADER_VIEW_OFFSET - Constants.PTR_OFFSET_TOP,
                 Constants.TAB_HEADER_VIEW_OFFSET + Constants.PTR_OFFSET_BOTTOM);
 
-        refreshLayout.post(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshLayout.setRefreshing(true);
-                    }
-                });
+        if (!restoreFromCache) {
+            // A restore draws the listing it already has; the spinner would announce a fetch that
+            // is not happening and then have to be taken down again.
+            refreshLayout.post(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            refreshLayout.setRefreshing(true);
+                        }
+                    });
+        }
 
         if ((multireddits != null) && !multireddits.isEmpty()) {
             posts = new MultiredditPosts(MiscUtil.orEmpty(multireddits.get(id).getDisplayName()), profile);
+            posts.restoreFromCache = restoreFromCache;
+            posts.restoreExpectedCount = restoreExpectedCount;
+            posts.restoreAfterToken = restoreAfterToken;
 
             adapter = new MultiredditAdapter(requireActivity(), posts, rv, refreshLayout, this);
             rv.setAdapter(adapter);
@@ -459,6 +480,9 @@ public class MultiredditView extends Fragment implements SubmissionDisplay {
         Bundle bundle = requireArguments();
         id = bundle.getInt("id", 0);
         profile = bundle.getString(EXTRA_PROFILE, "");
+        restoreFromCache = bundle.getBoolean(SubmissionsView.ARG_RESTORE_FROM_CACHE, false);
+        restoreExpectedCount = bundle.getInt(SubmissionsView.ARG_RESTORE_EXPECTED_COUNT, 0);
+        restoreAfterToken = bundle.getString(SubmissionsView.ARG_RESTORE_AFTER_TOKEN);
     }
 
     @Override

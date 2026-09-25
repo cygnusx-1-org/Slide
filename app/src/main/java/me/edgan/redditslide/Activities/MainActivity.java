@@ -1759,24 +1759,6 @@ public class MainActivity extends BaseActivity
     }
 
     /**
-     * Position of {@code sub} in {@code usedArray}, or -1. CaseInsensitiveArrayList overrides only
-     * {@code contains}, so its {@code indexOf} is the case-sensitive one from ArrayList and cannot
-     * be used here: subreddit names round-trip through prefs and JSON in whatever case they were
-     * written in.
-     */
-    private int indexOfSub(String sub) {
-        if (usedArray == null) {
-            return -1;
-        }
-        for (int i = 0; i < usedArray.size(); i++) {
-            if (sub.equalsIgnoreCase(usedArray.get(i))) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    /**
      * Puts the comment page back over the restored feed, in the swipe-to-comments pager mode.
      *
      * <p>Replays exactly what tapping a post does in that mode -- name the submission, add the
@@ -1847,18 +1829,26 @@ public class MainActivity extends BaseActivity
         if (onCommentPage) {
             page -= 1;
         }
-        if (page < 0 || page >= usedArray.size()) {
+        if (page < 0 || adapter == null) {
+            return;
+        }
+        // Asked of the adapter rather than read out of usedArray by index. The two are not the
+        // same numbering once hideSubredditTabs hides the ordinary subscriptions: the page would
+        // otherwise be recorded under the name of a subreddit that has no tab, and the resume
+        // came back on the right tab with a listing that never loaded.
+        final String sub = adapter.subredditForPage(page);
+        if (sub.isEmpty()) {
             return;
         }
         // getCurrentFragment stays on the feed even while the comment page is showing -- the pager
         // adapter tracks the thread separately -- so this is the listing either way.
-        final Fragment current = adapter == null ? null : adapter.getCurrentFragment();
+        final Fragment current = adapter.getCurrentFragment();
         // The comment page is only recorded on top of a feed that recorded itself. Without that,
         // out would carry a thread and no listing to put it back over, and being non-empty it
         // would still replace the complete state already on disk.
         if (!FeedRestoreState.capture(
                 out,
-                usedArray.get(page),
+                sub,
                 page,
                 current instanceof SubmissionsView ? (SubmissionsView) current : null,
                 header)) {
@@ -1957,7 +1947,10 @@ public class MainActivity extends BaseActivity
             // happens to be cached, so the index the user left on can point at a different
             // subreddit by the time they come back.
             if (restore.subreddit != null) {
-                final int restored = indexOfSub(restore.subreddit);
+                // The adapter's numbering, not usedArray's: toGoto is handed to
+                // pager.setCurrentItem below, and the two disagree whenever hideSubredditTabs
+                // drops an ordinary subscription from the strip.
+                final int restored = adapter.pageForSubreddit(restore.subreddit);
                 if (restored >= 0) {
                     toGoto = restored;
                 } else {
@@ -1969,17 +1962,22 @@ public class MainActivity extends BaseActivity
             if (toGoto == -1) {
                 toGoto = 0;
             }
-            if (toGoto >= usedArray.size()) {
-                toGoto = usedArray.size() - 1;
+            if (toGoto >= adapter.getCount()) {
+                toGoto = adapter.getCount() - 1;
             }
-            shouldLoad = usedArray.get(toGoto);
-            selectedSub = (usedArray.get(toGoto));
+            // toGoto is a pager position -- restartTheme writes pager.getCurrentItem() into
+            // EXTRA_PAGE_TO and it is handed to pager.setCurrentItem below -- so the subreddit it
+            // names comes from the adapter. Indexing usedArray with it names a different
+            // subreddit whenever hideSubredditTabs leaves an ordinary subscription off the strip.
+            final String openingSub = adapter.subredditForPage(toGoto);
+            shouldLoad = openingSub;
+            selectedSub = openingSub;
             // Sync the static current-position to the page actually shown at startup.
             // pager.setCurrentItem(toGoto) is a no-op when toGoto == 0, so onPageSelected
             // never fires to update it, leaving a stale value from a prior session (the
             // process survives a back-button exit). See issue #303.
             Reddit.currentPosition = toGoto;
-            themeSystemBars(usedArray.get(toGoto));
+            themeSystemBars(openingSub);
 
             final String USEDARRAY_0 = usedArray.get(0);
             header.setBackgroundColor(Palette.getColor(USEDARRAY_0));
@@ -2001,13 +1999,13 @@ public class MainActivity extends BaseActivity
                     LayoutUtils.scrollToTabAfterLayout(mTabLayout, toGoto);
                 }
             } else {
-                java.util.Objects.requireNonNull(getSupportActionBar()).setTitle(usedArray.get(toGoto));
+                java.util.Objects.requireNonNull(getSupportActionBar()).setTitle(openingSub);
                 pager.setCurrentItem(toGoto);
             }
             setToolbarClick();
 
-            setRecentBar(usedArray.get(toGoto));
-            sidebarController.doSubSidebarNoLoad(usedArray.get(toGoto));
+            setRecentBar(openingSub);
+            sidebarController.doSubSidebarNoLoad(openingSub);
             if (commentRestore.submission != null) {
                 // Posted so the pager has instantiated the feed page first; see
                 // reopenRestoredComments for why that matters.

@@ -40,8 +40,11 @@ public class MainPagerAdapterComment extends MainPagerAdapter {
                         if (positionOffset == 0) {
                             if (position != mainActivity.toOpenComments) {
                                 mainActivity.pager.setSwipeLeftOnly(true);
-                                mainActivity.header.setBackgroundColor(
-                                        Palette.getColor(mainActivity.usedArray.get(position)));
+                                final String scrolledTo = subredditForPage(position);
+                                if (!scrolledTo.isEmpty()) {
+                                    mainActivity.header.setBackgroundColor(
+                                            Palette.getColor(scrolledTo));
+                                }
                                 mainActivity.doPageSelectedComments(position);
                                 if (position == mainActivity.toOpenComments - 1 && mainActivity.adapter != null && mainActivity.adapter.getCurrentFragment() != null) {
                                     SubmissionsView page = (SubmissionsView) mainActivity.adapter.getCurrentFragment();
@@ -215,6 +218,54 @@ public class MainPagerAdapterComment extends MainPagerAdapter {
         }
     }
 
+    /**
+     * Whether the comment page is occupying a page of its own right now.
+     *
+     * <p>{@code toOpenComments} keeps the position it was last opened at after the page is gone,
+     * so the index alone does not say whether that slot is a thread or a feed; {@code
+     * openingComments} is what {@link #getItem} actually branches on.
+     */
+    private boolean commentPageShowing() {
+        return mainActivity.openingComments != null && mainActivity.toOpenComments >= 0;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The comment page takes a slot rather than shifting the ones above it: {@link #getItem}
+     * branches on {@code i != toOpenComments} and otherwise walks the specials by the raw
+     * position, exactly as the plain adapter does. So the inherited mapping is right for every
+     * page but the thread's own, and the subreddit that would have sat in that slot has no page
+     * at all while the thread is open.
+     */
+    @Override
+    public String subredditForPage(int position) {
+        if (commentPageShowing() && position == mainActivity.toOpenComments) {
+            return ""; // a thread, not a listing
+        }
+        final String named = super.subredditForPage(position);
+        if (!named.isEmpty() || position < 0 || position >= getCount()) {
+            return named;
+        }
+        // getItem falls back to the first subscription for any page its walk cannot name. On the
+        // plain adapter that is only ever page 0, because getCount() stops at the number of
+        // specials; here there is one page more than that, so the page past the last special is
+        // reachable and really is showing usedArray.get(0).
+        return mainActivity.usedArray == null || mainActivity.usedArray.isEmpty()
+                ? ""
+                : mainActivity.usedArray.get(0);
+    }
+
+    /** The inverse, refusing the slot the thread has taken. */
+    @Override
+    public int pageForSubreddit(String sub) {
+        final int position = super.pageForSubreddit(sub);
+        if (commentPageShowing() && position == mainActivity.toOpenComments) {
+            return -1; // that listing is the one the thread displaced
+        }
+        return position;
+    }
+
     @Override
     public @Nullable Parcelable saveState() {
         return null;
@@ -223,10 +274,15 @@ public class MainPagerAdapterComment extends MainPagerAdapter {
     @Override
     public void doSetPrimary(Object object, int position) {
         if (position != mainActivity.toOpenComments) {
-            if (mainActivity.multiNameToSubsMap.containsKey(mainActivity.usedArray.get(position))) {
-                mainActivity.shouldLoad = mainActivity.multiNameToSubsMap.getOrDefault(mainActivity.usedArray.get(position), "");
+            // By the adapter's numbering, not usedArray's. With hideSubredditTabs on an ordinary
+            // subscription gets no page, so from the first one onwards the two disagree and
+            // reading the array raw told the page to load a subreddit that has no tab -- the
+            // same mismatch that made a tab come up blank on the plain adapter.
+            final String primary = subredditForPage(position);
+            if (mainActivity.multiNameToSubsMap.containsKey(primary)) {
+                mainActivity.shouldLoad = mainActivity.multiNameToSubsMap.getOrDefault(primary, "");
             } else {
-                mainActivity.shouldLoad = mainActivity.usedArray.get(position);
+                mainActivity.shouldLoad = primary;
             }
             if (getCurrentFragment() != object) {
                 mCurrentFragment = ((SubmissionsView) object);

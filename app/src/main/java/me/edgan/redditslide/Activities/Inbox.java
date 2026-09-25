@@ -247,6 +247,9 @@ public class Inbox extends BaseActivityAnim implements HibernateState.Restorable
 
     @Override
     public void saveHibernateState(Bundle out) {
+        // Through to BaseActivity for the list position: the page index alone brought the right
+        // tab back at the top of its messages.
+        super.saveHibernateState(out);
         if (pager != null) {
             out.putInt(HibernateState.STATE_PAGE, pager.getCurrentItem());
         }
@@ -254,6 +257,7 @@ public class Inbox extends BaseActivityAnim implements HibernateState.Restorable
 
     @Override
     public void restoreHibernateState(Bundle in) {
+        super.restoreHibernateState(in);
         restoreTab = in.getInt(HibernateState.STATE_PAGE, -1);
     }
 

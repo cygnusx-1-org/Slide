@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.util.HashSet;
@@ -17,7 +16,6 @@ import me.edgan.redditslide.Adapters.ContributionAdapter;
 import me.edgan.redditslide.Adapters.HistoryPosts;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.ContributionRestoreState;
-import me.edgan.redditslide.HibernateState;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Views.CatchStaggeredGridLayoutManager;
 import me.edgan.redditslide.Views.PreCachingLayoutManager;
@@ -144,12 +142,6 @@ public class HistoryView extends Fragment implements ContributionRestoreState.So
                         // mid-scroll so flicked-past rows aren't downloaded.
                         if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                             warmVisibleTapTargets();
-                            // The tab has come to rest somewhere the user might leave from, so
-                            // record where that is.
-                            final FragmentActivity settled = getActivity();
-                            if (settled != null) {
-                                HibernateState.onContentSettled(settled);
-                            }
                         }
                     }
 

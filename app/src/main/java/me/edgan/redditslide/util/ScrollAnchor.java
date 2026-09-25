@@ -232,7 +232,7 @@ public final class ScrollAnchor {
      * How long a view stays hidden waiting for a position restored from cache. A backstop against a
      * layout that never arrives, not a schedule.
      */
-    private static final long REVEAL_TIMEOUT_MS = 1000L;
+    public static final long REVEAL_TIMEOUT_MS = 1000L;
 
     /**
      * The same backstop for a screen waiting on a network fetch before it can be positioned. Longer

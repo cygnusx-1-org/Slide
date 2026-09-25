@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import me.edgan.redditslide.Activities.BaseActivity;
 import me.edgan.redditslide.Activities.MainActivity;
 import me.edgan.redditslide.util.LogUtil;
 import org.json.JSONArray;
@@ -106,6 +107,7 @@ public final class HibernateState {
     public static final String STATE_HIDDEN_PERSONS = "hiddenPersons";
     public static final String STATE_VIDEO_POSITION = "videoPosition";
     public static final String STATE_TOOLBAR_HIDDEN = "toolbarHidden";
+    public static final String STATE_FAB_HIDDEN = "fabHidden";
     public static final String STATE_SUBMISSION = "submission";
     public static final String STATE_SCROLL_Y = "scrollY";
     public static final String STATE_CONTRIB_KEY = "contribKey";
@@ -176,6 +178,14 @@ public final class HibernateState {
     private static int startedCount;
 
     /**
+     * Activities currently between onResume and onPause. Unlike {@link #startedCount} this is
+     * zero whenever nothing of ours is in front of the user: most screens here use a translucent
+     * swipe-back theme, so the screens beneath one are paused but never stopped, and stay
+     * "started" for as long as it is open.
+     */
+    private static int resumedCount;
+
+    /**
      * The document last written, so the repeated captures below cost nothing when nothing has
      * changed. Null until the first write of the process.
      */
@@ -222,6 +232,7 @@ public final class HibernateState {
             final Entry e = live.get(i);
             if (e.cls.equals(cls) && (e.activity == null || e.activity.get() == null)) {
                 e.activity = new WeakReference<>(activity);
+                dropClearedAbove(activity, i);
                 return;
             }
         }
@@ -230,6 +241,45 @@ public final class HibernateState {
         entry.recordable = extras != null;
         entry.activity = new WeakReference<>(activity);
         live.add(entry);
+    }
+
+    /**
+     * Drops the entries above a screen that has just been brought back with
+     * {@code FLAG_ACTIVITY_CLEAR_TOP}, which finished every one of them.
+     *
+     * <p>Without this the list keeps screens that no longer exist. Seeding fills it from the
+     * snapshot with entries that have no activity behind them, and only the one screen the system
+     * recreated is ever attached to its entry; the rest are placeholders for screens the user has
+     * not backed into yet. {@link #recordDestroyed} drops an entry by matching the activity it
+     * holds, so a placeholder whose screen is finished without this process ever building it can
+     * never be dropped, and {@link #capture} writes it out again. Left alone it compounds: the
+     * stack on disk grew to
+     * {@code MainActivity > SettingsActivity > SettingsSubreddit > MainActivity > Profile}, each
+     * launch seeded that back and appended to it, and the resume replayed screens from sessions
+     * the user had long left.
+     *
+     * <p>Scoped to CLEAR_TOP because that is the one case where the screens above are known to be
+     * gone. It reaches here only when the target's own instance had already died with the process
+     * -- a CLEAR_TOP onto a live activity delivers {@code onNewIntent} and never creates anything
+     * -- which is exactly the resumed-from-a-notification path
+     * ({@code CheckForMailSingle} starts MainActivity with CLEAR_TOP | SINGLE_TOP).
+     *
+     * <p>Placeholders only. A screen rebuilt for a configuration change keeps the intent it was
+     * started with, flag and all, so a MainActivity opened from that notification and rebuilt for
+     * a font-scale or locale change arrives here too -- with the screens above it alive and being
+     * rebuilt alongside it. Dropping those took them out of every later capture.
+     */
+    private static void dropClearedAbove(Activity activity, int index) {
+        final Intent intent = activity.getIntent();
+        if (intent == null || (intent.getFlags() & Intent.FLAG_ACTIVITY_CLEAR_TOP) == 0) {
+            return;
+        }
+        for (int i = live.size() - 1; i > index; i--) {
+            final WeakReference<Activity> ref = live.get(i).activity;
+            if (ref == null || ref.get() == null) {
+                live.remove(i);
+            }
+        }
     }
 
     /**
@@ -279,6 +329,22 @@ public final class HibernateState {
             if (ref != null && ref.get() == activity) {
                 if (activity.isFinishing()) {
                     live.remove(i);
+                    // Backing out of a screen is the one navigation nothing else records. The
+                    // screen underneath resumes -- and captures -- while this one is still on
+                    // the stack, and no callback follows this destroy, so the snapshot kept the
+                    // screen the user had just left and a kill put them back on it.
+                    //
+                    // Only while something of ours is resumed, though. Backing out resumes the
+                    // screen underneath before this one is destroyed; dismissing the task from
+                    // the overview pauses everything first and then destroys it all, top down,
+                    // and capturing during that burst writes a stack that shrinks with every
+                    // destroy until only the feed is left -- which is what the next launch then
+                    // restored. Started is not the test: the screens beneath a translucent
+                    // swipe-back screen are paused but never stopped, so they still count as
+                    // started all through the teardown.
+                    if (resumedCount > 0) {
+                        capture(activity.getApplicationContext());
+                    }
                 } else {
                     // Destroyed for a configuration change, not dismissed: the screen is still on
                     // the stack and is about to be rebuilt. Keep the entry, drop the reference.
@@ -305,6 +371,32 @@ public final class HibernateState {
      * document on disk current, and an unchanged one is not rewritten.
      */
     public static void onActivityPaused(Context context) {
+        resumedCount = Math.max(0, resumedCount - 1);
+        capture(context);
+    }
+
+    /**
+     * Called from {@code Reddit.onActivityResumed}: the moment a screen the user navigated to is
+     * actually on the stack.
+     *
+     * <p>Without this, arriving somewhere is never recorded on its own. The pause that fires as
+     * the user leaves the previous screen runs before the new one exists, and the settle capture
+     * needs a scroll, so a screen opened and then killed for memory -- Multireddits straight from
+     * the drawer, say -- was not in the snapshot at all, and the next launch put the user back on
+     * the feed underneath it. The write is deduped like every other capture, so a resume that
+     * changes nothing (returning from a dialog, the screen below a dismissed one) costs a
+     * comparison.
+     */
+    public static void onActivityResumed(Context context) {
+        resumedCount++;
+        // Not while the snapshot read at launch is still the one on disk: it already describes
+        // this screen, and writing a replacement clears it. A screen resumed out of a restore does
+        // so before the one beneath it is rebuilt -- which a translucent screen has rebuilt at
+        // once, since it shows through -- so that one then found nothing to claim, came back from
+        // the system's own saved state, and fetched its feed twice over.
+        if (restoring != null) {
+            return;
+        }
         capture(context);
     }
 
@@ -346,7 +438,11 @@ public final class HibernateState {
                 break; // this screen and everything above it cannot be rebuilt
             }
             final Activity a = e.activity == null ? null : e.activity.get();
-            if (a instanceof Restorable) {
+            // A screen still landing on its restored page and position keeps the state it is
+            // landing on. Anything it says before then describes the way there, and the tabbed
+            // overviews say plenty: their drawer is a ScrollView, so their bundle is never empty.
+            if (a instanceof Restorable
+                    && !(a instanceof BaseActivity && ((BaseActivity) a).isRestorePending())) {
                 final Bundle out = new Bundle();
                 try {
                     ((Restorable) a).saveHibernateState(out);
@@ -458,6 +554,34 @@ public final class HibernateState {
         return null;
     }
 
+    /**
+     * Whether a snapshot entry is waiting for this screen, without taking it.
+     *
+     * <p>Asked before {@code super.onCreate}, which is earlier than anything may claim, so it
+     * cannot consume the entry the way {@link #claim} does -- the screen still has to claim it
+     * for itself a moment later.
+     */
+    public static boolean hasPendingRestore(Activity activity) {
+        if (!SettingValues.hibernateActive()) {
+            return false;
+        }
+        final List<Entry> stack = load(activity);
+        if (stack == null) {
+            return false;
+        }
+        final String cls = activity.getClass().getName();
+        final Bundle extras = extrasOf(activity.getIntent());
+        for (Entry e : stack) {
+            if (e.claimed || !e.cls.equals(cls)) {
+                continue;
+            }
+            if (MainActivity.class.getName().equals(cls) || extrasMatch(e.extras, extras)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** Forget the snapshot entirely — an account switch or a data restore invalidates it. */
     public static void clear(Context context) {
         restoring = null;
@@ -488,12 +612,36 @@ public final class HibernateState {
         }
         try {
             final String json = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-            restoring = fromJson(json);
+            restoring = dropStaleBottom(fromJson(json));
         } catch (IOException | JSONException e) {
             LogUtil.e(e, "HibernateState.load failed");
             restoring = null;
         }
         return restoring;
+    }
+
+    /**
+     * Throws away everything below the last MainActivity in a snapshot.
+     *
+     * <p>For documents written before {@link #dropClearedAbove}, which could record a
+     * stack with MainActivity in the middle of it. Such a stack has the screens of two sessions
+     * spliced together, and replaying it puts the user on a screen they left long ago with their
+     * real one buried underneath. The last MainActivity is the bottom of the most recent session,
+     * so the entries from it upwards are the ones worth restoring.
+     */
+    @Nullable
+    private static List<Entry> dropStaleBottom(@Nullable List<Entry> stack) {
+        if (stack == null) {
+            return null;
+        }
+        int bottom = 0;
+        for (int i = stack.size() - 1; i > 0; i--) {
+            if (MainActivity.class.getName().equals(stack.get(i).cls)) {
+                bottom = i;
+                break;
+            }
+        }
+        return bottom == 0 ? stack : new ArrayList<>(stack.subList(bottom, stack.size()));
     }
 
     // ---------------------------------------------------------------- serialization

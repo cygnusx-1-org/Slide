@@ -8,7 +8,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.util.HashSet;
@@ -20,7 +19,6 @@ import me.edgan.redditslide.Adapters.ContributionPosts;
 import me.edgan.redditslide.Adapters.ContributionPostsSaved;
 import me.edgan.redditslide.Constants;
 import me.edgan.redditslide.ContributionRestoreState;
-import me.edgan.redditslide.HibernateState;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SavedPostCache;
 import me.edgan.redditslide.Views.CatchStaggeredGridLayoutManager;
@@ -153,13 +151,6 @@ public class ContributionsView extends Fragment implements ContributionRestoreSt
                         // mid-scroll so flicked-past rows aren't downloaded.
                         if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                             warmVisibleTapTargets();
-                            // The tab has come to rest somewhere the user might leave from, so
-                            // record where that is; a process killed out of recents gets no
-                            // callback of its own.
-                            final FragmentActivity settled = getActivity();
-                            if (settled != null) {
-                                HibernateState.onContentSettled(settled);
-                            }
                         }
                     }
 
