@@ -4,6 +4,11 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+8.0.6 / 2026-9-24
+============
+* Fixed Resume where I left off needs some polish #308
+* Modernized the Megareddits screen and stopped needless refreshes
+
 8.0.5 / 2026-9-20
 ============
 * Added a Megareddit feature
