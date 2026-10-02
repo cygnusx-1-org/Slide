@@ -652,6 +652,29 @@ public class UserSubscriptions {
         }
         subscriptions.edit().putString("subhistory", history.toString()).apply();
     }
+    
+    // Subs in history that are not on the account, i.e. the ones that were typed in manually
+    public static CaseInsensitiveArrayList getManualHistory(Context c) {
+        CaseInsensitiveArrayList subscribed = getSubscriptions(c);
+        CaseInsensitiveArrayList manual = new CaseInsensitiveArrayList();
+        for (String s : getHistory()) {
+            if (!s.isEmpty() && !subscribed.contains(s)) {
+                manual.add(s);
+            }
+        }
+        return manual;
+    }
+
+    public static void removeSubsFromHistory(List<String> toRemove) {
+        CaseInsensitiveArrayList remove = new CaseInsensitiveArrayList(toRemove);
+        StringBuilder history = new StringBuilder();
+        for (String s : getHistory()) {
+            if (!s.isEmpty() && !remove.contains(s)) {
+                history.append(",").append(s);
+            }
+        }
+        subscriptions.edit().putString("subhistory", history.toString()).apply();
+    }
 
     public static ArrayList<Subreddit> syncSubredditsGetObject() {
         ArrayList<Subreddit> toReturn = new ArrayList<>();

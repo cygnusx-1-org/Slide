@@ -137,6 +137,43 @@
                 android:textColor="?attr/fontColor"
                 android:textColorHint="?attr/fontColor" />
     </RelativeLayout>
+    
+    <TextView
+            style="@style/TextAppearance.AppCompat.Body2"
+            android:id="@+id/settings_history_manageHistoryHeader"
+            android:text="@string/settings_section_manage_history"
+            android:tag="label"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="16dp"
+            android:layout_width="match_parent"
+            android:textColor="?attr/colorAccent"
+            android:layout_height="wrap_content" />
+
+    <RelativeLayout
+            android:id="@+id/settings_history_managesubs"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="?android:selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:orientation="vertical">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/manage_subreddit_history"
+                    android:textColor="?attr/fontColor"
+                    android:textSize="14sp" />
+        </LinearLayout>
+    </RelativeLayout>
 
     <TextView
             style="@style/TextAppearance.AppCompat.Body2"

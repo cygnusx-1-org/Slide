@@ -1382,8 +1382,11 @@ public class MainActivity extends BaseActivity
 
         Reddit.setDefaultErrorHandler(this);
 
-        if (sideArrayAdapter != null) {
-            sideArrayAdapter.updateHistory(UserSubscriptions.getHistory());
+        if (drawerController != null) {
+            drawerController.refreshSubredditHistory();
+        }
+        if (toolbarSearchController != null) {
+            toolbarSearchController.refreshSubredditHistory();
         }
 
         // Only refresh the view if a Setting was altered

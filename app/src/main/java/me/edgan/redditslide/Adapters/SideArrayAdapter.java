@@ -348,6 +348,19 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
         notifyDataSetChanged();
     }
 
+    /**
+     * Rebuilds the filter source from what is stored now. {@link #updateHistory} can only add, so
+     * it cannot forget history that was cleared or deleted in Settings.
+     */
+    public void refreshHistory() {
+        final CaseInsensitiveArrayList all = UserSubscriptions.getAllSubreddits(getContext());
+        synchronized (objectsLock) {
+            objects.clear();
+            objects.addAll(all);
+        }
+        notifyDataSetChanged();
+    }
+    
     /** A copy of the filter source, taken without racing {@link #updateHistory}. */
     private CaseInsensitiveArrayList objectsSnapshot() {
         synchronized (objectsLock) {

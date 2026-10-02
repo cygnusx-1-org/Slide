@@ -24,14 +24,22 @@ import me.edgan.redditslide.util.KeyboardUtil;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.stubs.SimpleTextWatcher;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 @NullMarked
 public class ToolbarSearchController {
 
     private final MainActivity mainActivity;
+    private @Nullable SideArrayAdapter suggestAdapter;
 
     public ToolbarSearchController(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
+    }
+
+    public void refreshSubredditHistory() {
+        if (suggestAdapter != null) {
+            suggestAdapter.refreshHistory();
+        }
     }
 
     /**
@@ -61,6 +69,8 @@ public class ToolbarSearchController {
                 final SideArrayAdapter TOOLBAR_SEARCH_SUGGEST_ADAPTER =
                         new SideArrayAdapter(mainActivity, subs_copy, UserSubscriptions.getAllSubreddits(mainActivity), TOOLBAR_SEARCH_SUGGEST_LIST);
 
+                suggestAdapter = TOOLBAR_SEARCH_SUGGEST_ADAPTER;
+                
                 if (TOOLBAR_SEARCH_SUGGEST_LIST != null) {
                     TOOLBAR_SEARCH_SUGGEST_LIST.setAdapter(TOOLBAR_SEARCH_SUGGEST_ADAPTER);
                 }
