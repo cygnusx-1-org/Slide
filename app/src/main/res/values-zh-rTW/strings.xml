@@ -712,6 +712,7 @@
     <string name="settings_section_internal_viewers">內建檢視器</string>
     <string name="settings_section_custom_domains">自訂域名</string>
     <string name="settings_section_save_history">保存瀏覽歷史</string>
+    <string name="settings_section_manage_history">管理瀏覽歷史</string>
     <string name="settings_section_clear_history">清除瀏覽歷史</string>
     <string name="settings_section_data_saving_mode">數據節省模式</string>
     <string name="settings_section_data_saving_quality">省流量畫質</string>
@@ -1152,6 +1153,8 @@
     <string name="download_gallery">下載圖集</string>
     <string name="compose_message">撰寫訊息</string>
     <string name="mark_all_as_read">標記全部項目為已讀</string>
+    <string name="manage_subreddit_history">管理閱讀歷史</string>
+    <string name="manage_subreddit_history_empty">歷史中沒有手動輸入的 Subreddit</string>
     <string name="clear_subreddit_history">清除閱讀歷史</string>
     <string name="clear_submission_history">清除貼文記錄</string>
     <string name="alert_history_cleared">閱讀紀錄已清除</string>

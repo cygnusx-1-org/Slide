@@ -726,6 +726,7 @@
     <string name="settings_section_internal_viewers">Visions internes</string>
     <string name="settings_section_custom_domains">Dominis personalitzats</string>
     <string name="settings_section_save_history">Desar l\'historial</string>
+    <string name="settings_section_manage_history">Gestionar l\'historial</string>
     <string name="settings_section_clear_history">Netejar l\'historial</string>
     <string name="settings_section_data_saving_mode">Mode d\'estalvi de dades</string>
     <string name="settings_section_data_saving_quality">Qualitat d\'estalvi de dades</string>
@@ -1186,6 +1187,8 @@
     <string name="download_gallery">Baixa la galeria</string>
     <string name="compose_message">Escriure un missatge</string>
     <string name="mark_all_as_read">Marcar-ho tot com a llegit</string>
+    <string name="manage_subreddit_history">Gestionar l\'historial del subreddit</string>
+    <string name="manage_subreddit_history_empty">No hi ha cap subreddit introduït manualment al teu historial</string>
     <string name="clear_subreddit_history">Eliminar l\'historial del subreddit</string>
     <string name="clear_submission_history">Netejar l\'historial de les publicacions</string>
     <string name="alert_history_cleared">Historial netejat!</string>

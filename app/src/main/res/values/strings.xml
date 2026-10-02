@@ -755,7 +755,7 @@
     <string name="settings_section_internal_viewers">Internal viewers</string>
     <string name="settings_section_custom_domains">Custom domains</string>
     <string name="settings_section_save_history">Save history</string>
-     <string name="settings_section_manage_history">Manage history</string>
+    <string name="settings_section_manage_history">Manage history</string>
     <string name="settings_section_clear_history">Clear history</string>
     <string name="settings_section_data_saving_mode">Data saving mode</string>
     <string name="settings_section_data_saving_quality">Data saving quality</string>

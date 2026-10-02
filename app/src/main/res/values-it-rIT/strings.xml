@@ -726,6 +726,7 @@
     <string name="settings_section_internal_viewers">Visitatori interni</string>
     <string name="settings_section_custom_domains">Domini personalizzati</string>
     <string name="settings_section_save_history">Salva la cronologia</string>
+    <string name="settings_section_manage_history">Gestisci la cronologia</string>
     <string name="settings_section_clear_history">Svuota cronologia</string>
     <string name="settings_section_data_saving_mode">Modalità risparmio dati</string>
     <string name="settings_section_data_saving_quality">Qualità risparmio dati</string>
@@ -1186,6 +1187,8 @@
     <string name="download_gallery">Scarica la galleria</string>
     <string name="compose_message">Componi messaggio</string>
     <string name="mark_all_as_read">Segna tutto come letto</string>
+    <string name="manage_subreddit_history">Gestisci la cronologia dei subreddit</string>
+    <string name="manage_subreddit_history_empty">Nessun subreddit inserito manualmente nella cronologia</string>
     <string name="clear_subreddit_history">Pulisci la cronologia dei subreddit</string>
     <string name="clear_submission_history">Pulisci cronologia post</string>
     <string name="alert_history_cleared">Cronologia pulita!</string>

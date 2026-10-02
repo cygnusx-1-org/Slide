@@ -747,6 +747,7 @@
     <string name="settings_section_internal_viewers">العارضات الداخلية</string>
     <string name="settings_section_custom_domains">النطاقات المخصصة</string>
     <string name="settings_section_save_history">حفظ السجل</string>
+    <string name="settings_section_manage_history">إدارة السجل</string>
     <string name="settings_section_clear_history">مسح السجل</string>
     <string name="settings_section_data_saving_mode">وضع توفير البيانات</string>
     <string name="settings_section_data_saving_quality">جودة توفير البيانات</string>
@@ -1237,6 +1238,8 @@
     <string name="download_gallery">تنزيل المعرض</string>
     <string name="compose_message">كتابة رسالة</string>
     <string name="mark_all_as_read">تعليم الكل كمقروء</string>
+    <string name="manage_subreddit_history">إدارة سجل السبريدتات</string>
+    <string name="manage_subreddit_history_empty">لا توجد سبريدتات مُدخلة يدويًا في سجلك</string>
     <string name="clear_subreddit_history">مسح سجل السبريدتات</string>
     <string name="clear_submission_history">مسح سجل المنشورات</string>
     <string name="alert_history_cleared">تم مسح السجل!</string>

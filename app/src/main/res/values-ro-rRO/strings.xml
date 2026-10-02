@@ -726,6 +726,7 @@
     <string name="settings_section_internal_viewers">Vizualizatoare interne</string>
     <string name="settings_section_custom_domains">Domenii personalizate</string>
     <string name="settings_section_save_history">Salvarea istoricului</string>
+    <string name="settings_section_manage_history">Gestionarea istoricului</string>
     <string name="settings_section_clear_history">Ștergerea istoricului</string>
     <string name="settings_section_data_saving_mode">Mod de economisire a datelor</string>
     <string name="settings_section_data_saving_quality">Calitatea la economisirea datelor</string>
@@ -1186,6 +1187,8 @@
     <string name="download_gallery">Descarcă galeria</string>
     <string name="compose_message">Creează mesaj</string>
     <string name="mark_all_as_read">Marchează totul citit</string>
+    <string name="manage_subreddit_history">Gestionează istoricul de subreddit</string>
+    <string name="manage_subreddit_history_empty">Niciun subreddit introdus manual în istoric</string>
     <string name="clear_subreddit_history">Curătă istoricul de subreddit</string>
     <string name="clear_submission_history">Șterge istoricul postărilor</string>
     <string name="alert_history_cleared">Istoric șters!</string>

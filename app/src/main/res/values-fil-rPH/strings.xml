@@ -719,6 +719,7 @@
     <string name="settings_section_internal_viewers">Mga panloob na viewer</string>
     <string name="settings_section_custom_domains">Mga custom na domain</string>
     <string name="settings_section_save_history">Pag-save ng kasaysayan</string>
+    <string name="settings_section_manage_history">Pamamahala ng kasaysayan</string>
     <string name="settings_section_clear_history">Pag-clear ng kasaysayan</string>
     <string name="settings_section_data_saving_mode">Data saving mode</string>
     <string name="settings_section_data_saving_quality">Kalidad sa data saving</string>
@@ -1169,6 +1170,8 @@
     <string name="download_gallery">I-download ang gallery</string>
     <string name="compose_message">Sumulat ng mensahe</string>
     <string name="mark_all_as_read">Markahan lahat bilang nabasa</string>
+    <string name="manage_subreddit_history">Pamahalaan ang kasaysayan ng subreddit</string>
+    <string name="manage_subreddit_history_empty">Walang mano-manong inilagay na subreddit sa kasaysayan</string>
     <string name="clear_subreddit_history">I-clear ang kasaysayan ng subreddit</string>
     <string name="clear_submission_history">I-clear ang kasaysayan ng post</string>
     <string name="alert_history_cleared">Na-clear ang kasaysayan!</string>

@@ -726,6 +726,7 @@
     <string name="settings_section_internal_viewers">מציגים פנימיים</string>
     <string name="settings_section_custom_domains">דומיינים מותאמים</string>
     <string name="settings_section_save_history">שמירת היסטוריה</string>
+    <string name="settings_section_manage_history">ניהול היסטוריה</string>
     <string name="settings_section_clear_history">ניקוי היסטוריה</string>
     <string name="settings_section_data_saving_mode">מצב חיסכון בנתונים</string>
     <string name="settings_section_data_saving_quality">איכות בחיסכון בנתונים</string>
@@ -1186,6 +1187,8 @@
     <string name="download_gallery">הורדת הגלריה</string>
     <string name="compose_message">כתיבת הודעה</string>
     <string name="mark_all_as_read">סימון הכל כנקרא</string>
+    <string name="manage_subreddit_history">ניהול היסטוריית הסאברדיטים</string>
+    <string name="manage_subreddit_history_empty">אין סאברדיטים שהוזנו ידנית בהיסטוריה</string>
     <string name="clear_subreddit_history">ניקוי היסטוריית הסאברדיטים</string>
     <string name="clear_submission_history">ניקוי היסטוריית הפוסטים</string>
     <string name="alert_history_cleared">ההיסטוריה נוקתה!</string>

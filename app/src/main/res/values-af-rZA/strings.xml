@@ -719,6 +719,7 @@
     <string name="settings_section_internal_viewers">Interne aansigte</string>
     <string name="settings_section_custom_domains">Pasgemaakte domeine</string>
     <string name="settings_section_save_history">Stoor geskiedenis</string>
+    <string name="settings_section_manage_history">Bestuur geskiedenis</string>
     <string name="settings_section_clear_history">Vee geskiedenis uit</string>
     <string name="settings_section_data_saving_mode">Databesparingsmodus</string>
     <string name="settings_section_data_saving_quality">Databesparingskwaliteit</string>
@@ -1169,6 +1170,8 @@
     <string name="download_gallery">Laai galery af</string>
     <string name="compose_message">Stel boodskap op</string>
     <string name="mark_all_as_read">Merk alles as gelees</string>
+    <string name="manage_subreddit_history">Bestuur subreddit-geskiedenis</string>
+    <string name="manage_subreddit_history_empty">Geen subreddits wat met die hand ingevoer is, in jou geskiedenis nie</string>
     <string name="clear_subreddit_history">Vee subreddit-geskiedenis uit</string>
     <string name="clear_submission_history">Vee plasinggeskiedenis uit</string>
     <string name="alert_history_cleared">Geskiedenis uitgevee!</string>

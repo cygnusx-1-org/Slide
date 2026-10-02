@@ -719,6 +719,7 @@
     <string name="settings_section_internal_viewers">Interne viewer</string>
     <string name="settings_section_custom_domains">Aangepaste domeinen</string>
     <string name="settings_section_save_history">Geschiedenis bewaren</string>
+    <string name="settings_section_manage_history">Geschiedenis beheren</string>
     <string name="settings_section_clear_history">Geschiedenis wissen</string>
     <string name="settings_section_data_saving_mode">Databesparende modus</string>
     <string name="settings_section_data_saving_quality">Kwaliteit bij databesparing</string>
@@ -1169,6 +1170,8 @@
     <string name="download_gallery">Galerij downloaden</string>
     <string name="compose_message">Bericht opstellen</string>
     <string name="mark_all_as_read">Markeer alles als gelezen</string>
+    <string name="manage_subreddit_history">Subreddit geschiedenis beheren</string>
+    <string name="manage_subreddit_history_empty">Geen handmatig ingevoerde subreddits in de geschiedenis</string>
     <string name="clear_subreddit_history">Subreddit geschiedenis wissen</string>
     <string name="clear_submission_history">Instuurgeschiedenis wissen</string>
     <string name="alert_history_cleared">Geschiedenis gewist!</string>

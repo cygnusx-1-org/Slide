@@ -719,6 +719,7 @@
     <string name="settings_section_internal_viewers">Sisäiset katselimet</string>
     <string name="settings_section_custom_domains">Mukautetut verkkotunnukset</string>
     <string name="settings_section_save_history">Tallenna historia</string>
+    <string name="settings_section_manage_history">Hallitse historiaa</string>
     <string name="settings_section_clear_history">Tyhjennä historia</string>
     <string name="settings_section_data_saving_mode">Virransäästötila</string>
     <string name="settings_section_data_saving_quality">Datansäästön laatu</string>
@@ -1169,6 +1170,8 @@
     <string name="download_gallery">Lataa galleria</string>
     <string name="compose_message">Kirjoita viesti</string>
     <string name="mark_all_as_read">Merkitse kaikki luetuiksi</string>
+    <string name="manage_subreddit_history">Hallitse subreddit-historiaa</string>
+    <string name="manage_subreddit_history_empty">Historiassa ei ole manuaalisesti syötettyjä subreddittejä</string>
     <string name="clear_subreddit_history">Tyhjennä subreddit-historia</string>
     <string name="clear_submission_history">Tyhjennä julkaisuhistoria</string>
     <string name="alert_history_cleared">Historia tyhjennetty!</string>

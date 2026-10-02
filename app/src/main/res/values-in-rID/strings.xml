@@ -712,6 +712,7 @@
     <string name="settings_section_internal_viewers">Penonton internal</string>
     <string name="settings_section_custom_domains">Domain khusus</string>
     <string name="settings_section_save_history">Simpan riwayat</string>
+    <string name="settings_section_manage_history">Kelola riwayat</string>
     <string name="settings_section_clear_history">Hapus riwayat</string>
     <string name="settings_section_data_saving_mode">Mode hemat data</string>
     <string name="settings_section_data_saving_quality">Kualitas hemat data</string>
@@ -1152,6 +1153,8 @@
     <string name="download_gallery">Unduh galeri</string>
     <string name="compose_message">Tulis pesan</string>
     <string name="mark_all_as_read">Tandai semua sudah dibaca</string>
+    <string name="manage_subreddit_history">Kelola riwayat subreddit</string>
+    <string name="manage_subreddit_history_empty">Tidak ada subreddit yang dimasukkan secara manual di riwayat</string>
     <string name="clear_subreddit_history">Bersihkan riwayat subreddit</string>
     <string name="clear_submission_history">Bersihkan riwayat pengiriman</string>
     <string name="alert_history_cleared">Riwayat dihapus!</string>

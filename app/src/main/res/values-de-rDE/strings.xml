@@ -719,6 +719,7 @@
     <string name="settings_section_internal_viewers">Interne Betrachter</string>
     <string name="settings_section_custom_domains">Benutzerdefinierte Domains</string>
     <string name="settings_section_save_history">Verlauf speichern</string>
+    <string name="settings_section_manage_history">Verlauf verwalten</string>
     <string name="settings_section_clear_history">Verlauf löschen</string>
     <string name="settings_section_data_saving_mode">Datensparmodus</string>
     <string name="settings_section_data_saving_quality">Qualität im Datensparmodus</string>
@@ -1169,6 +1170,8 @@
     <string name="download_gallery">Galerie herunterladen</string>
     <string name="compose_message">Nachricht verfassen</string>
     <string name="mark_all_as_read">Alles als gelesen markieren</string>
+    <string name="manage_subreddit_history">Subreddit-Verlauf verwalten</string>
+    <string name="manage_subreddit_history_empty">Keine manuell eingegebenen Subreddits im Verlauf</string>
     <string name="clear_subreddit_history">Subreddit-Verlauf löschen</string>
     <string name="clear_submission_history">Beitragsverlauf löschen</string>
     <string name="alert_history_cleared">Verlauf gelöscht!</string>

@@ -719,6 +719,7 @@
     <string name="settings_section_internal_viewers">Dahili görüntüleyiciler</string>
     <string name="settings_section_custom_domains">Özel alan adları</string>
     <string name="settings_section_save_history">Geçmişi kaydet</string>
+    <string name="settings_section_manage_history">Geçmişi yönet</string>
     <string name="settings_section_clear_history">Geçmişi temizle</string>
     <string name="settings_section_data_saving_mode">Veri tasarruf modu</string>
     <string name="settings_section_data_saving_quality">Veri tasarrufu kalitesi</string>
@@ -1169,6 +1170,8 @@
     <string name="download_gallery">Galeriyi indir</string>
     <string name="compose_message">Mesaj yaz</string>
     <string name="mark_all_as_read">Hepsi okundu olarak işaretle</string>
+    <string name="manage_subreddit_history">Subreddit geçmişini yönet</string>
+    <string name="manage_subreddit_history_empty">Geçmişte elle girilmiş subreddit yok</string>
     <string name="clear_subreddit_history">Subreddit geçmişini temizle</string>
     <string name="clear_submission_history">Gönderi geçmişini temizle</string>
     <string name="alert_history_cleared">Geçmiş temizlendi!</string>

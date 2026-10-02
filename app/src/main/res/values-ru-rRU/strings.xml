@@ -733,6 +733,7 @@
     <string name="settings_section_internal_viewers">Встроенные просмотрщики</string>
     <string name="settings_section_custom_domains">Пользовательские домены</string>
     <string name="settings_section_save_history">Сохранить историю</string>
+    <string name="settings_section_manage_history">Управлять историей</string>
     <string name="settings_section_clear_history">Очистить историю</string>
     <string name="settings_section_data_saving_mode">Режим экономии трафика</string>
     <string name="settings_section_data_saving_quality">Качество сохраняемых данных</string>
@@ -1203,6 +1204,8 @@
     <string name="download_gallery">Скачать галерею</string>
     <string name="compose_message">Написать сообщение</string>
     <string name="mark_all_as_read">Отметить все как прочитанное</string>
+    <string name="manage_subreddit_history">Управлять историей сабреддитов</string>
+    <string name="manage_subreddit_history_empty">В истории нет сабреддитов, введённых вручную</string>
     <string name="clear_subreddit_history">Очистить историю сабреддитов</string>
     <string name="clear_submission_history">Очистить историю публикаций</string>
     <string name="alert_history_cleared">История очищена!</string>

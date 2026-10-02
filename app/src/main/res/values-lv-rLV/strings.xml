@@ -726,6 +726,7 @@
     <string name="settings_section_internal_viewers">Iekšējie skatītāji</string>
     <string name="settings_section_custom_domains">Pielāgoti domēni</string>
     <string name="settings_section_save_history">Vēstures saglabāšana</string>
+    <string name="settings_section_manage_history">Vēstures pārvaldība</string>
     <string name="settings_section_clear_history">Vēstures notīrīšana</string>
     <string name="settings_section_data_saving_mode">Datu taupīšanas režīms</string>
     <string name="settings_section_data_saving_quality">Kvalitāte datu taupīšanas režīmā</string>
@@ -1186,6 +1187,8 @@
     <string name="download_gallery">Lejupielādēt galeriju</string>
     <string name="compose_message">Rakstīt ziņojumu</string>
     <string name="mark_all_as_read">Atzīmēt visus kā izlasītus</string>
+    <string name="manage_subreddit_history">Pārvaldīt subreddit vēsturi</string>
+    <string name="manage_subreddit_history_empty">Vēsturē nav manuāli ievadītu subreddit</string>
     <string name="clear_subreddit_history">Notīrīt subreddit vēsturi</string>
     <string name="clear_submission_history">Notīrīt ziņu vēsturi</string>
     <string name="alert_history_cleared">Vēsture notīrīta!</string>

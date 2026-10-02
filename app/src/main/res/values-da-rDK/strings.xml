@@ -719,6 +719,7 @@
     <string name="settings_section_internal_viewers">Interne visninger</string>
     <string name="settings_section_custom_domains">Brugerdefinerede domæner</string>
     <string name="settings_section_save_history">Gem historik</string>
+    <string name="settings_section_manage_history">Administrér historik</string>
     <string name="settings_section_clear_history">Ryd historik</string>
     <string name="settings_section_data_saving_mode">Databesparelsestilstand</string>
     <string name="settings_section_data_saving_quality">Kvalitet ved databesparelse</string>
@@ -1169,6 +1170,8 @@
     <string name="download_gallery">Download galleriet</string>
     <string name="compose_message">Skriv besked</string>
     <string name="mark_all_as_read">Markér alle som læst</string>
+    <string name="manage_subreddit_history">Administrér subreddit-historikken</string>
+    <string name="manage_subreddit_history_empty">Ingen manuelt indtastede subreddits i din historik</string>
     <string name="clear_subreddit_history">Ryd subreddit-historikken</string>
     <string name="clear_submission_history">Ryd opslagshistorikken</string>
     <string name="alert_history_cleared">Historikken er ryddet!</string>

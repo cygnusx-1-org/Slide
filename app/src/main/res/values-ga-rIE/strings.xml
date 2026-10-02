@@ -740,6 +740,7 @@
     <string name="settings_section_internal_viewers">Amharcáin inmheánacha</string>
     <string name="settings_section_custom_domains">Fearainn shaincheaptha</string>
     <string name="settings_section_save_history">Sábháil an stair</string>
+    <string name="settings_section_manage_history">Bainistigh an stair</string>
     <string name="settings_section_clear_history">Glan an stair</string>
     <string name="settings_section_data_saving_mode">Mód coigilte sonraí</string>
     <string name="settings_section_data_saving_quality">Cáilíocht le coigilt sonraí</string>
@@ -1220,6 +1221,8 @@
     <string name="download_gallery">Íoslódáil an gailearaí</string>
     <string name="compose_message">Cum teachtaireacht</string>
     <string name="mark_all_as_read">Marcáil gach rud mar léite</string>
+    <string name="manage_subreddit_history">Bainistigh stair na subreddits</string>
+    <string name="manage_subreddit_history_empty">Níl aon subreddits a cuireadh isteach de láimh sa stair</string>
     <string name="clear_subreddit_history">Glan stair na subreddits</string>
     <string name="clear_submission_history">Glan stair na bpostálacha</string>
     <string name="alert_history_cleared">Glanadh an stair!</string>

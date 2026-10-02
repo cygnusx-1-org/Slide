@@ -719,6 +719,7 @@
     <string name="settings_section_internal_viewers">Internaj vidigiloj</string>
     <string name="settings_section_custom_domains">Propraj retregnomoj</string>
     <string name="settings_section_save_history">Konservado de la historio</string>
+    <string name="settings_section_manage_history">Administrado de la historio</string>
     <string name="settings_section_clear_history">Vakigo de la historio</string>
     <string name="settings_section_data_saving_mode">Datumŝpara reĝimo</string>
     <string name="settings_section_data_saving_quality">Kvalito en datumŝpara reĝimo</string>
@@ -1169,6 +1170,8 @@
     <string name="download_gallery">Elŝuti la galerion</string>
     <string name="compose_message">Verki mesaĝon</string>
     <string name="mark_all_as_read">Marki ĉion kiel legitan</string>
+    <string name="manage_subreddit_history">Administri la historion de subreditoj</string>
+    <string name="manage_subreddit_history_empty">Neniuj mane enigitaj subreditoj en la historio</string>
     <string name="clear_subreddit_history">Vakigi la historion de subreditoj</string>
     <string name="clear_submission_history">Vakigi la historion de afiŝoj</string>
     <string name="alert_history_cleared">Historio vakigita!</string>
