@@ -617,10 +617,15 @@ public class UserSubscriptions {
         setPinned(subs);
     }
 
+    // Whole-entry match against the comma separated history, not a substring match
+    private static boolean historyContains(String history, String sub) {
+        return sub.isEmpty() || ("," + history + ",").contains("," + sub + ",");
+    }
+
     // Sets sub as "searched for", will apply to all accounts
     public static void addSubToHistory(String s) {
         String history = PrefUtil.getString(subscriptions, "subhistory", "");
-        if (!history.contains(s.toLowerCase(Locale.ENGLISH))) {
+        if (!historyContains(history, s.toLowerCase(Locale.ENGLISH))) {
             history += "," + s.toLowerCase(Locale.ENGLISH);
             subscriptions.edit().putString("subhistory", history).apply();
         }
@@ -633,7 +638,7 @@ public class UserSubscriptions {
                         PrefUtil.getString(subscriptions, "subhistory", "")
                                 .toLowerCase(Locale.ENGLISH));
         for (Subreddit s : s2) {
-            if (!history.toString().contains(MiscUtil.orEmpty(s.getDisplayName()).toLowerCase(Locale.ENGLISH))) {
+            if (!historyContains(history.toString(), MiscUtil.orEmpty(s.getDisplayName()).toLowerCase(Locale.ENGLISH))) {
                 history.append(",").append(MiscUtil.orEmpty(s.getDisplayName()).toLowerCase(Locale.ENGLISH));
             }
         }
@@ -646,13 +651,13 @@ public class UserSubscriptions {
                         PrefUtil.getString(subscriptions, "subhistory", "")
                                 .toLowerCase(Locale.ENGLISH));
         for (String s : s2) {
-            if (!history.toString().contains(s.toLowerCase(Locale.ENGLISH))) {
+            if (!historyContains(history.toString(), s.toLowerCase(Locale.ENGLISH))) {
                 history.append(",").append(s.toLowerCase(Locale.ENGLISH));
             }
         }
         subscriptions.edit().putString("subhistory", history.toString()).apply();
     }
-    
+
     // Subs in history that are not on the account, i.e. the ones that were typed in manually
     public static CaseInsensitiveArrayList getManualHistory(Context c) {
         CaseInsensitiveArrayList subscribed = getSubscriptions(c);
