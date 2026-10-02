@@ -5,11 +5,11 @@ import android.widget.RelativeLayout;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SwitchCompat;
 import com.lusfold.androidkeyvaluestore.KVStore;
-import me.edgan.redditslide.R;
 import java.util.ArrayList;
 import java.util.List;
 import me.edgan.redditslide.CaseInsensitiveArrayList;
 import me.edgan.redditslide.HasSeen;
+import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.util.DialogUtil;
@@ -38,7 +38,7 @@ public class SettingsHistoryFragment {
                 context.requireViewById(R.id.settings_history_clearsubs);
         final RelativeLayout manageSubsLayout =
                 context.requireViewById(R.id.settings_history_managesubs);
-                
+
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // * Save history */
         storeHistorySwitch.setChecked(SettingValues.storeHistory);

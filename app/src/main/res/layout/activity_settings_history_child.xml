@@ -137,7 +137,7 @@
                 android:textColor="?attr/fontColor"
                 android:textColorHint="?attr/fontColor" />
     </RelativeLayout>
-    
+
     <TextView
             style="@style/TextAppearance.AppCompat.Body2"
             android:id="@+id/settings_history_manageHistoryHeader"

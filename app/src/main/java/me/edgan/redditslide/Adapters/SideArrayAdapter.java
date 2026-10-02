@@ -360,7 +360,7 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
         }
         notifyDataSetChanged();
     }
-    
+
     /** A copy of the filter source, taken without racing {@link #updateHistory}. */
     private CaseInsensitiveArrayList objectsSnapshot() {
         synchronized (objectsLock) {

@@ -70,7 +70,7 @@ public class ToolbarSearchController {
                         new SideArrayAdapter(mainActivity, subs_copy, UserSubscriptions.getAllSubreddits(mainActivity), TOOLBAR_SEARCH_SUGGEST_LIST);
 
                 suggestAdapter = TOOLBAR_SEARCH_SUGGEST_ADAPTER;
-                
+
                 if (TOOLBAR_SEARCH_SUGGEST_LIST != null) {
                     TOOLBAR_SEARCH_SUGGEST_LIST.setAdapter(TOOLBAR_SEARCH_SUGGEST_ADAPTER);
                 }
