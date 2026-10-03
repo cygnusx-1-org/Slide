@@ -27,6 +27,16 @@ import org.jspecify.annotations.NullMarked;
  * <p>Declining the request while laying out breaks that re-entry. Returning false is honest -- no
  * scrolling happened -- and the position the child wanted is what the pass in progress is already
  * computing. Requests from outside a layout are handled normally.
+ *
+ * <p>"Laying out" means every {@code layoutChildren()} pass, not just the ones {@code onLayout()}
+ * starts. AbsListView also runs that pass directly -- on a fling frame, a touch move or release, a
+ * touch-mode change, a window-focus change -- and those reach the same scrap loop:
+ *
+ * <pre>
+ *     at android.widget.AbsListView$RecycleBin.addScrapView
+ *     at android.widget.ListView.layoutChildren
+ *     at android.widget.AbsListView$FlingRunnable.run
+ * </pre>
  */
 @NullMarked
 public class DrawerListView extends ListView {
@@ -46,12 +56,15 @@ public class DrawerListView extends ListView {
     }
 
     @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+    protected void layoutChildren() {
+        // Restored rather than cleared: a nested pass must not switch the guard off for the rest
+        // of the pass around it.
+        final boolean wasInLayout = inLayout;
         inLayout = true;
         try {
-            super.onLayout(changed, l, t, r, b);
+            super.layoutChildren();
         } finally {
-            inLayout = false;
+            inLayout = wasInLayout;
         }
     }
 
