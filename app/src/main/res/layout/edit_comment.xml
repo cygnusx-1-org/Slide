@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/card_background">
+    android:background="?attr/card_background"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:maxHeight="240dp">
 
         <LinearLayout
             android:id="@+id/sidebar"
@@ -28,6 +29,7 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone"/>
 
+            <!-- 16dp margin above and below. ScrollView ignores maxHeight, so the field cap keeps this block inside 240dp. -->
             <me.edgan.redditslide.Views.ImageInsertEditText
                 android:id="@+id/entry"
                 android:layout_width="match_parent"
@@ -36,53 +38,54 @@
                 android:hint="@string/btn_reply"
                 android:inputType="textMultiLine|textAutoCorrect|textCapSentences"
                 android:minHeight="30dp"
+                android:maxHeight="208dp"
                 android:textColor="?attr/fontColor"
                 android:textSize="16sp"
                 android:textCursorDrawable="@drawable/cursor"
                 android:theme="@style/ReplyEditTextTheme" />
         </LinearLayout>
+    </ScrollView>
 
-        <include
-            layout="@layout/editor_items"
-            android:layout_width="match_parent"
+    <include
+        layout="@layout/editor_items"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/cancel"
+            style="?attr/borderlessButtonStyle"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp" />
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="@string/btn_cancel" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/preview"
+            style="?attr/borderlessButtonStyle"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="@string/btn_preview" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/cancel"
-                style="?attr/borderlessButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:padding="16dp"
-                android:text="@string/btn_cancel" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/preview"
-                style="?attr/borderlessButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:padding="16dp"
-                android:text="@string/btn_preview" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/submit"
-                style="?attr/borderlessButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:padding="16dp"
-                android:text="@string/btn_submit" />
-        </LinearLayout>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/submit"
+            style="?attr/borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="@string/btn_submit" />
     </LinearLayout>
-</ScrollView>
+</LinearLayout>

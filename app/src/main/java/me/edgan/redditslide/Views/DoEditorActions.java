@@ -26,6 +26,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -70,6 +72,31 @@ public class DoEditorActions {
 
     private static final AtomicInteger registryCounter = new AtomicInteger(0);
 
+    /**
+     * A gesture IME dismiss does not always measure this dialog again, so a long comment keeps the
+     * height it had while the keyboard was open. Request layout only when the inset actually
+     * changes, and return the insets unconsumed.
+     */
+    public static void relayoutEditorWhenImeChanges(View editorRoot) {
+        final int[] lastImeBottom = new int[] {Integer.MIN_VALUE};
+        ViewCompat.setOnApplyWindowInsetsListener(
+                editorRoot,
+                (v, insets) -> {
+                    int imeBottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom;
+                    if (imeBottom != lastImeBottom[0]) {
+                        lastImeBottom[0] = imeBottom;
+                        editorRoot.post(
+                                () -> {
+                                    editorRoot.requestLayout();
+                                    if (editorRoot.getParent() instanceof View) {
+                                        ((View) editorRoot.getParent()).requestLayout();
+                                    }
+                                });
+                    }
+                    return insets;
+                });
+    }
+
     public static void doActions(
             final EditText editText,
             final View baseView,
@@ -88,6 +115,7 @@ public class DoEditorActions {
             final @Nullable String oldComment,
             @Nullable final String[] authors,
             @Nullable final ActivityResultLauncher<PickVisualMediaRequest> imageLauncher) {
+        relayoutEditorWhenImeChanges(baseView);
         baseView.requireViewById(R.id.bold)
                 .setOnClickListener(
                         new View.OnClickListener() {
