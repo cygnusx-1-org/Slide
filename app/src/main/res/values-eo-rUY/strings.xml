@@ -1171,7 +1171,7 @@
     <string name="compose_message">Verki mesaĝon</string>
     <string name="mark_all_as_read">Marki ĉion kiel legitan</string>
     <string name="manage_subreddit_history">Administri la historion de subreditoj</string>
-    <string name="manage_subreddit_history_empty">Neniuj mane enigitaj subreditoj en la historio</string>
+    <string name="manage_subreddit_history_empty">Neniuj subreditoj en la historio, al kiuj vi ne abonas</string>
     <string name="clear_subreddit_history">Vakigi la historion de subreditoj</string>
     <string name="clear_submission_history">Vakigi la historion de afiŝoj</string>
     <string name="alert_history_cleared">Historio vakigita!</string>

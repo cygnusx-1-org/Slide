@@ -1188,7 +1188,7 @@
     <string name="compose_message">Напиши поруку</string>
     <string name="mark_all_as_read">Означи све као прочитано</string>
     <string name="manage_subreddit_history">Управљај историјатом субредита</string>
-    <string name="manage_subreddit_history_empty">Нема ручно унетих субредита у историјату</string>
+    <string name="manage_subreddit_history_empty">Нема субредита у историјату на које нисте претплаћени</string>
     <string name="clear_subreddit_history">Очисти историјат субредита</string>
     <string name="clear_submission_history">Очисти историјат објава</string>
     <string name="alert_history_cleared">Историјат очишћен!</string>

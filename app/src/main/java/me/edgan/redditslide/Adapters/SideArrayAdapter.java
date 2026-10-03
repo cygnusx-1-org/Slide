@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -33,6 +34,7 @@ import me.edgan.redditslide.UserSubscriptions;
 import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.KeyboardUtil;
+import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 
@@ -47,6 +49,7 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
     private final MainActivity mainActivity;
     private final Map<String, String> subProps = new HashMap<>();
     private final Object objectsLock = new Object();
+    private int historyVersion = UserSubscriptions.getHistoryVersion();
 
     public SideArrayAdapter(
             MainActivity activity,
@@ -333,35 +336,40 @@ public class SideArrayAdapter extends ArrayAdapter<String> {
         return position < fitems.size() ? TYPE_SUBREDDIT : TYPE_SPACER;
     }
 
-    public void updateHistory(ArrayList<String> history) {
-        // Guarded because performFiltering copies this list on the Filter's worker thread while
-        // this runs on the UI thread (MainActivity.onResume). An ArrayList copy taken during an
-        // append does not just risk ConcurrentModificationException: it can also come back padded
-        // with nulls, and those nulls become rows.
-        synchronized (objectsLock) {
-            for (String s : history) {
-                if (!objects.contains(s)) {
-                    objects.add(s);
-                }
-            }
-        }
-        notifyDataSetChanged();
-    }
-
     /**
-     * Rebuilds the filter source from what is stored now. {@link #updateHistory} can only add, so
-     * it cannot forget history that was cleared or deleted in Settings.
+     * Rebuilds what was derived from the history, if it has changed since this adapter last read
+     * it. That is the filter source, and while offline also the default list, which is made of the
+     * history too. Cheap when nothing changed, so it can be called on every resume: the rebuild
+     * reads the subscriptions, which may sync.
      */
     public void refreshHistory() {
+        final int version = UserSubscriptions.getHistoryVersion();
+        if (version == historyVersion) {
+            return;
+        }
+        historyVersion = version;
+
         final CaseInsensitiveArrayList all = UserSubscriptions.getAllSubreddits(getContext());
         synchronized (objectsLock) {
             objects.clear();
             objects.addAll(all);
         }
+
+        if (!NetworkUtil.isConnected(getContext())) {
+            final CaseInsensitiveArrayList offline =
+                    new CaseInsensitiveArrayList(UserSubscriptions.getAllUserSubreddits(getContext()));
+            offline.removeAll(Arrays.asList("", null));
+            baseItems = offline;
+            fitems = new CaseInsensitiveArrayList(offline);
+            setNotifyOnChange(false);
+            clear();
+            addAll(offline);
+            setNotifyOnChange(true);
+        }
         notifyDataSetChanged();
     }
 
-    /** A copy of the filter source, taken without racing {@link #updateHistory}. */
+    /** A copy of the filter source, taken without racing {@link #refreshHistory}. */
     private CaseInsensitiveArrayList objectsSnapshot() {
         synchronized (objectsLock) {
             return new CaseInsensitiveArrayList(objects);

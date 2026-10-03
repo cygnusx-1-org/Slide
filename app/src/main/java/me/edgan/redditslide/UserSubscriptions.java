@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import me.edgan.redditslide.Activities.Login;
 import me.edgan.redditslide.Activities.MainActivity;
 import me.edgan.redditslide.Activities.MultiredditOverview;
@@ -603,6 +604,11 @@ public class UserSubscriptions {
         CaseInsensitiveArrayList subs = getSubscriptions(c);
         subs.remove(s);
         setSubscriptions(subs);
+        // Subs only reach history through a sync or a visit, so one subscribed to since the last
+        // sync would otherwise vanish from history when unsubscribed
+        if (SettingValues.storeHistory) {
+            addSubToHistory(s);
+        }
     }
 
     public static void addPinned(String s, Context c) {
@@ -617,6 +623,24 @@ public class UserSubscriptions {
         setPinned(subs);
     }
 
+    // Bumped by every write to the history, so a holder of a copy can tell whether it is stale
+    // without rebuilding it
+    private static final AtomicInteger historyVersion = new AtomicInteger();
+
+    public static int getHistoryVersion() {
+        return historyVersion.get();
+    }
+
+    private static void saveHistory(String history) {
+        subscriptions.edit().putString("subhistory", history).apply();
+        historyVersion.incrementAndGet();
+    }
+
+    public static void clearHistory() {
+        subscriptions.edit().remove("subhistory").apply();
+        historyVersion.incrementAndGet();
+    }
+
     // Whole-entry match against the comma separated history, not a substring match
     private static boolean historyContains(String history, String sub) {
         return sub.isEmpty() || ("," + history + ",").contains("," + sub + ",");
@@ -627,7 +651,7 @@ public class UserSubscriptions {
         String history = PrefUtil.getString(subscriptions, "subhistory", "");
         if (!historyContains(history, s.toLowerCase(Locale.ENGLISH))) {
             history += "," + s.toLowerCase(Locale.ENGLISH);
-            subscriptions.edit().putString("subhistory", history).apply();
+            saveHistory(history);
         }
     }
 
@@ -642,7 +666,7 @@ public class UserSubscriptions {
                 history.append(",").append(MiscUtil.orEmpty(s.getDisplayName()).toLowerCase(Locale.ENGLISH));
             }
         }
-        subscriptions.edit().putString("subhistory", history.toString()).apply();
+        saveHistory(history.toString());
     }
 
     public static void addSubsToHistory(CaseInsensitiveArrayList s2) {
@@ -655,19 +679,21 @@ public class UserSubscriptions {
                 history.append(",").append(s.toLowerCase(Locale.ENGLISH));
             }
         }
-        subscriptions.edit().putString("subhistory", history.toString()).apply();
+        saveHistory(history.toString());
     }
 
-    // Subs in history that are not on the account, i.e. the ones that were typed in manually
-    public static CaseInsensitiveArrayList getManualHistory(Context c) {
+    // Subs in history that are not on the current account, sorted. History does not record how an
+    // entry got there, so this also holds old subscriptions and subs reached through links.
+    public static CaseInsensitiveArrayList getUnsubscribedSubredditHistory(Context c) {
         CaseInsensitiveArrayList subscribed = getSubscriptions(c);
-        CaseInsensitiveArrayList manual = new CaseInsensitiveArrayList();
+        CaseInsensitiveArrayList unsubscribed = new CaseInsensitiveArrayList();
         for (String s : getHistory()) {
             if (!s.isEmpty() && !subscribed.contains(s)) {
-                manual.add(s);
+                unsubscribed.add(s);
             }
         }
-        return manual;
+        Collections.sort(unsubscribed, String.CASE_INSENSITIVE_ORDER);
+        return unsubscribed;
     }
 
     public static void removeSubsFromHistory(List<String> toRemove) {
@@ -678,7 +704,7 @@ public class UserSubscriptions {
                 history.append(",").append(s);
             }
         }
-        subscriptions.edit().putString("subhistory", history.toString()).apply();
+        saveHistory(history.toString());
     }
 
     public static ArrayList<Subreddit> syncSubredditsGetObject() {

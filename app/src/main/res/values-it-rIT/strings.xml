@@ -1188,7 +1188,7 @@
     <string name="compose_message">Componi messaggio</string>
     <string name="mark_all_as_read">Segna tutto come letto</string>
     <string name="manage_subreddit_history">Gestisci la cronologia dei subreddit</string>
-    <string name="manage_subreddit_history_empty">Nessun subreddit inserito manualmente nella cronologia</string>
+    <string name="manage_subreddit_history_empty">Nessun subreddit nella cronologia a cui non sei iscritto</string>
     <string name="clear_subreddit_history">Pulisci la cronologia dei subreddit</string>
     <string name="clear_submission_history">Pulisci cronologia post</string>
     <string name="alert_history_cleared">Cronologia pulita!</string>

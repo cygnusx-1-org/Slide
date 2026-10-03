@@ -1171,7 +1171,7 @@
     <string name="compose_message">Skriv meddelande</string>
     <string name="mark_all_as_read">Markera alla som lästa</string>
     <string name="manage_subreddit_history">Hantera subreddit-historiken</string>
-    <string name="manage_subreddit_history_empty">Inga manuellt inskrivna subreddits i historiken</string>
+    <string name="manage_subreddit_history_empty">Inga subreddits i historiken som du inte prenumererar på</string>
     <string name="clear_subreddit_history">Rensa subreddit-historiken</string>
     <string name="clear_submission_history">Rensa inläggshistoriken</string>
     <string name="alert_history_cleared">Historik rensad!</string>

@@ -1171,7 +1171,7 @@
     <string name="compose_message">Bericht opstellen</string>
     <string name="mark_all_as_read">Markeer alles als gelezen</string>
     <string name="manage_subreddit_history">Subreddit geschiedenis beheren</string>
-    <string name="manage_subreddit_history_empty">Geen handmatig ingevoerde subreddits in de geschiedenis</string>
+    <string name="manage_subreddit_history_empty">Geen subreddits in de geschiedenis waarop je niet bent geabonneerd</string>
     <string name="clear_subreddit_history">Subreddit geschiedenis wissen</string>
     <string name="clear_submission_history">Instuurgeschiedenis wissen</string>
     <string name="alert_history_cleared">Geschiedenis gewist!</string>

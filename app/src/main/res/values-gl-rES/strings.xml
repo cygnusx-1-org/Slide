@@ -1171,7 +1171,7 @@
     <string name="compose_message">Redactar mensaxe</string>
     <string name="mark_all_as_read">Marcar todo como lido</string>
     <string name="manage_subreddit_history">Xestionar o historial de subreddits</string>
-    <string name="manage_subreddit_history_empty">Non hai subreddits introducidos manualmente no historial</string>
+    <string name="manage_subreddit_history_empty">Non hai subreddits no historial aos que non esteas subscrito</string>
     <string name="clear_subreddit_history">Limpar o historial de subreddits</string>
     <string name="clear_submission_history">Limpar o historial de publicacións</string>
     <string name="alert_history_cleared">Historial limpado!</string>

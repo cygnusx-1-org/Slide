@@ -1154,7 +1154,7 @@
     <string name="compose_message">撰寫訊息</string>
     <string name="mark_all_as_read">標記全部項目為已讀</string>
     <string name="manage_subreddit_history">管理閱讀歷史</string>
-    <string name="manage_subreddit_history_empty">歷史中沒有手動輸入的 Subreddit</string>
+    <string name="manage_subreddit_history_empty">歷史中沒有您未訂閱的 Subreddit</string>
     <string name="clear_subreddit_history">清除閱讀歷史</string>
     <string name="clear_submission_history">清除貼文記錄</string>
     <string name="alert_history_cleared">閱讀紀錄已清除</string>

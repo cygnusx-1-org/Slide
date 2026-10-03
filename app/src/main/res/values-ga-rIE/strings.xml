@@ -1222,7 +1222,7 @@
     <string name="compose_message">Cum teachtaireacht</string>
     <string name="mark_all_as_read">Marcáil gach rud mar léite</string>
     <string name="manage_subreddit_history">Bainistigh stair na subreddits</string>
-    <string name="manage_subreddit_history_empty">Níl aon subreddits a cuireadh isteach de láimh sa stair</string>
+    <string name="manage_subreddit_history_empty">Níl aon subreddits sa stair nach bhfuil tú liostáilte leo</string>
     <string name="clear_subreddit_history">Glan stair na subreddits</string>
     <string name="clear_submission_history">Glan stair na bpostálacha</string>
     <string name="alert_history_cleared">Glanadh an stair!</string>

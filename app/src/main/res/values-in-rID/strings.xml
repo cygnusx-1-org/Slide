@@ -1154,7 +1154,7 @@
     <string name="compose_message">Tulis pesan</string>
     <string name="mark_all_as_read">Tandai semua sudah dibaca</string>
     <string name="manage_subreddit_history">Kelola riwayat subreddit</string>
-    <string name="manage_subreddit_history_empty">Tidak ada subreddit yang dimasukkan secara manual di riwayat</string>
+    <string name="manage_subreddit_history_empty">Tidak ada subreddit di riwayat yang tidak Anda ikuti</string>
     <string name="clear_subreddit_history">Bersihkan riwayat subreddit</string>
     <string name="clear_submission_history">Bersihkan riwayat pengiriman</string>
     <string name="alert_history_cleared">Riwayat dihapus!</string>

@@ -1171,7 +1171,7 @@
     <string name="compose_message">Mesaj yaz</string>
     <string name="mark_all_as_read">Hepsi okundu olarak işaretle</string>
     <string name="manage_subreddit_history">Subreddit geçmişini yönet</string>
-    <string name="manage_subreddit_history_empty">Geçmişte elle girilmiş subreddit yok</string>
+    <string name="manage_subreddit_history_empty">Geçmişte abone olmadığınız subreddit yok</string>
     <string name="clear_subreddit_history">Subreddit geçmişini temizle</string>
     <string name="clear_submission_history">Gönderi geçmişini temizle</string>
     <string name="alert_history_cleared">Geçmiş temizlendi!</string>

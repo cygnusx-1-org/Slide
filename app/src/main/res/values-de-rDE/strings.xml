@@ -1171,7 +1171,7 @@
     <string name="compose_message">Nachricht verfassen</string>
     <string name="mark_all_as_read">Alles als gelesen markieren</string>
     <string name="manage_subreddit_history">Subreddit-Verlauf verwalten</string>
-    <string name="manage_subreddit_history_empty">Keine manuell eingegebenen Subreddits im Verlauf</string>
+    <string name="manage_subreddit_history_empty">Keine Subreddits im Verlauf, die du nicht abonniert hast</string>
     <string name="clear_subreddit_history">Subreddit-Verlauf löschen</string>
     <string name="clear_submission_history">Beitragsverlauf löschen</string>
     <string name="alert_history_cleared">Verlauf gelöscht!</string>

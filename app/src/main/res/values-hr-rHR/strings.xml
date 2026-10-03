@@ -1188,7 +1188,7 @@
     <string name="compose_message">Sastavite poruku</string>
     <string name="mark_all_as_read">Označi sve kao pročitano</string>
     <string name="manage_subreddit_history">Upravljaj poviješću subreddita</string>
-    <string name="manage_subreddit_history_empty">Nema ručno unesenih subreddita u povijesti</string>
+    <string name="manage_subreddit_history_empty">Nema subreddita u povijesti na koje niste pretplaćeni</string>
     <string name="clear_subreddit_history">Obriši povijest subreddita</string>
     <string name="clear_submission_history">Obriši povijest objava</string>
     <string name="alert_history_cleared">Povijest izbrisana!</string>

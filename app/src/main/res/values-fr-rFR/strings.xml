@@ -1188,7 +1188,7 @@
     <string name="compose_message">Composer le message</string>
     <string name="mark_all_as_read">Tout marquer comme lu</string>
     <string name="manage_subreddit_history">Gérer l\'historique des subreddits</string>
-    <string name="manage_subreddit_history_empty">Aucun subreddit saisi manuellement dans l\'historique</string>
+    <string name="manage_subreddit_history_empty">Aucun subreddit dans l\'historique auquel vous n\'êtes pas abonné</string>
     <string name="clear_subreddit_history">Effacer l\'historique des subreddits</string>
     <string name="clear_submission_history">Effacer l\'historique des soumissions</string>
     <string name="alert_history_cleared">Historique effacé !</string>

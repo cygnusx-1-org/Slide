@@ -1188,7 +1188,7 @@
     <string name="compose_message">Creează mesaj</string>
     <string name="mark_all_as_read">Marchează totul citit</string>
     <string name="manage_subreddit_history">Gestionează istoricul de subreddit</string>
-    <string name="manage_subreddit_history_empty">Niciun subreddit introdus manual în istoric</string>
+    <string name="manage_subreddit_history_empty">Niciun subreddit în istoric la care nu ești abonat</string>
     <string name="clear_subreddit_history">Curătă istoricul de subreddit</string>
     <string name="clear_submission_history">Șterge istoricul postărilor</string>
     <string name="alert_history_cleared">Istoric șters!</string>

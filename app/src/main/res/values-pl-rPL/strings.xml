@@ -1205,7 +1205,7 @@
     <string name="compose_message">Zredaguj wiadomość</string>
     <string name="mark_all_as_read">Oznacz wszystko jako przeczytane</string>
     <string name="manage_subreddit_history">Zarządzaj historią subredditów</string>
-    <string name="manage_subreddit_history_empty">Brak ręcznie wprowadzonych subredditów w historii</string>
+    <string name="manage_subreddit_history_empty">Brak subredditów w historii, których nie subskrybujesz</string>
     <string name="clear_subreddit_history">Wykasuj historię subredditów</string>
     <string name="clear_submission_history">Wykasuj historię postów</string>
     <string name="alert_history_cleared">Historia usunięta!</string>

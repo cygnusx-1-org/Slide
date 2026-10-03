@@ -1205,7 +1205,7 @@
     <string name="compose_message">Написати повідомлення</string>
     <string name="mark_all_as_read">Позначити всі як прочитані</string>
     <string name="manage_subreddit_history">Керувати історією субредитів</string>
-    <string name="manage_subreddit_history_empty">В історії немає субредитів, введених вручну</string>
+    <string name="manage_subreddit_history_empty">В історії немає субредитів, на які ви не підписані</string>
     <string name="clear_subreddit_history">Очистити історію субредитів</string>
     <string name="clear_submission_history">Очистити історію дописів</string>
     <string name="alert_history_cleared">Історію очищено!</string>

@@ -1258,7 +1258,7 @@
     <string name="compose_message">Compose message</string>
     <string name="mark_all_as_read">Mark all as read</string>
     <string name="manage_subreddit_history">Manage subreddit history</string>
-    <string name="manage_subreddit_history_empty">No manually entered subreddits in your history</string>
+    <string name="manage_subreddit_history_empty">No subreddits in your history that you are not subscribed to</string>
     <string name="clear_subreddit_history">Clear subreddit history</string>
     <string name="clear_submission_history">Clear submission history</string>
     <string name="alert_history_cleared">History cleared!</string>

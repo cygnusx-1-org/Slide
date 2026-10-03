@@ -1171,7 +1171,7 @@
     <string name="compose_message">Shkruaj mesazh</string>
     <string name="mark_all_as_read">Shëno të gjitha si të lexuara</string>
     <string name="manage_subreddit_history">Menaxho historikun e subreddit-eve</string>
-    <string name="manage_subreddit_history_empty">Nuk ka subreddit-e të futura manualisht në historik</string>
+    <string name="manage_subreddit_history_empty">Nuk ka subreddit-e në historik në të cilat nuk jeni pajtuar</string>
     <string name="clear_subreddit_history">Pastro historikun e subreddit-eve</string>
     <string name="clear_submission_history">Pastro historikun e postimeve</string>
     <string name="alert_history_cleared">Historiku u pastrua!</string>

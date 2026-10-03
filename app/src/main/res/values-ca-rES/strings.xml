@@ -1188,7 +1188,7 @@
     <string name="compose_message">Escriure un missatge</string>
     <string name="mark_all_as_read">Marcar-ho tot com a llegit</string>
     <string name="manage_subreddit_history">Gestionar l\'historial del subreddit</string>
-    <string name="manage_subreddit_history_empty">No hi ha cap subreddit introduït manualment al teu historial</string>
+    <string name="manage_subreddit_history_empty">No hi ha cap subreddit al teu historial al qual no estiguis subscrit</string>
     <string name="clear_subreddit_history">Eliminar l\'historial del subreddit</string>
     <string name="clear_submission_history">Netejar l\'historial de les publicacions</string>
     <string name="alert_history_cleared">Historial netejat!</string>

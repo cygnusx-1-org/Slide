@@ -1154,7 +1154,7 @@
     <string name="compose_message">撰写信息</string>
     <string name="mark_all_as_read">标记全部为已读</string>
     <string name="manage_subreddit_history">管理版块历史记录</string>
-    <string name="manage_subreddit_history_empty">历史记录中没有手动输入的版块</string>
+    <string name="manage_subreddit_history_empty">历史记录中没有您未订阅的版块</string>
     <string name="clear_subreddit_history">清除版块历史记录</string>
     <string name="clear_submission_history">清除提交历史记录</string>
     <string name="alert_history_cleared">历史记录已清除</string>

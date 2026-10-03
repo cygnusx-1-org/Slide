@@ -1239,7 +1239,7 @@
     <string name="compose_message">كتابة رسالة</string>
     <string name="mark_all_as_read">تعليم الكل كمقروء</string>
     <string name="manage_subreddit_history">إدارة سجل السبريدتات</string>
-    <string name="manage_subreddit_history_empty">لا توجد سبريدتات مُدخلة يدويًا في سجلك</string>
+    <string name="manage_subreddit_history_empty">لا توجد سبريدتات في سجلك أنت غير مشترك بها</string>
     <string name="clear_subreddit_history">مسح سجل السبريدتات</string>
     <string name="clear_submission_history">مسح سجل المنشورات</string>
     <string name="alert_history_cleared">تم مسح السجل!</string>

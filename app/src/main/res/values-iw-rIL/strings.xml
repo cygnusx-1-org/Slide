@@ -1188,7 +1188,7 @@
     <string name="compose_message">כתיבת הודעה</string>
     <string name="mark_all_as_read">סימון הכל כנקרא</string>
     <string name="manage_subreddit_history">ניהול היסטוריית הסאברדיטים</string>
-    <string name="manage_subreddit_history_empty">אין סאברדיטים שהוזנו ידנית בהיסטוריה</string>
+    <string name="manage_subreddit_history_empty">אין סאברדיטים בהיסטוריה שאינך מנוי עליהם</string>
     <string name="clear_subreddit_history">ניקוי היסטוריית הסאברדיטים</string>
     <string name="clear_submission_history">ניקוי היסטוריית הפוסטים</string>
     <string name="alert_history_cleared">ההיסטוריה נוקתה!</string>

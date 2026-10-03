@@ -1188,7 +1188,7 @@
     <string name="compose_message">Rakstīt ziņojumu</string>
     <string name="mark_all_as_read">Atzīmēt visus kā izlasītus</string>
     <string name="manage_subreddit_history">Pārvaldīt subreddit vēsturi</string>
-    <string name="manage_subreddit_history_empty">Vēsturē nav manuāli ievadītu subreddit</string>
+    <string name="manage_subreddit_history_empty">Vēsturē nav subreddit, uz kuriem neesat abonējis</string>
     <string name="clear_subreddit_history">Notīrīt subreddit vēsturi</string>
     <string name="clear_submission_history">Notīrīt ziņu vēsturi</string>
     <string name="alert_history_cleared">Vēsture notīrīta!</string>

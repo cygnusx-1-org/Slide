@@ -1154,7 +1154,7 @@
     <string name="compose_message">Soạn tin nhắn</string>
     <string name="mark_all_as_read">Đánh dấu tất cả là đã đọc</string>
     <string name="manage_subreddit_history">Quản lý lịch sử subreddit</string>
-    <string name="manage_subreddit_history_empty">Không có subreddit nào được nhập thủ công trong lịch sử</string>
+    <string name="manage_subreddit_history_empty">Không có subreddit nào trong lịch sử mà bạn chưa đăng ký</string>
     <string name="clear_subreddit_history">Xóa lịch sử subreddit</string>
     <string name="clear_submission_history">Xóa lịch sử bài đăng</string>
     <string name="alert_history_cleared">Đã xóa lịch sử!</string>

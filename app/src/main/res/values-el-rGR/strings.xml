@@ -1171,7 +1171,7 @@
     <string name="compose_message">Σύνταξη μηνύματος</string>
     <string name="mark_all_as_read">Σήμανση όλων ως αναγνωσμένων</string>
     <string name="manage_subreddit_history">Διαχείριση ιστορικού subreddit</string>
-    <string name="manage_subreddit_history_empty">Δεν υπάρχουν subreddit που έχουν εισαχθεί χειροκίνητα στο ιστορικό</string>
+    <string name="manage_subreddit_history_empty">Δεν υπάρχουν subreddit στο ιστορικό στα οποία δεν είστε συνδρομητής</string>
     <string name="clear_subreddit_history">Εκκαθάριση ιστορικού subreddit</string>
     <string name="clear_submission_history">Εκκαθάριση ιστορικού δημοσιεύσεων</string>
     <string name="alert_history_cleared">Το ιστορικό εκκαθαρίστηκε!</string>

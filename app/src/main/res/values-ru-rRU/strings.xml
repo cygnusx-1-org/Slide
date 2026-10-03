@@ -1205,7 +1205,7 @@
     <string name="compose_message">Написать сообщение</string>
     <string name="mark_all_as_read">Отметить все как прочитанное</string>
     <string name="manage_subreddit_history">Управлять историей сабреддитов</string>
-    <string name="manage_subreddit_history_empty">В истории нет сабреддитов, введённых вручную</string>
+    <string name="manage_subreddit_history_empty">В истории нет сабреддитов, на которые вы не подписаны</string>
     <string name="clear_subreddit_history">Очистить историю сабреддитов</string>
     <string name="clear_submission_history">Очистить историю публикаций</string>
     <string name="alert_history_cleared">История очищена!</string>

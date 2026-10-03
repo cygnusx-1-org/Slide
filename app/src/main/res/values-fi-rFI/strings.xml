@@ -1171,7 +1171,7 @@
     <string name="compose_message">Kirjoita viesti</string>
     <string name="mark_all_as_read">Merkitse kaikki luetuiksi</string>
     <string name="manage_subreddit_history">Hallitse subreddit-historiaa</string>
-    <string name="manage_subreddit_history_empty">Historiassa ei ole manuaalisesti syötettyjä subreddittejä</string>
+    <string name="manage_subreddit_history_empty">Historiassa ei ole subreddittejä, joita et tilaa</string>
     <string name="clear_subreddit_history">Tyhjennä subreddit-historia</string>
     <string name="clear_submission_history">Tyhjennä julkaisuhistoria</string>
     <string name="alert_history_cleared">Historia tyhjennetty!</string>

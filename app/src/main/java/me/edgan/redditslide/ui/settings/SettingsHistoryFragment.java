@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import me.edgan.redditslide.CaseInsensitiveArrayList;
 import me.edgan.redditslide.HasSeen;
+import me.edgan.redditslide.LastComments;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.UserSubscriptions;
@@ -85,6 +86,10 @@ public class SettingsHistoryFragment {
                     // The seen sets are loaded once and are what the post lists consult
                     HasSeen.hasSeen.clear();
                     HasSeen.seenTimes.clear();
+                    // Same for the comment counts the "new comments" badges are measured against
+                    if (LastComments.commentsSince != null) {
+                        LastComments.commentsSince.clear();
+                    }
                     showHistoryClearedDialog();
                 });
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -92,25 +97,25 @@ public class SettingsHistoryFragment {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         clearSubsLayout.setOnClickListener(
                 v -> {
-                    UserSubscriptions.subscriptions.edit().remove("subhistory").apply();
+                    UserSubscriptions.clearHistory();
                     showHistoryClearedDialog();
                 });
     }
 
     private void showManageSubsDialog() {
-        final CaseInsensitiveArrayList manual = UserSubscriptions.getManualHistory(context);
-        if (manual.isEmpty()) {
+        final CaseInsensitiveArrayList unsubscribed = UserSubscriptions.getUnsubscribedSubredditHistory(context);
+        if (unsubscribed.isEmpty()) {
             DialogUtil.showWithCardBackground(new AlertDialog.Builder(context)
                     .setMessage(R.string.manage_subreddit_history_empty)
                     .setPositiveButton(android.R.string.ok, null));
             return;
         }
 
-        final boolean[] checked = new boolean[manual.size()];
+        final boolean[] checked = new boolean[unsubscribed.size()];
         DialogUtil.showWithCardBackground(new AlertDialog.Builder(context)
                 .setTitle(R.string.manage_subreddit_history)
                 .setMultiChoiceItems(
-                        manual.toArray(new String[0]),
+                        unsubscribed.toArray(new String[0]),
                         checked,
                         (dialog, which, isChecked) -> checked[which] = isChecked)
                 .setPositiveButton(
@@ -119,7 +124,7 @@ public class SettingsHistoryFragment {
                             final List<String> toRemove = new ArrayList<>();
                             for (int i = 0; i < checked.length; i++) {
                                 if (checked[i]) {
-                                    toRemove.add(manual.get(i));
+                                    toRemove.add(unsubscribed.get(i));
                                 }
                             }
                             UserSubscriptions.removeSubsFromHistory(toRemove);

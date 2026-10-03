@@ -1171,7 +1171,7 @@
     <string name="compose_message">Üzenet írása</string>
     <string name="mark_all_as_read">Összes megjelölése olvasottként</string>
     <string name="manage_subreddit_history">Alreddit előzmények kezelése</string>
-    <string name="manage_subreddit_history_empty">Nincs kézzel megadott alreddit az előzményekben</string>
+    <string name="manage_subreddit_history_empty">Nincs olyan alreddit az előzményekben, amelyre nem iratkozott fel</string>
     <string name="clear_subreddit_history">Alreddit előzmények törlése</string>
     <string name="clear_submission_history">Bejegyzés-előzmények törlése</string>
     <string name="alert_history_cleared">Előzmények törölve!</string>

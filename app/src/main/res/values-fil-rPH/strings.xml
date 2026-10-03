@@ -1171,7 +1171,7 @@
     <string name="compose_message">Sumulat ng mensahe</string>
     <string name="mark_all_as_read">Markahan lahat bilang nabasa</string>
     <string name="manage_subreddit_history">Pamahalaan ang kasaysayan ng subreddit</string>
-    <string name="manage_subreddit_history_empty">Walang mano-manong inilagay na subreddit sa kasaysayan</string>
+    <string name="manage_subreddit_history_empty">Walang subreddit sa kasaysayan na hindi ka naka-subscribe</string>
     <string name="clear_subreddit_history">I-clear ang kasaysayan ng subreddit</string>
     <string name="clear_submission_history">I-clear ang kasaysayan ng post</string>
     <string name="alert_history_cleared">Na-clear ang kasaysayan!</string>

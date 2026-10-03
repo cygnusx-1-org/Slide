@@ -74,7 +74,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import me.edgan.redditslide.Adapters.SideArrayAdapter;
 import me.edgan.redditslide.Adapters.SubredditPosts;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.BuildConfig;
@@ -211,8 +210,6 @@ public class MainActivity extends BaseActivity
     @SuppressWarnings("NullAway.Init") // assigned in onOptionsItemSelected/onPreExecute/updateSubs
     Dialog d;
     @Nullable View accountsArea;
-    // Nothing assigns this either; DrawerController builds and holds the real SideArrayAdapter.
-    @Nullable SideArrayAdapter sideArrayAdapter;
     @SuppressWarnings("NullAway.Init") // onPrepareOptionsMenu, which the framework runs before use
     Menu menu;
     int back;
