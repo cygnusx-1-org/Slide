@@ -968,6 +968,9 @@ public class PopulateSubmissionViewHolder {
                                                                                                     .LayoutParams
                                                                                                     .SOFT_INPUT_ADJUST_RESIZE);
                                                                         }
+                                                                        DialogUtil
+                                                                                .requestLayoutWhenImeHides(
+                                                                                        d);
 
                                                                         d.show();
                                                                         dialoglayout

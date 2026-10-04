@@ -490,6 +490,7 @@ public class CommentPage extends Fragment implements Toolbar.OnMenuItemClickList
                                                 WindowManager.LayoutParams
                                                         .SOFT_INPUT_ADJUST_RESIZE);
                             }
+                            DialogUtil.requestLayoutWhenImeHides(replyDialog);
 
                             replyView
                                     .requireViewById(R.id.cancel)

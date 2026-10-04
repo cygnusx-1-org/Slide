@@ -521,6 +521,7 @@ public class InboxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (d.getWindow() != null) {
             d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         }
+        DialogUtil.requestLayoutWhenImeHides(d);
 
         DialogUtil.matchDialogToCardBackground(d);
         d.show();

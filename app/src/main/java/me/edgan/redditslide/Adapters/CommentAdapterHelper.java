@@ -1922,6 +1922,7 @@ final AlertDialog reportDialog =
         if (d.getWindow() != null) {
             d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         }
+        DialogUtil.requestLayoutWhenImeHides(d);
 
         DialogUtil.matchDialogToCardBackground(d);
         d.show();
