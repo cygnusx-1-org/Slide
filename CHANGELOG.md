@@ -4,6 +4,12 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+8.0.7 / 2026-10-3
+============
+* Fixed Editing an existing comment sometimes doesn't show anything, but the input box #310
+* Fixed the input boxes of other dialogs
+* Fixed drawer list NPE by guarding scroll requests in every layoutChildren pass
+
 8.0.6 / 2026-9-24
 ============
 * Fixed Resume where I left off needs some polish #308
