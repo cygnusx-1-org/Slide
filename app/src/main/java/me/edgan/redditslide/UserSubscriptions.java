@@ -17,6 +17,7 @@ import java.util.Map;
 import me.edgan.redditslide.Activities.Login;
 import me.edgan.redditslide.Activities.MainActivity;
 import me.edgan.redditslide.Activities.MultiredditOverview;
+import me.edgan.redditslide.ui.settings.SettingsThemeFragment;
 import me.edgan.redditslide.ui.settings.dragSort.ReorderSubreddits;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
@@ -212,13 +213,24 @@ public class UserSubscriptions {
 
         Context c;
 
+        // The multi MultiredditOverview reopens on, by display name; null lands on the first.
+        @Nullable final String multi;
+
         public SyncMultireddits(Context c) {
+            this(c, null);
+        }
+
+        public SyncMultireddits(Context c, @Nullable String multi) {
             this.c = c;
+            this.multi = multi;
         }
 
         @Override
         public void onPostExecute(Boolean b) {
             Intent i = new Intent(c, MultiredditOverview.class);
+            if (multi != null) {
+                i.putExtra(MultiredditOverview.EXTRA_MULTI, multi);
+            }
             c.startActivity(i);
             ((Activity) c).finish();
         }
@@ -381,6 +393,63 @@ public class UserSubscriptions {
     public static void setPinned(CaseInsensitiveArrayList subs) {
         pinned.edit().putString(Authentication.nameOrEmpty(), StringUtil.arrayToString(subs)).apply();
         pins = null;
+    }
+
+    /**
+     * Moves a multireddit's entry in the main subreddit list (and its pin) to the name it was
+     * renamed to. The entry is MULTI_REDDIT + its display name, mapped to the multi's API path,
+     * and a rename moves the multi to a new path: left alone, the old entry opens a path that no
+     * longer exists. Does nothing if the multi was never added to the list.
+     */
+    public static void renameMultiInSubscriptions(String oldName, String newName) {
+        final String oldKey = ReorderSubreddits.MULTI_REDDIT + oldName;
+        final String newKey = ReorderSubreddits.MULTI_REDDIT + newName;
+
+        final CaseInsensitiveArrayList subs =
+                renameEntry(PrefUtil.getString(subscriptions, Authentication.nameOrEmpty(), ""), oldKey, newKey);
+        final CaseInsensitiveArrayList pinnedSubs =
+                renameEntry(PrefUtil.getString(pinned, Authentication.nameOrEmpty(), ""), oldKey, newKey);
+        if (subs == null && pinnedSubs == null) {
+            return;
+        }
+        if (subs != null) {
+            setSubscriptions(subs);
+        }
+        if (pinnedSubs != null) {
+            setPinned(pinnedSubs);
+        }
+
+        final String path = "api/user/" + Authentication.nameOrEmpty() + "/m/" + newName;
+        SharedPreferences.Editor editor = multiNameToSubs.edit();
+        for (String key : multiNameToSubs.getAll().keySet()) {
+            if (key.equalsIgnoreCase(oldKey)) {
+                editor.remove(key);
+            }
+        }
+        editor.putString(newKey, path).apply();
+        MainActivity.multiNameToSubsMap.remove(oldKey.toLowerCase(Locale.ENGLISH));
+        MainActivity.multiNameToSubsMap.put(newKey.toLowerCase(Locale.ENGLISH), path);
+
+        // What ReorderSubreddits sets after editing the list: MainActivity rebuilds its tabs from
+        // the stored list on its next resume.
+        SettingsThemeFragment.changed = true;
+    }
+
+    /** The comma-separated list with oldKey replaced by newKey, or null if oldKey is absent. */
+    @Nullable
+    private static CaseInsensitiveArrayList renameEntry(String stored, String oldKey, String newKey) {
+        if (stored.isEmpty()) {
+            return null;
+        }
+        boolean found = false;
+        CaseInsensitiveArrayList renamed = new CaseInsensitiveArrayList();
+        for (String s : stored.split(",")) {
+            final boolean match = s.equalsIgnoreCase(oldKey);
+            found |= match;
+            final String entry = match ? newKey : s;
+            if (!renamed.contains(entry)) renamed.add(entry);
+        }
+        return found ? renamed : null;
     }
 
     public static void switchAccounts() {

@@ -15,13 +15,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.LinearInterpolator;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -33,7 +30,6 @@ import java.util.List;
 import java.util.Locale;
 import me.edgan.redditslide.Adapters.MultiredditPosts;
 import me.edgan.redditslide.Authentication;
-import me.edgan.redditslide.CaseInsensitiveArrayList;
 import me.edgan.redditslide.Fragments.MultiredditView;
 import me.edgan.redditslide.Fragments.SubmissionsView;
 import me.edgan.redditslide.HibernateState;
@@ -44,14 +40,12 @@ import me.edgan.redditslide.Views.CatchStaggeredGridLayoutManager;
 import me.edgan.redditslide.Views.PreCachingLayoutManager;
 import me.edgan.redditslide.Visuals.ColorPreferences;
 import me.edgan.redditslide.Visuals.Palette;
-import me.edgan.redditslide.util.BlendModeUtil;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.SortingUtil;
 import net.dean.jraw.models.MultiReddit;
-import net.dean.jraw.models.MultiSubreddit;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.paginators.Sorting;
 import net.dean.jraw.paginators.TimePeriod;
@@ -64,8 +58,9 @@ public class MultiredditOverview extends BaseActivityAnim implements HibernateSt
     public static final String EXTRA_PROFILE = "profile";
     public static final String EXTRA_MULTI = "multi";
 
-    @SuppressWarnings("NullAway.Init") // assigned in onCreate
-    public static Activity multiActivity;
+    // Assigned in onCreate. Null when a process restart brought CreateMulti back before the
+    // overview underneath it was recreated.
+    @Nullable public static Activity multiActivity;
 
     // @Nullable already exempts this from the initialization check; the suppression was dead.
     @Nullable public static MultiReddit searchMulti;
@@ -197,15 +192,15 @@ public class MultiredditOverview extends BaseActivityAnim implements HibernateSt
             }
             return true;
         } else if (itemId == R.id.action_edit) {
+            // The pages are usedArray, so the multi is looked up there, and handed over by its
+            // name: that is the path Reddit edits, and the display name can differ from it.
             if (profile.isEmpty()
-                    && (UserSubscriptions.multireddits != null)
-                    && !UserSubscriptions.multireddits.isEmpty()) {
+                    && (usedArray != null)
+                    && pager.getCurrentItem() < usedArray.size()) {
                 Intent i = new Intent(MultiredditOverview.this, CreateMulti.class);
                 i.putExtra(
                         CreateMulti.EXTRA_MULTI,
-                        UserSubscriptions.multireddits
-                                .get(pager.getCurrentItem())
-                                .getDisplayName());
+                        MiscUtil.orEmpty(usedArray.get(pager.getCurrentItem()).getFullName()));
                 startActivity(i);
             }
             return true;
@@ -273,9 +268,6 @@ public class MultiredditOverview extends BaseActivityAnim implements HibernateSt
             return true;
         } else if (itemId == R.id.action_sort) {
             openPopup();
-            return true;
-        } else if (itemId == R.id.subs) {
-            ((DrawerLayout) requireViewById(R.id.drawer_layout)).openDrawer(Gravity.RIGHT);
             return true;
         } else if (itemId == R.id.gallery) {
             if (currentFragment != null && posts != null && !posts.isEmpty()) {
@@ -765,13 +757,11 @@ public class MultiredditOverview extends BaseActivityAnim implements HibernateSt
             applyRestoredPage();
             // The page landed on, not the first: either selection above may have moved the pager,
             // and its onPageSelected styled that page only for the lines below to overwrite it --
-            // a resume onto a later multireddit came back with the first one's colors and its
-            // subreddits in the drawer.
+            // a resume onto a later multireddit came back with the first one's colors.
             final int landed = pager.getCurrentItem();
             tabs.setSelectedTabIndicatorColor(
                     new ColorPreferences(MultiredditOverview.this)
                             .getColor(usedArray.get(landed).getDisplayName()));
-            doDrawerSubs(landed);
             Window window = this.getWindow();
             int color =
                     Palette.getDarkerColor(
@@ -826,41 +816,6 @@ public class MultiredditOverview extends BaseActivityAnim implements HibernateSt
         }
     }
 
-    public void doDrawerSubs(int position) {
-        MultiReddit current = usedArray.get(position);
-        LinearLayout l = (LinearLayout) requireViewById(R.id.sidebar_scroll);
-        l.removeAllViews();
-
-        CaseInsensitiveArrayList toSort = new CaseInsensitiveArrayList();
-
-        for (MultiSubreddit s : current.getSubreddits()) {
-            toSort.add(MiscUtil.orEmpty(s.getDisplayName()).toLowerCase(Locale.ENGLISH));
-        }
-
-        for (String sub : UserSubscriptions.sortNoExtras(toSort)) {
-            final View convertView = getLayoutInflater().inflate(R.layout.subforsublist, l, false);
-
-            final String subreddit = sub;
-            final TextView t = convertView.requireViewById(R.id.name);
-            t.setText(subreddit);
-
-            final View colorView = convertView.requireViewById(R.id.color);
-            colorView.setBackgroundResource(R.drawable.circle);
-            BlendModeUtil.tintDrawableAsModulate(
-                    colorView.getBackground(), Palette.getColor(subreddit));
-            convertView.setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent inte = new Intent(MultiredditOverview.this, SubredditView.class);
-                            inte.putExtra(SubredditView.EXTRA_SUBREDDIT, subreddit);
-                            MultiredditOverview.this.startActivityForResult(inte, 4);
-                        }
-                    });
-            l.addView(convertView);
-        }
-    }
-
     private class MultiredditOverviewPagerAdapter extends FragmentStatePagerAdapter {
 
         MultiredditOverviewPagerAdapter(FragmentManager fm) {
@@ -891,7 +846,6 @@ public class MultiredditOverview extends BaseActivityAnim implements HibernateSt
                             tabs.setSelectedTabIndicatorColor(
                                     new ColorPreferences(MultiredditOverview.this)
                                             .getColor(usedArray.get(position).getDisplayName()));
-                            doDrawerSubs(position);
                         }
                     });
         }

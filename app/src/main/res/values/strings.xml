@@ -1266,6 +1266,7 @@
     <string name="help">Help</string>
     <string name="upvote_percentage">Show upvote percentage</string>
     <string name="view_subreddits">View subreddits</string>
+    <string name="edit_subreddits">Edit subreddits</string>
     <string name="clear_saved_subreddits">Clear all saved subreddits</string>
     <string name="download_the_slide_video_player_plugin">Download the Slide Video Player plugin</string>
     <string name="btn_suggest_title">Suggest title</string>

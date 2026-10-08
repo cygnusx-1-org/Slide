@@ -3,12 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".SubredditOverview">
 
-    <item android:id="@+id/action_edit"
-        android:icon="@drawable/ic_edit"
-        android:title="@string/editor_title"
-        android:visible="false"
-        app:showAsAction="ifRoom"/>
-
     <item android:id="@+id/action_shadowbox"
         android:icon="@drawable/ic_view_carousel"
         android:title="@string/general_enable_shadowbox"
@@ -30,9 +24,9 @@
         android:icon="@drawable/ic_sort"
         android:title="@string/sorting_change_sorting"
         app:showAsAction="ifRoom"/>
-    <item android:id="@+id/subs"
-        android:icon="@drawable/ic_info"
-        android:title="@string/view_subreddits"
+    <item android:id="@+id/action_edit"
+        android:icon="@drawable/ic_edit"
+        android:title="@string/edit_subreddits"
         app:showAsAction="ifRoom"/>
 
 
