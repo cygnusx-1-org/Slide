@@ -712,6 +712,7 @@
     <string name="settings_section_internal_viewers">Trình xem nội bộ</string>
     <string name="settings_section_custom_domains">Tên miền tùy chỉnh</string>
     <string name="settings_section_save_history">Lưu lịch sử</string>
+    <string name="settings_section_manage_history">Quản lý lịch sử</string>
     <string name="settings_section_clear_history">Xóa lịch sử</string>
     <string name="settings_section_data_saving_mode">Chế độ tiết kiệm dữ liệu</string>
     <string name="settings_section_data_saving_quality">Chất lượng khi tiết kiệm dữ liệu</string>
@@ -1152,6 +1153,8 @@
     <string name="download_gallery">Tải thư viện xuống</string>
     <string name="compose_message">Soạn tin nhắn</string>
     <string name="mark_all_as_read">Đánh dấu tất cả là đã đọc</string>
+    <string name="manage_subreddit_history">Quản lý lịch sử subreddit</string>
+    <string name="manage_subreddit_history_empty">Không có subreddit nào trong lịch sử mà bạn chưa đăng ký</string>
     <string name="clear_subreddit_history">Xóa lịch sử subreddit</string>
     <string name="clear_submission_history">Xóa lịch sử bài đăng</string>
     <string name="alert_history_cleared">Đã xóa lịch sử!</string>

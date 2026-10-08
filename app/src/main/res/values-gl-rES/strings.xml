@@ -719,6 +719,7 @@
     <string name="settings_section_internal_viewers">Visores internos</string>
     <string name="settings_section_custom_domains">Dominios personalizados</string>
     <string name="settings_section_save_history">Gardar o historial</string>
+    <string name="settings_section_manage_history">Xestionar o historial</string>
     <string name="settings_section_clear_history">Limpar o historial</string>
     <string name="settings_section_data_saving_mode">Modo de aforro de datos</string>
     <string name="settings_section_data_saving_quality">Calidade no aforro de datos</string>
@@ -1169,6 +1170,8 @@
     <string name="download_gallery">Descargar a galería</string>
     <string name="compose_message">Redactar mensaxe</string>
     <string name="mark_all_as_read">Marcar todo como lido</string>
+    <string name="manage_subreddit_history">Xestionar o historial de subreddits</string>
+    <string name="manage_subreddit_history_empty">Non hai subreddits no historial aos que non esteas subscrito</string>
     <string name="clear_subreddit_history">Limpar o historial de subreddits</string>
     <string name="clear_submission_history">Limpar o historial de publicacións</string>
     <string name="alert_history_cleared">Historial limpado!</string>

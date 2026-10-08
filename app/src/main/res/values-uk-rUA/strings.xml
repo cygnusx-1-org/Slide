@@ -733,6 +733,7 @@
     <string name="settings_section_internal_viewers">Внутрішні переглядачі</string>
     <string name="settings_section_custom_domains">Користувацькі домени</string>
     <string name="settings_section_save_history">Збереження історії</string>
+    <string name="settings_section_manage_history">Керування історією</string>
     <string name="settings_section_clear_history">Очищення історії</string>
     <string name="settings_section_data_saving_mode">Режим економії трафіку</string>
     <string name="settings_section_data_saving_quality">Якість при економії трафіку</string>
@@ -1203,6 +1204,8 @@
     <string name="download_gallery">Звантажити галерею</string>
     <string name="compose_message">Написати повідомлення</string>
     <string name="mark_all_as_read">Позначити всі як прочитані</string>
+    <string name="manage_subreddit_history">Керувати історією субредитів</string>
+    <string name="manage_subreddit_history_empty">В історії немає субредитів, на які ви не підписані</string>
     <string name="clear_subreddit_history">Очистити історію субредитів</string>
     <string name="clear_submission_history">Очистити історію дописів</string>
     <string name="alert_history_cleared">Історію очищено!</string>

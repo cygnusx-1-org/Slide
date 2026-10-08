@@ -726,6 +726,7 @@
     <string name="settings_section_internal_viewers">Unutarnji preglednici</string>
     <string name="settings_section_custom_domains">Prilagođene domene</string>
     <string name="settings_section_save_history">Spremi povijest</string>
+    <string name="settings_section_manage_history">Upravljaj poviješću</string>
     <string name="settings_section_clear_history">Obriši povijest</string>
     <string name="settings_section_data_saving_mode">Način uštede podataka</string>
     <string name="settings_section_data_saving_quality">Kvaliteta pri uštedi podataka</string>
@@ -1186,6 +1187,8 @@
     <string name="download_gallery">Preuzmi galeriju</string>
     <string name="compose_message">Sastavite poruku</string>
     <string name="mark_all_as_read">Označi sve kao pročitano</string>
+    <string name="manage_subreddit_history">Upravljaj poviješću subreddita</string>
+    <string name="manage_subreddit_history_empty">Nema subreddita u povijesti na koje niste pretplaćeni</string>
     <string name="clear_subreddit_history">Obriši povijest subreddita</string>
     <string name="clear_submission_history">Obriši povijest objava</string>
     <string name="alert_history_cleared">Povijest izbrisana!</string>

@@ -712,6 +712,7 @@
     <string name="settings_section_internal_viewers">内部查看器</string>
     <string name="settings_section_custom_domains">自定义域名</string>
     <string name="settings_section_save_history">保存浏览记录</string>
+    <string name="settings_section_manage_history">管理历史记录</string>
     <string name="settings_section_clear_history">清除历史记录</string>
     <string name="settings_section_data_saving_mode">省流量模式</string>
     <string name="settings_section_data_saving_quality">数据节省质量</string>
@@ -1152,6 +1153,8 @@
     <string name="download_gallery">下载图集</string>
     <string name="compose_message">撰写信息</string>
     <string name="mark_all_as_read">标记全部为已读</string>
+    <string name="manage_subreddit_history">管理版块历史记录</string>
+    <string name="manage_subreddit_history_empty">历史记录中没有您未订阅的版块</string>
     <string name="clear_subreddit_history">清除版块历史记录</string>
     <string name="clear_submission_history">清除提交历史记录</string>
     <string name="alert_history_cleared">历史记录已清除</string>

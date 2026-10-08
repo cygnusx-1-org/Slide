@@ -726,6 +726,7 @@
     <string name="settings_section_internal_viewers">Интерни прегледач</string>
     <string name="settings_section_custom_domains">Прилагођени домени</string>
     <string name="settings_section_save_history">Сачувај историјат</string>
+    <string name="settings_section_manage_history">Управљај историјатом</string>
     <string name="settings_section_clear_history">Очисти историјат</string>
     <string name="settings_section_data_saving_mode">Режим штедње података</string>
     <string name="settings_section_data_saving_quality">Квалитет при уштеди података</string>
@@ -1186,6 +1187,8 @@
     <string name="download_gallery">Преузми галерију</string>
     <string name="compose_message">Напиши поруку</string>
     <string name="mark_all_as_read">Означи све као прочитано</string>
+    <string name="manage_subreddit_history">Управљај историјатом субредита</string>
+    <string name="manage_subreddit_history_empty">Нема субредита у историјату на које нисте претплаћени</string>
     <string name="clear_subreddit_history">Очисти историјат субредита</string>
     <string name="clear_submission_history">Очисти историјат објава</string>
     <string name="alert_history_cleared">Историјат очишћен!</string>

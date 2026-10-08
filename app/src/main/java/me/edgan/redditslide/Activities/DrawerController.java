@@ -957,6 +957,12 @@ public class DrawerController {
         }
     }
 
+    public void refreshSubredditHistory() {
+        if (sideArrayAdapter != null) {
+            sideArrayAdapter.refreshHistory();
+        }
+    }
+
     public void setDrawerSubList() {
         ArrayList<String> copy;
 
