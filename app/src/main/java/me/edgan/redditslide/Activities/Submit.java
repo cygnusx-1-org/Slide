@@ -1139,7 +1139,7 @@ public class Submit extends BaseActivity {
                 } else if (galleryVisible) {
                     // Upload every image to Reddit's media bucket, then submit a gallery post.
                     try {
-                        java.util.ArrayList<String> assetIds = new java.util.ArrayList<>();
+                        java.util.ArrayList<String> mediaIds = new java.util.ArrayList<>();
                         for (int i = 0; i < galleryUris.size(); i++) {
                             final int index = i + 1;
                             final int total = galleryUris.size();
@@ -1150,9 +1150,9 @@ public class Submit extends BaseActivity {
                                                             R.string.submit_uploading_gallery,
                                                             index,
                                                             total)));
-                            assetIds.add(
+                            mediaIds.add(
                                     me.edgan.redditslide.util.RedditMediaUpload
-                                            .uploadForGalleryAssetId(
+                                            .uploadForGalleryMediaId(
                                                     Submit.this, galleryUris.get(i)));
                         }
                         String permalink =
@@ -1160,7 +1160,7 @@ public class Submit extends BaseActivity {
                                         Authentication.reddit,
                                         subredditText,
                                         titleText,
-                                        assetIds,
+                                        mediaIds,
                                         galleryCaptions,
                                         sendReplies,
                                         selectedFlairID);

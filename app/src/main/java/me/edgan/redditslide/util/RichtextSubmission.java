@@ -1,6 +1,7 @@
 package me.edgan.redditslide.util;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
@@ -107,7 +108,8 @@ public final class RichtextSubmission {
     }
 
     /**
-     * Submits a self-post whose selftext is markdown plus inline images.
+     * Submits a self-post whose selftext is markdown plus inline images, then waits for Reddit to
+     * finish processing those images (see {@link RedditMediaProcessing}).
      *
      * @return the fullname ({@code t3_...}) of the created submission
      */
@@ -141,16 +143,30 @@ public final class RichtextSubmission {
 
         throwIfError(root);
 
+        String fullname = submissionFullname(root);
+        if (fullname == null) {
+            throw new RedditApiError("No submission returned by Reddit");
+        }
+        RedditMediaProcessing.awaitProcessed(client, fullname);
+        return fullname;
+    }
+
+    /**
+     * The created post's fullname from a submit reply, normalised to {@code t3_<id>}: {@code
+     * /api/submit} returns a bare {@code id} beside a prefixed {@code name}, while {@code
+     * submit_gallery_post} returns a prefixed {@code id} and no {@code name}.
+     */
+    @VisibleForTesting
+    public static @Nullable String submissionFullname(JsonNode root) {
         JsonNode data = root.path("json").path("data");
-        String name = data.path("name").asText(null);
-        if (name != null && !name.isEmpty()) {
-            return name;
+        for (String field : new String[] {"name", "id"}) {
+            String value = data.path(field).asText("");
+            if (!value.isEmpty()) {
+                return value.startsWith("t3_") ? value : "t3_" + value;
+            }
         }
         String id = findThingId(root, "t3_");
-        if (id != null) {
-            return "t3_" + id;
-        }
-        throw new RedditApiError("No submission returned by Reddit");
+        return id != null ? "t3_" + id : null;
     }
 
     /**
@@ -195,17 +211,20 @@ public final class RichtextSubmission {
     }
 
     /**
-     * Submits a Reddit gallery post from a list of uploaded media asset ids. The gallery endpoint
-     * takes a JSON body (not form-encoded), so this is sent with raw okhttp using the OAuth header
-     * borrowed from a JRAW request.
+     * Submits a Reddit gallery post from a list of uploaded media ids (the S3 keys returned by
+     * {@link RedditMediaUpload#uploadForGalleryMediaId}), then waits for Reddit to finish
+     * processing them (see {@link RedditMediaProcessing}). The gallery endpoint takes a JSON body
+     * (not form-encoded), so this is sent with raw okhttp using the OAuth header borrowed from a
+     * JRAW request.
      *
-     * @return the post permalink if Reddit returned one, otherwise {@code null}
+     * @return the post permalink, built from the post id if Reddit returned no url, otherwise
+     *     {@code null}
      */
     public static @Nullable String submitGallery(
             RedditClient client,
             String subreddit,
             String title,
-            List<String> assetIds,
+            List<String> mediaIds,
             @Nullable List<String> captions,
             boolean sendReplies,
             @Nullable String flairId)
@@ -228,7 +247,7 @@ public final class RichtextSubmission {
             payload.put("flair_id", flairId);
         }
         JSONArray items = new JSONArray();
-        for (int i = 0; i < assetIds.size(); i++) {
+        for (int i = 0; i < mediaIds.size(); i++) {
             String caption =
                     (captions != null && i < captions.size() && captions.get(i) != null)
                             ? captions.get(i)
@@ -236,7 +255,7 @@ public final class RichtextSubmission {
             JSONObject item = new JSONObject();
             item.put("caption", caption);
             item.put("outbound_url", "");
-            item.put("media_id", assetIds.get(i));
+            item.put("media_id", mediaIds.get(i));
             items.put(item);
         }
         payload.put("items", items);
@@ -270,12 +289,18 @@ public final class RichtextSubmission {
         JsonNode root = new ObjectMapper().readTree(body);
         throwIfError(root);
 
+        String fullname = submissionFullname(root);
+        if (fullname != null) {
+            RedditMediaProcessing.awaitProcessed(client, fullname);
+        }
+
         String url = root.path("json").path("data").path("url").asText(null);
         if (url != null && !url.isEmpty()) {
             return url;
         }
-        String id = findThingId(root, "t3_");
-        return id != null ? "t3_" + id : null;
+        return fullname != null
+                ? "reddit.com/r/" + subreddit + "/comments/" + fullname.substring(3)
+                : null;
     }
 
     private static void throwIfError(@Nullable JsonNode root) throws RedditApiError {
