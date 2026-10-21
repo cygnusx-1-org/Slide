@@ -4,6 +4,11 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+8.0.8 / 2026-10-21
+=============
+* Fixed Gallery posting is broken #314
+* Implemented Add ability to edit and remove subreddits from multi-reddits #313
+
 8.0.7 / 2026-10-3
 ============
 * Fixed Editing an existing comment sometimes doesn't show anything, but the input box #310
