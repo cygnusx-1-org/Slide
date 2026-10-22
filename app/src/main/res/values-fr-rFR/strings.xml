@@ -726,6 +726,7 @@
     <string name="settings_section_internal_viewers">Navigateurs internes</string>
     <string name="settings_section_custom_domains">Domaines personnalisés</string>
     <string name="settings_section_save_history">Sauvegarder l\'historique</string>
+    <string name="settings_section_manage_history">Gérer l\'historique</string>
     <string name="settings_section_clear_history">Effacer l\'historique</string>
     <string name="settings_section_data_saving_mode">Mode économie de données</string>
     <string name="settings_section_data_saving_quality">Qualité de l\'enregistrement des données</string>
@@ -1186,6 +1187,8 @@
     <string name="download_gallery">Télécharger la galerie</string>
     <string name="compose_message">Composer le message</string>
     <string name="mark_all_as_read">Tout marquer comme lu</string>
+    <string name="manage_subreddit_history">Gérer l\'historique des subreddits</string>
+    <string name="manage_subreddit_history_empty">Aucun subreddit dans l\'historique auquel vous n\'êtes pas abonné</string>
     <string name="clear_subreddit_history">Effacer l\'historique des subreddits</string>
     <string name="clear_submission_history">Effacer l\'historique des soumissions</string>
     <string name="alert_history_cleared">Historique effacé !</string>

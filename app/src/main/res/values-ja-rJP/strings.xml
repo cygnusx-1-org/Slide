@@ -712,6 +712,7 @@
     <string name="settings_section_internal_viewers">内部ビューアー</string>
     <string name="settings_section_custom_domains">カスタムドメイン</string>
     <string name="settings_section_save_history">履歴を保存</string>
+    <string name="settings_section_manage_history">履歴を管理</string>
     <string name="settings_section_clear_history">履歴を消去</string>
     <string name="settings_section_data_saving_mode">データ節約モード</string>
     <string name="settings_section_data_saving_quality">データを保存する品質</string>
@@ -1152,6 +1153,8 @@
     <string name="download_gallery">ギャラリーをダウンロード</string>
     <string name="compose_message">コメントを作成</string>
     <string name="mark_all_as_read">すべて既読にする</string>
+    <string name="manage_subreddit_history">サブレディット履歴を管理</string>
+    <string name="manage_subreddit_history_empty">履歴に、登録していないサブレディットはありません</string>
     <string name="clear_subreddit_history">サブレディット履歴を消去</string>
     <string name="clear_submission_history">投稿履歴を消去</string>
     <string name="alert_history_cleared">履歴を消去しました!</string>

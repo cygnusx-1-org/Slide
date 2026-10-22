@@ -719,6 +719,7 @@
     <string name="settings_section_internal_viewers">Beépített megtekintők</string>
     <string name="settings_section_custom_domains">Saját domain-ek</string>
     <string name="settings_section_save_history">Előzmények mentése</string>
+    <string name="settings_section_manage_history">Előzmények kezelése</string>
     <string name="settings_section_clear_history">Előzmények törlése</string>
     <string name="settings_section_data_saving_mode">Adattakarékos mód</string>
     <string name="settings_section_data_saving_quality">Minőség adattakarékos módban</string>
@@ -1169,6 +1170,8 @@
     <string name="download_gallery">Galéria letöltése</string>
     <string name="compose_message">Üzenet írása</string>
     <string name="mark_all_as_read">Összes megjelölése olvasottként</string>
+    <string name="manage_subreddit_history">Alreddit előzmények kezelése</string>
+    <string name="manage_subreddit_history_empty">Nincs olyan alreddit az előzményekben, amelyre nem iratkozott fel</string>
     <string name="clear_subreddit_history">Alreddit előzmények törlése</string>
     <string name="clear_submission_history">Bejegyzés-előzmények törlése</string>
     <string name="alert_history_cleared">Előzmények törölve!</string>

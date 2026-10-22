@@ -5,6 +5,11 @@ import android.widget.RelativeLayout;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SwitchCompat;
 import com.lusfold.androidkeyvaluestore.KVStore;
+import java.util.ArrayList;
+import java.util.List;
+import me.edgan.redditslide.CaseInsensitiveArrayList;
+import me.edgan.redditslide.HasSeen;
+import me.edgan.redditslide.LastComments;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.UserSubscriptions;
@@ -32,6 +37,8 @@ public class SettingsHistoryFragment {
                 context.requireViewById(R.id.settings_history_clearposts);
         final RelativeLayout clearSubsLayout =
                 context.requireViewById(R.id.settings_history_clearsubs);
+        final RelativeLayout manageSubsLayout =
+                context.requireViewById(R.id.settings_history_managesubs);
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // * Save history */
@@ -76,14 +83,53 @@ public class SettingsHistoryFragment {
         clearPostsLayout.setOnClickListener(
                 v -> {
                     KVStore.getInstance().clearTable();
+                    // The seen sets are loaded once and are what the post lists consult
+                    HasSeen.hasSeen.clear();
+                    HasSeen.seenTimes.clear();
+                    // Same for the comment counts the "new comments" badges are measured against
+                    if (LastComments.commentsSince != null) {
+                        LastComments.commentsSince.clear();
+                    }
                     showHistoryClearedDialog();
                 });
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        manageSubsLayout.setOnClickListener(v -> showManageSubsDialog());
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         clearSubsLayout.setOnClickListener(
                 v -> {
-                    UserSubscriptions.subscriptions.edit().remove("subhistory").apply();
+                    UserSubscriptions.clearHistory();
                     showHistoryClearedDialog();
                 });
+    }
+
+    private void showManageSubsDialog() {
+        final CaseInsensitiveArrayList unsubscribed = UserSubscriptions.getUnsubscribedSubredditHistory(context);
+        if (unsubscribed.isEmpty()) {
+            DialogUtil.showWithCardBackground(new AlertDialog.Builder(context)
+                    .setMessage(R.string.manage_subreddit_history_empty)
+                    .setPositiveButton(android.R.string.ok, null));
+            return;
+        }
+
+        final boolean[] checked = new boolean[unsubscribed.size()];
+        DialogUtil.showWithCardBackground(new AlertDialog.Builder(context)
+                .setTitle(R.string.manage_subreddit_history)
+                .setMultiChoiceItems(
+                        unsubscribed.toArray(new String[0]),
+                        checked,
+                        (dialog, which, isChecked) -> checked[which] = isChecked)
+                .setPositiveButton(
+                        R.string.btn_delete,
+                        (dialog, which) -> {
+                            final List<String> toRemove = new ArrayList<>();
+                            for (int i = 0; i < checked.length; i++) {
+                                if (checked[i]) {
+                                    toRemove.add(unsubscribed.get(i));
+                                }
+                            }
+                            UserSubscriptions.removeSubsFromHistory(toRemove);
+                        })
+                .setNegativeButton(R.string.btn_cancel, null));
     }
 
     private void showHistoryClearedDialog() {

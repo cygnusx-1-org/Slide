@@ -719,6 +719,7 @@
     <string name="settings_section_internal_viewers">Interna visare</string>
     <string name="settings_section_custom_domains">Anpassade domäner</string>
     <string name="settings_section_save_history">Spara historik</string>
+    <string name="settings_section_manage_history">Hantera historik</string>
     <string name="settings_section_clear_history">Rensa historik</string>
     <string name="settings_section_data_saving_mode">Databesparingsläge</string>
     <string name="settings_section_data_saving_quality">Kvalitet vid databesparing</string>
@@ -1169,6 +1170,8 @@
     <string name="download_gallery">Ladda ner galleriet</string>
     <string name="compose_message">Skriv meddelande</string>
     <string name="mark_all_as_read">Markera alla som lästa</string>
+    <string name="manage_subreddit_history">Hantera subreddit-historiken</string>
+    <string name="manage_subreddit_history_empty">Inga subreddits i historiken som du inte prenumererar på</string>
     <string name="clear_subreddit_history">Rensa subreddit-historiken</string>
     <string name="clear_submission_history">Rensa inläggshistoriken</string>
     <string name="alert_history_cleared">Historik rensad!</string>

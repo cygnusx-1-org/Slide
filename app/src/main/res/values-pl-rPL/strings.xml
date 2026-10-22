@@ -733,6 +733,7 @@
     <string name="settings_section_internal_viewers">Wewnętrzne oglądanie</string>
     <string name="settings_section_custom_domains">Niestandardowe domeny</string>
     <string name="settings_section_save_history">Zapisuj historię</string>
+    <string name="settings_section_manage_history">Zarządzaj historią</string>
     <string name="settings_section_clear_history">Wyczyść historię</string>
     <string name="settings_section_data_saving_mode">Tryb oszczędzania danych</string>
     <string name="settings_section_data_saving_quality">Jakość oszczędzania danych</string>
@@ -1203,6 +1204,8 @@
     <string name="download_gallery">Pobierz galerię</string>
     <string name="compose_message">Zredaguj wiadomość</string>
     <string name="mark_all_as_read">Oznacz wszystko jako przeczytane</string>
+    <string name="manage_subreddit_history">Zarządzaj historią subredditów</string>
+    <string name="manage_subreddit_history_empty">Brak subredditów w historii, których nie subskrybujesz</string>
     <string name="clear_subreddit_history">Wykasuj historię subredditów</string>
     <string name="clear_submission_history">Wykasuj historię postów</string>
     <string name="alert_history_cleared">Historia usunięta!</string>

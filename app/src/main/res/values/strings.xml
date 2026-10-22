@@ -755,6 +755,7 @@
     <string name="settings_section_internal_viewers">Internal viewers</string>
     <string name="settings_section_custom_domains">Custom domains</string>
     <string name="settings_section_save_history">Save history</string>
+    <string name="settings_section_manage_history">Manage history</string>
     <string name="settings_section_clear_history">Clear history</string>
     <string name="settings_section_data_saving_mode">Data saving mode</string>
     <string name="settings_section_data_saving_quality">Data saving quality</string>
@@ -1256,6 +1257,8 @@
     <string name="download_gallery">Download gallery</string>
     <string name="compose_message">Compose message</string>
     <string name="mark_all_as_read">Mark all as read</string>
+    <string name="manage_subreddit_history">Manage subreddit history</string>
+    <string name="manage_subreddit_history_empty">No subreddits in your history that you are not subscribed to</string>
     <string name="clear_subreddit_history">Clear subreddit history</string>
     <string name="clear_submission_history">Clear submission history</string>
     <string name="alert_history_cleared">History cleared!</string>
