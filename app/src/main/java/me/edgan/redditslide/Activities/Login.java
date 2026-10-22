@@ -58,6 +58,7 @@ import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.OAuthLoginHelper;
+import net.dean.jraw.RedditClient;
 import net.dean.jraw.http.NetworkException;
 import net.dean.jraw.http.RestResponse;
 import net.dean.jraw.http.oauth.Credentials;
@@ -80,12 +81,16 @@ public class Login extends BaseActivityAnim {
     CaseInsensitiveArrayList subNames;
     @SuppressWarnings("NullAway.Init") // assigned in onCreate
     String authorizationUrl;
-    @SuppressWarnings("NullAway.Init") // assigned in onCreate
-    OAuthHelper oAuthHelper;
-    /** The CSRF state JRAW embedded in the authorize URL, validated on the redirect. */
+    /**
+     * The CSRF state JRAW embedded in the authorize URL, validated on the redirect. Cleared once a
+     * redirect carrying it is accepted, so the attempt can only be exchanged once.
+     */
     @Nullable String expectedState;
 
     private static final String LOGIN_TAG = "Log into Reddit";
+
+    private static final String SAVED_AUTHORIZATION_URL = "authorizationUrl";
+    private static final String SAVED_EXPECTED_STATE = "expectedState";
 
     /**
      * Host of the page currently loaded in the login WebView, written on the UI thread from
@@ -270,14 +275,27 @@ public class Login extends BaseActivityAnim {
             return;
         }
 
-        oAuthHelper = Authentication.reddit.getOAuthHelper();
-        java.net.URL authUrl = oAuthHelper.getAuthorizationUrl(credentials, true, scopes);
-        // Capture the CSRF state JRAW embedded in the authorize URL so the redirect can be validated
-        // (via OAuthLoginHelper.classifyRedirect) before handing off to the token exchange.
-        expectedState = Uri.parse(authUrl.toExternalForm()).getQueryParameter("state");
-        authorizationUrl = authUrl.toExternalForm();
-        authorizationUrl = authorizationUrl.replace("www.", "i.");
-        authorizationUrl = authorizationUrl.replace("%3A%2F%2Fi", "://www");
+        String savedUrl =
+                savedInstance == null ? null : savedInstance.getString(SAVED_AUTHORIZATION_URL);
+        String savedState =
+                savedInstance == null ? null : savedInstance.getString(SAVED_EXPECTED_STATE);
+        if (savedUrl != null && savedState != null) {
+            // Recreated — a config change outside configChanges, or the process died while the
+            // user was in the browser. Keep the attempt already open there: a new authorize URL
+            // would carry a new state and reject that attempt's redirect.
+            authorizationUrl = savedUrl;
+            expectedState = savedState;
+        } else {
+            OAuthHelper oAuthHelper = Authentication.reddit.getOAuthHelper();
+            java.net.URL authUrl = oAuthHelper.getAuthorizationUrl(credentials, true, scopes);
+            // Capture the CSRF state JRAW embedded in the authorize URL so the redirect can be
+            // validated (via OAuthLoginHelper.classifyRedirect) before handing off to the token
+            // exchange.
+            expectedState = Uri.parse(authUrl.toExternalForm()).getQueryParameter("state");
+            authorizationUrl = authUrl.toExternalForm();
+            authorizationUrl = authorizationUrl.replace("www.", "i.");
+            authorizationUrl = authorizationUrl.replace("%3A%2F%2Fi", "://www");
+        }
         logV("Auth URL: " + authorizationUrl);
         final WebView webView = (WebView) findViewById(R.id.web);
         webView.clearCache(true);
@@ -570,6 +588,17 @@ public class Login extends BaseActivityAnim {
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Kept in the saved state, not just in fields, so a redirect delivered after the process
+        // died can still be matched to the attempt that caused it.
+        if (expectedState != null) {
+            outState.putString(SAVED_AUTHORIZATION_URL, authorizationUrl);
+            outState.putString(SAVED_EXPECTED_STATE, expectedState);
+        }
+    }
+
     /**
      * Decides what to do with an OAuth redirect URL via {@link OAuthLoginHelper#classifyRedirect}:
      * exchange a valid code (after stopping/hiding the WebView, when present), or surface a "Login
@@ -578,6 +607,11 @@ public class Login extends BaseActivityAnim {
      * ({@code webView} non-null) and the Custom Tab ({@code webView} null) paths.
      */
     private void handleOAuthRedirect(String url, @Nullable WebView webView) {
+        if (expectedState == null) {
+            // This attempt's redirect was already accepted and is being exchanged. A replay, or a
+            // second delivery of it, must not start another exchange or cancel the one running.
+            return;
+        }
         Uri uri = Uri.parse(url);
         String code;
         String state;
@@ -596,12 +630,13 @@ public class Login extends BaseActivityAnim {
         switch (result.action) {
             case EXCHANGE_CODE:
                 logV("Auth code received, exchanging for token");
+                expectedState = null;
                 if (webView != null) {
                     // Prevent the WebView from making the HTTP call to the redirect URI itself.
                     webView.stopLoading();
                     webView.setVisibility(View.GONE);
                 }
-                new UserChallengeTask(oAuthHelper, credentials).execute(url);
+                exchangeCode(url);
                 break;
             case ACCESS_DENIED:
                 logE("OAuth redirect: access denied");
@@ -627,6 +662,16 @@ public class Login extends BaseActivityAnim {
                 // Not an OAuth redirect (a normal page) — keep loading.
                 break;
         }
+    }
+
+    /** Exchanges an accepted redirect {@code url} for tokens through the current client. */
+    private void exchangeCode(String url) {
+        RedditClient reddit = Authentication.reddit;
+        if (reddit == null) {
+            showLoginFailedDialog();
+            return;
+        }
+        new UserChallengeTask(reddit.getOAuthHelper(), credentials).execute(url);
     }
 
     private void openLoginInCustomTab() {
@@ -851,8 +896,27 @@ public class Login extends BaseActivityAnim {
         protected @Nullable OAuthData doInBackground(String... params) {
             logV("doInBackground: processing challenge URL: " + redactCode(params[0]));
             try {
+                // JRAW checks the redirect's state against the last one it issued, which it keeps
+                // only in memory, so it has lost this attempt whenever the attempt outlived it: the
+                // activity was recreated, the process died while the user was in the browser, or
+                // Authentication rebuilt the client. So re-arm the helper and hand it the redirect
+                // under the state it now expects. The redirect already matched this attempt's own
+                // state in classifyRedirect, and that is the check that stops a forged one. Arming
+                // here, right before the check, leaves a token refresh running on another thread
+                // (the cold-start one is still in flight after process death) no gap in which to
+                // mark the helper authorized and fail the challenge. The URL itself is not used.
+                String armedState =
+                        Uri.parse(
+                                        mOAuthHelper
+                                                .getAuthorizationUrl(mCredentials, true)
+                                                .toExternalForm())
+                                .getQueryParameter("state");
                 logV("Calling onUserChallenge...");
-                OAuthData oAuthData = mOAuthHelper.onUserChallenge(params[0], mCredentials);
+                OAuthData oAuthData =
+                        mOAuthHelper.onUserChallenge(
+                                OAuthLoginHelper.withState(
+                                        params[0], MiscUtil.orEmpty(armedState)),
+                                mCredentials);
                 if (oAuthData != null) {
                     logV("OAuthData received successfully");
                     logV("Authenticating with Reddit...");

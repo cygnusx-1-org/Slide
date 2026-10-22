@@ -4,6 +4,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import java.io.IOException;
+import java.util.regex.Matcher;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jspecify.annotations.NullMarked;
@@ -213,6 +214,16 @@ public final class OAuthLoginHelper {
             return new RedirectResult(RedirectAction.OAUTH_ERROR, null, error);
         }
         return new RedirectResult(RedirectAction.NONE, null, null);
+    }
+
+    /**
+     * Returns the redirect {@code url} with every {@code state} query parameter set to
+     * {@code state}, leaving the rest of the URL as it was. Only ever handed a state JRAW generated,
+     * which is base-32, so the value needs no encoding.
+     */
+    @NonNull
+    public static String withState(String url, String state) {
+        return url.replaceAll("([?&]state=)[^&#]*", "$1" + Matcher.quoteReplacement(state));
     }
 
     /**

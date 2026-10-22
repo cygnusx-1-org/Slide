@@ -164,6 +164,44 @@ public class OAuthLoginHelperTest {
         assertEquals("abc123", r.authCode);
     }
 
+    // ---------- Re-arming JRAW's state ----------
+
+    @Test
+    public void withState_replacesStateAndKeepsTheRest() {
+        assertEquals(
+                "redreader://rr_oauth_redir?state=newstate&code=abc123",
+                OAuthLoginHelper.withState(
+                        "redreader://rr_oauth_redir?state=" + EXPECTED_STATE + "&code=abc123",
+                        "newstate"));
+    }
+
+    @Test
+    public void withState_replacesStateAfterOtherParamsAndBeforeFragment() {
+        assertEquals(
+                "https://127.0.0.1:65023/authorize_callback?code=abc123&state=newstate#_",
+                OAuthLoginHelper.withState(
+                        "https://127.0.0.1:65023/authorize_callback?code=abc123&state="
+                                + EXPECTED_STATE
+                                + "#_",
+                        "newstate"));
+    }
+
+    @Test
+    public void withState_replacesEveryStateParam() {
+        assertEquals(
+                "slide://localhost?state=newstate&code=abc123&state=newstate",
+                OAuthLoginHelper.withState(
+                        "slide://localhost?state=a&code=abc123&state=b", "newstate"));
+    }
+
+    @Test
+    public void withState_leavesParamsThatOnlyEndInStateAlone() {
+        assertEquals(
+                "slide://localhost?xstate=keep&code=abc123&state=newstate",
+                OAuthLoginHelper.withState(
+                        "slide://localhost?xstate=keep&code=abc123&state=old", "newstate"));
+    }
+
     // ---------- Error-page heuristic ----------
 
     @Test
