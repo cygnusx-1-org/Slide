@@ -37,8 +37,13 @@ public class HttpUtil {
             this.mp4 = mp4;
         }
 
+        /**
+         * Whether this plays as a video rather than a still image. Native video uploads (e.g. from
+         * a phone) come back as "video/mp4", not a gif type, and their link is the mp4 itself —
+         * handing that to the image loader shows a black screen. Issue #315.
+         */
         public boolean isGif() {
-            return type.contains("gif");
+            return type.contains("gif") || type.startsWith("video/");
         }
 
         /** Best url for gif playback: the mp4 rendition when the API provides one. */
