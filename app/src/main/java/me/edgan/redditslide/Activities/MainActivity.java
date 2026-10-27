@@ -1354,6 +1354,11 @@ public class MainActivity extends BaseActivity
     @Override
     public void onResume() {
         super.onResume();
+        // Inbox is translucent, so this activity is only paused under it and the observer keeps
+        // setting the badge while it is covered -- but those sets never reach the screen, and an
+        // open drawer showed the pre-read count until it was closed and reopened. Setting it again
+        // here, with the window back in front, is what gets the stored count drawn.
+        updateInboxBadge(InboxCount.get(Reddit.appRestart));
         if (Authentication.isLoggedIn
                 && Authentication.didOnline
                 && NetworkUtil.isConnected(MainActivity.this)
