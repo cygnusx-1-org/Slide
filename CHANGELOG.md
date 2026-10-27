@@ -4,6 +4,12 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+8.0.9 / 2026-10-27
+=============
+* Fixed Inbox count in left sidebar doesn't reload on return from the Inbox #316
+* Fixed Imgur video link in a Reddit selftext post just gives a black screen #315
+* Fixed OAuth login failing after Login was recreated or its process died
+
 8.0.8 / 2026-10-21
 =============
 * Fixed Gallery posting is broken #314
