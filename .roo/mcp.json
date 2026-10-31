@@ -2,7 +2,7 @@
   "mcpServers": {
     "android": {
       "command": "/usr/bin/uv",
-      "args": ["--directory", "/home/ngrennan/git/android-mcp-server.orig", "run", "server.py"]
+      "args": ["--directory", "/home/t3code/git/android-mcp-server.orig", "run", "server.py"]
     }
   }
 }
