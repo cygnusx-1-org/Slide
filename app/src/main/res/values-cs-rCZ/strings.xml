@@ -733,6 +733,7 @@
     <string name="settings_section_internal_viewers">Interní prohlížeče</string>
     <string name="settings_section_custom_domains">Vlastní domény</string>
     <string name="settings_section_save_history">Uložit historii</string>
+    <string name="settings_section_manage_history">Spravovat historii</string>
     <string name="settings_section_clear_history">Smazat historii</string>
     <string name="settings_section_data_saving_mode">Úsporný datový režim</string>
     <string name="settings_section_data_saving_quality">Kvalita při úspoře dat</string>
@@ -1203,6 +1204,8 @@
     <string name="download_gallery">Stáhnout galerii</string>
     <string name="compose_message">Napsat zprávu</string>
     <string name="mark_all_as_read">Označit vše jako přečtené</string>
+    <string name="manage_subreddit_history">Spravovat historii subredditů</string>
+    <string name="manage_subreddit_history_empty">V historii nejsou žádné subreddity, které neodebíráte</string>
     <string name="clear_subreddit_history">Vymazat historii subredditů</string>
     <string name="clear_submission_history">Vymazat historii příspěvků</string>
     <string name="alert_history_cleared">Historie vymazána!</string>
