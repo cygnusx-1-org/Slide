@@ -252,6 +252,8 @@ public class CommentsScreenSingle extends BaseActivityAnim implements HibernateS
             if (Authentication.reddit == null) {
                 return null;
             }
+            // As in SubmissionComments: a cold start from a link gets here before a guest's token.
+            Authentication.awaitPendingAuth();
 
             try {
                 final Submission s = Authentication.reddit.getSubmission(params[0]);

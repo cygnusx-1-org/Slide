@@ -65,6 +65,8 @@ public class SettingsCommentsFragment {
                 context.requireViewById(R.id.settings_comments_collapseStickyComment);
         final SwitchCompat commentsCollapseBlockedUsersSwitch =
                 context.requireViewById(R.id.settings_comments_collapseBlockedUsers);
+        final SwitchCompat commentsUseOldLoadMoreSwitch =
+                context.requireViewById(R.id.settings_comments_useOldLoadMoreComments);
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // * Display */
@@ -245,6 +247,14 @@ public class SettingsCommentsFragment {
                         editSharedBooleanPreference(
                                 SettingValues.PREF_COLLAPSE_COMMENTS, true);
                     }
+                });
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        commentsUseOldLoadMoreSwitch.setChecked(SettingValues.useOldLoadMoreComments);
+        commentsUseOldLoadMoreSwitch.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> {
+                    SettingValues.useOldLoadMoreComments = isChecked;
+                    editSharedBooleanPreference(
+                            SettingValues.PREF_USE_OLD_LOAD_MORE_COMMENTS, isChecked);
                 });
     }
 

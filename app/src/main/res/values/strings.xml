@@ -64,6 +64,14 @@
         <item quantity="one">cmt</item>
         <item quantity="other">cmts</item>
     </plurals>
+    <plurals name="err_rate_limited_seconds">
+        <item quantity="one">Reddit\'s request limit is almost used up. Try loading more comments again in %d second.</item>
+        <item quantity="other">Reddit\'s request limit is almost used up. Try loading more comments again in %d seconds.</item>
+    </plurals>
+    <plurals name="err_rate_limited_minutes">
+        <item quantity="one">Reddit\'s request limit is almost used up. Try loading more comments again in %d minute.</item>
+        <item quantity="other">Reddit\'s request limit is almost used up. Try loading more comments again in %d minutes.</item>
+    </plurals>
 
     <!-- Theme settings -->
     <string name="theme_light">Light</string>
@@ -770,6 +778,8 @@
     <string name="settings_comments_collapse_sticky">Always fully collapse the sticky comment</string>
     <string name="settings_comments_collapse_blocked_users">Collapse comments from blocked users</string>
     <string name="settings_comments_collapse_blocked_users_description">Enables Fully collapse comments</string>
+    <string name="settings_comments_old_load_more">Use Old Load More Comments Method</string>
+    <string name="settings_comments_old_load_more_description">Uses far fewer requests, but Load More Comments fails if Reddit blocks it for you</string>
     <string name="settings_backup_occurs">Backup will occur at %1$s</string>
     <string name="settings_backup_none">No subreddits will back up</string>
     <string name="settings_backup_will_backup">\u0020will back up</string>

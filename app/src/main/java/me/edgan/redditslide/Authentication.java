@@ -20,8 +20,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import me.edgan.redditslide.Notifications.TokenRefreshReceiver;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.LogUtil;
@@ -749,6 +753,36 @@ public class Authentication {
             return reddit != null && reddit.isAuthenticated();
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    /** Longer than the token request's own connect and read timeouts. */
+    private static final long AUTH_WAIT_SECONDS = 25;
+
+    /**
+     * Blocks until the authentication already queued has run, if the client has no token yet.
+     *
+     * <p>A cold start straight into a screen, from a link to a thread for instance, makes its first
+     * request while the token request the Application queued is still out. For an account that
+     * costs nothing, since its token comes from the cache, but a guest's token is a network round
+     * trip every time, and Reddit answers a request without one with a 403. Every auth task runs on
+     * {@link #REAUTH_EXECUTOR} in order, so an empty task queued behind them is done once they are.
+     *
+     * <p>Call it off the main thread, and never from that executor, which would wait on itself.
+     */
+    public static void awaitPendingAuth() {
+        if (reddit == null || isReauthed()) {
+            return;
+        }
+        FutureTask<Void> barrier = new FutureTask<>(() -> null);
+        REAUTH_EXECUTOR.execute(barrier);
+        try {
+            barrier.get(AUTH_WAIT_SECONDS, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException | TimeoutException e) {
+            // The request goes ahead and fails the way it would have without the wait.
+            LogUtil.e(e, "Gave up waiting for authentication");
         }
     }
 

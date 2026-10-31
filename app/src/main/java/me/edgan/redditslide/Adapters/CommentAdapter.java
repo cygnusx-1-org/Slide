@@ -67,6 +67,7 @@ import me.edgan.redditslide.util.AnimatorUtil;
 import me.edgan.redditslide.util.AsyncLoadMoreTask;
 import me.edgan.redditslide.util.CommentRecovery;
 import me.edgan.redditslide.util.CommentStateUtil;
+import me.edgan.redditslide.util.CommentTreeEditor;
 import me.edgan.redditslide.util.DialogUtil;
 import me.edgan.redditslide.util.DisplayUtil;
 import me.edgan.redditslide.util.FileUtil;
@@ -767,7 +768,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             final MoreChildItem baseNode = (MoreChildItem) currentComments.get(nextPos);
             final Integer moreCount = baseNode.children.getCount();
-            if (!baseNode.children.getChildrenIds().isEmpty()
+            if (baseNode.loading) {
+                holder.content.setText(R.string.comment_loading_more);
+            } else if (!baseNode.children.getChildrenIds().isEmpty()
                     || (moreCount != null && moreCount > 0)) {
                 holder.content.setText(R.string.comment_load_more_number_unknown);
             } else {
@@ -782,7 +785,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
 
             final View progress = holder.loading;
-            progress.setVisibility(View.GONE);
+            progress.setVisibility(baseNode.loading ? View.VISIBLE : View.GONE);
             final int finalNextPos = nextPos;
             holder.content.setOnClickListener(
                     new OnSingleClickListener() {
@@ -795,7 +798,8 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                 + baseNode.comment.getComment().getId()
                                                 + "?context=0";
                                 OpenRedditLink.openUrl(mContext, toGoTo, true);
-                            } else if (progress.getVisibility() == View.GONE) {
+                            } else if (!baseNode.loading) {
+                                baseNode.loading = true;
                                 progress.setVisibility(View.VISIBLE);
                                 holder.content.setText(R.string.comment_loading_more);
                                 currentLoading =
@@ -808,8 +812,18 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                 CommentAdapter.this,
                                                 listView,
                                                 currentComments,
-                                                keys);
-                                currentLoading.execute(baseNode);
+                                                keys,
+                                                baseNode);
+                                // Not the shared serial executor: a page of listings would hold up
+                                // every other AsyncTask in the app, votes included, until it's done.
+                                // The old route stays serial: JRAW inserts its replies into the tree
+                                // off the main thread, so two of those loads must not overlap.
+                                if (dataSet.getMoreCommentsSession().useOldMethod) {
+                                    currentLoading.execute(baseNode);
+                                } else {
+                                    currentLoading.executeOnExecutor(
+                                            AsyncTask.THREAD_POOL_EXECUTOR, baseNode);
+                                }
                             }
                         }
                     });
@@ -1736,7 +1750,8 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                 } else {
                     int childNumber = getChildNumber(baseNode);
-                    if (childNumber > 0) {
+                    // A lone "Continue this thread" counts for nothing but still has a row to hide.
+                    if (childNumber > 0 || (baseNode.hasMoreComments() && dataSet.online)) {
                         hideAll(baseNode, holder.getBindingAdapterPosition() + 1);
                         if (!hiddenPersons.contains(comment.getFullName())) {
                             hiddenPersons.add(comment.getFullName());
@@ -1787,16 +1802,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return cached;
         }
 
-        int i = 0;
-        for (CommentNode ignored : user.walkTree()) {
-            i++;
-            if (ignored.hasMoreComments() && dataSet.online) {
-                i++;
-            }
-        }
-
-        childCountCache.put(key, i - 1);
-        return i - 1;
+        int total = CommentTreeEditor.totalReplies(user, dataSet.online);
+        childCountCache.put(key, total);
+        return total;
     }
 
     @Override
@@ -1823,6 +1831,23 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return 2;
         } else {
             return 3 + (currentComments.size() - hidden.size());
+        }
+    }
+
+    /**
+     * Keeps rows loaded under a placeholder hidden if its comment was collapsed while they loaded.
+     * The placeholder's own entry goes with it, or the row count is off by one for good.
+     */
+    public void inheritHidden(
+            String placeholderName, boolean placeholderStays, List<CommentObject> rows) {
+        if (!hidden.contains(placeholderName)) {
+            return;
+        }
+        if (!placeholderStays) {
+            hidden.remove(placeholderName);
+        }
+        for (CommentObject row : rows) {
+            hidden.add(row.getName());
         }
     }
 

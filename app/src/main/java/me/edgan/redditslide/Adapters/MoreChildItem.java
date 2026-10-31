@@ -7,6 +7,9 @@ import net.dean.jraw.models.MoreChildren;
 public class MoreChildItem extends CommentObject {
     public MoreChildren children;
 
+    /** Outlives the row: a rebind mid-load must neither offer the tap again nor lose the spinner. */
+    public boolean loading;
+
     @Override
     public boolean isComment() {
         return false;

@@ -25,6 +25,7 @@ import me.edgan.redditslide.util.CommentLimit;
 import me.edgan.redditslide.util.CommentVideoPreview;
 import me.edgan.redditslide.util.FlairEmojiUtil;
 import me.edgan.redditslide.util.MiscUtil;
+import me.edgan.redditslide.util.MoreCommentsSession;
 import me.edgan.redditslide.util.NetworkUtil;
 import me.edgan.redditslide.util.SubmissionParser;
 import net.dean.jraw.http.RestResponse;
@@ -72,6 +73,8 @@ public class SubmissionComments {
     public LoadData mLoadData;
     public boolean online = true;
     int contextNumber = 5;
+    private final MoreCommentsSession moreCommentsSession =
+            new MoreCommentsSession(SettingValues.useOldLoadMoreComments);
 
     /**
      * A thread that is already in hand, rather than one to be fetched.
@@ -146,6 +149,14 @@ public class SubmissionComments {
         this.context = context;
         this.refreshLayout = layout;
         this.contextNumber = contextNumber;
+    }
+
+    public MoreCommentsSession getMoreCommentsSession() {
+        return moreCommentsSession;
+    }
+
+    public CommentSort getSorting() {
+        return defaultSorting;
     }
 
     public void cancelLoad() {
@@ -285,10 +296,14 @@ public class SubmissionComments {
                                 .focus(context)
                                 .context(contextNumber);
             }
+            // Opened from a link on a cold start, a guest's thread would otherwise be asked for
+            // before there is a token to ask with, and stay blank.
+            Authentication.awaitPendingAuth();
             try {
 
                 JsonNode node = getSubmissionNode(builder.build());
                 submission = SubmissionSerializer.withComments(node, defaultSorting);
+                moreCommentsSession.onThreadReloaded();
                 if (!single && SettingValues.hibernateActive()) {
                     // Keep the whole thread on disk, so reopening the app can put it straight back
                     // on screen instead of fetching it again -- which is a wait, a progress bar,

@@ -909,4 +909,66 @@
             android:textColorHint="?attr/fontColor" />
     </RelativeLayout>
 
+    <TextView
+        android:id="@+id/settings_comments_otherHeader"
+        style="@style/TextAppearance.AppCompat.Body2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:paddingTop="16dp"
+        android:tag="label"
+        android:text="@string/settings_section_other"
+        android:textColor="?attr/colorAccent" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="56dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:background="?android:selectableItemBackground"
+        android:paddingBottom="8dp"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp">
+
+        <LinearLayout
+            android:id="@+id/settings_comments_useOldLoadMoreCommentsText"
+            android:layout_marginEnd="64dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_comments_old_load_more"
+                android:textColor="?attr/fontColor"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha=".86"
+                android:text="@string/settings_comments_old_load_more_description"
+                android:textColor="?attr/fontColor"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/settings_comments_useOldLoadMoreComments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/settings_comments_useOldLoadMoreCommentsText"
+            android:layout_alignBottom="@id/settings_comments_useOldLoadMoreCommentsText"
+            android:paddingEnd="16dp"
+            android:backgroundTint="?attr/tintColor"
+            android:button="@null"
+            android:buttonTint="?attr/tintColor"
+            android:hapticFeedbackEnabled="true"
+            android:textColor="?attr/fontColor"
+            android:textColorHint="?attr/fontColor" />
+    </RelativeLayout>
+
 </LinearLayout>

@@ -32,6 +32,7 @@ import me.edgan.redditslide.Flair.RichFlairParser;
 import me.edgan.redditslide.R;
 import me.edgan.redditslide.Reddit;
 import net.dean.jraw.models.CommentNode;
+import net.dean.jraw.models.CommentSort;
 import net.dean.jraw.models.MoreChildren;
 import org.jspecify.annotations.NullMarked;
 
@@ -49,6 +50,9 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
 
     private ArrayList<CommentObject> finalData = new ArrayList<>();
     @Nullable private MoreChildItem targetItem;
+    @Nullable private MoreCommentsResult focusedResult;
+    @Nullable private MoreCommentsSession session;
+    private List<CommentNode> focusedNodes = new ArrayList<>();
 
     public AsyncLoadMoreTask(
             int dataPos,
@@ -58,7 +62,8 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
             CommentAdapter adapter,
             RecyclerView listView,
             ArrayList<CommentObject> currentComments,
-            HashMap<String, Integer> keys) {
+            HashMap<String, Integer> keys,
+            MoreChildItem item) {
         this.holder = holder;
         this.dataPos = dataPos;
         this.fullname = fullname;
@@ -67,12 +72,44 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
         this.listView = listView;
         this.currentComments = currentComments;
         this.keys = keys;
+        this.targetItem = item;
+    }
+
+    /** The row's flag has to clear on every way out, or the placeholder ignores taps for good. */
+    private void finishLoading() {
+        adapter.currentLoading = null;
+        if (targetItem != null) {
+            targetItem.loading = false;
+        }
+    }
+
+    @Override
+    protected void onCancelled() {
+        finishLoading();
+        forgetUnappliedListing();
+    }
+
+    /**
+     * A parent listing whose replies were dropped found nothing that's on screen, so the next load
+     * has to be free to list the parent again instead of fetching every id on its own.
+     */
+    private void forgetUnappliedListing() {
+        if (session != null
+                && targetItem != null
+                && focusedResult instanceof MoreCommentsResult.Loaded
+                && ((MoreCommentsResult.Loaded) focusedResult).getListedParent()) {
+            session.unmarkListed(MiscUtil.orEmpty(targetItem.comment.getComment().getId()));
+        }
     }
 
     @Override
     public void onPostExecute(@Nullable Integer data) {
-        adapter.currentLoading = null;
+        finishLoading();
         if (isCancelled()) {
+            return;
+        }
+        if (focusedResult != null) {
+            applyFocusedResult(focusedResult);
             return;
         }
         if (data == null) {
@@ -87,7 +124,6 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
             return;
         }
 
-        final int itemsToAdd = data;
         ((Activity) mContext)
                 .runOnUiThread(
                         () -> {
@@ -102,28 +138,116 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
                                 return;
                             }
 
-                            String placeholderKey = target.getName();
-                            currentComments.remove(currentDataPos);
-                            keys.remove(placeholderKey);
-
-                            if (itemsToAdd > 0) {
-                                currentComments.addAll(currentDataPos, finalData);
-                                for (int i = 0; i < finalData.size(); i++) {
-                                    keys.put(finalData.get(i).getName(), currentDataPos + i);
-                                }
-                            }
-                            for (int i = currentDataPos + (itemsToAdd > 0 ? finalData.size() : 0);
-                                 i < currentComments.size();
-                                 i++) {
-                                keys.put(currentComments.get(i).getName(), i);
-                            }
-
-                            if (itemsToAdd > 0) {
-                                listView.setItemAnimator(new SlideRightAlphaAnimator());
-                            }
-                            adapter.invalidatePositionCache();
-                            adapter.notifyDataSetChanged();
+                            replacePlaceholder(currentDataPos, target, false);
                         });
+    }
+
+    /**
+     * Puts {@link #finalData} where the placeholder is. Tree order is every existing reply, then
+     * the new ones, then whatever's left to load, so new rows go directly before a placeholder that
+     * stays.
+     */
+    private void replacePlaceholder(int position, MoreChildItem target, boolean placeholderStays) {
+        String placeholderKey = target.getName();
+        adapter.inheritHidden(placeholderKey, placeholderStays, finalData);
+        if (!placeholderStays) {
+            currentComments.remove(position);
+            keys.remove(placeholderKey);
+        }
+
+        currentComments.addAll(position, finalData);
+        for (int i = position; i < currentComments.size(); i++) {
+            keys.put(currentComments.get(i).getName(), i);
+        }
+
+        if (!finalData.isEmpty()) {
+            listView.setItemAnimator(new SlideRightAlphaAnimator());
+        }
+        adapter.invalidatePositionCache();
+        adapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Applied here rather than in doInBackground so the tree only ever changes on the main thread,
+     * where the rows and the "+N" counts read it, and a cancelled load leaves it untouched. The
+     * rows hold the tree's own nodes, so a collapse and re-expand finds the same state.
+     */
+    private void applyFocusedResult(MoreCommentsResult result) {
+        final MoreChildItem target = targetItem;
+        int position = findPlaceholderPosition();
+        // A refresh swapped the list while this was loading; these replies belong to the old tree.
+        if (target == null || position < 0 || currentComments != adapter.currentComments) {
+            Log.w(LogUtil.getTag(), "Target MoreChildItem no longer in list; nothing to apply.");
+            forgetUnappliedListing();
+            resetLoadingIndicator();
+            return;
+        }
+
+        CommentNode parent = target.comment;
+        int previous = CommentTreeEditor.pendingReplies(parent);
+        List<String> remaining = result.getRemainingIds();
+        String parentName = MiscUtil.orEmpty(parent.getComment().getFullName());
+
+        if (result instanceof MoreCommentsResult.Failed) {
+            // Ids found to be gone before the failure needn't be asked for again.
+            if (!remaining.isEmpty() && remaining.size() < target.children.getChildrenIds().size()) {
+                target.children = CommentTreeEditor.newMore(remaining, previous, parentName);
+                CommentTreeEditor.setMore(parent, target.children);
+            }
+            resetLoadingIndicator();
+            return;
+        }
+
+        MoreChildren more = null;
+        if (!remaining.isEmpty()) {
+            int loaded = 0;
+            for (CommentObject row : finalData) {
+                if (row.isComment()) {
+                    loaded++;
+                }
+            }
+            Integer redditCount = ((MoreCommentsResult.Loaded) result).getRemainingCount();
+            more =
+                    CommentTreeEditor.newMore(
+                            remaining,
+                            redditCount != null ? redditCount : Math.max(0, previous - loaded),
+                            parentName);
+            target.children = more;
+        }
+        // Into the existing list, which every row of this parent already shares.
+        parent.getChildren().addAll(focusedNodes);
+        CommentTreeEditor.setMore(parent, more);
+        replacePlaceholder(position, target, more != null);
+    }
+
+    /** Separate so a test can load from fixtures instead of the network. */
+    protected FocusedListingFetcher newFetcher(CommentNode parent, CommentSort sort) {
+        return new RedditFocusedListingFetcher(
+                MiscUtil.idFromFullname(parent.getSubmissionName()), sort);
+    }
+
+    private int loadFocused(MoreChildItem item) throws Exception {
+        CommentNode parent = item.comment;
+        CommentSort sort = adapter.dataSet.getSorting();
+        session = adapter.dataSet.getMoreCommentsSession();
+        MoreCommentsLoader loader = new MoreCommentsLoader(session, newFetcher(parent, sort));
+        List<String> ids = item.children.getChildrenIds();
+        MoreCommentsResult result =
+                parent.getDepth() == 0
+                        ? loader.loadTopLevel(ids)
+                        : loader.loadReplies(MiscUtil.orEmpty(parent.getComment().getId()), ids);
+        focusedResult = result;
+
+        if (result instanceof MoreCommentsResult.Failed) {
+            if (!isCancelled()) {
+                showLoadFailedDialog(((MoreCommentsResult.Failed) result).getCause());
+            }
+            return 0;
+        }
+        focusedNodes =
+                CommentTreeEditor.buildChildren(
+                        parent, ((MoreCommentsResult.Loaded) result).getComments(), sort);
+        return focusedNodes.isEmpty() ? 0 : appendExpandedNodes(parent, focusedNodes);
     }
 
     private void resetLoadingIndicator() {
@@ -198,11 +322,14 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
         int itemsAddedCount = 0;
         if (params.length > 0) {
             MoreChildItem moreChildItem = params[0];
-            targetItem = moreChildItem;
             CommentNode parentNode = moreChildItem.comment;
             MoreChildren moreChildren = moreChildItem.children;
 
             try {
+                if (!adapter.dataSet.getMoreCommentsSession().useOldMethod) {
+                    return loadFocused(moreChildItem);
+                }
+
                 if (Authentication.reddit == null) {
                     Log.e(LogUtil.getTag(), "Authentication.reddit is null in AsyncLoadMoreTask");
                     return null;
@@ -234,51 +361,68 @@ public class AsyncLoadMoreTask extends AsyncTask<MoreChildItem, Void, Integer> {
 
             } catch (Exception e) {
                 Log.e(LogUtil.getTag(), "Cannot load more comments for node " + parentNode.getComment().getId(), e);
-                Writer writer = new StringWriter();
-                PrintWriter printWriter = new PrintWriter(writer);
-                e.printStackTrace(printWriter);
-                String stacktrace = writer.toString().replace(";", ",");
-
-                final Handler mHandler = new Handler(Looper.getMainLooper());
-                mHandler.post(
-                        () -> {
-                            try {
-                                // Default error messages
-                                String message = mContext.getString(R.string.err_connection_failed_msg);
-                                String title = mContext.getString(R.string.err_title);
-                                String positiveButtonText = mContext.getString(R.string.btn_ok);
-
-                                // Specific error handling based on stacktrace
-                                if (stacktrace.contains("UnknownHostException")
-                                        || stacktrace.contains("SocketTimeoutException")
-                                        || stacktrace.contains("ConnectException")) {
-                                    message = mContext.getString(R.string.err_connection_failed_msg);
-                                } else if (stacktrace.contains("403 Forbidden")
-                                        || stacktrace.contains("401 Unauthorized")) {
-                                    message = mContext.getString(R.string.err_refused_request_msg);
-                                    // Removed re-auth attempt for simplicity, just inform user
-                                } else if (stacktrace.contains("404 Not Found")
-                                        || stacktrace.contains("400 Bad Request")) {
-                                    message = mContext.getString(R.string.err_could_not_find_content_msg);
-                                } else {
-                                    message = mContext.getString(R.string.err_general) + "\n" + e.getMessage();
-                                }
-
-                                AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
-                                        .setTitle(title)
-                                        .setMessage(message)
-                                        .setNegativeButton(R.string.btn_close, null);
-
-                                builder.setPositiveButton(positiveButtonText, null);
-                                DialogUtil.showWithCardBackground(builder);
-                            } catch (Exception ignored) {
-                                Log.e(LogUtil.getTag(), "Exception showing error dialog", ignored);
-                            }
-                        });
+                showLoadFailedDialog(e);
                 return null;
             }
         }
         return itemsAddedCount;
+    }
+
+    private void showLoadFailedDialog(Exception e) {
+        Writer writer = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(writer);
+        e.printStackTrace(printWriter);
+        String stacktrace = writer.toString().replace(";", ",");
+
+        final Handler mHandler = new Handler(Looper.getMainLooper());
+        mHandler.post(
+                () -> {
+                    try {
+                        // Default error messages
+                        String message = mContext.getString(R.string.err_connection_failed_msg);
+                        String title = mContext.getString(R.string.err_title);
+                        String positiveButtonText = mContext.getString(R.string.btn_ok);
+
+                        // Specific error handling based on stacktrace
+                        if (e instanceof RateLimitPausedException) {
+                            message = rateLimitMessage((RateLimitPausedException) e);
+                        } else if (stacktrace.contains("UnknownHostException")
+                                || stacktrace.contains("SocketTimeoutException")
+                                || stacktrace.contains("ConnectException")) {
+                            message = mContext.getString(R.string.err_connection_failed_msg);
+                        } else if (stacktrace.contains("403 Forbidden")
+                                || stacktrace.contains("401 Unauthorized")) {
+                            message = mContext.getString(R.string.err_refused_request_msg);
+                            // Removed re-auth attempt for simplicity, just inform user
+                        } else if (stacktrace.contains("404 Not Found")
+                                || stacktrace.contains("400 Bad Request")) {
+                            message = mContext.getString(R.string.err_could_not_find_content_msg);
+                        } else {
+                            message = mContext.getString(R.string.err_general) + "\n" + e.getMessage();
+                        }
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
+                                .setTitle(title)
+                                .setMessage(message)
+                                .setNegativeButton(R.string.btn_close, null);
+
+                        builder.setPositiveButton(positiveButtonText, null);
+                        DialogUtil.showWithCardBackground(builder);
+                    } catch (Exception ignored) {
+                        Log.e(LogUtil.getTag(), "Exception showing error dialog", ignored);
+                    }
+                });
+    }
+
+    private String rateLimitMessage(RateLimitPausedException e) {
+        int seconds = (int) Math.max(1, (e.getWaitMs() + 999) / 1000);
+        if (seconds < 60) {
+            return mContext.getResources()
+                    .getQuantityString(R.plurals.err_rate_limited_seconds, seconds, seconds);
+        }
+        int minutes = (seconds + 59) / 60;
+        return mContext.getResources()
+                .getQuantityString(R.plurals.err_rate_limited_minutes, minutes, minutes);
     }
 
     private int appendExpandedNodes(CommentNode parentNode, List<CommentNode> newNodesListing) {

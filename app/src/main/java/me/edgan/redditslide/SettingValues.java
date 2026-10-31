@@ -160,6 +160,7 @@ public class SettingValues {
     public static final String PREF_DIALOG_COLORED_BORDER = "dialogColoredBorder";
 
     public static final String PREF_COLLAPSE_BLOCKED_USERS = "collapseBlockedUsers";
+    public static final String PREF_USE_OLD_LOAD_MORE_COMMENTS = "useOldLoadMoreComments";
 
     public static String imageSaveLocation = "";
     public static String redditClientIdOverride = "";
@@ -371,6 +372,7 @@ public class SettingValues {
     public static boolean subredditFiltersTillRestart;
     public static boolean subredditFilterPrefixMatching;
     public static boolean collapseBlockedUsers;
+    public static boolean useOldLoadMoreComments;
     public static boolean filterOldPosts;
     public static int filterOldPostsDays;
     public static boolean dialogColoredBorder;
@@ -611,6 +613,7 @@ public class SettingValues {
         subredditFiltersTillRestart = prefs.getBoolean(PREF_SUBREDDIT_FILTERS_TILL_RESTART, true);
         subredditFilterPrefixMatching = prefs.getBoolean(PREF_SUBREDDIT_FILTER_PREFIX_MATCHING, false);
         collapseBlockedUsers = prefs.getBoolean(PREF_COLLAPSE_BLOCKED_USERS, false);
+        useOldLoadMoreComments = prefs.getBoolean(PREF_USE_OLD_LOAD_MORE_COMMENTS, false);
         filterOldPosts = prefs.getBoolean(PREF_FILTER_OLD_POSTS, false);
         filterOldPostsDays = prefs.getInt(PREF_FILTER_OLD_POSTS_DAYS, 30);
         dialogColoredBorder = prefs.getBoolean(PREF_DIALOG_COLORED_BORDER, false);
